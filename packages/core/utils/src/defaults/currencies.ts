@@ -882,6 +882,15 @@ export const defaultCurrencies: Record<string, Currency> = {
     code: "SDG",
     name_plural: "Sudanese pounds",
   },
+  SRD: {
+    symbol: "SRD",
+    name: "Surinamese dollar",
+    symbol_native: "SRD",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "SRD",
+    name_plural: "Surinamese dollars",
+  },
   SEK: {
     symbol: "Skr",
     name: "Swedish Krona",

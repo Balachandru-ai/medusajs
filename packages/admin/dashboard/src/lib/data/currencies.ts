@@ -601,6 +601,12 @@ export const currencies: Record<string, CurrencyInfo> = {
     symbol_native: "$",
     decimal_digits: 2,
   },
+  SRD: {
+    code: "SRD",
+    name: "Surinamese Dollar",
+    symbol_native: "SRD",
+    decimal_digits: 2,
+  },
   SOS: {
     code: "SOS",
     name: "Somali Shilling",
