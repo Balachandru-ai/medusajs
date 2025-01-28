@@ -106,7 +106,12 @@ const Header = () => {
 
   return (
     <div className="w-full p-3">
-      <DropdownMenu>
+    <DropdownMenu
+          dir={
+            document.documentElement.getAttribute(
+              "dir"
+            ) as "rtl" | "ltr" | undefined
+          }>
         <DropdownMenu.Trigger
           disabled={!isLoaded}
           className={clx(

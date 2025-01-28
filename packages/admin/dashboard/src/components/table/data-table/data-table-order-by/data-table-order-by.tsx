@@ -97,7 +97,14 @@ export const DataTableOrderBy = <TData,>({
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      dir={
+        document.documentElement.getAttribute("dir") as
+          | "rtl"
+          | "ltr"
+          | undefined
+      }
+    >
       <DropdownMenu.Trigger asChild>
         <IconButton size="small">
           <DescendingSorting />

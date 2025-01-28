@@ -217,7 +217,14 @@ const Canvas = ({
               <PlusMini />
             </button>
             <div>
-              <DropdownMenu>
+              <DropdownMenu
+                dir={
+                  document.documentElement.getAttribute("dir") as
+                    | "rtl"
+                    | "ltr"
+                    | undefined
+                }
+              >
                 <DropdownMenu.Trigger className="disabled:text-ui-fg-disabled transition-fg hover:bg-ui-bg-base-hover active:bg-ui-bg-base-pressed focus-visible:bg-ui-bg-base-pressed flex w-[50px] items-center justify-center border-r p-1 outline-none">
                   <Text
                     as="span"

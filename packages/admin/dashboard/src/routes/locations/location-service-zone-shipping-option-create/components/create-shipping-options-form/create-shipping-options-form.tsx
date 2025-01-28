@@ -271,6 +271,12 @@ export function CreateShippingOptionsForm({
         }}
       >
         <ProgressTabs
+          dir={
+            document.documentElement.getAttribute("dir") as
+              | "ltr"
+              | "rtl"
+              | undefined
+          }
           value={activeTab}
           className="flex h-full flex-col overflow-hidden"
           onValueChange={(tab) => onTabChange(tab as Tab)}

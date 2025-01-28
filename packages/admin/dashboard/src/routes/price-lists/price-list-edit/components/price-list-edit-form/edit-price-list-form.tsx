@@ -80,7 +80,16 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                     <Form.Hint>{t("priceLists.fields.type.hint")}</Form.Hint>
                   </div>
                   <Form.Control>
-                    <RadioGroup {...field} onValueChange={onChange}>
+                    <RadioGroup
+                      dir={
+                        document.documentElement.getAttribute("dir") as
+                          | "rtl"
+                          | "ltr"
+                          | undefined
+                      }
+                      {...field}
+                      onValueChange={onChange}
+                    >
                       <RadioGroup.ChoiceBox
                         value={PriceListType.SALE}
                         label={t("priceLists.fields.type.options.sale.label")}
@@ -130,7 +139,16 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                       {t("priceLists.fields.status.label")}
                     </Form.Label>
                     <Form.Control>
-                      <Select {...field} onValueChange={onChange}>
+                      <Select
+                        dir={
+                          document.documentElement.getAttribute("dir") as
+                            | "rtl"
+                            | "ltr"
+                            | undefined
+                        }
+                        {...field}
+                        onValueChange={onChange}
+                      >
                         <Select.Trigger ref={ref}>
                           <Select.Value />
                         </Select.Trigger>

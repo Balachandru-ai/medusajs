@@ -56,6 +56,12 @@ export const AddCampaignPromotionFields = ({
 
               <Form.Control>
                 <RadioGroup
+                  dir={
+                    document.documentElement.getAttribute("dir") as
+                      | "rtl"
+                      | "ltr"
+                      | undefined
+                  }
                   className="grid grid-cols-1 gap-3"
                   {...field}
                   value={field.value}
@@ -105,7 +111,16 @@ export const AddCampaignPromotionFields = ({
                 </Form.Label>
 
                 <Form.Control>
-                  <Select onValueChange={onChange} {...field}>
+                  <Select
+                    dir={
+                      document.documentElement.getAttribute("dir") as
+                        | "rtl"
+                        | "ltr"
+                        | undefined
+                    }
+                    onValueChange={onChange}
+                    {...field}
+                  >
                     <Select.Trigger ref={ref}>
                       <Select.Value />
                     </Select.Trigger>

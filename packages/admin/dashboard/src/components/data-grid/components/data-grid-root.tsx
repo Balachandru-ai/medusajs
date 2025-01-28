@@ -50,7 +50,7 @@ import { isCellMatch, isSpecialFocusKey } from "../utils"
 import { DataGridKeyboardShortcutModal } from "./data-grid-keyboard-shortcut-modal"
 export interface DataGridRootProps<
   TData,
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
 > {
   data?: TData[]
   columns: ColumnDef<TData>[]
@@ -96,7 +96,7 @@ const getCommonPinningStyles = <TData,>(
 
 export const DataGridRoot = <
   TData,
-  TFieldValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues,
 >({
   data = [],
   columns,
@@ -716,7 +716,16 @@ const DataGridHeader = ({
   return (
     <div className="bg-ui-bg-base flex items-center justify-between border-b p-4">
       <div className="flex items-center gap-x-2">
-        <DropdownMenu open={columnsOpen} onOpenChange={handleColumnsOpenChange}>
+        <DropdownMenu
+          dir={
+            document.documentElement.getAttribute("dir") as
+              | "rtl"
+              | "ltr"
+              | undefined
+          }
+          open={columnsOpen}
+          onOpenChange={handleColumnsOpenChange}
+        >
           <ConditionalTooltip
             showTooltip={isDisabled}
             content={t("dataGrid.columns.disabled")}

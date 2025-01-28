@@ -118,7 +118,16 @@ export const EditStoreForm = ({ store }: EditStoreFormProps) => {
                   <Form.Item>
                     <Form.Label>{t("store.defaultCurrency")}</Form.Label>
                     <Form.Control>
-                      <Select {...field} onValueChange={onChange}>
+                      <Select
+                        dir={
+                          document.documentElement.getAttribute("dir") as
+                            | "rtl"
+                            | "ltr"
+                            | undefined
+                        }
+                        {...field}
+                        onValueChange={onChange}
+                      >
                         <Select.Trigger ref={field.ref}>
                           <Select.Value />
                         </Select.Trigger>

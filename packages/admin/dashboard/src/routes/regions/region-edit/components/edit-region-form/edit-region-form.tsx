@@ -106,7 +106,16 @@ export const EditRegionForm = ({
                     <Form.Item>
                       <Form.Label>{t("fields.currency")}</Form.Label>
                       <Form.Control>
-                        <Select onValueChange={onChange} {...field}>
+                        <Select
+                          dir={
+                            document.documentElement.getAttribute("dir") as
+                              | "rtl"
+                              | "ltr"
+                              | undefined
+                          }
+                          onValueChange={onChange}
+                          {...field}
+                        >
                           <Select.Trigger ref={ref}>
                             <Select.Value />
                           </Select.Trigger>
@@ -137,6 +146,8 @@ export const EditRegionForm = ({
                           <Form.Label>{t("fields.automaticTaxes")}</Form.Label>
                           <Form.Control>
                             <Switch
+                              dir="ltr"
+                              className="rtl:rotate-180"
                               {...field}
                               checked={value}
                               onCheckedChange={onChange}
@@ -164,6 +175,8 @@ export const EditRegionForm = ({
                           </Form.Label>
                           <Form.Control>
                             <Switch
+                              dir="ltr"
+                              className="rtl:rotate-180"
                               {...field}
                               checked={value}
                               onCheckedChange={onChange}

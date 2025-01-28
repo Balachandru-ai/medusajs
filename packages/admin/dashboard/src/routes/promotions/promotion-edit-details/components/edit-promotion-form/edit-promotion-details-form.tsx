@@ -117,6 +117,12 @@ export const EditPromotionDetailsForm = ({
                     <Form.Label>{t("promotions.form.status.label")}</Form.Label>
                     <Form.Control>
                       <RadioGroup
+                        dir={
+                          document.documentElement.getAttribute("dir") as
+                            | "rtl"
+                            | "ltr"
+                            | undefined
+                        }
                         className="flex-col gap-y-3"
                         {...field}
                         value={field.value}
@@ -162,6 +168,12 @@ export const EditPromotionDetailsForm = ({
                     <Form.Label>{t("promotions.form.method.label")}</Form.Label>
                     <Form.Control>
                       <RadioGroup
+                        dir={
+                          document.documentElement.getAttribute("dir") as
+                            | "rtl"
+                            | "ltr"
+                            | undefined
+                        }
                         className="flex-col gap-y-3"
                         {...field}
                         value={field.value}
@@ -242,7 +254,13 @@ export const EditPromotionDetailsForm = ({
                         </Form.Label>
                         <Form.Control>
                           <RadioGroup
-                            className="flex-col gap-y-3"
+                            dir={
+                          document.documentElement.getAttribute("dir") as
+                            | "rtl"
+                            | "ltr"
+                            | undefined
+                        }
+                        className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
                           >
@@ -336,7 +354,13 @@ export const EditPromotionDetailsForm = ({
                         </Form.Label>
                         <Form.Control>
                           <RadioGroup
-                            className="flex-col gap-y-3"
+                            dir={
+                          document.documentElement.getAttribute("dir") as
+                            | "rtl"
+                            | "ltr"
+                            | undefined
+                        }
+                        className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
                           >

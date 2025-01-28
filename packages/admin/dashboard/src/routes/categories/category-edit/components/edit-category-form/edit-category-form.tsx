@@ -126,7 +126,16 @@ export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
                         {t("categories.fields.status.label")}
                       </Form.Label>
                       <Form.Control>
-                        <Select {...field} onValueChange={onChange}>
+                        <Select
+                          dir={
+                            document.documentElement.getAttribute("dir") as
+                              | "rtl"
+                              | "ltr"
+                              | undefined
+                          }
+                          {...field}
+                          onValueChange={onChange}
+                        >
                           <Select.Trigger ref={ref}>
                             <Select.Value />
                           </Select.Trigger>
@@ -155,7 +164,16 @@ export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
                         {t("categories.fields.visibility.label")}
                       </Form.Label>
                       <Form.Control>
-                        <Select {...field} onValueChange={onChange}>
+                        <Select
+                          dir={
+                            document.documentElement.getAttribute("dir") as
+                              | "rtl"
+                              | "ltr"
+                              | undefined
+                          }
+                          {...field}
+                          onValueChange={onChange}
+                        >
                           <Select.Trigger ref={ref}>
                             <Select.Value />
                           </Select.Trigger>
