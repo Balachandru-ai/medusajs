@@ -117,6 +117,11 @@ export const integrationsSidebar = [
         path: "/commerce-modules/payment/payment-provider/stripe",
         title: "Stripe",
       },
+      {
+        type: "link",
+        path: "/integrations/guides/klarna",
+        title: "Klarna",
+      },
     ],
   },
   {

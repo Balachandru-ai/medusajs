@@ -44,6 +44,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/contentful"
   },
   {
+    "title": "Integrate Klarna",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/klarna"
+  },
+  {
     "title": "Build Wishlist Plugin",
     "path": "https://docs.medusajs.com/resources/plugins/guides/wishlist"
   },
