@@ -118,9 +118,9 @@ Medusa Cloud offers a managed file storage solution with AWS S3 for your Medusa 
        - Confirm by clicking "Create bucket"
     3. Configure public access:
        - On your bucket's dashboard, click on the Settings tab.
-       - Scroll down to the Public Access section, and click on "Allow Access" in the "R2.dev subdomain" card.
-       - Type 'allow' to confirm
-       - Copy the Public R2.dev Bucket URL for your `S3_FILE_URL`
+       - In the General Section look for Custom Domains (recommended for production use)
+       - Enter the domain name you want to connect to and select Continue.
+       - Review the new record that will be added to the DNS table and select Connect Domain.
     4. Retrieve credentials:
        - [Go to API tokens page](https://dash.cloudflare.com/?to=/:account/r2/api-tokens):
          - Select "Create API token"
@@ -128,7 +128,9 @@ Medusa Cloud offers a managed file storage solution with AWS S3 for your Medusa 
          - Under Permissions, select Object Read & Write permission types
          - You can optionally specify the buckets that this API token has access to under the "Specify bucket(s)" section.
          - Once done, click the "Create API Token" button.
-         - You'll receive an access key ID and a secret access key. Save them to use them later for the `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` environment variables.
+         - Copy the jurisdiction-specific endpoint for S3 clients to S3_ENDPOINT into your environment variables.
+         - Copy the Access Key ID and Secret Access Key to the corresponding fields into your environment variables.
+         - Copy your custom domain to `S3_FILE_URL` with leading https:// into your environment variables.
 
     </TabsContent>
   </TabsContentWrapper>
@@ -235,7 +237,7 @@ module.exports = defineConfig({
       - For MinIO, it's the URL to the MinIO server with the bucket's name. For example, `https://{server-domain}/{bucket}`. Locally, it may be something like `http://192.168.0.123:9001/{bucket}`.
       - For DigitalOcean Spaces, it's either the Origin Endpoint or the CDN endpoint of your Spaces Object Storage bucket.
       - for Supabase, it's `https://{uniqueID}.supabase.co/storage/v1/object/public/{bucket}`. You can retrieve the `uniqueID` from [Storage Settings](https://supabase.com/docs/guides/storage/s3/authentication?queryGroups=language&language=javascript#s3-access-keys) page in the Endpoint URL.
-      - For Cloudflare R2, it's `Public R2.dev Bucket URL`.
+      - For Cloudflare R2, it's your `Custom Domain` (recommended for production use) `Public R2.dev Bucket URL` (for development).
       
       </Table.Cell>
       <Table.Cell>
@@ -330,7 +332,7 @@ module.exports = defineConfig({
       - For MinIO, it's the URL to the MinIO server. For example, locally, it may be something like `http://192.168.0.123:9001`.
       - For DigitalOcean Spaces, it's the Spaces Origin Endpoint of the format `https://{region}.digitaloceanspaces.com`.
       - For Supabase, it's the Endpoint URL in the [Storage Settings](https://supabase.com/docs/guides/storage/s3/authentication?queryGroups=language&language=javascript#s3-access-keys).
-      - For Cloudflare, it's `https://{your-account-id}.r2.cloudflarestorage.com`.
+      - For Cloudflare, it's the endpoint for S3 clients `https://{your-account-id}.r2.cloudflarestorage.com`.
       
       </Table.Cell>
       <Table.Cell>
