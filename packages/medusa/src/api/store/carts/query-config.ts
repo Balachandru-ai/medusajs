@@ -77,6 +77,7 @@ export const defaultStoreCartFields = [
   "items.adjustments.code",
   "items.adjustments.promotion_id",
   "items.adjustments.amount",
+  "items.adjustments.is_tax_inclusive",
   "customer.id",
   "customer.email",
   "customer.groups.id",
