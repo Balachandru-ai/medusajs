@@ -103,9 +103,9 @@ function applyPromotionToItems(
     ? 1
     : applicationMethod?.max_quantity!
 
-  let lineItemsTotal = MathBN.convert(0)
+  let lineItemsSubtotal = MathBN.convert(0)
   if (allocation === ApplicationMethodAllocation.ACROSS) {
-    lineItemsTotal = applicableItems.reduce(
+    lineItemsSubtotal = applicableItems.reduce(
       (acc, item) =>
         MathBN.sub(
           MathBN.add(acc, item.subtotal),
@@ -114,7 +114,7 @@ function applyPromotionToItems(
       MathBN.convert(0)
     )
 
-    if (MathBN.lte(lineItemsTotal, 0)) {
+    if (MathBN.lte(lineItemsSubtotal, 0)) {
       return computedActions
     }
   }
@@ -135,11 +135,12 @@ function applyPromotionToItems(
       {
         value: promotionValue,
         applied_value: appliedPromoValue,
+        is_tax_inclusive: promotion.is_tax_inclusive,
         max_quantity: maxQuantity,
         type: applicationMethod?.type!,
         allocation,
       },
-      lineItemsTotal
+      lineItemsSubtotal
     )
 
     if (MathBN.lte(amount, 0)) {
