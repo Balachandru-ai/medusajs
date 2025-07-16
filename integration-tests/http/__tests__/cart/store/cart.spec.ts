@@ -16,6 +16,7 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
+import { application } from "express"
 
 jest.setTimeout(100000)
 
@@ -2805,6 +2806,238 @@ medusaIntegrationTestRunner({
               items: expect.arrayContaining([
                 expect.objectContaining({
                   adjustments: [],
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 100 USD tax exclusive promotion for a 105 USD tax inclusive item and logically result in a 0 total with tax 5%", async () => {
+          const taxExclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_EXCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: false, //Here we apply a tax exclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 100,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxExclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 105,
+              discount_subtotal: 100,
+              discount_tax_total: 5,
+              original_total: 105,
+              total: 0, // 105 - 100 tax excl promotion + 5 promotion tax
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxExclPromotion.code,
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_EXCLUSIVE",
+                  application_method: expect.objectContaining({
+                    value: 100,
+                  }),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 105 USD tax inclusive promotion for a 105 USD tax inclusive item and logically result in a 0 total with tax 5%", async () => {
+          const taxExclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true, //Here we apply a tax inclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 105,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxExclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 105,
+              discount_subtotal: 100,
+              discount_tax_total: 5,
+              original_total: 105,
+              total: 0, // 105 - 100 tax excl promotion + 5 promotion tax
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxExclPromotion.code,
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_INCLUSIVE",
+                  application_method: expect.objectContaining({
+                    value: 105,
+                  }),
                 }),
               ]),
             })
