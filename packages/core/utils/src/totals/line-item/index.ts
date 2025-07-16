@@ -16,7 +16,7 @@ export interface GetItemTotalInput {
   quantity: BigNumber
   is_tax_inclusive?: boolean
   tax_lines?: Pick<TaxLineDTO, "rate">[]
-  adjustments?: Pick<AdjustmentLineDTO, "amount" | "is_tax_inclusive">[]
+  adjustments?: Pick<AdjustmentLineDTO, "amount">[]
   detail?: {
     fulfilled_quantity: BigNumber
     delivered_quantity: BigNumber

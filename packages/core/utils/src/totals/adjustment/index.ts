@@ -7,7 +7,7 @@ export function calculateAdjustmentTotal({
   adjustments,
   taxRate,
 }: {
-  adjustments: Pick<AdjustmentLineDTO, "amount" | "is_tax_inclusive">[]
+  adjustments: Pick<AdjustmentLineDTO, "amount">[]
   taxRate?: BigNumberInput
 }) {
   // the sum of all adjustment amounts excluding tax
