@@ -562,7 +562,7 @@ describe("Total calculation", function () {
      * TAX INCLUSIVE CART
      *
      * Total price -> 120 tax inclusive
-     * Fixed discount -> 10 tax inclusive
+     * Fixed discount -> 10 tax inclusive total (which results in a subtotal of 8.33 of the discount)
      * Tax rate -> 20%
      */
 
@@ -574,7 +574,7 @@ describe("Total calculation", function () {
           is_tax_inclusive: true,
           adjustments: [
             {
-              amount: 10,
+              amount: 8.333333333333334,
             },
           ],
           tax_lines: [
@@ -594,36 +594,36 @@ describe("Total calculation", function () {
           unit_price: 60,
           quantity: 2,
           subtotal: 100,
-          tax_total: 18,
-          total: 108,
+          tax_total: 18.333333333333332,
+          total: 110,
           is_tax_inclusive: true,
 
           original_total: 120,
           original_tax_total: 20,
 
-          discount_subtotal: 10,
-          discount_tax_total: 2,
-          discount_total: 12,
+          discount_subtotal: 8.333333333333334,
+          discount_tax_total: 1.6666666666666667,
+          discount_total: 10,
 
           tax_lines: [
             {
               rate: 20,
-              total: 18,
+              total: 18.333333333333332,
               subtotal: 20,
             },
           ],
           adjustments: [
             {
-              amount: 10,
-              subtotal: 10,
-              total: 12,
+              amount: 8.333333333333334,
+              subtotal: 8.333333333333334,
+              total: 10,
             },
           ],
         },
       ],
       subtotal: 100,
-      tax_total: 18,
-      total: 108, // total is 120 - 12 tax inclusive discount
+      tax_total: 18.333333333333332,
+      total: 110,
 
       original_item_subtotal: 100,
       original_item_tax_total: 20,
@@ -631,13 +631,13 @@ describe("Total calculation", function () {
       original_tax_total: 20,
       original_total: 120,
 
-      discount_subtotal: 10,
-      discount_tax_total: 2,
-      discount_total: 12,
+      discount_subtotal: 8.333333333333334,
+      discount_tax_total: 1.6666666666666667,
+      discount_total: 10,
 
       item_subtotal: 100,
-      item_tax_total: 18,
-      item_total: 108,
+      item_tax_total: 18.333333333333332,
+      item_total: 110,
 
       credit_line_subtotal: 0,
       credit_line_tax_total: 0,
