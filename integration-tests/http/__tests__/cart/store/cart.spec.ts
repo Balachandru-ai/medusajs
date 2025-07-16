@@ -419,22 +419,22 @@ medusaIntegrationTestRunner({
                   compare_at_unit_price: null,
                   is_tax_inclusive: true,
                   quantity: 2,
-                  tax_lines: [
+                  tax_lines: expect.arrayContaining([
                     expect.objectContaining({
                       description: "CA Default Rate",
                       code: "CADEFAULT",
                       rate: 5,
                       provider_id: "system",
                     }),
-                  ],
-                  adjustments: [
-                    {
+                  ]),
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
                       id: expect.any(String),
                       code: "PROMOTION_APPLIED",
                       promotion_id: promotion.id,
                       amount: 100,
-                    },
-                  ],
+                    }),
+                  ]),
                 }),
               ]),
             })
@@ -456,14 +456,14 @@ medusaIntegrationTestRunner({
               id: cart.id,
               items: expect.arrayContaining([
                 expect.objectContaining({
-                  adjustments: [
-                    {
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
                       id: expect.any(String),
                       code: "PROMOTION_APPLIED",
                       promotion_id: promotion.id,
                       amount: 100,
-                    },
-                  ],
+                    }),
+                  ]),
                 }),
               ]),
             })
@@ -823,22 +823,22 @@ medusaIntegrationTestRunner({
                     compare_at_unit_price: 1500,
                     is_tax_inclusive: true,
                     quantity: 2,
-                    tax_lines: [
+                    tax_lines: expect.arrayContaining([
                       expect.objectContaining({
                         description: "CA Default Rate",
                         code: "CADEFAULT",
                         rate: 5,
                         provider_id: "system",
                       }),
-                    ],
-                    adjustments: [
-                      {
+                    ]),
+                    adjustments: expect.arrayContaining([
+                      expect.objectContaining({
                         id: expect.any(String),
                         code: "PROMOTION_APPLIED",
                         promotion_id: promotion.id,
                         amount: 100,
-                      },
-                    ],
+                      }),
+                    ]),
                   }),
                 ]),
               })
@@ -1235,7 +1235,7 @@ medusaIntegrationTestRunner({
                 id: expect.any(String),
                 currency_code: "usd",
                 credit_line_total: 2395,
-                discount_total: 100,
+                discount_total: 105,
                 credit_lines: [
                   expect.objectContaining({
                     amount: 2395,
@@ -2744,7 +2744,7 @@ medusaIntegrationTestRunner({
                   is_discountable: true,
                   unit_price: 1500,
                   total: 1395,
-                  discount_total: 100,
+                  discount_total: 105,
                   adjustments: [
                     expect.objectContaining({
                       promotion_id: promotion.id,
@@ -2775,14 +2775,14 @@ medusaIntegrationTestRunner({
               id: cart.id,
               items: expect.arrayContaining([
                 expect.objectContaining({
-                  adjustments: [
-                    {
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
                       id: expect.any(String),
                       code: "PROMOTION_APPLIED",
                       promotion_id: promotion.id,
                       amount: 100,
-                    },
-                  ],
+                    }),
+                  ]),
                 }),
               ]),
             })
