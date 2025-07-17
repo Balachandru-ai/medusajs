@@ -237,11 +237,6 @@ export interface CreateAdjustmentDTO {
   amount: BigNumberInput
 
   /**
-   * Whether the adjustment amount includes tax.
-   */
-  is_tax_inclusive?: boolean
-
-  /**
    * The description of the adjustment.
    */
   description?: string

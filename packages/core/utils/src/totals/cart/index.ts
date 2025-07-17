@@ -22,7 +22,7 @@ export interface DecorateCartLikeInputDTO {
     unit_price: BigNumberInput
     is_tax_inclusive?: boolean
     quantity: BigNumberInput
-    adjustments?: { amount: BigNumberInput; is_tax_inclusive?: boolean }[]
+    adjustments?: { amount: BigNumberInput }[]
     tax_lines?: {
       rate: BigNumberInput
     }[]

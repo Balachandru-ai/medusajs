@@ -192,7 +192,6 @@ medusaIntegrationTestRunner({
                   description: "VIP discount",
                   promotion_id: expect.any(String),
                   code: "VIP_25 ETH",
-                  is_tax_inclusive: false,
                   raw_amount: {
                     value: "5e-18",
                     precision: 20,

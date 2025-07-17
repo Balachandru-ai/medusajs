@@ -23,11 +23,6 @@ export interface AdjustmentLineDTO {
   amount: BigNumberValue
 
   /**
-   * Whether the adjustment is tax inclusive.
-   */
-  is_tax_inclusive?: boolean
-
-  /**
    * The raw amount to adjust the original amount with.
    */
   raw_amount: BigNumberRawValue

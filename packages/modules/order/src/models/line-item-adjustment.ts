@@ -9,7 +9,6 @@ const _OrderLineItemAdjustment = model
     code: model.text().nullable(),
     amount: model.bigNumber(),
     provider_id: model.text().nullable(),
-    is_tax_inclusive: model.boolean().default(false),
     item: model.belongsTo<() => typeof OrderLineItem>(() => OrderLineItem, {
       mappedBy: "adjustments",
     }),
