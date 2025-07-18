@@ -16,7 +16,6 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
-import { application } from "express"
 
 jest.setTimeout(100000)
 
@@ -2929,7 +2928,7 @@ medusaIntegrationTestRunner({
         })
 
         it("should add a 105 USD tax inclusive promotion for a 105 USD tax inclusive item and logically result in a 0 total with tax 5%", async () => {
-          const taxExclPromotion = (
+          const taxInclPromotion = (
             await api.post(
               `/admin/promotions`,
               {
@@ -3009,7 +3008,7 @@ medusaIntegrationTestRunner({
 
           let updated = await api.post(
             `/store/carts/${cart.id}`,
-            { promo_codes: [taxExclPromotion.code] },
+            { promo_codes: [taxInclPromotion.code] },
             storeHeaders
           )
 
@@ -3026,7 +3025,7 @@ medusaIntegrationTestRunner({
                   is_tax_inclusive: true,
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      code: taxExclPromotion.code,
+                      code: taxInclPromotion.code,
                       amount: 100,
                     }),
                   ]),
