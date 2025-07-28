@@ -37,8 +37,8 @@ export const sidebars = [
           },
           {
             type: "link",
-            title: "Migrate from v1",
-            path: "/learn/introduction/v1-migration",
+            title: "From v1 to v2",
+            path: "/learn/introduction/from-v1-to-v2",
           },
         ],
       },

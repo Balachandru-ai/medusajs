@@ -1,18 +1,20 @@
 import { Table, CardList } from "docs-ui"
 
 export const metadata = {
-  title: `${pageNumber} Migrate from Medusa v1 to v2`,
+  title: `${pageNumber} From Medusa v1 to v2: Conceptual Differences`,
 }
 
 # {metadata.title}
 
-In this chapter, you'll learn how to migrate your Medusa project from Medusa v1 to v2.
+In this chapter, you'll learn about the differences and changes between concepts in Medusa v1 to v2.
 
 ## What to Expect in This Chapter
 
-This chapter is designed to help developers who have created projects with Medusa v1 to migrate them to Medusa v2. This guide will cover:
+This chapter is designed to help developers migrate from Medusa v1 to v2 by understanding the conceptual differences between the two versions.
 
-- The steps to update your project from Medusa v1 to v2.
+This chapter will cover:
+
+- The general steps to update your project from Medusa v1 to v2.
 - The changes in tools and plugins between Medusa v1 and v2.
 - The high-level changes in the concepts and commerce features between Medusa v1 and v2.
 
@@ -158,7 +160,7 @@ Medusa v2 comes with changes and improvements to its CLI tool. So, update your `
     "start": "medusa start",
     "dev": "medusa develop",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
-    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
+    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
   }
 }
@@ -404,7 +406,7 @@ In v1, the admin dashboard was installed as a plugin with configurations. In v2,
 
 The [Medusa Admin Changes](#medusa-admin-changes) section covers the changes in the Medusa Admin configurations and customizations.
 
-### 5. Setup v2 Database
+### 5. Setup New Database
 
 Now that you have updated your dependencies and configuration file, you need to set up the database for your v2 project.
 
@@ -453,7 +455,7 @@ This section doesn't cover changes related to Medusa Admin customizations. They'
 
 </Note>
 
-The Medusa Admin is now available out-of-the-box. It's built with [Vite](https://vite.dev/) and runs at `http://localhost:9000/app` by default when you start your Medusa application.
+The Medusa Admin is now available out-of-the-box. It's built with [Vite v5](https://vite.dev/) and runs at `http://localhost:9000/app` by default when you start your Medusa application.
 
 ### Admin Configurations
 
@@ -699,7 +701,7 @@ The following table highlights the alternatives for the Medusa v1 plugins:
         Mailchimp
       </Table.Cell>
       <Table.Cell>
-        Not available, but you can integrate it as a [Notification Module Provider](!resources!/references/notification-provider-module).
+        [Guide](!resources!/integrations/guides/mailchimp)
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -747,7 +749,7 @@ The following table highlights the alternatives for the Medusa v1 plugins:
         Segment
       </Table.Cell>
       <Table.Cell>
-        Not available, but you can integrate it as an [Analytics Module Provider](!resources!/references/analytics/provider).
+        [Guide](!resources!/integrations/guides/segment)
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -771,7 +773,7 @@ The following table highlights the alternatives for the Medusa v1 plugins:
         Slack
       </Table.Cell>
       <Table.Cell>
-        Not available, but you can integrate it as a [Notification Module Provider](!resources!/references/notification-provider-module).
+        [Guide](!resources!/integrations/guides/slack)
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -1903,6 +1905,6 @@ In Medusa v2, gift card features are now only available to [Medusa Cloud](https:
 
 The deployment process in Medusa v2 is similar to v1, but with some changes. For example, the Medusa server is now deployed with Medusa Admin.
 
-Medusa also provides [Medusa Cloud](https://medusajs.com/cloud/), which is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure.
+Medusa also provides [Cloud](https://medusajs.com/cloud/), a managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure.
 
 Refer to the [Deployment](!resources!/deployment) documentation to learn about the deployment process for Medusa applications and Next.js Starter Storefront.

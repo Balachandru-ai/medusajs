@@ -5022,41 +5022,105 @@ The Medusa application's production build, which is created using the `build` co
 If your hosting provider doesn't support setting a current-working directory, set the start command to the following:
 
 ```bash npm2yarn
-npm install --save-dev tsc-alias rimraf
+cd .medusa/server && npm install && npm run predeploy && npm run start
 ```
 
-Where `tsc-alias` is a package that resolves TypeScript aliases, and `rimraf` is a package that removes files and directories.
+Notice that you run the `predeploy` command before starting the Medusa application to run migrations and sync links whenever there's an update.
 
-Then, add a new `resolve:aliases` script to your `package.json` and update the `build` script:
+### Set Backend URL in Admin Configuration
 
-```json title="package.json"
-{
-  "scripts": {
-    // other scripts...
-    "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
-    "build": "medusa build && npm run resolve:aliases"
-  }
-}
-```
+The Medusa Admin is built and hosted statically. To send requests to the Medusa server application, you must set the backend URL in the Medusa Admin's configuration.
 
-You can now use TypeScript aliases in your Medusa application. For example, add the following in `tsconfig.json`:
+After you’ve obtained the Medusa application’s URL, add the following configuration to `medusa-config.ts`:
 
-```json title="tsconfig.json"
-{
-  "compilerOptions": {
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
     // ...
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
-}
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
+  },
+})
 ```
 
-Now, you can import modules, for example, using TypeScript aliases:
+Then, push the changes to the GitHub repository or deployed application.
 
-```ts
-import { BrandModuleService } from "@/modules/brand/service"
+In your hosting provider, add or modify the following environment variables for the Medusa application in server mode:
+
+```bash
+ADMIN_CORS= # MEDUSA APPLICATION URL
+AUTH_CORS= # ADD MEDUSA APPLICATION URL
+MEDUSA_BACKEND_URL= # URL TO DEPLOYED MEDUSA APPLICATION
 ```
+
+Where you set the value of `ADMIN_CORS` and `MEDUSA_BACKEND_URL` to the Medusa application’s URL, and you add the URL to `AUTH_CORS`.
+
+After setting the environment variables, make sure to restart the deployment for the changes to take effect.
+
+Remember to separate URLs in `AUTH_CORS` by commas.
+
+***
+
+## 6. Deploy Medusa Application in Worker Mode
+
+Next, you'll deploy the Medusa application in worker mode.
+
+As explained in the previous section, the deployment steps depend on your hosting provider. This section provides the general steps to perform during the deployment.
+
+### Set Environment Variables
+
+When setting the environment variables of the Medusa application, set the following variables:
+
+```bash
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+DISABLE_MEDUSA_ADMIN=true
+MEDUSA_WORKER_MODE=worker
+PORT=9000
+DATABASE_URL= # POSTGRES DATABASE URL
+REDIS_URL= # REDIS DATABASE URL
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `true` so that the admin isn't built with the worker application.
+- Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`
+- Set the Redis database's connection URL as the value of `REDIS_URL`.
+
+Feel free to add any other relevant environment variables, such as for integrations and Infrastructure Modules.
+
+### Set Start Command
+
+The Medusa application's production build, which is created using the `build` command, outputs the Medusa application to `.medusa/server`. So, you must install the dependencies in the `.medusa/server` directory, then run the `start` command in it.
+
+If your hosting provider doesn't support setting a current-working directory, set the start command to the following:
+
+```bash npm2yarn
+cd .medusa/server && npm install && npm run start
+```
+
+***
+
+## 7. Test Deployed Application
+
+Once the application is deployed and live, go to `<APP_URL>/health`, where `<APP_URL>` is the URL of the Medusa application in server mode. If the deployment was successful, you’ll see the `OK` response.
+
+The Medusa Admin is also available at `<APP_URL>/app`.
+
+***
+
+## Create Admin User
+
+If your hosting provider supports running commands in your Medusa application's directory, run the following command to create an admin user:
+
+```bash
+npx medusa user -e admin-medusa@test.com -p supersecret
+```
+
+Replace the email `admin-medusa@test.com` and password `supersecret` with the credentials you want.
+
+You can use these credentials to log into the Medusa Admin dashboard.
 
 
 # Medusa Deployment Overview
@@ -8974,50 +9038,108 @@ const product = await blogModuleService.retrieveProducts(
 In the example above, the retrieved product has an `orders` property, whose value is an array of orders associated with the product.
 
 
-# Admin Development
+# Data Models
 
-In this chapter, you'll learn about the Medusa Admin dashboard and the possible ways to customize it.
+In this chapter, you'll learn what a data model is and how to create a data model.
 
-## What is the Medusa Admin?
+## What is a Data Model?
 
-The Medusa Admin is an intuitive dashboard that allows merchants to manage their ecommerce store. It provides management featuers related to products, orders, customers, and more.
+A data model represents a table in the database. You create data models using Medusa's data modeling language (DML). It simplifies defining a table's columns, relations, and indexes with straightforward methods and configurations.
 
-To explore more what you can do with the Medusa Admin, check out the [User Guide](https://docs.medusajs.com/user-guide/index.html.md). These user guides are designed for merchants and provide the steps to perform any task within the Medusa Admin.
-
-The Medusa Admin is built with [Vite](https://vite.dev/). When you [install the Medusa application](https://docs.medusajs.com/learn/installation/index.html.md), you also install the Medusa Admin. Then, when you start the Medusa application, you can access the Medusa Admin at `http://localhost:9000/app`.
-
-If you don't have an admin user, use the [Medusa CLI](https://docs.medusajs.com/resources/medusa-cli/commands/user/index.html.md) to create one.
+You create a data model in a [module](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md). The module's service provides the methods to store and manage those data models. Then, you can resolve the module's service in other customizations, such as a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md), to manage the data models' records.
 
 ***
 
-## How to Customize the Medusa Admin?
+## How to Create a Data Model
 
-You can customize the Medusa Admin dashboard by:
+In a module, you can create a data model in a TypeScript or JavaScript file under the module's `models` directory.
 
-- Adding new sections to existing pages using [Widgets](https://docs.medusajs.com/learn/fundamentals/admin/widgets/index.html.md).
-- Adding new pages using [UI Routes](https://docs.medusajs.com/learn/fundamentals/admin/ui-routes/index.html.md).
+So, for example, assuming you have a Blog Module at `src/modules/blog`, you can create a `Post` data model by creating the `src/modules/blog/models/post.ts` file with the following content:
 
-The next chapters will cover these two topics in detail.
+![Updated directory overview after adding the data model](https://res.cloudinary.com/dza7lstvk/image/upload/v1732806790/Medusa%20Book/blog-dir-overview-1_jfvovj.jpg)
 
-### What You Can't Customize in the Medusa Admin
+```ts title="src/modules/blog/models/post.ts"
+import { model } from "@medusajs/framework/utils"
 
-You can't customize the admin dashboard's layout, design, or the content of the existing pages (aside from injecting widgets).
+const Post = model.define("post", {
+  id: model.id().primaryKey(),
+  title: model.text(),
+})
 
-If your use case requires heavy customization of the admin dashboard, you can build a custom admin dashboard using Medusa's [Admin API routes](https://docs.medusajs.com/api/admin).
+export default Post
+```
+
+You define the data model using the `define` method of the DML. It accepts two parameters:
+
+1. The first one is the name of the data model's table in the database. Use snake-case names.
+2. The second is an object, which is the data model's schema. The schema's properties are defined using the `model`'s methods, such as `text` and `id`.
+   - Data models automatically have the date properties `created_at`, `updated_at`, and `deleted_at`, so you don't need to add them manually.
+
+The code snippet above defines a `Post` data model with `id` and `title` properties.
 
 ***
 
-## Medusa UI Package
+## Generate Migrations
 
-Medusa provides a Medusa UI package to facilitate your admin development through ready-made components and ensure a consistent design between your customizations and the dashboard’s design.
+After you create a data model in a module, then [register that module in your Medusa configurations](https://docs.medusajs.com/learn/fundamentals/modules#4-add-module-to-medusas-configurations/index.html.md), you must generate a migration to create the data model's table in the database.
 
-Refer to the [Medusa UI documentation](https://docs.medusajs.com/ui/index.html.md) to learn how to install it and use its components.
+A migration is a TypeScript or JavaScript file that defines database changes made by a module. Migrations are useful when you re-use a module or you're working in a team, so that when one member of a team makes a database change, everyone else can reflect it on their side by running the migrations.
+
+For example, to generate a migration for the Blog Module, run the following command in your Medusa application's directory:
+
+If you're creating the module in a plugin, use the [plugin:db:generate command](https://docs.medusajs.com/resources/medusa-cli/commands/plugin#plugindbgenerate/index.html.md) instead.
+
+```bash
+npx medusa db:generate blog
+```
+
+The `db:generate` command of the Medusa CLI accepts one or more module names to generate the migration for. It will create a migration file for the Blog Module in the directory `src/modules/blog/migrations` similar to the following:
+
+```ts
+import { Migration } from "@mikro-orm/migrations"
+
+export class Migration20241121103722 extends Migration {
+
+  async up(): Promise<void> {
+    this.addSql("create table if not exists \"post\" (\"id\" text not null, \"title\" text not null, \"created_at\" timestamptz not null default now(), \"updated_at\" timestamptz not null default now(), \"deleted_at\" timestamptz null, constraint \"post_pkey\" primary key (\"id\"));")
+  }
+
+  async down(): Promise<void> {
+    this.addSql("drop table if exists \"post\" cascade;")
+  }
+
+}
+```
+
+In the migration class, the `up` method creates the table `post` and defines its columns using PostgreSQL syntax. The `down` method drops the table.
+
+### Run Migrations
+
+To reflect the changes in the generated migration file on the database, run the `db:migrate` command:
+
+If you're creating the module in a plugin, run this command on the Medusa application that the plugin is installed in.
+
+```bash
+npx medusa db:migrate
+```
+
+This creates the `post` table in the database.
+
+### Migrations on Data Model Changes
+
+Whenever you make a change to a data model, you must generate and run the migrations.
+
+For example, if you add a new column to the `Post` data model, you must generate a new migration and run it.
 
 ***
 
-## Admin Components List
+## Manage Data Models
 
-To build admin customizations that match the Medusa Admin's designs and layouts, refer to [this guide](https://docs.medusajs.com/resources/admin-components/index.html.md) to find common components.
+Your module's service should extend the [service factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md), which generates data-management methods for your module's data models.
+
+For example, the Blog Module's service would have methods like `retrievePost` and `createPosts`.
+
+Refer to the [Service Factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md) chapter to learn more about how to extend the service factory and manage data models, and refer to the [Service Factory Reference](https://docs.medusajs.com/resources/service-factory-reference/index.html.md) for the full list of generated methods and how to use them.
 
 
 # Data Model Properties
@@ -12392,46 +12514,228 @@ npx medusa db:migrate
 
 # Query Context
 
-In this chapter, you'll learn about Medusa's Commerce Modules.
+In this chapter, you'll learn how to pass contexts when retrieving data with [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query/index.html.md).
 
-## What is a Commerce Module?
+## What is Query Context?
 
-Commerce Modules are built-in [modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) of Medusa that provide core commerce logic specific to domains like Products, Orders, Customers, Fulfillment, and much more.
+Query context is a way to pass additional information when retrieving data with Query. This data can be useful when applying custom transformations to the retrieved data based on the current context.
 
-Medusa's Commerce Modules are used to form Medusa's default [workflows](https://docs.medusajs.com/resources/medusa-workflows-reference/index.html.md) and [APIs](https://docs.medusajs.com/api/store). For example, when you call the add to cart endpoint. the add to cart workflow runs which uses the Product Module to check if the product exists, the Inventory Module to ensure the product is available in the inventory, and the Cart Module to finally add the product to the cart.
-
-You'll find the details and steps of the add-to-cart workflow in [this workflow reference](https://docs.medusajs.com/resources/references/medusa-workflows/addToCartWorkflow/index.html.md)
-
-The core commerce logic contained in Commerce Modules is also available directly when you are building customizations. This granular access to commerce functionality is unique and expands what's possible to build with Medusa drastically.
-
-### List of Medusa's Commerce Modules
-
-Refer to [this reference](https://docs.medusajs.com/resources/commerce-modules/index.html.md) for a full list of Commerce Modules in Medusa.
+For example, consider you have a Blog Module with posts and authors. You can accept the user's language as a context and return the posts in the user's language. Another example is how Medusa uses Query Context to [retrieve product variants' prices based on the customer's currency](https://docs.medusajs.com/resources/commerce-modules/product/guides/price/index.html.md).
 
 ***
 
-## Use Commerce Modules in Custom Flows
+## How to Use Query Context
 
-Similar to your [custom modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md), the Medusa application registers a Commerce Module's service in the [container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md). So, you can resolve it in your custom flows. This is useful as you build unique requirements extending core commerce features.
+The `query.graph` method accepts an optional `context` parameter that can be used to pass additional context either to the data model you're retrieving (for example, `post`), or its related and linked models (for example, `author`).
 
-For example, consider you have a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) (a special function that performs a task in a series of steps with rollback mechanism) that needs a step to retrieve the total number of products. You can create a step in the workflow that resolves the Product Module's service from the container to use its methods:
+You initialize a context using `QueryContext` from the Modules SDK. It accepts an object of contexts as an argument.
 
-```ts highlights={highlights}
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+For example, to retrieve posts using Query while passing the user's language as a context:
 
-export const countProductsStep = createStep(
-  "count-products",
-  async ({ }, { container }) => {
-    const productModuleService = container.resolve("product")
-
-    const [,count] = await productModuleService.listAndCountProducts()
-
-    return new StepResponse(count)
-  }
-)
+```ts
+const { data } = await query.graph({
+  entity: "post",
+  fields: ["*"],
+  context: QueryContext({
+    lang: "es",
+  }),
+})
 ```
 
-Your workflow can use services of both custom and Commerce Modules, supporting you in building custom flows without having to re-build core commerce features.
+In this example, you pass in the context a `lang` property whose value is `es`.
+
+Then, to handle the context while retrieving records of the data model, in the associated module's service you override the generated `list` method of the data model.
+
+For example, continuing the example above, you can override the `listPosts` method of the Blog Module's service to handle the context:
+
+```ts highlights={highlights2}
+import { MedusaContext, MedusaService } from "@medusajs/framework/utils"
+import { Context, FindConfig } from "@medusajs/framework/types"
+import Post from "./models/post"
+import Author from "./models/author"
+
+class BlogModuleService extends MedusaService({
+  Post,
+  Author,
+}){
+  // @ts-ignore
+  async listPosts(
+    filters?: any, 
+    config?: FindConfig<any> | undefined, 
+    @MedusaContext() sharedContext?: Context | undefined
+  ) {
+    const context = filters.context ?? {}
+    delete filters.context
+
+    let posts = await super.listPosts(filters, config, sharedContext)
+
+    if (context.lang === "es") {
+      posts = posts.map((post) => {
+        return {
+          ...post,
+          title: post.title + " en español",
+        }
+      })
+    }
+
+    return posts
+  }
+}
+
+export default BlogModuleService
+```
+
+In the above example, you override the generated `listPosts` method. This method receives as a first parameter the filters passed to the query, but it also includes a `context` property that holds the context passed to the query.
+
+You extract the context from `filters`, then retrieve the posts using the parent's `listPosts` method. After that, if the language is set in the context, you transform the titles of the posts.
+
+All posts returned will now have their titles appended with "en español".
+
+Learn more about the generated `list` method in [this reference](https://docs.medusajs.com/resources/service-factory-reference/methods/list/index.html.md).
+
+### Using Pagination with Query
+
+If you pass pagination fields to `query.graph`, you must also override the `listAndCount` method in the service.
+
+For example, following along with the previous example, you must override the `listAndCountPosts` method of the Blog Module's service:
+
+```ts
+import { MedusaContext, MedusaService } from "@medusajs/framework/utils"
+import { Context, FindConfig } from "@medusajs/framework/types"
+import Post from "./models/post"
+import Author from "./models/author"
+
+class BlogModuleService extends MedusaService({
+  Post,
+  Author,
+}){
+  // @ts-ignore
+  async listAndCountPosts(
+    filters?: any, 
+    config?: FindConfig<any> | undefined, 
+    @MedusaContext() sharedContext?: Context | undefined
+  ) {
+    const context = filters.context ?? {}
+    delete filters.context
+
+    const result = await super.listAndCountPosts(
+      filters, 
+      config, 
+      sharedContext
+    )
+
+    if (context.lang === "es") {
+      result.posts = posts.map((post) => {
+        return {
+          ...post,
+          title: post.title + " en español",
+        }
+      })
+    }
+
+    return result
+  }
+}
+
+export default BlogModuleService
+```
+
+Now, the `listAndCountPosts` method will handle the context passed to `query.graph` when you pass pagination fields. You can also move the logic to transform the posts' titles to a separate method and call it from both `listPosts` and `listAndCountPosts`.
+
+***
+
+## Passing Query Context to Related Data Models
+
+If you're retrieving a data model and you want to pass context to its associated model in the same module, you can pass them as part of `QueryContext`'s parameter, then handle them in the same `list` method.
+
+For linked data models, check out the [next section](#passing-query-context-to-linked-data-models).
+
+For example, to pass a context for the post's authors:
+
+```ts highlights={highlights3}
+const { data } = await query.graph({
+  entity: "post",
+  fields: ["*"],
+  context: QueryContext({
+    lang: "es",
+    author: QueryContext({
+      lang: "es",
+    }),
+  }),
+})
+```
+
+Then, in the `listPosts` method, you can handle the context for the post's authors:
+
+```ts highlights={highlights4}
+import { MedusaContext, MedusaService } from "@medusajs/framework/utils"
+import { Context, FindConfig } from "@medusajs/framework/types"
+import Post from "./models/post"
+import Author from "./models/author"
+
+class BlogModuleService extends MedusaService({
+  Post,
+  Author,
+}){
+  // @ts-ignore
+  async listPosts(
+    filters?: any, 
+    config?: FindConfig<any> | undefined, 
+    @MedusaContext() sharedContext?: Context | undefined
+  ) {
+    const context = filters.context ?? {}
+    delete filters.context
+
+    let posts = await super.listPosts(filters, config, sharedContext)
+
+    const isPostLangEs = context.lang === "es"
+    const isAuthorLangEs = context.author?.lang === "es"
+
+    if (isPostLangEs || isAuthorLangEs) {
+      posts = posts.map((post) => {
+        return {
+          ...post,
+          title: isPostLangEs ? post.title + " en español" : post.title,
+          author: {
+            ...post.author,
+            name: isAuthorLangEs ? post.author.name + " en español" : post.author.name,
+          },
+        }
+      })
+    }
+
+    return posts
+  }
+}
+
+export default BlogModuleService
+```
+
+The context in `filters` will also have the context for `author`, which you can use to make transformations to the post's authors.
+
+***
+
+## Passing Query Context to Linked Data Models
+
+If you're retrieving a data model and you want to pass context to a linked model in a different module, pass to the `context` property an object instead, where its keys are the linked model's name and the values are the context for that linked model.
+
+For example, consider the Product Module's `Product` data model is linked to the Blog Module's `Post` data model. You can pass context to the `Post` data model while retrieving products like so:
+
+```ts highlights={highlights5}
+const { data } = await query.graph({
+  entity: "product",
+  fields: ["*", "post.*"],
+  context: {
+    post: QueryContext({
+      lang: "es",
+    }),
+  },
+})
+```
+
+In this example, you retrieve products and their associated posts. You also pass a context for `post`, indicating the customer's language.
+
+To handle the context, you override the generated `listPosts` method of the Blog Module as explained [previously](#how-to-use-query-context).
 
 
 # Query
@@ -19576,6 +19880,1367 @@ You can access the following plain text documentation files:
 - **Markdown version of any page** - You can access the Markdown version of any documentation page by appending `/index.html.md` to the page URL. For example, the plain text content of the current page is available at [https://docs.medusajs.com/learn/introduction/build-with-llms-ai/index.html.md](https://docs.medusajs.com/learn/introduction/build-with-llms-ai/index.html.md).
 
 You can provide these files to your AI tools or LLM editors like [Cursor](https://docs.cursor.com/context/@-symbols/@-docs). This will help them understand the Medusa documentation and provide better assistance when building customizations or answering questions.
+
+
+# From Medusa v1 to v2: Conceptual Differences
+
+In this chapter, you'll learn about the differences and changes between concepts in Medusa v1 to v2.
+
+## What to Expect in This Chapter
+
+This chapter is designed to help developers migrate from Medusa v1 to v2 by understanding the conceptual differences between the two versions.
+
+This chapter will cover:
+
+- The general steps to update your project from Medusa v1 to v2.
+- The changes in tools and plugins between Medusa v1 and v2.
+- The high-level changes in the concepts and commerce features between Medusa v1 and v2.
+
+By following this chapter, you'll learn about the general changes you need to make in your project, with links to read more about each topic. Only topics documented in the v1 documentation are covered.
+
+This chapter is also useful for developers who are already familiar with Medusa v1 and want to learn about the main differences from Medusa v2. However, it doesn't cover all the new and improved concepts in Medusa v2. Instead, it's highly recommended to read the rest of this documentation to learn about them.
+
+***
+
+## Prerequisites
+
+### Node.js Version
+
+While Medusa v1 supported Node.js v16+, Medusa v2 requires Node.js v20+. So, make sure to update your Node.js version if it's older.
+
+Refer to the [Node.js documentation](https://nodejs.org/en/docs/) for instructions on how to update your Node.js version.
+
+### New Database
+
+Medusa v2 makes big changes to the database. So, your existing database will not be compatible with the database for your v2 project.
+
+If you want to keep your product catalog, you should export the products from the admin dashboard, as explained in [this V1 User Guide](https://docs.medusajs.com/v1/user-guide/products/export/index.html.md). Then, you can import them into your new v2 project from the [Medusa Admin](https://docs.medusajs.com/user-guide/products/import/index.html.md).
+
+For other data types, you'll probably need to migrate them manually through custom scripts. [Custom CLI scripts](https://docs.medusajs.com/learn/fundamentals/custom-cli-scripts/index.html.md) may be useful for this.
+
+***
+
+## How to Upgrade from Medusa v1 to v2
+
+In this section, you'll learn how to upgrade your Medusa project from v1 to v2.
+
+To create a fresh new Medusa v2 project, check out the [Installation chapter](https://docs.medusajs.com/learn/installation/index.html.md).
+
+It's highly recommended to fully go through this chapter before you actually update your application, as some v1 features may have been removed or heavily changed in v2. By doing so, you'll formulate a clearer plan for your migration process and its feasibility.
+
+### 1. Update Dependencies in package.json
+
+The first step is to update the dependencies in your `package.json`.
+
+A basic v2 project has the following dependencies in `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@medusajs/admin-sdk": "2.8.2",
+    "@medusajs/cli": "2.8.2",
+    "@medusajs/framework": "2.8.2",
+    "@medusajs/medusa": "2.8.2",
+    "@mikro-orm/core": "6.4.3",
+    "@mikro-orm/knex": "6.4.3",
+    "@mikro-orm/migrations": "6.4.3",
+    "@mikro-orm/postgresql": "6.4.3",
+    "awilix": "^8.0.1",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@medusajs/test-utils": "2.8.2",
+    "@mikro-orm/cli": "6.4.3",
+    "@swc/core": "1.5.7",
+    "@swc/jest": "^0.2.36",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.2.25",
+    "jest": "^29.7.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.2.11",
+    "yalc": "^1.0.0-pre.53"
+  }
+}
+```
+
+The main changes are:
+
+- You need to install the following Medusa packages (All these packages use the same version):
+  - `@medusajs/admin-sdk`
+  - `@medusajs/cli`
+  - `@medusajs/framework`
+  - `@medusajs/medusa`
+  - `@medusajs/test-utils` (as a dev dependency)
+- You need to install the following extra packages:
+  - Database packages:
+    - `@mikro-orm/core@6.4.3`
+    - `@mikro-orm/knex@6.4.3`
+    - `@mikro-orm/migrations@6.4.3`
+    - `@mikro-orm/postgresql@6.4.3`
+    - `@mikro-orm/cli@6.4.3` (as a dev dependency)
+    - `pg^8.13.0`
+  - Framework packages:
+    - `awilix@^8.0.1`
+  - Development and Testing packages:
+    - `@swc/core@1.5.7`
+    - `@swc/jest@^0.2.36`
+    - `@types/node@^20.0.0`
+    - `jest@^29.7.0`
+    - `ts-node@^10.9.2`
+    - `typescript@^5.6.2`
+    - `vite@^5.2.11`
+    - `yalc@^1.0.0-pre.53`
+- Other packages, such as `@types/react` and `@types/react-dom`, are necessary for admin development and TypeScript support.
+
+Notice that Medusa now uses MikroORM instead of TypeORM for database functionalities.
+
+Once you're done, run the following command to install the new dependencies:
+
+```bash npm2yarn
+npm install
+```
+
+In Medusa v1, you needed to install Medusa modules like the Cache, Event, or Pricing modules.
+
+These modules are now available out of the box, and you don't need to install or configure them separately.
+
+### 2. Update Script in package.json
+
+Medusa v2 comes with changes and improvements to its CLI tool. So, update your `package.json` with the following scripts:
+
+```json
+{
+  "scripts": {
+    "build": "medusa build",
+    "seed": "medusa exec ./src/scripts/seed.ts",
+    "start": "medusa start",
+    "dev": "medusa develop",
+    "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
+    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
+    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
+  }
+}
+```
+
+Where:
+
+- `build`: Builds the Medusa application for production.
+- `seed`: Seeds the database with initial data.
+- `start`: Starts the Medusa server in production.
+- `dev`: Starts the Medusa server in development mode.
+- `test:integration:http`: Runs HTTP integration tests.
+- `test:integration:modules`: Runs module integration tests.
+- `test:unit`: Runs unit tests.
+
+You'll learn more about the [changes in the CLI tool later in this chapter](#medusa-cli-changes). You can also refer to the following documents to learn more about these changes:
+
+- [Medusa CLI reference](https://docs.medusajs.com/resources/medusa-cli/index.html.md)
+- [Build Medusa Application](https://docs.medusajs.com/learn/build/index.html.md)
+- [Integration and Module Tests](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools/index.html.md).
+
+### 3. TSConfig Changes
+
+In Medusa v1, you had multiple TSConfig configuration files for different customization types. For example, you had `tsconfig.admin.json` for admin customizations and `tsconfig.server.json` for server customizations.
+
+In Medusa v2, you only need one [root tsconfig.json](https://github.com/medusajs/medusa-starter-default/blob/master/tsconfig.json) file in your project. For admin customizations, you create a [src/admin/tsconfig.json file](https://github.com/medusajs/medusa-starter-default/blob/master/src/admin/tsconfig.json). Refer to each of those links for the recommended configurations.
+
+### 4. Update Configuration File
+
+In Medusa v1, you configured your application in the `medusa-config.js` file. Medusa v2 supports this file as `medusa-config.ts`, so make sure to rename it.
+
+`medusa-config.ts` now exports configurations created with the `defineConfig` utility. It also uses the [loadEnv](https://docs.medusajs.com/learn/fundamentals/environment-variables/index.html.md) utility to load environment variables based on the current environment.
+
+For example, this is the configuration file for a basic Medusa v2 project:
+
+```ts title="medusa-config.ts"
+import { loadEnv, defineConfig } from "@medusajs/framework/utils"
+
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
+
+module.exports = defineConfig({
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    http: {
+      storeCors: process.env.STORE_CORS!,
+      adminCors: process.env.ADMIN_CORS!,
+      authCors: process.env.AUTH_CORS!,
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    },
+  },
+})
+```
+
+You can refer to the full list of configurations in the [Medusa Configurations](https://docs.medusajs.com/learn/configurations/medusa-config/index.html.md) chapter. The following table highlights the main changes between v1 and v2:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|\`projectConfig.store\_cors\`|projectConfig.http.storeCors|
+|\`projectConfig.admin\_cors\`|projectConfig.http.adminCors|
+|\`projectConfig.auth\_cors\`|projectConfig.http.authCors|
+|\`projectConfig.cookie\_secret\`|projectConfig.http.cookieSecret|
+|\`projectConfig.jwt\_secret\`|projectConfig.http.jwtSecret|
+|\`projectConfig.database\_database\`|projectConfig.databaseName|
+|\`projectConfig.database\_url\`|projectConfig.databaseUrl|
+|\`projectConfig.database\_schema\`|projectConfig.databaseSchema|
+|\`projectConfig.database\_logging\`|projectConfig.databaseLogging|
+|\`projectConfig.database\_extra\`|projectConfig.databaseDriverOptions|
+|\`projectConfig.database\_driver\_options\`|projectConfig.databaseDriverOptions|
+|\`projectConfig.redis\_url\`|projectConfig.redisUrl|
+|\`projectConfig.redis\_prefix\`|projectConfig.redisPrefix|
+|\`projectConfig.redis\_options\`|projectConfig.redisOptions|
+|\`projectConfig.session\_options\`|projectConfig.sessionOptions|
+|\`projectConfig.http\_compression\`|projectConfig.http.compression|
+|\`projectConfig.jobs\_batch\_size\`|No longer supported.|
+|\`projectConfig.worker\_mode\`|projectConfig.workerMode|
+|\`modules\`|Array of modules|
+
+#### Plugin Changes
+
+While the `plugins` configuration hasn't changed, plugins available in Medusa v1 are not compatible with Medusa v2. These are covered later in the [Plugin Changes](#plugin-changes) section.
+
+#### Module Changes
+
+In Medusa v1, you had to configure modules like Inventory, Stock Location, Pricing, and Product. These modules are now available out of the box, and you don't need to install or configure them separately.
+
+For the Cache and Event modules, refer to the [Redis Cache Module](https://docs.medusajs.com/resources/infrastructure-modules/cache/redis/index.html.md) and [Redis Event Module](https://docs.medusajs.com/resources/infrastructure-modules/event/redis/index.html.md) documentations to learn how to configure them in v2 if you had them configured in v1.
+
+#### Feature Flags
+
+Some features like product categories and tax inclusive pricing were disabled behind feature flags.
+
+All of these features are now available out-of-the-box. So, you don't need to enable them in your configuration file anymore.
+
+#### Admin Configurations
+
+In v1, the admin dashboard was installed as a plugin with configurations. In v2, the Medusa Admin is available out-of-the-box with different configurations.
+
+The [Medusa Admin Changes](#medusa-admin-changes) section covers the changes in the Medusa Admin configurations and customizations.
+
+### 5. Setup New Database
+
+Now that you have updated your dependencies and configuration file, you need to set up the database for your v2 project.
+
+This will not take into account entities and data customizations in your v1 project, as you still need to change those. Instead, it will only create the database and tables for your v2 project.
+
+First, change your database environment variables to the following:
+
+```bash
+DATABASE_URL=postgres://localhost/$DB_NAME
+DB_NAME=medusa-v2
+```
+
+You can change `medusa-v2` to any database name you prefer.
+
+Then, run the following commands to create the database and tables:
+
+```bash npm2yarn
+npx medusa db:setup
+```
+
+This command will create the database and tables for your v2 project.
+
+After that, you can start your Medusa application with the `dev` command. Note that you may have errors if you need to make implementation changes that are covered in the rest of this guide, so it's better to wait until you finish the v2 migration process before starting the Medusa application.
+
+### (Optional) 6. Seed with Demo Data
+
+If you want to seed your Medusa v2 project with demo data, you can copy the content of [this file](https://github.com/medusajs/medusa-starter-default/blob/master/src/scripts/seed.ts) to your `src/scripts/seed.ts` file.
+
+Then, run the following command to seed the database:
+
+```bash npm2yarn
+npm run seed
+```
+
+This will seed your database with demo data.
+
+***
+
+## Medusa Admin Changes
+
+In this section, you'll learn about the changes in the Medusa Admin between v1 and v2.
+
+This section doesn't cover changes related to Medusa Admin customizations. They're covered later in the [Admin Customization Changes](#admin-customization-changes) section.
+
+The Medusa Admin is now available out-of-the-box. It's built with [Vite v5](https://vite.dev/) and runs at `http://localhost:9000/app` by default when you start your Medusa application.
+
+### Admin Configurations
+
+You previously configured the admin dashboard when you added it as a plugin in Medusa v1.
+
+In Medusa v2, you configure the Medusa Admin within the `defineConfig` utility in `medusa-config.ts`. `defineConfig` accepts an `admin` property to configure the Medusa Admin:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    // admin options...
+  },
+})
+```
+
+You can refer to the [Medusa Configuration](https://docs.medusajs.com/learn/configurations/medusa-config#admin-configurations-admin/index.html.md) chapter to learn about all the admin configurations. The following table highlights the main changes between v1 and v2:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|\`serve\`|admin.disable|
+|\`autoRebuild\`|No longer supported. The Medusa Admin is always built when you run the |
+|\`backend\`|admin.backendUrl|
+|\`outDir\`|No longer supported. The Medusa Admin is now built in the |
+|\`develop\`|No longer supported. The |
+
+### Admin Webpack Configurations
+
+In v1, you were able to modify Webpack configurations of the admin dashboard.
+
+Since Medusa Admin is now built with Vite, you can modify the Vite configurations with the `admin.vite` configuration. Learn more in the [Medusa Configuration](https://docs.medusajs.com/learn/configurations/medusa-config#vite/index.html.md) chapter.
+
+### Admin CLI Tool
+
+In Medusa v1, you used the `medusa-admin` CLI tool to build and run the admin dashboard.
+
+In Medusa v2, the Medusa Admin doesn't have a CLI tool. Instead, running `medusa build` and `medusa develop` also builds and runs the Medusa Admin, respectively.
+
+In addition, you can build the Medusa Admin separately from the Medusa application using the `--admin-only` option. Learn more in the [Build Medusa Application](https://docs.medusajs.com/learn/build#separate-admin-build/index.html.md) chapter.
+
+***
+
+## Medusa CLI Changes
+
+The Medusa CLI for v2 is now in the `@medusajs/cli` package. However, you don't need to install it globally. You can just use `npx medusa` in your Medusa projects.
+
+Refer to the [Medusa CLI reference](https://docs.medusajs.com/resources/medusa-cli/index.html.md) for the full list of commands and options. The following table highlights the main changes between v1 and v2:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|\`migrations run\`|db:migrate|
+|\`migrations revert\`|db:rollback|
+|\`migrations show\`|No longer supported.|
+|\`seed\`|No longer supported. However, you can create a |
+|\`start-cluster\`|start --cluster \<number>|
+
+***
+
+## Plugin Changes
+
+Medusa v2 supports plugins similar to Medusa v1, but with changes in its usage, development, and configuration.
+
+In Medusa v1, you created plugins that contained customizations like services that integrated third-party providers, custom API routes, and more.
+
+In Medusa v2, a plugin can contain customizations like modules that integrate third-party providers, custom API routes, workflows, and more. The plugin development experience has also been improved to resolve big pain points that developers faced in v1.
+
+Refer to the [Plugins](https://docs.medusajs.com/learn/fundamentals/plugins/index.html.md) chapter to learn more about plugins in Medusa v2.
+
+The rest of this section will cover some of the main changes in plugins between v1 and v2.
+
+### Medusa Plugins Alternative
+
+In v1, Medusa provided a set of plugins that you could use in your project. For example, the Stripe and SendGrid plugins.
+
+In v2, some of these plugins are now available as module providers out-of-the-box. For example, the Stripe and SendGrid module providers. Other plugins may no longer be available, but you can still find guides to create them.
+
+The following table highlights the alternatives for the Medusa v1 plugins:
+
+|Medusa v1|v2 Alternative|
+|---|---|
+|Algolia|Guide|
+|Brightpearl|Not available, but you can follow the |
+|Contenful|Guide|
+|Discount Generator|Not available, but you can build it |
+|IP Lookup|Not available, but you can build it |
+|Klarna|Not available, but you can integrate it as a |
+|Local File|Local File Module Provider|
+|Mailchimp|Guide|
+|MinIO|S3 (compatible APIs) File Module Provider|
+|MeiliSearch|Not available, but you can integrate it |
+|PayPal|Not available, but you can integrate it as a |
+|Restock Notification|Guide|
+|S3|S3 (compatible APIs) File Module Provider|
+|Segment|Guide|
+|SendGrid|SendGrid Module Provider|
+|Shopify|Not available, but you can build it |
+|Slack|Guide|
+|Spaces (DigitalOcean)|S3 (compatible APIs) File Module Provider|
+|Strapi|Not available, but you can integrate it |
+|Stripe|Stripe Payment Module Provider|
+|Twilio|Guide|
+|Wishlist|Guide|
+
+You can also find Medusa and community integrations in the [Integrations](https://medusajs.com/integrations/) page.
+
+### Plugin Options
+
+Similar to Medusa v1, you can pass options to plugins in Medusa v2.
+
+However, plugin options are now only passed to modules and module providers created in a plugin.
+
+So, if you previously accessed options in a plugin's subscriber, for example, that's not possible anymore. You need to access the options in a module or module provider instead, then use its service in the plugin's subscriber.
+
+For example, this is how you can access options in a plugin's subscriber in v2:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+
+export default async function orderPlacedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  const customModuleService = container.resolve("custom")
+
+  const options = customModuleService.getOptions()
+
+  // Use the options in your logic...
+}
+
+export const config: SubscriberConfig = {
+  event: `order.placed`,
+}
+```
+
+Learn more in the [Create Plugin](https://docs.medusajs.com/learn/fundamentals/plugins/create/index.html.md) chapter.
+
+#### enableUI Option
+
+Plugins in v1 accepted an `enableUI` option to configure whether a plugin's admin customizations should be shown.
+
+In v2, this option is no longer supported. All admin customizations in a plugin will be shown in the Medusa Admin.
+
+***
+
+## Tool Changes
+
+This section covers changes to tools that were available in Medusa v1.
+
+|Medusa v1|Medusa v2|
+|---|---|
+|JS Client|JS SDK|
+|Medusa React|No longer supported. Instead, you can |
+|Next.js Starter Template|Next.js Starter Storefront|
+|Medusa Dev CLI|No longer supported.|
+
+***
+
+## Changes in Concepts and Development
+
+In the next sections, you'll learn about the changes in specific concepts and development practices between Medusa v1 and v2.
+
+### Entities, Services, and Modules
+
+In Medusa v1, entities, services, and modules were created separately:
+
+- You create an entity to add a new table to the database.
+- You create a service to add new business logic to the Medusa application.
+- You create a module to add new features to the Medusa application. It may include entities and services.
+
+In Medusa v2, you create entities (now called data models) and services in a module. You can't create them separately anymore. The data models define new tables to add to the database, and the service provides data-management features for those data models.
+
+In this section, you'll learn about the most important changes related to these concepts. You can also learn more in the [Modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) chapter.
+
+#### Modules
+
+A module is a reusable package of functionalities related to a single domain or integration. For example, Medusa provides a Product Module for product-related data models and features.
+
+So, if in Medusa v1 you had a `Brand` entity and a service to manage it, in v2, you create a Brand Module that defines a `Brand` data model and a service to manage it.
+
+To learn how to create a module, refer to the [Modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) chapter.
+
+![Diagram showcasing the directory structure difference between Medusa v1 and v2](https://res.cloudinary.com/dza7lstvk/image/upload/v1748277500/Medusa%20Book/modules-v1-v2_dsnzyl.jpg)
+
+#### Data Models
+
+In Medusa v1, you created data models (entities) using TypeORM.
+
+In Medusa v2, you use Medusa's Data Model Language (DML) to create data models. It simplifies defining a table's columns, relations, and indexes with straightforward methods and configurations.
+
+For example:
+
+```ts title="src/modules/brand/models/brand.ts"
+import { model } from "@medusajs/framework/utils"
+
+export const Brand = model.define("brand", {
+  id: model.id().primaryKey(),
+  name: model.text(),
+})
+```
+
+Learn more about data models in the [Data Models](https://docs.medusajs.com/learn/fundamentals/data-models/index.html.md) chapters.
+
+#### Migrations
+
+In Medusa v1, you had to write migrations manually to create or update tables in the database. Migrations were based on TypeORM.
+
+In Medusa v2, you can use the Medusa CLI to generate migrations based on MikroORM. For example:
+
+```bash npm2yarn
+npx medusa db:generate brand
+```
+
+This generates migrations for data models in the Brand Module. Learn more in the [Migrations](https://docs.medusajs.com/learn/fundamentals/data-models/write-migration/index.html.md) chapter.
+
+#### Services
+
+In Medusa v1, you created a service with business logic related to a feature within your Medusa project. For example, you created a `BrandService` at `src/services/brand.ts` to manage the `Brand` entity.
+
+In Medusa v2, you can only create a service in a module, and the service either manages the module's data models in the database, or connects to third-party services.
+
+For example, you create a `BrandService` in the Brand Module at `src/modules/brand/service.ts`:
+
+```ts title="src/modules/brand/service.ts"
+import { MedusaService } from "@medusajs/framework/utils"
+import { Brand } from "./models/brand"
+
+class BrandModuleService extends MedusaService({
+  Brand,
+}) {
+
+}
+
+export default BrandModuleService
+```
+
+The service has automatically generated data-management methods by extending `MedusaService` from the Modules SDK. So, you now have methods like `retrieveBrand` and `createBrands` available in the service.
+
+Learn more in the [Service Factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md) chapter.
+
+When you register the module in the Medusa application, the service is registered in the [Medusa container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md), allowing you to use its methods in workflows, subscribers, scheduled jobs, and API routes.
+
+#### Repositories
+
+In Medusa v1, you used the repository of a data model in a service to provide data-management features. For example, you used the `BrandRepository` to manage the `Brand` entity. Repositories were also based on TypeORM.
+
+In Medusa v2, you generally don't need repositories for basic data-management features, as they're generated by the service factory. However, for more complex use cases, you can use the data model repository based on MikroORM.
+
+For example:
+
+```ts title="src/modules/brand/service.ts"
+import { InferTypeOf, DAL } from "@medusajs/framework/types"
+import Post from "./models/post"
+
+type Post = InferTypeOf<typeof Post>
+
+type InjectedDependencies = {
+  postRepository: DAL.RepositoryService<Post>
+}
+
+class BlogModuleService {
+  protected postRepository_: DAL.RepositoryService<Post>
+
+  constructor({ 
+    postRepository, 
+  }: InjectedDependencies) {
+    super(...arguments)
+    this.postRepository_ = postRepository
+  }
+}
+
+export default BlogModuleService
+```
+
+Learn more in the [Database Operations](https://docs.medusajs.com/learn/fundamentals/modules/db-operations/index.html.md) chapter.
+
+#### Module Isolation
+
+In Medusa v1, you had access to all entities and services in the Medusa application. While this approach was flexible, it introduced complexities, was difficult to maintain, and resulted in hacky workarounds.
+
+In Medusa v2, modules are isolated. This means that you can only access entities and services within the module. This isolation allows you to integrate modules into your application without side effects, while still providing you with the necessary flexibility to build your use cases.
+
+The [Module Isolation](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md) chapter explains this concept in detail. The rest of this section gives a general overview of how module isolation affects your Medusa v1 customizations.
+
+#### Extending Entities
+
+In Medusa v1, you were able to extend entities by creating a new entity that extended the original one. For example, you could create a custom `Product` entity that extended the original `Product` entity to add a `brand` column.
+
+In Medusa v2, you can no longer extend entities. Instead, you need to create a new data model that contains the columns you want to add. Then, you can create a [Module Link](https://docs.medusajs.com/learn/fundamentals/module-links/index.html.md) that links your data model to the one you want to extend.
+
+For example, you create a Brand Module that has a `Brand` data model. Then, you create a Module Link that links the `Brand` data model to the `Product` data model in the Product Module:
+
+```ts title="src/links/product-brand.ts"
+import BrandModule from "../modules/brand"
+import ProductModule from "@medusajs/medusa/product"
+import { defineLink } from "@medusajs/framework/utils"
+
+export default defineLink(
+  {
+    linkable: ProductModule.linkable.product,
+    isList: true,
+  },
+  BrandModule.linkable.brand
+)
+```
+
+You can then associate brands with a product, retrieve them in API routes and custom functionalities, and more.
+
+Learn more in the [Module Links](https://docs.medusajs.com/learn/fundamentals/module-links/index.html.md) chapter.
+
+#### Extending Services
+
+In Medusa v1, you were able to extend services by creating a new service that extended the original one. For example, you could create a custom `ProductService` that extended the original `ProductService` to add a new method.
+
+In Medusa v2, you can no longer extend services. Instead, you need to [create a module](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) with a service that contains the methods you want to add. Then, you can:
+
+- Build [workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) that use both services to achieve a custom feature.
+- Consume [Workflow Hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks/index.html.md) to run custom actions in existing workflows.
+- For more complex use cases, you can re-create an existing workflow and use your custom module's service in it.
+
+For example, if you extended the `CartService` in v1 to add items with custom prices to the cart, you can instead build a custom workflow that uses your custom module to retrieve an item's price, then add it to the cart using the existing `addToCartWorkflow`:
+
+```ts
+import { 
+  createWorkflow,
+  transform,
+  WorkflowResponse
+} from "@medusajs/framework/workflows-sdk"
+import { addToCartWorkflow } from "@medusajs/medusa/core-flows"
+import { 
+  getCustomPriceStep, 
+} from "./steps/get-custom-price"
+
+type AddCustomToCartWorkflowInput = {
+  cart_id: string
+  item: {
+    variant_id: string
+    quantity: number
+    metadata?: Record<string, unknown>
+  }
+}
+
+export const addCustomToCartWorkflow = createWorkflow(
+  "add-custom-to-cart",
+  ({ cart_id, item }: AddCustomToCartWorkflowInput) => {
+    // assuming this step uses a custom module to get the price
+    const price = getCustomPriceStep({
+      variant: item.variant_id,
+      currencyCode: "usd",
+      quantity: item.quantity,
+    })
+
+    const itemToAdd = transform({
+      item,
+      price,
+    }, (data) => {
+      return [{
+        ...data.item,
+        unit_price: data.price,
+      }]
+    })
+
+    addToCartWorkflow.runAsStep({
+      input: {
+        items: itemToAdd,
+        cart_id,
+      },
+    })
+  }
+)
+```
+
+Refer to the [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) chapters to learn more about workflows in Medusa v2.
+
+#### Integrating Third-Party Services
+
+In Medusa v1, you integrated third-party services by creating a service under `src/services` and using it in your customizations.
+
+In Medusa v2, you can integrate third-party services by creating a module with a service that contains the methods to interact with the third-party service. You can then use the module's service in a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) to build custom features.
+
+![Directory structure change between v1 and v2](https://res.cloudinary.com/dza7lstvk/image/upload/v1748278103/Medusa%20Book/integrations-v1-v2_cjzkus.jpg)
+
+***
+
+### Medusa and Module Containers
+
+In Medusa v1, you accessed dependencies from the container in all your customizations, such as services, API routes, and subscribers.
+
+In Medusa v2, there are two containers:
+
+|Container|Description|Accessed By|
+|---|---|---|
+|Medusa container|Main container that contains Framework and commerce resources, such as services of registered modules.||
+|Module container|Container of a module. It contains some resources from the Framework, and resources implemented in the module.|Services and loaders in the module.|
+
+You can view the list of resources in each container in the [Container Resources](https://docs.medusajs.com/resources/medusa-container-resources/index.html.md) reference.
+
+***
+
+### Workflow Changes
+
+In Medusa v2, workflows are the main way to implement custom features spanning across modules and systems.
+
+Workflows have been optimized for data reliability, flexibility, and orchestration across systems. You can learn more in the [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) chapters.
+
+This section highlights the main changes in workflows between v1 and v2.
+
+#### Workflows SDK Imports
+
+In Medusa v1, you imported all Workflows SDK functions and types from the `@medusajs/workflows-sdk` package.
+
+In Medusa v2, you import them from the `@medusajs/framework/workflows-sdk` package. For example:
+
+```ts title="src/workflows/hello-world.ts"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+```
+
+#### Workflow Return Value
+
+In Medusa v1, you returned any value from a workflow, such as a string or an object.
+
+In Medusa v2, you must return an instance of `WorkflowResponse` from a workflow. The data passed to `WorkflowResponse`'s constructor is returned to the caller of the workflow.
+
+For example:
+
+```ts title="src/workflows/hello-world.ts"
+import { 
+  createWorkflow, 
+  WorkflowResponse
+} from "@medusajs/framework/workflows-sdk"
+
+export const helloWorldWorkflow = createWorkflow(
+  "hello-world", 
+  () => {
+    return new WorkflowResponse("Hello, world!")
+  }
+)
+
+// in API route, for example:
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+
+export const GET = (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  // message is "Hello, world!"
+  const { result: message } = await helloWorldWorkflow(req.scope)
+    .run()
+
+  res.json({
+    message,
+  })
+}
+```
+
+#### New Workflow Features
+
+- [Use when-then in workflows to run steps if a condition is satisfied](https://docs.medusajs.com/learn/fundamentals/workflows/conditions/index.html.md).
+- [Consume hooks to run custom steps in existing workflows](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks/index.html.md).
+- [Create long-running workflows that run asynchronously in the background](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow/index.html.md).
+
+***
+
+### API Route Changes
+
+API routes are generally similar in Medusa v1 and v2, but with minor changes.
+
+You can learn more about creating API routes in the [API Routes](https://docs.medusajs.com/learn/fundamentals/api-routes/index.html.md) chapters. This section highlights the main changes in API routes between v1 and v2.
+
+#### HTTP Imports
+
+In Medusa v1, you imported API-route related types and functions from the `@medusajs/medusa` package.
+
+In Medusa v2, you import them from the `@medusajs/framework/http` package. For example:
+
+```ts title="src/api/store/custom/route.ts"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+```
+
+#### Protected API Routes
+
+In Medusa v1, routes starting with `/store/me` and `/admin` were protected by default.
+
+In Medusa v2, routes starting with `/store/customers/me` are accessible by registered customers, and `/admin` routes are accessible by admin users.
+
+In an API route, you can access the logged in user or customer using the `auth_context.actor_id` property of `AuthenticatedMedusaRequest`. For example:
+
+```ts title="src/api/store/custom/route.ts"
+import type {
+  AuthenticatedMedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+
+export const GET = async (
+  req: AuthenticatedMedusaRequest,
+  res: MedusaResponse
+) => {
+  const id = req.auth_context?.actor_id
+
+  // ...
+}
+```
+
+Learn more in the [Protected API Routes](https://docs.medusajs.com/learn/fundamentals/api-routes/protected-routes/index.html.md) chapter.
+
+#### Authentication Middlewares
+
+In Medusa v1, you had three middlewares to protect API routes:
+
+- `authenticate` to protect API routes for admin users.
+- `authenticateCustomer` to optionally authenticate customers.
+- `requireCustomerAuthentication` to require customer authentication.
+
+In Medusa v2, you can use a single `authenticate` middleware for the three use cases. For example:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  defineMiddlewares,
+  authenticate,
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom/admin*",
+      middlewares: [authenticate("user", ["session", "bearer", "api-key"])],
+    },
+    {
+      matcher: "/custom/customer*",
+      // equivalent to requireCustomerAuthentication
+      middlewares: [authenticate("customer", ["session", "bearer"])],
+    },
+    {
+      matcher: "/custom/all-customers*",
+      // equivalent to authenticateCustomer
+      middlewares: [authenticate("customer", ["session", "bearer"], {
+        allowUnauthenticated: true,
+      })],
+    },
+  ],
+})
+```
+
+Learn more in the [Protected API Routes](https://docs.medusajs.com/learn/fundamentals/api-routes/protected-routes/index.html.md) chapter.
+
+#### Middlewares
+
+In Medusa v1, you created middlewares by exporting an object in the `src/api/middlewares.ts` file.
+
+In Medusa v2, you create middlewares by exporting an object created with `defineMiddlewares`, which accepts an object with the same properties as in v1. For example:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  defineMiddlewares,
+  MedusaNextFunction, 
+  MedusaRequest, 
+  MedusaResponse, 
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom*",
+      middlewares: [
+        (
+          req: MedusaRequest, 
+          res: MedusaResponse, 
+          next: MedusaNextFunction
+        ) => {
+          console.log("Received a request!")
+
+          next()
+        },
+      ],
+    },
+  ],
+})
+```
+
+Learn more in the [Middlewares](https://docs.medusajs.com/learn/fundamentals/api-routes/middlewares/index.html.md) chapter.
+
+#### Disable Body Parser
+
+In Medusa v1, you disabled the body parser in API routes by setting `bodyParser: false` in the route's middleware configuration.
+
+In Medusa v2, you disable the body parser by setting `bodyParser.preserveRawBody` to `true` in the route's middleware configuration. For example:
+
+```ts title="src/api/middlewares.ts"
+import { defineMiddlewares } from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      method: ["POST"],
+      bodyParser: { preserveRawBody: true },
+      matcher: "/custom",
+    },
+  ],
+})
+```
+
+Learn more in the [Body Parser](https://docs.medusajs.com/learn/fundamentals/api-routes/parse-body/index.html.md) chapter.
+
+#### Extending Validators
+
+In Medusa v1, you passed custom request parameters to Medusa's API routes by extending a request's validator.
+
+In Medusa v2, some Medusa API routes support passing additional data in the request body. You can then configure the validation of that additional data and consume them in the hooks of the workflow used in the API route.
+
+For example:
+
+```ts title="src/api/middlewares.ts"
+import { defineMiddlewares } from "@medusajs/framework/http"
+import { z } from "zod"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      method: "POST",
+      matcher: "/admin/products",
+      additionalDataValidator: {
+        brand: z.string().optional(),
+      },
+    },
+  ],
+})
+```
+
+In this example, you allow passing a `brand` property as additional data to the `/admin/products` API route.
+
+You can learn more in the [Additional Data](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data/index.html.md) chapter.
+
+If a route doesn't support passing additional data, you need to [replicate it](https://docs.medusajs.com/learn/fundamentals/api-routes/override/index.html.md) to support your custom use case.
+
+***
+
+### Events and Subscribers Changes
+
+Events and subscribers are similar in Medusa v1 and v2, but with minor changes.
+
+You can learn more in the [Events and Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md) chapters. This section highlights the main changes in events and subscribers between v1 and v2.
+
+#### Emitted Events
+
+Medusa v2 doesn't emit the same events as v1. Refer to the [Events Reference](https://docs.medusajs.com/resources/references/events/index.html.md) for the full list of events emitted in v2.
+
+#### Subscriber Type Imports
+
+In Medusa v1, you imported subscriber types from the `@medusajs/medusa` package.
+
+In Medusa v2, you import them from the `@medusajs/framework` package. For example:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+```
+
+#### Subscriber Parameter Change
+
+In Medusa v1, a subscriber function received an object parameter that has `eventName` and `data` properties.
+
+In Medusa v2, the subscriber function receives an object parameter that has an `event` property. The `event` property contains the event name and data. For example:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+
+export default async function orderPlacedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  // ...
+}
+
+export const config: SubscriberConfig = {
+  event: `order.placed`,
+}
+```
+
+Also, the `pluginOptions` property is no longer passed in the subscriber's parameter. Instead, you can access the options passed to a plugin within its modules' services, which you can resolve in a subscriber.
+
+Learn more in the [Events and Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md) chapter.
+
+#### Subscriber Implementation Change
+
+In Medusa v1, you implemented functionalities, such as sending confirmation email, directly within a subscriber.
+
+In Medusa v2, you should implement these functionalities in a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) and call the workflow in the subscriber. By using workflows, you benefit from rollback mechanism, among other features.
+
+For example:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+import { 
+  sendOrderConfirmationWorkflow,
+} from "../workflows/send-order-confirmation"
+
+export default async function orderPlacedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  await sendOrderConfirmationWorkflow(container)
+    .run({
+      input: {
+        id: data.id,
+      },
+    })
+}
+
+export const config: SubscriberConfig = {
+  event: `order.placed`,
+}
+```
+
+#### Emitting Events
+
+In Medusa v1, you emitted events in services and API routes by resolving the Event Module's service from the container.
+
+In Medusa v2, you should emit events in workflows instead. For example:
+
+```ts title="src/workflows/hello-world.ts"
+import { 
+  createWorkflow,
+} from "@medusajs/framework/workflows-sdk"
+import {
+  emitEventStep,
+} from "@medusajs/medusa/core-flows"
+
+const helloWorldWorkflow = createWorkflow(
+  "hello-world",
+  () => {
+    // ...
+
+    emitEventStep({
+      eventName: "custom.created",
+      data: {
+        id: "123",
+        // other data payload
+      },
+    })
+  }
+)
+```
+
+If you need to emit events in a service, you can add the Event Module as a dependency of your module. Then, you can resolve the Event Module's service from the module container and emit the event. This approach is only recommended for events related to under-the-hood processes.
+
+Learn more in the [Emit Events](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/emit-event/index.html.md) chapter.
+
+***
+
+### Loader Changes
+
+In Medusa v1, you created loaders in the `src/loaders` directory to perform tasks at application startup.
+
+In Medusa v2, loaders can only be created in a module. You can create loaders in the `src/modules/<module-name>/loaders` directory. That also means the loader can only access resources in the module's container.
+
+Learn more in the [Loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) chapter.
+
+#### Loader Parameter Changes
+
+In Medusa v1, a loader function receives two parameters: `container` and `config`. If the loader was created in a module, it also received a `logger` parameter.
+
+In Medusa v2, a loader function receives a single object parameter that has a `container` and `options` properties. The `options` property contains the properties passed to the module.
+
+For example:
+
+```ts title="src/modules/hello/loaders/hello-world.ts"
+import {
+  LoaderOptions,
+} from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+  options,
+}: LoaderOptions) {
+  const logger = container.resolve("logger")
+
+  logger.info("[HELLO MODULE] Just started the Medusa application!")
+}
+```
+
+***
+
+### Scheduled Job Changes
+
+Scheduled jobs are similar in Medusa v1 and v2, but with minor changes.
+
+You can learn more about scheduled jobs in the [Scheduled Jobs](https://docs.medusajs.com/learn/fundamentals/scheduled-jobs/index.html.md) chapters. This section highlights the main changes in scheduled jobs between v1 and v2.
+
+#### Scheduled Job Parameter Changes
+
+In Medusa v1, a scheduled job function received an object of parameters.
+
+In Medusa v2, a scheduled job function receives only the Medusa container as a parameter. For example:
+
+```ts title="src/jobs/hello-world.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+
+export default async function greetingJob(container: MedusaContainer) {
+  const logger = container.resolve("logger")
+
+  logger.info("Greeting!")
+}
+
+export const config = {
+  name: "greeting-every-minute",
+  schedule: "* * * * *",
+}
+```
+
+The `pluginOptions` property is no longer available, as you can access the options passed to a plugin within its modules' services, which you can resolve in a scheduled job.
+
+The `data` property is also no longer available, as you can't pass data in the scheduled job's configuration anymore.
+
+#### Scheduled Job Configuration Changes
+
+In Medusa v2, the `data` property is removed from the scheduled job's configuration object.
+
+#### Scheduled Job Implementation Changes
+
+In Medusa v1, you implemented functionalities directly in the job function.
+
+In Medusa v2, you should implement these functionalities in a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) and call the workflow in the scheduled job. By using workflows, you benefit from rollback mechanism, among other features.
+
+For example:
+
+```ts title="src/jobs/sync-products.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { syncProductToErpWorkflow } from "../workflows/sync-products-to-erp"
+
+export default async function syncProductsJob(container: MedusaContainer) {
+  await syncProductToErpWorkflow(container)
+    .run()
+}
+
+export const config = {
+  name: "sync-products-job",
+  schedule: "0 0 * * *",
+}
+```
+
+***
+
+### Removed Concepts and Alternatives
+
+The following table highlights concepts that have been removed or changed in Medusa v2 and their alternatives:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|Batch Jobs and Strategies|Long-Running Workflows|
+|File Service|File Module Provider|
+|Notification Provider Service|Notification Module Provider|
+|Search Service|Can be integrated as a |
+
+***
+
+### Admin Customization Changes
+
+This section covers changes to the admin customizations between Medusa v1 and v2.
+
+#### Custom Admin Environment Variables
+
+In Medusa v1, you set custom environment variables to be passed to the admin dashboard by prefixing them with `MEDUSA_ADMIN_`.
+
+In Medusa v2, you can set custom environment variables to be passed to the admin dashboard by prefixing them with `VITE_`. Learn more in the [Admin Environment Variables](https://docs.medusajs.com/learn/fundamentals/admin/environment-variables/index.html.md) chapter.
+
+#### Admin Widgets
+
+Due to design changes in the Medusa Admin, some widget injection zones may have been changed or removed. Refer to the [Admin Widgets Injection Zones](https://docs.medusajs.com/resources/admin-widget-injection-zones/index.html.md) reference for the full list of injection zones in v2.
+
+Also, In Medusa v1, you exported in the widget's file a `config` object with the widget's configurations, such as its injection zone.
+
+In Medusa v2, you export a configuration object defined with `defineWidgetConfig` from the Admin Extension SDK. For example:
+
+```tsx title="src/admin/widgets/product-widget.tsx" highlights={[["9"], ["10"], ["11"]]}
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+
+// The widget
+const ProductWidget = () => {
+  // ...
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+})
+
+export default ProductWidget
+```
+
+The function accepts an object with a `zone` property, indicating the zone to inject the widget.
+
+Refer to the [Admin Widgets](https://docs.medusajs.com/learn/fundamentals/admin/widgets/index.html.md) chapter to learn more about creating widgets in Medusa v2.
+
+### Admin UI Routes
+
+In Medusa v1, UI Routes were prefixed by `/a`. For example, a route created at `src/admin/routes/custom/page.tsx` would be available at `http://localhost:9000/a/custom`.
+
+In Medusa v2, the `/a` prefix has been removed. So, that same route would be available at `http://localhost:9000/app/custom` (where `/app` is the path to the admin dashboard, not a prefix).
+
+Also, in v1, you exported a `config` object with the route's configurations to show the route in the dashboard's sidebar.
+
+In v2, you export a configuration object defined with `defineRouteConfig` from the Admin Extension SDK. For example:
+
+```tsx title="src/admin/routes/custom/page.tsx" highlights={[["8"], ["9"], ["10"], ["11"]]}
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { ChatBubbleLeftRight } from "@medusajs/icons"
+
+const CustomPage = () => {
+  // ...
+}
+
+export const config = defineRouteConfig({
+  label: "Custom Route",
+  icon: ChatBubbleLeftRight,
+})
+
+export default CustomPage
+```
+
+The `defineRouteConfig` function accepts an object with the following properties:
+
+- `label`: The label of the route to show in the sidebar.
+- `icon`: The icon to use in the sidebar for the route.
+
+Refer to the [Admin UI Routes](https://docs.medusajs.com/learn/fundamentals/admin/ui-routes/index.html.md) chapter to learn more about creating UI routes in Medusa v2.
+
+### Admin Setting Routes
+
+In Medusa v1, you created setting pages under the `src/admin/settings` directory with their own configurations.
+
+In Medusa v2, setting pages are UI routes created under the `src/admin/routes/settings` directory.
+
+For example, if you had a `src/admin/settings/custom/page.tsx` file in v1, you should move it to `src/admin/routes/settings/custom/page.tsx` in v2. The file's content will be the same as a UI route.
+
+For example:
+
+```tsx title="src/admin/routes/settings/custom/page.tsx" highlights={[["14"], ["15"], ["16"]]}
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+const CustomSettingPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h1">Custom Setting Page</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Custom",
+})
+
+export default CustomSettingPage
+```
+
+In v1, you exported a `config` object that showed a setting page as a card in the settings page. In v2, you export the same configuration object as a UI route.
+
+Learn more about creating setting pages in the [Admin UI Routes](https://docs.medusajs.com/learn/fundamentals/admin/ui-routes#create-settings-page/index.html.md) chapter.
+
+### notify Props in Widgets, UI Routes, and Settings
+
+In Medusa v1, admin widgets, UI routes, and setting pages received a `notify` prop to show notifications in the admin dashboard.
+
+This prop is no longer passed in v2. Instead, use the [toast utility from Medusa UI](https://docs.medusajs.com/ui/components/toast/index.html.md) to show notifications.
+
+For example:
+
+```tsx title="src/admin/widgets/product-details.tsx" highlights={[["7"], ["8"], ["9"]]}
+import { toast } from "@medusajs/ui"
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+
+// The widget
+const ProductWidget = () => {
+  const handleOnClick = () => {
+    toast.info("Info", {
+      description: "The quick brown fox jumps over the lazy dog.",
+    })
+  }
+  // ...
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+})
+
+export default ProductWidget
+```
+
+Learn more about the `toast` utility in the [Medusa UI Toasts](https://docs.medusajs.com/ui/components/toast/index.html.md) documentation.
+
+### Sending Requests to Medusa Server
+
+In Medusa v1, you used Medusa React to send requests to the Medusa server.
+
+Medusa v2 no longer supports Medusa React. Instead, you can use the JS SDK with Tanstack Query to send requests from your admin customizations to the Medusa server.
+
+Learn more in the [Admin Development Tips](https://docs.medusajs.com/learn/fundamentals/admin/tips#send-requests-to-api-routes/index.html.md) chapter.
+
+### Admin Languages
+
+Medusa Admin v2 supports different languages out-of-the-box, and you can contribute with new translations.
+
+Refer to the [User Guide](https://docs.medusajs.com/user-guide/tips/languages/index.html.md) for the list of languages supported in the Medusa Admin.
+
+***
+
+## Commerce Features Changes
+
+In Medusa v2, commerce features are implemented as [Commerce Modules](https://docs.medusajs.com/resources/commerce-modules/index.html.md). For example, the [Product Module](https://docs.medusajs.com/resources/commerce-modules/product/index.html.md) implements the product-related features, whereas the [Cart Module](https://docs.medusajs.com/resources/commerce-modules/cart/index.html.md) implements the cart-related features.
+
+So, it's difficult to cover all changes in commerce features between v1 and v2. Instead, this section will highlight changes to customizations that were documented in the Medusa v1 documentation.
+
+To learn about all commerce features in Medusa v2, refer to the [Commerce Modules](https://docs.medusajs.com/resources/commerce-modules/index.html.md) documentation.
+
+### Providers are now Module Providers
+
+In Medusa v1, you created providers for payment, fulfillment, and tax in services under `src/services`.
+
+In Medusa v2, you create these providers as module providers that belong to the Payment, Fulfillment, and Tax modules respectively.
+
+Refer to the following guides to learn how to create these module providers:
+
+- [Payment Module Provider](https://docs.medusajs.com/resources/commerce-modules/payment/payment-provider/index.html.md)
+- [Fulfillment Module Provider](https://docs.medusajs.com/resources/commerce-modules/fulfillment/fulfillment-provider/index.html.md)
+- [Tax Module Provider](https://docs.medusajs.com/resources/commerce-modules/tax/tax-provider/index.html.md)
+
+### Overridden Cart Completion
+
+In Medusa v1, you were able to override the cart completion strategy to customize the cart completion process.
+
+In Medusa v2, the cart completion process is now implemented in the [completeCartWorkflow](https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow/index.html.md). There are two ways you can customize the completion process:
+
+- [Consuming hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks/index.html.md) like the [validate](https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow#validate/index.html.md) hook. This is useful if you only want to make changes in key points of the cart completion process.
+  - You can view available hooks in the [completeCartWorkflow reference](https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow#hooks/index.html.md)
+- For more complex use cases, you can create a new workflow with the desired functionality. Then, you can [replicate the complete cart API route](https://docs.medusajs.com/learn/fundamentals/api-routes/override/index.html.md) and use it in your storefront.
+
+### Overridden Tax Calculation
+
+In Medusa v1, you were able to override the tax calculation strategy to customize the tax calculation process.
+
+In Medusa v2, the tax calculation process is now implemented in a [Tax Module Provider](https://docs.medusajs.com/resources/commerce-modules/tax/tax-provider/index.html.md). So, you can [create a custom tax provider](https://docs.medusajs.com/resources/references/tax/provider/index.html.md) with the calculation logic you want, then [use it in a tax region](https://docs.medusajs.com/user-guide/settings/tax-regions#edit-tax-region/index.html.md).
+
+### Overridden Price Selection
+
+In Medusa v1, you were able to override the price selection strategy to customize the price selection process.
+
+In Medusa v2, the price selection process is now implemented in the [Pricing Module's calculate method](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation/index.html.md). The Pricing Module allows you to set [flexible rules and tiers](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules/index.html.md) to support your use case.
+
+If your use case is complex and these rules are not enough, you can create a new [module](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) with the necessary logic, then use that module in your custom workflows.
+
+### Gift Card Features
+
+Medusa v1 has gift card features out-of-the-box.
+
+In Medusa v2, gift card features are now only available to [Medusa Cloud](https://medusajs.com/cloud/) users.
+
+***
+
+## Deployment Changes
+
+The deployment process in Medusa v2 is similar to v1, but with some changes. For example, the Medusa server is now deployed with Medusa Admin.
+
+Medusa also provides [Cloud](https://medusajs.com/cloud/), a managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure.
+
+Refer to the [Deployment](https://docs.medusajs.com/resources/deployment/index.html.md) documentation to learn about the deployment process for Medusa applications and Next.js Starter Storefront.
 
 
 # Introduction
@@ -35671,17 +37336,7 @@ const step1 = createStep(
       template: "product-created",
       data,
     })
-
-    sendNotificationsStep({
-      to: "user@gmail.com",
-      channel: "email",
-      template: "product-created",
-      data: {
-        product_title: product[0].title,
-        product_image: product[0].images[0]?.url,
-      },
-    })
-  }
+  } 
 )
 
 export const workflow = createWorkflow(
@@ -36542,72 +38197,6 @@ Connection to Redis in module 'workflow-engine-redis' established
 ```
 
 
-# Redis Workflow Engine Module
-
-The Redis Workflow Engine Module uses Redis to track workflow executions and handle their subscribers. In production, it's recommended to use this module.
-
-***
-
-## Register the Redis Workflow Engine Module
-
-### Prerequisites
-
-- [Redis installed and Redis server running](https://redis.io/docs/getting-started/installation/)
-
-Add the module into the `modules` property of the exported object in `medusa-config.ts`:
-
-```ts title="medusa-config.ts" highlights={highlights}
-import { Modules } from "@medusajs/framework/utils"
-
-// ...
-
-module.exports = defineConfig({
-  // ...
-  modules: [
-    {
-      resolve: "@medusajs/medusa/workflow-engine-redis",
-      options: {
-        redis: {
-          url: process.env.WE_REDIS_URL,
-        },
-      },
-    },
-  ],
-})
-```
-
-### Environment Variables
-
-Make sure to add the following environment variables:
-
-```bash
-WE_REDIS_URL=<YOUR_REDIS_URL>
-```
-
-### Redis Workflow Engine Module Options
-
-|Option|Description|Required|Default|
-|---|---|---|---|---|---|---|
-|\`url\`|A string indicating the Redis connection URL.|No. If not provided, you must provide the |-|
-|\`options\`|An object of Redis options. Refer to the |No|-|
-|\`queueName\`|The name of the queue used to keep track of retries and timeouts.|No|\`medusa-workflows\`|
-|\`pubsub\`|A connection object having the following properties:|No. If not provided, you must provide the |-|
-
-## Test the Module
-
-To test the module, start the Medusa application:
-
-```bash npm2yarn
-npm run dev
-```
-
-You'll see the following message in the terminal's logs:
-
-```bash noCopy noReport
-Connection to Redis in module 'workflow-engine-redis' established
-```
-
-
 ## Workflows
 
 - [createApiKeysWorkflow](https://docs.medusajs.com/references/medusa-workflows/createApiKeysWorkflow/index.html.md)
@@ -36625,13 +38214,10 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [createPaymentCollectionForCartWorkflow](https://docs.medusajs.com/references/medusa-workflows/createPaymentCollectionForCartWorkflow/index.html.md)
 - [deleteCartCreditLinesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteCartCreditLinesWorkflow/index.html.md)
 - [listShippingOptionsForCartWithPricingWorkflow](https://docs.medusajs.com/references/medusa-workflows/listShippingOptionsForCartWithPricingWorkflow/index.html.md)
-- [createPaymentCollectionForCartWorkflow](https://docs.medusajs.com/references/medusa-workflows/createPaymentCollectionForCartWorkflow/index.html.md)
-- [deleteCartCreditLinesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteCartCreditLinesWorkflow/index.html.md)
-- [createCartWorkflow](https://docs.medusajs.com/references/medusa-workflows/createCartWorkflow/index.html.md)
-- [refreshCartItemsWorkflow](https://docs.medusajs.com/references/medusa-workflows/refreshCartItemsWorkflow/index.html.md)
 - [listShippingOptionsForCartWorkflow](https://docs.medusajs.com/references/medusa-workflows/listShippingOptionsForCartWorkflow/index.html.md)
 - [refreshCartItemsWorkflow](https://docs.medusajs.com/references/medusa-workflows/refreshCartItemsWorkflow/index.html.md)
 - [refreshCartShippingMethodsWorkflow](https://docs.medusajs.com/references/medusa-workflows/refreshCartShippingMethodsWorkflow/index.html.md)
+- [refreshPaymentCollectionForCartWorkflow](https://docs.medusajs.com/references/medusa-workflows/refreshPaymentCollectionForCartWorkflow/index.html.md)
 - [refundPaymentAndRecreatePaymentSessionWorkflow](https://docs.medusajs.com/references/medusa-workflows/refundPaymentAndRecreatePaymentSessionWorkflow/index.html.md)
 - [transferCartCustomerWorkflow](https://docs.medusajs.com/references/medusa-workflows/transferCartCustomerWorkflow/index.html.md)
 - [updateCartPromotionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateCartPromotionsWorkflow/index.html.md)
@@ -36708,17 +38294,15 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [validateInventoryLevelsDelete](https://docs.medusajs.com/references/medusa-workflows/validateInventoryLevelsDelete/index.html.md)
 - [acceptInviteWorkflow](https://docs.medusajs.com/references/medusa-workflows/acceptInviteWorkflow/index.html.md)
 - [createInvitesWorkflow](https://docs.medusajs.com/references/medusa-workflows/createInvitesWorkflow/index.html.md)
+- [deleteInvitesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteInvitesWorkflow/index.html.md)
 - [refreshInviteTokensWorkflow](https://docs.medusajs.com/references/medusa-workflows/refreshInviteTokensWorkflow/index.html.md)
 - [deleteLineItemsWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteLineItemsWorkflow/index.html.md)
 - [acceptOrderTransferValidationStep](https://docs.medusajs.com/references/medusa-workflows/acceptOrderTransferValidationStep/index.html.md)
 - [acceptOrderTransferWorkflow](https://docs.medusajs.com/references/medusa-workflows/acceptOrderTransferWorkflow/index.html.md)
 - [addOrderLineItemsWorkflow](https://docs.medusajs.com/references/medusa-workflows/addOrderLineItemsWorkflow/index.html.md)
-- [beginClaimOrderValidationStep](https://docs.medusajs.com/references/medusa-workflows/beginClaimOrderValidationStep/index.html.md)
-- [acceptOrderTransferValidationStep](https://docs.medusajs.com/references/medusa-workflows/acceptOrderTransferValidationStep/index.html.md)
 - [archiveOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/archiveOrderWorkflow/index.html.md)
 - [beginClaimOrderValidationStep](https://docs.medusajs.com/references/medusa-workflows/beginClaimOrderValidationStep/index.html.md)
 - [beginClaimOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/beginClaimOrderWorkflow/index.html.md)
-- [beginOrderEditOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/beginOrderEditOrderWorkflow/index.html.md)
 - [beginExchangeOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/beginExchangeOrderWorkflow/index.html.md)
 - [beginOrderEditOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/beginOrderEditOrderWorkflow/index.html.md)
 - [beginOrderEditValidationStep](https://docs.medusajs.com/references/medusa-workflows/beginOrderEditValidationStep/index.html.md)
@@ -36741,6 +38325,7 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [cancelOrderFulfillmentValidateOrder](https://docs.medusajs.com/references/medusa-workflows/cancelOrderFulfillmentValidateOrder/index.html.md)
 - [cancelOrderFulfillmentWorkflow](https://docs.medusajs.com/references/medusa-workflows/cancelOrderFulfillmentWorkflow/index.html.md)
 - [cancelOrderTransferRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/cancelOrderTransferRequestWorkflow/index.html.md)
+- [cancelOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/cancelOrderWorkflow/index.html.md)
 - [cancelReceiveReturnValidationStep](https://docs.medusajs.com/references/medusa-workflows/cancelReceiveReturnValidationStep/index.html.md)
 - [cancelRequestReturnValidationStep](https://docs.medusajs.com/references/medusa-workflows/cancelRequestReturnValidationStep/index.html.md)
 - [cancelReturnReceiveWorkflow](https://docs.medusajs.com/references/medusa-workflows/cancelReturnReceiveWorkflow/index.html.md)
@@ -36755,14 +38340,13 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [confirmExchangeRequestValidationStep](https://docs.medusajs.com/references/medusa-workflows/confirmExchangeRequestValidationStep/index.html.md)
 - [confirmExchangeRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/confirmExchangeRequestWorkflow/index.html.md)
 - [confirmOrderEditRequestValidationStep](https://docs.medusajs.com/references/medusa-workflows/confirmOrderEditRequestValidationStep/index.html.md)
+- [confirmOrderEditRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/confirmOrderEditRequestWorkflow/index.html.md)
 - [confirmReceiveReturnValidationStep](https://docs.medusajs.com/references/medusa-workflows/confirmReceiveReturnValidationStep/index.html.md)
 - [confirmReturnReceiveWorkflow](https://docs.medusajs.com/references/medusa-workflows/confirmReturnReceiveWorkflow/index.html.md)
-- [confirmOrderEditRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/confirmOrderEditRequestWorkflow/index.html.md)
 - [confirmReturnRequestValidationStep](https://docs.medusajs.com/references/medusa-workflows/confirmReturnRequestValidationStep/index.html.md)
 - [confirmReturnRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/confirmReturnRequestWorkflow/index.html.md)
 - [createAndCompleteReturnOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/createAndCompleteReturnOrderWorkflow/index.html.md)
 - [createClaimShippingMethodValidationStep](https://docs.medusajs.com/references/medusa-workflows/createClaimShippingMethodValidationStep/index.html.md)
-- [confirmReturnRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/confirmReturnRequestWorkflow/index.html.md)
 - [createClaimShippingMethodWorkflow](https://docs.medusajs.com/references/medusa-workflows/createClaimShippingMethodWorkflow/index.html.md)
 - [createCompleteReturnValidationStep](https://docs.medusajs.com/references/medusa-workflows/createCompleteReturnValidationStep/index.html.md)
 - [createExchangeShippingMethodValidationStep](https://docs.medusajs.com/references/medusa-workflows/createExchangeShippingMethodValidationStep/index.html.md)
@@ -36782,9 +38366,7 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [createReturnShippingMethodValidationStep](https://docs.medusajs.com/references/medusa-workflows/createReturnShippingMethodValidationStep/index.html.md)
 - [createReturnShippingMethodWorkflow](https://docs.medusajs.com/references/medusa-workflows/createReturnShippingMethodWorkflow/index.html.md)
 - [createShipmentValidateOrder](https://docs.medusajs.com/references/medusa-workflows/createShipmentValidateOrder/index.html.md)
-- [createOrdersWorkflow](https://docs.medusajs.com/references/medusa-workflows/createOrdersWorkflow/index.html.md)
 - [declineOrderChangeWorkflow](https://docs.medusajs.com/references/medusa-workflows/declineOrderChangeWorkflow/index.html.md)
-- [createReturnShippingMethodValidationStep](https://docs.medusajs.com/references/medusa-workflows/createReturnShippingMethodValidationStep/index.html.md)
 - [declineOrderTransferRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/declineOrderTransferRequestWorkflow/index.html.md)
 - [declineTransferOrderRequestValidationStep](https://docs.medusajs.com/references/medusa-workflows/declineTransferOrderRequestValidationStep/index.html.md)
 - [deleteOrderChangeActionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteOrderChangeActionsWorkflow/index.html.md)
@@ -36806,15 +38388,14 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [orderClaimItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderClaimItemWorkflow/index.html.md)
 - [orderClaimRequestItemReturnValidationStep](https://docs.medusajs.com/references/medusa-workflows/orderClaimRequestItemReturnValidationStep/index.html.md)
 - [orderClaimRequestItemReturnWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderClaimRequestItemReturnWorkflow/index.html.md)
-- [orderClaimItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderClaimItemWorkflow/index.html.md)
 - [orderEditAddNewItemValidationStep](https://docs.medusajs.com/references/medusa-workflows/orderEditAddNewItemValidationStep/index.html.md)
 - [orderEditAddNewItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderEditAddNewItemWorkflow/index.html.md)
 - [orderEditUpdateItemQuantityValidationStep](https://docs.medusajs.com/references/medusa-workflows/orderEditUpdateItemQuantityValidationStep/index.html.md)
 - [orderEditUpdateItemQuantityWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderEditUpdateItemQuantityWorkflow/index.html.md)
 - [orderExchangeAddNewItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderExchangeAddNewItemWorkflow/index.html.md)
-- [receiveAndCompleteReturnOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/receiveAndCompleteReturnOrderWorkflow/index.html.md)
 - [orderExchangeRequestItemReturnWorkflow](https://docs.medusajs.com/references/medusa-workflows/orderExchangeRequestItemReturnWorkflow/index.html.md)
 - [orderFulfillmentDeliverablilityValidationStep](https://docs.medusajs.com/references/medusa-workflows/orderFulfillmentDeliverablilityValidationStep/index.html.md)
+- [receiveAndCompleteReturnOrderWorkflow](https://docs.medusajs.com/references/medusa-workflows/receiveAndCompleteReturnOrderWorkflow/index.html.md)
 - [receiveCompleteReturnValidationStep](https://docs.medusajs.com/references/medusa-workflows/receiveCompleteReturnValidationStep/index.html.md)
 - [receiveItemReturnRequestValidationStep](https://docs.medusajs.com/references/medusa-workflows/receiveItemReturnRequestValidationStep/index.html.md)
 - [receiveItemReturnRequestWorkflow](https://docs.medusajs.com/references/medusa-workflows/receiveItemReturnRequestWorkflow/index.html.md)
@@ -36845,8 +38426,6 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [requestOrderTransferValidationStep](https://docs.medusajs.com/references/medusa-workflows/requestOrderTransferValidationStep/index.html.md)
 - [requestOrderTransferWorkflow](https://docs.medusajs.com/references/medusa-workflows/requestOrderTransferWorkflow/index.html.md)
 - [throwUnlessPaymentCollectionNotPaid](https://docs.medusajs.com/references/medusa-workflows/throwUnlessPaymentCollectionNotPaid/index.html.md)
-- [requestOrderTransferWorkflow](https://docs.medusajs.com/references/medusa-workflows/requestOrderTransferWorkflow/index.html.md)
-- [requestOrderEditRequestValidationStep](https://docs.medusajs.com/references/medusa-workflows/requestOrderEditRequestValidationStep/index.html.md)
 - [throwUnlessStatusIsNotPaid](https://docs.medusajs.com/references/medusa-workflows/throwUnlessStatusIsNotPaid/index.html.md)
 - [updateClaimAddItemValidationStep](https://docs.medusajs.com/references/medusa-workflows/updateClaimAddItemValidationStep/index.html.md)
 - [updateClaimAddItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateClaimAddItemWorkflow/index.html.md)
@@ -36858,6 +38437,7 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [updateExchangeAddItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateExchangeAddItemWorkflow/index.html.md)
 - [updateExchangeShippingMethodValidationStep](https://docs.medusajs.com/references/medusa-workflows/updateExchangeShippingMethodValidationStep/index.html.md)
 - [updateExchangeShippingMethodWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateExchangeShippingMethodWorkflow/index.html.md)
+- [updateOrderChangeActionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateOrderChangeActionsWorkflow/index.html.md)
 - [updateOrderChangesWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateOrderChangesWorkflow/index.html.md)
 - [updateOrderEditAddItemValidationStep](https://docs.medusajs.com/references/medusa-workflows/updateOrderEditAddItemValidationStep/index.html.md)
 - [updateOrderEditAddItemWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateOrderEditAddItemWorkflow/index.html.md)
@@ -36902,7 +38482,6 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [batchLinkProductsToCollectionWorkflow](https://docs.medusajs.com/references/medusa-workflows/batchLinkProductsToCollectionWorkflow/index.html.md)
 - [batchProductVariantsWorkflow](https://docs.medusajs.com/references/medusa-workflows/batchProductVariantsWorkflow/index.html.md)
 - [batchProductsWorkflow](https://docs.medusajs.com/references/medusa-workflows/batchProductsWorkflow/index.html.md)
-- [batchLinkProductsToCategoryWorkflow](https://docs.medusajs.com/references/medusa-workflows/batchLinkProductsToCategoryWorkflow/index.html.md)
 - [createCollectionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/createCollectionsWorkflow/index.html.md)
 - [createProductOptionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/createProductOptionsWorkflow/index.html.md)
 - [createProductTagsWorkflow](https://docs.medusajs.com/references/medusa-workflows/createProductTagsWorkflow/index.html.md)
@@ -36915,15 +38494,14 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [deleteProductTypesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteProductTypesWorkflow/index.html.md)
 - [deleteProductVariantsWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteProductVariantsWorkflow/index.html.md)
 - [deleteProductsWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteProductsWorkflow/index.html.md)
-- [importProductsWorkflow](https://docs.medusajs.com/references/medusa-workflows/importProductsWorkflow/index.html.md)
-- [importProductsAsChunksWorkflow](https://docs.medusajs.com/references/medusa-workflows/importProductsAsChunksWorkflow/index.html.md)
 - [exportProductsWorkflow](https://docs.medusajs.com/references/medusa-workflows/exportProductsWorkflow/index.html.md)
+- [importProductsAsChunksWorkflow](https://docs.medusajs.com/references/medusa-workflows/importProductsAsChunksWorkflow/index.html.md)
+- [importProductsWorkflow](https://docs.medusajs.com/references/medusa-workflows/importProductsWorkflow/index.html.md)
 - [updateCollectionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateCollectionsWorkflow/index.html.md)
 - [updateProductOptionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateProductOptionsWorkflow/index.html.md)
 - [updateProductTagsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateProductTagsWorkflow/index.html.md)
 - [updateProductTypesWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateProductTypesWorkflow/index.html.md)
 - [updateProductVariantsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateProductVariantsWorkflow/index.html.md)
-- [upsertVariantPricesWorkflow](https://docs.medusajs.com/references/medusa-workflows/upsertVariantPricesWorkflow/index.html.md)
 - [updateProductsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateProductsWorkflow/index.html.md)
 - [upsertVariantPricesWorkflow](https://docs.medusajs.com/references/medusa-workflows/upsertVariantPricesWorkflow/index.html.md)
 - [validateProductInputStep](https://docs.medusajs.com/references/medusa-workflows/validateProductInputStep/index.html.md)
@@ -36962,7 +38540,6 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [createLocationFulfillmentSetWorkflow](https://docs.medusajs.com/references/medusa-workflows/createLocationFulfillmentSetWorkflow/index.html.md)
 - [createStockLocationsWorkflow](https://docs.medusajs.com/references/medusa-workflows/createStockLocationsWorkflow/index.html.md)
 - [deleteStockLocationsWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteStockLocationsWorkflow/index.html.md)
-- [createStockLocationsWorkflow](https://docs.medusajs.com/references/medusa-workflows/createStockLocationsWorkflow/index.html.md)
 - [linkSalesChannelsToStockLocationWorkflow](https://docs.medusajs.com/references/medusa-workflows/linkSalesChannelsToStockLocationWorkflow/index.html.md)
 - [updateStockLocationsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateStockLocationsWorkflow/index.html.md)
 - [createStoresWorkflow](https://docs.medusajs.com/references/medusa-workflows/createStoresWorkflow/index.html.md)
@@ -36974,14 +38551,10 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [deleteTaxRateRulesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteTaxRateRulesWorkflow/index.html.md)
 - [deleteTaxRatesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteTaxRatesWorkflow/index.html.md)
 - [deleteTaxRegionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteTaxRegionsWorkflow/index.html.md)
-- [deleteTaxRatesWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteTaxRatesWorkflow/index.html.md)
 - [maybeListTaxRateRuleIdsStep](https://docs.medusajs.com/references/medusa-workflows/maybeListTaxRateRuleIdsStep/index.html.md)
 - [setTaxRateRulesWorkflow](https://docs.medusajs.com/references/medusa-workflows/setTaxRateRulesWorkflow/index.html.md)
 - [updateTaxRatesWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateTaxRatesWorkflow/index.html.md)
 - [updateTaxRegionsWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateTaxRegionsWorkflow/index.html.md)
-- [deleteStoresWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteStoresWorkflow/index.html.md)
-- [updateStoresWorkflow](https://docs.medusajs.com/references/medusa-workflows/updateStoresWorkflow/index.html.md)
-- [createStoresWorkflow](https://docs.medusajs.com/references/medusa-workflows/createStoresWorkflow/index.html.md)
 - [createUserAccountWorkflow](https://docs.medusajs.com/references/medusa-workflows/createUserAccountWorkflow/index.html.md)
 - [createUsersWorkflow](https://docs.medusajs.com/references/medusa-workflows/createUsersWorkflow/index.html.md)
 - [deleteUsersWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteUsersWorkflow/index.html.md)
@@ -37080,7 +38653,8 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [updateServiceZonesStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateServiceZonesStep/index.html.md)
 - [updateShippingOptionRulesStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateShippingOptionRulesStep/index.html.md)
 - [updateShippingProfilesStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateShippingProfilesStep/index.html.md)
-- [updateShippingOptionRulesStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateShippingOptionRulesStep/index.html.md)
+- [upsertShippingOptionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/upsertShippingOptionsStep/index.html.md)
+- [validateShipmentStep](https://docs.medusajs.com/references/medusa-workflows/steps/validateShipmentStep/index.html.md)
 - [validateShippingOptionPricesStep](https://docs.medusajs.com/references/medusa-workflows/steps/validateShippingOptionPricesStep/index.html.md)
 - [adjustInventoryLevelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/adjustInventoryLevelsStep/index.html.md)
 - [attachInventoryItemToVariants](https://docs.medusajs.com/references/medusa-workflows/steps/attachInventoryItemToVariants/index.html.md)
@@ -37126,8 +38700,6 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [deleteOrderChangeActionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteOrderChangeActionsStep/index.html.md)
 - [deleteOrderChangesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteOrderChangesStep/index.html.md)
 - [deleteOrderLineItems](https://docs.medusajs.com/references/medusa-workflows/steps/deleteOrderLineItems/index.html.md)
-- [deleteOrderChangeActionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteOrderChangeActionsStep/index.html.md)
-- [deleteOrderChangesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteOrderChangesStep/index.html.md)
 - [deleteOrderShippingMethods](https://docs.medusajs.com/references/medusa-workflows/steps/deleteOrderShippingMethods/index.html.md)
 - [deleteReturnsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteReturnsStep/index.html.md)
 - [previewOrderChangeStep](https://docs.medusajs.com/references/medusa-workflows/steps/previewOrderChangeStep/index.html.md)
@@ -37176,14 +38748,15 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [createProductOptionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductOptionsStep/index.html.md)
 - [createProductTagsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductTagsStep/index.html.md)
 - [createProductTypesStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductTypesStep/index.html.md)
-- [createProductsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductsStep/index.html.md)
-- [deleteCollectionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteCollectionsStep/index.html.md)
 - [createProductVariantsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductVariantsStep/index.html.md)
+- [createProductsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductsStep/index.html.md)
 - [createVariantPricingLinkStep](https://docs.medusajs.com/references/medusa-workflows/steps/createVariantPricingLinkStep/index.html.md)
+- [deleteCollectionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteCollectionsStep/index.html.md)
 - [deleteProductOptionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductOptionsStep/index.html.md)
-- [deleteProductTypesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductTypesStep/index.html.md)
 - [deleteProductTagsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductTagsStep/index.html.md)
+- [deleteProductTypesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductTypesStep/index.html.md)
 - [deleteProductVariantsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductVariantsStep/index.html.md)
+- [deleteProductsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductsStep/index.html.md)
 - [generateProductCsvStep](https://docs.medusajs.com/references/medusa-workflows/steps/generateProductCsvStep/index.html.md)
 - [getAllProductsStep](https://docs.medusajs.com/references/medusa-workflows/steps/getAllProductsStep/index.html.md)
 - [getProductsStep](https://docs.medusajs.com/references/medusa-workflows/steps/getProductsStep/index.html.md)
@@ -37192,13 +38765,12 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [normalizeCsvToChunksStep](https://docs.medusajs.com/references/medusa-workflows/steps/normalizeCsvToChunksStep/index.html.md)
 - [parseProductCsvStep](https://docs.medusajs.com/references/medusa-workflows/steps/parseProductCsvStep/index.html.md)
 - [processImportChunksStep](https://docs.medusajs.com/references/medusa-workflows/steps/processImportChunksStep/index.html.md)
-- [parseProductCsvStep](https://docs.medusajs.com/references/medusa-workflows/steps/parseProductCsvStep/index.html.md)
 - [updateCollectionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateCollectionsStep/index.html.md)
 - [updateProductOptionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateProductOptionsStep/index.html.md)
 - [updateProductTagsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateProductTagsStep/index.html.md)
-- [updateProductVariantsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateProductVariantsStep/index.html.md)
 - [updateProductTypesStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateProductTypesStep/index.html.md)
-- [createPricePreferencesStep](https://docs.medusajs.com/references/medusa-workflows/steps/createPricePreferencesStep/index.html.md)
+- [updateProductVariantsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateProductVariantsStep/index.html.md)
+- [updateProductsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateProductsStep/index.html.md)
 - [waitConfirmationProductImportStep](https://docs.medusajs.com/references/medusa-workflows/steps/waitConfirmationProductImportStep/index.html.md)
 - [createProductCategoriesStep](https://docs.medusajs.com/references/medusa-workflows/steps/createProductCategoriesStep/index.html.md)
 - [deleteProductCategoriesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteProductCategoriesStep/index.html.md)
@@ -37228,13 +38800,11 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [associateLocationsWithSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/associateLocationsWithSalesChannelsStep/index.html.md)
 - [associateProductsWithSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/associateProductsWithSalesChannelsStep/index.html.md)
 - [canDeleteSalesChannelsOrThrowStep](https://docs.medusajs.com/references/medusa-workflows/steps/canDeleteSalesChannelsOrThrowStep/index.html.md)
-- [associateProductsWithSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/associateProductsWithSalesChannelsStep/index.html.md)
 - [createDefaultSalesChannelStep](https://docs.medusajs.com/references/medusa-workflows/steps/createDefaultSalesChannelStep/index.html.md)
-- [detachLocationsFromSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/detachLocationsFromSalesChannelsStep/index.html.md)
-- [deleteSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteSalesChannelsStep/index.html.md)
 - [createSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createSalesChannelsStep/index.html.md)
+- [deleteSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteSalesChannelsStep/index.html.md)
+- [detachLocationsFromSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/detachLocationsFromSalesChannelsStep/index.html.md)
 - [detachProductsFromSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/detachProductsFromSalesChannelsStep/index.html.md)
-- [listShippingOptionsForContextStep](https://docs.medusajs.com/references/medusa-workflows/steps/listShippingOptionsForContextStep/index.html.md)
 - [updateSalesChannelsStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateSalesChannelsStep/index.html.md)
 - [listShippingOptionsForContextStep](https://docs.medusajs.com/references/medusa-workflows/steps/listShippingOptionsForContextStep/index.html.md)
 - [deleteShippingProfilesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteShippingProfilesStep/index.html.md)
@@ -37244,9 +38814,8 @@ Connection to Redis in module 'workflow-engine-redis' established
 - [createStoresStep](https://docs.medusajs.com/references/medusa-workflows/steps/createStoresStep/index.html.md)
 - [deleteStoresStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteStoresStep/index.html.md)
 - [updateStoresStep](https://docs.medusajs.com/references/medusa-workflows/steps/updateStoresStep/index.html.md)
-- [createStoresStep](https://docs.medusajs.com/references/medusa-workflows/steps/createStoresStep/index.html.md)
-- [createTaxRatesStep](https://docs.medusajs.com/references/medusa-workflows/steps/createTaxRatesStep/index.html.md)
 - [createTaxRateRulesStep](https://docs.medusajs.com/references/medusa-workflows/steps/createTaxRateRulesStep/index.html.md)
+- [createTaxRatesStep](https://docs.medusajs.com/references/medusa-workflows/steps/createTaxRatesStep/index.html.md)
 - [createTaxRegionsStep](https://docs.medusajs.com/references/medusa-workflows/steps/createTaxRegionsStep/index.html.md)
 - [deleteTaxRateRulesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteTaxRateRulesStep/index.html.md)
 - [deleteTaxRatesStep](https://docs.medusajs.com/references/medusa-workflows/steps/deleteTaxRatesStep/index.html.md)
@@ -38727,220 +40296,6 @@ The following workflows emit this event when they're executed. These workflows a
 
 - [deleteUsersWorkflow](https://docs.medusajs.com/references/medusa-workflows/deleteUsersWorkflow/index.html.md)
 - [removeUserAccountWorkflow](https://docs.medusajs.com/references/medusa-workflows/removeUserAccountWorkflow/index.html.md)
-
-
-# build Command - Medusa CLI Reference
-
-Create a standalone build of the Medusa application.
-
-This creates a build that:
-
-- Doesn't rely on the source TypeScript files.
-- Can be copied to a production server reliably.
-
-The build is outputted to a new `.medusa/server` directory.
-
-```bash
-npx medusa build
-```
-
-Refer to [this section](#run-built-medusa-application) for next steps.
-
-## Options
-
-|Option|Description|
-|---|---|---|
-|\`--admin-only\`|Whether to only build the admin to host it separately. If this option is not passed, the admin is built to the |
-
-***
-
-## Run Built Medusa Application
-
-After running the `build` command, use the following step to run the built Medusa application:
-
-- Change to the `.medusa/server` directory and install the dependencies:
-
-```bash npm2yarn
-cd .medusa/server && npm install
-```
-
-- When running the application locally, make sure to copy the `.env` file from the root project's directory. In production, use system environment variables instead.
-
-```bash npm2yarn
-cp .env .medusa/server/.env.production
-```
-
-- In the system environment variables, set `NODE_ENV` to `production`:
-
-```bash
-NODE_ENV=production
-```
-
-- Use the `start` command to run the application:
-
-```bash npm2yarn
-cd .medusa/server && npm run start
-```
-
-***
-
-## Build Medusa Admin
-
-By default, the Medusa Admin is built to the `.medusa/server/public/admin` directory.
-
-If you want a separate build to host the admin standalone, such as on Vercel, pass the `--admin-only` option as explained in the [Options](#options) section. This outputs the admin to the `.medusa/admin` directory instead.
-
-
-# develop Command - Medusa CLI Reference
-
-Start Medusa application in development. This command watches files for any changes, then rebuilds the files and restarts the Medusa application.
-
-```bash
-npx medusa develop
-```
-
-## Options
-
-|Option|Description|Default|
-|---|---|---|---|---|
-|\`-H \<host>\`|Set host of the Medusa server.|\`localhost\`|
-|\`-p \<port>\`|Set port of the Medusa server.|\`9000\`|
-
-
-# db Commands - Medusa CLI Reference
-
-Commands starting with `db:` perform actions on the database.
-
-## db:setup
-
-Creates a database for the Medusa application with the specified name, if it doesn't exit. Then, it runs migrations and syncs links.
-
-It also updates your `.env` file with the database name.
-
-```bash
-npx medusa db:setup --db <name>
-```
-
-Use this command if you're setting up a Medusa project or database manually.
-
-### Options
-
-|Option|Description|Required|Default|
-|---|---|---|---|---|---|---|
-|\`--db \<name>\`|The database name.|Yes|-|
-|\`--skip-links\`|Skip syncing links to the database.|No|Links are synced by default.|
-|\`--execute-safe-links\`|Skip prompts when syncing links and execute only safe actions.|No|Prompts are shown for unsafe actions, by default.|
-|\`--execute-all-links\`|Skip prompts when syncing links and execute all (including unsafe) actions.|No|Prompts are shown for unsafe actions, by default.|
-|\`--no-interactive\`|Disable the command's prompts.|No|-|
-
-***
-
-## db:create
-
-Creates a database for the Medusa application with the specified name, if it doesn't exit.
-
-It also updates your `.env` file with the database name.
-
-```bash
-npx medusa db:create --db <name>
-```
-
-Use this command if you want to only create a database.
-
-### Options
-
-|Option|Description|Required|Default|
-|---|---|---|---|---|---|---|
-|\`--db \<name>\`|The database name.|Yes|-|
-|\`--no-interactive\`|Disable the command's prompts.|No|-|
-
-***
-
-## db:generate
-
-Generate a migration file for the latest changes in one or more modules.
-
-```bash
-npx medusa db:generate <module_names...>
-```
-
-### Arguments
-
-|Argument|Description|Required|
-|---|---|---|---|---|
-|\`module\_names\`|The name of one or more module (separated by spaces) to generate migrations for. For example, |Yes|
-
-***
-
-## db:migrate
-
-Run the latest migrations to reflect changes on the database, sync link definitions with the database, and run migration data scripts.
-
-```bash
-npx medusa db:migrate
-```
-
-Use this command if you've updated the Medusa packages, or you've created customizations and want to reflect them in the database.
-
-### Options
-
-|Option|Description|Required|Default|
-|---|---|---|---|---|---|---|
-|\`--skip-links\`|Skip syncing links to the database.|No|Links are synced by default.|
-|\`--skip-scripts\`|Skip running data migration scripts. This option is added starting from
-|No|Data migration scripts are run by default starting from
-|
-|\`--execute-safe-links\`|Skip prompts when syncing links and execute only safe actions.|No|Prompts are shown for unsafe actions, by default.|
-|\`--execute-all-links\`|Skip prompts when syncing links and execute all (including unsafe) actions.|No|Prompts are shown for unsafe actions, by default.|
-
-***
-
-## db:rollback
-
-Revert the last migrations ran on one or more modules.
-
-```bash
-npx medusa db:rollback <module_names...>
-```
-
-### Arguments
-
-|Argument|Description|Required|
-|---|---|---|---|---|
-|\`module\_names\`|The name of one or more module (separated by spaces) to rollback their migrations for. For example, |Yes|
-
-***
-
-## db:sync-links
-
-Sync the database with the link definitions in your application, including the definitions in Medusa's modules.
-
-```bash
-npx medusa db:sync-links
-```
-
-### Options
-
-|Option|Description|Required|Default|
-|---|---|---|---|---|---|---|
-|\`--execute-safe\`|Skip prompts when syncing links and execute only safe actions.|No|Prompts are shown for unsafe actions, by default.|
-|\`--execute-all\`|Skip prompts when syncing links and execute all (including unsafe) actions.|No|Prompts are shown for unsafe actions, by default.|
-
-
-# develop Command - Medusa CLI Reference
-
-Start Medusa application in development. This command watches files for any changes, then rebuilds the files and restarts the Medusa application.
-
-```bash
-npx medusa develop
-```
-
-## Options
-
-|Option|Description|Default|
-|---|---|---|---|---|
-|\`-H \<host>\`|Set host of the Medusa server.|\`localhost\`|
-|\`-p \<port>\`|Set port of the Medusa server.|\`9000\`|
 
 
 # build Command - Medusa CLI Reference
@@ -75317,11 +76672,9 @@ To learn more about the commerce features that Medusa provides, check out Medusa
 - [addInboundItems](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.addInboundItems/index.html.md)
 - [addInboundShipping](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.addInboundShipping/index.html.md)
 - [addOutboundItems](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.addOutboundItems/index.html.md)
-- [addInboundItems](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.addInboundItems/index.html.md)
 - [addOutboundShipping](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.addOutboundShipping/index.html.md)
 - [cancel](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.cancel/index.html.md)
 - [cancelRequest](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.cancelRequest/index.html.md)
-- [deleteInboundShipping](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.deleteInboundShipping/index.html.md)
 - [create](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.create/index.html.md)
 - [deleteInboundShipping](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.deleteInboundShipping/index.html.md)
 - [deleteOutboundShipping](https://docs.medusajs.com/references/js_sdk/admin/Exchange/methods/js_sdk.admin.Exchange.deleteOutboundShipping/index.html.md)
@@ -75456,7 +76809,6 @@ To learn more about the commerce features that Medusa provides, check out Medusa
 - [addRules](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.addRules/index.html.md)
 - [create](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.create/index.html.md)
 - [delete](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.delete/index.html.md)
-- [addRules](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.addRules/index.html.md)
 - [list](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.list/index.html.md)
 - [listRuleAttributes](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.listRuleAttributes/index.html.md)
 - [listRuleValues](https://docs.medusajs.com/references/js_sdk/admin/Promotion/methods/js_sdk.admin.Promotion.listRuleValues/index.html.md)
@@ -77916,6 +79268,124 @@ To delete records matching a set of filters, pass an object of filters as a para
 Learn more about accepted filters in [this documentation](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/service-factory-reference/tips/filtering/index.html.md).
 
 
+# list Method - Service Factory Reference
+
+This method retrieves a list of records.
+
+## Retrieve List of Records
+
+```ts
+const posts = await postModuleService.listPosts()
+```
+
+If no parameters are passed, the method returns an array of the first `15` records.
+
+***
+
+## Filter Records
+
+```ts
+const posts = await postModuleService.listPosts({
+  id: ["123", "321"],
+})
+```
+
+### Parameters
+
+To retrieve records matching a set of filters, pass an object of the filters as a first parameter.
+
+Learn more about accepted filters in [this documentation](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/service-factory-reference/tips/filtering/index.html.md).
+
+### Returns
+
+The method returns an array of the first `15` records matching the filters.
+
+***
+
+## Retrieve Relations
+
+This applies to relations between data models of the same module. To retrieve linked records of different modules, use [Query](https://docs.medusajs.com/docs/learn/fundamentals/module-links/query/index.html.md).
+
+```ts
+const posts = await postModuleService.listPosts({}, {
+  relations: ["author"],
+})
+```
+
+### Parameters
+
+To retrieve records with their relations, pass as a second parameter an object having a `relations` property. `relations`'s value is an array of relation names.
+
+### Returns
+
+The method returns an array of the first `15` records matching the filters.
+
+***
+
+## Select Properties
+
+```ts
+const posts = await postModuleService.listPosts({}, {
+  select: ["id", "name"],
+})
+```
+
+### Parameters
+
+By default, retrieved records have all their properties. To select specific properties to retrieve, pass in the second object parameter a `select` property.
+
+`select`'s value is an array of property names to retrieve.
+
+### Returns
+
+The method returns an array of the first `15` records matching the filters.
+
+***
+
+## Paginate Relations
+
+```ts
+const posts = await postModuleService.listPosts({}, {
+  take: 20,
+  skip: 10,
+})
+```
+
+### Parameters
+
+To paginate the returned records, the second object parameter accepts the following properties:
+
+- `take`: a number indicating how many records to retrieve. By default, it's `15`.
+- `skip`: a number indicating how many records to skip before the retrieved records. By default, it's `0`.
+
+### Returns
+
+The method returns an array of records. The number of records is less than or equal to `take`'s value.
+
+***
+
+## Sort Records
+
+```ts
+const posts = await postModuleService.listPosts({}, {
+  order: {
+    name: "ASC",
+  },
+})
+```
+
+### Parameters
+
+To sort records by one or more properties, pass to the second object parameter the `order` property. Its value is an object whose keys are the property names, and values can either be:
+
+- `ASC` to sort by this property in the ascending order.
+- `DESC` to sort by this property in the descending order.
+
+### Returns
+
+The method returns an array of the first `15` records matching the filters.
+
+
 # listAndCount Method - Service Factory Reference
 
 This method retrieves a list of records with the total count.
@@ -78281,63 +79751,6 @@ deletedPosts = {
   post_id: ["123"],
 }
 ```
-
-
-# retrieve Method - Service Factory Reference
-
-This method retrieves one record of the data model by its ID.
-
-## Retrieve a Record
-
-```ts
-const post = await postModuleService.retrievePost("123")
-```
-
-### Parameters
-
-Pass the ID of the record to retrieve.
-
-### Returns
-
-The method returns the record as an object.
-
-***
-
-## Retrieve a Record's Relations
-
-This applies to relations between data models of the same module. To retrieve linked records of different modules, use [Query](https://docs.medusajs.com/docs/learn/fundamentals/module-links/query/index.html.md).
-
-```ts
-const post = await postModuleService.retrievePost("123", {
-  relations: ["author"],
-})
-```
-
-### Parameters
-
-To retrieve the data model with relations, pass as a second parameter of the method an object with the property `relations`. `relations`'s value is an array of relation names.
-
-### Returns
-
-The method returns the record as an object.
-
-***
-
-## Select Properties to Retrieve
-
-```ts
-const post = await postModuleService.retrievePost("123", {
-  select: ["id", "name"],
-})
-```
-
-### Parameters
-
-By default, all of the record's properties are retrieved. To select specific ones, pass in the second object parameter a `select` property. Its value is an array of property names.
-
-### Returns
-
-The method returns the record as an object.
 
 
 # update Method - Service Factory Reference
