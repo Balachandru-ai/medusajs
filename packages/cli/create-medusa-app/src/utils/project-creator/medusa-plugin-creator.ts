@@ -72,6 +72,7 @@ export class PluginProjectCreator
       processManager: this.processManager,
       abortController: this.abortController,
       verbose: this.options.verbose,
+      packageManager: this.packageManager,
     })
   }
 

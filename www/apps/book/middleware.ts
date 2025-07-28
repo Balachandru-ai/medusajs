@@ -9,5 +9,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!resources|api|ui|user-guide).*)index.html.md",
+  matcher: "/((?!resources|api|ui|user-guide|cloud).*)index.html.md",
 }

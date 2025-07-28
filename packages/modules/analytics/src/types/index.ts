@@ -7,7 +7,7 @@ export type AnalyticsModuleOptions = Partial<ModuleServiceInitializeOptions> & {
   /**
    * Providers to be registered
    */
-  provider?: {
+  providers?: {
     /**
      * The module provider to be registered
      */
@@ -20,5 +20,5 @@ export type AnalyticsModuleOptions = Partial<ModuleServiceInitializeOptions> & {
      * key value pair of the configuration to be passed to the provider constructor
      */
     options?: Record<string, unknown>
-  }
+  }[]
 }

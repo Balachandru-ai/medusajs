@@ -9,7 +9,6 @@ import React, {
   useRef,
 } from "react"
 import { BadgeProps, Modal, Search, SearchProps } from "@/components"
-import { checkArraySameElms } from "../../utils"
 import {
   liteClient as algoliasearch,
   LiteClient as SearchClient,
@@ -30,20 +29,21 @@ export type SearchCommand = {
 export type SearchContextType = {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  defaultFilters: string[]
-  setDefaultFilters: (value: string[]) => void
   searchClient: SearchClient
   commands: SearchCommand[]
   command: SearchCommand | null
   setCommand: React.Dispatch<React.SetStateAction<SearchCommand | null>>
   setCommands: React.Dispatch<React.SetStateAction<SearchCommand[]>>
-  modalRef: React.MutableRefObject<HTMLDialogElement | null>
+  modalRef: React.RefObject<HTMLDialogElement | null>
+  indices: AlgoliaIndex[]
+  selectedIndex: string
+  setSelectedIndex: (value: string) => void
 }
 
 const SearchContext = createContext<SearchContextType | null>(null)
 
 export type AlgoliaIndex = {
-  name: string
+  value: string
   title: string
 }
 
@@ -51,12 +51,12 @@ export type AlgoliaProps = {
   appId: string
   apiKey: string
   mainIndexName: string
-  indices: AlgoliaIndex[]
 }
 
 export type SearchProviderProps = {
   children: React.ReactNode
-  initialDefaultFilters?: string[]
+  indices: AlgoliaIndex[]
+  defaultIndex: string
   algolia: AlgoliaProps
   searchProps: Omit<SearchProps, "algolia">
   commands?: SearchCommand[]
@@ -65,16 +65,16 @@ export type SearchProviderProps = {
 
 export const SearchProvider = ({
   children,
-  initialDefaultFilters = [],
+  defaultIndex: initialDefaultIndex,
   searchProps,
   algolia,
   commands: initialCommands = [],
   modalClassName,
+  indices,
 }: SearchProviderProps) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [defaultFilters, setDefaultFilters] = useState<string[]>(
-    initialDefaultFilters
-  )
+  const [selectedIndex, setSelectedIndex] =
+    useState<string>(initialDefaultIndex)
   const [commands, setCommands] = useState<SearchCommand[]>(initialCommands)
   const [command, setCommand] = useState<SearchCommand | null>(null)
 
@@ -88,13 +88,10 @@ export const SearchProvider = ({
   }, [algolia.appId, algolia.apiKey])
 
   useEffect(() => {
-    if (
-      initialDefaultFilters.length &&
-      !checkArraySameElms(defaultFilters, initialDefaultFilters)
-    ) {
-      setDefaultFilters(initialDefaultFilters)
+    if (initialDefaultIndex !== selectedIndex) {
+      setSelectedIndex(initialDefaultIndex)
     }
-  }, [initialDefaultFilters])
+  }, [initialDefaultIndex])
 
   const componentWrapperRef = useRef(null)
 
@@ -107,14 +104,15 @@ export const SearchProvider = ({
       value={{
         isOpen,
         setIsOpen,
-        defaultFilters,
-        setDefaultFilters,
         searchClient,
         commands,
         command,
         setCommand,
         modalRef,
         setCommands,
+        indices,
+        selectedIndex,
+        setSelectedIndex,
       }}
     >
       {children}

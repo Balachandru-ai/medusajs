@@ -20,6 +20,8 @@ swap:
   "Next.js starter storefront": "Next.js Starter Storefront"
   "Next.js storefront": "Next.js Starter Storefront"
   "Next.js Storefront": "Next.js Starter Storefront"
+  "Medusa Cloud": "Cloud"
+  " cloud ": " Cloud "
 exceptions:
   - 'storefront framework'
   - 'Storefront Framework'

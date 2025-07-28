@@ -1,3 +1,10 @@
+---
+products:
+  - product
+  - customer
+  - order
+---
+
 import { AcademicCapSolid, BoltSolid } from "@medusajs/icons"
 
 export const metadata = {
@@ -64,7 +71,7 @@ This approach allows you to interact with the third-party service within custom 
 
 You can also automate sending notifications to customers when changes happen related to their orders, returns, exchanges, and more.
 
-Medusa's Notification Module allows you to send notifications when an event is triggered, such as when a customer's order is updated. You can use third-party services, like [SendGrid](../../infrastructure-modules/notification/sendgrid), to send emails to customers.
+Medusa's Notification Module allows you to send notifications when an event is triggered, such as when a customer's order is updated. You can use third-party services, like [SendGrid](../../infrastructure-modules/notification/sendgrid/page.mdx), to send emails to customers.
 
 <CardList items={[
   {
@@ -156,7 +163,7 @@ Medusa's commerce features are geared towards automating RMA flows and ensuring 
 
 <CardList items={[
   {
-    href: "/commerce-modules/orders",
+    href: "/commerce-modules/order",
     title: "Order Module",
     text: "Learn about the Order Module and its features.",
     icon: AcademicCapSolid,

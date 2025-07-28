@@ -1206,7 +1206,7 @@ function buildSchemaFromFilterableLinks(
         })
         .join("\n")
 
-      return `type ${entity} ${events} {
+      return `extend type ${entity} ${events} {
 ${fieldDefinitions}
 }`
     })
@@ -1253,7 +1253,10 @@ export function buildSchemaObjectRepresentation(schema: string): {
   } as IndexTypes.SchemaObjectRepresentation
 
   Object.entries(entitiesMap).forEach(([entityName, entityMapValue]) => {
-    if (!entityMapValue.astNode) {
+    if (
+      !entityMapValue.astNode ||
+      entityMapValue.astNode.kind === GraphQLUtils.Kind.SCALAR_TYPE_DEFINITION
+    ) {
       return
     }
 

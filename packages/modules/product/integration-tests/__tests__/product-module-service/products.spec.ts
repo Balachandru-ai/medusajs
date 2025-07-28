@@ -1277,9 +1277,14 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           await service.softDeleteProducts([products[0].id])
 
-          const softDeleted = await service.listProducts({
-            deleted_at: { $gt: "01-01-2022" },
-          })
+          const softDeleted = await service.listProducts(
+            {
+              deleted_at: { $gt: "01-01-2022" },
+            },
+            {
+              withDeleted: true,
+            }
+          )
 
           expect(softDeleted).toHaveLength(1)
         })

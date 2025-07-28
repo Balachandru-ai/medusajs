@@ -42,6 +42,7 @@
  *   - original_shipping_total
  *   - original_shipping_subtotal
  *   - original_shipping_tax_total
+ *   - credit_line_total
  * properties:
  *   payment_collections:
  *     type: array
@@ -249,6 +250,10 @@
  *     description: The order's credit lines.
  *     items:
  *       $ref: "#/components/schemas/OrderCreditLine"
+ *   credit_line_total:
+ *     type: number
+ *     title: credit_line_total
+ *     description: The order's credit line total.
  * 
 */
 

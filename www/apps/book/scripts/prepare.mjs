@@ -284,6 +284,9 @@ async function main() {
         },
         allowedFilesPatterns: [/^(?!.*\/(colors|icons|hooks)\/).*$/],
       },
+      {
+        dir: path.join(process.cwd(), "..", "resources", "app", "recipes"),
+      },
     ],
   })
 }

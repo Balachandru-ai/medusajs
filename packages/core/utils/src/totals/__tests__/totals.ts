@@ -557,6 +557,96 @@ describe("Total calculation", function () {
     })
   })
 
+  it("should calculate tax inclusive carts with items + taxes with tax inclusive adjustments", function () {
+    /**
+     * TAX INCLUSIVE CART
+     *
+     * Total price -> 120 tax inclusive
+     * Fixed discount -> 10 tax inclusive
+     * Tax rate -> 20%
+     */
+
+    const cart = {
+      items: [
+        {
+          unit_price: 60,
+          quantity: 2,
+          is_tax_inclusive: true,
+          adjustments: [
+            {
+              amount: 10,
+              is_tax_inclusive: true,
+            },
+          ],
+          tax_lines: [
+            {
+              rate: 20,
+            },
+          ],
+        },
+      ],
+    }
+
+    const serialized = JSON.parse(JSON.stringify(decorateCartTotals(cart)))
+
+    expect(serialized).toEqual({
+      items: [
+        {
+          unit_price: 60,
+          quantity: 2,
+          subtotal: 100,
+          tax_total: 18.333333333333332,
+          total: 110,
+          is_tax_inclusive: true,
+
+          original_total: 120,
+          original_tax_total: 20,
+
+          discount_subtotal: 8.333333333333334,
+          discount_tax_total: 1.6666666666666667,
+          discount_total: 10,
+
+          tax_lines: [
+            {
+              rate: 20,
+              total: 18.333333333333332,
+              subtotal: 20,
+            },
+          ],
+          adjustments: [
+            {
+              is_tax_inclusive: true,
+              amount: 10, // <- amount is tax inclusive so it's equal to total
+              subtotal: 8.333333333333334,
+              total: 10,
+            },
+          ],
+        },
+      ],
+      subtotal: 100,
+      tax_total: 18.333333333333332,
+      total: 110, // total is 120 - 10 tax inclusive discount
+
+      original_item_subtotal: 100,
+      original_item_tax_total: 20,
+      original_item_total: 120,
+      original_tax_total: 20,
+      original_total: 120,
+
+      discount_subtotal: 8.333333333333334,
+      discount_tax_total: 1.6666666666666667,
+      discount_total: 10,
+
+      item_subtotal: 100,
+      item_tax_total: 18.333333333333332,
+      item_total: 110,
+
+      credit_line_subtotal: 0,
+      credit_line_tax_total: 0,
+      credit_line_total: 0,
+    })
+  })
+
   it("should calculate carts with items + taxes + adjustments + shipping methods", function () {
     const cart = {
       items: [

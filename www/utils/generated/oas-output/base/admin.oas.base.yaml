@@ -159,6 +159,22 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/item-fulfillment
     x-associatedSchema:
       $ref: "#/components/schemas/AdminFulfillment"
+  - name: Gift Cards
+    description: >
+      A gift card is a prepaid card that can be used to pay for items during checkout.
+
+      Gift cards can be purchased by customers, or created by admin users. When a gift card is redeemed, its amount
+      is added to the customer's store credit account, which can then be used to pay for items during checkout.
+
+      These API routes allow admin users to manage gift cards, transfer gift cards between customers, and more.
+
+      <Note>
+
+      Gift Card routes are only available for Cloud users using the [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: "#/components/schemas/AdminGiftCard"
   - name: Inventory Items
     description: |
       An inventory item is a stock-kept product whose inventory is managed.
@@ -502,6 +518,22 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/stock-location/concepts
     x-associatedSchema:
       $ref: "#/components/schemas/AdminStockLocation"
+  - name: Store Credit Accounts
+    description: >
+      A store credit account is a ledger of store credit transactions for a customer. They hold the customer's store credit balance, 
+      including their credit and debit amounts.
+
+      Store credit accounts allow you to build features that let customers pay for items using their store credit balance, such as gift cards or loyalty points.
+
+      These API routes allow admin users to manage store credit accounts, their transactions, and more.
+
+      <Note>
+
+      Store Credit Account routes are only available for Cloud users using the [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: "#/components/schemas/AdminStoreCreditAccount"
   - name: Stores
     description: >
       A store holds the main configuration and information of your commerce
@@ -558,6 +590,20 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-region
     x-associatedSchema:
       $ref: "#/components/schemas/AdminTaxRegion"
+  - name: Transaction Groups
+    description: >
+      A transaction group is a group of transactions that belong to a store credit account.
+      It allows you to group transactions together, such as all transactions related to a specific gift card.
+
+      These API routes allow admin users to list transaction groups.
+
+      <Note>
+
+      Transaction Group routes are only available for Cloud users using the [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: "#/components/schemas/AdminTransactionGroup"
   - name: Uploads
     description: >
       Use these API routes to upload files to your Medusa application using the

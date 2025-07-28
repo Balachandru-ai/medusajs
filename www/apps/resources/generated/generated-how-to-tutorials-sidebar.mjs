@@ -146,6 +146,22 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Retrieve Cart Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Order Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Send Notification",
               "path": "https://docs.medusajs.com/resources/infrastructure-modules/notification/send-notification",
               "children": []
@@ -369,6 +385,24 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Add Gift Message",
+          "path": "/how-to-tutorials/tutorials/gift-message",
+          "description": "Learn how to add a gift option and message to items in the cart.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Analytics with Segment",
+          "path": "/integrations/guides/segment",
+          "description": "Learn how to integrate Segment with Medusa to track user interactions and events.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Bundled Products",
           "path": "/recipes/bundled-products/examples/standard",
@@ -430,6 +464,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "First-Purchase Discounts",
+          "path": "/how-to-tutorials/tutorials/first-purchase-discounts",
+          "description": "Learn how to implement first-purchase discounts in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Localization with Contentful",
           "path": "/integrations/guides/contentful",
@@ -457,10 +500,37 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "ref",
+          "title": "Newsletter with Mailchimp",
+          "path": "/integrations/guides/mailchimp",
+          "description": "Learn how to integrate Mailchimp with Medusa to manage and automate newsletters.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Personalized Products",
+          "path": "/recipes/personalized-products/example",
+          "description": "Learn how to implement personalized products in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "link",
           "title": "Phone Authentication",
           "path": "/how-to-tutorials/tutorials/phone-auth",
           "description": "Learn how to allow users to authenticate using their phone numbers.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Pre-Order Products",
+          "path": "/how-to-tutorials/tutorials/preorder",
+          "description": "Learn how to implement pre-order functionality for products in your Medusa store.",
           "children": []
         },
         {
@@ -528,8 +598,8 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
-          "title": "Medusa Cloud",
-          "path": "https://medusajs.com/pricing",
+          "title": "Cloud",
+          "path": "https://docs.medusajs.com/cloud",
           "children": []
         },
         {

@@ -116,7 +116,7 @@ export function createHook<Name extends string, TInvokeInput, TInvokeOutput>(
         stepName: name,
         input: hookInput,
         invokeFn,
-        compensateFn,
+        compensateFn: compensateFn ?? (() => void 0),
       })
 
       if (this.hooks_.registered.includes(name)) {

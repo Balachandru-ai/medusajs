@@ -1,33 +1,33 @@
 import React, { useEffect, useRef } from "react"
 import clsx from "clsx"
-import { useAiAssistantChat } from "../../../../providers/AiAssistant/Chat"
 import { ArrowUpCircleSolid } from "@medusajs/icons"
 import { useAiAssistant } from "../../../../providers"
+import { useChat } from "@kapaai/react-sdk"
+import { useAiAssistantChatNavigation } from "../../../../hooks"
 
-export const AiAssistantChatWindowInput = () => {
-  const {
-    inputRef,
-    question,
-    setQuestion,
-    handleSubmit: submitQuestion,
-    loading,
-    getThreadItems,
-  } = useAiAssistantChat()
-  const { chatOpened } = useAiAssistant()
+type AiAssistantChatWindowInputProps = {
+  chatWindowRef: React.RefObject<HTMLDivElement | null>
+}
+
+export const AiAssistantChatWindowInput = ({
+  chatWindowRef,
+}: AiAssistantChatWindowInputProps) => {
+  const { chatOpened, inputRef, loading } = useAiAssistant()
+  const { submitQuery, conversation } = useChat()
+  const [question, setQuestion] = React.useState("")
   const formRef = useRef<HTMLFormElement | null>(null)
 
   const onSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault()
-    submitQuestion()
+    submitQuery(question)
+    setQuestion("")
   }
 
   const handleKeyboardDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "ArrowUp" && !question) {
-      const lastQuestion = getThreadItems()
-        .reverse()
-        .find((item) => item.type === "question")
+      const lastQuestion = conversation.getLatest()?.question
       if (lastQuestion) {
-        setQuestion(lastQuestion.content)
+        setQuestion(lastQuestion)
       }
       return
     }
@@ -87,6 +87,16 @@ export const AiAssistantChatWindowInput = () => {
     }
   }, [chatOpened, inputRef.current])
 
+  useAiAssistantChatNavigation({
+    getChatWindowElm: () => chatWindowRef.current as HTMLElement | null,
+    getInputElm: () => inputRef.current as HTMLTextAreaElement | null,
+    focusInput: () =>
+      inputRef.current?.focus({
+        preventScroll: true,
+      }),
+    question,
+  })
+
   return (
     <div
       className={clsx(
@@ -103,7 +113,7 @@ export const AiAssistantChatWindowInput = () => {
             "appearance-none text-base md:text-small placeholder:text-medusa-fg-muted",
             "text-medusa-fg-base max-h-[210px] overflow-auto resize-none bg-transparent",
             "focus:outline-none focus:ring-0 disabled:cursor-not-allowed max-h-[210px]",
-            "disabled:!bg-transparent disabled:text-medusa-fg-disabled"
+            "disabled:!bg-transparent disabled:text-medusa-fg-disabled disabled:placeholder:text-medusa-fg-disabled"
           )}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}

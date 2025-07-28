@@ -588,10 +588,6 @@
  *       description: Filter the retrieved products' variants.
  *       x-schemaName: AdminProductVariantParams
  *       properties:
- *         q:
- *           type: string
- *           title: q
- *           description: Search term to apply on the variant's searchable properties.
  *         id:
  *           oneOf:
  *             - type: string
@@ -985,6 +981,39 @@
  *           items:
  *             type: object
  *           title: $or
+ *         ean:
+ *           oneOf:
+ *             - type: string
+ *               title: ean
+ *               description: The variant's ean.
+ *             - type: array
+ *               description: The variant's ean.
+ *               items:
+ *                 type: string
+ *                 title: ean
+ *                 description: The ean's details.
+ *         upc:
+ *           oneOf:
+ *             - type: string
+ *               title: upc
+ *               description: The variant's upc.
+ *             - type: array
+ *               description: The variant's upc.
+ *               items:
+ *                 type: string
+ *                 title: upc
+ *                 description: The upc's details.
+ *         barcode:
+ *           oneOf:
+ *             - type: string
+ *               title: barcode
+ *               description: The variant's barcode.
+ *             - type: array
+ *               description: The variant's barcode.
+ *               items:
+ *                 type: string
+ *                 title: barcode
+ *                 description: The barcode's details.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

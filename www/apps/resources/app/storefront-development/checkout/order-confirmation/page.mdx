@@ -2,6 +2,8 @@
 tags:
   - order
   - storefront
+products:
+  - order
 ---
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
@@ -18,7 +20,7 @@ After the customer completes the checkout process and places an order, you can s
 
 ## Retrieve Order Details
 
-To show the order details, you need to retrieve the order by sending a request to the [Get an Order API route](!api!store#orders_getordersid).
+To show the order details, you need to retrieve the order by sending a request to the [Get an Order API route](!api!/store#orders_getordersid).
 
 You need the order's ID to retrieve the order. You can pass it from the [complete cart step](../complete-cart/page.mdx) or store it in the `localStorage`.
 
@@ -84,7 +86,7 @@ sdk.store.order.retrieve(orderId)
   </CodeTab>
 </CodeTabs>
 
-In the above example, you retrieve the order's details from the [Get an Order API route](!api!store#orders_getordersid). Then, in the React example, you show the order details like the order ID, order date, and customer email.
+In the above example, you retrieve the order's details from the [Get an Order API route](!api!/store#orders_getordersid). Then, in the React example, you show the order details like the order ID, order date, and customer email.
 
 The rest of this guide will expand on the React example to show more order details.
 

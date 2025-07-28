@@ -1148,6 +1148,11 @@ export interface OrderDTO {
   updated_at: string | Date
 
   /**
+   * When the order was deleted.
+   */
+  deleted_at?: string | Date
+
+  /**
    * The original item total of the order.
    */
   original_item_total: BigNumberValue
@@ -1221,6 +1226,11 @@ export interface OrderDTO {
    * The discount tax total of the order.
    */
   discount_tax_total: BigNumberValue
+
+  /**
+   * The credit line total of the order.
+   */
+  credit_line_total: BigNumberValue
 
   /**
    * The gift card total of the order.
@@ -1359,6 +1369,13 @@ export interface OrderDTO {
    * @ignore
    */
   raw_discount_tax_total: BigNumberRawValue
+
+  /**
+   * The raw credit line total of the order.
+   *
+   * @ignore
+   */
+  raw_credit_line_total: BigNumberRawValue
 
   /**
    * The raw gift card total of the order.

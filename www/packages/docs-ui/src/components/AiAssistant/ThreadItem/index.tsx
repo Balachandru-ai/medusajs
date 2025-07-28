@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import React from "react"
+import React, { useMemo } from "react"
 import {
   AiAssistantIcon,
   CodeMdx,
@@ -9,13 +9,22 @@ import {
   MDXComponents,
 } from "@/components"
 import { AiAssistantThreadItemActions } from "./Actions"
-import { AiAssistantThread } from "../../../providers/AiAssistant/Chat"
+import { AiAssistantThreadItem as AiAssistantThreadItemType } from "../../../providers"
+import { useChat } from "@kapaai/react-sdk"
 
 export type AiAssistantThreadItemProps = {
-  item: AiAssistantThread
+  item: AiAssistantThreadItemType
 }
 
 export const AiAssistantThreadItem = ({ item }: AiAssistantThreadItemProps) => {
+  const { error } = useChat()
+  const showLoading = useMemo(() => {
+    if (error?.length) {
+      return false
+    }
+
+    return !item.question_id && item.content.length === 0
+  }, [item, error])
   return (
     <div
       className={clsx(
@@ -84,15 +93,23 @@ export const AiAssistantThreadItem = ({ item }: AiAssistantThreadItemProps) => {
         )}
         {item.type === "answer" && (
           <div className="flex flex-col gap-docs_0.75">
-            {!item.question_id && item.content.length === 0 && <DotsLoading />}
+            {showLoading && <DotsLoading />}
             <MarkdownContent
               className="[&>*:last-child]:mb-0"
               components={{
                 ...MDXComponents,
                 code: (props: CodeMdxProps) => {
-                  return <CodeMdx {...props} noReport noAskAi />
+                  return (
+                    <CodeMdx
+                      {...props}
+                      noReport
+                      noAskAi
+                      wrapperClassName="mt-docs_1"
+                    />
+                  )
                 },
               }}
+              disallowedElements={["h1", "h2", "h3", "h4", "h5", "h6"]}
             >
               {item.content}
             </MarkdownContent>

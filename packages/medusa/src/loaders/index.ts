@@ -89,10 +89,10 @@ async function loadEntrypoints(
     return async () => {}
   }
 
-  const { shutdown } = await expressLoader({
-    app: expressApp,
-  })
-
+  /**
+   * The scope and the ip address must be fetched before we execute any other
+   * middleware
+   */
   expressApp.use((req: Request, res: Response, next: NextFunction) => {
     req.scope = container.createScope() as MedusaContainer
     req.requestId = (req.headers["x-request-id"] as string) ?? v4()
@@ -106,6 +106,10 @@ async function loadEntrypoints(
       ip_address: ipAddress,
     }
     next()
+  })
+
+  const { shutdown } = await expressLoader({
+    app: expressApp,
   })
 
   await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
@@ -129,7 +133,7 @@ export async function initializeContainer(
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
   })
 
-  pgConnectionLoader()
+  await pgConnectionLoader()
   return container
 }
 

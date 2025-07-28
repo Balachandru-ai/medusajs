@@ -21,7 +21,10 @@ function buildStepContext({
 
   stepArguments.context!.idempotencyKey = idempotencyKey
 
-  const flowMetadata = stepArguments.transaction.getFlow()?.metadata
+  const flow = stepArguments.transaction.getFlow()
+  const flowMetadata = flow?.metadata
+  const stepDefinition = stepArguments.step.definition
+
   const executionContext: StepExecutionContext = {
     workflowId: metadata.model_id,
     stepName: metadata.action,
@@ -36,6 +39,7 @@ function buildStepContext({
     preventReleaseEvents: flowMetadata?.preventReleaseEvents ?? false,
     transactionId: stepArguments.context!.transactionId,
     context: stepArguments.context!,
+    " stepDefinition": stepDefinition,
     " getStepResult"(
       stepId: string,
       action: "invoke" | "compensate" = "invoke"

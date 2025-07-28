@@ -116,56 +116,58 @@ export default async function () {
         "route.ts"
       )
 
-      // check if a route exists for the path
-      if (!existsSync(sourceFilePath)) {
-        // remove OAS file
-        rmSync(filePath, {
-          force: true,
-        })
-        return
-      }
-
-      // check if method exists in the file
-      let exists = false
-      const program = ts.createProgram([sourceFilePath], {})
-
-      const oasKindGenerator = new OasKindGenerator({
-        checker: program.getTypeChecker(),
-        generatorEventManager: new GeneratorEventManager(),
-        additionalOptions: {},
-      })
-      const sourceFile = program.getSourceFile(sourceFilePath)
-
-      if (!sourceFile) {
-        // remove file
-        rmSync(filePath, {
-          force: true,
-        })
-        return
-      }
-
-      const visitChildren = (node: ts.Node) => {
-        if (
-          !exists &&
-          oasKindGenerator.isAllowed(node) &&
-          oasKindGenerator.canDocumentNode(node) &&
-          oasKindGenerator.getHTTPMethodName(node) ===
-            matchOasPrefix.groups!.method
-        ) {
-          exists = true
-        } else if (!exists) {
-          ts.forEachChild(node, visitChildren)
+      if (!oas["x-ignoreCleanup"]) {
+        // check if a route exists for the path
+        if (!existsSync(sourceFilePath)) {
+          // remove OAS file
+          rmSync(filePath, {
+            force: true,
+          })
+          return
         }
-      }
 
-      ts.forEachChild(sourceFile, visitChildren)
+        // check if method exists in the file
+        let exists = false
+        const program = ts.createProgram([sourceFilePath], {})
 
-      if (!exists) {
-        // remove OAS file
-        rmSync(filePath, {
-          force: true,
+        const oasKindGenerator = new OasKindGenerator({
+          checker: program.getTypeChecker(),
+          generatorEventManager: new GeneratorEventManager(),
+          additionalOptions: {},
         })
-        return
+        const sourceFile = program.getSourceFile(sourceFilePath)
+
+        if (!sourceFile) {
+          // remove file
+          rmSync(filePath, {
+            force: true,
+          })
+          return
+        }
+
+        const visitChildren = (node: ts.Node) => {
+          if (
+            !exists &&
+            oasKindGenerator.isAllowed(node) &&
+            oasKindGenerator.canDocumentNode(node) &&
+            oasKindGenerator.getHTTPMethodName(node) ===
+              matchOasPrefix.groups!.method
+          ) {
+            exists = true
+          } else if (!exists) {
+            ts.forEachChild(node, visitChildren)
+          }
+        }
+
+        ts.forEachChild(sourceFile, visitChildren)
+
+        if (!exists) {
+          // remove OAS file
+          rmSync(filePath, {
+            force: true,
+          })
+          return
+        }
       }
 
       // collect tags

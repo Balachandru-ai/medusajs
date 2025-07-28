@@ -11,8 +11,11 @@ import {
   resolveAdmonitionsPlugin,
   crossProjectLinksPlugin,
   prerequisitesLinkFixerPlugin,
+  remarkAttachFrontmatterDataPlugin,
+  recmaInjectMdxDataPlugin,
 } from "remark-rehype-plugins"
 import bundleAnalyzer from "@next/bundle-analyzer"
+import withExtractedTableOfContents from "@stefanprobst/rehype-extract-toc"
 
 const withMDX = mdx({
   extension: /\.mdx?$/,
@@ -32,6 +35,13 @@ const withMDX = mdx({
             resources: {
               projectPath: path.resolve("..", "resources"),
               hasGeneratedSlugs: true,
+            },
+            api: {
+              projectPath: path.resolve("..", "api-reference"),
+              skipSlugValidation: true,
+            },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
             },
           },
         },
@@ -53,6 +63,9 @@ const withMDX = mdx({
             },
             api: {
               url: process.env.NEXT_PUBLIC_API_URL,
+            },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
             },
           },
           useBaseUrl:
@@ -88,12 +101,15 @@ const withMDX = mdx({
           checkLinksType: "value",
         },
       ],
+      [withExtractedTableOfContents],
     ],
     remarkPlugins: [
       [remarkFrontmatter],
       [remarkDirective],
       [resolveAdmonitionsPlugin],
+      [remarkAttachFrontmatterDataPlugin],
     ],
+    recmaPlugins: [[recmaInjectMdxDataPlugin]],
     jsx: true,
   },
 })

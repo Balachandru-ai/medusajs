@@ -5,8 +5,9 @@ const KEYS_THAT_ARE_NOT_RELATIONS = ["metadata"]
 
 export function getSelectsAndRelationsFromObjectArray(
   dataArray: object[],
-  options: { objectFields: string[] } = {
-    objectFields: [],
+  options?: {
+    objectFields?: string[]
+    requiredFields?: string[]
   },
   prefix?: string
 ): {
@@ -15,10 +16,11 @@ export function getSelectsAndRelationsFromObjectArray(
 } {
   const selects: string[] = []
   const relations: string[] = []
+  const { objectFields, requiredFields } = options ?? {}
 
   for (const data of dataArray) {
     for (const [key, value] of Object.entries(data)) {
-      if (isObject(value) && !options.objectFields.includes(key)) {
+      if (isObject(value) && !objectFields?.includes(key)) {
         const res = getSelectsAndRelationsFromObjectArray(
           [value],
           options,
@@ -48,7 +50,10 @@ export function getSelectsAndRelationsFromObjectArray(
     }
   }
 
-  const uniqueSelects: string[] = deduplicate(selects)
+  const uniqueSelects: string[] = deduplicate([
+    ...selects,
+    ...(requiredFields ?? []),
+  ])
   const uniqueRelations: string[] = deduplicate(relations)
 
   return {

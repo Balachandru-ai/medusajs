@@ -6,6 +6,7 @@ const eventsOptions: FormattingOptionsType = {
     frontmatterData: {
       slug: "/references/events",
       sidebar_label: "Events Reference",
+      generate_toc: true,
     },
     isEventsReference: true,
     reflectionTitle: {
@@ -22,6 +23,7 @@ const eventsOptions: FormattingOptionsType = {
     frontmatterData: {
       slug: "/references/{{alias-slug}}/events",
       sidebar_label: "Events Reference",
+      generate_toc: true,
     },
   },
 }

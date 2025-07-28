@@ -7,6 +7,9 @@ tags:
     - tutorial
     - name: product
       label: "Implement Bundled Products"
+products:
+  - cart
+  - product
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -38,7 +41,7 @@ By following this tutorial, you'll learn how to:
 - Customize the add-to-cart flow to support bundled products.
 - Customize the Next.js Starter Storefront to display bundled products.
 
-![Diagram illustrating the bundled products architecture](https://res.cloudinary.com/dza7lstvk/image/upload/v1745855513/Medusa%20Resources/bundled-products-overview_r5zejm.jpg)
+![Bundled products system architecture diagram showing the relationship between bundled products and individual products and variants](https://res.cloudinary.com/dza7lstvk/image/upload/v1745855513/Medusa%20Resources/bundled-products-overview_r5zejm.jpg)
 
 <CardList items={[
   {
@@ -619,7 +622,7 @@ export const createBundledProductWorkflowHighlights = [
   ["38", "createRemoteLinkStep", "Create a link between the bundle and the Medusa product."],
   ["47", "transform", "Prepare the data to create links between bundle items and Medusa products."],
   ["61", "createRemoteLinkStep", "Create the links between the bundle items and the Medusa products."],
-  ["67", "useQueryGraphStep", "Retrieve the created bundle and its items."],
+  ["66", "useQueryGraphStep", "Retrieve the created bundle and its items."],
 ]
 
 ```ts title="src/workflows/create-bundled-product.ts" highlights={createBundledProductWorkflowHighlights}
@@ -688,7 +691,6 @@ export const createBundledProductWorkflow = createWorkflow(
     })
 
     // retrieve bundled product with items
-    // @ts-ignore
     const { data } = useQueryGraphStep({
       entity: "bundle",
       fields: ["*", "items.*"],
@@ -1274,6 +1276,7 @@ const CreateBundledProduct = () => {
   ])
   // TODO fetch products
 }
+export default CreateBundledProduct
 ```
 
 You create a `CreateBundledProduct` component that defines the following state variables:
@@ -1291,7 +1294,7 @@ Next, you need to retrieve the list of products in Medusa to show them in a sele
 export const createBundledProductComponentHighlights2 = [
   ["1", "products", "The products to show in the selector."],
   ["2", "productsLimit", "The maximum number of products to retrieve."],
-  ["3", "currnetProductPage", "The current page of products retrieved from the server."],
+  ["3", "currentProductPage", "The current page of products retrieved from the server."],
   ["4", "productsCount", "The total number of products."],
   ["5", "hasNextPage", "Whether there are more products to load."],
   ["9", "useQuery", "Retrieve the products from the API route."],
@@ -1301,7 +1304,7 @@ export const createBundledProductComponentHighlights2 = [
 ```tsx title="src/admin/components/create-bundled-product.tsx" highlights={createBundledProductComponentHighlights2}
 const [products, setProducts] = useState<HttpTypes.AdminProduct[]>([])
 const productsLimit = 15
-const [currnetProductPage, setCurrentProductPage] = useState(0)
+const [currentProductPage, setCurrentProductPage] = useState(0)
 const [productsCount, setProductsCount] = useState(0)
 const hasNextPage = useMemo(() => {
   return productsCount ? productsCount > productsLimit : true
@@ -1313,7 +1316,7 @@ useQuery({
   queryFn: async () => {
     const { products, count } = await sdk.admin.product.list({
       limit: productsLimit,
-      offset: currnetProductPage * productsLimit,
+      offset: currentProductPage * productsLimit,
     })
     setProductsCount(count)
     setProducts((prev) => [...prev, ...products])
@@ -1326,7 +1329,7 @@ const fetchMoreProducts = () => {
   if (!hasNextPage) {
     return
   }
-  setCurrentProductPage(currnetProductPage + 1)
+  setCurrentProductPage(currentProductPage + 1)
 }
 
 // TODO add creation logic
@@ -1756,7 +1759,7 @@ The add-to-cart workflow for bundled products has the following steps:
         type: "step",
         description: "Add the items in the bundle to the cart.",
         depth: 1,
-        link: "/references/workflows/addToCartWorkflow"
+        link: "/references/medusa-workflows/addToCartWorkflow"
       },
       {
         name: "useQueryGraphStep",
@@ -1886,10 +1889,10 @@ You can now create the workflow with the custom add-to-cart logic.
 To create the workflow, create the file `src/workflows/add-bundle-to-cart.ts` with the following content:
 
 export const addBundleToCartWorkflowHighlights = [
-  ["29", "useQueryGraphStep", "Retrieve the bundle, its items, and their products and variants."],
-  ["45", "prepareBundleCartDataStep", "Validate and prepare the items to be added to the cart."],
-  ["51", "addToCartWorkflow", "Add the items in the bundle to the cart."],
-  ["59", "useQueryGraphStep", "Retrieve the updated cart."],
+  ["28", "useQueryGraphStep", "Retrieve the bundle, its items, and their products and variants."],
+  ["44", "prepareBundleCartDataStep", "Validate and prepare the items to be added to the cart."],
+  ["50", "addToCartWorkflow", "Add the items in the bundle to the cart."],
+  ["57", "useQueryGraphStep", "Retrieve the updated cart."],
 ]
 
 ```ts title="src/workflows/add-bundle-to-cart.ts" highlights={addBundleToCartWorkflowHighlights} collapsibleLines="1-14" expandButtonLabel="Show Imports"
@@ -1920,7 +1923,6 @@ type AddBundleToCartWorkflowInput = {
 export const addBundleToCartWorkflow = createWorkflow(
   "add-bundle-to-cart",
   ({ cart_id, bundle_id, quantity, items }: AddBundleToCartWorkflowInput) => {
-    // @ts-ignore
     const { data } = useQueryGraphStep({
       entity: "bundle",
       fields: [
@@ -1950,7 +1952,6 @@ export const addBundleToCartWorkflow = createWorkflow(
       },
     })
 
-    // @ts-ignore
     const { data: updatedCarts } = useQueryGraphStep({
       entity: "cart",
       filters: { id: cart_id },
@@ -2778,7 +2779,7 @@ The workflow has the following steps:
         type: "workflow",
         description: "Remove the items in the bundle from the cart.",
         depth: 1,
-        link: "/references/workflows/removeFromCartWorkflow"
+        link: "/references/medusa-workflows/deleteLineItemsWorkflow"
       },
       {
         name: "useQueryGraphStep",
@@ -2800,7 +2801,7 @@ export const removeBundleFromCartWorkflowHighlights = [
   ["19", "useQueryGraphStep", "Retrieve the details of the cart and its items."],
   ["33", "transform", "Prepare the IDs of the items to remove."],
   ["42", "deleteLineItemsWorkflow", "Remove the items in the bundle from the cart."],
-  ["51", "useQueryGraphStep", "Retrieve the updated cart."],
+  ["50", "useQueryGraphStep", "Retrieve the updated cart."],
 ]
 
 ```ts title="src/workflows/remove-bundle-from-cart.ts" collapsibleLines="1-10" expandButtonLabel="Show Imports" highlights={removeBundleFromCartWorkflowHighlights}
@@ -2853,7 +2854,6 @@ export const removeBundleFromCartWorkflow = createWorkflow(
     })
 
     // retrieve cart again
-    // @ts-ignore
     const { data: updatedCarts } = useQueryGraphStep({
       entity: "cart",
       fields: [

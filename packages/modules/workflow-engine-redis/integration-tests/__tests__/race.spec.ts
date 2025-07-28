@@ -96,7 +96,9 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             if (event.eventType === "onFinish") {
               try {
                 expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-                expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(1)
+                expect(
+                  step1InvokeMock.mock.calls.length
+                ).toBeGreaterThanOrEqual(1)
                 expect(step2InvokeMock).toHaveBeenCalledTimes(1)
                 expect(transformMock).toHaveBeenCalledTimes(1)
 

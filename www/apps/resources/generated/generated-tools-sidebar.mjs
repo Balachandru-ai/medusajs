@@ -781,7 +781,7 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "isPathHref": true,
                   "type": "link",
                   "path": "/nextjs-starter/guides/customize-stripe",
-                  "title": "Customize Stripe Integration",
+                  "title": "Use Stripe's Payment Element",
                   "children": []
                 },
                 {
@@ -803,6 +803,30 @@ const generatedgeneratedToolsSidebarSidebar = {
               "autogenerate_as_ref": true,
               "sort_sidebar": "alphabetize",
               "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Add Gift Message",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "First-Purchase Discount",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Pre-Orders",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder",
+                  "children": []
+                },
                 {
                   "loaded": true,
                   "isPathHref": true,

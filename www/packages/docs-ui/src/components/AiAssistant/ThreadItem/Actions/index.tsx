@@ -2,33 +2,29 @@ import React, { useState } from "react"
 import clsx from "clsx"
 import { Badge, Button, Link, type ButtonProps } from "@/components"
 import { ThumbDown, ThumbUp } from "@medusajs/icons"
-import { AiAssistantFeedbackType, useAiAssistant } from "@/providers"
-import { AiAssistantThread } from "../../../../providers/AiAssistant/Chat"
+import { AiAssistantThreadItem as AiAssistantThreadItemType } from "../../../../providers"
+import { Reaction, useChat } from "@kapaai/react-sdk"
 
 export type AiAssistantThreadItemActionsProps = {
-  item: AiAssistantThread
+  item: AiAssistantThreadItemType
 }
 
 export const AiAssistantThreadItemActions = ({
   item,
 }: AiAssistantThreadItemActionsProps) => {
-  const [feedback, setFeedback] = useState<AiAssistantFeedbackType | null>(null)
-  const { sendFeedback } = useAiAssistant()
+  const [feedback, setFeedback] = useState<Reaction | null>(null)
+  const { addFeedback } = useChat()
 
   const handleFeedback = async (
-    reaction: AiAssistantFeedbackType,
-    question_id?: string
+    reaction: Reaction,
+    question_id?: string | null
   ) => {
     try {
       if (!question_id || feedback) {
         return
       }
       setFeedback(reaction)
-      const response = await sendFeedback(question_id, reaction)
-
-      if (response.status !== 200) {
-        console.error("Error sending feedback:", response.status)
-      }
+      addFeedback(question_id, reaction)
     } catch (error) {
       console.error("Error sending feedback:", error)
     }

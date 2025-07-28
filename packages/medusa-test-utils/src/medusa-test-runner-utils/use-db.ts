@@ -15,7 +15,7 @@ export async function initDb() {
     "@medusajs/framework"
   )
 
-  const pgConnection = pgConnectionLoader()
+  const pgConnection = await pgConnectionLoader()
   await featureFlagsLoader()
 
   return pgConnection

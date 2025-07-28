@@ -96,6 +96,7 @@ export class MedusaProjectCreator
           factBoxOptions: this.factBoxOptions,
           verbose: this.options.verbose,
           processManager: this.processManager,
+          version: this.options.version,
         })
       }
     } catch (e) {
@@ -153,6 +154,8 @@ export class MedusaProjectCreator
         nextjsDirectory: this.nextjsDirectory,
         client: this.client,
         verbose: this.options.verbose,
+        packageManager: this.packageManager,
+        version: this.options.version,
       })
     } finally {
       await this.client?.end()
@@ -214,18 +217,19 @@ export class MedusaProjectCreator
   }
 
   protected showSuccessMessage(): void {
+    const commandStr = this.packageManager.getCommandStr(`dev`)
     logMessage({
       message: boxen(
         chalk.green(
           `Change to the \`${
             this.projectName
-          }\` directory to explore your Medusa project.${EOL}${EOL}Start your Medusa application again with the following command:${EOL}${EOL}yarn dev${EOL}${EOL}${
+          }\` directory to explore your Medusa project.${EOL}${EOL}Start your Medusa application again with the following command:${EOL}${EOL}${commandStr}${EOL}${EOL}${
             this.inviteToken
               ? `After you start the Medusa application, you can create an admin user with the URL http://localhost:9000/app/invite?token=${this.inviteToken}&first_run=true${EOL}${EOL}`
               : ""
           }${
             this.nextjsDirectory?.length
-              ? `The Next.js Starter Storefront was installed in the \`${this.nextjsDirectory}\` directory. Change to that directory and start it with the following command:${EOL}${EOL}npm run dev${EOL}${EOL}`
+              ? `The Next.js Starter Storefront was installed in the \`${this.nextjsDirectory}\` directory. Change to that directory and start it with the following command:${EOL}${EOL}${commandStr}${EOL}${EOL}`
               : ""
           }Check out the Medusa documentation to start your development:${EOL}${EOL}https://docs.medusajs.com/${EOL}${EOL}Star us on GitHub if you like what we're building:${EOL}${EOL}https://github.com/medusajs/medusa/stargazers`
         ),

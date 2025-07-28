@@ -20,10 +20,10 @@ export const normalizeCsvStep = createStep(
   normalizeCsvStepId,
   async (fileContent: NormalizeProductCsvStepInput) => {
     const csvProducts =
-      convertCsvToJson<ConstructorParameters<typeof CSVNormalizer>[0][0]>(
-        fileContent
-      )
-    const normalizer = new CSVNormalizer(csvProducts)
+      convertCsvToJson<Record<string, number | string | boolean>>(fileContent)
+    const normalizer = new CSVNormalizer(
+      csvProducts.map((row, index) => CSVNormalizer.preProcess(row, index + 1))
+    )
     const products = normalizer.proccess()
 
     const create = Object.keys(products.toCreate).reduce<

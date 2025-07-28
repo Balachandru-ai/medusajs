@@ -688,27 +688,30 @@ export interface FilterableProductProps
   /**
    * The status to filter products by
    */
-  status?: ProductStatus | ProductStatus[]
+  status?:
+    | ProductStatus
+    | ProductStatus[]
+    | OperatorMap<ProductStatus | ProductStatus[]>
   /**
    * The titles to filter products by.
    */
-  title?: string | string[]
+  title?: string | string[] | OperatorMap<string | string[]>
   /**
    * The handles to filter products by.
    */
-  handle?: string | string[]
+  handle?: string | string[] | OperatorMap<string | string[]>
   /**
    * The skus to filter products by.
    */
-  sku?: string | string[]
+  sku?: string | string[] | OperatorMap<string | string[]>
   /**
    * The IDs to filter products by.
    */
-  id?: string | string[]
+  id?: string | string[] | OperatorMap<string | string[]>
   /**
    * The external IDs to filter products by.
    */
-  external_id?: string | string[]
+  external_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filters only or excluding gift card products
    */
@@ -736,27 +739,27 @@ export interface FilterableProductProps
   /**
    * Filter a product by the ID of the associated type
    */
-  type_id?: string | string[]
+  type_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter a product by the IDs of their associated categories.
    */
-  categories?: { id: OperatorMap<string> } | { id: OperatorMap<string[]> }
+  categories?: { id: string | string[] | OperatorMap<string | string[]> }
   /**
    * Filters a product by the IDs of their associated collections.
    */
-  collection_id?: string | string[] | OperatorMap<string>
+  collection_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filters a product based on when it was created
    */
-  created_at?: OperatorMap<string>
+  created_at?: string | OperatorMap<string>
   /**
    * Filters a product based on when it was updated
    */
-  updated_at?: OperatorMap<string>
+  updated_at?: string | OperatorMap<string>
   /**
    * Filters soft-deleted products based on the date they were deleted at.
    */
-  deleted_at?: OperatorMap<string>
+  deleted_at?: string | OperatorMap<string>
 }
 
 /**

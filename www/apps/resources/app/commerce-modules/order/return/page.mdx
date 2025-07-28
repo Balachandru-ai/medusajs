@@ -26,7 +26,7 @@ Once the merchant receives the returned items, they mark the return as received.
 
 ## Returned Items
 
-The items to be returned are represented by the [ReturnItem data model](references/order/models/ReturnItem).
+The items to be returned are represented by the [ReturnItem data model](/references/order/models/ReturnItem).
 
 The `ReturnItem` model has two properties storing the item's quantity:
 
@@ -37,7 +37,7 @@ The `ReturnItem` model has two properties storing the item's quantity:
 
 ## Return Shipping Methods
 
-A return has shipping methods used to return the items to the merchant. The shipping methods are represented by the [OrderShippingMethod data model](references/order/models/OrderShippingMethod).
+A return has shipping methods used to return the items to the merchant. The shipping methods are represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
 
 In the Medusa application, the shipping method for a return is created only from a shipping option, provided by the Fulfillment Module, that has the rule `is_return` enabled.
 
@@ -47,7 +47,7 @@ In the Medusa application, the shipping method for a return is created only from
 
 The `refund_amount` property of the `Return` data model holds the amount a merchant must refund the customer.
 
-The [OrderTransaction data model](references/order/models/OrderTransaction) represents the refunds made for the return.
+The [OrderTransaction data model](/references/order/models/OrderTransaction) represents the refunds made for the return.
 
 ---
 

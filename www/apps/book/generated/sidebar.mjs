@@ -25,7 +25,18 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/installation",
             "title": "Installation",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/installation/docker",
+                "title": "Install with Docker",
+                "children": [],
+                "chapterTitle": "1.2.1. Install with Docker",
+                "number": "1.2.1."
+              }
+            ],
             "chapterTitle": "1.2. Installation",
             "number": "1.2."
           },
@@ -43,10 +54,10 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "Migrate from v1",
-            "path": "/learn/introduction/v1-migration",
+            "title": "AI Assistants and LLMs",
+            "path": "/learn/introduction/build-with-llms-ai",
             "children": [],
-            "chapterTitle": "1.4. Migrate from v1",
+            "chapterTitle": "1.4. AI Assistants and LLMs",
             "number": "1.4."
           }
         ],
@@ -425,11 +436,21 @@ export const generatedSidebars = [
                 "loaded": true,
                 "isPathHref": true,
                 "type": "link",
+                "path": "/learn/fundamentals/module-links/index-module",
+                "title": "Index Module",
+                "children": [],
+                "chapterTitle": "3.4.4. Index Module",
+                "number": "3.4.4."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
                 "path": "/learn/fundamentals/module-links/custom-columns",
                 "title": "Add Custom Columns",
                 "children": [],
-                "chapterTitle": "3.4.4. Add Custom Columns",
-                "number": "3.4.4."
+                "chapterTitle": "3.4.5. Add Custom Columns",
+                "number": "3.4.5."
               },
               {
                 "loaded": true,
@@ -438,8 +459,8 @@ export const generatedSidebars = [
                 "path": "/learn/fundamentals/module-links/read-only",
                 "title": "Read-Only Links",
                 "children": [],
-                "chapterTitle": "3.4.5. Read-Only Links",
-                "number": "3.4.5."
+                "chapterTitle": "3.4.6. Read-Only Links",
+                "number": "3.4.6."
               },
               {
                 "loaded": true,
@@ -448,8 +469,8 @@ export const generatedSidebars = [
                 "path": "/learn/fundamentals/module-links/query-context",
                 "title": "Query Context",
                 "children": [],
-                "chapterTitle": "3.4.6. Query Context",
-                "number": "3.4.6."
+                "chapterTitle": "3.4.7. Query Context",
+                "number": "3.4.7."
               }
             ],
             "chapterTitle": "3.4. Module Links",
@@ -911,6 +932,16 @@ export const generatedSidebars = [
             ],
             "chapterTitle": "3.11. Custom CLI Scripts",
             "number": "3.11."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/learn/fundamentals/generated-types",
+            "title": "Auto-Generated Types",
+            "children": [],
+            "chapterTitle": "3.12. Auto-Generated Types",
+            "number": "3.12."
           }
         ],
         "chapterTitle": "3. Framework",
@@ -1107,18 +1138,7 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/debugging-and-testing/testing-tools/modules-tests",
             "title": "Modules Tests",
-            "children": [
-              {
-                "loaded": true,
-                "isPathHref": true,
-                "type": "link",
-                "path": "/learn/debugging-and-testing/testing-tools/modules-tests/module-example",
-                "title": "Example",
-                "children": [],
-                "chapterTitle": "7.3.1. Example",
-                "number": "7.3.1."
-              }
-            ],
+            "children": [],
             "chapterTitle": "7.3. Modules Tests",
             "number": "7.3."
           },
@@ -1128,7 +1148,18 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/debugging-and-testing/instrumentation",
             "title": "Instrumentation",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "ref",
+                "path": "/resources/integrations/guides/sentry",
+                "title": "Guide: Sentry",
+                "children": [],
+                "chapterTitle": "7.4.1. Guide: Sentry",
+                "number": "7.4.1."
+              }
+            ],
             "chapterTitle": "7.4. Instrumentation",
             "number": "7.4."
           },

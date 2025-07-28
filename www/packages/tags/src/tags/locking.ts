@@ -40,10 +40,6 @@ export const locking = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderFulfillmentWorkflow"
   },
   {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
-  },
-  {
     "title": "createReservationsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/createReservationsStep"
   },

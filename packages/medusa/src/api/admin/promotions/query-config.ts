@@ -2,6 +2,7 @@ export const defaultAdminPromotionFields = [
   "id",
   "code",
   "is_automatic",
+  "is_tax_inclusive",
   "type",
   "status",
   "created_at",

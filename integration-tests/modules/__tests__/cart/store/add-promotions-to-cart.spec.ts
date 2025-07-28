@@ -162,6 +162,71 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should add line item adjustments only for discountable items", async () => {
+          const createdPromotion =
+            await promotionModuleService.createPromotions({
+              code: "PROMOTION_TEST",
+              type: PromotionType.STANDARD,
+              status: PromotionStatus.ACTIVE,
+              application_method: {
+                type: "fixed",
+                target_type: "items",
+                allocation: "across",
+                value: 1000,
+                apply_to_quantity: 1,
+                currency_code: "usd",
+              },
+            })
+
+          const cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            items: [
+              {
+                id: "item-1",
+                unit_price: 2000,
+                quantity: 1,
+                title: "Test item",
+                product_id: "prod_mat",
+              } as any,
+              {
+                id: "item-2",
+                unit_price: 1000,
+                quantity: 1,
+                title: "Test item",
+                product_id: "prod_tshirt",
+                is_discountable: false,
+              } as any,
+            ],
+          })
+
+          const created = await api.post(
+            `/store/carts/${cart.id}/promotions`,
+            { promo_codes: [createdPromotion.code] },
+            storeHeaders
+          )
+
+          expect(created.status).toEqual(200)
+          expect(created.data.cart).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  id: "item-1",
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: createdPromotion.code,
+                      amount: 1000,
+                    }),
+                  ]),
+                }),
+                expect.objectContaining({
+                  adjustments: [],
+                }),
+              ]),
+            })
+          )
+        })
+
         it("should add shipping method adjustments to a cart based on promotions", async () => {
           const [appliedPromotion] =
             await promotionModuleService.createPromotions([

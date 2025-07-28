@@ -115,31 +115,36 @@ class MyFileProviderService extends AbstractFileProviderService {
 
 ### delete
 
-This method deletes the file from storage. It's used when an admin user deletes a product image,
-or other custom file deletions.
+This method deletes one or more files from the storage. It's used when an admin user
+deletes a product image, or other custom file deletions.
 
 #### Example
 
 ```ts
 class MyFileProviderService extends AbstractFileProviderService {
   // ...
-  async delete(file: ProviderDeleteFileDTO): Promise<void> {
+  async delete(
+    files: FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]
+  ): Promise<void> {
     // TODO logic to remove the file from storage
     // Use the `file.fileKey` to delete the file, which is the identifier of the file
    // in the provider's storage.
     // for example:
-    this.client.delete(file.fileKey)
+    const fileArray = Array.isArray(files) ? files : [files]
+    for (const file of fileArray) {
+      this.client.delete(file.fileKey)
+    }
   }
 }
 ```
 
 #### Parameters
 
-<TypeList types={[{"name":"file","type":"[ProviderDeleteFileDTO](../../../types/FileTypes/interfaces/types.FileTypes.ProviderDeleteFileDTO/page.mdx)","description":"The details of the file to delete.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"fileKey","type":"`string`","description":"The file's key. When uploading a file, the\nreturned key is used here.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="delete"/>
+<TypeList types={[{"name":"files","type":"[ProviderDeleteFileDTO](../../../types/FileTypes/interfaces/types.FileTypes.ProviderDeleteFileDTO/page.mdx) \\| [ProviderDeleteFileDTO](../../../types/FileTypes/interfaces/types.FileTypes.ProviderDeleteFileDTO/page.mdx)[]","description":"The details of the files to delete.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"fileKey","type":"`string`","description":"The file's key. When uploading a file, the\nreturned key is used here.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="delete"/>
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;void&#62;","optional":false,"defaultValue":"","description":"Resolves when the file is deleted.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="delete"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;void&#62;","optional":false,"defaultValue":"","description":"Resolves when the files are deleted.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="delete"/>
 
 ### getAsBuffer
 

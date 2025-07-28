@@ -1,6 +1,12 @@
+import CustomerModule from "@medusajs/customer"
+import ProductModule from "@medusajs/product"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { RemoteQueryFunction } from "@medusajs/types"
-import { ContainerRegistrationKeys, defaultCurrencies } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  defaultCurrencies,
+  defineLink,
+} from "@medusajs/utils"
 import { setTimeout } from "timers/promises"
 import {
   adminHeaders,
@@ -26,6 +32,7 @@ async function populateData(api: any) {
       title: "Test Product",
       status: "published",
       description: "test-product-description",
+      origin_country: "USA",
       shipping_profile_id: shippingProfile.id,
       options: [{ title: "Denominations", values: ["100"] }],
       variants: [
@@ -82,6 +89,17 @@ async function populateData(api: any) {
 process.env.ENABLE_INDEX_MODULE = "true"
 
 medusaIntegrationTestRunner({
+  hooks: {
+    beforeServerStart: async () => {
+      const customer = CustomerModule.linkable.customer
+      const product = ProductModule.linkable.product
+
+      defineLink(customer, {
+        linkable: product,
+        filterable: ["origin_country"],
+      })
+    },
+  },
   testSuite: ({ getContainer, dbConnection, api, dbConfig }) => {
     let appContainer
 
@@ -416,6 +434,33 @@ medusaIntegrationTestRunner({
         )
 
         expect(resultset.data.length).toEqual(2)
+      })
+
+      it("should query by custom linkable field and default field using query.index", async () => {
+        await populateData(api)
+
+        const query = appContainer.resolve(
+          ContainerRegistrationKeys.QUERY
+        ) as RemoteQueryFunction
+
+        const resultset = await fetchAndRetry(
+          async () =>
+            await query.index({
+              entity: "product",
+              fields: ["id", "origin_country"],
+              filters: {
+                origin_country: ["USA"],
+              },
+            }),
+          ({ data }) => data.length > 0,
+          {
+            retries: 3,
+            waitSeconds: 3,
+          }
+        )
+
+        expect(resultset.data.length).toEqual(1)
+        expect(resultset.data[0].origin_country).toEqual("USA")
       })
     })
   },

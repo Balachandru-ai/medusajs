@@ -18,7 +18,7 @@ const s3ProviderService = fileModuleService.getProvider()
 
 #### Returns
 
-<TypeList types={[{"name":"upload","type":"(`file`: [ProviderUploadFileDTO](../types.FileTypes.ProviderUploadFileDTO/page.mdx)) => Promise&#60;[ProviderFileResultDTO](../types.FileTypes.ProviderFileResultDTO/page.mdx)&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"delete","type":"(`fileData`: [ProviderDeleteFileDTO](../types.FileTypes.ProviderDeleteFileDTO/page.mdx)) => Promise&#60;void&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getPresignedDownloadUrl","type":"(`fileData`: [ProviderGetFileDTO](../types.FileTypes.ProviderGetFileDTO/page.mdx)) => Promise&#60;string&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getDownloadStream","type":"(`fileData`: [ProviderGetFileDTO](../types.FileTypes.ProviderGetFileDTO/page.mdx)) => Promise&#60;Readable&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getAsBuffer","type":"(`fileData`: [ProviderGetFileDTO](../types.FileTypes.ProviderGetFileDTO/page.mdx)) => Promise&#60;Buffer&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getPresignedUploadUrl","type":"(`fileData`: [ProviderGetPresignedUploadUrlDTO](../types.FileTypes.ProviderGetPresignedUploadUrlDTO/page.mdx)) => Promise&#60;[ProviderFileResultDTO](../types.FileTypes.ProviderFileResultDTO/page.mdx)&#62;","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getProvider"/>
+<TypeList types={[{"name":"upload","type":"(`file`: [ProviderUploadFileDTO](../types.FileTypes.ProviderUploadFileDTO/page.mdx)) => Promise&#60;[ProviderFileResultDTO](../types.FileTypes.ProviderFileResultDTO/page.mdx)&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"delete","type":"(`fileData`: [ProviderDeleteFileDTO](../types.FileTypes.ProviderDeleteFileDTO/page.mdx) \\| [ProviderDeleteFileDTO](../types.FileTypes.ProviderDeleteFileDTO/page.mdx)[]) => Promise&#60;void&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getPresignedDownloadUrl","type":"(`fileData`: [ProviderGetFileDTO](../types.FileTypes.ProviderGetFileDTO/page.mdx)) => Promise&#60;string&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getDownloadStream","type":"(`fileData`: [ProviderGetFileDTO](../types.FileTypes.ProviderGetFileDTO/page.mdx)) => Promise&#60;Readable&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getAsBuffer","type":"(`fileData`: [ProviderGetFileDTO](../types.FileTypes.ProviderGetFileDTO/page.mdx)) => Promise&#60;Buffer&#62;","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"getPresignedUploadUrl","type":"(`fileData`: [ProviderGetPresignedUploadUrlDTO](../types.FileTypes.ProviderGetPresignedUploadUrlDTO/page.mdx)) => Promise&#60;[ProviderFileResultDTO](../types.FileTypes.ProviderFileResultDTO/page.mdx)&#62;","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getProvider"/>
 
 ### createFiles
 
@@ -168,12 +168,12 @@ const file = await fileModuleService.retrieveFile("file_123")
 
 ### listFiles
 
-This method is used to retrieve a file by ID, similarly to `retrieve`. It doesn't retrieve multiple files, but it's added to support retrieving files with [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query).
+This method is used to list files. It only supports filtering by ID.
 
 #### Example
 
 ```ts
-const files = await fileModuleService.listFiles({ id: "file_123" })
+const files = await fileModuleService.listFiles({ id: ["file_123", "file_456"] })
 ```
 
 #### Parameters
@@ -182,11 +182,11 @@ const files = await fileModuleService.listFiles({ id: "file_123" })
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[FileDTO](../types.FileTypes.FileDTO/page.mdx)[]&#62;","optional":false,"defaultValue":"","description":"The list of files. In this case, it will have at most one file.","expandable":false,"children":[{"name":"FileDTO[]","type":"[FileDTO](../types.FileTypes.FileDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the file. You can use this ID later to\nretrieve or delete the file.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"url","type":"`string`","description":"The URL of the file.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="listFiles"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[FileDTO](../types.FileTypes.FileDTO/page.mdx)[]&#62;","optional":false,"defaultValue":"","description":"The list of files.","expandable":false,"children":[{"name":"FileDTO[]","type":"[FileDTO](../types.FileTypes.FileDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the file. You can use this ID later to\nretrieve or delete the file.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"url","type":"`string`","description":"The URL of the file.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="listFiles"/>
 
 ### listAndCountFiles
 
-This method is used to retrieve a file by ID, similarly to `retrieve`. It doesn't retrieve multiple files, but it's added to support retrieving files with [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query).
+This method is used to list files and their count. It only supports filtering by ID.
 
 #### Example
 
@@ -200,7 +200,7 @@ const [files] = await fileModuleService.listAndCountFiles({ id: "file_123" })
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[[FileDTO](../types.FileTypes.FileDTO/page.mdx)[], number]&#62;","optional":false,"defaultValue":"","description":"The list of files and their count. In this case, it will have at most one file.","expandable":false,"children":[{"name":"FileDTO[]","type":"[FileDTO](../types.FileTypes.FileDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]},{"name":"number","type":"`number`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="listAndCountFiles"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[[FileDTO](../types.FileTypes.FileDTO/page.mdx)[], number]&#62;","optional":false,"defaultValue":"","description":"The list of files and their count.","expandable":false,"children":[{"name":"FileDTO[]","type":"[FileDTO](../types.FileTypes.FileDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]},{"name":"number","type":"`number`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="listAndCountFiles"/>
 
 ### getDownloadStream
 

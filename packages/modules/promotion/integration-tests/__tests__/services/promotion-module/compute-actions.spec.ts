@@ -189,12 +189,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 100,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 150,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
 
@@ -326,18 +328,21 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 50,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 30,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -434,12 +439,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 150,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -497,6 +504,7 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 500,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -624,12 +632,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 10,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 15,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -726,24 +736,28 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 30,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 45,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 10.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -813,12 +827,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMO_PERCENTAGE_1",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMO_PERCENTAGE_2",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -915,12 +931,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 150,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1103,12 +1121,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 100,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 300,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1177,12 +1197,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 100,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 300,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1278,24 +1300,28 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 12.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 37.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 7.5,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 22.5,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1391,12 +1417,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 150,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1574,12 +1602,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 20,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 60,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1648,12 +1678,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 20,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 60,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1748,24 +1780,28 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 5,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 15,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 4.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 13.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -1838,24 +1874,28 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 150,
                 code: "PROMO_PERCENTAGE_1",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_wool_tshirt",
                 amount: 50,
                 code: "PROMO_PERCENTAGE_1",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 75,
                 code: "PROMO_PERCENTAGE_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_wool_tshirt",
                 amount: 25,
                 code: "PROMO_PERCENTAGE_2",
+                is_tax_inclusive: false,
               },
             ])
 
@@ -1914,12 +1954,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 300,
                 code: "PROMO_PERCENTAGE_3",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_wool_tshirt",
                 amount: 100,
                 code: "PROMO_PERCENTAGE_3",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -2014,24 +2056,28 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 5,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 15,
                 code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 4.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_sweater",
                 amount: 13.5,
                 code: "PROMOTION_TEST_2",
+                is_tax_inclusive: false,
               },
             ])
           })
@@ -4174,12 +4220,14 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt",
               amount: 50,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_sweater",
               amount: 150,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
           ])
         })
@@ -4241,12 +4289,14 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt",
               amount: 50,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_sweater",
               amount: 150,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
           ])
         })
@@ -4329,24 +4379,28 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt",
               amount: 12.5,
               code: "PROMOTION_TEST_2",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_sweater",
               amount: 37.5,
               code: "PROMOTION_TEST_2",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt",
               amount: 7.5,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_sweater",
               amount: 22.5,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
           ])
         })
@@ -4429,12 +4483,14 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt",
               amount: 50,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_sweater",
               amount: 150,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
           ])
         })
@@ -4519,12 +4575,14 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt",
               amount: 100,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_sweater",
               amount: 150,
               code: "PROMOTION_TEST",
+              is_tax_inclusive: false,
             },
           ])
         })

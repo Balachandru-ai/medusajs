@@ -23,6 +23,7 @@ const notificationOptions: FormattingOptionsType = {
       member_declaration_title: false,
       reflection_typeParameters: false,
     },
+    maxLevel: 2,
     startSections: [
       `## Implementation Example
       

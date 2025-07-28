@@ -5,6 +5,9 @@ tags:
       label: "Implement Product Reviews"
     - server
     - tutorial
+products:
+  - product
+  - customer
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -502,7 +505,6 @@ export const createReviewWorkflow = createWorkflow(
   "create-review",
   (input: CreateReviewInput) => {
     // Check product exists
-    // @ts-ignore
     useQueryGraphStep({
       entity: "product",
       fields: ["id"],
@@ -517,7 +519,6 @@ export const createReviewWorkflow = createWorkflow(
     // Create the review
     const review = createReviewStep(input)
 
-    // @ts-ignore
     return new WorkflowResponse({
       review,
     })
@@ -536,7 +537,7 @@ In the workflow's constructor function, you:
 
 <Note title="Tip">
 
-`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), which allows you to retrieve data across modules. For example, in the above snippet you're retrieving the cart's promotions, which are managed in the [Promotion Module](../../../commerce-modules/promotion/page.mdx), by passing `promotions.code` to the `fields` array.
+`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), which allows you to retrieve data across modules. For example, in the above snippet you're retrieving the product, which is managed in the [Product Module](../../../commerce-modules/product/page.mdx), by passing `id` to the `fields` array.
 
 </Note>
 
@@ -1519,8 +1520,8 @@ export const GetStoreReviewsHighlights = [
   ["10", "GetStoreReviewsSchema", "Define the query parameters schema."],
   ["12", "GET", "Expose a GET API route."],
   ["26", "query.graph", "Retrieve reviews with pagination."],
-  ["31", "status", "Only retrieve approved reviews."],
-  ["41", "average_rating", "Retrieve the average rating of the product."],
+  ["30", "status", "Only retrieve approved reviews."],
+  ["40", "average_rating", "Retrieve the average rating of the product."],
 ]
 
 ```ts title="src/api/store/products/[id]/reviews/route.ts" highlights={GetStoreReviewsHighlights} collapsibleLines="1-9" expandButtonLabel="Show Imports"
@@ -1553,7 +1554,6 @@ export const GET = async (
     entity: "review",
     filters: {
       product_id: id,
-      // @ts-ignore
       status: "approved",
     },
     ...req.queryConfig,

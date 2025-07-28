@@ -51,12 +51,12 @@ import {
 } from "../utils/get-smallest-unit"
 
 type StripeIndeterminateState = {
-  indeterminate_due_to: string,
+  indeterminate_due_to: string
 }
 type StripeErrorData = Stripe.PaymentIntent | StripeIndeterminateState
 type HandledErrorType =
-  | { retry: true; }
-  | { retry: false; data: StripeErrorData };
+  | { retry: true }
+  | { retry: false; data: StripeErrorData }
 
 abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
   protected readonly options_: StripeOptions
@@ -105,8 +105,15 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
       (extra?.setup_future_usage as "off_session" | "on_session" | undefined) ??
       this.paymentIntentOptions.setup_future_usage
 
-    res.payment_method_types = this.paymentIntentOptions
-      .payment_method_types as string[]
+    res.payment_method_types =
+      (extra?.payment_method_types as string[]) ??
+      (this.paymentIntentOptions.payment_method_types as string[])
+
+    res.payment_method_data =
+      extra?.payment_method_data as Stripe.PaymentIntentCreateParams.PaymentMethodData
+
+    res.payment_method_options =
+      extra?.payment_method_options as Stripe.PaymentIntentCreateParams.PaymentMethodOptions
 
     res.automatic_payment_methods =
       (extra?.automatic_payment_methods as { enabled: true } | undefined) ??
@@ -125,7 +132,7 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
 
   handleStripeError(error: any): HandledErrorType {
     switch (error.type) {
-      case 'StripeCardError':
+      case "StripeCardError":
         // Stripe has created a payment intent but it failed
         // Extract and return paymentIntent object to be stored in payment_session
         // Allows for reference to the failed intent and potential webhook reconciliation
@@ -133,7 +140,7 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
         if (stripeError.payment_intent) {
           return {
             retry: false,
-            data: stripeError.payment_intent 
+            data: stripeError.payment_intent,
           }
         } else {
           throw this.buildError(
@@ -142,21 +149,21 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
           )
         }
 
-      case 'StripeConnectionError':
-      case 'StripeRateLimitError':
+      case "StripeConnectionError":
+      case "StripeRateLimitError":
         // Connection or rate limit errors indicate an uncertain result
         // Retry the operation
         return {
           retry: true,
         }
-      case 'StripeAPIError': {
+      case "StripeAPIError": {
         // API errors should be treated as indeterminate per Stripe documentation
         // Rely on webhooks rather than assuming failure
         return {
           retry: false,
           data: {
-            indeterminate_due_to: "stripe_api_error"
-          }
+            indeterminate_due_to: "stripe_api_error",
+          },
         }
       }
       default:
@@ -177,37 +184,41 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     currentAttempt: number = 1
   ): Promise<T | StripeErrorData> {
     try {
-      return await apiCall();
+      return await apiCall()
     } catch (error) {
       const handledError = this.handleStripeError(error)
 
       if (!handledError.retry) {
         // If retry is false, we know data exists per the type definition
-        return handledError.data;
+        return handledError.data
       }
 
-      if (
-        handledError.retry &&
-        currentAttempt <= maxRetries
-      ) {
+      if (handledError.retry && currentAttempt <= maxRetries) {
         // Logic for retrying
-        const delay = baseDelay * Math.pow(2, currentAttempt - 1) * (0.5 + Math.random() * 0.5);
-        await setTimeout(delay);
-        return this.executeWithRetry(apiCall, maxRetries, baseDelay, currentAttempt + 1);
+        const delay =
+          baseDelay *
+          Math.pow(2, currentAttempt - 1) *
+          (0.5 + Math.random() * 0.5)
+        await setTimeout(delay)
+        return this.executeWithRetry(
+          apiCall,
+          maxRetries,
+          baseDelay,
+          currentAttempt + 1
+        )
       }
-      // Retries are exhausted  
+      // Retries are exhausted
       throw this.buildError(
         "An error occurred in InitiatePayment during creation of stripe payment intent",
         error
-      ) 
+      )
     }
   }
 
-
-  async getPaymentStatus({
-    data,
-  }: GetPaymentStatusInput): Promise<GetPaymentStatusOutput> {
-    const id = data?.id as string
+  async getPaymentStatus(
+    input: GetPaymentStatusInput
+  ): Promise<GetPaymentStatusOutput> {
+    const id = input?.data?.id as string
     if (!id) {
       throw this.buildError(
         "No payment intent ID provided while getting payment status",
@@ -216,31 +227,9 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     }
 
     const paymentIntent = await this.stripe_.paymentIntents.retrieve(id)
-    const dataResponse = paymentIntent as unknown as Record<string, unknown>
+    const statusResponse = this.getStatus(paymentIntent)
 
-    switch (paymentIntent.status) {
-      case "requires_payment_method":
-        if (paymentIntent.last_payment_error) {
-          return { status: PaymentSessionStatus.ERROR, data: dataResponse }
-        }
-        return { status: PaymentSessionStatus.PENDING, data: dataResponse }
-      case "requires_confirmation":
-      case "processing":
-        return { status: PaymentSessionStatus.PENDING, data: dataResponse }
-      case "requires_action":
-        return {
-          status: PaymentSessionStatus.REQUIRES_MORE,
-          data: dataResponse,
-        }
-      case "canceled":
-        return { status: PaymentSessionStatus.CANCELED, data: dataResponse }
-      case "requires_capture":
-        return { status: PaymentSessionStatus.AUTHORIZED, data: dataResponse }
-      case "succeeded":
-        return { status: PaymentSessionStatus.CAPTURED, data: dataResponse }
-      default:
-        return { status: PaymentSessionStatus.PENDING, data: dataResponse }
-    }
+    return statusResponse as unknown as GetPaymentStatusOutput
   }
 
   async initiatePayment({
@@ -262,23 +251,24 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
       | string
       | undefined
 
-    const sessionData = await this.executeWithRetry<Stripe.PaymentIntent>(
-      () => this.stripe_.paymentIntents.create(intentRequest, {
+    const sessionData = await this.executeWithRetry<Stripe.PaymentIntent>(() =>
+      this.stripe_.paymentIntents.create(intentRequest, {
         idempotencyKey: context?.idempotency_key,
       })
     )
-    const isPaymentIntent = 'id' in sessionData;
+    const isPaymentIntent = "id" in sessionData
     return {
       id: isPaymentIntent ? sessionData.id : (data?.session_id as string),
-      data: sessionData as unknown as Record<string, unknown>,
+      ...(this.getStatus(
+        sessionData as unknown as Stripe.PaymentIntent
+      ) as unknown as Pick<InitiatePaymentOutput, "data" | "status">),
     }
   }
 
   async authorizePayment(
     input: AuthorizePaymentInput
   ): Promise<AuthorizePaymentOutput> {
-    const statusResponse = await this.getPaymentStatus(input)
-    return statusResponse
+    return this.getPaymentStatus(input)
   }
 
   async cancelPayment({
@@ -385,7 +375,9 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
   }: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     const amountNumeric = getSmallestUnit(amount, currency_code)
     if (isPresent(amount) && data?.amount === amountNumeric) {
-      return { data }
+      return this.getStatus(
+        data as unknown as Stripe.PaymentIntent
+      ) as unknown as UpdatePaymentOutput
     }
 
     try {
@@ -400,7 +392,9 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
         }
       )) as unknown as Record<string, unknown>
 
-      return { data: sessionData }
+      return this.getStatus(
+        sessionData as unknown as Stripe.PaymentIntent
+      ) as unknown as UpdatePaymentOutput
     } catch (e) {
       throw this.buildError("An error occurred in updatePayment", e)
     }
@@ -594,6 +588,35 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     return { id: resp.id, data: resp as unknown as Record<string, unknown> }
   }
 
+  private getStatus(paymentIntent: Stripe.PaymentIntent): {
+    data: Stripe.PaymentIntent
+    status: PaymentSessionStatus
+  } {
+    switch (paymentIntent.status) {
+      case "requires_payment_method":
+        if (paymentIntent.last_payment_error) {
+          return { status: PaymentSessionStatus.ERROR, data: paymentIntent }
+        }
+        return { status: PaymentSessionStatus.PENDING, data: paymentIntent }
+      case "requires_confirmation":
+      case "processing":
+        return { status: PaymentSessionStatus.PENDING, data: paymentIntent }
+      case "requires_action":
+        return {
+          status: PaymentSessionStatus.REQUIRES_MORE,
+          data: paymentIntent,
+        }
+      case "canceled":
+        return { status: PaymentSessionStatus.CANCELED, data: paymentIntent }
+      case "requires_capture":
+        return { status: PaymentSessionStatus.AUTHORIZED, data: paymentIntent }
+      case "succeeded":
+        return { status: PaymentSessionStatus.CAPTURED, data: paymentIntent }
+      default:
+        return { status: PaymentSessionStatus.PENDING, data: paymentIntent }
+    }
+  }
+
   async getWebhookActionAndData(
     webhookData: ProviderWebhookPayload["payload"]
   ): Promise<WebhookActionResult> {
@@ -643,6 +666,18 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
             session_id: intent.metadata.session_id,
             amount: getAmountFromSmallestUnit(
               intent.amount_capturable,
+              currency
+            ),
+          },
+        }
+      case "payment_intent.partially_funded":
+        return {
+          action: PaymentActions.REQUIRES_MORE,
+          data: {
+            session_id: intent.metadata.session_id,
+            amount: getAmountFromSmallestUnit(
+              intent.next_action?.display_bank_transfer_instructions
+                ?.amount_remaining ?? intent.amount,
               currency
             ),
           },

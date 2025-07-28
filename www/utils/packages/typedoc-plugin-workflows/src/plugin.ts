@@ -314,12 +314,6 @@ class WorkflowsPlugin {
               (tag) => tag.tagName.getText() === "ignore"
             )
           })
-        if (stepId === "beforePaymentAuthorization") {
-          console.log(
-            shouldIgnore,
-            ts.getJSDocCommentsAndTags(initializer.parent)
-          )
-        }
         if (!shouldIgnore) {
           const hookArgumetSymbol = this.getHookArgumentSymbol({
             argument: initializer.arguments[1],

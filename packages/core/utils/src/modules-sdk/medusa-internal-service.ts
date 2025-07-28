@@ -260,6 +260,13 @@ export function MedusaInternalService<
           | InferEntityType<TEntity>[]
       }
 
+      let shouldReturnArray = false
+      if (Array.isArray(input)) {
+        shouldReturnArray = true
+      } else if (isObject(input) && "selector" in input) {
+        shouldReturnArray = true
+      }
+
       const primaryKeys = AbstractService_.retrievePrimaryKeys(model)
       const inputArray = Array.isArray(input) ? input : [input]
 
@@ -352,7 +359,9 @@ export function MedusaInternalService<
       }
 
       if (!toUpdateData.length) {
-        return []
+        return (shouldReturnArray ? [] : void 0) as
+          | InferEntityType<TEntity>
+          | InferEntityType<TEntity>[]
       }
 
       // Manage metadata if needed
@@ -372,10 +381,12 @@ export function MedusaInternalService<
         }
       })
 
-      return await this[propertyRepositoryName].update(
+      const entities = await this[propertyRepositoryName].update(
         toUpdateData,
         sharedContext
       )
+
+      return shouldReturnArray ? entities : entities[0]
     }
 
     delete(idOrSelector: string, sharedContext?: Context): Promise<string[]>

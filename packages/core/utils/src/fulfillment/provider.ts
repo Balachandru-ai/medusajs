@@ -283,10 +283,10 @@ export class AbstractFulfillmentProviderService
    * class MyFulfillmentProviderService extends AbstractFulfillmentProviderService {
    *   // ...
    *   async createFulfillment(
-   *     data: any,
-   *     items: any,
-   *     order: any,
-   *     fulfillment: any
+   *     data: Record<string, unknown>,
+   *     items: Partial<Omit<FulfillmentItemDTO, "fulfillment">>[],
+   *     order: Partial<FulfillmentOrderDTO> | undefined,
+   *     fulfillment: Partial<Omit<FulfillmentDTO, "provider_id" | "data" | "items">>
    *   ): Promise<CreateFulfillmentResult> {
    *     // assuming the client creates a fulfillment
    *     // in the third-party service

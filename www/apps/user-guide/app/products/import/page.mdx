@@ -4,6 +4,8 @@ sidebar_label: "Import Products"
 tags:
     - user guide
     - product
+products:
+    - product
 ---
 
 import { ArrowDownTray, Trash, BellAlert, EllipsisHorizontal } from "@medusajs/icons"
@@ -90,14 +92,6 @@ The columns in the CSV file holds the details of the product variant and its ass
       <Table.Cell>The ID of a product category, where `*` is the number of the category, allowing you to add more than one category. For example, `Product Category 1`. </Table.Cell>
     </Table.Row>
     <Table.Row>
-      <Table.Cell>`Product Created At`</Table.Cell>
-      <Table.Cell>The date and time when the product was created.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Product Deleted At`</Table.Cell>
-      <Table.Cell>The date and time when the product was deleted.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>`Product Discountable`</Table.Cell>
       <Table.Cell>Whether the product can be discounted. Can be `true` or `false`.</Table.Cell>
     </Table.Row>
@@ -136,10 +130,6 @@ The columns in the CSV file holds the details of the product variant and its ass
     <Table.Row>
       <Table.Cell>`Product Sales Channel *`</Table.Cell>
       <Table.Cell>The ID of a sales channel the product is available in, where `*` is the sales channel's number, allowing you to add more than one sales channel. For example, `Product Sales Channel 1`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Product Updated At`</Table.Cell>
-      <Table.Cell>The date and time when the product was last updated.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>`Product Weight`</Table.Cell>
@@ -190,14 +180,6 @@ The columns in the CSV file holds the details of the product variant and its ass
       <Table.Cell>The barcode of the variant.</Table.Cell>
     </Table.Row>
     <Table.Row>
-      <Table.Cell>`Variant Created At`</Table.Cell>
-      <Table.Cell>The date and time when the variant was created.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Variant Deleted At`</Table.Cell>
-      <Table.Cell>The date and time when the variant was deleted.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>`Variant Height`</Table.Cell>
       <Table.Cell>The height of the variant.</Table.Cell>
     </Table.Row>
@@ -232,14 +214,6 @@ The columns in the CSV file holds the details of the product variant and its ass
     <Table.Row>
       <Table.Cell>`Variant Price [X] Y`</Table.Cell>
       <Table.Cell>The price of the variant in a region, where `X` is the region's name, and `Y` is the ISO currency code of the region. For example, `Variant Price Europe [EUR]`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Variant Product Id`</Table.Cell>
-      <Table.Cell>The ID of the product the variant belongs to.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Variant Updated At`</Table.Cell>
-      <Table.Cell>The date and time when the variant was last updated.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>`Variant Variant Rank`</Table.Cell>

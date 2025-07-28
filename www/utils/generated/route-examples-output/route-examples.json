@@ -167,6 +167,9 @@
   "POST /admin/draft-orders": {
     "js-sdk": "sdk.admin.draftOrder.create({\n  email: \"test@test.com\",\n  items: [\n    {\n      variant_id: \"variant_123\",\n      quantity: 1,\n    },\n  ],\n  region_id: \"region_123\",\n  sales_channel_id: \"sc_123\",\n})\n.then(({ draft_order }) => {\n  console.log(draft_order)\n})"
   },
+  "DELETE /admin/draft-orders/{id}": {
+    "js-sdk": "sdk.admin.draftOrder.delete(\"order_123\")\n.then(({ id, object, deleted }) => {\n  console.log(id, object, deleted)\n})"
+  },
   "POST /admin/draft-orders/{id}": {
     "js-sdk": "sdk.admin.draftOrder.update(\"order_123\", {\n  email: \"test@test.com\",\n})\n.then(({ draft_order }) => {\n  console.log(draft_order)\n})"
   },
@@ -368,8 +371,14 @@
   "GET /admin/orders": {
     "js-sdk": "sdk.admin.order.list()\n.then(({ orders, count, limit, offset }) => {\n  console.log(orders)\n})"
   },
+  "POST /admin/orders/{id}/archive": {
+    "js-sdk": "sdk.admin.order.archive(\"order_123\")\n.then(({ order }) => {\n  console.log(order)\n})"
+  },
   "POST /admin/orders/{id}/cancel": {
     "js-sdk": "sdk.admin.order.cancel(\"order_123\")\n.then(({ order }) => {\n  console.log(order)\n})"
+  },
+  "POST /admin/orders/{id}/complete": {
+    "js-sdk": "sdk.admin.order.complete(\"order_123\")\n.then(({ order }) => {\n  console.log(order)\n})"
   },
   "POST /admin/orders/{id}/transfer": {
     "js-sdk": "sdk.admin.order.requestTransfer(\"order_123\", {\n  customer_id: \"cus_123\",\n  internal_note: \"Internal note\",\n})\n.then(({ order }) => {\n  console.log(order)\n})"
@@ -491,7 +500,7 @@
   "POST /admin/products/imports": {
     "js-sdk": "sdk.admin.product.createImport({\n  file // uploaded File instance\n})\n.then(({ transaction_id }) => {\n  console.log(transaction_id)\n})"
   },
-  "POST /admin/products/import/{transactionid}/confirm": {
+  "POST /admin/products/imports/{transactionid}/confirm": {
     "js-sdk": "sdk.admin.product.confirmImport(\"transaction_123\")\n.then(() => {\n  console.log(\"Import confirmed\")\n})"
   },
   "POST /admin/products/export": {

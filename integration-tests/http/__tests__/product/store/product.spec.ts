@@ -788,31 +788,33 @@ medusaIntegrationTestRunner({
 
       // TODO: This doesn't work currently, but worked in v1
       it.skip("returns a list of ordered products by variants title DESC", async () => {
-        const response = await api.get(
-          "/store/products?order=-variants.title",
-          storeHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        expect(response.data.products).toEqual([
-          expect.objectContaining({ id: product3.id }),
-          expect.objectContaining({ id: product2.id }),
-          expect.objectContaining({ id: product.id }),
-        ])
       })
 
-      // TODO: This doesn't work currently, but worked in v1
-      it.skip("returns a list of ordered products by variants title ASC", async () => {
+      it("returns a list of ordered products by variant title ASC", async () => {
         const response = await api.get(
           "/store/products?order=variants.title",
           storeHeaders
         )
 
         expect(response.status).toEqual(200)
-        expect(response.data.products).toEqual([
-          expect.objectContaining({ id: product3.id }),
-          expect.objectContaining({ id: product2.id }),
-          expect.objectContaining({ id: product.id }),
+        expect(response.data.products.map((p) => p.id)).toEqual([
+          product.id,
+          product2.id,
+          product3.id,
+        ])
+      })
+
+      it("returns a list of ordered products by variant title DESC", async () => {
+        const response = await api.get(
+          "/store/products?order=-variants.title",
+          storeHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.products.map((p) => p.id)).toEqual([
+          product3.id,
+          product2.id,
+          product.id,
         ])
       })
 

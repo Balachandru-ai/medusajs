@@ -130,6 +130,29 @@ export const useActiveOnScroll = ({
         ? scrollableElement.scrollHeight / 2
         : 0
 
+    if (scrollableElement?.scrollTop === 0) {
+      // set the first heading as active if the scrollable element is at the top
+      setActiveItemId(
+        items.length && useDefaultIfNoActive ? items[0].heading.id : ""
+      )
+
+      return
+    } else if (
+      scrollableElement?.scrollTop + scrollableElement?.clientHeight >=
+      scrollableElement?.scrollHeight
+    ) {
+      // set the last heading as active if the scrollable element is at the bottom
+      let lastHeading = items[items.length - 1]
+      while (lastHeading?.children?.length) {
+        lastHeading = lastHeading.children[lastHeading.children.length - 1]
+      }
+      setActiveItemId(
+        lastHeading && useDefaultIfNoActive ? lastHeading.heading.id : ""
+      )
+
+      return
+    }
+
     headings?.forEach((heading) => {
       if (heading.id === hash) {
         selectedHeadingByHash = heading as HTMLHeadingElement

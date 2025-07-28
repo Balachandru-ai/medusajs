@@ -1,3 +1,10 @@
+---
+products:
+  - fulfillment
+  - inventory
+  - sales channel
+---
+
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
 export const metadata = {
@@ -41,7 +48,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [FulfillmentSet](/references/fulfillment/models/FulfillmentSet) in [Fulfillment Module](../../fulfillment/page.mdx)
       </Table.Cell>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation)
+        [StockLocation](/references/stock-location-next/models/StockLocation)
       </Table.Cell>
       <Table.Cell>
         Stored - many-to-one
@@ -55,7 +62,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [FulfillmentProvider](/references/fulfillment/models/FulfillmentProvider) in [Fulfillment Module](../../fulfillment/page.mdx)
       </Table.Cell>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation)
+        [StockLocation](/references/stock-location-next/models/StockLocation)
       </Table.Cell>
       <Table.Cell>
         Stored - many-to-many
@@ -66,10 +73,10 @@ Read-only links are used to query data across modules, but the relations aren't 
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        [InventoryLevel](/references/inventory/models/InventoryLevel) in [Inventory Module](../../inventory/page.mdx)
+        [InventoryLevel](/references/inventory-next/models/InventoryLevel) in [Inventory Module](../../inventory/page.mdx)
       </Table.Cell>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation)
+        [StockLocation](/references/stock-location-next/models/StockLocation)
       </Table.Cell>
       <Table.Cell>
         Read-only - has many
@@ -83,7 +90,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [SalesChannel](/references/sales-channel/models/SalesChannel) in [Sales Channel Module](../../sales-channel/page.mdx)
       </Table.Cell>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation)
+        [StockLocation](/references/stock-location-next/models/StockLocation)
       </Table.Cell>
       <Table.Cell>
         Stored - many-to-many

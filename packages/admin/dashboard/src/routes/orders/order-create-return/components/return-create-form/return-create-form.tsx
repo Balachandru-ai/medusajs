@@ -94,7 +94,13 @@ export const ReturnCreateForm = ({
    */
   const { setIsOpen } = useStackedModal()
   const [isShippingPriceEdit, setIsShippingPriceEdit] = useState(false)
-  const [customShippingAmount, setCustomShippingAmount] = useState(0)
+  const [customShippingAmount, setCustomShippingAmount] = useState<{
+    value: string
+    float: number | null
+  }>({
+    value: "0",
+    float: 0,
+  })
   const [inventoryMap, setInventoryMap] = useState<
     Record<string, InventoryLevelDTO[]>
   >({})
@@ -671,10 +677,7 @@ export const ReturnCreateForm = ({
                         if (actionId) {
                           updateReturnShipping({
                             actionId,
-                            custom_amount:
-                              typeof customShippingAmount === "string"
-                                ? null
-                                : customShippingAmount,
+                            custom_amount: customShippingAmount.float,
                           })
                         }
                         setIsShippingPriceEdit(false)
@@ -684,10 +687,13 @@ export const ReturnCreateForm = ({
                           .symbol_native
                       }
                       code={order.currency_code}
-                      onValueChange={(value) =>
-                        setCustomShippingAmount(value ? parseFloat(value) : "")
+                      onValueChange={(value, name, values) =>
+                        setCustomShippingAmount({
+                          value: values?.value || "",
+                          float: values?.float || null,
+                        })
                       }
-                      value={customShippingAmount}
+                      value={customShippingAmount.value}
                       disabled={showPlaceholder}
                     />
                   ) : (

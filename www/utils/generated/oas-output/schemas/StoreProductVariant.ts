@@ -130,10 +130,10 @@
  *   - deleted_at
  *   - sku
  *   - barcode
+ *   - manage_inventory
+ *   - allow_backorder
  *   - ean
  *   - upc
- *   - allow_backorder
- *   - manage_inventory
  * 
 */
 

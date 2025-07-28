@@ -33,10 +33,10 @@ export const updateDraftOrderActionShippingMethodWorkflowId =
 /**
  * This workflow updates a new shipping method that was added to a draft order edit. It's used by the
  * [Update New Shipping Method in Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethodsaction_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * updating a new shipping method in a draft order edit.
- * 
+ *
  * @example
  * const { result } = await updateDraftOrderActionShippingMethodWorkflow(container)
  * .run({
@@ -48,9 +48,9 @@ export const updateDraftOrderActionShippingMethodWorkflowId =
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update a new shipping method in a draft order edit.
  */
 export const updateDraftOrderActionShippingMethodWorkflow = createWorkflow(
@@ -142,19 +142,11 @@ export const updateDraftOrderActionShippingMethodWorkflow = createWorkflow(
       order,
     })
 
-    const appliedPromoCodes = transform(context, (context) => {
-      const promotionLink = (context as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      context,
+      (context) =>
+        (context as any).promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     when(
       appliedPromoCodes,

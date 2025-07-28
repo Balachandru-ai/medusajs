@@ -87,7 +87,7 @@ export const useSearchNavigation = ({
       if (isInput) {
         // go to the first data-hit item
         const nextItem = modalRef.current?.querySelector(
-          "[data-hit]"
+          "[data-index]:not(.hidden) [data-hit]"
         ) as HTMLElement
         nextItem?.focus()
       } else {

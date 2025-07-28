@@ -1252,6 +1252,60 @@ medusaIntegrationTestRunner({
             )
           })
 
+          it("should successfully complete cart with promotions", async () => {
+            const oldCart = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            createCartCreditLinesWorkflow.run({
+              input: [
+                {
+                  cart_id: oldCart.id,
+                  amount: oldCart.total,
+                  currency_code: "usd",
+                  reference: "test",
+                  reference_id: "test",
+                },
+              ],
+              container: appContainer,
+            })
+
+            const cartResponse = await api.post(
+              `/store/carts/${cart.id}/complete`,
+              {},
+              storeHeaders
+            )
+
+            const orderResponse = await api.get(
+              `/store/orders/${cartResponse.data.order.id}?fields=+promotions.*`,
+              storeHeaders
+            )
+
+            expect(cartResponse.status).toEqual(200)
+            expect(orderResponse.data.order).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: promotion.code,
+                  }),
+                ],
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    unit_price: 1500,
+                    compare_at_unit_price: null,
+                    quantity: 1,
+                    adjustments: expect.arrayContaining([
+                      expect.objectContaining({
+                        amount: 100,
+                        code: promotion.code,
+                      }),
+                    ]),
+                  }),
+                ]),
+              })
+            )
+          })
+
           it("should successfully complete cart without shipping for digital products", async () => {
             /**
              * Product has a shipping profile so cart item should not require shipping
@@ -2617,6 +2671,96 @@ medusaIntegrationTestRunner({
                 id: customer.id,
                 email: "tony@stark-industries.com",
               }),
+            })
+          )
+        })
+
+        it("should only apply promotion on discountable items", async () => {
+          const notDiscountableProduct = (
+            await api.post(
+              "/admin/products",
+              {
+                title: "Medusa T-Shirt not discountable",
+                handle: "t-shirt-not-discountable",
+                discountable: false,
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S",
+                    sku: "s-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 1000,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+
+                shipping_profile_id: shippingProfile.id,
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          const cartData = {
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+            region_id: region.id,
+            shipping_address: shippingAddressData,
+            items: [
+              { variant_id: product.variants[0].id, quantity: 1 },
+              {
+                variant_id: notDiscountableProduct.variants[0].id,
+                quantity: 1,
+              },
+            ],
+            promo_codes: [promotion.code],
+          }
+
+          const cart = (
+            await api.post(
+              `/store/carts?fields=+items.is_discountable,+items.total,+items.discount_total`,
+              cartData,
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(cart).toEqual(
+            expect.objectContaining({
+              discount_subtotal: 100,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  variant_id: product.variants[0].id,
+                  is_discountable: true,
+                  unit_price: 1500,
+                  total: 1395,
+                  discount_total: 100,
+                  adjustments: [
+                    expect.objectContaining({
+                      promotion_id: promotion.id,
+                      amount: 100,
+                    }),
+                  ],
+                }),
+                expect.objectContaining({
+                  variant_id: notDiscountableProduct.variants[0].id,
+                  is_discountable: false,
+                  total: 1000,
+                  unit_price: 1000,
+                  discount_total: 0,
+                  adjustments: [],
+                }),
+              ]),
             })
           )
         })

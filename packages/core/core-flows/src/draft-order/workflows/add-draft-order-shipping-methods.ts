@@ -48,10 +48,10 @@ export interface AddDraftOrderShippingMethodsWorkflowInput {
 /**
  * This workflow adds shipping methods to a draft order. It's used by the
  * [Add Shipping Method to Draft Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethods).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around adding shipping methods to
  * a draft order.
- * 
+ *
  * @example
  * const { result } = await addDraftOrderShippingMethodsWorkflow(container)
  * .run({
@@ -61,15 +61,19 @@ export interface AddDraftOrderShippingMethodsWorkflowInput {
  *     custom_amount: 10
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Add shipping methods to a draft order.
  */
 export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
   addDraftOrderShippingMethodsWorkflowId,
   function (input: WorkflowData<AddDraftOrderShippingMethodsWorkflowInput>) {
-    const order: OrderDTO = useRemoteQueryStep({
+    const order: OrderDTO & {
+      promotions: {
+        code: string
+      }[]
+    } = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
       variables: { id: input.order_id },
@@ -133,19 +137,10 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
       },
     })
 
-    const appliedPromoCodes = transform(order, (order) => {
-      const promotionLink = (order as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      order,
+      (order) => order.promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     // If any the order has any promo codes, then we need to refresh the adjustments.
     when(

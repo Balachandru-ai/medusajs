@@ -8,6 +8,7 @@ const Promotion = model
     id: model.id({ prefix: "promo" }).primaryKey(),
     code: model.text().searchable(),
     is_automatic: model.boolean().default(false),
+    is_tax_inclusive: model.boolean().default(false),
     type: model.enum(PromotionUtils.PromotionType).index("IDX_promotion_type"),
     status: model
       .enum(PromotionUtils.PromotionStatus)

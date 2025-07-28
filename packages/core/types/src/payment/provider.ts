@@ -190,7 +190,8 @@ export interface UpdateAccountHolderInput extends PaymentProviderInput {
 /**
  * The data to delete an account holder.
  */
-export interface DeleteAccountHolderInput extends Omit<PaymentProviderInput, "context"> {
+export interface DeleteAccountHolderInput
+  extends Omit<PaymentProviderInput, "context"> {
   /**
    * The context of deleting the account holder.
    */
@@ -237,6 +238,10 @@ export interface InitiatePaymentOutput extends PaymentProviderOutput {
    * The ID of the payment session in the payment provider.
    */
   id: string
+  /**
+   * The status of the payment session, which will be stored in the payment session's `status` field.
+   */
+  status?: PaymentSessionStatus
 }
 
 /**
@@ -252,7 +257,12 @@ export interface AuthorizePaymentOutput extends PaymentProviderOutput {
 /**
  * The result of updating a payment.
  */
-export interface UpdatePaymentOutput extends PaymentProviderOutput {}
+export interface UpdatePaymentOutput extends PaymentProviderOutput {
+  /**
+   * The status of the payment, which will be stored in the payment session's `status` field.
+   */
+  status?: PaymentSessionStatus
+}
 
 /**
  * The result of deleting a payment.
@@ -305,12 +315,15 @@ export interface DeleteAccountHolderOutput extends PaymentProviderOutput {}
 /**
  * The result of listing payment methods for an account holder in the third-party payment provider.
  */
-export interface ListPaymentMethodsOutput extends Array<PaymentProviderOutput & {
-  /**
-   * The ID of the payment method in the payment provider.
-   */
-  id: string
-}> {}
+export interface ListPaymentMethodsOutput
+  extends Array<
+    PaymentProviderOutput & {
+      /**
+       * The ID of the payment method in the payment provider.
+       */
+      id: string
+    }
+  > {}
 
 /**
  * The result of saving a payment method.

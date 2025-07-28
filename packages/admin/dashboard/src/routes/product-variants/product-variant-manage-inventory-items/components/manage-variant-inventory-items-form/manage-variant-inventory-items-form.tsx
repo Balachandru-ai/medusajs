@@ -3,7 +3,12 @@ import { XMarkMini } from "@medusajs/icons"
 import { AdminProductVariant, HttpTypes } from "@medusajs/types"
 import { Button, Heading, IconButton, Input, Label, toast } from "@medusajs/ui"
 import i18next from "i18next"
-import { useFieldArray, useForm, UseFormReturn } from "react-hook-form"
+import {
+  useFieldArray,
+  useForm,
+  UseFormReturn,
+  useWatch,
+} from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
@@ -68,6 +73,10 @@ type VariantInventoryItemRowProps = {
     inventory_item_id: string
     required_quantity: number
   }
+  isItemOptionDisabled: (
+    option: { value: string },
+    inventoryIndex: number
+  ) => boolean
   onRemove: () => void
 }
 
@@ -75,14 +84,21 @@ function VariantInventoryItemRow({
   form,
   inventoryIndex,
   inventoryItem,
+  isItemOptionDisabled,
   onRemove,
 }: VariantInventoryItemRowProps) {
   const { t } = useTranslation()
+
+  const selectedInventoryItemId = useWatch({
+    control: form.control,
+    name: `inventory.${inventoryIndex}.inventory_item_id`,
+  })
 
   const items = useComboboxData({
     queryKey: ["inventory_items"],
     defaultValueKey: "id",
     defaultValue: inventoryItem.inventory_item_id,
+    selectedValue: selectedInventoryItemId,
     queryFn: (params) => sdk.admin.inventoryItem.list(params),
     getOptions: (data) =>
       data.inventory_items.map((item) => ({
@@ -117,7 +133,10 @@ function VariantInventoryItemRow({
                 <Form.Control>
                   <Combobox
                     {...field}
-                    options={items.options}
+                    options={items.options.map((o) => ({
+                      ...o,
+                      disabled: isItemOptionDisabled(o, inventoryIndex),
+                    }))}
                     searchValue={items.searchValue}
                     onSearchValueChange={items.onSearchValueChange}
                     onBlur={() => items.onSearchValueChange("")}
@@ -208,6 +227,24 @@ export function ManageVariantInventoryItemsForm({
     name: `inventory`,
   })
 
+  const inventoryFormData = useWatch({
+    control: form.control,
+    name: `inventory`,
+  })
+
+  /**
+   * Will mark an option as disabled if another input already selected that option
+   */
+  const isItemOptionDisabled = (
+    option: { value: string },
+    inventoryIndex: number
+  ) => {
+    return !!inventoryFormData?.some(
+      (i, index) =>
+        index != inventoryIndex && i.inventory_item_id === option.value
+    )
+  }
+
   const hasKit = inventory.fields.length > 1
 
   const { mutateAsync, isPending } = useProductVariantsInventoryItemsBatch(
@@ -272,10 +309,7 @@ export function ManageVariantInventoryItemsForm({
 
   return (
     <RouteFocusModal.Form form={form}>
-      <KeyboundForm
-        className="flex h-full flex-col overflow-hidden"
-        onSubmit={handleSubmit}
-      >
+      <KeyboundForm className="flex h-full flex-col" onSubmit={handleSubmit}>
         <RouteFocusModal.Header>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
@@ -288,7 +322,7 @@ export function ManageVariantInventoryItemsForm({
             </Button>
           </div>
         </RouteFocusModal.Header>
-        <RouteFocusModal.Body className="flex justify-center">
+        <RouteFocusModal.Body className="flex justify-center overflow-auto">
           <div className="flex w-full flex-col gap-y-8 px-6 pt-12 md:w-[720px] md:pt-24">
             <Heading>
               {t(
@@ -298,7 +332,7 @@ export function ManageVariantInventoryItemsForm({
               )}
             </Heading>
 
-            <div className="grid gap-y-4">
+            <div className="grid gap-y-4 pb-8">
               <div className="flex items-start justify-between gap-x-4">
                 <div className="flex flex-col">
                   <Form.Label>{variant.title}</Form.Label>
@@ -330,6 +364,7 @@ export function ManageVariantInventoryItemsForm({
                   form={form}
                   inventoryIndex={inventoryIndex}
                   inventoryItem={inventoryItem}
+                  isItemOptionDisabled={isItemOptionDisabled}
                   onRemove={() => inventory.remove(inventoryIndex)}
                 />
               ))}

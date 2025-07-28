@@ -405,7 +405,10 @@ describe("joiner-config-builder", () => {
         ],
       })
 
-      const schemaExpected = `type FulfillmentSet {
+      const schemaExpected = `scalar DateTime
+      scalar JSON
+      directive @enumValue(value: String) on ENUM_VALUE
+      type FulfillmentSet {
             id: ID!
             created_at: DateTime!
             updated_at: DateTime!

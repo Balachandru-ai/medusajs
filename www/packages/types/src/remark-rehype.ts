@@ -1,4 +1,5 @@
 import { Node } from "unist-builder"
+import { SlugChange } from "./build-scripts.js"
 
 export interface UnistNode extends Node {
   type: string
@@ -104,6 +105,70 @@ export interface UnistTree extends Node {
   children: UnistNode[]
 }
 
+export interface UnistFunctionDeclarationNode extends UnistNode {
+  type: "FunctionDeclaration"
+  body: {
+    type: "BlockStatement"
+    body: UnistNode[]
+  }
+}
+
+export interface UnistReturnStatementNode extends UnistNode {
+  type: "ReturnStatement"
+  argument: UnistFragmentNode | UnistCallExpressionNode | UnistJSXElementNode
+}
+
+export interface UnistFragmentNode extends UnistNode {
+  type: "JSXFragment"
+  openingElement: {
+    type: "JSXOpeningFragment"
+  }
+  closingElement: {
+    type: "JSXClosingFragment"
+  }
+  children: UnistNode[]
+}
+
+export interface UnistCallExpressionNode extends UnistNode {
+  type: "CallExpression"
+  arguments: UnistNode[]
+}
+
+export interface UnistJSXElementNode extends UnistNode {
+  type: "JSXElement"
+  // TODO add correct type if necessary
+}
+
+export interface UnistImportDeclarationNode extends UnistNode {
+  type: "ImportDeclaration"
+  source: {
+    type: "Literal"
+    value: string
+  }
+  specifiers: {
+    type: "ImportSpecifier"
+    imported: {
+      type: "Identifier"
+      name: string
+    }
+    local: {
+      type: "Identifier"
+      name: string
+    }
+  }[]
+}
+
+export interface UnistProgram extends UnistNode {
+  type: "Program"
+  body: (
+    | UnistNode
+    | UnistFunctionDeclarationNode
+    | UnistImportDeclarationNode
+  )[]
+  sourceType: "module" | "script"
+  comments?: UnistNode[]
+}
+
 export declare type CloudinaryConfig = {
   cloudName?: string
   flags?: string[]
@@ -128,11 +193,21 @@ export declare type CrossProjectLinksOptions = {
 }
 
 export declare type BrokenLinkCheckerOptions = {
+  rootBasePath?: {
+    default: string
+    overrides?: {
+      [k: string]: string
+    }
+  }
+  hasGeneratedSlugs?: boolean
+  generatedSlugs?: SlugChange[]
   crossProjects: {
     [k: string]: {
       projectPath: string
       contentPath?: string
       hasGeneratedSlugs?: boolean
+      generatedSlugs?: SlugChange[]
+      skipSlugValidation?: boolean
     }
   }
 }

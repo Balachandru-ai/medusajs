@@ -65,6 +65,22 @@ tags:
       url: https://docs.medusajs.com/resources/storefront-development/customers
     x-associatedSchema:
       $ref: "#/components/schemas/StoreCustomer"
+  - name: Gift Cards
+    description: >
+      A gift card is a prepaid card that customers can use to purchase products
+      in the store.
+
+      Customers can purchase gift cards for themselves or others, and then use them to pay for their orders.
+
+      These API routes allow logged-in customers to create and manage their gift cards.
+
+      <Note>
+
+      Gift Cards are only available for Cloud users using the [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: "#/components/schemas/StoreGiftCard"
   - name: Orders
     description: |
       Guest and registered customers can view orders they placed.
@@ -142,6 +158,14 @@ tags:
       url: https://docs.medusajs.com/resources/storefront-development/regions
     x-associatedSchema:
       $ref: "#/components/schemas/StoreRegion"
+  - name: Return Reasons
+    description: >
+      A return reason is a possible reason a customer wants to return an item.
+
+
+      Use these API routes when implementing return creation flow in your storefront to allow customers to select their return reason.
+    x-associatedSchema:
+      $ref: "#/components/schemas/StoreReturnReason"
   - name: Returns
     description: >
       Customers can request to return items in their order. The admin user then
@@ -151,14 +175,6 @@ tags:
       These API routes allows customers to create a return.
     x-associatedSchema:
       $ref: "#/components/schemas/StoreReturn"
-  - name: Return Reasons
-    description: >
-      A return reason is a possible reason a customer wants to return an item.
-
-
-      Use these API routes when implementing return creation flow in your storefront to allow customers to select their return reason.
-    x-associatedSchema:
-      $ref: "#/components/schemas/StoreReturnReason"
   - name: Shipping Options
     description: >
       A shipping option is a way of shipping an item to or from the customer.
@@ -173,6 +189,20 @@ tags:
       url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping
     x-associatedSchema:
       $ref: "#/components/schemas/StoreShippingOption"
+  - name: Store Credit Accounts
+    x-associatedSchema:
+      description: >
+        A store credit account is a way for customers to manage their store credit balance.
+        Customers can use their store credit to pay for orders, and view their store credit balance.
+
+        These API routes allow customers to view their store credit accounts.
+
+        <Note>
+
+        Store Credit Accounts are only available for Cloud users using the [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+        </Note>
+      $ref: "#/components/schemas/StoreStoreCreditAccount"
 servers:
   - url: http://localhost:9000
   - url: https://api.medusajs.com

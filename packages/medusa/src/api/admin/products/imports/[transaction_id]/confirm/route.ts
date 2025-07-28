@@ -12,7 +12,7 @@ import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
- * @version 2.8.0
+ * @version 2.8.5
  */
 export const POST = async (
   req: AuthenticatedMedusaRequest,

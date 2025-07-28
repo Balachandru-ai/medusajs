@@ -247,7 +247,7 @@ export class S3FileService extends AbstractFileProviderService {
       )
     }
 
-    const fileKey = `${this.config_.prefix}${file.fileKey}`
+    const fileKey = file.fileKey
     const response = await this.client_.send(
       new GetObjectCommand({
         Key: fileKey,
@@ -266,7 +266,7 @@ export class S3FileService extends AbstractFileProviderService {
       )
     }
 
-    const fileKey = `${this.config_.prefix}${file.fileKey}`
+    const fileKey = file.fileKey
     const response = await this.client_.send(
       new GetObjectCommand({
         Key: fileKey,

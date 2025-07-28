@@ -1010,6 +1010,31 @@
     }
   },
   "orders": {
+    "giftCardsStoreCreditLines": "Gift cards & credit lines",
+    "creditLines": {
+      "title": "Credit lines",
+      "total": "Sum of all credit lines",
+      "creditOrDebit": "Credit / Debit",
+      "createCreditLine": "Create credit line",
+      "createCreditLineSuccess": "Credit line created successfully",
+      "createCreditLineError": "Error creating credit line",
+      "createCreditLineDescription": "Create a credit line for amount {{amount}}",
+      "operation": "Operation",
+      "credit": "Credit",
+      "creditDescription": "Adds a positive sum to the order",
+      "debit": "Debit",
+      "debitDescription": "Subtracts a negative sum from the order"
+    },
+    "balanceSettlement": {
+      "title": "Balance settlement",
+      "settlementType": "Settlement type",
+      "settlementTypes": {
+        "paymentMethod": "Payment method",
+        "paymentMethodDescription": "Refund amount to the payment method",
+        "creditLine": "Store credit",
+        "creditLineDescription": "Refund amount as store credit"
+      }
+    },
     "domain": "Orders",
     "claim": "Claim",
     "exchange": "Exchange",
@@ -1056,6 +1081,7 @@
       "title": "Payments",
       "isReadyToBeCaptured": "Payment <0/> is ready to be captured.",
       "totalPaidByCustomer": "Total paid by customer",
+      "totalStoreCreditRefunds": "Total store credit refunds",
       "capture": "Capture payment",
       "capture_short": "Capture",
       "refund": "Refund",
@@ -1969,6 +1995,7 @@
       "allocation": "Allocation",
       "addCondition": "Add condition",
       "clearAll": "Clear all",
+      "taxInclusive": "Tax Inclusive",
       "amount": {
         "tooltip": "Select the currency code to enable setting the amount"
       },
@@ -2044,6 +2071,10 @@
           "title": "Without Campaign",
           "description": "Proceed without associating promotion with campaign"
         }
+      },
+      "taxInclusive": {
+        "title": "Does promotion include taxes?",
+        "description": "Enable this field to apply the promotion after taxes"
       },
       "status": {
         "label": "Status",
@@ -2666,7 +2697,10 @@
         "placeholder": "wrong_size",
         "tooltip": "The value should be a unique identifier for the return reason."
       },
-      "label": { "label": "Label", "placeholder": "Wrong size" },
+      "label": {
+        "label": "Label",
+        "placeholder": "Wrong size"
+      },
       "description": {
         "label": "Description",
         "placeholder": "Customer received the wrong size"
@@ -2842,6 +2876,8 @@
   },
   "fields": {
     "amount": "Amount",
+    "reference": "Reference",
+    "reference_id": "Reference ID",
     "refundAmount": "Refund amount",
     "name": "Name",
     "default": "Default",
@@ -2927,7 +2963,8 @@
     "orders": "Orders",
     "account": "Account",
     "total": "Order Total",
-    "paidTotal": "Total captured",
+    "paidTotal": "Paid Total",
+    "creditTotal": "Credit Lines Total",
     "totalExclTax": "Total excl. tax",
     "subtotal": "Subtotal",
     "shipping": "Shipping",

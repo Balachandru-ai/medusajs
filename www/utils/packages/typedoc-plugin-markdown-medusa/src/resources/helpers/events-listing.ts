@@ -1,7 +1,6 @@
 import Handlebars from "handlebars"
 import pkg from "slugify"
 import { DeclarationReflection, ReflectionKind } from "typedoc"
-import { pascalToWords } from "utils"
 
 const slugify = pkg.default
 
@@ -35,16 +34,12 @@ export default function () {
       }
 
       if (this.kind === ReflectionKind.Module) {
-        this.children?.forEach((child, index) => {
-          const count = parseChildren(child.children || [])
-          if (count > 0 && index < this.children!.length - 1) {
-            content.push("")
-            content.push("---")
-            content.push("")
-          }
-        })
+        const sortedChildren = sortChildren(
+          this.children?.map((child) => child.children || []).flat() || []
+        )
+        parseChildren(sortedChildren)
       } else {
-        parseChildren(this.children || [])
+        parseChildren(sortChildren(this.children || []))
       }
 
       return content.join("\n")
@@ -67,9 +62,11 @@ function formatEventsType(
   }
   const content: string[] = []
   const subHeaderPrefix = "#".repeat(subtitleLevel)
-  const header = pascalToWords(
-    eventVariable.name.replaceAll("WorkflowEvents", "")
-  )
+  const header =
+    eventVariable.comment?.blockTags
+      .find((tag) => tag.tag === "@category")
+      ?.content.map((content) => content.text)
+      .join("") || ""
   if (showHeader) {
     content.push(`${"#".repeat(subtitleLevel - 1)} ${header} Events`)
   }
@@ -267,4 +264,10 @@ function getEventWorkflows(event: DeclarationReflection): string[] | undefined {
     ?.content.map((content) => content.text)
     .join("")
     .split(", ")
+}
+
+function sortChildren(ref: DeclarationReflection[]) {
+  return ref.sort((a, b) => {
+    return a.name.localeCompare(b.name)
+  })
 }

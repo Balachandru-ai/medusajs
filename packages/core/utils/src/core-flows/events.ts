@@ -814,3 +814,32 @@ export const FulfillmentWorkflowEvents = {
    */
   DELIVERY_CREATED: "delivery.created",
 }
+
+/**
+ * @category Payment
+ * @customNamespace Payment
+ */
+export const PaymentEvents = {
+  /**
+   * Emitted when a payment is captured.
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // the ID of the payment
+   * }
+   * ```
+   */
+  CAPTURED: "payment.captured",
+  /**
+   * Emitted when a payment is refunded.
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // the ID of the payment
+   * }
+   * ```
+   */
+  REFUNDED: "payment.refunded",
+}

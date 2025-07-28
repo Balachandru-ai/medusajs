@@ -4,7 +4,7 @@ import {
   WorkflowStepHandler,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
-import { isString, OrchestrationUtils } from "@medusajs/utils"
+import { isDefined, isString, OrchestrationUtils } from "@medusajs/utils"
 import { ulid } from "ulid"
 import { resolveValue, StepResponse } from "./helpers"
 import { createStepHandler } from "./helpers/create-step-handler"
@@ -143,9 +143,9 @@ export function applyStep<
 
     this.isAsync ||= !!(stepConfig.async || stepConfig.compensateAsync)
 
-    if (!this.handlers.has(stepName)) {
-      this.handlers.set(stepName, handler)
-    }
+    this.overriddenHandler.set(stepName, this.handlers.get(stepName)!)
+
+    this.handlers.set(stepName, handler)
 
     const ret = {
       __type: OrchestrationUtils.SymbolWorkflowStep,
@@ -173,7 +173,11 @@ export function applyStep<
         ...localConfig,
       }
 
-      delete localConfig.name
+      if (isDefined(newConfig.nested)) {
+        newConfig.nested ||= newConfig.async
+      }
+
+      delete newConfig.name
 
       const handler = createStepHandler.bind(this)({
         stepName: newStepName,
@@ -183,6 +187,9 @@ export function applyStep<
       })
 
       wrapAsyncHandler(newConfig, handler)
+
+      this.handlers.set(stepName, this.overriddenHandler.get(stepName)!)
+      this.overriddenHandler.delete(stepName)
 
       this.handlers.set(newStepName, handler)
 

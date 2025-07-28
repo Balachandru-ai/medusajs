@@ -30,6 +30,107 @@ medusaIntegrationTestRunner({
       ).data.shipping_profile
     })
 
+    describe("GET /admin/orders", () => {
+      beforeEach(async () => {
+        seeder = await createOrderSeeder({
+          api,
+          container: getContainer(),
+        })
+        order = seeder.order
+      })
+
+      it("should search orders by display_id", async () => {
+        let response = await api.get(`/admin/orders`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?q=${order.display_id}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?q=2345`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(0)
+        expect(response.data.orders).toEqual([])
+      })
+
+      it("should search orders by shipping address", async () => {
+        let response = await api.get(`/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2&q=${order.shipping_address.address_1}`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?q=${order.shipping_address.address_2}`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?q=does-not-exist`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(0)
+        expect(response.data.orders).toEqual([])
+      })
+
+      it("should search orders by billing address", async () => {
+        let response = await api.get(`/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id, 
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?fields=+billing_address.address_1,+billing_address.address_2&q=${order.billing_address.address_1}`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?q=${order.billing_address.address_2}`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id, 
+          }),
+        ])
+      })
+    })
+
     describe("POST /orders/:id", () => {
       beforeEach(async () => {
         seeder = await createOrderSeeder({

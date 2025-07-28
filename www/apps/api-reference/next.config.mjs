@@ -55,6 +55,9 @@ const withMDX = createMDX({
             "user-guide": {
               projectPath: path.resolve("..", "user-guide"),
             },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
+            },
           },
         },
       ],
@@ -75,6 +78,9 @@ const withMDX = createMDX({
             },
             ui: {
               url: process.env.NEXT_PUBLIC_UI_URL,
+            },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
             },
           },
           useBaseUrl:

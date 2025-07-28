@@ -86,6 +86,14 @@ get:
         items:
           type: object
         title: $or
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   security:
     - api_token: []
     - cookie_auth: []
@@ -192,23 +200,7 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The inventory level's details.
-          required:
-            - location_id
-          properties:
-            location_id:
-              type: string
-              title: location_id
-              description: The ID of the associated location.
-            stocked_quantity:
-              type: number
-              title: stocked_quantity
-              description: The inventory level's stocked quantity.
-            incoming_quantity:
-              type: number
-              title: incoming_quantity
-              description: The inventory level's incoming quantity.
+          $ref: ../components/schemas/AdminCreateInventoryLocationLevel.yaml
   x-codeSamples:
     - lang: Shell
       label: cURL

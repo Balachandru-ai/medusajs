@@ -32,6 +32,11 @@ export const infrastructureModulesSidebar = [
             path: "/infrastructure-modules/analytics/posthog",
             title: "PostHog",
           },
+          {
+            type: "ref",
+            path: "/integrations/guides/segment",
+            title: "Segment",
+          },
         ],
       },
       {

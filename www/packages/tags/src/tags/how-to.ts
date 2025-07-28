@@ -8,6 +8,14 @@ export const howTo = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
   },
   {
+    "title": "Retrieve Cart Totals",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals"
+  },
+  {
+    "title": "Retrieve Order Totals",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals"
+  },
+  {
     "title": "Get Variant Prices",
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price"
   },
@@ -34,6 +42,10 @@ export const howTo = [
   {
     "title": "Use Workflow Engine Module",
     "path": "https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine/how-to-use"
+  },
+  {
+    "title": "Use Analytics Module",
+    "path": "https://docs.medusajs.com/resources/references/analytics/service"
   },
   {
     "title": "Create Auth Provider",

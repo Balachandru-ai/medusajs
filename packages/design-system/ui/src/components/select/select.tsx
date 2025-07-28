@@ -105,8 +105,8 @@ const Trigger = React.forwardRef<
 })
 Trigger.displayName = "Select.Trigger"
 
-interface SelectContentProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Content> {
-}
+interface SelectContentProps
+  extends React.ComponentPropsWithoutRef<typeof RadixSelect.Content> {}
 
 /**
  * The content that appears when the select is open.
@@ -120,6 +120,7 @@ const Content = React.forwardRef<
     {
       className,
       children,
+      onScroll,
       /**
        * Whether to show the select items below (`popper`) or over (`item-aligned`) the select input.
        */
@@ -161,6 +162,7 @@ const Content = React.forwardRef<
             position === "popper" &&
               "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
           )}
+          onScroll={onScroll}
         >
           {children}
         </RadixSelect.Viewport>
@@ -201,7 +203,7 @@ const Item = React.forwardRef<
     <RadixSelect.Item
       ref={ref}
       className={clx(
-        "bg-ui-bg-component grid cursor-pointer grid-cols-[15px_1fr] gap-x-2 rounded-[4px] px-2 py-1.5 outline-none transition-colors txt-compact-small items-center",
+        "bg-ui-bg-component txt-compact-small grid cursor-pointer grid-cols-[15px_1fr] items-center gap-x-2 rounded-[4px] px-2 py-1.5 outline-none transition-colors",
         "focus-visible:bg-ui-bg-component-hover",
         "active:bg-ui-bg-component-pressed",
         "data-[state=checked]:txt-compact-small-plus",
@@ -229,7 +231,10 @@ const Separator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <RadixSelect.Separator
     ref={ref}
-    className={clx("bg-ui-border-component -mx-1 my-1 h-0.5 border-t border-t-ui-border-menu-top border-b border-b-ui-border-menu-bot", className)}
+    className={clx(
+      "bg-ui-border-component border-t-ui-border-menu-top border-b-ui-border-menu-bot -mx-1 my-1 h-0.5 border-b border-t",
+      className
+    )}
     {...props}
   />
 ))

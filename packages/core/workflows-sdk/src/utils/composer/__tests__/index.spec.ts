@@ -9,12 +9,143 @@ import { transform } from "../transform"
 import { WorkflowData } from "../type"
 import { when } from "../when"
 import { createHook } from "../create-hook"
+import { TransactionStepsDefinition } from "@medusajs/orchestration"
 
 let count = 1
 const getNewWorkflowId = () => `workflow-${count++}`
 
 describe("Workflow composer", () => {
-  describe("running sub workflows", () => {
+  describe("when running workflows as sub-workflows", () => {
+    describe("handling of async and nested workflow configurations", () => {
+      it("should set the runAsStep as nested and async when parent workflow is async", async () => {
+        const subworkflowStep1 = createStep("step1", async (_, context) => {
+          return new StepResponse({ result: "sub workflow step1" })
+        })
+
+        const subWorkflowId = getNewWorkflowId()
+        const subWorkflow = createWorkflow(
+          subWorkflowId,
+          function (input: WorkflowData<string>) {
+            subworkflowStep1()
+            return new WorkflowResponse(void 0)
+          }
+        )
+
+        const step1 = createStep(
+          { name: "step1", async: true },
+          async (_, context) => {
+            return new StepResponse({ result: "step1" })
+          }
+        )
+
+        const workflowId = getNewWorkflowId()
+        const workflow = createWorkflow(workflowId, function () {
+          step1()
+
+          const subWorkflowRes = subWorkflow.runAsStep({
+            input: "hi from outside",
+          })
+
+          return new WorkflowResponse(subWorkflowRes)
+        })
+
+        expect(workflow().getFlow().async).toBe(true)
+        expect(subWorkflow().getFlow().async).toBeUndefined()
+
+        const runAsStep = workflow().getFlow()
+          .next! as TransactionStepsDefinition
+
+        expect(runAsStep.action).toBe(`${subWorkflowId}-as-step`)
+        expect(runAsStep.async).toBe(true)
+        expect(runAsStep.nested).toBe(true)
+      })
+
+      it("should set the runAsStep as nested and async when parent workflow is sync but sub workflow is async", async () => {
+        const subworkflowStep1 = createStep(
+          { name: "step1", async: true },
+          async (_, context) => {
+            return new StepResponse({ result: "sub workflow step1" })
+          }
+        )
+
+        const subWorkflowId = getNewWorkflowId()
+        const subWorkflow = createWorkflow(
+          subWorkflowId,
+          function (input: WorkflowData<string>) {
+            subworkflowStep1()
+            return new WorkflowResponse(void 0)
+          }
+        )
+
+        const step1 = createStep("step1", async (_, context) => {
+          return new StepResponse({ result: "step1" })
+        })
+
+        const workflowId = getNewWorkflowId()
+        const workflow = createWorkflow(workflowId, function () {
+          step1()
+
+          const subWorkflowRes = subWorkflow.runAsStep({
+            input: "hi from outside",
+          })
+
+          return new WorkflowResponse(subWorkflowRes)
+        })
+
+        expect(workflow().getFlow().async).toBeUndefined()
+        expect(subWorkflow().getFlow().async).toBe(true)
+
+        const runAsStep = workflow().getFlow()
+          .next! as TransactionStepsDefinition
+
+        expect(runAsStep.action).toBe(`${subWorkflowId}-as-step`)
+        expect(runAsStep.async).toBe(true)
+        expect(runAsStep.nested).toBe(true)
+      })
+
+      it("should set the runAsStep as nested and async when parent workflow is sync as well as sub workflow but the step is configured as async", async () => {
+        const subworkflowStep1 = createStep("step1", async (_, context) => {
+          return new StepResponse({ result: "sub workflow step1" })
+        })
+
+        const subWorkflowId = getNewWorkflowId()
+        const subWorkflow = createWorkflow(
+          subWorkflowId,
+          function (input: WorkflowData<string>) {
+            subworkflowStep1()
+            return new WorkflowResponse({})
+          }
+        )
+
+        const step1 = createStep("step1", async (_, context) => {
+          return new StepResponse({ result: "step1" })
+        })
+
+        const workflowId = getNewWorkflowId()
+        const workflow = createWorkflow(workflowId, function () {
+          step1()
+
+          const subWorkflowRes = subWorkflow
+            .runAsStep({
+              input: "hi from outside",
+            })
+            .config({ async: true })
+
+          return new WorkflowResponse(subWorkflowRes)
+        })
+
+        expect(workflow().getFlow().async).toBeUndefined()
+        expect(subWorkflow().getFlow().async).toBeUndefined()
+
+        const runAsStep = workflow().getFlow()
+          .next! as TransactionStepsDefinition
+
+        expect(runAsStep.action).toBe(`${subWorkflowId}-as-step`)
+        expect(runAsStep.async).toBe(true)
+        expect(runAsStep.nested).toBe(true)
+      })
+    })
+
     it("should succeed", async function () {
       const step1 = createStep("step1", async (_, context) => {
         return new StepResponse({ result: "step1" })

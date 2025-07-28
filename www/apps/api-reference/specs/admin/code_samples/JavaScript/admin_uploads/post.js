@@ -14,7 +14,7 @@ sdk.admin.upload.create(
        // file uploaded as a binary string
       {
         name: "test.txt",
-        content: "test", // Should be the binary content of the file
+        content: "test", // Should be the binary string of the file
       },
       // file uploaded as a File object
       new File(["test"], "test.txt", { type: "text/plain" })

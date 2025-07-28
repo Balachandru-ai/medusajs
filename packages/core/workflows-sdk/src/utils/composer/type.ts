@@ -113,6 +113,7 @@ export type CreateWorkflowComposerContext = {
   flow: OrchestratorBuilder
   isAsync: boolean
   handlers: WorkflowHandler
+  overriddenHandler: WorkflowHandler
   stepBinder: <TOutput = unknown>(
     fn: StepFunctionResult
   ) => WorkflowData<TOutput>
@@ -198,6 +199,11 @@ export interface StepExecutionContext {
    * Adding a space hides the method from the autocomplete
    */
   " getStepResult"(stepId: string, action?: "invoke" | "compensate"): any
+
+  /**
+   * Get access to the definition of the step.
+   */
+  " stepDefinition": TransactionStepsDefinition
 }
 
 export type WorkflowTransactionContext = StepExecutionContext &

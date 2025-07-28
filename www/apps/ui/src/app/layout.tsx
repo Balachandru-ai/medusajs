@@ -4,7 +4,7 @@ import { Providers } from "@/providers"
 
 import { siteConfig } from "@/config/site"
 import "../styles/globals.css"
-import { BareboneLayout, TightLayout } from "docs-ui"
+import { BareboneLayout, InjectedMDXData, TightLayout } from "docs-ui"
 import { Inter, Roboto_Mono } from "next/font/google"
 import clsx from "clsx"
 
@@ -60,7 +60,19 @@ export default function RootLayout({
       htmlClassName={clsx(inter.variable, robotoMono.variable)}
       gaId={process.env.NEXT_PUBLIC_GA_ID}
     >
-      <TightLayout ProvidersComponent={Providers}>{children}</TightLayout>
+      <TightLayout ProvidersComponent={Providers}>
+        {children}
+        {/* 
+          Since we use contentlayer in this project, we can't use a Recma plugin.
+          This is a workaround until we move from contentlayer.
+        */}
+        <InjectedMDXData
+          frontmatter={{
+            generate_toc: true,
+          }}
+          toc={[]}
+        />
+      </TightLayout>
     </BareboneLayout>
   )
 }

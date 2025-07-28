@@ -285,6 +285,59 @@ moduleIntegrationTestRunner<Service>({
           )
         })
 
+        it("should update a product and its allowed relations using selector", async () => {
+          const updateData = [
+            {
+              selector: {
+                id: productOne.id,
+              },
+              data: {
+                title: "update test 1",
+              },
+            },
+          ]
+
+          const products = await service.update(updateData)
+
+          expect(products.length).toEqual(1)
+
+          let result = await service.retrieve(productOne.id)
+          let serialized = JSON.parse(JSON.stringify(result))
+
+          expect(serialized).toEqual(
+            expect.objectContaining({
+              id: productOne.id,
+              title: "update test 1",
+            })
+          )
+        })
+
+        it("should update a single product and its allowed relations", async () => {
+          const updateData = {
+            id: productOne.id,
+            title: "update test 1",
+          }
+
+          const product = await service.update(updateData)
+
+          expect(product).toEqual(
+            expect.objectContaining({
+              id: productOne.id,
+              title: "update test 1",
+            })
+          )
+
+          let result = await service.retrieve(productOne.id)
+          let serialized = JSON.parse(JSON.stringify(result))
+
+          expect(serialized).toEqual(
+            expect.objectContaining({
+              id: productOne.id,
+              title: "update test 1",
+            })
+          )
+        })
+
         it("should throw an error when id is not present", async () => {
           let error
           const updateData = [

@@ -11,6 +11,11 @@ tags:
       label: "Implement Loyalty Points"
     - name: promotion
       label: "Implement Loyalty Points"
+products:
+  - cart
+  - order
+  - customer
+  - promotion
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -26,7 +31,7 @@ In this tutorial, you'll learn how to implement a loyalty points system in Medus
 
 <Note title="Looking for a straightforward implementation?">
 
-Medusa Cloud provides a beta Store Credits feature that facilitates building a loyalty point system. [Get in touch](https://medusajs.com/contact) for early access.
+Cloud provides a beta Loyalty Plugin feature that facilitates building a loyalty point system. Refer to the [Cloud Loyalty Plugin](!cloud!/loyalty-plugin) documentation to learn more.
 
 </Note>
 
@@ -830,14 +835,14 @@ Now that you have all the steps, you can create the workflow that uses them.
 To create the workflow, create the file `src/workflows/handle-order-points.ts` with the following content:
 
 export const handleOrderPointsHighlights = [
-  ["18", "useQueryGraphStep", "Retrieve the order's details."],
-  ["38", "validateCustomerExistsStep", "Validate that the customer is registered."],
-  ["42", "getCartLoyaltyPromoStep", "Retrieve the cart's loyalty promotion."],
-  ["46", "when", "Check whether the order's cart has a loyalty promotion."],
-  ["51", "deductPurchasePointsStep", "Deduct points from the customer's loyalty points."],
-  ["56", "updatePromotionsStep", "Deactivate the cart's loyalty promotion."],
-  ["65", "when", "Check whether the order's cart doesn't have a loyalty promotion."],
-  ["70", "addPurchaseAsPointsStep", "Add points to the customer's loyalty points."],
+  ["17", "useQueryGraphStep", "Retrieve the order's details."],
+  ["37", "validateCustomerExistsStep", "Validate that the customer is registered."],
+  ["41", "getCartLoyaltyPromoStep", "Retrieve the cart's loyalty promotion."],
+  ["45", "when", "Check whether the order's cart has a loyalty promotion."],
+  ["50", "deductPurchasePointsStep", "Deduct points from the customer's loyalty points."],
+  ["55", "updatePromotionsStep", "Deactivate the cart's loyalty promotion."],
+  ["64", "when", "Check whether the order's cart doesn't have a loyalty promotion."],
+  ["69", "addPurchaseAsPointsStep", "Add points to the customer's loyalty points."],
 ]
 
 ```ts title="src/workflows/handle-order-points.ts" highlights={handleOrderPointsHighlights} collapsibleLines="1-9" expandButtonLabel="Show Imports"
@@ -857,7 +862,6 @@ type WorkflowInput = {
 export const handleOrderPointsWorkflow = createWorkflow(
   "handle-order-points",
   ({ order_id }: WorkflowInput) => {
-    // @ts-ignore
     const { data: orders } = useQueryGraphStep({
       entity: "order",
       fields: [
@@ -1293,7 +1297,7 @@ The workflow will have the following steps:
         type: "workflow",
         name: "updateCartPromotionsWorkflow",
         description: "Update the cart's promotions with the new loyalty promotion.",
-        link: "/references/medusa-workflows/workflows/updateCartPromotionsWorkflow",
+        link: "/references/medusa-workflows/updateCartPromotionsWorkflow",
         depth: 1,
       },
       {
@@ -1389,10 +1393,10 @@ You can now create the workflow that applies a loyalty promotion to the cart.
 To create the workflow, create the file `src/workflows/apply-loyalty-on-cart.ts` with the following content:
 
 export const applyLoyaltyOnCartWorkflowHighlights = [
-  ["45", "useQueryGraphStep", "Retrieve the cart's details."],
-  ["56", "validateCustomerExistsStep", "Validate that the customer is registered."],
-  ["60", "getCartLoyaltyPromoStep", "Retrieve the cart's loyalty promotion."],
-  ["65", "getCartLoyaltyPromoAmountStep", "Get the amount to be discounted based on the loyalty points."],
+  ["44", "useQueryGraphStep", "Retrieve the cart's details."],
+  ["55", "validateCustomerExistsStep", "Validate that the customer is registered."],
+  ["59", "getCartLoyaltyPromoStep", "Retrieve the cart's loyalty promotion."],
+  ["64", "getCartLoyaltyPromoAmountStep", "Get the amount to be discounted based on the loyalty points."],
 ]
 
 ```ts title="src/workflows/apply-loyalty-on-cart.ts" highlights={applyLoyaltyOnCartWorkflowHighlights} collapsibleLines="1-24" expandButtonLabel="Show Imports"
@@ -1439,7 +1443,6 @@ const fields = [
 export const applyLoyaltyOnCartWorkflow = createWorkflow(
   "apply-loyalty-on-cart",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: carts } = useQueryGraphStep({
       entity: "cart",
       fields,
@@ -1554,7 +1557,7 @@ export const createLoyaltyPromoStepHighlights = [
   ["5", "transform", "Prepare the data to update the cart's promotions."],
   ["25", "updateCartPromotionsWorkflow", "Update the cart's promotions with the new loyalty promotion."],
   ["29", "updateCartsStep", "Update the cart to store the ID of the loyalty promotion in the metadata."],
-  ["38", "useQueryGraphStep", "Retrieve the cart's details again."],
+  ["37", "useQueryGraphStep", "Retrieve the cart's details again."],
 ]
 
 ```ts title="src/workflows/apply-loyalty-on-cart.ts" highlights={createLoyaltyPromoStepHighlights}
@@ -1594,7 +1597,6 @@ updateCartsStep([
 ])
 
 // retrieve cart with updated promotions
-// @ts-ignore
 const { data: updatedCarts } = useQueryGraphStep({
   entity: "cart",
   fields,
@@ -1762,7 +1764,7 @@ The workflow will have the following steps:
         type: "workflow",
         name: "updateCartPromotionsWorkflow",
         description: "Update the cart's promotions to remove the loyalty promotion.",
-        link: "/references/medusa-workflows/workflows/updateCartPromotionsWorkflow",
+        link: "/references/medusa-workflows/updateCartPromotionsWorkflow",
         depth: 1,
       },
       {
@@ -1795,13 +1797,13 @@ Since you already have all the steps, you can create the workflow.
 To create the workflow, create the file `src/workflows/remove-loyalty-from-cart.ts` with the following content:
 
 export const removeLoyaltyFromCartWorkflowHighlights = [
-  ["36", "useQueryGraphStep", "Retrieve the cart's details."],
-  ["44", "getCartLoyaltyPromoStep", "Retrieve the cart's loyalty promotion."],
-  ["49", "updateCartPromotionsWorkflow", "Update the cart's promotions to remove the loyalty promotion."],
-  ["57", "transform", "Prepare the new metadata to remove the loyalty promotion ID."],
-  ["68", "updateCartsStep", "Update the cart to remove the loyalty promotion ID from the metadata."],
-  ["75", "updatePromotionsStep", "Deactivate the loyalty promotion."],
-  ["84", "useQueryGraphStep", "Retrieve the cart's details again."],
+  ["35", "useQueryGraphStep", "Retrieve the cart's details."],
+  ["43", "getCartLoyaltyPromoStep", "Retrieve the cart's loyalty promotion."],
+  ["48", "updateCartPromotionsWorkflow", "Update the cart's promotions to remove the loyalty promotion."],
+  ["56", "transform", "Prepare the new metadata to remove the loyalty promotion ID."],
+  ["67", "updateCartsStep", "Update the cart to remove the loyalty promotion ID from the metadata."],
+  ["74", "updatePromotionsStep", "Deactivate the loyalty promotion."],
+  ["82", "useQueryGraphStep", "Retrieve the cart's details again."],
 ]
 
 ```ts title="src/workflows/remove-loyalty-from-cart.ts" collapsibleLines="1-15" expandButtonLabel="Show Imports" highlights={removeLoyaltyFromCartWorkflowHighlights}
@@ -1839,7 +1841,6 @@ const fields = [
 export const removeLoyaltyFromCartWorkflow = createWorkflow(
   "remove-loyalty-from-cart",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: carts } = useQueryGraphStep({
       entity: "cart",
       fields,
@@ -1887,7 +1888,6 @@ export const removeLoyaltyFromCartWorkflow = createWorkflow(
     ])
 
     // retrieve cart with updated promotions
-    // @ts-ignore
     const { data: updatedCarts } = useQueryGraphStep({
       entity: "cart",
       fields,

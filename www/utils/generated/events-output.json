@@ -102,8 +102,7 @@
     "description": "Emitted when an order is placed, or when a draft order is converted to an\norder.",
     "workflows": [
       "convertDraftOrderWorkflow",
-      "completeCartWorkflow",
-      "processPaymentWorkflow"
+      "completeCartWorkflow"
     ],
     "deprecated": false
   },
@@ -674,6 +673,30 @@
     "description": "Emitted when a fulfillment is marked as delivered.",
     "workflows": [
       "markOrderFulfillmentAsDeliveredWorkflow"
+    ],
+    "deprecated": false
+  },
+  {
+    "name": "payment.captured",
+    "parentName": "PaymentEvents",
+    "propertyName": "CAPTURED",
+    "payload": "```ts\n{\n  id, // the ID of the payment\n}\n```",
+    "description": "Emitted when a payment is captured.",
+    "workflows": [
+      "capturePaymentWorkflow",
+      "processPaymentWorkflow",
+      "markPaymentCollectionAsPaid"
+    ],
+    "deprecated": false
+  },
+  {
+    "name": "payment.refunded",
+    "parentName": "PaymentEvents",
+    "propertyName": "REFUNDED",
+    "payload": "```ts\n{\n  id, // the ID of the payment\n}\n```",
+    "description": "Emitted when a payment is refunded.",
+    "workflows": [
+      "refundPaymentWorkflow"
     ],
     "deprecated": false
   }

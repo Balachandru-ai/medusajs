@@ -4,8 +4,8 @@
 const redirects = async () => {
   return [
     {
-      source: "/v2/:path*",
-      destination: "/:path*",
+      source: "/v2/learn/customization",
+      destination: "/learn/customization/custom-features",
       permanent: true,
     },
     {
@@ -64,6 +64,11 @@ const redirects = async () => {
       permanent: true,
     },
     {
+      source: "/commerce-modules",
+      destination: "/learn/fundamentals/modules/commerce-modules",
+      permanent: true,
+    },
+    {
       source: "/learn/advanced-development/architecture/infrastructure-modules",
       destination: "/learn/fundamentals/modules/infrastructure-modules",
       permanent: true,
@@ -100,6 +105,11 @@ const redirects = async () => {
     },
     {
       source: "/learn/advanced-development/:path*",
+      destination: "/learn/fundamentals/:path*",
+      permanent: true,
+    },
+    {
+      source: "/advanced-development/:path*",
       destination: "/learn/fundamentals/:path*",
       permanent: true,
     },
@@ -266,12 +276,12 @@ const redirects = async () => {
     },
     {
       source: "/v1/modules/products/admin/manage-products",
-      destination: "/user-guides/products/edit",
+      destination: "/user-guide/products/edit",
       permanent: true,
     },
     {
       source: "/v1/plugins/overview",
-      destination: "/learn/integrations",
+      destination: "/resources/integrations",
       permanent: true,
     },
     {
@@ -321,12 +331,12 @@ const redirects = async () => {
     },
     {
       source: "/v1/modules/users/admin/manage-profile",
-      destination: "/user-guides/settings/profile",
+      destination: "/user-guide/settings/profile",
       permanent: true,
     },
     {
       source: "/v1/modules/customers/customer-groups",
-      destination: "/commerce-modules/customer",
+      destination: "/resources/commerce-modules/customer",
       permanent: true,
     },
     {
@@ -367,6 +377,107 @@ const redirects = async () => {
     {
       source: "/learn/fundamentals/workflows/access-workflow-errors",
       destination: "/learn/fundamentals/workflows/errors",
+      permanent: true,
+    },
+    {
+      source: "/add-plugins/:path",
+      destination: "/v1/plugins/:path",
+      permanent: true,
+    },
+    {
+      source: "/usage/create-medusa-app",
+      destination: "/learn/installation",
+      permanent: true,
+    },
+    {
+      source: "/tutorial/set-up-your-development-environment",
+      destination: "/v1/development/backend/prepare-environmentt",
+      permanent: true,
+    },
+    {
+      source: "/api",
+      destination: "/v1/api",
+      permanent: true,
+    },
+    {
+      source: "/development/:path*",
+      destination: "/v1/development/:path*",
+      permanent: true,
+    },
+    {
+      source: "/modules/:path*",
+      destination: "/v1/modules/:path*",
+      permanent: true,
+    },
+    {
+      source: "/advanced/:path*",
+      destination: "/v1/development/overview",
+      permanent: true,
+    },
+    {
+      source: "/deployments/:path*",
+      destination: "/v1/deployments/:path*",
+      permanent: true,
+    },
+    {
+      source: "/guides/fulfillment-api",
+      destination: "/resources/commerce-modules/fulfillment",
+      permanent: true,
+    },
+    {
+      source: "/introduction",
+      destination: "/learn/introduction",
+      permanent: true,
+    },
+    {
+      source: "/admin/:path*",
+      destination: "/v1/admin/:path*",
+      permanent: true,
+    },
+    {
+      source: "/user-guide/regions/providers",
+      destination: "/user-guide/settings/regions",
+      permanent: true,
+    },
+    {
+      source: "/starters/gatsby-medusa-starter",
+      destination: "/resources/nextjs-starter",
+      permanent: true,
+    },
+    {
+      source: "/usage/configurations",
+      destination: "/learn/configurations/medusa-config",
+      permanent: true,
+    },
+    {
+      source: "/troubleshooting/:path",
+      destination: "/v1/troubleshooting/:path",
+      permanent: true,
+    },
+    {
+      source: "/quickstart/quick-start",
+      destination: "/learn/installation",
+      permanent: true,
+    },
+    {
+      source: "/guides/:path*",
+      destination: "/resources/how-to-tutorials",
+      permanent: true,
+    },
+    {
+      source: "/v2/:path*",
+      destination: "/:path*",
+      permanent: true,
+    },
+    {
+      source: "/js-client/:path*",
+      destination: "/resources/js-client/:path*",
+      permanent: true,
+    },
+    {
+      source:
+        "/learn/debugging-and-testing/testing-tools/modules-tests/module-example",
+      destination: "/learn/debugging-and-testing/testing-tools/modules-tests",
       permanent: true,
     },
   ]

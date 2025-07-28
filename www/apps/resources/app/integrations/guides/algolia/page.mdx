@@ -1,3 +1,8 @@
+---
+products:
+  - product
+---
+
 import { Card, Prerequisites, Details, WorkflowDiagram } from "docs-ui"
 import { Github, PlaySolid } from "@medusajs/icons"
 
@@ -528,7 +533,6 @@ type SyncProductsWorkflowInput = {
 export const syncProductsWorkflow = createWorkflow(
   "sync-products",
   ({ filters, limit, offset }: SyncProductsWorkflowInput) => {
-    // @ts-ignore
     const { data, metadata } = useQueryGraphStep({
       entity: "product",
       fields: ["id", "title", "description", "handle", "thumbnail", "categories.*", "tags.*"],
@@ -537,7 +541,6 @@ export const syncProductsWorkflow = createWorkflow(
         skip: offset,
       },
       filters: {
-        // @ts-ignore
         status: "published",
         ...filters,
       },
@@ -687,7 +690,7 @@ export async function POST(
 }
 ```
 
-Since you export a `POST` route handler function, you expose an `API` route at `/admin/algolia/sync`. The route handler function accepts two parameters:
+Since you export a `POST` route handler function, you expose a `POST` API route at `/admin/algolia/sync`. The route handler function accepts two parameters:
 
 1. A request object with details and context on the request, such as body parameters or authenticated user details.
 2. A response object to manipulate and send the response.

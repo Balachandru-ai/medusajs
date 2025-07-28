@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react"
 import { Sidebar } from "types"
 import { Badge, Loading, SidebarItem, useSidebar } from "../../../.."
 import clsx from "clsx"
-import { MinusMini, PlusMini } from "@medusajs/icons"
+import { TriangleDownMini, TriangleUpMini } from "@medusajs/icons"
 
 export type SidebarItemCategoryProps = {
   item: Sidebar.SidebarItemCategory
@@ -109,8 +109,8 @@ export const SidebarItemCategory = ({
           )}
           {!item.additionalElms && (
             <>
-              {open && <MinusMini />}
-              {!open && <PlusMini />}
+              {open && <TriangleDownMini />}
+              {!open && <TriangleUpMini />}
             </>
           )}
         </div>

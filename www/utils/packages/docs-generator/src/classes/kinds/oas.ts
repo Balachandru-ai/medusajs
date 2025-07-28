@@ -121,10 +121,23 @@ class OasKindGenerator extends FunctionKindGenerator {
       requiresAuthentication: true,
       allowedAuthTypes: ["cookie_auth", "jwt_token"],
     },
+    {
+      exact: "store/gift-cards/[idOrCode]/redeem",
+      requiresAuthentication: true,
+    },
+    {
+      startsWith: "store/store-credit-accounts",
+      requiresAuthentication: true,
+    },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
   readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
-  readonly PAGINATION_QUERY_PARAMS = ["limit", "offset", "order"]
+  readonly PAGINATION_QUERY_PARAMS = [
+    "limit",
+    "offset",
+    "order",
+    "with_deleted",
+  ]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,

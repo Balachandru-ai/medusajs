@@ -31,13 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment's details.
- *         properties:
- *           amount:
- *             type: number
- *             title: amount
- *             description: The amount to capture.
+ *         $ref: "#/components/schemas/AdminCreatePaymentCapture"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -83,7 +77,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: capturePaymentWorkflow
- * x-events: []
+ * x-events:
+ *   - name: payment.captured
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // the ID of the payment
+ *       }
+ *       ```
+ *     description: Emitted when a payment is captured.
+ *     deprecated: false
  * 
 */
 

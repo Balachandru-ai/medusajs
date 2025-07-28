@@ -5,6 +5,8 @@ tags:
       label: "Implement Re-Order"
     - server
     - tutorial
+products:
+  - order
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -177,7 +179,7 @@ This workflow uses steps from Medusa's `@medusajs/medusa/core-flows` package. So
 To create the workflow, create the file `src/workflows/reorder.ts` with the following content:
 
 export const workflowHighlights1 = [
-  ["20", "useQueryGraphStep", "Retrieve the order's details."],
+  ["19", "useQueryGraphStep", "Retrieve the order's details."],
 ]
 
 ```ts title="src/workflows/reorder.ts" highlights={workflowHighlights1}
@@ -199,7 +201,6 @@ type ReorderWorkflowInput = {
 export const reorderWorkflow = createWorkflow(
   "reorder",
   ({ order_id }: ReorderWorkflowInput) => {
-    // @ts-ignore
     const { data: orders } = useQueryGraphStep({
       entity: "order",
       fields: [
@@ -357,12 +358,11 @@ Finally, you need to retrieve the cart's details and return them as the workflow
 Replace the `TODO` in the workflow with the following:
 
 export const workflowHighlights4 = [
-  ["2", "useQueryGraphStep", "Retrieve the cart's details."],
-  ["28", "WorkflowResponse", "Return the cart's details."],
+  ["1", "useQueryGraphStep", "Retrieve the cart's details."],
+  ["27", "WorkflowResponse", "Return the cart's details."],
 ]
 
 ```ts title="src/workflows/reorder.ts" highlights={workflowHighlights4}
-// @ts-ignore
 const { data: carts } = useQueryGraphStep({
   entity: "cart",
   fields: [

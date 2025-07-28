@@ -175,6 +175,26 @@ tags:
         https://docs.medusajs.com/resources/commerce-modules/fulfillment/item-fulfillment
     x-associatedSchema:
       $ref: ./components/schemas/AdminFulfillment.yaml
+  - name: Gift Cards
+    description: >
+      A gift card is a prepaid card that can be used to pay for items during
+      checkout.
+
+      Gift cards can be purchased by customers, or created by admin users. When
+      a gift card is redeemed, its amount is added to the customer's store
+      credit account, which can then be used to pay for items during checkout.
+
+      These API routes allow admin users to manage gift cards, transfer gift
+      cards between customers, and more.
+
+      <Note>
+
+      Gift Card routes are only available for Cloud users using the [Loyalty
+      Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminGiftCard.yaml
   - name: Inventory Items
     description: |
       An inventory item is a stock-kept product whose inventory is managed.
@@ -551,6 +571,27 @@ tags:
         https://docs.medusajs.com/resources/commerce-modules/stock-location/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminStockLocation.yaml
+  - name: Store Credit Accounts
+    description: >
+      A store credit account is a ledger of store credit transactions for a
+      customer. They hold the customer's store credit balance,  including their
+      credit and debit amounts.
+
+      Store credit accounts allow you to build features that let customers pay
+      for items using their store credit balance, such as gift cards or loyalty
+      points.
+
+      These API routes allow admin users to manage store credit accounts, their
+      transactions, and more.
+
+      <Note>
+
+      Store Credit Account routes are only available for Cloud users using the
+      [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminStoreCreditAccount.yaml
   - name: Stores
     description: >
       A store holds the main configuration and information of your commerce
@@ -612,6 +653,22 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-region
     x-associatedSchema:
       $ref: ./components/schemas/AdminTaxRegion.yaml
+  - name: Transaction Groups
+    description: >
+      A transaction group is a group of transactions that belong to a store
+      credit account. It allows you to group transactions together, such as all
+      transactions related to a specific gift card.
+
+      These API routes allow admin users to list transaction groups.
+
+      <Note>
+
+      Transaction Group routes are only available for Cloud users using the
+      [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminTransactionGroup.yaml
   - name: Uploads
     description: >
       Use these API routes to upload files to your Medusa application using the
@@ -787,6 +844,14 @@ paths:
     $ref: paths/admin_fulfillments_{id}_cancel.yaml
   /admin/fulfillments/{id}/shipment:
     $ref: paths/admin_fulfillments_{id}_shipment.yaml
+  /admin/gift-cards:
+    $ref: paths/admin_gift-cards.yaml
+  /admin/gift-cards/{id}:
+    $ref: paths/admin_gift-cards_{id}.yaml
+  /admin/gift-cards/{id}/orders:
+    $ref: paths/admin_gift-cards_{id}_orders.yaml
+  /admin/gift-cards/{id}/redeem:
+    $ref: paths/admin_gift-cards_{id}_redeem.yaml
   /admin/inventory-items:
     $ref: paths/admin_inventory-items.yaml
   /admin/inventory-items/location-levels/batch:
@@ -916,6 +981,10 @@ paths:
     $ref: paths/admin_products_import.yaml
   /admin/products/import/{transaction_id}/confirm:
     $ref: paths/admin_products_import_{transaction_id}_confirm.yaml
+  /admin/products/imports:
+    $ref: paths/admin_products_imports.yaml
+  /admin/products/imports/{transaction_id}/confirm:
+    $ref: paths/admin_products_imports_{transaction_id}_confirm.yaml
   /admin/products/{id}:
     $ref: paths/admin_products_{id}.yaml
   /admin/products/{id}/options:
@@ -1022,6 +1091,12 @@ paths:
     $ref: paths/admin_stock-locations_{id}_fulfillment-sets.yaml
   /admin/stock-locations/{id}/sales-channels:
     $ref: paths/admin_stock-locations_{id}_sales-channels.yaml
+  /admin/store-credit-accounts:
+    $ref: paths/admin_store-credit-accounts.yaml
+  /admin/store-credit-accounts/{id}:
+    $ref: paths/admin_store-credit-accounts_{id}.yaml
+  /admin/store-credit-accounts/{id}/transactions:
+    $ref: paths/admin_store-credit-accounts_{id}_transactions.yaml
   /admin/stores:
     $ref: paths/admin_stores.yaml
   /admin/stores/{id}:
@@ -1040,8 +1115,12 @@ paths:
     $ref: paths/admin_tax-regions.yaml
   /admin/tax-regions/{id}:
     $ref: paths/admin_tax-regions_{id}.yaml
+  /admin/transaction-groups:
+    $ref: paths/admin_transaction-groups.yaml
   /admin/uploads:
     $ref: paths/admin_uploads.yaml
+  /admin/uploads/presigned-urls:
+    $ref: paths/admin_uploads_presigned-urls.yaml
   /admin/uploads/{id}:
     $ref: paths/admin_uploads_{id}.yaml
   /admin/users:

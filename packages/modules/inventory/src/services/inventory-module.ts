@@ -1052,7 +1052,7 @@ export default class InventoryModuleService
       context
     )
 
-    return result[0]
+    return result
   }
 
   @InjectManager()

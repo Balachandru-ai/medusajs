@@ -6,6 +6,8 @@ tags:
     - server
     - tutorial
     - notification
+products:
+  - cart
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -556,11 +558,9 @@ const {
     updated_at: {
       $lt: oneDayAgo,
     },
-    // @ts-ignore
     email: {
       $ne: null,
     },
-    // @ts-ignore
     completed_at: null,
   },
   pagination: {

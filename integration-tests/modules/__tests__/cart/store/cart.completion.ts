@@ -747,6 +747,135 @@ medusaIntegrationTestRunner({
             paymentSession.id
           )
         })
+        it("should complete cart when payment webhook and storefront are called in simultaneously", async () => {
+          const salesChannel = await scModuleService.createSalesChannels({
+            name: "Webshop",
+          })
+
+          const location = await stockLocationModule.createStockLocations({
+            name: "Warehouse",
+          })
+
+          const [product] = await productModule.createProducts([
+            {
+              title: "Test product",
+              variants: [
+                {
+                  title: "Test variant",
+                  manage_inventory: false,
+                },
+              ],
+            },
+          ])
+
+          const priceSet = await pricingModule.createPriceSets({
+            prices: [
+              {
+                amount: 3000,
+                currency_code: "usd",
+              },
+            ],
+          })
+
+          await pricingModule.createPricePreferences({
+            attribute: "currency_code",
+            value: "usd",
+            has_tax_inclusive: true,
+          })
+
+          await remoteLink.create([
+            {
+              [Modules.PRODUCT]: {
+                variant_id: product.variants[0].id,
+              },
+              [Modules.PRICING]: {
+                price_set_id: priceSet.id,
+              },
+            },
+            {
+              [Modules.SALES_CHANNEL]: {
+                sales_channel_id: salesChannel.id,
+              },
+              [Modules.STOCK_LOCATION]: {
+                stock_location_id: location.id,
+              },
+            },
+          ])
+
+          // create cart
+          const cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+          })
+
+          await addToCartWorkflow(appContainer).run({
+            input: {
+              items: [
+                {
+                  variant_id: product.variants[0].id,
+                  quantity: 1,
+                  requires_shipping: false,
+                },
+              ],
+              cart_id: cart.id,
+            },
+          })
+
+          await createPaymentCollectionForCartWorkflow(appContainer).run({
+            input: {
+              cart_id: cart.id,
+            },
+          })
+
+          const [payCol] = await remoteQuery(
+            remoteQueryObjectFromString({
+              entryPoint: "cart_payment_collection",
+              variables: { filters: { cart_id: cart.id } },
+              fields: ["payment_collection_id"],
+            })
+          )
+
+          const { result: paymentSession } =
+            await createPaymentSessionsWorkflow(appContainer).run({
+              input: {
+                payment_collection_id: payCol.payment_collection_id,
+                provider_id: "pp_system_default",
+                context: {},
+                data: {},
+              },
+            })
+
+          const [{ result: order }] = await Promise.all([
+            completeCartWorkflow(appContainer).run({
+              input: {
+                id: cart.id,
+              },
+            }),
+            processPaymentWorkflow(appContainer).run({
+              input: {
+                action: "captured",
+                data: {
+                  session_id: paymentSession.id,
+                  amount: 3000,
+                },
+              },
+            }),
+          ])
+
+          const { result: fullOrder } = await getOrderDetailWorkflow(
+            appContainer
+          ).run({
+            input: {
+              fields: ["*"],
+              order_id: order.id,
+            },
+          })
+
+          expect(fullOrder.payment_status).toBe("captured")
+          expect(fullOrder.payment_collections[0].authorized_amount).toBe(3000)
+          expect(fullOrder.payment_collections[0].captured_amount).toBe(3000)
+          expect(fullOrder.payment_collections[0].status).toBe("completed")
+        })
       })
     })
   },

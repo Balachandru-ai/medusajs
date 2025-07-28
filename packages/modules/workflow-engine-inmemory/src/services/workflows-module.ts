@@ -43,7 +43,6 @@ export class WorkflowsModuleService<
   protected workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<TWorkflowExecution>
   protected workflowOrchestratorService_: WorkflowOrchestratorService
   protected manager_: SqlEntityManager
-  private clearTimeout_: NodeJS.Timeout
 
   constructor(
     {
@@ -65,16 +64,10 @@ export class WorkflowsModuleService<
 
   __hooks = {
     onApplicationStart: async () => {
-      await this.clearExpiredExecutions()
-
-      this.clearTimeout_ = setInterval(async () => {
-        try {
-          await this.clearExpiredExecutions()
-        } catch {}
-      }, 1000 * 60 * 60)
+      await this.workflowOrchestratorService_.onApplicationStart()
     },
     onApplicationShutdown: async () => {
-      clearInterval(this.clearTimeout_)
+      await this.workflowOrchestratorService_.onApplicationShutdown()
     },
   }
 
@@ -287,14 +280,6 @@ export class WorkflowsModuleService<
     @MedusaContext() context: Context = {}
   ) {
     return this.workflowOrchestratorService_.unsubscribe(args as any)
-  }
-
-  private async clearExpiredExecutions() {
-    return this.manager_.execute(`
-      DELETE FROM workflow_execution
-      WHERE retention_time IS NOT NULL AND
-      updated_at <= (CURRENT_TIMESTAMP - INTERVAL '1 second' * retention_time);
-    `)
   }
 
   @InjectSharedContext()

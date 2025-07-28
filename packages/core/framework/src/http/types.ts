@@ -141,6 +141,7 @@ export interface MedusaRequest<
   queryConfig: {
     fields: string[]
     pagination: { order?: Record<string, string>; skip: number; take?: number }
+    withDeleted?: boolean
   }
 
   /**

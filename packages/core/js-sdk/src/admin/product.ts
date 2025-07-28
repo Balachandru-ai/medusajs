@@ -1,5 +1,5 @@
 import { HttpTypes, SelectParams } from "@medusajs/types"
-import { Client } from "../client"
+import { Client, FetchError } from "../client"
 import { ClientHeaders } from "../types"
 
 export class Product {
@@ -66,12 +66,7 @@ export class Product {
    * [Create Product Import](https://docs.medusajs.com/api/admin#products_postproductsimports)
    * API route.
    *
-   * @version 2.8.0
-   * @ignore
-   * @privateRemarks
-   * The ignore tag to be removed once the feature is ready.
-   * Also, the version indicates the version where the method was added.
-   * Maybe we should change the version once the feature is ready.
+   * @version 2.8.5
    *
    * @param body - The import's details.
    * @param query - Query parameters to pass to the request.
@@ -114,10 +109,40 @@ export class Product {
      * special headers in this request, since external services like S3 will
      * give a CORS error.
      */
-    await fetch(response.url, {
-      method: "PUT",
-      body: body.file,
-    })
+    if (
+      response.url.startsWith("http://") ||
+      response.url.startsWith("https://")
+    ) {
+      const uploadResponse = await fetch(response.url, {
+        method: "PUT",
+        body: body.file,
+      })
+      if (uploadResponse.status >= 400) {
+        throw new FetchError(
+          uploadResponse.statusText,
+          uploadResponse.statusText,
+          uploadResponse.status
+        )
+      }
+    } else {
+      const form = new FormData()
+      form.append("files", body.file)
+
+      const localUploadResponse = await this.client.fetch<{
+        files: HttpTypes.AdminUploadFile
+      }>("admin/uploads", {
+        method: "POST",
+        headers: {
+          ...headers,
+          // Let the browser determine the content type.
+          "content-type": null,
+        },
+        body: form,
+        query,
+      })
+
+      response.filename = localUploadResponse.files[0].id
+    }
 
     /**
      * Perform products import using the uploaded file name
@@ -147,6 +172,8 @@ export class Product {
    * [Confirm Product Import](https://docs.medusajs.com/api/admin#products_postproductsimporttransaction_idconfirm)
    * API route.
    *
+   * @version 2.8.5
+   *
    * @param transactionId - The ID of the transaction of the created product import. This is returned
    * by the API route used to create the product import.
    * @param query - Query parameters to pass in the request.
@@ -164,7 +191,7 @@ export class Product {
     headers?: ClientHeaders
   ) {
     return await this.client.fetch<{}>(
-      `/admin/products/import/${transactionId}/confirm`,
+      `/admin/products/imports/${transactionId}/confirm`,
       {
         method: "POST",
         headers,

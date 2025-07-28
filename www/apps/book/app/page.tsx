@@ -6,6 +6,7 @@ import HomepageLinksSection from "../components/Homepage/LinksSection"
 import HomepageRecipesSection from "../components/Homepage/RecipesSection"
 import HomepageModulesSection from "../components/Homepage/ModulesSection"
 import HomepageFooter from "../components/Homepage/Footer"
+import { HomepageCloudSection } from "../components/Homepage/CloudSection"
 
 const Homepage = () => {
   return (
@@ -43,6 +44,7 @@ const Homepage = () => {
               )}
             />
             <HomepageTopSection />
+            {/* <HomepageCloudSection /> */}
             <HomepageLinksSection />
             <HomepageRecipesSection />
             <HomepageModulesSection />

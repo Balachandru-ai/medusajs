@@ -38,6 +38,11 @@ export interface CreatePaymentSessionStepInput {
    * Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property).
    */
   data?: Record<string, unknown>
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
 }
 
 export const createPaymentSessionStepId = "create-payment-session"
@@ -57,6 +62,7 @@ export const createPaymentSessionStep = createStep(
         amount: input.amount,
         data: input.data ?? {},
         context: input.context,
+        metadata: input.metadata ?? {},
       }
     )
 

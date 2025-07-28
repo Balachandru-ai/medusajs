@@ -1,144 +1,199 @@
 "use client"
 
-import React, { createContext, useContext, useEffect, useState } from "react"
-import { useAnalytics, useSearch } from "@/providers"
-import { AiAssistantIcon, AiAssistantSearchWindow } from "@/components"
-import { RecaptchaAction, useRecaptcha } from "../../hooks/use-recaptcha"
-import { AiAssistantChatProvider } from "./Chat"
-
-export type AiAssistantFeedbackType = "upvote" | "downvote"
+import { KapaProvider, useChat } from "@kapaai/react-sdk"
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import type { Source } from "@kapaai/react-sdk"
+import useResizeObserver from "@react-hook/resize-observer"
+import { AiAssistantSearchWindow } from "../../components"
+import { useIsBrowser } from "../BrowserProvider"
 
 export type AiAssistantChatType = "default" | "popover"
 
 export type AiAssistantContextType = {
-  getAnswer: (question: string, thread_id?: string) => Promise<Response>
-  sendFeedback: (
-    questionId: string,
-    reaction: AiAssistantFeedbackType
-  ) => Promise<Response>
-  version: "v1" | "v2"
   chatOpened: boolean
   setChatOpened: React.Dispatch<React.SetStateAction<boolean>>
   chatType: AiAssistantChatType
+  inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>
+  contentRef: React.RefObject<HTMLDivElement | null>
+  loading: boolean
+}
+
+export type AiAssistantThreadItem = {
+  type: "question" | "answer" | "error"
+  content: string
+  question_id?: string | null
+  sources?: Source[]
 }
 
 const AiAssistantContext = createContext<AiAssistantContextType | null>(null)
 
 export type AiAssistantProviderProps = {
   children?: React.ReactNode
-  apiUrl: string
-  recaptchaSiteKey: string
-  websiteId: string
-  version?: "v1" | "v2"
-  type?: "search" | "chat"
+  integrationId: string
   chatType?: AiAssistantChatType
+  type?: "search" | "chat"
 }
 
-export const AiAssistantProvider = ({
-  apiUrl,
-  recaptchaSiteKey,
-  websiteId,
-  version = "v2",
+type AiAssistantInnerProviderProps = Omit<
+  AiAssistantProviderProps,
+  "integrationId"
+> & {
+  preventAutoScroll: boolean
+  setPreventAutoScroll: React.Dispatch<React.SetStateAction<boolean>>
+  setOnCompleteAction: React.Dispatch<React.SetStateAction<() => void>>
+}
+
+const AiAssistantInnerProvider = ({
   children,
-  type = "chat",
   chatType = "default",
-}: AiAssistantProviderProps) => {
+  preventAutoScroll,
+  setPreventAutoScroll,
+  setOnCompleteAction,
+  type,
+}: AiAssistantInnerProviderProps) => {
   const [chatOpened, setChatOpened] = useState(false)
-  const { setCommands, setIsOpen, setCommand } = useSearch()
-  const { analytics } = useAnalytics()
-  const { execute: getReCaptchaToken } = useRecaptcha({
-    siteKey: recaptchaSiteKey,
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const { isGeneratingAnswer, isPreparingAnswer } = useChat()
+  const loading = useMemo(
+    () => isGeneratingAnswer || isPreparingAnswer,
+    [isGeneratingAnswer, isPreparingAnswer]
+  )
+  const { isBrowser } = useIsBrowser()
+
+  const scrollToBottom = () => {
+    if (preventAutoScroll) {
+      return
+    }
+    const parent = contentRef.current?.parentElement as HTMLElement
+
+    parent.scrollTop = parent.scrollHeight
+  }
+
+  useResizeObserver(contentRef as React.RefObject<HTMLDivElement>, () => {
+    if (!loading) {
+      return
+    }
+
+    scrollToBottom()
   })
 
-  const sendRequest = async (
-    apiPath: string,
-    action: RecaptchaAction,
-    method = "GET",
-    headers?: HeadersInit,
-    body?: BodyInit
-  ) => {
-    return await fetch(`${apiUrl}${apiPath}`, {
-      method,
-      headers: {
-        "X-RECAPTCHA-ENTERPRISE-TOKEN": await getReCaptchaToken(action),
-        "X-WEBSITE-ID": websiteId,
-        ...headers,
-      },
-      body,
-    })
-  }
+  const handleUserScroll = useCallback(() => {
+    if (!loading || preventAutoScroll) {
+      return
+    }
 
-  const getAnswer = async (question: string, threadId?: string) => {
-    const questionParam = encodeURI(question)
-    return await sendRequest(
-      threadId
-        ? `/query/v1/thread/${threadId}/stream?query=${questionParam}`
-        : `/query/v1/stream?query=${questionParam}`,
-      RecaptchaAction.AskAi
-    )
-  }
-
-  const sendFeedback = async (
-    questionId: string,
-    reaction: AiAssistantFeedbackType
-  ) => {
-    return await sendRequest(
-      `/query/v1/question-answer/${questionId}/feedback`,
-      RecaptchaAction.FeedbackSubmit,
-      "POST",
-      {
-        "Content-Type": "application/json",
-      },
-      JSON.stringify({
-        question_id: questionId,
-        reaction,
-        user_identifier: analytics?.user().anonymousId() || "",
-      })
-    )
-  }
+    setPreventAutoScroll(true)
+  }, [loading, preventAutoScroll])
 
   useEffect(() => {
-    setCommands((prevCommands) => {
-      const newCommands = [...prevCommands]
+    if (!contentRef.current?.parentElement) {
+      return
+    }
 
-      if (!newCommands.find((c) => c.name === "ai-assistant")) {
-        newCommands.push({
-          name: "ai-assistant",
-          icon: <AiAssistantIcon />,
-          title: "AI Assistant",
-          badge: {
-            variant: "blue",
-            badgeType: "shaded",
-            children: "Beta",
-          },
-          action: () => {
-            setIsOpen(false)
-            setChatOpened(true)
-            setCommand(null)
-          },
-        })
+    contentRef.current.parentElement.addEventListener(
+      "wheel",
+      handleUserScroll,
+      {
+        passive: true,
       }
+    )
+    contentRef.current.parentElement.addEventListener(
+      "touchmove",
+      handleUserScroll,
+      {
+        passive: true,
+      }
+    )
 
-      return newCommands
+    return () => {
+      contentRef.current?.parentElement?.removeEventListener(
+        "wheel",
+        handleUserScroll
+      )
+      contentRef.current?.parentElement?.removeEventListener(
+        "touchmove",
+        handleUserScroll
+      )
+    }
+  }, [contentRef.current, handleUserScroll])
+
+  useEffect(() => {
+    setOnCompleteAction(() => {
+      scrollToBottom()
+      inputRef.current?.focus({
+        preventScroll: true,
+      })
     })
-  }, [])
+  }, [scrollToBottom])
+
+  /**
+   * This effect is required to avoid recaptcha messing up
+   * the page layout.
+   */
+  useEffect(() => {
+    if (!isBrowser) {
+      return
+    }
+
+    const recaptchaElm = document.querySelector(".grecaptcha-badge")
+    recaptchaElm?.parentElement?.classList.add("absolute")
+  }, [isBrowser])
 
   return (
     <AiAssistantContext.Provider
       value={{
-        getAnswer,
-        sendFeedback,
-        version,
         chatOpened,
         setChatOpened,
         chatType,
+        inputRef,
+        contentRef,
+        loading,
       }}
     >
-      <AiAssistantChatProvider>
-        {children}
-        {type === "search" && <AiAssistantSearchWindow />}
-      </AiAssistantChatProvider>
+      {children}
+      {type === "search" && <AiAssistantSearchWindow />}
     </AiAssistantContext.Provider>
+  )
+}
+
+export const AiAssistantProvider = ({
+  integrationId,
+  ...props
+}: AiAssistantProviderProps) => {
+  const [preventAutoScroll, setPreventAutoScroll] = useState(false)
+  const [onCompleteAction, setOnCompleteAction] = useState<() => void>(
+    () => () => {}
+  )
+
+  return (
+    <KapaProvider
+      integrationId={integrationId}
+      callbacks={{
+        askAI: {
+          onAnswerGenerationCompleted: () => {
+            onCompleteAction?.()
+          },
+          onQuerySubmit: () => setPreventAutoScroll(false),
+        },
+      }}
+      userTrackingMode="cookie"
+    >
+      <AiAssistantInnerProvider
+        {...props}
+        preventAutoScroll={preventAutoScroll}
+        setPreventAutoScroll={setPreventAutoScroll}
+        setOnCompleteAction={setOnCompleteAction}
+      />
+    </KapaProvider>
   )
 }
 

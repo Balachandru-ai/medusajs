@@ -14,6 +14,7 @@ export declare type OpenApiOperation = Partial<OpenAPIV3.OperationObject> & {
   "x-deprecated_message"?: string
   "x-version"?: string
   "x-featureFlag"?: string
+  "x-ignoreCleanup"?: boolean
 }
 
 export declare type CommonCliOptions = {

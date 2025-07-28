@@ -29,7 +29,18 @@ export const updateCartsStep = createStep(
   async (data: UpdateCartsStepInput, { container }) => {
     const cartModule = container.resolve<ICartModuleService>(Modules.CART)
 
-    const { selects, relations } = getSelectsAndRelationsFromObjectArray(data)
+    const { selects, relations } = getSelectsAndRelationsFromObjectArray(data, {
+      requiredFields: [
+        "id",
+        "region_id",
+        "customer_id",
+        "sales_channel_id",
+        "email",
+        "currency_code",
+        "metadata",
+        "completed_at",
+      ],
+    })
     const cartsBeforeUpdate = await cartModule.listCarts(
       { id: data.map((d) => d.id) },
       { select: selects, relations }

@@ -204,6 +204,10 @@ export const workflow = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/convertDraftOrderWorkflow"
   },
   {
+    "title": "deleteDraftOrdersWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteDraftOrdersWorkflow"
+  },
+  {
     "title": "removeDraftOrderActionItemWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/removeDraftOrderActionItemWorkflow"
   },
@@ -870,6 +874,10 @@ export const workflow = [
   {
     "title": "exportProductsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/exportProductsWorkflow"
+  },
+  {
+    "title": "importProductsAsChunksWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/importProductsAsChunksWorkflow"
   },
   {
     "title": "importProductsWorkflow",

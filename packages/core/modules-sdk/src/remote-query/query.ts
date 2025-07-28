@@ -155,7 +155,7 @@ export class Query {
     queryOptions: RemoteQueryInput<TEntry>,
     options?: RemoteJoinerOptions
   ): Promise<GraphResultSet<TEntry>> {
-    const normalizedQuery = toRemoteQuery<TEntry>(
+    const normalizedQuery = toRemoteQuery(
       queryOptions,
       this.#remoteQuery.getEntitiesMap()
     )

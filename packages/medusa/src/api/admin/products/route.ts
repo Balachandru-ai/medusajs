@@ -43,7 +43,8 @@ async function getProducts(
     req.filterableFields,
     req.scope,
     selectFields,
-    req.queryConfig.pagination
+    req.queryConfig.pagination,
+    req.queryConfig.withDeleted
   )
 
   res.json({
@@ -75,6 +76,7 @@ async function getProductsWithIndexEngine(
     fields: req.queryConfig.fields ?? [],
     filters: filters,
     pagination: req.queryConfig.pagination,
+    withDeleted: req.queryConfig.withDeleted,
   })
 
   res.json({

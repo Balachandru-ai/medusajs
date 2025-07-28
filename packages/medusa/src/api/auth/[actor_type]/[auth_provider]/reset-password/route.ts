@@ -22,7 +22,8 @@ export const POST = async (
       entityId: identifier,
       actorType: actor_type,
       provider: auth_provider,
-      secret: http.jwtSecret as string,
+      secret: http.jwtSecret!,
+      jwtOptions: http.jwtOptions,
     },
     throwOnError: false, // we don't want to throw on error to avoid leaking information about non-existing identities
   })

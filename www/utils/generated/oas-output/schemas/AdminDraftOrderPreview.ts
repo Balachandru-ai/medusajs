@@ -42,6 +42,7 @@
  *   - original_shipping_total
  *   - original_shipping_subtotal
  *   - original_shipping_tax_total
+ *   - credit_line_total
  * properties:
  *   return_requested_total:
  *     type: number
@@ -629,6 +630,10 @@
  *     description: The order preview's credit lines.
  *     items:
  *       $ref: "#/components/schemas/OrderCreditLine"
+ *   credit_line_total:
+ *     type: number
+ *     title: credit_line_total
+ *     description: The draft order preview's credit line total.
  * 
 */
 

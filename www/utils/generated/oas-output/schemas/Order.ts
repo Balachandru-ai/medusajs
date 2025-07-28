@@ -26,6 +26,7 @@
  *   - discount_subtotal
  *   - discount_total
  *   - discount_tax_total
+ *   - credit_line_total
  *   - gift_card_total
  *   - gift_card_tax_total
  *   - shipping_total
@@ -296,6 +297,15 @@
  *     type: boolean
  *     title: is_draft_order
  *     description: Whether the order is a draft order.
+ *   deleted_at:
+ *     type: string
+ *     format: date-time
+ *     title: deleted_at
+ *     description: The date the order was deleted.
+ *   credit_line_total:
+ *     type: number
+ *     title: credit_line_total
+ *     description: The order's credit line total.
  * 
 */
 

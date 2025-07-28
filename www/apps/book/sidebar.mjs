@@ -17,11 +17,23 @@ export const sidebars = [
             type: "link",
             path: "/learn/installation",
             title: "Installation",
+            children: [
+              {
+                type: "link",
+                path: "/learn/installation/docker",
+                title: "Install with Docker",
+              },
+            ],
           },
           {
             type: "link",
             title: "Architecture",
             path: "/learn/introduction/architecture",
+          },
+          {
+            type: "link",
+            title: "AI Assistants and LLMs",
+            path: "/learn/introduction/build-with-llms-ai",
           },
           {
             type: "link",
@@ -224,6 +236,11 @@ export const sidebars = [
                 type: "link",
                 path: "/learn/fundamentals/module-links/query",
                 title: "Query",
+              },
+              {
+                type: "link",
+                path: "/learn/fundamentals/module-links/index-module",
+                title: "Index Module",
               },
               {
                 type: "link",
@@ -481,6 +498,11 @@ export const sidebars = [
               },
             ],
           },
+          {
+            type: "link",
+            path: "/learn/fundamentals/generated-types",
+            title: "Auto-Generated Types",
+          },
         ],
       },
       {
@@ -581,18 +603,18 @@ export const sidebars = [
             type: "link",
             path: "/learn/debugging-and-testing/testing-tools/modules-tests",
             title: "Modules Tests",
-            children: [
-              {
-                type: "link",
-                path: "/learn/debugging-and-testing/testing-tools/modules-tests/module-example",
-                title: "Example",
-              },
-            ],
           },
           {
             type: "link",
             path: "/learn/debugging-and-testing/instrumentation",
             title: "Instrumentation",
+            children: [
+              {
+                type: "ref",
+                path: "/resources/integrations/guides/sentry",
+                title: "Guide: Sentry",
+              },
+            ],
           },
           {
             type: "link",

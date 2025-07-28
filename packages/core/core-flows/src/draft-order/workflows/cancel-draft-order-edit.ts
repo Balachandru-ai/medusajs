@@ -33,10 +33,10 @@ export interface CancelDraftOrderEditWorkflowInput {
 /**
  * This workflow cancels a draft order edit. It's used by the
  * [Cancel Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersidedit).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * cancelling a draft order edit.
- * 
+ *
  * @example
  * const { result } = await cancelDraftOrderEditWorkflow(container)
  * .run({
@@ -44,15 +44,19 @@ export interface CancelDraftOrderEditWorkflowInput {
  *     order_id: "order_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Cancel a draft order edit.
  */
 export const cancelDraftOrderEditWorkflow = createWorkflow(
   cancelDraftOrderEditWorkflowId,
   function (input: WorkflowData<CancelDraftOrderEditWorkflowInput>) {
-    const order: OrderDTO = useRemoteQueryStep({
+    const order: OrderDTO & {
+      promotions: {
+        code: string
+      }[]
+    } = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["version", ...draftOrderFieldsForRefreshSteps],
       variables: { id: input.order_id },
@@ -125,18 +129,12 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
     const promotionsToRefresh = transform(
       { order, promotionsToRemove, promotionsToRestore },
       ({ order, promotionsToRemove, promotionsToRestore }) => {
-        const promotionLink = (order as any).promotion_link
+        const orderPromotions = order.promotions
         const codes: Set<string> = new Set()
 
-        if (promotionLink) {
-          if (Array.isArray(promotionLink)) {
-            promotionLink.forEach((promo) => {
-              codes.add(promo.promotion.code)
-            })
-          } else {
-            codes.add(promotionLink.promotion.code)
-          }
-        }
+        orderPromotions?.forEach((promo) => {
+          codes.add(promo.code)
+        })
 
         for (const code of promotionsToRemove) {
           codes.delete(code)
@@ -163,9 +161,7 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
       },
     })
 
-    when(shippingToRestore, (methods) => {
-      return !!methods?.length
-    }).then(() => {
+    when(shippingToRestore, (methods) => !!methods?.length).then(() => {
       restoreDraftOrderShippingMethodsStep({
         shippingMethods: shippingToRestore as any,
       })

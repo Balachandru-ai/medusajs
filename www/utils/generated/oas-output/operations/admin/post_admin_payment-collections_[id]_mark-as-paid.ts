@@ -32,15 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment details.
- *         required:
- *           - order_id
- *         properties:
- *           order_id:
- *             type: string
- *             title: order_id
- *             description: The ID of the order associated with the payment collection.
+ *         $ref: "#/components/schemas/AdminMarkPaymentCollectionPaid"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -92,7 +84,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: markPaymentCollectionAsPaid
- * x-events: []
+ * x-events:
+ *   - name: payment.captured
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // the ID of the payment
+ *       }
+ *       ```
+ *     description: Emitted when a payment is captured.
+ *     deprecated: false
  * 
 */
 
