@@ -4,6 +4,7 @@ import { ArrowUpCircleSolid } from "@medusajs/icons"
 import { useAiAssistant } from "../../../../providers"
 import { useChat } from "@kapaai/react-sdk"
 import { useAiAssistantChatNavigation } from "../../../../hooks"
+import { useSearchParams } from "next/navigation"
 
 type AiAssistantChatWindowInputProps = {
   chatWindowRef: React.RefObject<HTMLDivElement | null>
@@ -12,8 +13,11 @@ type AiAssistantChatWindowInputProps = {
 export const AiAssistantChatWindowInput = ({
   chatWindowRef,
 }: AiAssistantChatWindowInputProps) => {
-  const { chatOpened, inputRef, loading } = useAiAssistant()
+  const { chatOpened, inputRef, loading, setChatOpened } = useAiAssistant()
   const { submitQuery, conversation } = useChat()
+  const searchParams = useSearchParams()
+  const searchQueryType = searchParams.get("queryType")
+  const searchQuery = searchParams.get("query")
   const [question, setQuestion] = React.useState("")
   const formRef = useRef<HTMLFormElement | null>(null)
 
@@ -96,6 +100,21 @@ export const AiAssistantChatWindowInput = ({
       }),
     question,
   })
+
+  useEffect(() => {
+    if (searchQueryType === "submit") {
+      onSubmit()
+    }
+  }, [searchQueryType])
+
+  useEffect(() => {
+    if (!searchQuery) {
+      return
+    }
+
+    setQuestion(searchQuery)
+    setChatOpened(true)
+  }, [searchQuery])
 
   return (
     <div
