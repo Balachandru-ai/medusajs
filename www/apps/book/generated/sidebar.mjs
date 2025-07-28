@@ -25,7 +25,18 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/installation",
             "title": "Installation",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/installation/docker",
+                "title": "Install with Docker",
+                "children": [],
+                "chapterTitle": "1.2.1. Install with Docker",
+                "number": "1.2.1."
+              }
+            ],
             "chapterTitle": "1.2. Installation",
             "number": "1.2."
           },
@@ -48,6 +59,16 @@ export const generatedSidebars = [
             "children": [],
             "chapterTitle": "1.4. AI Assistants and LLMs",
             "number": "1.4."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "From v1 to v2",
+            "path": "/learn/introduction/from-v1-to-v2",
+            "children": [],
+            "chapterTitle": "1.5. From v1 to v2",
+            "number": "1.5."
           }
         ],
         "chapterTitle": "1. Getting Started",
@@ -921,6 +942,16 @@ export const generatedSidebars = [
             ],
             "chapterTitle": "3.11. Custom CLI Scripts",
             "number": "3.11."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/learn/fundamentals/generated-types",
+            "title": "Auto-Generated Types",
+            "children": [],
+            "chapterTitle": "3.12. Auto-Generated Types",
+            "number": "3.12."
           }
         ],
         "chapterTitle": "3. Framework",
@@ -1117,18 +1148,7 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/debugging-and-testing/testing-tools/modules-tests",
             "title": "Modules Tests",
-            "children": [
-              {
-                "loaded": true,
-                "isPathHref": true,
-                "type": "link",
-                "path": "/learn/debugging-and-testing/testing-tools/modules-tests/module-example",
-                "title": "Example",
-                "children": [],
-                "chapterTitle": "7.3.1. Example",
-                "number": "7.3.1."
-              }
-            ],
+            "children": [],
             "chapterTitle": "7.3. Modules Tests",
             "number": "7.3."
           },
