@@ -77,7 +77,7 @@ const { data: [cart] } = await query.graph({
   ],
   filters: {
     id: "cart_123", // Specify the cart ID
-  }
+  },
 })
 ```
   </CodeTab>
@@ -188,7 +188,7 @@ const { data: [cart] } = await query.graph({
   fields: ["*"],
   filters: {
     id: "cart_123",
-  }
+  },
 })
 
 // cart doesn't include cart totals
@@ -223,7 +223,7 @@ const { data: [cart] } = await query.graph({
   fields: ["*", "total"],
   filters: {
     id: "cart_123",
-  }
+  },
 })
 
 // cart doesn't include cart totals
