@@ -116,7 +116,7 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
-        title: "Invoice Generator",
+        title: "Generate Invoices",
         path: "/how-to-tutorials/tutorials/invoice-generator",
         description:
           "Learn how to generate invoices for orders in your Medusa store.",
