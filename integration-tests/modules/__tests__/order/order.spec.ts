@@ -197,6 +197,7 @@ medusaIntegrationTestRunner({
                     precision: 20,
                   },
                   provider_id: expect.any(String),
+                  is_tax_inclusive: false,
                   created_at: expect.any(String),
                   updated_at: expect.any(String),
                   deleted_at: null,

@@ -3026,7 +3026,8 @@ medusaIntegrationTestRunner({
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
                       code: taxInclPromotion.code,
-                      amount: 100,
+                      amount: 105,
+                      is_tax_inclusive: true,
                     }),
                   ]),
                 }),
@@ -3034,6 +3035,7 @@ medusaIntegrationTestRunner({
               promotions: expect.arrayContaining([
                 expect.objectContaining({
                   code: "PROMOTION_TAX_INCLUSIVE",
+                  is_tax_inclusive: true,
                   application_method: expect.objectContaining({
                     value: 105,
                   }),

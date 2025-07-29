@@ -5,44 +5,23 @@ import {
 } from "../../promotion"
 import { MathBN } from "../math"
 
-function getPromotionValueForPercentage(
-  sumTaxRate,
-  promotion,
-  lineItemSubtotal
-) {
-  return MathBN.mult(
-    MathBN.div(
-      promotion.is_tax_inclusive
-        ? MathBN.div(promotion.value, MathBN.add(1, sumTaxRate))
-        : promotion.value,
-      100
-    ),
-    lineItemSubtotal
-  )
+function getPromotionValueForPercentage(promotion, lineItemAmount) {
+  return MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount)
 }
 
-function getPromotionValueForFixed(
-  sumTaxRate,
-  promotion,
-  itemSubtotal,
-  lineItemSubtotal
-) {
-  const promotionAmount = promotion.is_tax_inclusive
-    ? MathBN.div(promotion.value, MathBN.add(1, sumTaxRate))
-    : promotion.value
-
+function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
   if (promotion.allocation === ApplicationMethodAllocation.ACROSS) {
     const promotionValueForItem = MathBN.mult(
-      MathBN.div(itemSubtotal, lineItemSubtotal),
-      promotionAmount
+      MathBN.div(lineItemAmount, lineItemsAmount),
+      promotion.value
     )
 
-    if (MathBN.lte(promotionValueForItem, itemSubtotal)) {
+    if (MathBN.lte(promotionValueForItem, lineItemAmount)) {
       return promotionValueForItem
     }
 
     const percentage = MathBN.div(
-      MathBN.mult(itemSubtotal, 100),
+      MathBN.mult(lineItemAmount, 100),
       promotionValueForItem
     )
 
@@ -51,29 +30,15 @@ function getPromotionValueForFixed(
       MathBN.div(percentage, 100)
     ).precision(4)
   }
-  return promotionAmount
+  return promotion.value
 }
 
-export function getPromotionValue(
-  sumTaxRate,
-  promotion,
-  lineItemSubtotal,
-  lineItemsSubtotal
-) {
+export function getPromotionValue(promotion, lineItemAmount, lineItemsAmount) {
   if (promotion.type === ApplicationMethodType.PERCENTAGE) {
-    return getPromotionValueForPercentage(
-      sumTaxRate,
-      promotion,
-      lineItemSubtotal
-    )
+    return getPromotionValueForPercentage(promotion, lineItemAmount)
   }
 
-  return getPromotionValueForFixed(
-    sumTaxRate,
-    promotion,
-    lineItemSubtotal,
-    lineItemsSubtotal
-  )
+  return getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount)
 }
 
 export function getApplicableQuantity(lineItem, maxQuantity) {
@@ -88,10 +53,14 @@ function getLineItemSubtotal(lineItem) {
   return MathBN.div(lineItem.subtotal, lineItem.quantity)
 }
 
+function getLineItemTotal(lineItem) {
+  return MathBN.div(lineItem.total, lineItem.quantity)
+}
+
 export function calculateAdjustmentAmountFromPromotion(
   lineItem,
   promotion,
-  lineItemsSubtotal: BigNumberInput = 0
+  lineItemsAmount: BigNumberInput = 0
 ) {
   /*
     For a promotion with an across allocation, we consider not only the line item total, but also the total of all other line items in the order.
@@ -121,34 +90,28 @@ export function calculateAdjustmentAmountFromPromotion(
       total: 100$
   
   */
-  const sumTax = MathBN.sum(
-    ...((lineItem.tax_lines ?? []).map((taxLine) => taxLine.rate) ?? [])
-  )
-  const sumTaxRate = MathBN.div(sumTax, 100)
-
   if (promotion.allocation === ApplicationMethodAllocation.ACROSS) {
     const quantity = getApplicableQuantity(lineItem, promotion.max_quantity)
-    const lineItemSubtotal = MathBN.mult(
-      getLineItemSubtotal(lineItem),
+
+    const lineItemAmount = MathBN.mult(
+      promotion.is_tax_inclusive
+        ? getLineItemTotal(lineItem)
+        : getLineItemSubtotal(lineItem),
       quantity
     )
-    const applicableSubtotal = MathBN.sub(
-      lineItemSubtotal,
-      promotion.applied_value
-    )
+    const applicableAmount = MathBN.sub(lineItemAmount, promotion.applied_value)
 
-    if (MathBN.lte(applicableSubtotal, 0)) {
-      return applicableSubtotal
+    if (MathBN.lte(applicableAmount, 0)) {
+      return applicableAmount
     }
 
     const promotionValue = getPromotionValue(
-      sumTaxRate,
       promotion,
-      applicableSubtotal,
-      lineItemsSubtotal
+      applicableAmount,
+      lineItemsAmount
     )
 
-    return MathBN.min(promotionValue, applicableSubtotal)
+    return MathBN.min(promotionValue, applicableAmount)
   }
 
   /*
@@ -170,30 +133,32 @@ export function calculateAdjustmentAmountFromPromotion(
       We then apply whichever is lower.
   */
 
-  const remainingItemSubtotal = MathBN.sub(
-    lineItem.subtotal,
+  const remainingItemAmount = MathBN.sub(
+    promotion.is_tax_inclusive ? lineItem.total : lineItem.subtotal,
     promotion.applied_value
   )
-  const unitPrice = MathBN.div(lineItem.subtotal, lineItem.quantity)
-  const maximumPromotionTotal = MathBN.mult(
-    unitPrice,
+  const itemAmount = MathBN.div(
+    promotion.is_tax_inclusive ? lineItem.total : lineItem.subtotal,
+    lineItem.quantity
+  )
+  const maximumPromotionAmount = MathBN.mult(
+    itemAmount,
     promotion.max_quantity ?? MathBN.convert(1)
   )
-  const applicableSubtotal = MathBN.min(
-    remainingItemSubtotal,
-    maximumPromotionTotal
+  const applicableAmount = MathBN.min(
+    remainingItemAmount,
+    maximumPromotionAmount
   )
 
-  if (MathBN.lte(applicableSubtotal, 0)) {
+  if (MathBN.lte(applicableAmount, 0)) {
     return MathBN.convert(0)
   }
 
   const promotionValue = getPromotionValue(
-    sumTaxRate,
     promotion,
-    applicableSubtotal,
-    lineItemsSubtotal
+    applicableAmount,
+    lineItemsAmount
   )
 
-  return MathBN.min(promotionValue, applicableSubtotal)
+  return MathBN.min(promotionValue, applicableAmount)
 }

@@ -7,7 +7,7 @@ export function calculateAdjustmentTotal({
   adjustments,
   taxRate,
 }: {
-  adjustments: Pick<AdjustmentLineDTO, "amount">[]
+  adjustments: Pick<AdjustmentLineDTO, "amount" | "is_tax_inclusive">[]
   taxRate?: BigNumberInput
 }) {
   // the sum of all adjustment amounts excluding tax
@@ -22,23 +22,22 @@ export function calculateAdjustmentTotal({
       continue
     }
 
-    const adjustmentAmount = MathBN.convert(adj.amount)
+    const adjustmentSubtotal =
+      isDefined(taxRate) && adj.is_tax_inclusive
+        ? MathBN.div(adj.amount, MathBN.add(1, taxRate))
+        : adj.amount
 
-    if (isDefined(taxRate)) {
-      const adjustmentTaxTotal = MathBN.mult(adjustmentAmount, taxRate)
-      const adjustmentTotal = MathBN.add(adjustmentAmount, adjustmentTaxTotal)
+    const adjustmentTaxTotal = isDefined(taxRate)
+      ? MathBN.mult(adjustmentSubtotal, taxRate)
+      : 0
+    const adjustmentTotal = MathBN.add(adjustmentSubtotal, adjustmentTaxTotal)
 
-      adjustmentsSubtotal = MathBN.add(adjustmentsSubtotal, adjustmentAmount)
-      adjustmentsTaxTotal = MathBN.add(adjustmentsTaxTotal, adjustmentTaxTotal)
-      adjustmentsTotal = MathBN.add(adjustmentsTotal, adjustmentTotal)
-      adj["subtotal"] = new BigNumber(adjustmentsSubtotal)
-      adj["total"] = new BigNumber(adjustmentsTotal)
-    } else {
-      adjustmentsSubtotal = MathBN.add(adjustmentsSubtotal, adjustmentAmount)
-      adjustmentsTotal = MathBN.add(adjustmentsTotal, adjustmentAmount)
-      adj["subtotal"] = new BigNumber(adjustmentsSubtotal)
-      adj["total"] = new BigNumber(adjustmentsTotal)
-    }
+    adjustmentsSubtotal = MathBN.add(adjustmentsSubtotal, adjustmentSubtotal)
+    adjustmentsTaxTotal = MathBN.add(adjustmentsTaxTotal, adjustmentTaxTotal)
+    adjustmentsTotal = MathBN.add(adjustmentsTotal, adjustmentTotal)
+
+    adj["subtotal"] = new BigNumber(adjustmentsSubtotal)
+    adj["total"] = new BigNumber(adjustmentsTotal)
   }
 
   return {

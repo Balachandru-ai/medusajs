@@ -782,7 +782,8 @@ medusaIntegrationTestRunner({
 
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      amount: 80,
+                      amount: 100,
+                      is_tax_inclusive: true,
                       provider_id: null,
                       code: "FIXED_10",
                     }),
@@ -866,7 +867,8 @@ medusaIntegrationTestRunner({
 
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      amount: 80,
+                      amount: 100,
+                      is_tax_inclusive: true,
                       provider_id: null,
                       code: "FIXED_10",
                     }),
@@ -1075,7 +1077,8 @@ medusaIntegrationTestRunner({
 
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      amount: 80,
+                      amount: 100,
+                      is_tax_inclusive: true,
                     }),
                   ]),
                 }),
@@ -1096,7 +1099,8 @@ medusaIntegrationTestRunner({
 
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      amount: 80,
+                      amount: 100,
+                      is_tax_inclusive: true,
                     }),
                   ]),
                 }),
@@ -1178,7 +1182,8 @@ medusaIntegrationTestRunner({
 
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      amount: 80,
+                      amount: 100,
+                      is_tax_inclusive: true,
                     }),
                   ]),
                 }),
@@ -1199,7 +1204,8 @@ medusaIntegrationTestRunner({
 
                   adjustments: expect.arrayContaining([
                     expect.objectContaining({
-                      amount: 80,
+                      amount: 100,
+                      is_tax_inclusive: true,
                     }),
                   ]),
                 }),

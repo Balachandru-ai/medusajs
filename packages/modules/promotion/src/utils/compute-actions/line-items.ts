@@ -103,24 +103,29 @@ function applyPromotionToItems(
     ? 1
     : applicationMethod?.max_quantity!
 
-  let lineItemsSubtotal = MathBN.convert(0)
+  let lineItemsAmount = MathBN.convert(0)
   if (allocation === ApplicationMethodAllocation.ACROSS) {
-    lineItemsSubtotal = applicableItems.reduce(
+    lineItemsAmount = applicableItems.reduce(
       (acc, item) =>
         MathBN.sub(
-          MathBN.add(acc, item.subtotal),
+          MathBN.add(
+            acc,
+            promotion.is_tax_inclusive ? item.total : item.subtotal
+          ),
           appliedPromotionsMap.get(item.id) ?? 0
         ),
       MathBN.convert(0)
     )
 
-    if (MathBN.lte(lineItemsSubtotal, 0)) {
+    if (MathBN.lte(lineItemsAmount, 0)) {
       return computedActions
     }
   }
 
   for (const item of applicableItems) {
-    if (MathBN.lte(item.subtotal, 0)) {
+    if (
+      MathBN.lte(promotion.is_tax_inclusive ? item.total : item.subtotal, 0)
+    ) {
       continue
     }
 
@@ -140,7 +145,7 @@ function applyPromotionToItems(
         type: applicationMethod?.type!,
         allocation,
       },
-      lineItemsSubtotal
+      lineItemsAmount
     )
 
     if (MathBN.lte(amount, 0)) {
@@ -165,6 +170,7 @@ function applyPromotionToItems(
         item_id: item.id,
         amount,
         code: promotion.code!,
+        is_tax_inclusive: promotion.is_tax_inclusive,
       })
     } else if (isTargetShippingMethod) {
       computedActions.push({

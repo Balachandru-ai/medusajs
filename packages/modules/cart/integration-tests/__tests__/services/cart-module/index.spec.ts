@@ -2904,6 +2904,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
                 id: expect.any(String),
                 description: null,
                 code: "FREE",
+                is_tax_inclusive: false,
                 raw_amount: {
                   value: "100",
                   precision: 20,
@@ -3011,6 +3012,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
                 id: expect.any(String),
                 description: null,
                 code: "FREE-2",
+                is_tax_inclusive: false,
                 raw_amount: {
                   value: "200",
                   precision: 20,
