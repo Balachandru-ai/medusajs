@@ -52,7 +52,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/custom-cli-scripts/page.mdx": "2025-07-25T15:32:47.587Z",
   "app/learn/debugging-and-testing/testing-tools/integration-tests/api-routes/page.mdx": "2025-03-18T15:06:27.864Z",
   "app/learn/debugging-and-testing/testing-tools/integration-tests/page.mdx": "2024-12-09T15:52:01.019Z",
-  "app/learn/debugging-and-testing/testing-tools/integration-tests/workflows/page.mdx": "2025-02-11T15:56:03.835Z",
+  "app/learn/debugging-and-testing/testing-tools/integration-tests/workflows/page.mdx": "2025-07-30T13:43:44.636Z",
   "app/learn/debugging-and-testing/testing-tools/page.mdx": "2025-07-23T15:32:18.008Z",
   "app/learn/debugging-and-testing/testing-tools/unit-tests/module-example/page.mdx": "2024-09-02T11:04:27.232Z",
   "app/learn/debugging-and-testing/testing-tools/unit-tests/page.mdx": "2024-09-02T11:03:26.997Z",
@@ -126,5 +126,5 @@ export const generatedEditDates = {
   "app/learn/installation/docker/page.mdx": "2025-07-23T15:34:18.530Z",
   "app/learn/fundamentals/generated-types/page.mdx": "2025-07-25T13:17:35.319Z",
   "app/learn/introduction/from-v1-to-v2/page.mdx": "2025-07-30T08:13:48.592Z",
-  "app/learn/debugging-and-testing/debug-workflows/page.mdx": "2025-07-30T10:38:41.398Z"
+  "app/learn/debugging-and-testing/debug-workflows/page.mdx": "2025-07-30T13:45:14.117Z"
 }
