@@ -844,6 +844,16 @@ export const generatedSidebars = [
                 "children": [],
                 "chapterTitle": "3.7.14. Multiple Step Usage",
                 "number": "3.7.14."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "ref",
+                "path": "/learn/debugging-and-testing/debug-workflows",
+                "title": "Debug Workflows",
+                "children": [],
+                "chapterTitle": "3.7.15. Debug Workflows",
+                "number": "3.7.15."
               }
             ],
             "chapterTitle": "3.7. Workflows",
@@ -1156,6 +1166,16 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "path": "/learn/debugging-and-testing/debug-workflows",
+            "title": "Debug Workflows",
+            "children": [],
+            "chapterTitle": "7.4. Debug Workflows",
+            "number": "7.4."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "path": "/learn/debugging-and-testing/instrumentation",
             "title": "Instrumentation",
             "children": [
@@ -1166,12 +1186,12 @@ export const generatedSidebars = [
                 "path": "/resources/integrations/guides/sentry",
                 "title": "Guide: Sentry",
                 "children": [],
-                "chapterTitle": "7.4.1. Guide: Sentry",
-                "number": "7.4.1."
+                "chapterTitle": "7.5.1. Guide: Sentry",
+                "number": "7.5.1."
               }
             ],
-            "chapterTitle": "7.4. Instrumentation",
-            "number": "7.4."
+            "chapterTitle": "7.5. Instrumentation",
+            "number": "7.5."
           },
           {
             "loaded": true,
@@ -1180,8 +1200,8 @@ export const generatedSidebars = [
             "path": "/learn/debugging-and-testing/logging",
             "title": "Logging",
             "children": [],
-            "chapterTitle": "7.5. Logging",
-            "number": "7.5."
+            "chapterTitle": "7.6. Logging",
+            "number": "7.6."
           }
         ],
         "chapterTitle": "7. Debugging & Testing",
