@@ -35,6 +35,11 @@ export const sidebars = [
             title: "AI Assistants and LLMs",
             path: "/learn/introduction/build-with-llms-ai",
           },
+          {
+            type: "link",
+            title: "From v1 to v2",
+            path: "/learn/introduction/from-v1-to-v2",
+          },
         ],
       },
       {
