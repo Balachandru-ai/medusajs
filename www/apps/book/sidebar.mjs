@@ -443,6 +443,11 @@ export const sidebars = [
                 path: "/learn/fundamentals/workflows/multiple-step-usage",
                 title: "Multiple Step Usage",
               },
+              {
+                type: "ref",
+                path: "/learn/debugging-and-testing/debug-workflows",
+                title: "Debug Workflows",
+              },
             ],
           },
           {
@@ -603,6 +608,11 @@ export const sidebars = [
             type: "link",
             path: "/learn/debugging-and-testing/testing-tools/modules-tests",
             title: "Modules Tests",
+          },
+          {
+            type: "link",
+            path: "/learn/debugging-and-testing/debug-workflows",
+            title: "Debug Workflows",
           },
           {
             type: "link",
