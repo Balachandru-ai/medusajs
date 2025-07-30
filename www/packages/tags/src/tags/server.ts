@@ -8,12 +8,20 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
   },
   {
+    "title": "Retrieve Cart Totals using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals"
+  },
+  {
     "title": "Extend Cart",
     "path": "https://docs.medusajs.com/resources/commerce-modules/cart/extend"
   },
   {
     "title": "Extend Customer",
     "path": "https://docs.medusajs.com/resources/commerce-modules/customer/extend"
+  },
+  {
+    "title": "Retrieve Order Totals Using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals"
   },
   {
     "title": "Extend Product",

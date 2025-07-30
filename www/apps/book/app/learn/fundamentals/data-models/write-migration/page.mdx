@@ -37,7 +37,7 @@ You can also write migrations manually. To do that, create a file in the `migrat
 
 For example:
 
-```ts title="src/modules/blog/migrations/Migration202507021059.ts"
+```ts title="src/modules/blog/migrations/Migration202507021059_create_author.ts"
 import { Migration } from "@mikro-orm/migrations"
 
 export class Migration202507021059 extends Migration {
@@ -62,6 +62,12 @@ In the example above, the `up` method creates the table `author`, and the `down`
 Refer to [MikroORM's documentation](https://mikro-orm.io/docs/migrations#migration-class) for more details on writing migrations.
 
 </Note>
+
+### Migration File Naming
+
+Migrations are executed in the ascending order of their file names. So, it's recommended to prefix the migration file name with the timestamp of when the migration was created. This ensures that migrations are executed in the order they were created.
+
+For example, if you create a migration on July 2, 2025, at 10:59 AM, the file name should be `Migration202507021059_create_brand.ts`. This way, the migration will be executed after any previous migrations that were created before this date and time.
 
 ---
 

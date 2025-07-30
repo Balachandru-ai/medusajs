@@ -59,6 +59,16 @@ export const generatedSidebars = [
             "children": [],
             "chapterTitle": "1.4. AI Assistants and LLMs",
             "number": "1.4."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "From v1 to v2",
+            "path": "/learn/introduction/from-v1-to-v2",
+            "children": [],
+            "chapterTitle": "1.5. From v1 to v2",
+            "number": "1.5."
           }
         ],
         "chapterTitle": "1. Getting Started",
@@ -932,6 +942,16 @@ export const generatedSidebars = [
             ],
             "chapterTitle": "3.11. Custom CLI Scripts",
             "number": "3.11."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/learn/fundamentals/generated-types",
+            "title": "Auto-Generated Types",
+            "children": [],
+            "chapterTitle": "3.12. Auto-Generated Types",
+            "number": "3.12."
           }
         ],
         "chapterTitle": "3. Framework",

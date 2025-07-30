@@ -146,6 +146,22 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Retrieve Cart Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Order Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Send Notification",
               "path": "https://docs.medusajs.com/resources/infrastructure-modules/notification/send-notification",
               "children": []

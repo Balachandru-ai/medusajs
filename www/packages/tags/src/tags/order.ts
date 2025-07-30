@@ -36,6 +36,10 @@ export const order = [
     "path": "https://docs.medusajs.com/user-guide/settings/return-reasons"
   },
   {
+    "title": "Retrieve Order Totals Using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals"
+  },
+  {
     "title": "Implement Quote Management",
     "path": "https://docs.medusajs.com/resources/examples/guides/quote-management"
   },
@@ -610,10 +614,6 @@ export const order = [
   {
     "title": "capturePaymentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/capturePaymentWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "refundPaymentWorkflow",

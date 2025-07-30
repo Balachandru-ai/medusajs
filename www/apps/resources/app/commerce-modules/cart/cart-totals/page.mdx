@@ -1,0 +1,238 @@
+---
+tags:
+  - cart
+  - name: how to
+    label: Retrieve Cart Totals
+  - server
+---
+
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Retrieve Cart Totals using Query`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to retrieve cart totals in your Medusa application using [Query](!docs!/learn/fundamentals/module-links/query).
+
+You may need to retrieve cart totals in your Medusa customizations, such as workflows or custom API routes, to perform custom actions with them. The ideal way to retrieve totals is with Query.
+
+<Note title="Looking for a storefront guide?">
+
+Refer to the [Retrieve Cart Totals in Storefront](../../../storefront-development/cart/totals/page.mdx) guide for a storefront-specific approach.
+
+</Note>
+
+## How to Retrieve Cart Totals with Query
+
+To retrieve cart totals, pass the `total` field within the `fields` option of Query. For example:
+
+<Note title="Tip">
+
+Use `useQueryGraphStep` in workflows, and `query.graph` in custom API routes, scheduled jobs, and subscribers.
+
+</Note>
+
+<CodeTabs group="query-type">
+  <CodeTab label="useQueryGraphStep" value="useQueryGraphStep">
+
+```ts highlights={[["12"]]}
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const { data: carts } = useQueryGraphStep({
+      entity: "cart",
+      fields: [
+        "id",
+        "currency_code",
+        "total",
+        "items.*",
+        "shipping_methods.*",
+      ],
+      filters: {
+        id: "cart_123", // Specify the cart ID
+      },
+    })
+  }
+)
+```
+  </CodeTab>
+  <CodeTab label="query.graph" value="query.graph">
+
+```ts highlights={[["8"]]}
+const query = container.resolve("query") // or req.scope.resolve in API routes
+
+const { data: [cart] } = await query.graph({
+  entity: "cart",
+  fields: [
+    "id",
+    "currency_code",
+    "total",
+    "items.*",
+    "shipping_methods.*",
+  ],
+  filters: {
+    id: "cart_123", // Specify the cart ID
+  }
+})
+```
+  </CodeTab>
+</CodeTabs>
+
+By specifying the `total` field, you retrieve totals related to the cart, line items, and shipping methods. The returned `cart` object will look like this:
+
+```json
+{
+  "id": "cart_123",
+  "currency_code": "usd",
+  "total": 10,
+  "items": [
+    {
+      "id": "cali_123",
+      // ...
+      "unit_price": 10,
+      "subtotal": 10,
+      "total": 0,
+      "original_total": 10,
+      "discount_total": 10,
+      "discount_subtotal": 10,
+      "discount_tax_total": 0,
+      "tax_total": 0,
+      "original_tax_total": 0,
+    }
+  ],
+  "shipping_methods": [
+    {
+      "id": "casm_01K10AYZDKZGQXE8WXW3QP9T22",
+      // ...
+      "amount": 10,
+      "subtotal": 10,
+      "total": 10,
+      "original_total": 10,
+      "discount_total": 0,
+      "discount_subtotal": 0,
+      "discount_tax_total": 0,
+      "tax_total": 0,
+      "original_tax_total": 0,
+    }
+  ]
+}
+```
+
+### Cart Grand Total
+
+The cart's grand total is the `total` field in the `cart` object. It represents the total amount of the cart, including all line items, shipping methods, taxes, and discounts.
+
+### Cart Line Item Totals
+
+The `items` array in the `cart` object contains total fields for each line item:
+
+- `unit_price`: The price of a single unit of the line item. This field is not calculated and is stored in the database.
+- `subtotal`: The total price of the line item before any discounts or taxes.
+- `total`: The total price of the line item after applying discounts and taxes.
+- `original_total`: The total price of the line item before any discounts.
+- `discount_total`: The total amount of discounts applied to the line item.
+- `discount_subtotal`: The total amount of discounts applied to the line item's subtotal.
+- `discount_tax_total`: The total amount of discounts applied to the line item's tax.
+- `tax_total`: The total tax amount applied to the line item.
+- `original_tax_total`: The total tax amount applied to the line item before any discounts.
+
+### Cart Shipping Method Totals
+
+The `shipping_methods` array in the `cart` object contains total fields for each shipping method:
+
+- `amount`: The amount charged for the shipping method. This field is not calculated and is stored in the database.
+- `subtotal`: The total price of the shipping method before any discounts or taxes.
+- `total`: The total price of the shipping method after applying discounts and taxes.
+- `original_total`: The total price of the shipping method before any discounts.
+- `discount_total`: The total amount of discounts applied to the shipping method.
+- `discount_subtotal`: The total amount of discounts applied to the shipping method's subtotal.
+- `discount_tax_total`: The total amount of discounts applied to the shipping method's tax.
+- `tax_total`: The total tax amount applied to the shipping method.
+- `original_tax_total`: The total tax amount applied to the shipping method before any discounts.
+
+---
+
+## Caveats of Retrieving Cart Totals
+
+### Using Astrisk (*) in Cart's Query
+
+Cart totals are calculated based on the cart's line items, shipping methods, taxes, and any discounts applied. They are not stored in the `Cart` data model.
+
+For that reason, you cannot retrieve cart totals by passing `*` to the Query's fields. For example, the following query will not return cart totals:
+
+<CodeTabs group="query-type">
+  <CodeTab label="useQueryGraphStep" value="useQueryGraphStep">
+
+```ts
+const { data: carts } = useQueryGraphStep({
+  entity: "cart",
+  fields: ["*"],
+  filters: {
+    id: "cart_123",
+  },
+})
+
+// carts don't include cart totals
+```
+  </CodeTab>
+  <CodeTab label="query.graph" value="query.graph">
+
+```ts
+const { data: [cart] } = await query.graph({
+  entity: "cart",
+  fields: ["*"],
+  filters: {
+    id: "cart_123",
+  }
+})
+
+// cart doesn't include cart totals
+```
+  </CodeTab>
+</CodeTabs>
+
+This will return the cart data stored in the database, but not the calculated totals.
+
+You also can't pass `*` along with `total` in the Query's fields option. Passing `*` will override the `total` field, and you will not retrieve cart totals. For example, the following query will not return cart totals:
+
+<CodeTabs group="query-type">
+  <CodeTab label="useQueryGraphStep" value="useQueryGraphStep">
+
+```ts
+const { data: carts } = useQueryGraphStep({
+  entity: "cart",
+  fields: ["*", "total"],
+  filters: {
+    id: "cart_123",
+  },
+})
+
+// carts don't include cart totals
+```
+  </CodeTab>
+  <CodeTab label="query.graph" value="query.graph">
+
+```ts
+const { data: [cart] } = await query.graph({
+  entity: "cart",
+  fields: ["*", "total"],
+  filters: {
+    id: "cart_123",
+  }
+})
+
+// cart doesn't include cart totals
+```
+  </CodeTab>
+</CodeTabs>
+
+Instead, when you need to retrieve cart totals, explicitly pass the `total` field in the Query's fields option, as shown in [the previous section](#how-to-retrieve-cart-totals-with-query). You can also include other fields and relations you need, such as `email` and `items.*`.
+
+### Applying Filters on Cart Totals
+
+You can't apply filters directly on the cart totals, as they are not stored in the `Cart` data model. You can still filter the cart based on its properties, such as `id`, `email`, or `currency_code`, but not on the calculated totals.
