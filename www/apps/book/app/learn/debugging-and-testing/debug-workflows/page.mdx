@@ -28,7 +28,7 @@ There are several ways to debug workflows in Medusa:
   <Table.Body>
     <Table.Row>
       <Table.Cell>
-        Write integration tests
+        [Write integration tests](#approach-1-write-integration-tests)
       </Table.Cell>
       <Table.Cell>
         To ensure your workflow produces the expected results and handles edge cases.
@@ -36,7 +36,7 @@ There are several ways to debug workflows in Medusa:
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        Add breakpoints
+        [Add breakpoints](#approach-2-add-breakpoints)
       </Table.Cell>
       <Table.Cell>
         To inspect specific steps in your workflow and understand the data flow.
@@ -44,7 +44,7 @@ There are several ways to debug workflows in Medusa:
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        Log messages
+        [Log messages](#approach-3-log-messages)
       </Table.Cell>
       <Table.Cell>
         To check values during execution with minimal overhead.
@@ -52,7 +52,7 @@ There are several ways to debug workflows in Medusa:
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        View Workflow Executions in Medusa Admin
+        [View Workflow Executions in Medusa Admin](#approach-4-monitor-workflow-executions-in-medusa-admin)
       </Table.Cell>
       <Table.Cell>
         To monitor stored workflow executions and long-running workflows, especially in production environments.
@@ -140,12 +140,12 @@ import {
   createWorkflow, 
   StepResponse, 
   WorkflowResponse,
-} from "@medusajs/framework/workflows-sdk";
+} from "@medusajs/framework/workflows-sdk"
 
 const step1 = createStep(
   "step-1",
   async () => {
-    const message = "Hello from step 1!";
+    const message = "Hello from step 1!"
 
     return new StepResponse(
       message
@@ -171,10 +171,10 @@ export const myWorkflow = createWorkflow(
     step2()
 
     return new WorkflowResponse({
-      response
+      response,
     })
   }
-);
+)
 ```
   </CodeTab>
   <CodeTab label="Transform Callback" value="transform-callback">
@@ -424,12 +424,12 @@ import {
   createWorkflow, 
   StepResponse, 
   WorkflowResponse,
-} from "@medusajs/framework/workflows-sdk";
+} from "@medusajs/framework/workflows-sdk"
 
 const step1 = createStep(
   "step-1",
   async () => {
-    const message = "Hello from step 1!";
+    const message = "Hello from step 1!"
 
     return new StepResponse(
       message
@@ -447,10 +447,10 @@ export const myWorkflow = createWorkflow(
     const response = step1()
 
     return new WorkflowResponse({
-      response
+      response,
     })
   }
-);
+)
 ```
 
 <Note>
@@ -460,12 +460,3 @@ Refer to the [Store Workflow Executions](../../fundamentals/workflows/store-exec
 </Note>
 
 You can view all executions of this workflow in the Medusa Admin under the [Workflows settings page](!user-guide!/settings/developer/workflows). Each execution will show you the status, input, and output data.
-
----
-
-## Related Topics
-
-- [Error Handling in Workflows](../../fundamentals/workflows/errors/page.mdx) - For debugging error scenarios and compensation functions
-- [Long-Running Workflows](../../fundamentals/workflows/long-running-workflow/page.mdx) - For debugging async workflows and step status management
-- [Store Workflow Executions](../../fundamentals/workflows/store-executions/page.mdx) - For programmatic access to execution details
-- [Workflow Execution States](!user-guide!/settings/developer/workflows#workflow-execution-status) - For understanding execution statuses in the admin
