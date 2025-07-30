@@ -31,7 +31,7 @@ const standardPromotionPayload = {
     target_type: "items",
     type: "fixed",
     allocation: "each",
-    currency_code: "USD",
+    currency_code: "usd",
     value: 100,
     max_quantity: 100,
     target_rules: [
@@ -87,7 +87,7 @@ medusaIntegrationTestRunner({
                 target_type: "items",
                 value: 100,
                 target_rules: [promotionRule],
-                currency_code: "USD",
+                currency_code: "usd",
               },
               rules: [promotionRule],
             },
@@ -180,7 +180,7 @@ medusaIntegrationTestRunner({
                 type: "fixed",
                 target_type: "order",
                 value: 100,
-                currency_code: "USD",
+                currency_code: "usd",
               },
             },
             adminHeaders
@@ -322,7 +322,7 @@ medusaIntegrationTestRunner({
                   allocation: "each",
                   value: 100,
                   max_quantity: 100,
-                  currency_code: "USD",
+                  currency_code: "usd",
                   target_rules: [
                     {
                       attribute: "test.test",
@@ -364,7 +364,7 @@ medusaIntegrationTestRunner({
                   allocation: "each",
                   value: 100,
                   max_quantity: 100,
-                  currency_code: "USD",
+                  currency_code: "usd",
                   buy_rules: [
                     {
                       attribute: "test.test",
@@ -415,7 +415,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 100,
                 apply_to_quantity: 1,
                 buy_rules_min_quantity: 1,
-                currency_code: "USD",
+                currency_code: "usd",
                 target_rules: [
                   {
                     attribute: "test.test",
@@ -557,7 +557,7 @@ medusaIntegrationTestRunner({
                   target_type: "items",
                   type: "fixed",
                   allocation: "each",
-                  currency_code: "USD",
+                  currency_code: "usd",
                   value: 100,
                   max_quantity: 100,
                 },
@@ -683,7 +683,7 @@ medusaIntegrationTestRunner({
                 target_type: "items",
                 type: "fixed",
                 allocation: "across",
-                currency_code: "DKK",
+                currency_code: "dkk",
                 value: 100,
               },
             },
@@ -727,11 +727,11 @@ medusaIntegrationTestRunner({
           ).data.cart
 
           /**
-           * Orignal total -> 1300 DKK (tax incl.)
+           * Orignal total -> 1300 dkk (tax incl.)
            * Tax rate -> 25%
-           * Promotion -> FIXED 100 DKK (tax incl.)
+           * Promotion -> FIXED 100 dkk (tax incl.)
            *
-           * We want total to be 1300 DKK - 100 DKK = 1200 DKK
+           * We want total to be 1300 dkk - 100 dkk = 1200 dkk
            */
           expect(cart).toEqual(
             expect.objectContaining({
@@ -812,11 +812,11 @@ medusaIntegrationTestRunner({
           ).data.order
 
           /**
-           * Orignal total -> 1300 DKK (tax incl.)
+           * Orignal total -> 1300 dkk (tax incl.)
            * Tax rate -> 25%
-           * Promotion -> FIXED 100 DKK (tax incl.)
+           * Promotion -> FIXED 100 dkk (tax incl.)
            *
-           * We want total to be 1300 DKK - 100 DKK = 1200 DKK
+           * We want total to be 1300 dkk - 100 dkk = 1200 dkk
            */
           expect(order).toEqual(
             expect.objectContaining({
@@ -972,7 +972,7 @@ medusaIntegrationTestRunner({
                 target_type: "items",
                 type: "fixed",
                 allocation: "each",
-                currency_code: "DKK",
+                currency_code: "dkk",
                 value: 100,
                 max_quantity: 2,
               },
@@ -1022,11 +1022,11 @@ medusaIntegrationTestRunner({
           ).data.cart
 
           /**
-           * Orignal total -> 1500 DKK (tax incl.)
-           * Promotion -> FIXED 100 DKK per item (tax incl.)
+           * Orignal total -> 1500 dkk (tax incl.)
+           * Promotion -> FIXED 100 dkk per item (tax incl.)
            * Tax rate -> 25%
            *
-           * We want total to be 1500 DKK - 100 DKK - 100 DKK = 1300 DKK
+           * We want total to be 1500 dkk - 100 dkk - 100 dkk = 1300 dkk
            */
           expect(cart).toEqual(
             expect.objectContaining({
@@ -1036,7 +1036,7 @@ medusaIntegrationTestRunner({
               subtotal: 1200, // taxable base (item subtotal - discount subtotal) = 1200 - 200 = 1000
               tax_total: 260,
 
-              discount_total: 200, // 2 * 100 DKK fixed tax inclusive
+              discount_total: 200, // 2 * 100 dkk fixed tax inclusive
               discount_subtotal: 160,
               discount_tax_total: 40,
 
@@ -1127,11 +1127,11 @@ medusaIntegrationTestRunner({
           ).data.order
 
           /**
-           * Orignal total -> 1500 DKK (tax incl.)
-           * Promotion -> FIXED 100 DKK per item (tax incl.)
+           * Orignal total -> 1500 dkk (tax incl.)
+           * Promotion -> FIXED 100 dkk per item (tax incl.)
            * Tax rate -> 25%
            *
-           * We want total to be 1500 DKK - 100 DKK - 100 DKK = 1300 DKK
+           * We want total to be 1500 dkk - 100 dkk - 100 dkk = 1300 dkk
            */
           expect(order).toEqual(
             expect.objectContaining({
@@ -1141,7 +1141,7 @@ medusaIntegrationTestRunner({
               subtotal: 1200, // taxable base (item subtotal - discount subtotal) = 1200 - 200 = 1000
               tax_total: 260,
 
-              discount_total: 200, // 2 * 100 DKK fixed tax inclusive
+              discount_total: 200, // 2 * 100 dkk fixed tax inclusive
               discount_subtotal: 160,
               discount_tax_total: 40,
 
@@ -1263,7 +1263,7 @@ medusaIntegrationTestRunner({
                 target_type: "items",
                 type: "fixed",
                 allocation: "across",
-                currency_code: "DKK",
+                currency_code: "dkk",
                 value: 100,
               },
             },
@@ -1307,9 +1307,9 @@ medusaIntegrationTestRunner({
           ).data.cart
 
           /**
-           * Orignal total -> 1300 DKK (tax incl.)
+           * Orignal total -> 1300 dkk (tax incl.)
            * Tax rate -> 25%
-           * Promotion -> FIXED 100 DKK (tax exclusive !)
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
            */
           expect(cart).toEqual(
             expect.objectContaining({
@@ -1388,9 +1388,9 @@ medusaIntegrationTestRunner({
           ).data.order
 
           /**
-           * Orignal total -> 1300 DKK (tax incl.)
+           * Orignal total -> 1300 dkk (tax incl.)
            * Tax rate -> 25%
-           * Promotion -> FIXED 100 DKK (tax exclusive !)
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
            */
           expect(order).toEqual(
             expect.objectContaining({
@@ -1500,7 +1500,7 @@ medusaIntegrationTestRunner({
                 target_type: "items",
                 type: "fixed",
                 allocation: "across",
-                currency_code: "DKK",
+                currency_code: "dkk",
                 value: 100,
               },
             },
@@ -1544,9 +1544,9 @@ medusaIntegrationTestRunner({
           ).data.cart
 
           /**
-           * Orignal total -> 1300 DKK (tax excl.)
+           * Orignal total -> 1300 dkk (tax excl.)
            * Tax rate -> 25%
-           * Promotion -> FIXED 100 DKK (tax exclusive !)
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
            */
           expect(cart).toEqual(
             expect.objectContaining({
@@ -1625,9 +1625,9 @@ medusaIntegrationTestRunner({
           ).data.order
 
           /**
-           * Orignal total -> 1300 DKK (tax excl.)
+           * Orignal total -> 1300 dkk (tax excl.)
            * Tax rate -> 25%
-           * Promotion -> FIXED 100 DKK (tax exclusive !)
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
            */
           expect(order).toEqual(
             expect.objectContaining({
@@ -2053,7 +2053,7 @@ medusaIntegrationTestRunner({
                   buy_rules_min_quantity: 1,
                   buy_rules: [promotionRule],
                   target_rules: [promotionRule],
-                  currency_code: "USD",
+                  currency_code: "usd",
                 },
                 rules: [promotionRule],
               },
@@ -2216,7 +2216,7 @@ medusaIntegrationTestRunner({
                 type: PromotionType.BUYGET,
                 application_method: {
                   type: "fixed",
-                  currency_code: "USD",
+                  currency_code: "usd",
                   target_type: "items",
                   allocation: "across",
                   value: 100,
