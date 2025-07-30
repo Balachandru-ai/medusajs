@@ -6064,13 +6064,13 @@ For more customizations related to routes, refer to the [Routing Customizations 
 
 # Admin Widgets
 
-In this chapter, you’ll learn more about widgets and how to use them.
+In this chapter, you’ll learn about widgets and how to use them.
 
 ## What is an Admin Widget?
 
-The Medusa Admin dashboard's pages are customizable to insert widgets of custom content in pre-defined injection zones. You create these widgets as React components that allow admin users to perform custom actions.
+The Medusa Admin's pages are customizable for inserting widgets of custom content in pre-defined injection zones. For example, you can add a widget on the product details page that allows admin users to sync products to a third-party service.
 
-For example, you can add a widget on the product details page that allow admin users to sync products to a third-party service.
+You create these widgets as React components that render the content and functionality of the widget.
 
 ***
 
@@ -6080,7 +6080,10 @@ For example, you can add a widget on the product details page that allow admin u
 
 - [Medusa application installed](https://docs.medusajs.com/learn/installation/index.html.md)
 
-You create a widget in a `.tsx` file under the `src/admin/widgets` directory. The file’s default export must be the widget, which is the React component that renders the custom content. The file must also export the widget’s configurations indicating where to insert the widget.
+You create a widget in a `.tsx` file under the `src/admin/widgets` directory. The file must export:
+
+1. A React component that renders the widget. This will be the file's default export.
+2. The widget’s configurations indicating where to insert the widget.
 
 For example, create the file `src/admin/widgets/product-widget.tsx` with the following content:
 
@@ -6109,11 +6112,11 @@ export const config = defineWidgetConfig({
 export default ProductWidget
 ```
 
-You export the `ProductWidget` component, which shows the heading `Product Widget`. In the widget, you use [Medusa UI](https://docs.medusajs.com/ui/index.html.md), a package that Medusa maintains to allow you to customize the dashboard with the same components used to build it.
-
-To export the widget's configurations, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts as a parameter an object with the `zone` property, whose value is a string or an array of strings, each being the name of the zone to inject the widget into.
-
 In the example above, the widget is injected at the top of a product’s details.
+
+You export the `ProductWidget` component, which displays the heading `Product Widget`. In the widget, you use [Medusa UI](https://docs.medusajs.com/ui/index.html.md) to customize the dashboard with the same components used to build it.
+
+To export the widget's configuration, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts an object as a parameter with the `zone` property, whose value is a string or an array of strings, each being the name of the zone to inject the widget into.
 
 The widget component must be created as an arrow function.
 
@@ -6129,9 +6132,9 @@ Then, open a product’s details page. You’ll find your custom widget at the t
 
 ***
 
-## Props Passed in Detail Pages
+## Props Passed to Widgets on Detail Pages
 
-Widgets that are injected into a details page receive a `data` prop, which is the main data of the details page.
+Widgets that are injected into a detail page receive a `data` prop, which is the main data of the details page.
 
 For example, a widget injected into the `product.details.before` zone receives the product's details in the `data` prop:
 
@@ -6170,15 +6173,17 @@ The props type is `DetailWidgetProps`, and it accepts as a type argument the exp
 
 ***
 
-## Injection Zone
+## Injection Zones List
 
-Refer to [this reference](https://docs.medusajs.com/resources/admin-widget-injection-zones/index.html.md) for the full list of injection zones and their props.
+Refer to the [Admin Widget Injection Zones](https://docs.medusajs.com/resources/admin-widget-injection-zones/index.html.md) reference for the full list of injection zones and their props.
 
 ***
 
 ## Admin Components List
 
-To build admin customizations that match the Medusa Admin's designs and layouts, refer to [this guide](https://docs.medusajs.com/resources/admin-components/index.html.md) to find common components.
+While the Medusa Admin uses the [Medusa UI](https://docs.medusajs.com/ui/index.html.md) components, it also expands on them for styling and design purposes.
+
+To build admin customizations that match the Medusa Admin's designs and layouts, refer to the [Admin Components](https://docs.medusajs.com/resources/admin-components/index.html.md) guide. You'll find components like `Header`, `JSON View`, and more that match the Medusa Admin's design.
 
 ***
 
@@ -6186,7 +6191,7 @@ To build admin customizations that match the Medusa Admin's designs and layouts,
 
 In some cases, you may want to show a widget only if certain conditions are met. For example, you may want to show a widget only if the product has a brand.
 
-To disable the widget from showing, return an empty fragment from the widget component:
+To prevent the widget from showing, return an empty fragment from the widget component:
 
 ```tsx title="src/admin/widgets/product-widget.tsx"
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
@@ -6690,7 +6695,7 @@ In this chapter, you'll learn about how to add new API routes for each HTTP meth
 
 ## HTTP Method Handler
 
-An API route is created for every HTTP method you export a handler function for in a route file.
+An API route is created for every HTTP method you export a handler function for in a `route.ts` or `route.js` file.
 
 Allowed HTTP methods are: `GET`, `POST`, `DELETE`, `PUT`, `PATCH`, `OPTIONS`, and `HEAD`.
 
@@ -6721,10 +6726,10 @@ export const POST = async (
 }
 ```
 
-This adds two API Routes:
+This file adds two API Routes:
 
-- A `GET` route at `http://localhost:9000/hello-world`.
-- A `POST` route at `http://localhost:9000/hello-world`.
+- A `GET` API route at `http://localhost:9000/hello-world`.
+- A `POST` API route at `http://localhost:9000/hello-world`.
 
 
 # Middlewares
@@ -7160,25 +7165,25 @@ Some examples of when you might want to replicate an API route include:
 
 # API Routes
 
-In this chapter, you’ll learn what API Routes are and how to create them.
+In this chapter, you’ll learn what API routes are and how to create them.
 
 ## What is an API Route?
 
-An API Route is an endpoint. It exposes commerce features to external applications, such as storefronts, the admin dashboard, or third-party systems.
+An API route is a REST endpoint that exposes commerce features to external applications, such as storefronts, the admin dashboard, or third-party systems.
 
-The Medusa core application provides a set of admin and store API routes out-of-the-box. You can also create custom API routes to expose your custom functionalities.
+The Medusa core application provides a set of [admin](https://docs.medusajs.com/api/admin) and [store](https://docs.medusajs.com/api/store) API routes out-of-the-box. You can also create custom API routes to expose your custom functionalities.
 
 ***
 
 ## How to Create an API Route?
 
-An API Route is created in a TypeScript or JavaScript file under the `src/api` directory of your Medusa application. The file’s name must be `route.ts` or `route.js`.
+You can create an API route in a TypeScript or JavaScript file under the `src/api` directory of your Medusa application. The file’s name must be `route.ts` or `route.js`.
 
 ![Example of API route in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732808645/Medusa%20Book/route-dir-overview_dqgzmk.jpg)
 
-Each file exports API Route handler functions for at least one HTTP method (`GET`, `POST`, `DELETE`, etc…).
+Each file exports API route handler functions for at least one HTTP method (`GET`, `POST`, `DELETE`, etc…).
 
-For example, to create a `GET` API Route at `/hello-world`, create the file `src/api/hello-world/route.ts` with the following content:
+For example, to create a `GET` API route at `/hello-world`, create the file `src/api/hello-world/route.ts` with the following content:
 
 ```ts title="src/api/hello-world/route.ts"
 import type {
@@ -7196,7 +7201,7 @@ export const GET = (
 }
 ```
 
-### Test API Route
+### Test the API Route
 
 To test the API route above, start the Medusa application:
 
@@ -7204,17 +7209,25 @@ To test the API route above, start the Medusa application:
 npm run dev
 ```
 
-Then, send a `GET` request to the `/hello-world` API Route:
+Then, send a `GET` request to the `/hello-world` API route:
 
 ```bash
 curl http://localhost:9000/hello-world
 ```
 
+You should receive the following response:
+
+```json
+{
+  "message": "[GET] Hello world!"
+}
+```
+
 ***
 
-## When to Use API Routes
+## Next Chapters: Learn More About API Routes
 
-You're exposing custom functionality to be used by a storefront, admin dashboard, or any external application.
+Follow the next chapters to learn about the different HTTP methods you can use in API routes, parameters and validation, protecting routes, and more.
 
 
 # API Route Parameters
@@ -7804,7 +7817,7 @@ In this chapter, you'll learn how to send a response in your API route.
 
 ## Send a JSON Response
 
-To send a JSON response, use the `json` method of the `MedusaResponse` object passed as the second parameter of your API route handler.
+To send a JSON response, use the `json` method of the `MedusaResponse` object that is passed as the second parameter of your API route handler.
 
 For example:
 
@@ -7888,10 +7901,10 @@ export const GET = async (
 
 The `writeHead` method accepts two parameters:
 
-1. The first one is the response's status code.
-2. The second is an object of key-value pairs to set the headers of the response.
+1. The first parameter is the response's status code.
+2. The second parameter is an object of key-value pairs to set the response headers.
 
-This API route opens a stream by setting the `Content-Type` in the header to `text/event-stream`. It then simulates a stream by creating an interval that writes the stream data every three seconds.
+This API route opens a stream by setting the `Content-Type` to `text/event-stream`. It then simulates a stream by creating an interval that writes the stream data every three seconds.
 
 ***
 
@@ -8234,17 +8247,22 @@ To see different examples and learn more about creating a validation schema, ref
 
 # Custom CLI Scripts
 
-In this chapter, you'll learn how to create and execute custom scripts from Medusa's CLI tool.
+In this chapter, you'll learn how to create and execute custom scripts using Medusa's CLI tool.
 
 ## What is a Custom CLI Script?
 
-A custom CLI script is a function to execute through Medusa's CLI tool. This is useful when creating custom Medusa tooling to run through the CLI.
+A custom CLI script is a function that you can execute using Medusa's CLI tool. It is useful when you need a script that has access to the [Medusa container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md) and can be executed using Medusa's CLI.
+
+For example, you can create a custom CLI script that:
+
+- [Seeds data into the database](https://docs.medusajs.com/learn/fundamentals/custom-cli-scripts/seed-data/index.html.md).
+- Runs a script before starting the Medusa application.
 
 ***
 
 ## How to Create a Custom CLI Script?
 
-To create a custom CLI script, create a TypeScript or JavaScript file under the `src/scripts` directory. The file must default export a function.
+To create a custom CLI script, create a TypeScript or JavaScript file under the `src/scripts` directory. The file must export a function by default.
 
 For example, create the file `src/scripts/my-script.ts` with the following content:
 
@@ -8267,13 +8285,13 @@ export default async function myScript({ container }: ExecArgs) {
 }
 ```
 
-The function receives as a parameter an object having a `container` property, which is an instance of the Medusa Container. Use it to resolve resources in your Medusa application.
+The function receives as a parameter an object with a `container` property, which is an instance of the Medusa Container. Use it to resolve resources in your Medusa application.
 
 ***
 
-## How to Run Custom CLI Script?
+## How to Run a Custom CLI Script?
 
-To run the custom CLI script, run the Medusa CLI's `exec` command:
+To run a custom CLI script, run the Medusa CLI's `exec` command:
 
 ```bash
 npx medusa exec ./src/scripts/my-script.ts
@@ -8285,7 +8303,7 @@ npx medusa exec ./src/scripts/my-script.ts
 
 Your script can accept arguments from the command line. Arguments are passed to the function's object parameter in the `args` property.
 
-For example:
+For example, create the following CLI script that logs the command line arguments:
 
 ```ts
 import { ExecArgs } from "@medusajs/framework/types"
@@ -8295,11 +8313,35 @@ export default async function myScript({ args }: ExecArgs) {
 }
 ```
 
-Then, pass the arguments in the `exec` command after the file path:
+Then, run the script with the `exec` command and pass arguments after the script's path.
 
 ```bash
 npx medusa exec ./src/scripts/my-script.ts arg1 arg2
 ```
+
+***
+
+## Run Custom Script on Application Startup
+
+In some cases, you may need to perform an action when the Medusa application starts.
+
+If the action is related to a module, you should use a [loader](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md). Otherwise, you can create a custom CLI script and run it before starting the Medusa application.
+
+To run a custom script on application startup, modify the `dev` and `start` commands in `package.json` to execute your script first.
+
+For example:
+
+```json title="package.json"
+{
+  "scripts": {
+    "startup": "medusa exec ./src/scripts/startup.ts",
+    "dev": "npm run startup && medusa develop",
+    "start": "npm run startup && medusa start"
+  }
+}
+```
+
+The `startup` script will run every time you run the Medusa application.
 
 
 # Seed Data with Custom CLI Script
@@ -11140,12 +11182,12 @@ In this chapter, you'll learn about the types Medusa automatically generates und
 
 Medusa automatically generates TypeScript types for:
 
-![Diagram showcasing the directory structure of the .medusa directory, highlighting the types folder and its contents.](https://res.cloudinary.com/dza7lstvk/image/upload/v1753448927/Medusa%20Book/generated-types-dir_bmvdts.jpg)
-
 1. Data models collected in the [Query's graph](https://docs.medusajs.com/learn/fundamentals/module-links/query#querying-the-graph/index.html.md). These types provide you with auto-completion and type checking when using Query.
    - Generated data model types are located in the `.medusa/types/query-entry-points.d.ts` file.
 2. Modules registered in the [Medusa container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md). These types provide you with auto-completion and type checking when resolving modules from the container.
    - Generated module registration names are located in the `.medusa/types/modules-bindings.d.ts` file.
+
+![Diagram showcasing the directory structure of the .medusa directory, highlighting the types folder and its contents.](https://res.cloudinary.com/dza7lstvk/image/upload/v1753448927/Medusa%20Book/generated-types-dir_bmvdts.jpg)
 
 ***
 
@@ -15105,29 +15147,29 @@ You can now resolve the MongoDB Module's main service in your customizations to 
 
 # Modules Directory Structure
 
-In this document, you'll learn about the expected files and directories in your module.
+In this chapter, you'll learn about the expected files and directories in your module.
 
 ![Module Directory Structure Example](https://res.cloudinary.com/dza7lstvk/image/upload/v1714379976/Medusa%20Book/modules-dir-overview_nqq7ne.jpg)
 
 ## index.ts
 
-The `index.ts` file in the root of your module's directory is the only required file. It must export the module's definition as explained in a [previous chapter](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md).
+The `index.ts` file is in the root of your module's directory and exports the module's definition as explained in the [Modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) chapter.
 
 ***
 
 ## service.ts
 
-A module must have a main service. It's created in the `service.ts` file at the root of your module directory as explained in a [previous chapter](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md).
+A module must have a main service that contains the module's business logic. It's created in the `service.ts` file at the root of your module directory as explained in the [Modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) chapter.
 
 ***
 
 ## Other Directories
 
-The following directories are optional and their content are explained more in the following chapters:
+The following directories are optional and you can choose to create them based on your module's functionality:
 
-- `models`: Holds the data models representing tables in the database.
-- `migrations`: Holds the migration files used to reflect changes on the database.
-- `loaders`: Holds the scripts to run on the Medusa application's start-up.
+- `models`: Holds the [data models](https://docs.medusajs.com/learn/fundamentals/data-models/index.html.md) representing tables in the database.
+- `migrations`: Holds the [migration](https://docs.medusajs.com/learn/fundamentals/data-models/write-migration/index.html.md) files used to reflect changes on the database.
+- `loaders`: Holds the [script files to run on the application's startup](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) when Medusa loads the module.
 
 
 # Multiple Services in a Module
@@ -16408,19 +16450,25 @@ For example, in a plugin, you can define a module that integrates a third-party 
 The next chapter explains how you can create and publish a plugin.
 
 
-# Scheduled Jobs Number of Executions
+# Scheduled Job Number of Executions
 
 In this chapter, you'll learn how to set a limit on the number of times a scheduled job is executed.
 
-## numberOfExecutions Option
+## Default Number of Scheduled Job Executions
 
-The export configuration object of the scheduled job accepts an optional property `numberOfExecutions`. Its value is a number indicating how many times the scheduled job can be executed during the Medusa application's runtime.
+By default, a scheduled job is executed whenever it matches its specified pattern. For example, if you set a scheduled job to run every five minutes, it will run every five minutes until you stop the Medusa application.
+
+***
+
+## Configure Number of Scheduled Job Executions
+
+To execute a scheduled job a specific number of times only, you can configure it with the `numberOfExecutions` option. Its value is the number of times the scheduled job can be executed during the Medusa application's runtime.
 
 For example:
 
 ```ts highlights={highlights}
 export default async function myCustomJob() {
-  console.log("I'll be executed three times only.")
+  console.log("I'll be executed only three times.")
 }
 
 export const config = {
@@ -16433,9 +16481,13 @@ export const config = {
 
 The above scheduled job has the `numberOfExecutions` configuration set to `3`.
 
-So, it'll only execute 3 times, each every minute, then it won't be executed anymore.
+So, Medusa will execute this job only 3 times, once every minute, and then it won't be executed anymore during the current runtime.
 
-If you restart the Medusa application, the scheduled job will be executed again until reaching the number of executions specified.
+### Configuration is Per Application Runtime
+
+Medusa tracks the number of executions for a scheduled job during its current runtime. Once the application stops, the next time you start it, the counter will be reset to `0`.
+
+So, if you restart the Medusa application, the scheduled job will be executed again until it reaches the number of executions specified.
 
 
 # Scheduled Jobs
@@ -16446,12 +16498,12 @@ In this chapter, you’ll learn about scheduled jobs and how to use them.
 
 When building your commerce application, you may need to automate tasks and run them repeatedly at a specific schedule. For example, you need to automatically sync products to a third-party service once a day.
 
-In other commerce platforms, this feature isn't natively supported. Instead, you have to setup a separate application to execute cron jobs, which adds complexity as to how you expose this task to be executed in a cron job, or how do you debug it when it's not running within the platform's tooling.
+In other commerce platforms, this feature isn't natively supported. Instead, you have to setup a separate application to execute cron jobs, which adds complexity as to how you expose this task to be executed in a cron job, or how you debug it when it's not running within the platform's tooling.
 
 Medusa removes this overhead by supporting this feature natively with scheduled jobs. A scheduled job is an asynchronous function that the Medusa application runs at the interval you specify during the Medusa application's runtime. Your efforts are only spent on implementing the functionality performed by the job, such as syncing products to an ERP.
 
-- You want the action to execute at a specified schedule while the Medusa application **isn't** running. Instead, use the operating system's equivalent of a cron job.
-- You want to execute the action once when the application loads. Use [loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) instead.
+- You want the action to execute at a specified schedule while the Medusa application **isn't** running. Instead, create a [custom CLI script](https://docs.medusajs.com/learn/fundamentals/custom-cli-scripts/index.html.md) and execute it using the operating system's equivalent of a cron job.
+- You want to execute the action once when the application loads. Use [loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) or [custom CLI scripts](https://docs.medusajs.com/learn/fundamentals/custom-cli-scripts#run-custom-script-on-application-startup/index.html.md) instead.
 - You want to execute the action if an event occurs. Use [subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md) instead.
 
 ***
@@ -16486,7 +16538,7 @@ You also export a `config` object that has the following properties:
 - `name`: A unique name for the job.
 - `schedule`: A string that holds a [cron expression](https://crontab.guru/) indicating the schedule to run the job.
 
-This scheduled job executes every minute and logs into the terminal `Greeting!`.
+This scheduled job executes every minute and logs into the terminal the message `Greeting!`.
 
 ### Test the Scheduled Job
 
@@ -16506,11 +16558,11 @@ info:    Greeting!
 
 ## Example: Sync Products Once a Day
 
-In this section, you'll find a brief example of how you use a scheduled job to sync products to a third-party service.
+In a realistic scenario like syncing products to an ERP once a day, you should create a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) and execute it in a scheduled job.
 
-When implementing flows spanning across systems or [modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md), you use [workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md). A workflow is a task made up of a series of steps, and you construct it like you would a regular function, but it's a special function that supports rollback mechanism in case of errors, background execution, and more.
+A workflow is a task made up of a series of steps, and you construct it like you would a regular function, but it's a special function that supports rollback mechanism in case of errors, background execution, and more.
 
-You can learn how to create a workflow in [this chapter](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md), but this example assumes you already have a `syncProductToErpWorkflow` implemented. To execute this workflow once a day, create a scheduled job at `src/jobs/sync-products.ts` with the following content:
+You can learn how to create a workflow in the [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) chapter, but this example assumes you already have a `syncProductToErpWorkflow` implemented. To execute this workflow once a day, create a scheduled job at `src/jobs/sync-products.ts` with the following content:
 
 ```ts title="src/jobs/sync-products.ts"
 import { MedusaContainer } from "@medusajs/framework/types"
@@ -19828,6 +19880,1367 @@ You can access the following plain text documentation files:
 - **Markdown version of any page** - You can access the Markdown version of any documentation page by appending `/index.html.md` to the page URL. For example, the plain text content of the current page is available at [https://docs.medusajs.com/learn/introduction/build-with-llms-ai/index.html.md](https://docs.medusajs.com/learn/introduction/build-with-llms-ai/index.html.md).
 
 You can provide these files to your AI tools or LLM editors like [Cursor](https://docs.cursor.com/context/@-symbols/@-docs). This will help them understand the Medusa documentation and provide better assistance when building customizations or answering questions.
+
+
+# From Medusa v1 to v2: Conceptual Differences
+
+In this chapter, you'll learn about the differences and changes between concepts in Medusa v1 to v2.
+
+## What to Expect in This Chapter
+
+This chapter is designed to help developers migrate from Medusa v1 to v2 by understanding the conceptual differences between the two versions.
+
+This chapter will cover:
+
+- The general steps to update your project from Medusa v1 to v2.
+- The changes in tools and plugins between Medusa v1 and v2.
+- The high-level changes in the concepts and commerce features between Medusa v1 and v2.
+
+By following this chapter, you'll learn about the general changes you need to make in your project, with links to read more about each topic. Only topics documented in the v1 documentation are covered.
+
+This chapter is also useful for developers who are already familiar with Medusa v1 and want to learn about the main differences from Medusa v2. However, it doesn't cover all the new and improved concepts in Medusa v2. Instead, it's highly recommended to read the rest of this documentation to learn about them.
+
+***
+
+## Prerequisites
+
+### Node.js Version
+
+While Medusa v1 supported Node.js v16+, Medusa v2 requires Node.js v20+. So, make sure to update your Node.js version if it's older.
+
+Refer to the [Node.js documentation](https://nodejs.org/en/docs/) for instructions on how to update your Node.js version.
+
+### New Database
+
+Medusa v2 makes big changes to the database. So, your existing database will not be compatible with the database for your v2 project.
+
+If you want to keep your product catalog, you should export the products from the admin dashboard, as explained in [this V1 User Guide](https://docs.medusajs.com/v1/user-guide/products/export/index.html.md). Then, you can import them into your new v2 project from the [Medusa Admin](https://docs.medusajs.com/user-guide/products/import/index.html.md).
+
+For other data types, you'll probably need to migrate them manually through custom scripts. [Custom CLI scripts](https://docs.medusajs.com/learn/fundamentals/custom-cli-scripts/index.html.md) may be useful for this.
+
+***
+
+## How to Upgrade from Medusa v1 to v2
+
+In this section, you'll learn how to upgrade your Medusa project from v1 to v2.
+
+To create a fresh new Medusa v2 project, check out the [Installation chapter](https://docs.medusajs.com/learn/installation/index.html.md).
+
+It's highly recommended to fully go through this chapter before you actually update your application, as some v1 features may have been removed or heavily changed in v2. By doing so, you'll formulate a clearer plan for your migration process and its feasibility.
+
+### 1. Update Dependencies in package.json
+
+The first step is to update the dependencies in your `package.json`.
+
+A basic v2 project has the following dependencies in `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@medusajs/admin-sdk": "2.8.2",
+    "@medusajs/cli": "2.8.2",
+    "@medusajs/framework": "2.8.2",
+    "@medusajs/medusa": "2.8.2",
+    "@mikro-orm/core": "6.4.3",
+    "@mikro-orm/knex": "6.4.3",
+    "@mikro-orm/migrations": "6.4.3",
+    "@mikro-orm/postgresql": "6.4.3",
+    "awilix": "^8.0.1",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@medusajs/test-utils": "2.8.2",
+    "@mikro-orm/cli": "6.4.3",
+    "@swc/core": "1.5.7",
+    "@swc/jest": "^0.2.36",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.2.25",
+    "jest": "^29.7.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.2.11",
+    "yalc": "^1.0.0-pre.53"
+  }
+}
+```
+
+The main changes are:
+
+- You need to install the following Medusa packages (All these packages use the same version):
+  - `@medusajs/admin-sdk`
+  - `@medusajs/cli`
+  - `@medusajs/framework`
+  - `@medusajs/medusa`
+  - `@medusajs/test-utils` (as a dev dependency)
+- You need to install the following extra packages:
+  - Database packages:
+    - `@mikro-orm/core@6.4.3`
+    - `@mikro-orm/knex@6.4.3`
+    - `@mikro-orm/migrations@6.4.3`
+    - `@mikro-orm/postgresql@6.4.3`
+    - `@mikro-orm/cli@6.4.3` (as a dev dependency)
+    - `pg^8.13.0`
+  - Framework packages:
+    - `awilix@^8.0.1`
+  - Development and Testing packages:
+    - `@swc/core@1.5.7`
+    - `@swc/jest@^0.2.36`
+    - `@types/node@^20.0.0`
+    - `jest@^29.7.0`
+    - `ts-node@^10.9.2`
+    - `typescript@^5.6.2`
+    - `vite@^5.2.11`
+    - `yalc@^1.0.0-pre.53`
+- Other packages, such as `@types/react` and `@types/react-dom`, are necessary for admin development and TypeScript support.
+
+Notice that Medusa now uses MikroORM instead of TypeORM for database functionalities.
+
+Once you're done, run the following command to install the new dependencies:
+
+```bash npm2yarn
+npm install
+```
+
+In Medusa v1, you needed to install Medusa modules like the Cache, Event, or Pricing modules.
+
+These modules are now available out of the box, and you don't need to install or configure them separately.
+
+### 2. Update Script in package.json
+
+Medusa v2 comes with changes and improvements to its CLI tool. So, update your `package.json` with the following scripts:
+
+```json
+{
+  "scripts": {
+    "build": "medusa build",
+    "seed": "medusa exec ./src/scripts/seed.ts",
+    "start": "medusa start",
+    "dev": "medusa develop",
+    "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
+    "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
+    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
+  }
+}
+```
+
+Where:
+
+- `build`: Builds the Medusa application for production.
+- `seed`: Seeds the database with initial data.
+- `start`: Starts the Medusa server in production.
+- `dev`: Starts the Medusa server in development mode.
+- `test:integration:http`: Runs HTTP integration tests.
+- `test:integration:modules`: Runs module integration tests.
+- `test:unit`: Runs unit tests.
+
+You'll learn more about the [changes in the CLI tool later in this chapter](#medusa-cli-changes). You can also refer to the following documents to learn more about these changes:
+
+- [Medusa CLI reference](https://docs.medusajs.com/resources/medusa-cli/index.html.md)
+- [Build Medusa Application](https://docs.medusajs.com/learn/build/index.html.md)
+- [Integration and Module Tests](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools/index.html.md).
+
+### 3. TSConfig Changes
+
+In Medusa v1, you had multiple TSConfig configuration files for different customization types. For example, you had `tsconfig.admin.json` for admin customizations and `tsconfig.server.json` for server customizations.
+
+In Medusa v2, you only need one [root tsconfig.json](https://github.com/medusajs/medusa-starter-default/blob/master/tsconfig.json) file in your project. For admin customizations, you create a [src/admin/tsconfig.json file](https://github.com/medusajs/medusa-starter-default/blob/master/src/admin/tsconfig.json). Refer to each of those links for the recommended configurations.
+
+### 4. Update Configuration File
+
+In Medusa v1, you configured your application in the `medusa-config.js` file. Medusa v2 supports this file as `medusa-config.ts`, so make sure to rename it.
+
+`medusa-config.ts` now exports configurations created with the `defineConfig` utility. It also uses the [loadEnv](https://docs.medusajs.com/learn/fundamentals/environment-variables/index.html.md) utility to load environment variables based on the current environment.
+
+For example, this is the configuration file for a basic Medusa v2 project:
+
+```ts title="medusa-config.ts"
+import { loadEnv, defineConfig } from "@medusajs/framework/utils"
+
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
+
+module.exports = defineConfig({
+  projectConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    http: {
+      storeCors: process.env.STORE_CORS!,
+      adminCors: process.env.ADMIN_CORS!,
+      authCors: process.env.AUTH_CORS!,
+      jwtSecret: process.env.JWT_SECRET || "supersecret",
+      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+    },
+  },
+})
+```
+
+You can refer to the full list of configurations in the [Medusa Configurations](https://docs.medusajs.com/learn/configurations/medusa-config/index.html.md) chapter. The following table highlights the main changes between v1 and v2:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|\`projectConfig.store\_cors\`|projectConfig.http.storeCors|
+|\`projectConfig.admin\_cors\`|projectConfig.http.adminCors|
+|\`projectConfig.auth\_cors\`|projectConfig.http.authCors|
+|\`projectConfig.cookie\_secret\`|projectConfig.http.cookieSecret|
+|\`projectConfig.jwt\_secret\`|projectConfig.http.jwtSecret|
+|\`projectConfig.database\_database\`|projectConfig.databaseName|
+|\`projectConfig.database\_url\`|projectConfig.databaseUrl|
+|\`projectConfig.database\_schema\`|projectConfig.databaseSchema|
+|\`projectConfig.database\_logging\`|projectConfig.databaseLogging|
+|\`projectConfig.database\_extra\`|projectConfig.databaseDriverOptions|
+|\`projectConfig.database\_driver\_options\`|projectConfig.databaseDriverOptions|
+|\`projectConfig.redis\_url\`|projectConfig.redisUrl|
+|\`projectConfig.redis\_prefix\`|projectConfig.redisPrefix|
+|\`projectConfig.redis\_options\`|projectConfig.redisOptions|
+|\`projectConfig.session\_options\`|projectConfig.sessionOptions|
+|\`projectConfig.http\_compression\`|projectConfig.http.compression|
+|\`projectConfig.jobs\_batch\_size\`|No longer supported.|
+|\`projectConfig.worker\_mode\`|projectConfig.workerMode|
+|\`modules\`|Array of modules|
+
+#### Plugin Changes
+
+While the `plugins` configuration hasn't changed, plugins available in Medusa v1 are not compatible with Medusa v2. These are covered later in the [Plugin Changes](#plugin-changes) section.
+
+#### Module Changes
+
+In Medusa v1, you had to configure modules like Inventory, Stock Location, Pricing, and Product. These modules are now available out of the box, and you don't need to install or configure them separately.
+
+For the Cache and Event modules, refer to the [Redis Cache Module](https://docs.medusajs.com/resources/infrastructure-modules/cache/redis/index.html.md) and [Redis Event Module](https://docs.medusajs.com/resources/infrastructure-modules/event/redis/index.html.md) documentations to learn how to configure them in v2 if you had them configured in v1.
+
+#### Feature Flags
+
+Some features like product categories and tax inclusive pricing were disabled behind feature flags.
+
+All of these features are now available out-of-the-box. So, you don't need to enable them in your configuration file anymore.
+
+#### Admin Configurations
+
+In v1, the admin dashboard was installed as a plugin with configurations. In v2, the Medusa Admin is available out-of-the-box with different configurations.
+
+The [Medusa Admin Changes](#medusa-admin-changes) section covers the changes in the Medusa Admin configurations and customizations.
+
+### 5. Setup New Database
+
+Now that you have updated your dependencies and configuration file, you need to set up the database for your v2 project.
+
+This will not take into account entities and data customizations in your v1 project, as you still need to change those. Instead, it will only create the database and tables for your v2 project.
+
+First, change your database environment variables to the following:
+
+```bash
+DATABASE_URL=postgres://localhost/$DB_NAME
+DB_NAME=medusa-v2
+```
+
+You can change `medusa-v2` to any database name you prefer.
+
+Then, run the following commands to create the database and tables:
+
+```bash npm2yarn
+npx medusa db:setup
+```
+
+This command will create the database and tables for your v2 project.
+
+After that, you can start your Medusa application with the `dev` command. Note that you may have errors if you need to make implementation changes that are covered in the rest of this guide, so it's better to wait until you finish the v2 migration process before starting the Medusa application.
+
+### (Optional) 6. Seed with Demo Data
+
+If you want to seed your Medusa v2 project with demo data, you can copy the content of [this file](https://github.com/medusajs/medusa-starter-default/blob/master/src/scripts/seed.ts) to your `src/scripts/seed.ts` file.
+
+Then, run the following command to seed the database:
+
+```bash npm2yarn
+npm run seed
+```
+
+This will seed your database with demo data.
+
+***
+
+## Medusa Admin Changes
+
+In this section, you'll learn about the changes in the Medusa Admin between v1 and v2.
+
+This section doesn't cover changes related to Medusa Admin customizations. They're covered later in the [Admin Customization Changes](#admin-customization-changes) section.
+
+The Medusa Admin is now available out-of-the-box. It's built with [Vite v5](https://vite.dev/) and runs at `http://localhost:9000/app` by default when you start your Medusa application.
+
+### Admin Configurations
+
+You previously configured the admin dashboard when you added it as a plugin in Medusa v1.
+
+In Medusa v2, you configure the Medusa Admin within the `defineConfig` utility in `medusa-config.ts`. `defineConfig` accepts an `admin` property to configure the Medusa Admin:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    // admin options...
+  },
+})
+```
+
+You can refer to the [Medusa Configuration](https://docs.medusajs.com/learn/configurations/medusa-config#admin-configurations-admin/index.html.md) chapter to learn about all the admin configurations. The following table highlights the main changes between v1 and v2:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|\`serve\`|admin.disable|
+|\`autoRebuild\`|No longer supported. The Medusa Admin is always built when you run the |
+|\`backend\`|admin.backendUrl|
+|\`outDir\`|No longer supported. The Medusa Admin is now built in the |
+|\`develop\`|No longer supported. The |
+
+### Admin Webpack Configurations
+
+In v1, you were able to modify Webpack configurations of the admin dashboard.
+
+Since Medusa Admin is now built with Vite, you can modify the Vite configurations with the `admin.vite` configuration. Learn more in the [Medusa Configuration](https://docs.medusajs.com/learn/configurations/medusa-config#vite/index.html.md) chapter.
+
+### Admin CLI Tool
+
+In Medusa v1, you used the `medusa-admin` CLI tool to build and run the admin dashboard.
+
+In Medusa v2, the Medusa Admin doesn't have a CLI tool. Instead, running `medusa build` and `medusa develop` also builds and runs the Medusa Admin, respectively.
+
+In addition, you can build the Medusa Admin separately from the Medusa application using the `--admin-only` option. Learn more in the [Build Medusa Application](https://docs.medusajs.com/learn/build#separate-admin-build/index.html.md) chapter.
+
+***
+
+## Medusa CLI Changes
+
+The Medusa CLI for v2 is now in the `@medusajs/cli` package. However, you don't need to install it globally. You can just use `npx medusa` in your Medusa projects.
+
+Refer to the [Medusa CLI reference](https://docs.medusajs.com/resources/medusa-cli/index.html.md) for the full list of commands and options. The following table highlights the main changes between v1 and v2:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|\`migrations run\`|db:migrate|
+|\`migrations revert\`|db:rollback|
+|\`migrations show\`|No longer supported.|
+|\`seed\`|No longer supported. However, you can create a |
+|\`start-cluster\`|start --cluster \<number>|
+
+***
+
+## Plugin Changes
+
+Medusa v2 supports plugins similar to Medusa v1, but with changes in its usage, development, and configuration.
+
+In Medusa v1, you created plugins that contained customizations like services that integrated third-party providers, custom API routes, and more.
+
+In Medusa v2, a plugin can contain customizations like modules that integrate third-party providers, custom API routes, workflows, and more. The plugin development experience has also been improved to resolve big pain points that developers faced in v1.
+
+Refer to the [Plugins](https://docs.medusajs.com/learn/fundamentals/plugins/index.html.md) chapter to learn more about plugins in Medusa v2.
+
+The rest of this section will cover some of the main changes in plugins between v1 and v2.
+
+### Medusa Plugins Alternative
+
+In v1, Medusa provided a set of plugins that you could use in your project. For example, the Stripe and SendGrid plugins.
+
+In v2, some of these plugins are now available as module providers out-of-the-box. For example, the Stripe and SendGrid module providers. Other plugins may no longer be available, but you can still find guides to create them.
+
+The following table highlights the alternatives for the Medusa v1 plugins:
+
+|Medusa v1|v2 Alternative|
+|---|---|
+|Algolia|Guide|
+|Brightpearl|Not available, but you can follow the |
+|Contenful|Guide|
+|Discount Generator|Not available, but you can build it |
+|IP Lookup|Not available, but you can build it |
+|Klarna|Not available, but you can integrate it as a |
+|Local File|Local File Module Provider|
+|Mailchimp|Guide|
+|MinIO|S3 (compatible APIs) File Module Provider|
+|MeiliSearch|Not available, but you can integrate it |
+|PayPal|Not available, but you can integrate it as a |
+|Restock Notification|Guide|
+|S3|S3 (compatible APIs) File Module Provider|
+|Segment|Guide|
+|SendGrid|SendGrid Module Provider|
+|Shopify|Not available, but you can build it |
+|Slack|Guide|
+|Spaces (DigitalOcean)|S3 (compatible APIs) File Module Provider|
+|Strapi|Not available, but you can integrate it |
+|Stripe|Stripe Payment Module Provider|
+|Twilio|Guide|
+|Wishlist|Guide|
+
+You can also find Medusa and community integrations in the [Integrations](https://medusajs.com/integrations/) page.
+
+### Plugin Options
+
+Similar to Medusa v1, you can pass options to plugins in Medusa v2.
+
+However, plugin options are now only passed to modules and module providers created in a plugin.
+
+So, if you previously accessed options in a plugin's subscriber, for example, that's not possible anymore. You need to access the options in a module or module provider instead, then use its service in the plugin's subscriber.
+
+For example, this is how you can access options in a plugin's subscriber in v2:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+
+export default async function orderPlacedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  const customModuleService = container.resolve("custom")
+
+  const options = customModuleService.getOptions()
+
+  // Use the options in your logic...
+}
+
+export const config: SubscriberConfig = {
+  event: `order.placed`,
+}
+```
+
+Learn more in the [Create Plugin](https://docs.medusajs.com/learn/fundamentals/plugins/create/index.html.md) chapter.
+
+#### enableUI Option
+
+Plugins in v1 accepted an `enableUI` option to configure whether a plugin's admin customizations should be shown.
+
+In v2, this option is no longer supported. All admin customizations in a plugin will be shown in the Medusa Admin.
+
+***
+
+## Tool Changes
+
+This section covers changes to tools that were available in Medusa v1.
+
+|Medusa v1|Medusa v2|
+|---|---|
+|JS Client|JS SDK|
+|Medusa React|No longer supported. Instead, you can |
+|Next.js Starter Template|Next.js Starter Storefront|
+|Medusa Dev CLI|No longer supported.|
+
+***
+
+## Changes in Concepts and Development
+
+In the next sections, you'll learn about the changes in specific concepts and development practices between Medusa v1 and v2.
+
+### Entities, Services, and Modules
+
+In Medusa v1, entities, services, and modules were created separately:
+
+- You create an entity to add a new table to the database.
+- You create a service to add new business logic to the Medusa application.
+- You create a module to add new features to the Medusa application. It may include entities and services.
+
+In Medusa v2, you create entities (now called data models) and services in a module. You can't create them separately anymore. The data models define new tables to add to the database, and the service provides data-management features for those data models.
+
+In this section, you'll learn about the most important changes related to these concepts. You can also learn more in the [Modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) chapter.
+
+#### Modules
+
+A module is a reusable package of functionalities related to a single domain or integration. For example, Medusa provides a Product Module for product-related data models and features.
+
+So, if in Medusa v1 you had a `Brand` entity and a service to manage it, in v2, you create a Brand Module that defines a `Brand` data model and a service to manage it.
+
+To learn how to create a module, refer to the [Modules](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) chapter.
+
+![Diagram showcasing the directory structure difference between Medusa v1 and v2](https://res.cloudinary.com/dza7lstvk/image/upload/v1748277500/Medusa%20Book/modules-v1-v2_dsnzyl.jpg)
+
+#### Data Models
+
+In Medusa v1, you created data models (entities) using TypeORM.
+
+In Medusa v2, you use Medusa's Data Model Language (DML) to create data models. It simplifies defining a table's columns, relations, and indexes with straightforward methods and configurations.
+
+For example:
+
+```ts title="src/modules/brand/models/brand.ts"
+import { model } from "@medusajs/framework/utils"
+
+export const Brand = model.define("brand", {
+  id: model.id().primaryKey(),
+  name: model.text(),
+})
+```
+
+Learn more about data models in the [Data Models](https://docs.medusajs.com/learn/fundamentals/data-models/index.html.md) chapters.
+
+#### Migrations
+
+In Medusa v1, you had to write migrations manually to create or update tables in the database. Migrations were based on TypeORM.
+
+In Medusa v2, you can use the Medusa CLI to generate migrations based on MikroORM. For example:
+
+```bash npm2yarn
+npx medusa db:generate brand
+```
+
+This generates migrations for data models in the Brand Module. Learn more in the [Migrations](https://docs.medusajs.com/learn/fundamentals/data-models/write-migration/index.html.md) chapter.
+
+#### Services
+
+In Medusa v1, you created a service with business logic related to a feature within your Medusa project. For example, you created a `BrandService` at `src/services/brand.ts` to manage the `Brand` entity.
+
+In Medusa v2, you can only create a service in a module, and the service either manages the module's data models in the database, or connects to third-party services.
+
+For example, you create a `BrandService` in the Brand Module at `src/modules/brand/service.ts`:
+
+```ts title="src/modules/brand/service.ts"
+import { MedusaService } from "@medusajs/framework/utils"
+import { Brand } from "./models/brand"
+
+class BrandModuleService extends MedusaService({
+  Brand,
+}) {
+
+}
+
+export default BrandModuleService
+```
+
+The service has automatically generated data-management methods by extending `MedusaService` from the Modules SDK. So, you now have methods like `retrieveBrand` and `createBrands` available in the service.
+
+Learn more in the [Service Factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md) chapter.
+
+When you register the module in the Medusa application, the service is registered in the [Medusa container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md), allowing you to use its methods in workflows, subscribers, scheduled jobs, and API routes.
+
+#### Repositories
+
+In Medusa v1, you used the repository of a data model in a service to provide data-management features. For example, you used the `BrandRepository` to manage the `Brand` entity. Repositories were also based on TypeORM.
+
+In Medusa v2, you generally don't need repositories for basic data-management features, as they're generated by the service factory. However, for more complex use cases, you can use the data model repository based on MikroORM.
+
+For example:
+
+```ts title="src/modules/brand/service.ts"
+import { InferTypeOf, DAL } from "@medusajs/framework/types"
+import Post from "./models/post"
+
+type Post = InferTypeOf<typeof Post>
+
+type InjectedDependencies = {
+  postRepository: DAL.RepositoryService<Post>
+}
+
+class BlogModuleService {
+  protected postRepository_: DAL.RepositoryService<Post>
+
+  constructor({ 
+    postRepository, 
+  }: InjectedDependencies) {
+    super(...arguments)
+    this.postRepository_ = postRepository
+  }
+}
+
+export default BlogModuleService
+```
+
+Learn more in the [Database Operations](https://docs.medusajs.com/learn/fundamentals/modules/db-operations/index.html.md) chapter.
+
+#### Module Isolation
+
+In Medusa v1, you had access to all entities and services in the Medusa application. While this approach was flexible, it introduced complexities, was difficult to maintain, and resulted in hacky workarounds.
+
+In Medusa v2, modules are isolated. This means that you can only access entities and services within the module. This isolation allows you to integrate modules into your application without side effects, while still providing you with the necessary flexibility to build your use cases.
+
+The [Module Isolation](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md) chapter explains this concept in detail. The rest of this section gives a general overview of how module isolation affects your Medusa v1 customizations.
+
+#### Extending Entities
+
+In Medusa v1, you were able to extend entities by creating a new entity that extended the original one. For example, you could create a custom `Product` entity that extended the original `Product` entity to add a `brand` column.
+
+In Medusa v2, you can no longer extend entities. Instead, you need to create a new data model that contains the columns you want to add. Then, you can create a [Module Link](https://docs.medusajs.com/learn/fundamentals/module-links/index.html.md) that links your data model to the one you want to extend.
+
+For example, you create a Brand Module that has a `Brand` data model. Then, you create a Module Link that links the `Brand` data model to the `Product` data model in the Product Module:
+
+```ts title="src/links/product-brand.ts"
+import BrandModule from "../modules/brand"
+import ProductModule from "@medusajs/medusa/product"
+import { defineLink } from "@medusajs/framework/utils"
+
+export default defineLink(
+  {
+    linkable: ProductModule.linkable.product,
+    isList: true,
+  },
+  BrandModule.linkable.brand
+)
+```
+
+You can then associate brands with a product, retrieve them in API routes and custom functionalities, and more.
+
+Learn more in the [Module Links](https://docs.medusajs.com/learn/fundamentals/module-links/index.html.md) chapter.
+
+#### Extending Services
+
+In Medusa v1, you were able to extend services by creating a new service that extended the original one. For example, you could create a custom `ProductService` that extended the original `ProductService` to add a new method.
+
+In Medusa v2, you can no longer extend services. Instead, you need to [create a module](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) with a service that contains the methods you want to add. Then, you can:
+
+- Build [workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) that use both services to achieve a custom feature.
+- Consume [Workflow Hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks/index.html.md) to run custom actions in existing workflows.
+- For more complex use cases, you can re-create an existing workflow and use your custom module's service in it.
+
+For example, if you extended the `CartService` in v1 to add items with custom prices to the cart, you can instead build a custom workflow that uses your custom module to retrieve an item's price, then add it to the cart using the existing `addToCartWorkflow`:
+
+```ts
+import { 
+  createWorkflow,
+  transform,
+  WorkflowResponse
+} from "@medusajs/framework/workflows-sdk"
+import { addToCartWorkflow } from "@medusajs/medusa/core-flows"
+import { 
+  getCustomPriceStep, 
+} from "./steps/get-custom-price"
+
+type AddCustomToCartWorkflowInput = {
+  cart_id: string
+  item: {
+    variant_id: string
+    quantity: number
+    metadata?: Record<string, unknown>
+  }
+}
+
+export const addCustomToCartWorkflow = createWorkflow(
+  "add-custom-to-cart",
+  ({ cart_id, item }: AddCustomToCartWorkflowInput) => {
+    // assuming this step uses a custom module to get the price
+    const price = getCustomPriceStep({
+      variant: item.variant_id,
+      currencyCode: "usd",
+      quantity: item.quantity,
+    })
+
+    const itemToAdd = transform({
+      item,
+      price,
+    }, (data) => {
+      return [{
+        ...data.item,
+        unit_price: data.price,
+      }]
+    })
+
+    addToCartWorkflow.runAsStep({
+      input: {
+        items: itemToAdd,
+        cart_id,
+      },
+    })
+  }
+)
+```
+
+Refer to the [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) chapters to learn more about workflows in Medusa v2.
+
+#### Integrating Third-Party Services
+
+In Medusa v1, you integrated third-party services by creating a service under `src/services` and using it in your customizations.
+
+In Medusa v2, you can integrate third-party services by creating a module with a service that contains the methods to interact with the third-party service. You can then use the module's service in a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) to build custom features.
+
+![Directory structure change between v1 and v2](https://res.cloudinary.com/dza7lstvk/image/upload/v1748278103/Medusa%20Book/integrations-v1-v2_cjzkus.jpg)
+
+***
+
+### Medusa and Module Containers
+
+In Medusa v1, you accessed dependencies from the container in all your customizations, such as services, API routes, and subscribers.
+
+In Medusa v2, there are two containers:
+
+|Container|Description|Accessed By|
+|---|---|---|
+|Medusa container|Main container that contains Framework and commerce resources, such as services of registered modules.||
+|Module container|Container of a module. It contains some resources from the Framework, and resources implemented in the module.|Services and loaders in the module.|
+
+You can view the list of resources in each container in the [Container Resources](https://docs.medusajs.com/resources/medusa-container-resources/index.html.md) reference.
+
+***
+
+### Workflow Changes
+
+In Medusa v2, workflows are the main way to implement custom features spanning across modules and systems.
+
+Workflows have been optimized for data reliability, flexibility, and orchestration across systems. You can learn more in the [Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) chapters.
+
+This section highlights the main changes in workflows between v1 and v2.
+
+#### Workflows SDK Imports
+
+In Medusa v1, you imported all Workflows SDK functions and types from the `@medusajs/workflows-sdk` package.
+
+In Medusa v2, you import them from the `@medusajs/framework/workflows-sdk` package. For example:
+
+```ts title="src/workflows/hello-world.ts"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+```
+
+#### Workflow Return Value
+
+In Medusa v1, you returned any value from a workflow, such as a string or an object.
+
+In Medusa v2, you must return an instance of `WorkflowResponse` from a workflow. The data passed to `WorkflowResponse`'s constructor is returned to the caller of the workflow.
+
+For example:
+
+```ts title="src/workflows/hello-world.ts"
+import { 
+  createWorkflow, 
+  WorkflowResponse
+} from "@medusajs/framework/workflows-sdk"
+
+export const helloWorldWorkflow = createWorkflow(
+  "hello-world", 
+  () => {
+    return new WorkflowResponse("Hello, world!")
+  }
+)
+
+// in API route, for example:
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+
+export const GET = (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  // message is "Hello, world!"
+  const { result: message } = await helloWorldWorkflow(req.scope)
+    .run()
+
+  res.json({
+    message,
+  })
+}
+```
+
+#### New Workflow Features
+
+- [Use when-then in workflows to run steps if a condition is satisfied](https://docs.medusajs.com/learn/fundamentals/workflows/conditions/index.html.md).
+- [Consume hooks to run custom steps in existing workflows](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks/index.html.md).
+- [Create long-running workflows that run asynchronously in the background](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow/index.html.md).
+
+***
+
+### API Route Changes
+
+API routes are generally similar in Medusa v1 and v2, but with minor changes.
+
+You can learn more about creating API routes in the [API Routes](https://docs.medusajs.com/learn/fundamentals/api-routes/index.html.md) chapters. This section highlights the main changes in API routes between v1 and v2.
+
+#### HTTP Imports
+
+In Medusa v1, you imported API-route related types and functions from the `@medusajs/medusa` package.
+
+In Medusa v2, you import them from the `@medusajs/framework/http` package. For example:
+
+```ts title="src/api/store/custom/route.ts"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+```
+
+#### Protected API Routes
+
+In Medusa v1, routes starting with `/store/me` and `/admin` were protected by default.
+
+In Medusa v2, routes starting with `/store/customers/me` are accessible by registered customers, and `/admin` routes are accessible by admin users.
+
+In an API route, you can access the logged in user or customer using the `auth_context.actor_id` property of `AuthenticatedMedusaRequest`. For example:
+
+```ts title="src/api/store/custom/route.ts"
+import type {
+  AuthenticatedMedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+
+export const GET = async (
+  req: AuthenticatedMedusaRequest,
+  res: MedusaResponse
+) => {
+  const id = req.auth_context?.actor_id
+
+  // ...
+}
+```
+
+Learn more in the [Protected API Routes](https://docs.medusajs.com/learn/fundamentals/api-routes/protected-routes/index.html.md) chapter.
+
+#### Authentication Middlewares
+
+In Medusa v1, you had three middlewares to protect API routes:
+
+- `authenticate` to protect API routes for admin users.
+- `authenticateCustomer` to optionally authenticate customers.
+- `requireCustomerAuthentication` to require customer authentication.
+
+In Medusa v2, you can use a single `authenticate` middleware for the three use cases. For example:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  defineMiddlewares,
+  authenticate,
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom/admin*",
+      middlewares: [authenticate("user", ["session", "bearer", "api-key"])],
+    },
+    {
+      matcher: "/custom/customer*",
+      // equivalent to requireCustomerAuthentication
+      middlewares: [authenticate("customer", ["session", "bearer"])],
+    },
+    {
+      matcher: "/custom/all-customers*",
+      // equivalent to authenticateCustomer
+      middlewares: [authenticate("customer", ["session", "bearer"], {
+        allowUnauthenticated: true,
+      })],
+    },
+  ],
+})
+```
+
+Learn more in the [Protected API Routes](https://docs.medusajs.com/learn/fundamentals/api-routes/protected-routes/index.html.md) chapter.
+
+#### Middlewares
+
+In Medusa v1, you created middlewares by exporting an object in the `src/api/middlewares.ts` file.
+
+In Medusa v2, you create middlewares by exporting an object created with `defineMiddlewares`, which accepts an object with the same properties as in v1. For example:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  defineMiddlewares,
+  MedusaNextFunction, 
+  MedusaRequest, 
+  MedusaResponse, 
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom*",
+      middlewares: [
+        (
+          req: MedusaRequest, 
+          res: MedusaResponse, 
+          next: MedusaNextFunction
+        ) => {
+          console.log("Received a request!")
+
+          next()
+        },
+      ],
+    },
+  ],
+})
+```
+
+Learn more in the [Middlewares](https://docs.medusajs.com/learn/fundamentals/api-routes/middlewares/index.html.md) chapter.
+
+#### Disable Body Parser
+
+In Medusa v1, you disabled the body parser in API routes by setting `bodyParser: false` in the route's middleware configuration.
+
+In Medusa v2, you disable the body parser by setting `bodyParser.preserveRawBody` to `true` in the route's middleware configuration. For example:
+
+```ts title="src/api/middlewares.ts"
+import { defineMiddlewares } from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      method: ["POST"],
+      bodyParser: { preserveRawBody: true },
+      matcher: "/custom",
+    },
+  ],
+})
+```
+
+Learn more in the [Body Parser](https://docs.medusajs.com/learn/fundamentals/api-routes/parse-body/index.html.md) chapter.
+
+#### Extending Validators
+
+In Medusa v1, you passed custom request parameters to Medusa's API routes by extending a request's validator.
+
+In Medusa v2, some Medusa API routes support passing additional data in the request body. You can then configure the validation of that additional data and consume them in the hooks of the workflow used in the API route.
+
+For example:
+
+```ts title="src/api/middlewares.ts"
+import { defineMiddlewares } from "@medusajs/framework/http"
+import { z } from "zod"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      method: "POST",
+      matcher: "/admin/products",
+      additionalDataValidator: {
+        brand: z.string().optional(),
+      },
+    },
+  ],
+})
+```
+
+In this example, you allow passing a `brand` property as additional data to the `/admin/products` API route.
+
+You can learn more in the [Additional Data](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data/index.html.md) chapter.
+
+If a route doesn't support passing additional data, you need to [replicate it](https://docs.medusajs.com/learn/fundamentals/api-routes/override/index.html.md) to support your custom use case.
+
+***
+
+### Events and Subscribers Changes
+
+Events and subscribers are similar in Medusa v1 and v2, but with minor changes.
+
+You can learn more in the [Events and Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md) chapters. This section highlights the main changes in events and subscribers between v1 and v2.
+
+#### Emitted Events
+
+Medusa v2 doesn't emit the same events as v1. Refer to the [Events Reference](https://docs.medusajs.com/resources/references/events/index.html.md) for the full list of events emitted in v2.
+
+#### Subscriber Type Imports
+
+In Medusa v1, you imported subscriber types from the `@medusajs/medusa` package.
+
+In Medusa v2, you import them from the `@medusajs/framework` package. For example:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+```
+
+#### Subscriber Parameter Change
+
+In Medusa v1, a subscriber function received an object parameter that has `eventName` and `data` properties.
+
+In Medusa v2, the subscriber function receives an object parameter that has an `event` property. The `event` property contains the event name and data. For example:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+
+export default async function orderPlacedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  // ...
+}
+
+export const config: SubscriberConfig = {
+  event: `order.placed`,
+}
+```
+
+Also, the `pluginOptions` property is no longer passed in the subscriber's parameter. Instead, you can access the options passed to a plugin within its modules' services, which you can resolve in a subscriber.
+
+Learn more in the [Events and Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md) chapter.
+
+#### Subscriber Implementation Change
+
+In Medusa v1, you implemented functionalities, such as sending confirmation email, directly within a subscriber.
+
+In Medusa v2, you should implement these functionalities in a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) and call the workflow in the subscriber. By using workflows, you benefit from rollback mechanism, among other features.
+
+For example:
+
+```ts title="src/subscribers/order-placed.ts"
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+import { 
+  sendOrderConfirmationWorkflow,
+} from "../workflows/send-order-confirmation"
+
+export default async function orderPlacedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  await sendOrderConfirmationWorkflow(container)
+    .run({
+      input: {
+        id: data.id,
+      },
+    })
+}
+
+export const config: SubscriberConfig = {
+  event: `order.placed`,
+}
+```
+
+#### Emitting Events
+
+In Medusa v1, you emitted events in services and API routes by resolving the Event Module's service from the container.
+
+In Medusa v2, you should emit events in workflows instead. For example:
+
+```ts title="src/workflows/hello-world.ts"
+import { 
+  createWorkflow,
+} from "@medusajs/framework/workflows-sdk"
+import {
+  emitEventStep,
+} from "@medusajs/medusa/core-flows"
+
+const helloWorldWorkflow = createWorkflow(
+  "hello-world",
+  () => {
+    // ...
+
+    emitEventStep({
+      eventName: "custom.created",
+      data: {
+        id: "123",
+        // other data payload
+      },
+    })
+  }
+)
+```
+
+If you need to emit events in a service, you can add the Event Module as a dependency of your module. Then, you can resolve the Event Module's service from the module container and emit the event. This approach is only recommended for events related to under-the-hood processes.
+
+Learn more in the [Emit Events](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/emit-event/index.html.md) chapter.
+
+***
+
+### Loader Changes
+
+In Medusa v1, you created loaders in the `src/loaders` directory to perform tasks at application startup.
+
+In Medusa v2, loaders can only be created in a module. You can create loaders in the `src/modules/<module-name>/loaders` directory. That also means the loader can only access resources in the module's container.
+
+Learn more in the [Loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) chapter.
+
+#### Loader Parameter Changes
+
+In Medusa v1, a loader function receives two parameters: `container` and `config`. If the loader was created in a module, it also received a `logger` parameter.
+
+In Medusa v2, a loader function receives a single object parameter that has a `container` and `options` properties. The `options` property contains the properties passed to the module.
+
+For example:
+
+```ts title="src/modules/hello/loaders/hello-world.ts"
+import {
+  LoaderOptions,
+} from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+  options,
+}: LoaderOptions) {
+  const logger = container.resolve("logger")
+
+  logger.info("[HELLO MODULE] Just started the Medusa application!")
+}
+```
+
+***
+
+### Scheduled Job Changes
+
+Scheduled jobs are similar in Medusa v1 and v2, but with minor changes.
+
+You can learn more about scheduled jobs in the [Scheduled Jobs](https://docs.medusajs.com/learn/fundamentals/scheduled-jobs/index.html.md) chapters. This section highlights the main changes in scheduled jobs between v1 and v2.
+
+#### Scheduled Job Parameter Changes
+
+In Medusa v1, a scheduled job function received an object of parameters.
+
+In Medusa v2, a scheduled job function receives only the Medusa container as a parameter. For example:
+
+```ts title="src/jobs/hello-world.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+
+export default async function greetingJob(container: MedusaContainer) {
+  const logger = container.resolve("logger")
+
+  logger.info("Greeting!")
+}
+
+export const config = {
+  name: "greeting-every-minute",
+  schedule: "* * * * *",
+}
+```
+
+The `pluginOptions` property is no longer available, as you can access the options passed to a plugin within its modules' services, which you can resolve in a scheduled job.
+
+The `data` property is also no longer available, as you can't pass data in the scheduled job's configuration anymore.
+
+#### Scheduled Job Configuration Changes
+
+In Medusa v2, the `data` property is removed from the scheduled job's configuration object.
+
+#### Scheduled Job Implementation Changes
+
+In Medusa v1, you implemented functionalities directly in the job function.
+
+In Medusa v2, you should implement these functionalities in a [workflow](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md) and call the workflow in the scheduled job. By using workflows, you benefit from rollback mechanism, among other features.
+
+For example:
+
+```ts title="src/jobs/sync-products.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { syncProductToErpWorkflow } from "../workflows/sync-products-to-erp"
+
+export default async function syncProductsJob(container: MedusaContainer) {
+  await syncProductToErpWorkflow(container)
+    .run()
+}
+
+export const config = {
+  name: "sync-products-job",
+  schedule: "0 0 * * *",
+}
+```
+
+***
+
+### Removed Concepts and Alternatives
+
+The following table highlights concepts that have been removed or changed in Medusa v2 and their alternatives:
+
+|Medusa v1|Medusa v2|
+|---|---|
+|Batch Jobs and Strategies|Long-Running Workflows|
+|File Service|File Module Provider|
+|Notification Provider Service|Notification Module Provider|
+|Search Service|Can be integrated as a |
+
+***
+
+### Admin Customization Changes
+
+This section covers changes to the admin customizations between Medusa v1 and v2.
+
+#### Custom Admin Environment Variables
+
+In Medusa v1, you set custom environment variables to be passed to the admin dashboard by prefixing them with `MEDUSA_ADMIN_`.
+
+In Medusa v2, you can set custom environment variables to be passed to the admin dashboard by prefixing them with `VITE_`. Learn more in the [Admin Environment Variables](https://docs.medusajs.com/learn/fundamentals/admin/environment-variables/index.html.md) chapter.
+
+#### Admin Widgets
+
+Due to design changes in the Medusa Admin, some widget injection zones may have been changed or removed. Refer to the [Admin Widgets Injection Zones](https://docs.medusajs.com/resources/admin-widget-injection-zones/index.html.md) reference for the full list of injection zones in v2.
+
+Also, In Medusa v1, you exported in the widget's file a `config` object with the widget's configurations, such as its injection zone.
+
+In Medusa v2, you export a configuration object defined with `defineWidgetConfig` from the Admin Extension SDK. For example:
+
+```tsx title="src/admin/widgets/product-widget.tsx" highlights={[["9"], ["10"], ["11"]]}
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+
+// The widget
+const ProductWidget = () => {
+  // ...
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+})
+
+export default ProductWidget
+```
+
+The function accepts an object with a `zone` property, indicating the zone to inject the widget.
+
+Refer to the [Admin Widgets](https://docs.medusajs.com/learn/fundamentals/admin/widgets/index.html.md) chapter to learn more about creating widgets in Medusa v2.
+
+### Admin UI Routes
+
+In Medusa v1, UI Routes were prefixed by `/a`. For example, a route created at `src/admin/routes/custom/page.tsx` would be available at `http://localhost:9000/a/custom`.
+
+In Medusa v2, the `/a` prefix has been removed. So, that same route would be available at `http://localhost:9000/app/custom` (where `/app` is the path to the admin dashboard, not a prefix).
+
+Also, in v1, you exported a `config` object with the route's configurations to show the route in the dashboard's sidebar.
+
+In v2, you export a configuration object defined with `defineRouteConfig` from the Admin Extension SDK. For example:
+
+```tsx title="src/admin/routes/custom/page.tsx" highlights={[["8"], ["9"], ["10"], ["11"]]}
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { ChatBubbleLeftRight } from "@medusajs/icons"
+
+const CustomPage = () => {
+  // ...
+}
+
+export const config = defineRouteConfig({
+  label: "Custom Route",
+  icon: ChatBubbleLeftRight,
+})
+
+export default CustomPage
+```
+
+The `defineRouteConfig` function accepts an object with the following properties:
+
+- `label`: The label of the route to show in the sidebar.
+- `icon`: The icon to use in the sidebar for the route.
+
+Refer to the [Admin UI Routes](https://docs.medusajs.com/learn/fundamentals/admin/ui-routes/index.html.md) chapter to learn more about creating UI routes in Medusa v2.
+
+### Admin Setting Routes
+
+In Medusa v1, you created setting pages under the `src/admin/settings` directory with their own configurations.
+
+In Medusa v2, setting pages are UI routes created under the `src/admin/routes/settings` directory.
+
+For example, if you had a `src/admin/settings/custom/page.tsx` file in v1, you should move it to `src/admin/routes/settings/custom/page.tsx` in v2. The file's content will be the same as a UI route.
+
+For example:
+
+```tsx title="src/admin/routes/settings/custom/page.tsx" highlights={[["14"], ["15"], ["16"]]}
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+const CustomSettingPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h1">Custom Setting Page</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Custom",
+})
+
+export default CustomSettingPage
+```
+
+In v1, you exported a `config` object that showed a setting page as a card in the settings page. In v2, you export the same configuration object as a UI route.
+
+Learn more about creating setting pages in the [Admin UI Routes](https://docs.medusajs.com/learn/fundamentals/admin/ui-routes#create-settings-page/index.html.md) chapter.
+
+### notify Props in Widgets, UI Routes, and Settings
+
+In Medusa v1, admin widgets, UI routes, and setting pages received a `notify` prop to show notifications in the admin dashboard.
+
+This prop is no longer passed in v2. Instead, use the [toast utility from Medusa UI](https://docs.medusajs.com/ui/components/toast/index.html.md) to show notifications.
+
+For example:
+
+```tsx title="src/admin/widgets/product-details.tsx" highlights={[["7"], ["8"], ["9"]]}
+import { toast } from "@medusajs/ui"
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+
+// The widget
+const ProductWidget = () => {
+  const handleOnClick = () => {
+    toast.info("Info", {
+      description: "The quick brown fox jumps over the lazy dog.",
+    })
+  }
+  // ...
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+})
+
+export default ProductWidget
+```
+
+Learn more about the `toast` utility in the [Medusa UI Toasts](https://docs.medusajs.com/ui/components/toast/index.html.md) documentation.
+
+### Sending Requests to Medusa Server
+
+In Medusa v1, you used Medusa React to send requests to the Medusa server.
+
+Medusa v2 no longer supports Medusa React. Instead, you can use the JS SDK with Tanstack Query to send requests from your admin customizations to the Medusa server.
+
+Learn more in the [Admin Development Tips](https://docs.medusajs.com/learn/fundamentals/admin/tips#send-requests-to-api-routes/index.html.md) chapter.
+
+### Admin Languages
+
+Medusa Admin v2 supports different languages out-of-the-box, and you can contribute with new translations.
+
+Refer to the [User Guide](https://docs.medusajs.com/user-guide/tips/languages/index.html.md) for the list of languages supported in the Medusa Admin.
+
+***
+
+## Commerce Features Changes
+
+In Medusa v2, commerce features are implemented as [Commerce Modules](https://docs.medusajs.com/resources/commerce-modules/index.html.md). For example, the [Product Module](https://docs.medusajs.com/resources/commerce-modules/product/index.html.md) implements the product-related features, whereas the [Cart Module](https://docs.medusajs.com/resources/commerce-modules/cart/index.html.md) implements the cart-related features.
+
+So, it's difficult to cover all changes in commerce features between v1 and v2. Instead, this section will highlight changes to customizations that were documented in the Medusa v1 documentation.
+
+To learn about all commerce features in Medusa v2, refer to the [Commerce Modules](https://docs.medusajs.com/resources/commerce-modules/index.html.md) documentation.
+
+### Providers are now Module Providers
+
+In Medusa v1, you created providers for payment, fulfillment, and tax in services under `src/services`.
+
+In Medusa v2, you create these providers as module providers that belong to the Payment, Fulfillment, and Tax modules respectively.
+
+Refer to the following guides to learn how to create these module providers:
+
+- [Payment Module Provider](https://docs.medusajs.com/resources/commerce-modules/payment/payment-provider/index.html.md)
+- [Fulfillment Module Provider](https://docs.medusajs.com/resources/commerce-modules/fulfillment/fulfillment-provider/index.html.md)
+- [Tax Module Provider](https://docs.medusajs.com/resources/commerce-modules/tax/tax-provider/index.html.md)
+
+### Overridden Cart Completion
+
+In Medusa v1, you were able to override the cart completion strategy to customize the cart completion process.
+
+In Medusa v2, the cart completion process is now implemented in the [completeCartWorkflow](https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow/index.html.md). There are two ways you can customize the completion process:
+
+- [Consuming hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks/index.html.md) like the [validate](https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow#validate/index.html.md) hook. This is useful if you only want to make changes in key points of the cart completion process.
+  - You can view available hooks in the [completeCartWorkflow reference](https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow#hooks/index.html.md)
+- For more complex use cases, you can create a new workflow with the desired functionality. Then, you can [replicate the complete cart API route](https://docs.medusajs.com/learn/fundamentals/api-routes/override/index.html.md) and use it in your storefront.
+
+### Overridden Tax Calculation
+
+In Medusa v1, you were able to override the tax calculation strategy to customize the tax calculation process.
+
+In Medusa v2, the tax calculation process is now implemented in a [Tax Module Provider](https://docs.medusajs.com/resources/commerce-modules/tax/tax-provider/index.html.md). So, you can [create a custom tax provider](https://docs.medusajs.com/resources/references/tax/provider/index.html.md) with the calculation logic you want, then [use it in a tax region](https://docs.medusajs.com/user-guide/settings/tax-regions#edit-tax-region/index.html.md).
+
+### Overridden Price Selection
+
+In Medusa v1, you were able to override the price selection strategy to customize the price selection process.
+
+In Medusa v2, the price selection process is now implemented in the [Pricing Module's calculate method](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation/index.html.md). The Pricing Module allows you to set [flexible rules and tiers](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules/index.html.md) to support your use case.
+
+If your use case is complex and these rules are not enough, you can create a new [module](https://docs.medusajs.com/learn/fundamentals/modules/index.html.md) with the necessary logic, then use that module in your custom workflows.
+
+### Gift Card Features
+
+Medusa v1 has gift card features out-of-the-box.
+
+In Medusa v2, gift card features are now only available to [Medusa Cloud](https://medusajs.com/cloud/) users.
+
+***
+
+## Deployment Changes
+
+The deployment process in Medusa v2 is similar to v1, but with some changes. For example, the Medusa server is now deployed with Medusa Admin.
+
+Medusa also provides [Cloud](https://medusajs.com/cloud/), a managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure.
+
+Refer to the [Deployment](https://docs.medusajs.com/resources/deployment/index.html.md) documentation to learn about the deployment process for Medusa applications and Next.js Starter Storefront.
 
 
 # Introduction
@@ -82485,6 +83898,260 @@ import { DatePicker } from "@medusajs/ui"
 - validationBehavior: (union) Whether to use native HTML form validation to prevent form submission
   when the value is missing or invalid, or mark the field as required
   or invalid via ARIA.
+
+## Examples
+
+***
+
+### Controlled Date Picker
+
+Manage and store the value of the date picker in a state variable for controlled behavior. This is also useful for form integration.
+
+```tsx
+"use client"
+
+import { DatePicker } from "@medusajs/ui"
+import { useState } from "react"
+
+export default function DatePickerControlled() {
+  const [date, setDate] = useState<Date | null>(new Date())
+
+  return (
+    <div className="space-y-4 w-[300px]">
+      <DatePicker
+        value={date}
+        onChange={setDate}
+        aria-label="Select a date"
+      />
+      <div className="text-ui-fg-subtle text-ui-body-small">
+        Selected date: {date ? date.toLocaleDateString() : "None"}
+      </div>
+    </div>
+  )
+}
+
+```
+
+### Date Picker With Time
+
+Enable time selection with different granularity levels for precise scheduling.
+
+```tsx
+"use client"
+
+import { DatePicker } from "@medusajs/ui"
+
+export default function DatePickerWithTime() {
+  return (
+    <div className="w-[300px]">
+      <DatePicker
+        granularity="minute"
+        defaultValue={new Date()}
+        aria-label="Select date and time"
+      />
+    </div>
+  )
+}
+
+```
+
+### Min/Max Values
+
+Restrict date selection to a specific range by setting minimum and maximum values.
+
+In the example below, you can only select dates within the next 30 days. Dates outside the range are disabled.
+
+```tsx
+"use client"
+
+import { DatePicker } from "@medusajs/ui"
+
+export default function DatePickerMinMax() {
+  const today = new Date()
+  const maxDate = new Date()
+  maxDate.setDate(today.getDate() + 30) // 30 days from today
+
+  return (
+    <div className="w-[300px]">
+      <DatePicker
+        minValue={today}
+        maxValue={maxDate}
+        aria-label="Select a date within the next 30 days"
+      />
+    </div>
+  )
+}
+
+```
+
+### Disabled Dates
+
+Disable specific dates like weekends and holidays to prevent selection of unavailable dates.
+
+The example below disables weekends and holidays like Christmas.
+
+```tsx
+"use client"
+
+import { DatePicker } from "@medusajs/ui"
+
+export default function DatePickerBusinessHours() {
+  return (
+    <div className="w-[300px]">
+      <DatePicker
+        granularity="hour"
+        defaultValue={new Date()}
+        aria-label="Select date and hour for business scheduling"
+        isDateUnavailable={(date) => {
+          // Disable weekends and holidays
+          const day = date.getDay()
+          const isWeekend = day === 0 || day === 6
+          
+          // Example: Disable specific holiday (Christmas)
+          const isChristmas = date.getMonth() === 11 && date.getDate() === 25
+          
+          return isWeekend || isChristmas
+        }}
+      />
+    </div>
+  )
+}
+
+```
+
+### Granularity Options
+
+Different levels of time precision from date-only to second-precision selection.
+
+```tsx
+"use client"
+
+import { DatePicker } from "@medusajs/ui"
+
+export default function DatePickerGranularity() {
+  const defaultDate = new Date()
+
+  return (
+    <div className="space-y-6 max-w-md">
+      <div className="space-y-2">
+        <div className="text-ui-fg-base text-ui-body-small font-medium">Date Only</div>
+        <DatePicker
+          granularity="day"
+          defaultValue={defaultDate}
+          aria-label="Select day only"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <div className="text-ui-fg-base text-ui-body-small font-medium">Date and Time with Hour Precision</div>
+        <DatePicker
+          granularity="hour"
+          defaultValue={defaultDate}
+          aria-label="Select date and hour"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <div className="text-ui-fg-base text-ui-body-small font-medium">Date and Time with Minute Precision</div>
+        <DatePicker
+          granularity="minute"
+          defaultValue={defaultDate}
+          aria-label="Select date and time with minutes"
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <div className="text-ui-fg-base text-ui-body-small font-medium">Date and Time with Second Precision</div>
+        <DatePicker
+          granularity="second"
+          defaultValue={defaultDate}
+          aria-label="Select date and time with seconds"
+        />
+      </div>
+    </div>
+  )
+}
+
+```
+
+### Form Integration
+
+The following example shows how to use the date picker in a form, with simulated form submission.
+
+```tsx
+"use client"
+
+import { DatePicker, Button, Label } from "@medusajs/ui"
+import { useState } from "react"
+
+export default function DatePickerForm() {
+  const [eventDate, setEventDate] = useState<Date | null>(null)
+  const [reminderDate, setReminderDate] = useState<Date | null>(null)
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitted(true)
+    // Here you would typically send data to your API
+    setTimeout(() => setSubmitted(false), 5000)
+  }
+
+  const isFormValid = eventDate && reminderDate
+
+  return (
+    <div className="p-6 max-w-md border border-ui-border-base rounded-lg bg-ui-bg-base">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <h3 className="text-ui-fg-base font-medium">Schedule Event</h3>
+          <p className="text-ui-fg-subtle text-ui-body-small">
+            Set up your event and reminder dates
+          </p>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="event-date">Event Date & Time</Label>
+            <DatePicker
+              id="event-date"
+              value={eventDate}
+              onChange={setEventDate}
+              minValue={new Date()}
+              aria-label="Select event date and time"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="reminder-date">Reminder Date</Label>
+            <DatePicker
+              id="reminder-date"
+              value={reminderDate}
+              onChange={setReminderDate}
+              minValue={new Date()}
+              maxValue={eventDate || undefined}
+              aria-label="Select reminder date"
+            />
+          </div>
+        </div>
+
+        <Button 
+          type="submit" 
+          disabled={!isFormValid || submitted}
+          className="w-full"
+        >
+          {submitted ? "Event Scheduled!" : "Schedule Event"}
+        </Button>
+      </form>
+
+      {submitted && (
+        <div className="mt-4 text-ui-fg-subtle text-ui-body-small">
+          Event scheduled for {eventDate?.toLocaleString()} with a reminder on {reminderDate?.toLocaleDateString()}.
+        </div>
+      )}
+    </div>
+  )
+}
+
+```
 
 
 # Drawer
