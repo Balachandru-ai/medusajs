@@ -3463,6 +3463,143 @@ medusaIntegrationTestRunner({
             })
           )
         })
+
+        it("should verify that reapplying the same promotion code after the cart total has been reduced to zero does not incorrectly remove existing adjustments", async () => {
+          const taxInclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true,
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 50,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 50,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              promo_codes: [taxInclPromotion.code],
+            },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 50,
+              original_total: 50,
+              total: 0,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 50,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          let updatedAgain = await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              promo_codes: [taxInclPromotion.code],
+            },
+            storeHeaders
+          )
+
+          expect(updatedAgain.status).toEqual(200)
+          expect(updatedAgain.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 50,
+              original_total: 50,
+              total: 0,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 50,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
       })
 
       describe("POST /store/carts/:id/customer", () => {
