@@ -276,6 +276,11 @@ export const sidebars = [
               },
               {
                 type: "link",
+                path: "/learn/fundamentals/data-models/json-properties",
+                title: "JSON Properties",
+              },
+              {
+                type: "link",
                 path: "/learn/fundamentals/data-models/relationships",
                 title: "Relationships",
               },

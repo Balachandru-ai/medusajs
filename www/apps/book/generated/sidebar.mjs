@@ -517,11 +517,21 @@ export const generatedSidebars = [
                 "loaded": true,
                 "isPathHref": true,
                 "type": "link",
+                "path": "/learn/fundamentals/data-models/json-properties",
+                "title": "JSON Properties",
+                "children": [],
+                "chapterTitle": "3.5.3. JSON Properties",
+                "number": "3.5.3."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
                 "path": "/learn/fundamentals/data-models/relationships",
                 "title": "Relationships",
                 "children": [],
-                "chapterTitle": "3.5.3. Relationships",
-                "number": "3.5.3."
+                "chapterTitle": "3.5.4. Relationships",
+                "number": "3.5.4."
               },
               {
                 "loaded": true,
@@ -530,8 +540,8 @@ export const generatedSidebars = [
                 "path": "/learn/fundamentals/data-models/manage-relationships",
                 "title": "Manage Relationships",
                 "children": [],
-                "chapterTitle": "3.5.4. Manage Relationships",
-                "number": "3.5.4."
+                "chapterTitle": "3.5.5. Manage Relationships",
+                "number": "3.5.5."
               },
               {
                 "loaded": true,
@@ -540,8 +550,8 @@ export const generatedSidebars = [
                 "path": "/learn/fundamentals/data-models/index",
                 "title": "Define Index",
                 "children": [],
-                "chapterTitle": "3.5.5. Define Index",
-                "number": "3.5.5."
+                "chapterTitle": "3.5.6. Define Index",
+                "number": "3.5.6."
               },
               {
                 "loaded": true,
@@ -550,8 +560,8 @@ export const generatedSidebars = [
                 "path": "/learn/fundamentals/data-models/check-constraints",
                 "title": "Check Constraints",
                 "children": [],
-                "chapterTitle": "3.5.6. Check Constraints",
-                "number": "3.5.6."
+                "chapterTitle": "3.5.7. Check Constraints",
+                "number": "3.5.7."
               },
               {
                 "loaded": true,
@@ -560,8 +570,8 @@ export const generatedSidebars = [
                 "path": "/learn/fundamentals/data-models/write-migration",
                 "title": "Migrations",
                 "children": [],
-                "chapterTitle": "3.5.7. Migrations",
-                "number": "3.5.7."
+                "chapterTitle": "3.5.8. Migrations",
+                "number": "3.5.8."
               }
             ],
             "chapterTitle": "3.5. Data Models",
