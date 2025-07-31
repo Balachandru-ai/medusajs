@@ -9604,6 +9604,243 @@ class BlogModuleService extends MedusaService({ Post }) {
 ```
 
 
+# JSON Properties in Data Models
+
+In this chapter, you'll learn how to use and manage [JSON properties](https://docs.medusajs.com/learn/fundamentals/data-models/properties#json/index.html.md) in data models.
+
+## What is a JSON Property?
+
+A JSON property in a data model is a flexible object that can contain various types of values.
+
+For example, you can create a `Brand` data model with a `metadata` JSON property to store additional information about the brand:
+
+```ts highlights={[["6"]]}
+import { model } from "@medusajs/framework/utils"
+
+const Brand = model.define("brand", {
+  id: model.id().primaryKey(),
+  name: model.text(),
+  metadata: model.json(),
+})
+```
+
+### Accepted Values in JSON Property
+
+JSON properties are made up of key-value pairs. The keys are strings, and the values can be one of the following types:
+
+- **Strings**: Text values.
+  - Empty strings remove the property from the JSON object. Learn more in the [Remove a Property from the JSON Property](#remove-a-property-from-the-json-property) section.
+- **Numbers**: Numeric values.
+- **Booleans**: `true` or `false` values.
+- **Nested Objects**: Objects within objects.
+- **Arrays**: Lists of values of any of the above types.
+
+For example, a `metadata` JSON property can look like this:
+
+```json
+{
+  "category": "electronics",
+  "views": 1500,
+  "is_featured": true,
+  "tags": ["new", "sale"],
+  "details": {
+    "warranty": "2 years",
+    "origin": "USA"
+  }
+}
+```
+
+### What are JSON Properties Useful For?
+
+JSON properties allow you to store flexible and dynamic data structures that can evolve over time without requiring changes to the database schema.
+
+Most data models in Medusa's Commerce Modules have a `metadata` property that is a JSON object. `metadata` allows you to store custom information that is not part of the core data model.
+
+Some examples of data to store in JSON properties:
+
+- Custom gift message for line items in an order.
+- Product's ID in a third-party system.
+- Brand's category or tags.
+
+### What are JSON Properties Not Useful For?
+
+JSON properties are not suitable for structured data that requires strict validation or relationships with other data models.
+
+For example, if you want to re-use brands across different products, it's better to create a `Brand` data model and [define a link](https://docs.medusajs.com/learn/fundamentals/module-links/index.html.md) to the `Product` data model instead of storing brand information in the product's `metadata` JSON property.
+
+***
+
+## How to Manage JSON Properties?
+
+### How Medusa Updates JSON Properties
+
+Consider a Brand Module with a `Brand` data model as shown [in the previous section](#what-is-a-json-property). The [module's service](https://docs.medusajs.com/learn/fundamentals/modules#2-create-service/index.html.md) will extend `MedusaService`, which generates methods like [updateBrands](https://docs.medusajs.com/resources/service-factory-reference/methods/update/index.html.md) to update a brand.
+
+When you pass a JSON property in the `updateBrands` method, Medusa will merge the provided JSON object with the existing one in the database. So, only the properties you pass will be updated, and the rest will remain unchanged.
+
+The following sections show examples of how to add, update, and remove properties in a JSON property.
+
+The following examples assume you have a `brandModuleService` that is resolved from the [Medusa container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md). For example:
+
+```ts
+const brandModuleService = container.resolve(BRAND_MODULE)
+```
+
+### Add a Property to the JSON Property
+
+Continuing with the Brand example, to add a `category` property to the `metadata` property, pass the new property in the `update` or `create` methods:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    category: "electronics",
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to include the new `category` property:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics"
+  }
+}
+```
+
+If you want to add another `is_featured` property later, you can do so by passing it in the update method again without affecting the existing properties:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    is_featured: true,
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to include both `category` and `is_featured` properties:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics",
+    "is_featured": true
+  }
+}
+```
+
+### Update an Existing Property in the JSON Property
+
+To update an existing property in the JSON property, pass the updated value in the `update` method.
+
+Continuing with the Brand example, to update the `category` property in the `metadata`:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    category: "home appliances",
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to reflect the new `category` value, and existing properties will remain unchanged:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "home appliances",
+    "is_featured": true
+  }
+}
+```
+
+### Caveat: Updating Nested Objects
+
+If you want to update a nested object within the JSON property, you need to provide the entire nested object in the update method.
+
+For example, consider that you have a `details` object within the `metadata`:
+
+```json
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics",
+    "details": {
+      "warranty": "1 year",
+      "origin": "China"
+    }
+  }
+}
+```
+
+To update the `warranty` property within the `details` object, you need to provide the entire `details` object in the update method:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    details: {
+      warranty: "2 years",
+      origin: "China",
+    },
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated with the new `warranty` value:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics",
+    "details": {
+      "warranty": "2 years",
+      "origin": "China"
+    }
+  }
+}
+```
+
+### Remove a Property from the JSON Property
+
+To remove a property from the JSON property, you can pass an empty string as the value of the property in the update method.
+
+For example, to remove the `is_featured` property from the `metadata`:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    is_featured: "",
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to remove the `is_featured` property:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "home appliances"
+  }
+}
+```
+
+### Manage JSON Properties in API Routes
+
+The instructions above also apply when managing JSON properties in API routes, since they typically use a service's `update` method under the hood.
+
+Refer to the [API reference](https://docs.medusajs.com/api/store#manage-metadata) to learn more about managing JSON properties, such as `metadata`, in API routes.
+
+
 # Manage Relationships
 
 In this chapter, you'll learn how to manage relationships between data models when creating, updating, or retrieving records using the module's main service.
@@ -10114,7 +10351,7 @@ export default Post
 
 ### json
 
-The `json` method defines a property whose value is a stringified JSON object.
+The `json` method defines a property whose value is stored as a stringified JSON object in the database.
 
 For example:
 
@@ -10128,6 +10365,8 @@ const Post = model.define("post", {
 
 export default Post
 ```
+
+Learn more in the [JSON Properties](https://docs.medusajs.com/learn/fundamentals/data-models/json-properties/index.html.md) chapter.
 
 ### array
 
@@ -14700,9 +14939,9 @@ Your workflow can use services of both custom and Commerce Modules, supporting y
 
 # Module Container
 
-In this chapter, you'll learn about the module's container and how to resolve resources in that container.
+In this chapter, you'll learn about the module container and how to resolve resources from it.
 
-Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), each module has a local container only used by the resources of that module.
+Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), each module has a local container used only by the resources of that module.
 
 So, resources in the module, such as services or loaders, can only resolve other resources registered in the module's container, and some Framework tools that the Medusa application registers in the module's container.
 
@@ -14712,13 +14951,13 @@ Find a list of resources or dependencies registered in a module's container in [
 
 ***
 
-## Resolve Resources
+## Resolve Resources from the Module Container
 
-### Services
+### Resolve in Services
 
-A service's constructor accepts as a first parameter an object used to resolve resources registered in the module's container.
+A service's constructor accepts as a first parameter an object used to resolve resources registered in the module's container. To resolve a resource, add the resource's registration name as a property of the object.
 
-For example:
+For example, to resolve the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) from the container:
 
 ```ts highlights={[["4"], ["10"]]}
 import { Logger } from "@medusajs/framework/types"
@@ -14740,11 +14979,13 @@ export default class BlogModuleService {
 }
 ```
 
-### Loader
+You can then use the logger in the service's methods.
 
-A loader function accepts as a parameter an object having the property `container`. Its value is the module's container used to resolve resources.
+### Resolve in Loaders
 
-For example:
+[Loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) accept an object parameter with the property `container`. Its value is the module's container that can be used to resolve resources using its `resolve` method.
+
+For example, to resolve the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) in a loader:
 
 ```ts highlights={[["9"]]}
 import {
@@ -14762,6 +15003,72 @@ export default async function helloWorldLoader({
   logger.info("[helloWorldLoader]: Hello, World!")
 }
 ```
+
+You can then use the logger in the loader's code.
+
+***
+
+## Caveat: Resolving Module Services in Loaders
+
+Consider a module that has a main service `BrandModuleService`, and an internal service `CmsService`. Medusa will register both of these services in the module's container.
+
+However, loaders are executed before any services are initialized and registered in the module's container. So, you can't resolve the `BrandModuleService` and `CmsService` in a loader.
+
+Instead, if your main service extends the `MedusaService` [service factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md), you can resolve the internal services generated for each data model passed to the `MedusaService` function.
+
+For example, if the `BrandModuleService` is defined as follows:
+
+```ts
+import { MedusaService } from "@medusajs/framework/utils"
+import Brand from "./models/brand"
+
+class BrandModuleService extends MedusaService({
+  Brand,
+}) {
+}
+
+export default BrandModuleService
+```
+
+Then, you can resolve the `brandService` that allows you to manage brands in the module's loader:
+
+```ts
+import {
+  LoaderOptions,
+} from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const brandService = container.resolve("brandService")
+
+  const brands = await brandService.list()
+
+  console.log("[helloWorldLoader]: Brands:", brands)
+}
+```
+
+Refer to the [Service Factory reference](https://docs.medusajs.com/resources/service-factory-reference/index.html.md) for details on the available methods in the generated services.
+
+***
+
+## Alternative to Resolving Other Modules' Services
+
+Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), you can't resolve resources that belong to other modules from the module's container. For example, you can't resolve the Product Module's service in the Blog Module's service.
+
+Instead, to build commerce features that span multiple modules, you can create [workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md). In those workflows, you can resolve services of all modules registered in the Medusa application, including the services of the Product and Blog modules.
+
+Then, you can execute the workflows in [API routes](https://docs.medusajs.com/learn/fundamentals/api-routes/index.html.md), [subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md), or [scheduled jobs](https://docs.medusajs.com/learn/fundamentals/scheduled-jobs/index.html.md).
+
+Learn more and find examples in the [Module Isolation](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md) chapter.
+
+***
+
+## Avoid Circular Dependencies
+
+When resolving resources in a module's services, make sure you don't create circular dependencies. For example, if `BlogModuleService` resolves `CmsService`, and `CmsService` resolves `BlogModuleService`, it will cause a circular dependency error.
+
+Instead, you should generally only resolve services within the main service. For example, `BlogModuleService` can resolve `CmsService`, but `CmsService` should not resolve `BlogModuleService`.
 
 
 # Perform Database Operations in a Service
@@ -16597,9 +16904,9 @@ In this chapter, you’ll learn about what the service factory is and how to use
 
 Medusa provides a service factory that your module’s main service can extend.
 
-The service factory generates data management methods for your data models in the database, so you don't have to implement these methods manually.
+The service factory generates data management methods for your data models, saving you time on implementing these methods manually.
 
-Your service provides data-management functionalities of your data models.
+Your service provides data-management functionality for your data models.
 
 ***
 
@@ -16624,7 +16931,7 @@ export default BlogModuleService
 
 ### MedusaService Parameters
 
-The `MedusaService` function accepts one parameter, which is an object of data models to generate data-management methods for.
+The `MedusaService` function accepts one parameter, which is an object of data models for which to generate data-management methods.
 
 In the example above, since the `BlogModuleService` extends `MedusaService`, it has methods to manage the `Post` data model, such as `createPosts`.
 
@@ -16632,7 +16939,7 @@ In the example above, since the `BlogModuleService` extends `MedusaService`, it 
 
 The service factory generates methods to manage the records of each of the data models provided in the first parameter in the database.
 
-The method's names are the operation's name, suffixed by the data model's key in the object parameter passed to `MedusaService`.
+The method names are the operation name, suffixed by the data model's key in the object parameter passed to `MedusaService`.
 
 For example, the following methods are generated for the service above:
 
@@ -16744,7 +17051,7 @@ await blogModuleService.softDeletePosts({
 
 ### Using a Constructor
 
-If you implement the `constructor` of your service, make sure to call `super` passing it `...arguments`.
+If you implement a `constructor` in your service, make sure to call `super` and pass it `...arguments`.
 
 For example:
 
@@ -16761,6 +17068,48 @@ class BlogModuleService extends MedusaService({
 }
 
 export default BlogModuleService
+```
+
+***
+
+## Generated Internal Services
+
+The service factory also generates internal services for each data model passed to the `MedusaService` function. These services are registered in the module's container and can be resolved using their camel-cased names.
+
+For example, if the `BlogModuleService` is defined as follows:
+
+```ts
+import { MedusaService } from "@medusajs/framework/utils"
+import Post from "./models/post"
+
+class BlogModuleService extends MedusaService({
+  Post,
+}){
+}
+
+export default BlogModuleService
+```
+
+Then, you'll have a `postService` registered in the module's container that allows you to manage posts.
+
+Generated internal services have the same methods as the `BlogModuleService`, such as `create`, `retrieve`, `update`, and `delete`, but without the data model name suffix.
+
+These services are useful when you need to perform database operations in loaders, as they are executed before the module's services are registered. Learn more in the [Module Container](https://docs.medusajs.com/learn/fundamentals/modules/container/index.html.md) documentation.
+
+For example, you can create a loader that logs the number of posts in the database:
+
+```ts
+import { LoaderOptions } from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const postService = container.resolve("postService")
+
+  const [_, count] = await postService.listAndCount()
+
+  console.log(`[helloWorldLoader]: There are ${count} posts in the database.`)
+}
 ```
 
 
@@ -80661,19 +81010,60 @@ Learn more about accepted filters in [this documentation](https://docs.medusajs.
 
 The method returns an array of objects of updated records.
 
+***
+
+## Update a JSON Property
+
+```ts
+const post = await postModuleService.updatePosts({
+  id: "123",
+  name: "My Post",
+  metadata: {
+    category: "news",
+    tags: ["update", "json"],
+  },
+})
+```
+
+When you have a JSON property in your data model, you can update it by adding, updating, or removing properties within that JSON object. Medusa will merge the properties you pass in the `update` method with the existing JSON object.
+
+### Remove a Property from the JSON Property
+
+```ts
+const post = await postModuleService.updatePosts({
+  id: "123",
+  metadata: {
+    is_featured: "",
+  },
+})
+```
+
+To remove a property from the JSON object, you can set its value to an empty string.
+
+### Learn More about Updating JSON Properties
+
+Refer to the [JSON Properties](https://docs.medusajs.com/docs/learn/fundamentals/data-models/json-properties/index.html.md) documentation to learn more about how JSON properties work in Medusa and how to update them.
+
 
 # Service Factory Reference
 
-This section of the documentation provides a reference of the methods generated for services extending the service factory (`MedusaService`), and how to use them.
+This section of the documentation provides a reference to the methods generated for services extending the service factory (`MedusaService`) and how to use them.
 
-Learn more about the service factory in [this documentation](https://docs.medusajs.com/docs/learn/fundamentals/modules/service-factory/index.html.md).
+Refer to the [Service Factory](https://docs.medusajs.com/docs/learn/fundamentals/modules/service-factory/index.html.md) documentation to learn more.
 
 ## Method Names
 
-Generated method names are of the format `{operationName}_{dataModelName}`, where:
+When your module's main service extends the service factory, Medusa will:
+
+1. Generate data-management methods in your main service for each of the data models passed to the `MedusaService` function.
+2. Generate internal services for each of the data models passed to the `MedusaService` function, which can be resolved in loaders.
+
+### Main Service Methods
+
+The names of the generated methods for a service extending the service factory are of the format `{operationName}_{dataModelName}`, where:
 
 - `{operationName}` is the name of the operation. For example, `create`.
-- `{dataModelName}` is the pascal-case version of the data model's key that's passed in the object parameter of `MedusaService`. The name is pluralized for all operations except for the `retrieve` operation.
+- `{dataModelName}` is the pascal-case version of the data model's key that's passed in the object parameter of `MedusaService`. The name is pluralized for all operations except the `retrieve` operation.
 
 Some examples of method names:
 
@@ -80681,6 +81071,14 @@ Some examples of method names:
 - `createMyPosts`
 - `retrievePost`
 - `listPosts`
+
+### Internal Generated Service Methods
+
+The internal services are useful when you need to perform database operations in loaders, as they're executed before the module's services are registered. Learn more in the [Module Container](https://docs.medusajs.com/docs/learn/fundamentals/modules/container/index.html.md) documentation.
+
+For the internal services, the method names are only the operation name, without the data model name.
+
+For example, a `Post` data model would have a `postService` with methods like `create`, `retrieve`, `update`, and `delete`.
 
 ***
 
@@ -82801,7 +83199,7 @@ const data = [
   {
     id: "1",
     title: "Shirt",
-    price: 10
+    price: 10,
   },
   // other data...
 ]
@@ -82840,7 +83238,7 @@ import {
 Then, inside the component that will render `DataTable`, create a table instance using the `useDataTable` hook:
 
 ```tsx
-export default function ProductTable () {
+export default function ProductTable() {
   const table = useDataTable({
     columns,
     data,
@@ -82864,7 +83262,7 @@ The `useDataTable` hook accepts an object with the following properties:
 Finally, render the `DataTable` component with the table instance created using the `useDataTable` hook:
 
 ```tsx
-export default function ProductTable () {
+export default function ProductTable() {
   // ...
   return (
     <DataTable instance={table}>
@@ -83103,14 +83501,14 @@ const products = [
     id: "1",
     title: "Shirt",
     price: 10,
-    is_active: true
+    is_active: true,
   },
   {
     id: "2",
     title: "Pants",
     price: 20,
-    is_active: true
-  }
+    is_active: true,
+  },
 ]
 
 const columnHelper = createDataTableColumnHelper<typeof products[0]>()
@@ -83125,7 +83523,7 @@ const columns = [
           {isActive ? "Active" : "Inactive"}
         </Badge>
       )
-    }
+    },
   }),
   // ...
 ]
@@ -83210,8 +83608,8 @@ const table = useDataTable({
   // ...
   search: {
     state: search,
-    onSearchChange: setSearch
-  }
+    onSearchChange: setSearch,
+  },
 })
 ```
 
@@ -83240,8 +83638,8 @@ const table = useDataTable({
   // Pass the state and onSearchChange to the table instance.
   search: {
     state: search,
-    onSearchChange: setSearch
-  }
+    onSearchChange: setSearch,
+  },
 })
 ```
 
@@ -83482,7 +83880,7 @@ const table = useDataTable({
     onPaginationChange: setPagination,
   },
   isLoading: false,
-});
+})
 ```
 
 Finally, render the `DataTable.Pagination` component as part of the `DataTable`'s children:
@@ -83641,8 +84039,8 @@ const filters = [
     label: "Title",
     options: products.map((product) => ({
       label: product.title,
-      value: product.title.toLowerCase()
-    }))
+      value: product.title.toLowerCase(),
+    })),
   }),
 ]
 ```
@@ -83735,7 +84133,7 @@ const table = useDataTable({
     state: filtering,
     onFilteringChange: setFiltering,
   },
-  filters
+  filters,
 })
 ```
 
@@ -83923,24 +84321,24 @@ const filters = [
         label: "Today",
         value: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0)).toString(),
-          $lte: new Date(new Date().setHours(23, 59, 59, 999)).toString()
-        }
+          $lte: new Date(new Date().setHours(23, 59, 59, 999)).toString(),
+        },
       },
       {
         label: "Yesterday",
         value: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0) - 24 * 60 * 60 * 1000).toString(),
-          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString()
-        }
+          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString(),
+        },
       },
       {
         label: "Last Week",
         value: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0) - 7 * 24 * 60 * 60 * 1000).toString(),
-          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString()
+          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString(),
         },
       },
-    ]
+    ],
   }),
 ]
 ```
@@ -84109,7 +84507,7 @@ If you want to set initial filter values, you can set the initial state of the `
 
 ```tsx
 const [filtering, setFiltering] = useState<DataTableFilteringState>({
-  title: ["shirt"]
+  title: ["shirt"],
 })
 ```
 
@@ -84237,11 +84635,11 @@ Next, in the component rendering the `DataTable` component, create a state varia
 ```tsx
 import {
   // ...
-  DataTableSortingState
+  DataTableSortingState,
 } from "@medusajs/ui"
 
-export default function ProductTable () {
-  const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
+export default function ProductTable() {
+  const [sorting, setSorting] = useState<DataTableSortingState | null>(null)
 
   const table = useDataTable({
     // ...
@@ -84267,7 +84665,7 @@ You must also implement the sorting logic, such as sending the sorting condition
 For example, when using a simple array as in the example above, this is how you sort the data based on the sorting conditions:
 
 ```tsx
-const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
+const [sorting, setSorting] = useState<DataTableSortingState | null>(null)
 
 const shownProducts = useMemo(() => {
   if (!sorting) {
@@ -84550,8 +84948,8 @@ const useCommands = () => {
         const productsToDeleteIds = Object.keys(selection)
 
         // TODO remove products from the server
-      }
-    })
+      },
+    }),
   ]
 }
 ```
@@ -88156,50 +88554,60 @@ npm install @medusajs/ui
 The configuration of the UI package is handled by the `@medusajs/admin` package. Therefore, you do not need to any additional configuration to use the UI package in your Admin extensions.
 
 
-# Standalone Project
+# Medusa UI Installation in Standalone Projects
 
-How to install and use Medusa UI in a standalone project.
+Learn how to install and use Medusa UI in a standalone project.
 
-## Installation
+Medusa UI is a React UI library that, while intended for usage within Medusa projects, can also be used in any React project.
+
+The icons package is installed independently from Medusa UI. Learn how to install it in the [Icons](../icons/overview.mdx) guide.
+
+## Medusa UI Compatibility
+
+To use Medusa UI in your standalone project, you must have:
+
+- React 18+ installed. Most React-based frameworks and libraries, such as Next.js and Vite, are compatible with this requirement.
+- [Tailwind CSS](https://v3.tailwindcss.com/) installed. The components in Medusa UI are styled using Tailwind CSS, so you will need to install it in your project as well.
+  - Medusa UI was built with Tailwind CSS v3, but it may generally support v4 as well.
 
 ***
 
-Medusa UI is a React UI library and while it's intended for usage within Medusa projects, it can also be used in any React project.
+## Step 1: Install Medusa UI
 
-### Install Medusa UI
-
-Install the React UI library with the following command:
+In your standalone project, install the Medusa UI package with the following command:
 
 ```bash
 npm install @medusajs/ui
 ```
 
-### Configuring Tailwind CSS
+***
 
-The components are styled using Tailwind CSS, and in order to use them, you will need to install Tailwind CSS in your project as well.
-For more information on how to install Tailwind CSS, please refer to the [Tailwind CSS documentation](https://tailwindcss.com/docs/installation).
+## Step 2: Install UI Presets
 
-All of the classes used for Medusa UI are shipped as a Tailwind CSS customization.
-You can install it with the following command:
+Medusa UI customizes Tailwind CSS classes to implement its design system. So, you must also install the Medusa UI preset package.
+
+To install the Medusa UI preset, run the following command:
 
 ```bash
 npm install @medusajs/ui-preset
 ```
 
-After you have installed Tailwind CSS and the Medusa UI preset, you need to add the following to your `tailwind.config.js`file:
+***
 
-```tsx
+## Step 3: Configure Tailwind CSS
+
+Next, you'll need to configure Tailwind CSS to use the Medusa UI preset and explicitly add the paths to the Medusa UI components as content files.
+
+### Tailwind CSS v3 Configurations
+
+In Tailwind CSS v3, which is the recommended version to use with Medusa UI, you need to add the following configurations to your `tailwind.config.js` or `tailwind.config.ts` file:
+
+1. Add the Medusa UI preset to the `presets` array.
+2. Ensure that the `content` field includes the path to the Medusa UI package.
+
+```js title="tailwind.config.js"
 module.exports = {
   presets: [require("@medusajs/ui-preset")],
-  // ...
-}
-```
-
-In order for the styles to be applied correctly to the components, you will also need to ensure that
-`@medusajs/ui` is included in the content field of your `tailwind.config.js` file:
-
-```tsx
-module.exports = {
   content: [
     // ...
     "./node_modules/@medusajs/ui/dist/**/*.{js,jsx,ts,tsx}",
@@ -88208,9 +88616,9 @@ module.exports = {
 }
 ```
 
-If you are working within a monorepo, you may need to add the path to the `@medusajs/ui` package in your `tailwind.config.js` like so:
+If your project is in a monorepo, you'll need to resolve the path to the `@medusajs/ui` package from the monorepo root:
 
-```tsx
+```tsx title="tailwind.config.js"
 const path = require("path")
 
 const uiPath = path.resolve(
@@ -88220,6 +88628,7 @@ const uiPath = path.resolve(
 )
 
 module.exports = {
+  presets: [require("@medusajs/ui-preset")],
   content: [
     // ...
     uiPath,
@@ -88229,26 +88638,55 @@ module.exports = {
 
 ```
 
-## Start building
+### Tailwind CSS v4 Configurations
 
-***
+Medusa UI isn't officially compatible with Tailwind CSS v4 yet, so use it with caution.
 
-You are now ready to start building your application with Medusa UI. You can import the components like so:
+In your CSS file that imports Tailwind CSS, add the following `@config` and `@source` directives:
 
-```tsx
-import { Button, Drawer } from "@medusajs/ui"
+```css
+@import "tailwindcss";
+@source "../node_modules/@medusajs/ui";
+@config "@medusajs/ui-preset";
 ```
 
-## Updating UI Packages
+This will explicitly include the Medusa UI preset and its components in your Tailwind CSS build, and will apply the preset styles to your project.
 
 ***
 
-Medusa's design-system packages, including `@medusajs/ui`, `@medusajs/ui-preset`, and `@medusajs/ui-icons`, are versioned independently. However, they're still part of the latest Medusa release. So, you can browse the [release notes](https://github.com/medusajs/medusa/releases) to see if there are any breaking changes to these packages.
+## Step 4: Use Medusa UI in Standalone Projects
 
-To update these packages, update their version in your `package.json` file and re-install dependencies. For example:
+You can now start building your application with Medusa UI.
 
-```bash
-npm install @medusajs/ui
+For example, you can use the `Button` in your custom components:
+
+```tsx
+import { Button } from "@medusajs/ui"
+
+export function ButtonDemo() {
+  return <Button>Button</Button>
+}
+```
+
+Refer to the documentation of each component to learn about its props and usage.
+
+***
+
+## Update UI Packages in Standalone Projects
+
+Medusa's design-system packages, including `@medusajs/ui` and `@medusajs/ui-preset`, are versioned independently from other `@medusajs/*` packages. However, they're still released as part of Medusa's releases.
+
+So, to find latest updates and breaking changes to any of these packages, refer to the [release notes in the Medusa GitHub repository](https://github.com/medusajs/medusa/releases).
+
+To update these packages in your standalone project, update their version in your `package.json` file and re-install dependencies. For example:
+
+```json title="package.json"
+{
+  "dependencies": {
+    "@medusajs/ui": "4.0.0",
+    "@medusajs/ui-preset": "4.0.0"
+  }
+}
 ```
 
 
