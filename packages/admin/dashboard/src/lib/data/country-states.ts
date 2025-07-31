@@ -1272,6 +1272,11 @@ const countryProvinceMap: Record<string, CountryProvinceObject> = {
       "US-WV": "West Virginia",
       "US-WI": "Wisconsin",
       "US-WY": "Wyoming",
+      "US-AS": "American Samoa",
+      "US-GU": "Guam",
+      "US-MP": "Northern Mariana Islands",
+      "US-VI": "U.S. Virgin Islands",
+      "US-UM": "United States Minor Outlying Islands",
     },
   },
   VE: {
