@@ -2071,6 +2071,56 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should not add a promotion that belongs to a different currency than the cart", async () => {
+          const newPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TEST",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  // Set for EUR currency, different from USD Currency of the cart
+                  currency_code: "eur",
+                  value: 1000,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          await api.post(
+            `/store/carts/${cart.id}/line-items`,
+            {
+              variant_id: product.variants[0].id,
+              quantity: 1,
+            },
+            storeHeaders
+          )
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [newPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              items: [
+                expect.objectContaining({
+                  adjustments: [],
+                }),
+              ],
+            })
+          )
+        })
+
         it("should not generate tax lines if automatic taxes is false", async () => {
           let updated = await api.post(
             `/store/carts/${cart.id}`,

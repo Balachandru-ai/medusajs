@@ -115,7 +115,7 @@ export const generatedEditDates = {
   "app/learn/configurations/ts-aliases/page.mdx": "2025-07-23T15:32:18.008Z",
   "app/learn/production/worker-mode/page.mdx": "2025-07-18T15:19:45.352Z",
   "app/learn/fundamentals/module-links/read-only/page.mdx": "2025-07-25T07:58:54.327Z",
-  "app/learn/fundamentals/data-models/properties/page.mdx": "2025-07-25T13:40:28.866Z",
+  "app/learn/fundamentals/data-models/properties/page.mdx": "2025-07-31T08:22:20.431Z",
   "app/learn/fundamentals/framework/page.mdx": "2025-06-26T14:26:22.120Z",
   "app/learn/fundamentals/api-routes/retrieve-custom-links/page.mdx": "2025-07-14T10:24:32.582Z",
   "app/learn/fundamentals/workflows/errors/page.mdx": "2025-04-25T14:26:25.000Z",
@@ -126,5 +126,6 @@ export const generatedEditDates = {
   "app/learn/installation/docker/page.mdx": "2025-07-23T15:34:18.530Z",
   "app/learn/fundamentals/generated-types/page.mdx": "2025-07-25T13:17:35.319Z",
   "app/learn/introduction/from-v1-to-v2/page.mdx": "2025-07-30T08:13:48.592Z",
-  "app/learn/debugging-and-testing/debug-workflows/page.mdx": "2025-07-30T13:45:14.117Z"
+  "app/learn/debugging-and-testing/debug-workflows/page.mdx": "2025-07-30T13:45:14.117Z",
+  "app/learn/fundamentals/data-models/json-properties/page.mdx": "2025-07-31T08:38:55.014Z"
 }

@@ -131,7 +131,7 @@ export const generatedEditDates = {
   "app/service-factory-reference/methods/restore/page.mdx": "2024-07-31T17:01:33+03:00",
   "app/service-factory-reference/methods/retrieve/page.mdx": "2024-07-31T17:01:33+03:00",
   "app/service-factory-reference/methods/soft-delete/page.mdx": "2024-07-31T17:01:33+03:00",
-  "app/service-factory-reference/methods/update/page.mdx": "2024-07-31T17:01:33+03:00",
+  "app/service-factory-reference/methods/update/page.mdx": "2025-07-31T08:24:03.685Z",
   "app/service-factory-reference/tips/filtering/page.mdx": "2025-04-23T14:38:29.068Z",
   "app/service-factory-reference/page.mdx": "2024-07-26T14:40:56+00:00",
   "app/storefront-development/cart/context/page.mdx": "2025-03-27T14:47:14.258Z",
