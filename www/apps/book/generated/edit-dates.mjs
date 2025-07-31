@@ -16,7 +16,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/api-routes/page.mdx": "2025-07-25T15:19:33.365Z",
   "app/learn/fundamentals/modules/modules-directory-structure/page.mdx": "2025-07-25T15:40:20.362Z",
   "app/learn/fundamentals/events-and-subscribers/page.mdx": "2025-05-16T13:40:16.111Z",
-  "app/learn/fundamentals/modules/container/page.mdx": "2025-05-21T15:07:12.059Z",
+  "app/learn/fundamentals/modules/container/page.mdx": "2025-07-31T14:24:04.087Z",
   "app/learn/fundamentals/workflows/execute-another-workflow/page.mdx": "2024-12-09T15:56:22.895Z",
   "app/learn/fundamentals/modules/loaders/page.mdx": "2025-06-16T13:34:16.462Z",
   "app/learn/fundamentals/admin/widgets/page.mdx": "2025-07-25T15:08:07.035Z",
@@ -38,7 +38,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/modules/options/page.mdx": "2025-03-18T15:12:34.510Z",
   "app/learn/fundamentals/data-models/relationships/page.mdx": "2025-07-16T09:51:22.141Z",
   "app/learn/fundamentals/workflows/compensation-function/page.mdx": "2025-04-24T13:16:00.941Z",
-  "app/learn/fundamentals/modules/service-factory/page.mdx": "2025-03-18T15:14:13.486Z",
+  "app/learn/fundamentals/modules/service-factory/page.mdx": "2025-07-31T13:27:53.791Z",
   "app/learn/fundamentals/modules/module-links/page.mdx": "2024-09-30T08:43:53.126Z",
   "app/learn/fundamentals/scheduled-jobs/execution-number/page.mdx": "2025-07-25T15:54:56.135Z",
   "app/learn/fundamentals/api-routes/parameters/page.mdx": "2025-02-14T08:34:03.184Z",
@@ -127,5 +127,5 @@ export const generatedEditDates = {
   "app/learn/fundamentals/generated-types/page.mdx": "2025-07-25T13:17:35.319Z",
   "app/learn/introduction/from-v1-to-v2/page.mdx": "2025-07-30T08:13:48.592Z",
   "app/learn/debugging-and-testing/debug-workflows/page.mdx": "2025-07-30T13:45:14.117Z",
-  "app/learn/fundamentals/data-models/json-properties/page.mdx": "2025-07-31T10:47:27.882Z"
+  "app/learn/fundamentals/data-models/json-properties/page.mdx": "2025-07-31T14:25:01.268Z"
 }

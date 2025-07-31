@@ -9695,7 +9695,7 @@ const brand = await brandModuleService.updateBrands({
   id: "brand_123",
   metadata: {
     category: "electronics",
-  }
+  },
 })
 ```
 
@@ -9717,7 +9717,7 @@ const brand = await brandModuleService.updateBrands({
   id: "brand_123",
   metadata: {
     is_featured: true,
-  }
+  },
 })
 ```
 
@@ -9744,7 +9744,7 @@ const brand = await brandModuleService.updateBrands({
   id: "brand_123",
   metadata: {
     category: "home appliances",
-  }
+  },
 })
 ```
 
@@ -9787,9 +9787,9 @@ const brand = await brandModuleService.updateBrands({
   metadata: {
     details: {
       warranty: "2 years",
-      origin: "China"
-    }
-  }
+      origin: "China",
+    },
+  },
 })
 ```
 
@@ -9819,7 +9819,7 @@ const brand = await brandModuleService.updateBrands({
   id: "brand_123",
   metadata: {
     is_featured: "",
-  }
+  },
 })
 ```
 
@@ -14939,9 +14939,9 @@ Your workflow can use services of both custom and Commerce Modules, supporting y
 
 # Module Container
 
-In this chapter, you'll learn about the module's container and how to resolve resources in that container.
+In this chapter, you'll learn about the module container and how to resolve resources from it.
 
-Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), each module has a local container only used by the resources of that module.
+Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), each module has a local container used only by the resources of that module.
 
 So, resources in the module, such as services or loaders, can only resolve other resources registered in the module's container, and some Framework tools that the Medusa application registers in the module's container.
 
@@ -14951,13 +14951,13 @@ Find a list of resources or dependencies registered in a module's container in [
 
 ***
 
-## Resolve Resources
+## Resolve Resources from the Module Container
 
-### Services
+### Resolve in Services
 
-A service's constructor accepts as a first parameter an object used to resolve resources registered in the module's container.
+A service's constructor accepts as a first parameter an object used to resolve resources registered in the module's container. To resolve a resource, add the resource's registration name as a property of the object.
 
-For example:
+For example, to resolve the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) from the container:
 
 ```ts highlights={[["4"], ["10"]]}
 import { Logger } from "@medusajs/framework/types"
@@ -14979,11 +14979,13 @@ export default class BlogModuleService {
 }
 ```
 
-### Loader
+You can then use the logger in the service's methods.
 
-A loader function accepts as a parameter an object having the property `container`. Its value is the module's container used to resolve resources.
+### Resolve in Loaders
 
-For example:
+[Loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) accept an object parameter with the property `container`. Its value is the module's container that can be used to resolve resources using its `resolve` method.
+
+For example, to resolve the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) in a loader:
 
 ```ts highlights={[["9"]]}
 import {
@@ -15001,6 +15003,72 @@ export default async function helloWorldLoader({
   logger.info("[helloWorldLoader]: Hello, World!")
 }
 ```
+
+You can then use the logger in the loader's code.
+
+***
+
+## Caveat: Resolving Module Services in Loaders
+
+Consider a module that has a main service `BrandModuleService`, and an internal service `CmsService`. Medusa will register both of these services in the module's container.
+
+However, loaders are executed before any services are initialized and registered in the module's container. So, you can't resolve the `BrandModuleService` and `CmsService` in a loader.
+
+Instead, if your main service extends the `MedusaService` [service factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md), you can resolve the internal services generated for each data model passed to the `MedusaService` function.
+
+For example, if the `BrandModuleService` is defined as follows:
+
+```ts
+import { MedusaService } from "@medusajs/framework/utils"
+import Brand from "./models/brand"
+
+class BrandModuleService extends MedusaService({
+  Brand,
+}) {
+}
+
+export default BrandModuleService
+```
+
+Then, you can resolve the `brandService` that allows you to manage brands in the module's loader:
+
+```ts
+import {
+  LoaderOptions,
+} from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const brandService = container.resolve("brandService")
+
+  const brands = await brandService.list()
+
+  console.log("[helloWorldLoader]: Brands:", brands)
+}
+```
+
+Refer to the [Service Factory reference](https://docs.medusajs.com/resources/service-factory-reference/index.html.md) for details on the available methods in the generated services.
+
+***
+
+## Alternative to Resolving Other Modules' Services
+
+Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), you can't resolve resources that belong to other modules from the module's container. For example, you can't resolve the Product Module's service in the Blog Module's service.
+
+Instead, to build commerce features that span multiple modules, you can create [workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md). In those workflows, you can resolve services of all modules registered in the Medusa application, including the services of the Product and Blog modules.
+
+Then, you can execute the workflows in [API routes](https://docs.medusajs.com/learn/fundamentals/api-routes/index.html.md), [subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md), or [scheduled jobs](https://docs.medusajs.com/learn/fundamentals/scheduled-jobs/index.html.md).
+
+Learn more and find examples in the [Module Isolation](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md) chapter.
+
+***
+
+## Avoid Circular Dependencies
+
+When resolving resources in a module's services, make sure you don't create circular dependencies. For example, if `BlogModuleService` resolves `CmsService`, and `CmsService` resolves `BlogModuleService`, it will cause a circular dependency error.
+
+Instead, you should generally only resolve services within the main service. For example, `BlogModuleService` can resolve `CmsService`, but `CmsService` should not resolve `BlogModuleService`.
 
 
 # Perform Database Operations in a Service
@@ -16836,9 +16904,9 @@ In this chapter, you’ll learn about what the service factory is and how to use
 
 Medusa provides a service factory that your module’s main service can extend.
 
-The service factory generates data management methods for your data models in the database, so you don't have to implement these methods manually.
+The service factory generates data management methods for your data models, saving you time on implementing these methods manually.
 
-Your service provides data-management functionalities of your data models.
+Your service provides data-management functionality for your data models.
 
 ***
 
@@ -16863,7 +16931,7 @@ export default BlogModuleService
 
 ### MedusaService Parameters
 
-The `MedusaService` function accepts one parameter, which is an object of data models to generate data-management methods for.
+The `MedusaService` function accepts one parameter, which is an object of data models for which to generate data-management methods.
 
 In the example above, since the `BlogModuleService` extends `MedusaService`, it has methods to manage the `Post` data model, such as `createPosts`.
 
@@ -16871,7 +16939,7 @@ In the example above, since the `BlogModuleService` extends `MedusaService`, it 
 
 The service factory generates methods to manage the records of each of the data models provided in the first parameter in the database.
 
-The method's names are the operation's name, suffixed by the data model's key in the object parameter passed to `MedusaService`.
+The method names are the operation name, suffixed by the data model's key in the object parameter passed to `MedusaService`.
 
 For example, the following methods are generated for the service above:
 
@@ -16983,7 +17051,7 @@ await blogModuleService.softDeletePosts({
 
 ### Using a Constructor
 
-If you implement the `constructor` of your service, make sure to call `super` passing it `...arguments`.
+If you implement a `constructor` in your service, make sure to call `super` and pass it `...arguments`.
 
 For example:
 
@@ -17000,6 +17068,48 @@ class BlogModuleService extends MedusaService({
 }
 
 export default BlogModuleService
+```
+
+***
+
+## Generated Internal Services
+
+The service factory also generates internal services for each data model passed to the `MedusaService` function. These services are registered in the module's container and can be resolved using their camel-cased names.
+
+For example, if the `BlogModuleService` is defined as follows:
+
+```ts
+import { MedusaService } from "@medusajs/framework/utils"
+import Post from "./models/post"
+
+class BlogModuleService extends MedusaService({
+  Post,
+}){
+}
+
+export default BlogModuleService
+```
+
+Then, you'll have a `postService` registered in the module's container that allows you to manage posts.
+
+Generated internal services have the same methods as the `BlogModuleService`, such as `create`, `retrieve`, `update`, and `delete`, but without the data model name suffix.
+
+These services are useful when you need to perform database operations in loaders, as they are executed before the module's services are registered. Learn more in the [Module Container](https://docs.medusajs.com/learn/fundamentals/modules/container/index.html.md) documentation.
+
+For example, you can create a loader that logs the number of posts in the database:
+
+```ts
+import { LoaderOptions } from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const postService = container.resolve("postService")
+
+  const [_, count] = await postService.listAndCount()
+
+  console.log(`[helloWorldLoader]: There are ${count} posts in the database.`)
+}
 ```
 
 
@@ -80937,16 +81047,23 @@ Refer to the [JSON Properties](https://docs.medusajs.com/docs/learn/fundamentals
 
 # Service Factory Reference
 
-This section of the documentation provides a reference of the methods generated for services extending the service factory (`MedusaService`), and how to use them.
+This section of the documentation provides a reference to the methods generated for services extending the service factory (`MedusaService`) and how to use them.
 
-Learn more about the service factory in [this documentation](https://docs.medusajs.com/docs/learn/fundamentals/modules/service-factory/index.html.md).
+Refer to the [Service Factory](https://docs.medusajs.com/docs/learn/fundamentals/modules/service-factory/index.html.md) documentation to learn more.
 
 ## Method Names
 
-Generated method names are of the format `{operationName}_{dataModelName}`, where:
+When your module's main service extends the service factory, Medusa will:
+
+1. Generate data-management methods in your main service for each of the data models passed to the `MedusaService` function.
+2. Generate internal services for each of the data models passed to the `MedusaService` function, which can be resolved in loaders.
+
+### Main Service Methods
+
+The names of the generated methods for a service extending the service factory are of the format `{operationName}_{dataModelName}`, where:
 
 - `{operationName}` is the name of the operation. For example, `create`.
-- `{dataModelName}` is the pascal-case version of the data model's key that's passed in the object parameter of `MedusaService`. The name is pluralized for all operations except for the `retrieve` operation.
+- `{dataModelName}` is the pascal-case version of the data model's key that's passed in the object parameter of `MedusaService`. The name is pluralized for all operations except the `retrieve` operation.
 
 Some examples of method names:
 
@@ -80954,6 +81071,14 @@ Some examples of method names:
 - `createMyPosts`
 - `retrievePost`
 - `listPosts`
+
+### Internal Generated Service Methods
+
+The internal services are useful when you need to perform database operations in loaders, as they're executed before the module's services are registered. Learn more in the [Module Container](https://docs.medusajs.com/docs/learn/fundamentals/modules/container/index.html.md) documentation.
+
+For the internal services, the method names are only the operation name, without the data model name.
+
+For example, a `Post` data model would have a `postService` with methods like `create`, `retrieve`, `update`, and `delete`.
 
 ***
 
