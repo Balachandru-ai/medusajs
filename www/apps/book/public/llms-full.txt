@@ -25014,7 +25014,9 @@ Refer to the [Retrieve Cart Totals in Storefront](https://docs.medusajs.com/User
 
 ## How to Retrieve Cart Totals with Query
 
-To retrieve cart totals, pass the `total` field within the `fields` option of Query. For example:
+To retrieve cart totals, you mainly need to pass the `total` field within the `fields` option of the Query. This will return the cart's grand total, along with the totals of its line items and shipping methods. You can also pass additional total fields that you need for your use case.
+
+For example, to retrieve all totals of a cart:
 
 Use `useQueryGraphStep` in workflows, and `query.graph` in custom API routes, scheduled jobs, and subscribers.
 
@@ -25033,6 +25035,28 @@ export const myWorkflow = createWorkflow(
         "id",
         "currency_code",
         "total",
+        "subtotal",
+        "tax_total",
+        "discount_total",
+        "discount_subtotal",
+        "discount_tax_total",
+        "original_total",
+        "original_tax_total",
+        "item_total",
+        "item_subtotal",
+        "item_tax_total",
+        "original_item_total",
+        "original_item_subtotal",
+        "original_item_tax_total",
+        "shipping_total",
+        "shipping_subtotal",
+        "shipping_tax_total",
+        "original_shipping_tax_total",
+        "original_shipping_subtotal",
+        "original_shipping_total",
+        "credit_line_subtotal",
+        "credit_line_tax_total",
+        "credit_line_total",
         "items.*",
         "shipping_methods.*",
       ],
@@ -25055,6 +25079,28 @@ const { data: [cart] } = await query.graph({
     "id",
     "currency_code",
     "total",
+    "subtotal",
+    "tax_total",
+    "discount_total",
+    "discount_subtotal",
+    "discount_tax_total",
+    "original_total",
+    "original_tax_total",
+    "item_total",
+    "item_subtotal",
+    "item_tax_total",
+    "original_item_total",
+    "original_item_subtotal",
+    "original_item_tax_total",
+    "shipping_total",
+    "shipping_subtotal",
+    "shipping_tax_total",
+    "original_shipping_tax_total",
+    "original_shipping_subtotal",
+    "original_shipping_total",
+    "credit_line_subtotal",
+    "credit_line_tax_total",
+    "credit_line_total",
     "items.*",
     "shipping_methods.*",
   ],
@@ -25064,13 +25110,35 @@ const { data: [cart] } = await query.graph({
 })
 ```
 
-By specifying the `total` field, you retrieve totals related to the cart, line items, and shipping methods. The returned `cart` object will look like this:
+The returned `cart` object will look like this:
 
 ```json
 {
   "id": "cart_123",
   "currency_code": "usd",
   "total": 10,
+  "subtotal": 10,
+  "tax_total": 0,
+  "discount_total": 0,
+  "discount_subtotal": 0,
+  "discount_tax_total": 0,
+  "original_total": 10,
+  "original_tax_total": 0,
+  "item_total": 10,
+  "item_subtotal": 10,
+  "item_tax_total": 0,
+  "original_item_total": 10,
+  "original_item_subtotal": 10,
+  "original_item_tax_total": 0,
+  "shipping_total": 10,
+  "shipping_subtotal": 10,
+  "shipping_tax_total": 0,
+  "original_shipping_tax_total": 0,
+  "original_shipping_subtotal": 10,
+  "original_shipping_total": 10,
+  "credit_line_subtotal": 0,
+  "credit_line_tax_total": 0,
+  "credit_line_total": 0,
   "items": [
     {
       "id": "cali_123",
@@ -25079,8 +25147,8 @@ By specifying the `total` field, you retrieve totals related to the cart, line i
       "subtotal": 10,
       "total": 0,
       "original_total": 10,
-      "discount_total": 10,
-      "discount_subtotal": 10,
+      "discount_total": 0,
+      "discount_subtotal": 0,
       "discount_tax_total": 0,
       "tax_total": 0,
       "original_tax_total": 0,
@@ -25104,9 +25172,33 @@ By specifying the `total` field, you retrieve totals related to the cart, line i
 }
 ```
 
-### Cart Grand Total
+### Cart Totals
 
-The cart's grand total is the `total` field in the `cart` object. It represents the total amount of the cart, including all line items, shipping methods, taxes, and discounts.
+The cart will include the following total fields:
+
+- `total`: The grand total of the cart, including all line items, shipping methods, taxes, and discounts.
+- `subtotal`: The cart's total excluding taxes, including promotions.
+- `tax_total`: The total tax amount applied to the cart.
+- `discount_total`: The total amount of discounts applied to the cart.
+- `discount_subtotal`: The total amount of discounts applied to the cart's subtotal.
+- `discount_tax_total`: The total amount of discounts applied to the cart's tax.
+- `original_total`: The cart's total including taxes, excluding promotions.
+- `original_tax_total`: The cart items' tax total including promotions.
+- `item_total`: The cart items' total including taxes and promotions.
+- `item_subtotal`: The cart items' total excluding taxes, including promotions.
+- `item_tax_total`: The cart items' tax total including promotions.
+- `original_item_total`: The cart items' total including taxes, excluding promotions.
+- `original_item_subtotal`: The cart items' total excluding taxes, including promotions.
+- `original_item_tax_total`: The cart items' tax total excluding promotions.
+- `shipping_total`: The cart's shipping total including taxes and promotions.
+- `shipping_subtotal`: The cart's shipping total excluding taxes, including promotions.
+- `shipping_tax_total`: The total taxes applied to the cart's shipping amount.
+- `original_shipping_tax_total`: The total taxes applied to the cart's shipping amount, excluding promotions.
+- `original_shipping_subtotal`: The cart's shipping total excluding taxes, including promotions.
+- `original_shipping_total`: The cart's shipping total including taxes, excluding promotions.
+- `credit_line_subtotal`: The subtotal of the credit line applied to the cart.
+- `credit_line_tax_total`: The total tax amount applied to the credit line.
+- `credit_line_total`: The total amount of the credit line applied to the cart.
 
 ### Cart Line Item Totals
 
@@ -25140,7 +25232,7 @@ The `shipping_methods` array in the `cart` object contains total fields for each
 
 ## Caveats of Retrieving Cart Totals
 
-### Using Astrisk (\*) in Cart's Query
+### Using Asterisk (\*) in Cart's Query
 
 Cart totals are calculated based on the cart's line items, shipping methods, taxes, and any discounts applied. They are not stored in the `Cart` data model.
 
@@ -28983,13 +29075,15 @@ The following table lists the possible `action` values that Medusa uses and what
 
 In this guide, you'll learn how to retrieve order totals in your Medusa application using [Query](https://docs.medusajs.com/docs/learn/fundamentals/module-links/query/index.html.md).
 
-You may need to retrieve order totals in your Medusa customizations, such as workflows or custom API routes, to perform custom actions with them. The ideal way to retrieve totals is with Query.
+You may need to retrieve order totals in your Medusa customizations, such as workflows or custom API routes, to perform custom actions with them. The ideal way to retrieve totals is using Query.
 
 Refer to the [Order Confirmation in Storefront](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/storefront-development/checkout/order-confirmation#show-order-totals/index.html.md) guide for a storefront-specific approach.
 
 ## How to Retrieve Order Totals with Query
 
-To retrieve order totals, pass the `total` field within the `fields` option of the Query. For example:
+To retrieve order totals, you mainly need to pass the `total` field within the `fields` option of the Query. This will return the order's grand total, along with the totals of its line items and shipping methods. You can also pass additional total fields that you need for your use case.
+
+For example, to retrieve all totals of an order:
 
 Use `useQueryGraphStep` in workflows, and `query.graph` in custom API routes, scheduled jobs, and subscribers.
 
@@ -29008,8 +29102,30 @@ export const myWorkflow = createWorkflow(
         "id",
         "currency_code",
         "total",
+        "subtotal",
+        "tax_total",
+        "original_total",
+        "original_subtotal",
+        "original_tax_total",
+        "discount_total",
+        "discount_tax_total",
+        "shipping_total",
+        "shipping_subtotal",
+        "shipping_tax_total",
+        "original_shipping_total",
+        "original_shipping_subtotal",
+        "original_shipping_tax_total",
+        "item_total",
+        "item_tax_total",
+        "item_subtotal",
+        "original_item_total",
+        "original_item_tax_total",
+        "original_item_subtotal",
+        "gift_card_total",
+        "gift_card_tax_total",
         "items.*",
         "shipping_methods.*",
+        "summary.*"
       ],
       filters: {
         id: "order_123", // Specify the order ID
@@ -29030,8 +29146,30 @@ const { data: [order] } = await query.graph({
     "id",
     "currency_code",
     "total",
+    "subtotal",
+    "tax_total",
+    "original_total",
+    "original_subtotal",
+    "original_tax_total",
+    "discount_total",
+    "discount_tax_total",
+    "shipping_total",
+    "shipping_subtotal",
+    "shipping_tax_total",
+    "original_shipping_total",
+    "original_shipping_subtotal",
+    "original_shipping_tax_total",
+    "item_total",
+    "item_tax_total",
+    "item_subtotal",
+    "original_item_total",
+    "original_item_tax_total",
+    "original_item_subtotal",
+    "gift_card_total",
+    "gift_card_tax_total",
     "items.*",
     "shipping_methods.*",
+    "summary.*"
   ],
   filters: {
     id: "order_123", // Specify the order ID
@@ -29039,40 +29177,33 @@ const { data: [order] } = await query.graph({
 })
 ```
 
-By specifying the `total` field, you retrieve totals related to the order, line items, and shipping methods. The returned `order` object will look like this:
+The returned `order` object will look like this:
 
 ```json
 {
-  "id": "order_123",
-  "currency_code": "usd",
-  "total": 28,
+  "id": "order_01K1GEZ6Y1V9651AJNYG1WV3TC",
+  "currency_code": "eur",
+  "total": 20,
+  "subtotal": 20,
+  "tax_total": 0,
+  "original_total": 20,
+  "original_tax_total": 0,
+  "discount_total": 0,
+  "discount_tax_total": 0,
+  "shipping_total": 10,
+  "shipping_subtotal": 10,
+  "shipping_tax_total": 0,
+  "original_shipping_total": 10,
+  "original_shipping_subtotal": 10,
+  "original_shipping_tax_total": 0,
+  "item_total": 10,
+  "item_tax_total": 0,
+  "item_subtotal": 10,
+  "original_item_total": 10,
+  "original_item_tax_total": 0,
+  "original_item_subtotal": 10,
   "items": [
     {
-      "id": "ordli_01K10AZQZ0F86MSTT4FKFNNN8X",
-      // ...
-      "unit_price": 10,
-      "subtotal": 10,
-      "total": 0,
-      "original_total": 10,
-      "discount_total": 10,
-      "discount_subtotal": 10,
-      "discount_tax_total": 0,
-      "tax_total": 0,
-      "original_tax_total": 0,
-      "refundable_total_per_unit": 0,
-      "refundable_total": 0,
-      "fulfilled_total": 0,
-      "shipped_total": 0,
-      "return_requested_total": 0,
-      "return_received_total": 0,
-      "return_dismissed_total": 0,
-      "write_off_total": 0,
-    }
-  ],
-  "shipping_methods": [
-    {
-      "id": "ordsm_01K10AZQYZ1PVCX0DPEAY1G9B9",
-      // ...
       "subtotal": 10,
       "total": 10,
       "original_total": 10,
@@ -29081,14 +29212,69 @@ By specifying the `total` field, you retrieve totals related to the order, line 
       "discount_tax_total": 0,
       "tax_total": 0,
       "original_tax_total": 0,
+      "refundable_total_per_unit": 10,
+      "refundable_total": 10,
+      "fulfilled_total": 0,
+      "shipped_total": 0,
+      "return_requested_total": 0,
+      "return_received_total": 0,
+      "return_dismissed_total": 0,
+      "write_off_total": 0,
+      // ...
     }
-  ]
+  ],
+  "shipping_methods": [
+    {
+      "subtotal": 10,
+      "total": 10,
+      "original_total": 10,
+      "discount_total": 0,
+      "discount_subtotal": 0,
+      "discount_tax_total": 0,
+      "tax_total": 0,
+      "original_tax_total": 0,
+      // ...
+    }
+  ],
+  "summary": {
+    "paid_total": 0,
+    "refunded_total": 0,
+    "accounting_total": 20,
+    "credit_line_total": 0,
+    "transaction_total": 0,
+    "pending_difference": 20,
+    "current_order_total": 20,
+    "original_order_total": 20
+  }
 }
 ```
 
-### Order Grand Total
+### Order Totals
 
-The order's grand total is the `total` field in the `order` object. It represents the total amount of the order, including all line items, shipping methods, taxes, and discounts.
+The order will include the following total fields:
+
+- `total`: The grand total of the order, including all line items, shipping methods, taxes, and discounts.
+- `subtotal`: The order's total excluding taxes, including promotions.
+- `tax_total`: The order's tax total including promotions.
+- `original_total`: The order's total including taxes, excluding promotions.
+- `original_subtotal`: The order's total excluding taxes, including promotions.
+- `original_tax_total`: The order's tax total excluding promotions.
+- `discount_total`: The order's discount or promotions total.
+- `discount_tax_total`: The tax total of the order's discount or promotion.
+- `shipping_total`: The order's shipping total including taxes and promotions.
+- `shipping_subtotal`: The order's shipping total excluding taxes, including promotions.
+- `shipping_tax_total`: The tax total of the order's shipping.
+- `original_shipping_total`: The order's shipping total including taxes, excluding promotions.
+- `original_shipping_subtotal`: The order's shipping total excluding taxes, including promotions.
+- `original_shipping_tax_total`: The tax total of the order's shipping excluding promotions.
+- `item_total`: The total of all line items in the order, including taxes and promotions.
+- `item_tax_total`: The tax total of all line items in the order, including promotions.
+- `item_subtotal`: The subtotal of all line items in the order, excluding taxes, including promotions.
+- `original_item_total`: The total of all line items in the order, including taxes, excluding promotions.
+- `original_item_tax_total`: The tax total of all line items in the order, excluding promotions.
+- `original_item_subtotal`: The subtotal of all line items in the order, excluding taxes, including promotions.
+- `gift_card_total`: The total amount of gift cards applied to the order.
+- `gift_card_tax_total`: The tax total of the gift cards applied to the order.
 
 ### Order Line Item Totals
 
@@ -29128,11 +29314,24 @@ The `shipping_methods` array in the `order` object contains total fields for eac
 - `tax_total`: The total tax amount applied to the shipping method.
 - `original_tax_total`: The total tax amount applied to the shipping method before any discounts.
 
+### Order Summary Totals
+
+The `summary` object in the `order` object provides an overview of the order's transactions. It includes the following fields:
+
+- `paid_total`: The total amount that has been paid for the order.
+- `refunded_total`: The total amount that has been refunded for the order.
+- `accounting_total`: The order's total without the credit-line total.
+- `credit_line_total`: The total amount of credit lines applied to the order.
+- `transaction_total`: The total amount of transactions associated with the order.
+- `pending_difference`: The difference between the order's total and the paid total.
+- `current_order_total`: The current total of the order. It's useful if the order has been edited or modified.
+- `original_order_total`: The original total of the order before any modifications.
+
 ***
 
 ## Caveats of Retrieving Order Totals
 
-### Using Asterisk (\*) in Order's Query
+### Using Asterisk (\*) in Order Query
 
 Order totals are calculated based on the order's line items, shipping methods, taxes, and any discounts applied. They are not stored in the `Order` data model.
 
