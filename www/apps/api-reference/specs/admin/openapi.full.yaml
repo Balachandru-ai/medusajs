@@ -15024,7 +15024,7 @@ paths:
           $ref: '#/components/responses/500_error'
       x-workflow: deleteDraftOrdersWorkflow
       x-events: []
-      x-version: 2.8.4
+      x-since: 2.8.4
   /admin/draft-orders/{id}/convert-to-order:
     post:
       operationId: PostDraftOrdersIdConvertToOrder
@@ -22738,7 +22738,7 @@ paths:
             ```
           description: Emitted when an order edit request is canceled.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /admin/order-edits/{id}/confirm:
     post:
       operationId: PostOrderEditsIdConfirm
@@ -22812,7 +22812,7 @@ paths:
             ```
           description: Emitted when an order edit request is confirmed.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /admin/order-edits/{id}/items:
     post:
       operationId: PostOrderEditsIdItems
@@ -23208,7 +23208,7 @@ paths:
             ```
           description: Emitted when an order edit is requested.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /admin/order-edits/{id}/shipping-method:
     post:
       operationId: PostOrderEditsIdShippingMethod
@@ -33277,7 +33277,7 @@ paths:
           $ref: '#/components/responses/500_error'
       x-workflow: importProductsAsChunksWorkflow
       x-events: []
-      x-version: 2.8.5
+      x-since: 2.8.5
   /admin/products/imports/{transaction_id}/confirm:
     post:
       operationId: PostProductsImportsTransaction_idConfirm
@@ -33335,7 +33335,7 @@ paths:
           $ref: '#/components/responses/invalid_request_error'
         '500':
           $ref: '#/components/responses/500_error'
-      x-version: 2.8.5
+      x-since: 2.8.5
   /admin/products/{id}:
     get:
       operationId: GetProductsId
@@ -48956,7 +48956,7 @@ paths:
           $ref: '#/components/responses/invalid_request_error'
         '500':
           $ref: '#/components/responses/500_error'
-      x-version: 2.8.0
+      x-since: 2.8.0
   /admin/tax-rates:
     get:
       operationId: GetTaxRates
