@@ -840,9 +840,9 @@ export const generatedSidebars = [
                 "isPathHref": true,
                 "type": "link",
                 "path": "/learn/fundamentals/workflows/execute-another-workflow",
-                "title": "Execute Another Workflow",
+                "title": "Execute Nested Workflows",
                 "children": [],
-                "chapterTitle": "3.7.13. Execute Another Workflow",
+                "chapterTitle": "3.7.13. Execute Nested Workflows",
                 "number": "3.7.13."
               },
               {
