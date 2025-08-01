@@ -22738,7 +22738,7 @@ paths:
             ```
           description: Emitted when an order edit request is canceled.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /admin/order-edits/{id}/confirm:
     post:
       operationId: PostOrderEditsIdConfirm
@@ -22812,7 +22812,7 @@ paths:
             ```
           description: Emitted when an order edit request is confirmed.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /admin/order-edits/{id}/items:
     post:
       operationId: PostOrderEditsIdItems
@@ -23208,7 +23208,7 @@ paths:
             ```
           description: Emitted when an order edit is requested.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /admin/order-edits/{id}/shipping-method:
     post:
       operationId: PostOrderEditsIdShippingMethod
