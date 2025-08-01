@@ -19385,7 +19385,7 @@ To find a full example of a long-running workflow, refer to the [restaurant-deli
 In the recipe, you use a long-running workflow that moves an order from placed to completed. The workflow waits for the restaurant to accept the order, the driver to pick up the order, and other external actions.
 
 
-# Multiple Step Usage in Workflow
+# Multiple Step Usage in Workflows
 
 In this chapter, you'll learn how to use a step multiple times in a workflow.
 
@@ -19395,7 +19395,7 @@ In some cases, you may need to use a step multiple times in the same workflow.
 
 The most common example is using the `useQueryGraphStep` multiple times in a workflow to retrieve multiple unrelated data, such as customers and products.
 
-Each workflow step must have a unique ID, which is the ID passed as a first parameter when creating the step:
+Steps must have a unique ID, which you pass as the first parameter of the `createStep` function.
 
 ```ts
 const useQueryGraphStep = createStep(
@@ -19404,7 +19404,7 @@ const useQueryGraphStep = createStep(
 )
 ```
 
-This causes an error when you use the same step multiple times in a workflow, as it's registered in the workflow as two steps having the same ID:
+So, when a step is used multiple times in a workflow, it's registered multiple times in the workflow with the same ID, which causes an error.
 
 ```ts
 const helloWorkflow = createWorkflow(
@@ -19434,7 +19434,7 @@ When you execute a step in a workflow, you can chain a `config` method to it to 
 
 Use the `config` method to change a step's ID for a single execution.
 
-So, this is the correct way to write the example above:
+For example, this is the correct way to write the example above:
 
 ```ts highlights={highlights}
 const helloWorkflow = createWorkflow(
@@ -19454,7 +19454,7 @@ const helloWorkflow = createWorkflow(
 )
 ```
 
-The `config` method accepts an object with a `name` property. Its value is a new ID of the step to use for this execution only.
+The `config` method accepts an object with a `name` property. Its value is the new ID for the step to use for this execution only.
 
 The first `useQueryGraphStep` usage has the ID `use-query-graph`, and the second `useQueryGraphStep` usage has the ID `fetch-customers`.
 
@@ -23262,22 +23262,51 @@ npm  install
 
 # API Key Concepts
 
-In this document, you’ll learn about the different types of API keys, their expiration and verification.
+In this guide, you’ll learn about the different types of API keys, their expiration and verification.
 
 ## API Key Types
 
 There are two types of API keys:
 
 - `publishable`: A public key used in client applications, such as a storefront.
+  - This API key is useful for operations that do not require authentication, such as fetching product data or categories.
 - `secret`: A secret key used for authentication and verification purposes, such as an admin user’s authentication token or a password reset token.
+  - This API key is useful for operations that require authentication, such as creating orders or managing products as an admin user.
 
 The API key’s type is stored in the `type` property of the [ApiKey data model](https://docs.medusajs.com/references/api-key/models/ApiKey/index.html.md).
+
+### Default Scopes and Permissions
+
+In your Medusa application, a `publishable` API key is only useful to send requests to the [Store API routes](https://docs.medusajs.com/api/store). Learn more about it in the [Publishable API Keys](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/sales-channel/publishable-api-keys/index.html.md) guide.
+
+In addition, a `secret` API key allows you to access the [Admin API routes](https://docs.medusajs.com/api/admin) and perform actions as the admin user that the key was created for. The `created_by` property of the [ApiKey data model](https://docs.medusajs.com/references/api-key/models/ApiKey/index.html.md) indicates the ID of the associated admin user.
+
+***
+
+## API Key Creation
+
+When using the [Medusa Admin](https://docs.medusajs.com/user-guide/settings/developer/index.html.md) or [API routes](https://docs.medusajs.com/api/admin#api-keys), only admin users can create API keys.
+
+You can also create API keys in your customizations using the [createApiKeysWorkflow](https://docs.medusajs.com/references/medusa-workflows/createApiKeysWorkflow/index.html.md).
+
+***
+
+## API Key Tokens
+
+The API key data model has a `token` property that contains the actual key used for authentication.
+
+This token is created using the `salt` property in the data model, which is a random string generated when the API key is created. The salt is a `64`-character hexadecimal string generated randomly using the `crypto` module in Node.js.
+
+For display purposes, the API key data model also has a `redacted` property that contains the first six characters of the token, followed by `...`, then the last three characters of the token. You can use this property to show the API key in the UI without revealing the full token.
 
 ***
 
 ## API Key Expiration
 
-An API key expires when it’s revoked using the [revoke method of the module’s main service](https://docs.medusajs.com/references/api-key/revoke/index.html.md).
+An API key expires when it’s revoked using the [revokeApiKeysWorkflow](https://docs.medusajs.com/references/medusa-workflows/revokeApiKeysWorkflow/index.html.md). This method will set the following properties in the API key:
+
+- `revoked_at`: The date and time when the API key was revoked.
+- `revoked_by`: The ID of the user who revoked the API key.
 
 The associated token is no longer usable or verifiable.
 
@@ -79330,6 +79359,8 @@ To learn more about the commerce features that Medusa provides, check out Medusa
 
 # Action Menu - Admin Components
 
+In this guide, you'll learn how to add an action menu to your Medusa Admin customizations.
+
 The Medusa Admin often provides additional actions in a dropdown shown when users click a three-dot icon.
 
 ![Example of an action menu in the Medusa Admin](https://res.cloudinary.com/dza7lstvk/image/upload/v1728291319/Medusa%20Resources/action-menu_jnus6k.png)
@@ -79554,6 +79585,8 @@ export default ProductWidget
 
 
 # Container - Admin Components
+
+In this guide, you'll learn how to create a container component that matches the Medusa Admin's design conventions.
 
 The Medusa Admin wraps each section of a page in a container.
 
@@ -80101,6 +80134,8 @@ export default CustomPage
 
 # Forms - Admin Components
 
+In this guide, you'll learn how to create forms that match the Medusa Admin's design conventions.
+
 The Medusa Admin has two types of forms:
 
 1. Create forms, created using the [FocusModal UI component](https://docs.medusajs.com/ui/components/focus-modal/index.html.md).
@@ -80152,7 +80187,7 @@ export const CreateForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -80218,7 +80253,7 @@ export const CreateForm = () => {
 
 Unlike other components in this documentation, this form component isn't reusable. You have to create one for every resource that has a create form in the admin.
 
-Start by creating the file `src/admin/components/create-form.tsx` that you'll create the form in.
+Start by creating the file `src/admin/components/create-form.tsx` in which you'll create the form.
 
 ### Create Validation Schema
 
@@ -80254,7 +80289,7 @@ export const CreateForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -80435,7 +80470,7 @@ export const EditForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -80495,7 +80530,7 @@ export const EditForm = () => {
 
 Unlike other components in this documentation, this form component isn't reusable. You have to create one for every resource that has an edit form in the admin.
 
-Start by creating the file `src/admin/components/edit-form.tsx` that you'll create the form in.
+Start by creating the file `src/admin/components/edit-form.tsx` in which you'll create the form.
 
 ### Create Validation Schema
 
@@ -80531,7 +80566,7 @@ export const EditForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -80673,6 +80708,8 @@ It will add at the top of a product's details page a new section, and in its hea
 
 
 # Header - Admin Components
+
+In this guide, you'll learn how to create a header component that matches the Medusa Admin's design conventions.
 
 Each section in the Medusa Admin has a header with a title, and optionally a subtitle with buttons to perform an action.
 
@@ -80819,6 +80856,8 @@ This widget also uses a [Container](https://docs.medusajs.com/Users/shahednasser
 
 
 # JSON View - Admin Components
+
+In this guide, you'll learn how to create a JSON view section that matches the Medusa Admin's design conventions.
 
 Detail pages in the Medusa Admin show a JSON section to view the current page's details in JSON format.
 
@@ -81047,6 +81086,8 @@ This shows the JSON section at the top of the product page, passing it the objec
 
 
 # Section Row - Admin Components
+
+In this guide, you'll learn how to create a section row component that matches the Medusa Admin's design conventions.
 
 The Medusa Admin often shows information in rows of label-values, such as when showing a product's details.
 
@@ -81430,6 +81471,8 @@ To test it out, log into the Medusa Admin and open `http://localhost:9000/app/cu
 
 # Single Column Layout - Admin Components
 
+In this guide, you'll learn how to create a layout component that matches the Medusa Admin's design conventions for pages with a single column of content.
+
 The Medusa Admin has pages with a single column of content.
 
 This doesn't include the sidebar, only the main content.
@@ -81489,6 +81532,8 @@ This UI route also uses a [Container](https://docs.medusajs.com/Users/shahednass
 
 
 # Two Column Layout - Admin Components
+
+In this guide, you'll learn how to create a layout component that matches the Medusa Admin's design conventions for pages with two columns of content.
 
 The Medusa Admin has pages with two columns of content.
 
