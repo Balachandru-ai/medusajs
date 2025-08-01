@@ -6079,9 +6079,15 @@ If you receive a type error on `import.meta.env`, create the file `src/admin/vit
 
 ```ts title="src/admin/vite-env.d.ts"
 /// <reference types="vite/client" />
+
+declare const __BASE__: string
+declare const __BACKEND_URL__: string
+declare const __STOREFRONT_URL__: string
 ```
 
 This file tells TypeScript to recognize the `import.meta.env` object and enhances the types of your custom environment variables.
+
+Note that the `__BASE__`, `__BACKEND_URL__`, and `__STOREFRONT_URL__` variables are global variables available in your admin customizations. Learn more in the [Tips for Admin Customizations](https://docs.medusajs.com/learn/fundamentals/admin/tips#global-variables-in-admin-customizations/index.html.md) chapter.
 
 ***
 
@@ -6135,6 +6141,16 @@ export const config = defineWidgetConfig({
 })
 
 export default ProductWidget
+```
+
+To fix possible type errors, create the file `src/admin/vite-env.d.ts` and add the global variables:
+
+```ts title="src/admin/vite-env.d.ts"
+/// <reference types="vite/client" />
+
+declare const __BACKEND_URL__: string
+declare const __BASE__: string
+declare const __STOREFRONT_URL__: string
 ```
 
 
@@ -6484,6 +6500,16 @@ In your admin customizations, you can use the following global variables:
 - `__BASE__`: The base path of the Medusa Admin, as set in the [admin.path](https://docs.medusajs.com/learn/configurations/medusa-config#path/index.html.md) configuration in `medusa-config.ts`.
 - `__BACKEND_URL__`: The URL to the Medusa backend, as set in the [admin.backendUrl](https://docs.medusajs.com/learn/configurations/medusa-config#backendurl/index.html.md) configuration in `medusa-config.ts`.
 - `__STOREFRONT_URL__`: The URL to the storefront, as set in the [admin.storefrontUrl](https://docs.medusajs.com/learn/configurations/medusa-config#storefrontUrl/index.html.md) configuration in `medusa-config.ts`.
+
+If you get type errors while using these variables, you can create the file `src/admin/vite-env.d.ts` with the following content:
+
+```ts title="src/admin/vite-env.d.ts"
+/// <reference types="vite/client" />
+
+declare const __BASE__: string
+declare const __BACKEND_URL__: string
+declare const __STOREFRONT_URL__: string
+```
 
 ***
 
@@ -18546,11 +18572,9 @@ Instead, refer to the [Error Handling](https://docs.medusajs.com/learn/fundament
 
 ***
 
-## Step Constraints
+## Returned Value Constraints
 
-### Returned Values
-
-A step must only return serializable values, such as [primitive values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#primitive_values) or an object.
+Data returned from workflows and steps are serialized, allowing Medusa to store them in the database. So, you must only return serializable values, such as [primitive values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#primitive_values) or an object, from workflows and steps.
 
 Values of other types, such as Maps, aren't allowed.
 
@@ -18592,6 +18616,69 @@ const step1 = createStep(
     })
   }
 )
+```
+
+### Buffer Example
+
+In some cases, you may need to return a buffer. For example, when your workflow generates a file and you want to return it as a buffer.
+
+In those cases, you can return an object containing the buffer as a property. Then, in customizations that execute the workflow, you can recreate the buffer from the serialized data.
+
+For example, consider the following workflow that returns a buffer:
+
+```ts
+import { 
+  createWorkflow,
+  createStep,
+  WorkflowResponse,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  (_, { container }) => {
+    const buffer = Buffer.from("Hello, World!")
+
+    return new StepResponse({
+      buffer,
+    })
+  }
+)
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function () {
+    const step1Response = step1()
+
+    return new WorkflowResponse({
+      buffer: step1Response.buffer,
+    })
+  }
+)
+```
+
+Then, in an API route that executes this workflow, you can recreate the buffer from the serialized data using `Buffer.from`:
+
+```ts
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import myWorkflow from "../../workflows/hello-world"
+
+export async function GET(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await myWorkflow(req.scope)
+    .run()
+
+  const buffer = Buffer.from(result.buffer)
+
+  res.setHeader("Content-Type", "application/octet-stream")
+  res.setHeader("Content-Disposition", "attachment; filename=hello.txt")
+  res.send(buffer)
+}
 ```
 
 
