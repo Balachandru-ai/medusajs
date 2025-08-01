@@ -24919,23 +24919,72 @@ Medusa provides the following authentication providers out-of-the-box. You can u
 ***
 
 
-# How to Handle Password Reset Token Event
+# Send Reset Password Email Notification
 
-In this guide, you'll learn how to handle the `auth.password_reset` event, which is emitted when a request is sent to the [Generate Reset Password Token API route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#generate-reset-password-token-route/index.html.md).
+In this guide, you'll learn how to handle the `auth.password_reset` event to send a reset password email (or other notification type) to users.
 
 Refer to this [Medusa Admin User Guide](https://docs.medusajs.com/user-guide/reset-password/index.html.md) to learn how to reset your user admin password using the dashboard.
 
-You'll create a subscriber that listens to the event. When the event is emitted, the subscriber sends an email notification to the user.
+## Reset Password Flow Overview
 
-### Prerequisites
+![Diagram showcasing the reset password flow detailed below](https://res.cloudinary.com/dza7lstvk/image/upload/v1754050032/Medusa%20Resources/reset-password_qheixj.jpg)
 
-- [A notification provider module, such as SendGrid](https://docs.medusajs.com/infrastructure-modules/notification/sendgrid/index.html.md)
+Users of any actor type (admin, customer, or custom actor type) can request to reset their password. The flow for resetting a password is as follows:
 
-## 1. Create Subscriber
+1. The user requests to reset their password either through the frontend (for example, [Medusa Admin](https://docs.medusajs.com/user-guide/reset-password/index.html.md)) or the [Generate Reset Password Token API route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#generate-reset-password-token-route/index.html.md).
+2. The Medusa application generates a password reset token and emits the `auth.password_reset` event.
+   - At this point, you can handle the event to send a notification to the user with instructions on how to reset their password.
+3. The user receives the notification and clicks on the link to reset their password.
+   - The user can reset their password either through the frontend (for example, [Medusa Admin](https://docs.medusajs.com/user-guide/reset-password/index.html.md)) or the [Reset Password API route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#reset-password-route/index.html.md).
 
-The first step is to create a subscriber that listens to the `auth.password_reset` and sends the user a notification with instructions to reset their password.
+In this guide, you'll implement a subscriber that handles the `auth.password_reset` event to send an email notification to the user with instructions on how to reset their password.
 
-Create the file `src/subscribers/handle-reset.ts` with the following content:
+After adding the subscriber, you will have a complete reset password flow you can utilize using the Medusa admin, storefront, or API routes.
+
+***
+
+## Prerequisites: Notification Module Provider
+
+To send an email or notification to the user, you must have a Notification Module Provider set up.
+
+Medusa provides providers like [SendGrid](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) and [Resend](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), and you can also [create your own custom provider](https://docs.medusajs.com/references/notification-provider-module/index.html.md).
+
+Refer to the [Notification Module](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification#what-is-a-notification-module-provider/index.html.md) documentation for a list of available providers and how to set them up.
+
+### Testing with the Local Notification Module Provider
+
+For testing purposes, you can use the [Local Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/local/index.html.md) by adding this to your `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          // ...
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: {
+              channels: ["email"],
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+The Local provider logs email details to your terminal instead of sending actual emails, which is useful for development and testing.
+
+***
+
+## Create the Reset Password Subscriber
+
+To create a [subscriber](https://docs.medusajs.com/docs/learn/fundamentals/events-and-subscribers/index.html.md) that handles the `auth.password_reset` event, create the file `src/subscribers/password-reset.ts` with the following content:
 
 ```ts title="src/subscribers/handle-reset.ts" highlights={highlights} collapsibleLines="1-6" expandMoreLabel="Show Imports"
 import {
@@ -24955,18 +25004,27 @@ export default async function resetPasswordTokenHandler({
   const notificationModuleService = container.resolve(
     Modules.NOTIFICATION
   )
+  const config = container.resolve("configModule")
 
-  const urlPrefix = actor_type === "customer" ? 
-    "https://storefront.com" : 
-    "https://admin.com/app"
+  let urlPrefix = ""
+
+  if (actor_type === "customer") {
+    urlPrefix = config.admin.storefrontUrl || "https://storefront.com"
+  } else {
+    const backendUrl = config.admin.backendUrl !== "/" ? config.admin.backendUrl :
+      "http://localhost:9000"
+    const adminPath = config.admin.path
+    urlPrefix = `${backendUrl}${adminPath}`
+  }
 
   await notificationModuleService.createNotifications({
     to: email,
     channel: "email",
-    template: "reset-password-template",
+    // TODO replace with template ID in notification provider
+    template: "password-reset",
     data: {
       // a URL to a frontend application
-      url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
+      reset_url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
     },
   })
 }
@@ -24976,7 +25034,7 @@ export const config: SubscriberConfig = {
 }
 ```
 
-You subscribe to the `auth.password_reset` event. The event has a data payload object with the following properties:
+The subscriber receives the following data through the event payload:
 
 - `entity_id`: The identifier of the user. When using the `emailpass` provider, it's the user's email.
 - `token`: The token to reset the user's password.
@@ -24984,41 +25042,46 @@ You subscribe to the `auth.password_reset` event. The event has a data payload o
 
 This event's payload previously had an `actorType` field. It was renamed to `actor_type` after [Medusa v2.0.7](https://github.com/medusajs/medusa/releases/tag/v2.0.7).
 
-In the subscriber, you:
+### Reset Password URL
 
-- Decide the frontend URL based on whether the user is a customer or admin user by checking the value of `actor_type`.
-- Resolve the Notification Module and use its `createNotifications` method to send the notification.
-- You pass to the `createNotifications` method an object having the following properties:
-  - `to`: The identifier to send the notification to, which in this case is the email.
-  - `channel`: The channel to send the notification through, which in this case is email.
-  - `template`: The template ID in the third-party service.
-  - `data`: The data payload to pass to the template. You pass the URL to redirect the user to. You must pass the token and email in the URL so that the frontend can send them later to the Medusa application when reseting the password.
+Based on the user's actor type, you set the URL prefix to redirect the user to the appropriate frontend page to reset their password:
 
-***
+- If the user is a customer, you set the URL prefix to the storefront URL.
+- If the user is an admin, you set the URL prefix to the backend URL, which is constructed from the `config.admin.backendUrl` and `config.admin.path` values.
 
-## 2. Test it Out: Generate Reset Password Token
+Note that the Medusa Admin has a reset password form at `/reset-password?token={token}&email={email}`.
 
-To test the subscriber out, send a request to the `/auth/{actor_type}/{auth_provider}/reset-password` API route, replacing `{actor_type}` and `{auth_provider}` with the user's actor type and provider used for authentication respectively.
+### Notification Configurations
 
-For example, to generate a reset password token for an admin user using the `emailpass` provider, send the following request:
+For the notification, you can configure the following fields:
 
-```bash
-curl --location 'http://localhost:9000/auth/user/emailpass/reset-password' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "identifier": "admin-test@gmail.com"
-}'
+- `to`: The identifier to send the notification to, which in this case is the email.
+- `channel`: The channel to send the notification through, which in this case is email.
+- `template`: The template ID of the email to send. This ID depends on the Notification Module provider you use. For example, if you use SendGrid, this would be the ID of the SendGrid template.
+  - Refer to the [Example Notification Templates](#example-notification-templates) section below for examples of notification templates to use.
+- `data`: The data payload to pass to the template. You can pass additional fields, if necessary.
+
+### Test It Out
+
+After you set up the Notification Module Provider, create a template in the provider, and create the subscriber, you can test the reset password flow.
+
+Start the Medusa application with the following command:
+
+```bash npm2yarn
+npm run dev
 ```
 
-In the request body, you must pass an `identifier` parameter. Its value is the user's identifier, which is the email in this case.
+Then, open the Medusa Admin (locally at `http://localhost:9000/app`) and click on "Reset" in the login form. Then, enter the email of the user you want to reset the password for.
 
-If the token is generated successfully, the request returns a response with `201` status code. In the terminal, you'll find the following message indicating that the `auth.password_reset` event was emitted and your subscriber ran:
+Once you reset the password, you should see that the `auth.password_reset` event is emitted in the server's logs:
 
-```plain
+```bash
 info:    Processing auth.password_reset which has 1 subscribers
 ```
 
-The notification is sent to the user with the frontend URL to enter a new password.
+If you're using an email Notification Module Provider, check the user's email inbox for the reset password email with the link to reset their password.
+
+If you're using the Local provider, check your terminal for the logged email details.
 
 ***
 
@@ -25028,9 +25091,304 @@ In your frontend, you must have a page that accepts `token` and `email` query pa
 
 The page shows the user password fields to enter their new password, then submits the new password, token, and email to the [Reset Password Route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#reset-password-route/index.html.md).
 
+The Medusa Admin already has a reset password page at `/reset-password?token={token}&email={email}`. So, you only need to implement this page in your storefront or custom admin dashboard.
+
 ### Examples
 
 - [Storefront Guide: Reset Customer Password](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/storefront-development/customers/reset-password/index.html.md)
+
+***
+
+## Example Notification Templates
+
+The following section provides example notification templates for some Notification Module Providers.
+
+### SendGrid
+
+Refer to the [SendGrid Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) documentation for more details on how to set up SendGrid.
+
+The following HTML template can be used with SendGrid to send a reset password email:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 465px;
+            margin: 40px auto;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .title {
+            color: #000000;
+            font-size: 24px;
+            font-weight: normal;
+            margin: 0;
+        }
+        .content {
+            margin: 32px 0;
+        }
+        .text {
+            color: #000000;
+            font-size: 14px;
+            line-height: 24px;
+            margin: 0 0 16px 0;
+        }
+        .button-container {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .reset-button {
+            background-color: #000000;
+            border-radius: 3px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            padding: 12px 20px;
+            display: inline-block;
+        }
+        .reset-button:hover {
+            background-color: #333333;
+        }
+        .url-section {
+            margin: 32px 0;
+        }
+        .url-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 24px;
+            word-break: break-all;
+        }
+        .disclaimer {
+            margin: 32px 0;
+        }
+        .disclaimer-text {
+            color: #666666;
+            font-size: 12px;
+            line-height: 24px;
+            margin: 0 0 8px 0;
+        }
+        .security-footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        .security-text {
+            color: #666666;
+            font-size: 12px;
+            line-height: 24px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Reset Your Password</h1>
+        </div>
+
+        <div class="content">
+            <p class="text">
+                Hello{{#if email}} {{email}}{{/if}},
+            </p>
+            <p class="text">
+                We received a request to reset your password. Click the button below to create a new password for your account.
+            </p>
+        </div>
+
+        <div class="button-container">
+            <a href="{{reset_url}}" class="reset-button">
+                Reset Password
+            </a>
+        </div>
+
+        <div class="url-section">
+            <p class="text">
+                Or copy and paste this URL into your browser:
+            </p>
+            <a href="{{reset_url}}" class="url-link">
+                {{reset_url}}
+            </a>
+        </div>
+
+        <div class="disclaimer">
+            <p class="disclaimer-text">
+                This password reset link will expire soon for security reasons.
+            </p>
+            <p class="disclaimer-text">
+                If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+            </p>
+        </div>
+
+        <div class="security-footer">
+            <p class="security-text">
+                For security reasons, never share this reset link with anyone. If you're having trouble with the button above, copy and paste the URL into your web browser.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+Make sure to pass the `reset_url` variable to the template, which contains the URL to reset the password.
+
+You can also customize the template further to show other information.
+
+### Resend
+
+If you've integrated Resend as explained in the [Resend Integration Guide](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), you can add a new template for password reset emails at `src/modules/resend/emails/password-reset.tsx`:
+
+```tsx title="src/modules/resend/emails/password-reset.tsx"
+import { 
+  Text, 
+  Container, 
+  Heading, 
+  Html, 
+  Section, 
+  Tailwind, 
+  Head, 
+  Preview, 
+  Body, 
+  Link,
+  Button, 
+} from "@react-email/components"
+
+type PasswordResetEmailProps = {
+  reset_url: string
+  email?: string
+}
+
+function PasswordResetEmailComponent({ reset_url, email }: PasswordResetEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Reset your password</Preview>
+      <Tailwind>
+        <Body className="bg-white my-auto mx-auto font-sans px-2">
+          <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
+            <Section className="mt-[32px]">
+              <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
+                Reset Your Password
+              </Heading>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Hello{email ? ` ${email}` : ""},
+              </Text>
+              <Text className="text-black text-[14px] leading-[24px]">
+                We received a request to reset your password. Click the button below to create a new password for your account.
+              </Text>
+            </Section>
+
+            <Section className="text-center mt-[32px] mb-[32px]">
+              <Button
+                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
+                href={reset_url}
+              >
+                Reset Password
+              </Button>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Or copy and paste this URL into your browser:
+              </Text>
+              <Link
+                href={reset_url}
+                className="text-blue-600 no-underline text-[14px] leading-[24px] break-all"
+              >
+                {reset_url}
+              </Link>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
+                This password reset link will expire soon for security reasons.
+              </Text>
+              <Text className="text-[#666666] text-[12px] leading-[24px] mt-2">
+                If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+              </Text>
+            </Section>
+
+            <Section className="mt-[32px] pt-[20px] border-t border-solid border-[#eaeaea]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
+                For security reasons, never share this reset link with anyone. If you're having trouble with the button above, copy and paste the URL into your web browser.
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
+  )
+}
+
+export const passwordResetEmail = (props: PasswordResetEmailProps) => (
+  <PasswordResetEmailComponent {...props} />
+)
+
+// Mock data for preview/development
+const mockPasswordReset: PasswordResetEmailProps = {
+  reset_url: "https://your-app.com/reset-password?token=sample-reset-token-123",
+  email: "user@example.com",
+}
+
+export default () => <PasswordResetEmailComponent {...mockPasswordReset} />
+```
+
+Feel free to customize the email template further to match your branding and style, or to add additional information.
+
+Then, in the Resend Module's service at `src/modules/resend/service.ts`, add the new template to the `templates` object and `Templates` type:
+
+```ts title="src/modules/resend/service.ts"
+// other imports...
+import { passwordResetEmail } from "./emails/password-reset"
+
+enum Templates {
+  // ...
+  PASSWORD_RESET = "password-reset",
+}
+
+const templates: {[key in Templates]?: (props: unknown) => React.ReactNode} = {
+  // ...
+  [Templates.PASSWORD_RESET]: passwordResetEmail,
+}
+```
+
+Finally, find the `getTemplateSubject` function in the `ResendNotificationProviderService` and add a case for the `USER_INVITED` template:
+
+```ts title="src/modules/resend/service.ts"
+class ResendNotificationProviderService extends AbstractNotificationProviderService {
+  // ...
+
+  private getTemplateSubject(template: Templates) {
+    // ...
+    switch (template) {
+      // ...
+      case Templates.PASSWORD_RESET:
+        return "Reset Your Password"
+    }
+  }
+}
+```
 
 
 # Retrieve Cart Totals using Query
@@ -25135,7 +25493,7 @@ const { data: [cart] } = await query.graph({
   ],
   filters: {
     id: "cart_123", // Specify the cart ID
-  }
+  },
 })
 ```
 
@@ -25289,7 +25647,7 @@ const { data: [cart] } = await query.graph({
   fields: ["*"],
   filters: {
     id: "cart_123",
-  }
+  },
 })
 
 // cart doesn't include cart totals
@@ -25321,7 +25679,7 @@ const { data: [cart] } = await query.graph({
   fields: ["*", "total"],
   filters: {
     id: "cart_123",
-  }
+  },
 })
 
 // cart doesn't include cart totals
@@ -29154,7 +29512,7 @@ export const myWorkflow = createWorkflow(
         "gift_card_tax_total",
         "items.*",
         "shipping_methods.*",
-        "summary.*"
+        "summary.*",
       ],
       filters: {
         id: "order_123", // Specify the order ID
@@ -29198,11 +29556,11 @@ const { data: [order] } = await query.graph({
     "gift_card_tax_total",
     "items.*",
     "shipping_methods.*",
-    "summary.*"
+    "summary.*",
   ],
   filters: {
     id: "order_123", // Specify the order ID
-  }
+  },
 })
 ```
 
@@ -29388,7 +29746,7 @@ const { data: [order] } = await query.graph({
   fields: ["*"],
   filters: {
     id: "order_123",
-  }
+  },
 })
 
 // order doesn't include order totals
@@ -29420,7 +29778,7 @@ const { data: [order] } = await query.graph({
   fields: ["*", "total"],
   filters: {
     id: "order_123",
-  }
+  },
 })
 
 // order doesn't include order totals
@@ -36505,6 +36863,431 @@ You can use Medusa's default tax provider or create a custom one, allowing you t
 Learn more about tax providers in the [Tax Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/tax/tax-provider/index.html.md) guide.
 
 
+# Send Invite User Email Notification
+
+In this guide, you'll learn how to handle the `invite.created` and `invite.resent` events to send an invite email (or other notification type) to the user.
+
+Refer to the [Manage Invites](https://docs.medusajs.com/user-guide/settings/users/invites/index.html.md) user guide to learn how to manage invites using the Medusa Admin.
+
+## User Invite Flow Overview
+
+![Diagram showcasing the user invite flow detailed below](https://res.cloudinary.com/dza7lstvk/image/upload/v1754047213/Medusa%20Resources/invite-user_uqspsv.jpg)
+
+Admin users can add new users to their store by sending them an invite. The flow for inviting users is as follows:
+
+1. An admin user invites a user either through the [Medusa Admin](https://docs.medusajs.com/user-guide/settings/users/invites/index.html.md) or using the [Create Invite API route](https://docs.medusajs.com/api/admin#invites_postinvites).
+2. The invite is created and the `invite.created` event is emitted.
+   - At this point, you can handle the event to send an email or notification to the user.
+3. The invited user receives the invite and can accept it, which creates a new user.
+   - The invited user can accept the invite either through the Medusa Admin or using the [Accept Invite API route](https://docs.medusajs.com/api/admin#invites_postinvitesaccept).
+
+The admin user can also resend the invite if the invited user doesn't receive the invite or doesn't accept it before expiry, which emits the `invite.resent` event.
+
+In this guide, you'll implement a subscriber that handles the `invite.created` and `invite.resent` events to send an email to the user.
+
+After adding the subscriber, you will have a complete user invite flow that you can utilize either through the Medusa Admin or using the Admin APIs.
+
+***
+
+## Prerequisites: Notification Module Provider
+
+To send an email or notification to the user, you must have a Notification Module Provider set up.
+
+Medusa provides providers like [SendGrid](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) and [Resend](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), and you can also [create your own custom provider](https://docs.medusajs.com/references/notification-provider-module/index.html.md).
+
+Refer to the [Notification Module](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification#what-is-a-notification-module-provider/index.html.md) documentation for a list of available providers and how to set them up.
+
+### Testing with the Local Notification Module Provider
+
+For testing purposes, you can use the [Local Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/local/index.html.md) by adding this to your `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          // ...
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: {
+              channels: ["email"],
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+The Local provider logs email details to your terminal instead of sending actual emails, which is useful for development and testing.
+
+***
+
+## Create the Invite User Subscriber
+
+To create a [subscriber](https://docs.medusajs.com/docs/learn/fundamentals/events-and-subscribers/index.html.md) that handles the `invite.created` and `invite.resent` events, create the file `src/subscribers/user-invited.ts` with the following content:
+
+```ts title="src/subscribers/user-invited.ts" highlights={highlights}
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+
+export default async function inviteCreatedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{
+  id: string
+}>) {
+  const query = container.resolve("query")
+  const notificationModuleService = container.resolve(
+    "notification"
+  )
+  const config = container.resolve("configModule")
+
+  const { data: [invite] } = await query.graph({
+    entity: "invite",
+    fields: [
+      "email",
+      "token",
+    ],
+    filters: {
+      id: data.id,
+    },
+  })
+
+  const backend_url = config.admin.backendUrl !== "/" ? config.admin.backendUrl :
+    "http://localhost:9000"
+  const adminPath = config.admin.path
+
+  await notificationModuleService.createNotifications({
+    to: invite.email,
+    // TODO replace with template ID in notification provider
+    template: "user-invited",
+    channel: "email",
+    data: {
+      invite_url: `${backend_url}${adminPath}/invite?token=${invite.token}`,
+    },
+  })
+}
+
+export const config: SubscriberConfig = {
+  event: [
+    "invite.created",
+    "invite.resent",
+  ],
+}
+```
+
+The subscriber receives the ID of the invite in the event payload. You resolve [Query](https://docs.medusajs.com/docs/learn/fundamentals/module-links/query/index.html.md) to fetch the invite details, including the email and token.
+
+### Invite URL
+
+You then use the Notification Module's service to send an email to the user with the invite link. The invite link is constructed using:
+
+1. The backend URL of the Medusa application, since the Medusa Admin is hosted on the same URL.
+2. The admin path, which is the path to the Medusa Admin (for example, `/app`).
+
+Note that the Medusa Admin has an invite form at `/invite?token=`, which accepts the invite token as a query parameter.
+
+### Notification Configurations
+
+For the notification, you can configure the following fields:
+
+- `template`: The template ID of the email to send. This ID depends on the Notification Module provider you use. For example, if you use SendGrid, this would be the ID of the SendGrid template.
+  - Refer to the [Example Notification Templates](#example-notification-templates) section below for examples of notification templates to use.
+- `channel`: The channel to send the notification through. In this case, it's set to `email`.
+- `data`: The data to pass to the notification template. You can add additional fields as needed, such as the invited user's email.
+
+### Test It Out
+
+After you set up the Notification Module Provider, create a template in the provider, and create the subscriber, you can test the full invite flow.
+
+Start the Medusa application with the following command:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, open the Medusa Admin (locally at `http://localhost:9000/app`) and go to Settings → Users. Create an invite as explained in the [Manage Invites](https://docs.medusajs.com/user-guide/settings/users/invites/index.html.md) user guide.
+
+Once you create the invite, you should see that the `invite.created` event is emitted in the server's logs:
+
+```bash
+info:    Processing invite.created which has 1 subscribers
+```
+
+If you're using an email Notification Module Provider, check the recipient's email inbox for the invite email with the link to accept the invite.
+
+If you're using the Local provider, check your terminal for the logged email details.
+
+***
+
+## Example Notification Templates
+
+The following section provides example notification templates for some Notification Module Providers.
+
+### SendGrid
+
+Refer to the [SendGrid Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) documentation for more details on how to set up SendGrid.
+
+The following HTML template can be used with SendGrid to send an invite email:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 465px;
+            margin: 40px auto;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .title {
+            color: #000000;
+            font-size: 24px;
+            font-weight: normal;
+            margin: 0;
+        }
+        .content {
+            margin: 32px 0;
+        }
+        .text {
+            color: #000000;
+            font-size: 14px;
+            line-height: 24px;
+            margin: 0 0 16px 0;
+        }
+        .button-container {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .invite-button {
+            background-color: #000000;
+            border-radius: 3px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            padding: 12px 20px;
+            display: inline-block;
+        }
+        .invite-button:hover {
+            background-color: #333333;
+        }
+        .url-section {
+            margin: 32px 0;
+        }
+        .url-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 24px;
+            word-break: break-all;
+        }
+        .footer {
+            margin-top: 32px;
+        }
+        .footer-text {
+            color: #666666;
+            font-size: 12px;
+            line-height: 24px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">You're Invited!</h1>
+        </div>
+
+        <div class="content">
+            <p class="text">
+                Hello{{#if email}} {{email}}{{/if}},
+            </p>
+            <p class="text">
+                You've been invited to join our platform. Click the button below to accept your invitation and set up your account.
+            </p>
+        </div>
+
+        <div class="button-container">
+            <a href="{{invite_url}}" class="invite-button">
+                Accept Invitation
+            </a>
+        </div>
+
+        <div class="url-section">
+            <p class="text">
+                Or copy and paste this URL into your browser:
+            </p>
+            <a href="{{invite_url}}" class="url-link">
+                {{invite_url}}
+            </a>
+        </div>
+
+        <div class="footer">
+            <p class="footer-text">
+                If you weren't expecting this invitation, you can ignore this email.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+Make sure to pass the `invite_url` variable to the template, which contains the URL to accept the invite.
+
+You can also customize the template further to show other information, such as the user's email.
+
+### Resend
+
+If you've integrated Resend as explained in the [Resend Integration Guide](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), you can add a new template for user invites at `src/modules/resend/emails/user-invited.tsx`:
+
+```tsx title="src/modules/resend/emails/user-invited.tsx"
+import { 
+  Text, 
+  Container, 
+  Heading, 
+  Html, 
+  Section, 
+  Tailwind, 
+  Head, 
+  Preview, 
+  Body, 
+  Link,
+  Button, 
+} from "@react-email/components"
+
+type UserInvitedEmailProps = {
+  invite_url: string
+  email?: string
+}
+
+function UserInvitedEmailComponent({ invite_url, email }: UserInvitedEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>You've been invited to join our platform</Preview>
+      <Tailwind>
+        <Body className="bg-white my-auto mx-auto font-sans px-2">
+          <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
+            <Section className="mt-[32px]">
+              <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
+                You're Invited!
+              </Heading>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Hello{email ? ` ${email}` : ""},
+              </Text>
+              <Text className="text-black text-[14px] leading-[24px]">
+                You've been invited to join our platform. Click the button below to accept your invitation and set up your account.
+              </Text>
+            </Section>
+
+            <Section className="text-center mt-[32px] mb-[32px]">
+              <Button
+                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
+                href={invite_url}
+              >
+                Accept Invitation
+              </Button>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Or copy and paste this URL into your browser:
+              </Text>
+              <Link
+                href={invite_url}
+                className="text-blue-600 no-underline text-[14px] leading-[24px] break-all"
+              >
+                {invite_url}
+              </Link>
+            </Section>
+
+            <Section className="mt-[32px]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
+                If you weren't expecting this invitation, you can ignore this email.
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
+  )
+}
+
+export const userInvitedEmail = (props: UserInvitedEmailProps) => (
+  <UserInvitedEmailComponent {...props} />
+)
+
+// Mock data for preview/development
+const mockInvite: UserInvitedEmailProps = {
+  invite_url: "https://your-app.com/app/invite/sample-token-123",
+  email: "user@example.com",
+}
+
+export default () => <UserInvitedEmailComponent {...mockInvite} />
+```
+
+Feel free to customize the email template further to match your branding and style, or to add additional information such as the user's email.
+
+Then, in the Resend Module's service at `src/modules/resend/service.ts`, add the new template to the `templates` object and `Templates` type:
+
+```ts title="src/modules/resend/service.ts"
+// other imports...
+import { userInvitedEmail } from "./emails/user-invited"
+
+enum Templates {
+  // ...
+  USER_INVITED = "user-invited",
+}
+
+const templates: {[key in Templates]?: (props: unknown) => React.ReactNode} = {
+  // ...
+  [Templates.USER_INVITED]: userInvitedEmail,
+}
+```
+
+Finally, find the `getTemplateSubject` function in the `ResendNotificationProviderService` and add a case for the `USER_INVITED` template:
+
+```ts title="src/modules/resend/service.ts"
+class ResendNotificationProviderService extends AbstractNotificationProviderService {
+  // ...
+
+  private getTemplateSubject(template: Templates) {
+    // ...
+    switch (template) {
+      // ...
+      case Templates.USER_INVITED:
+        return "You've been invited to join our platform"
+    }
+  }
+}
+```
+
+
 # User Module Options
 
 In this document, you'll learn about the options of the User Module.
@@ -38627,10 +39410,6 @@ Add the module into the `providers` array of the Notification Module:
 Only one provider can be defined for a channel.
 
 ```ts title="medusa-config.ts"
-import { Modules } from "@medusajs/framework/utils"
-
-// ...
-
 module.exports = defineConfig({
   // ...
   modules: [
@@ -71272,6 +72051,15 @@ If you check the inbox of the email address you specified in the shipping addres
 ## Next Steps
 
 You've now integrated Medusa with Resend. You can add more templates for other emails, such as customer registration confirmation, user invites, and more. Check out the [Events Reference](https://docs.medusajs.com/references/events/index.html.md) for a list of all events that the Medusa application emits.
+
+### More Resend Email Templates
+
+Find more email templates to use with the Resend Module Provider in the following guides:
+
+- [Send Invite User Email](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/user/invite-user-subscriber/index.html.md).
+- [Send Reset Password Email](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/reset-password/index.html.md).
+
+### Learn More About Medusa
 
 If you're new to Medusa, check out the [main documentation](https://docs.medusajs.com/docs/learn/index.html.md), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 

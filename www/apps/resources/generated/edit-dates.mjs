@@ -208,7 +208,7 @@ export const generatedEditDates = {
   "app/infrastructure-modules/event/local/page.mdx": "2025-03-27T14:53:13.309Z",
   "app/infrastructure-modules/workflow-engine/in-memory/page.mdx": "2024-11-19T16:37:47.262Z",
   "app/infrastructure-modules/cache/in-memory/page.mdx": "2024-11-19T16:37:47.261Z",
-  "app/infrastructure-modules/notification/local/page.mdx": "2024-11-19T16:37:47.262Z",
+  "app/infrastructure-modules/notification/local/page.mdx": "2025-08-01T11:42:33.657Z",
   "app/infrastructure-modules/file/local/page.mdx": "2025-05-20T07:51:40.714Z",
   "app/infrastructure-modules/notification/send-notification/page.mdx": "2025-05-20T07:51:40.714Z",
   "app/infrastructure-modules/file/page.mdx": "2025-04-17T08:29:00.672Z",
@@ -2098,7 +2098,7 @@ export const generatedEditDates = {
   "app/admin-components/layouts/single-column/page.mdx": "2024-10-07T11:16:06.435Z",
   "app/admin-components/layouts/two-column/page.mdx": "2024-10-07T11:16:10.092Z",
   "app/admin-components/components/forms/page.mdx": "2024-10-09T12:48:04.229Z",
-  "app/commerce-modules/auth/reset-password/page.mdx": "2025-04-17T08:29:01.697Z",
+  "app/commerce-modules/auth/reset-password/page.mdx": "2025-08-01T12:07:32.023Z",
   "app/storefront-development/customers/reset-password/page.mdx": "2025-03-27T14:46:51.424Z",
   "app/commerce-modules/api-key/links-to-other-modules/page.mdx": "2025-04-17T15:39:39.374Z",
   "app/commerce-modules/cart/extend/page.mdx": "2024-12-25T12:48:59.149Z",
@@ -5524,7 +5524,7 @@ export const generatedEditDates = {
   "references/workflows/classes/workflows.WorkflowResponse/page.mdx": "2025-04-11T09:04:53.140Z",
   "references/workflows/interfaces/workflows.ApplyStepOptions/page.mdx": "2025-05-20T07:51:41.181Z",
   "references/workflows/types/workflows.WorkflowData/page.mdx": "2024-12-23T13:57:08.059Z",
-  "app/integrations/guides/resend/page.mdx": "2025-06-26T12:38:47.063Z",
+  "app/integrations/guides/resend/page.mdx": "2025-08-01T12:09:08.483Z",
   "references/api_key_models/variables/api_key_models.ApiKey/page.mdx": "2025-07-24T08:20:54.787Z",
   "references/cart/ICartModuleService/methods/cart.ICartModuleService.updateShippingMethods/page.mdx": "2025-06-25T10:11:35.302Z",
   "references/cart/interfaces/cart.UpdateShippingMethodDTO/page.mdx": "2025-06-25T10:11:35.052Z",
@@ -6563,5 +6563,6 @@ export const generatedEditDates = {
   "references/js_sdk/admin/Order/methods/js_sdk.admin.Order.archive/page.mdx": "2025-07-24T08:20:57.709Z",
   "references/js_sdk/admin/Order/methods/js_sdk.admin.Order.complete/page.mdx": "2025-07-24T08:20:57.714Z",
   "app/commerce-modules/cart/cart-totals/page.mdx": "2025-07-31T15:18:13.978Z",
-  "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z"
+  "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z",
+  "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z"
 }

@@ -75,7 +75,7 @@ export const myWorkflow = createWorkflow(
         "gift_card_tax_total",
         "items.*",
         "shipping_methods.*",
-        "summary.*"
+        "summary.*",
       ],
       filters: {
         id: "order_123", // Specify the order ID
@@ -119,11 +119,11 @@ const { data: [order] } = await query.graph({
     "gift_card_tax_total",
     "items.*",
     "shipping_methods.*",
-    "summary.*"
+    "summary.*",
   ],
   filters: {
     id: "order_123", // Specify the order ID
-  }
+  },
 })
 ```
   </CodeTab>
@@ -312,7 +312,7 @@ const { data: [order] } = await query.graph({
   fields: ["*"],
   filters: {
     id: "order_123",
-  }
+  },
 })
 
 // order doesn't include order totals
@@ -347,7 +347,7 @@ const { data: [order] } = await query.graph({
   fields: ["*", "total"],
   filters: {
     id: "order_123",
-  }
+  },
 })
 
 // order doesn't include order totals

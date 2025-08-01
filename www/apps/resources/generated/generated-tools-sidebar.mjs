@@ -823,14 +823,6 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
-                  "title": "Generate Invoices",
-                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator",
-                  "children": []
-                },
-                {
-                  "loaded": true,
-                  "isPathHref": true,
-                  "type": "ref",
                   "title": "Implement Pre-Orders",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder",
                   "children": []

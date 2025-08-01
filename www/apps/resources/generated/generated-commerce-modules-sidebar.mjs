@@ -6106,14 +6106,6 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
-              "title": "Generate Invoices",
-              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator",
-              "children": []
-            },
-            {
-              "loaded": true,
-              "isPathHref": true,
-              "type": "ref",
               "title": "Implement Loyalty Points",
               "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points",
               "children": []
@@ -16771,6 +16763,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
           "sort_sidebar": "alphabetize",
           "description": "Learn how to use the User Module in your customizations on the Medusa application server.",
           "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/commerce-modules/user/invite-user-subscriber",
+              "title": "Invite User Email",
+              "children": []
+            },
             {
               "loaded": true,
               "isPathHref": true,
