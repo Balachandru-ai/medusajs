@@ -25,10 +25,7 @@ function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
       promotionValueForItem
     )
 
-    return MathBN.mult(
-      promotionValueForItem,
-      MathBN.div(percentage, 100)
-    ).precision(4)
+    return MathBN.mult(promotionValueForItem, MathBN.div(percentage, 100))
   }
   return promotion.value
 }
