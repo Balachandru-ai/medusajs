@@ -3480,6 +3480,402 @@ Medusa provides the tooling to create a plugin package, test it in a local Medus
 To learn more about plugins and how to create them, refer to [this chapter](https://docs.medusajs.com/learn/fundamentals/plugins/index.html.md).
 
 
+# Debug Workflows
+
+In this chapter, you'll learn about the different ways you can debug workflows in Medusa.
+
+Debugging workflows is essential to ensure your custom features work as expected. It helps you identify unexpected issues and bugs in your workflow logic.
+
+## Approaches to Debug Workflows
+
+There are several ways to debug workflows in Medusa:
+
+|Approach|When to Use|
+|---|---|
+|Write integration tests|To ensure your workflow produces the expected results and handles edge cases.|
+|Add breakpoints|To inspect specific steps in your workflow and understand the data flow.|
+|Log messages|To check values during execution with minimal overhead.|
+|View Workflow Executions in Medusa Admin|To monitor stored workflow executions and long-running workflows, especially in production environments.|
+
+***
+
+## Approach 1: Write Integration Tests
+
+Integration tests run your workflow in a controlled environment to verify its behavior and outcome. By writing integration tests, you ensure your workflow produces the expected results and handles edge cases.
+
+### When to Use Integration Tests
+
+It's recommended to always write integration tests for your workflows. This helps you catch issues early and ensures your custom logic works as intended.
+
+### How to Write Integration Tests for Workflows
+
+Refer to the [Integration Tests](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools/integration-tests/index.html.md) chapter to learn how to write integration tests for your workflows and find examples of testing workflows.
+
+***
+
+## Approach 2: Add Breakpoints
+
+Breakpoints allow you to pause workflow execution at specific steps and inspect the data. They're useful for understanding the data flow in your steps and identifying issues.
+
+### When to Use Breakpoints
+
+Use breakpoints when you need to debug specific steps in your workflow, rather than the entire workflow. You can verify that the step is behaving as expected and is producing the correct output.
+
+### Where Can You Add Breakpoints
+
+Since Medusa stores an internal representation of the workflow constructor on application startup, breakpoints within the workflow's constructor won't work during execution. Learn more in the [Data Manipulation](https://docs.medusajs.com/learn/fundamentals/workflows/variable-manipulation/index.html.md) chapter.
+
+Instead, you can add breakpoints in:
+
+- A step function.
+- A step's compensation function.
+- The `transform` callback function of a step.
+
+For example:
+
+### Step Function
+
+```ts highlights={[["11"], ["12"]]} collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async () => {
+    // Add a breakpoint here to inspect the message
+    const message = "Hello from step 1!"
+
+    return new StepResponse(
+      message
+    )
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const response = step1()
+    
+    return new WorkflowResponse({
+      response,
+    })
+  }
+)
+```
+
+### Compensation Function
+
+```ts highlights={[["18"], ["19"]]} collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async () => {
+    const message = "Hello from step 1!"
+
+    return new StepResponse(
+      message
+    )
+  },
+  async () => {
+    // Add a breakpoint here to inspect the compensation logic
+    console.log("Compensating step 1")
+  }
+)
+
+const step2 = createStep(
+  "step-2",
+  async () => {
+    throw new Error("This is an error in step 2")
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const response = step1()
+    step2()
+
+    return new WorkflowResponse({
+      response,
+    })
+  }
+)
+```
+
+### Transform Callback
+
+```ts highlights={[["28"], ["29"]]} collapsibleLines="1-8" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+  transform,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async () => {
+    const message = "Hello from step 1!"
+
+    return new StepResponse(
+      message
+    )
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const response = step1()
+
+    const transformedMessage = transform(
+      { response },
+      (data) => {
+        // Add a breakpoint here to inspect the transformed data
+        const upperCase = data.response.toUpperCase()
+        return upperCase
+      }
+    )
+
+    return new WorkflowResponse({
+      response: transformedMessage,
+    })
+  }
+)
+```
+
+### How to Add Breakpoints
+
+If your code editor supports adding breakpoints, you can add them in your step and compensation functions, or the `transform` callback function. When the workflow execution reaches the breakpoint, your code editor will pause execution, allowing you to inspect the data and walk through the code.
+
+If you're using VS Code or Cursor, learn how to add breakpoints in the [VS Code documentation](https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_breakpoints). For other code editors, refer to their respective documentation.
+
+***
+
+## Approach 3: Log Messages
+
+Logging messages is a simple yet effective way to debug code. By logging messages, you can check values during execution with minimal overhead.
+
+### When to Use Logging
+
+Use logging when debugging workflows and you want to check values during execution without the overhead of setting up breakpoints.
+
+Logging is also useful when you want to verify variable values between steps or in a `transform` callback function.
+
+### How to Log Messages
+
+Since Medusa stores an internal representation of the workflow constructor on application startup, you can't directly log messages in the workflow's constructor.
+
+Instead, you can log messages in:
+
+- A step function.
+- A step's compensation function.
+- The `transform` callback function of a step.
+
+You can log messages with `console.log`. In step and compensation functions, you can also use the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) to log messages with different log levels (info, warn, error).
+
+For example:
+
+### Step Function
+
+```ts highlights={[["14"]]} collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async ({}, { container }) => {
+    const logger = container.resolve("logger")
+    const message = "Hello from step 1!"
+
+    logger.info(`Step 1 output: ${message}`)
+
+    return new StepResponse(
+      message
+    )
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const response = step1()
+
+    return new WorkflowResponse({
+      response,
+    })
+  }
+)
+```
+
+### Compensation Function
+
+```ts highlights={[["22"]]} collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async ({}, { container }) => {
+    const logger = container.resolve("logger")
+    const message = "Hello from step 1!"
+
+    logger.info(`Step 1 output: ${message}`)
+
+    return new StepResponse(
+      message
+    )
+  },
+  async (_, { container }) => {
+    const logger = container.resolve("logger")
+    logger.warn("Compensating step 1")
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const response = step1()
+
+    return new WorkflowResponse({
+      response,
+    })
+  }
+)
+```
+
+### Transform Callback
+
+```ts highlights={[["29"]]} collapsibleLines="1-8" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+  transform,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async () => {
+    const message = "Hello from step 1!"
+
+    return new StepResponse(
+      message
+    )
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const response = step1()
+
+    const transformedMessage = transform(
+      { response },
+      (data) => {
+        const upperCase = data.response.toUpperCase()
+        console.log("Transformed Data:", upperCase)
+        return upperCase
+      }
+    )
+
+    return new WorkflowResponse({
+      response: transformedMessage,
+    })
+  }
+)
+```
+
+If you execute the workflow, you'll see the logged message in your console.
+
+Learn more about logging in the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) chapter.
+
+***
+
+## Approach 4: Monitor Workflow Executions in Medusa Admin
+
+The Medusa Admin has a [Workflows](https://docs.medusajs.com/user-guide/settings/developer/workflows/index.html.md) settings page that provides a user-friendly interface to view stored workflow executions.
+
+### When to Use Admin Monitoring
+
+Use the Medusa Admin to monitor [stored workflow executions](https://docs.medusajs.com/learn/fundamentals/workflows/store-executions/index.html.md) when debugging unexpected issues and edge cases, especially in production environments and long-running workflows that run in the background.
+
+By viewing the workflow executions through the Medusa Admin, you can:
+
+- View the status of stored workflow executions.
+- Inspect input and output data for each execution and its steps.
+- Identify any issues or errors in the workflow execution.
+
+### How to Monitor Workflow Executions in the Admin
+
+The Workflows settings page in the Medusa Admin shows you the history of stored workflow executions only. Workflow executions are stored if a workflow is [long-running](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow/index.html.md), or if the `store` and `retentionTime` options are set on the workflow.
+
+For example, to store workflow executions:
+
+### Prerequisites
+
+- [Redis Workflow Engine must be installed and configured.](https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine/redis/index.html.md)
+
+```ts highlights={[["22"], ["23"]]} collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import { 
+  createStep, 
+  createWorkflow, 
+  StepResponse, 
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  async () => {
+    const message = "Hello from step 1!"
+
+    return new StepResponse(
+      message
+    )
+  }
+)
+
+export const myWorkflow = createWorkflow(
+  {
+    name: "my-workflow",
+    retentionTime: 99999,
+    store: true,
+  },
+  () => {
+    const response = step1()
+
+    return new WorkflowResponse({
+      response,
+    })
+  }
+)
+```
+
+Refer to the [Store Workflow Executions](https://docs.medusajs.com/learn/fundamentals/workflows/store-executions/index.html.md) chapter to learn more.
+
+You can view all executions of this workflow in the Medusa Admin under the [Workflows settings page](https://docs.medusajs.com/user-guide/settings/developer/workflows/index.html.md). Each execution will show you the status, input, and output data.
+
+
 # Configure Instrumentation
 
 In this chapter, you'll learn about observability in Medusa and how to configure instrumentation with OpenTelemetry.
@@ -4399,13 +4795,15 @@ The next chapters provide examples of writing integration tests for API routes a
 
 # Example: Write Integration Tests for Workflows
 
-In this chapter, you'll learn how to write integration tests for workflows using [medusaIntegrationTestRunner](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools/integration-tests/index.html.md) from Medusa's Testing Framwork.
+In this chapter, you'll learn how to write integration tests for workflows using [medusaIntegrationTestRunner](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools/integration-tests/index.html.md) from Medusa's Testing Framework.
+
+For other debugging approaches, refer to the [Debug Workflows](https://docs.medusajs.com/learn/debugging-and-testing/debug-workflows/index.html.md) chapter.
 
 ### Prerequisites
 
 - [Testing Tools Setup](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools/index.html.md)
 
-## Write Integration Test for Workflow
+## Write Integration Test for a Workflow
 
 Consider you have the following workflow defined at `src/workflows/hello-world.ts`:
 
@@ -4453,7 +4851,7 @@ medusaIntegrationTestRunner({
 jest.setTimeout(60 * 1000)
 ```
 
-You use the `medusaIntegrationTestRunner` to write an integration test for the workflow. The test pases if the workflow returns the string `"Hello, World!"`.
+You use the `medusaIntegrationTestRunner` to write an integration test for the workflow. The test passes if the workflow returns the string `"Hello, World!"`.
 
 ### Jest Timeout
 
@@ -4466,28 +4864,28 @@ jest.setTimeout(60 * 1000)
 
 ***
 
-## Run Test
+## Run Tests
 
 Run the following command to run your tests:
 
 ```bash npm2yarn
-npm run test:integration
+npm run test:integration:http
 ```
 
-If you don't have a `test:integration` script in `package.json`, refer to the [Medusa Testing Tools chapter](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools#add-test-commands/index.html.md).
+If you don't have a `test:integration:http` script in `package.json`, refer to the [Medusa Testing Tools chapter](https://docs.medusajs.com/learn/debugging-and-testing/testing-tools#add-test-commands/index.html.md).
 
-This runs your Medusa application and runs the tests available under the `integrations/http` directory.
+This runs your Medusa application and runs the tests available under the `integration-tests/http` directory.
 
 ***
 
 ## Test That a Workflow Throws an Error
 
-You might want to test that a workflow throws an error in certain cases. To test this:
+You might want to verify that a workflow throws an error in certain edge cases. To test that a workflow throws an error:
 
 - Disable the `throwOnError` option when executing the workflow.
 - Use the returned `errors` property to check what errors were thrown.
 
-For example, if you have a step that throws this error:
+For example, if you have the following step in your workflow that throws a `MedusaError`:
 
 ```ts title="src/workflows/hello-world.ts"
 import { MedusaError } from "@medusajs/framework/utils"
@@ -4507,7 +4905,7 @@ import { helloWorldWorkflow } from "../../src/workflows/hello-world"
 medusaIntegrationTestRunner({
   testSuite: ({ getContainer }) => {
     describe("Test hello-world workflow", () => {
-      it("returns message", async () => {
+      it("should throw error when item doesn't exist", async () => {
         const { errors } = await helloWorldWorkflow(getContainer())
           .run({
             throwOnError: false,
@@ -4523,9 +4921,397 @@ medusaIntegrationTestRunner({
 jest.setTimeout(60 * 1000)
 ```
 
-The `errors` property contains an array of errors thrown during the execution of the workflow. Each error item has an `error` object, being the error thrown.
+The `errors` property contains an array of errors thrown during the execution of the workflow. Each error item has an `error` object, which is the error thrown.
 
 If you threw a `MedusaError`, then you can check the error message in `errors[0].error.message`.
+
+***
+
+## Test Long-Running Workflows
+
+Since [long-running workflows](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow/index.html.md) run asynchronously, testing them requires a different approach than synchronous workflows.
+
+When testing long-running workflows, you need to:
+
+1. Set the asynchronous steps as successful manually.
+2. Subscribe to the workflow's events to listen for the workflow execution's completion.
+3. Verify the output of the workflow after it has completed.
+
+For example, consider you have the following long-running workflow defined at `src/workflows/long-running-workflow.ts`:
+
+```ts title="src/workflows/long-running-workflow.ts" highlights={[["15"]]}
+import { 
+  createStep,  
+  createWorkflow,
+  WorkflowResponse,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep("step-1", async () => {
+  return new StepResponse({})
+})
+
+const step2 = createStep(
+  {
+    name: "step-2",
+    async: true,
+  },
+  async () => {
+    console.log("Waiting to be successful...")
+  }
+)
+
+const step3 = createStep("step-3", async () => {
+  return new StepResponse("Finished three steps")
+})
+
+const longRunningWorkflow = createWorkflow(
+  "long-running", 
+  function () {
+    step1()
+    step2()
+    const message = step3()
+
+    return new WorkflowResponse({
+      message,
+    })
+  }
+)
+
+export default longRunningWorkflow
+```
+
+`step2` in this workflow is an asynchronous step that you need to set as successful manually in your test.
+
+You can write the following test to ensure that the long-running workflow completes successfully:
+
+```ts title="integration-tests/http/long-running-workflow.spec.ts" highlights={longRunningWorkflowHighlights1}
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import longRunningWorkflow from "../../src/workflows/long-running-workflow"
+import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
+import { StepResponse } from "@medusajs/framework/workflows-sdk"
+
+medusaIntegrationTestRunner({
+  testSuite: ({ getContainer }) => {
+    describe("Test long-running workflow", () => {
+      it("returns message", async () => {
+        const container = getContainer()
+        const { transaction } = await longRunningWorkflow(container)
+          .run()
+
+        const workflowEngineService = container.resolve(
+          Modules.WORKFLOW_ENGINE
+        )
+
+        let workflowOk: any
+        const workflowCompletion = new Promise((ok) => {
+          workflowOk = ok
+        })
+
+        const subscriptionOptions = {
+          workflowId: "long-running",
+          transactionId: transaction.transactionId,
+          subscriberId: "long-running-subscriber",
+        }
+
+
+        await workflowEngineService.subscribe({
+          ...subscriptionOptions,
+          subscriber: async (data) => {
+            if (data.eventType === "onFinish") {
+              workflowOk(data.result.message)
+              // unsubscribe
+              await workflowEngineService.unsubscribe({
+                ...subscriptionOptions,
+                subscriberOrId: subscriptionOptions.subscriberId,
+              })
+            }
+          },
+        })
+
+        await workflowEngineService.setStepSuccess({
+          idempotencyKey: {
+            action: TransactionHandlerType.INVOKE,
+            transactionId: transaction.transactionId,
+            stepId: "step-2",
+            workflowId: "long-running",
+          },
+          stepResponse: new StepResponse("Done!"),
+        })
+
+        const afterSubscriber = await workflowCompletion
+
+        expect(afterSubscriber).toBe("Finished three steps")
+      })
+    })
+  },
+})
+
+jest.setTimeout(60 * 1000)
+```
+
+In this test, you:
+
+1. Execute the long-running workflow and get the transaction details from the `run` method's result.
+2. Resolve the [Workflow Engine Module](https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine/index.html.md)'s service from the Medusa container.
+3. Create a promise to wait for the workflow's completion.
+4. Subscribe to the workflow's events using the Workflow Engine Module's `subscribe` method.
+   - The `subscriber` function is called whenever an event related to the workflow occurs. On the `onFinish` event that indicates the workflow has completed, you resolve the promise with the workflow's result.
+5. Set the asynchronous step as successful using the `setStepSuccess` method of the Workflow Engine Module.
+6. Wait for the promise to resolve, which indicates that the workflow has completed successfully.
+7. Finally, you assert that the workflow's result matches the expected output.
+
+If you run the integration test, it will execute the long-running workflow and verify that it completes and returns the expected result.
+
+### Example with Multiple Asynchronous Steps
+
+If your long-running workflow has multiple asynchronous steps, you must set each of them as successful in your test before the workflow can complete.
+
+Here's how the test would look like if you had two asynchronous steps:
+
+```ts title="integration-tests/http/long-running-workflow-multiple-steps.spec.ts" highlights={longRunningWorkflowHighlights2}
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import longRunningWorkflow from "../../src/workflows/long-running-workflow"
+import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
+import { StepResponse } from "@medusajs/framework/workflows-sdk"
+
+medusaIntegrationTestRunner({
+  testSuite: ({ getContainer }) => {
+    describe("Test long-running workflow with multiple async steps", () => {
+      it("returns message", async () => {
+        const container = getContainer()
+        const { transaction } = await longRunningWorkflow(container)
+          .run()
+
+        const workflowEngineService = container.resolve(
+          Modules.WORKFLOW_ENGINE
+        )
+
+        let workflowOk: any
+        const workflowCompletion = new Promise((ok) => {
+          workflowOk = ok
+        })
+
+        const subscriptionOptions = {
+          workflowId: "long-running",
+          transactionId: transaction.transactionId,
+          subscriberId: "long-running-subscriber",
+        }
+
+        await workflowEngineService.subscribe({
+          ...subscriptionOptions,
+          subscriber: async (data) => {
+            if (data.eventType === "onFinish") {
+              workflowOk(data.result.message)
+              // unsubscribe
+              await workflowEngineService.unsubscribe({
+                ...subscriptionOptions,
+                subscriberOrId: subscriptionOptions.subscriberId,
+              })
+            }
+          },
+        })
+
+        await workflowEngineService.setStepSuccess({
+          idempotencyKey: {
+            action: TransactionHandlerType.INVOKE,
+            transactionId: transaction.transactionId,
+            stepId: "step-2",
+            workflowId: "long-running",
+          },
+          stepResponse: new StepResponse("Done!"),
+        })
+
+        await workflowEngineService.setStepSuccess({
+          idempotencyKey: {
+            action: TransactionHandlerType.INVOKE,
+            transactionId: transaction.transactionId,
+            stepId: "step-3",
+            workflowId: "long-running",
+          },
+          stepResponse: new StepResponse("Done with step 3!"),
+        })
+
+        const afterSubscriber = await workflowCompletion
+
+        expect(afterSubscriber).toBe("Finished three steps")
+      })
+    })
+  },
+})
+```
+
+In this example, you set both `step-2` and `step-3` as successful before waiting for the workflow to complete.
+
+***
+
+## Test Database Operations in Workflows
+
+In real use cases, you'll often test workflows that perform database operations, such as creating a brand.
+
+When you test such workflows, you may need to:
+
+- Verify that the database operations were performed correctly. For example, that a brand was created with the expected properties.
+- Perform database actions before testing the workflow. For example, creating a brand before testing a workflow that deletes it.
+
+This section provides examples of both scenarios.
+
+### Verify Database Operations in Workflow Test
+
+To retrieve data from the database after running a workflow, you can resolve and use either the module's service (for example, the Brand Module's service) or [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query/index.html.md).
+
+For example, the following test verifies that a brand was created by a workflow:
+
+```ts title="integration-tests/http/workflow-brand.spec.ts" highlights={workflowBrandHighlights}
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { createBrandWorkflow } from "../../src/workflows/create-brand"
+import { BRAND_MODULE } from "../../src/modules/brand"
+
+medusaIntegrationTestRunner({
+  testSuite: ({ getContainer }) => {
+    describe("Test create brand workflow", () => {
+      it("creates a brand", async () => {
+        const container = getContainer()
+        const { result: brand } = await createBrandWorkflow(container)
+          .run({
+            input: {
+              name: "Test Brand",
+            },
+          })
+
+        const brandModuleService = container.resolve(BRAND_MODULE)
+
+        const createdBrand = await brandModuleService.retrieveBrand(brand.id)
+        expect(createdBrand).toBeDefined()
+        expect(createdBrand.name).toBe("Test Brand")
+      })
+    })
+  },
+})
+
+jest.setTimeout(60 * 1000)
+```
+
+In this test, you run the workflow, which creates a brand. Then, you retrieve the brand from the database using the Brand Module's service and verify that it was created with the expected properties.
+
+### Perform Database Actions Before Testing Workflow
+
+You can perform database actions before testing workflows in the `beforeAll` or `beforeEach` hooks of your test suite. In those hooks, you can create data that is useful for your workflow tests.
+
+Learn more about test hooks in [Jest's Documentation](https://jestjs.io/docs/setup-teardown).
+
+You can perform the database actions before testing a workflow by either:
+
+- Using the module's service (for example, the Brand Module's service).
+- Using an existing workflow that performs the database actions.
+
+#### Use Module's Service
+
+For example, the following test creates a brand using the Brand Module's service before running the workflow that deletes it:
+
+```ts title="integration-tests/http/workflow-brand-delete.spec.ts"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { deleteBrandWorkflow } from "../../src/workflows/delete-brand"
+import { BRAND_MODULE } from "../../src/modules/brand"
+
+medusaIntegrationTestRunner({
+  testSuite: ({ getContainer }) => {
+    let brandId: string
+
+    beforeAll(async () => {
+      const container = getContainer()
+      
+      const brandModuleService = container.resolve(BRAND_MODULE)
+      
+      const brand = await brandModuleService.createBrands({
+        name: "Test Brand",
+      })
+
+      brandId = brand.id
+    })
+
+    describe("Test delete brand workflow", () => {
+      it("deletes a brand", async () => {
+        const container = getContainer()
+        const { result } = await deleteBrandWorkflow(container)
+          .run({
+            input: {
+              id: brandId,
+            },
+          })
+
+        expect(result.success).toBe(true)
+
+        const brandModuleService = container.resolve(BRAND_MODULE)
+        await expect(brandModuleService.retrieveBrand(brandId))
+          .rejects.toThrow()
+      })
+    })
+  },
+})
+```
+
+In this example, you:
+
+1. Use the `beforeAll` hook to create a brand before running the workflow that deletes it.
+2. Create a test that runs the `deleteBrandWorkflow` to delete the created brand.
+3. Verify that the brand was deleted successfully by checking that retrieving it throws an error.
+
+#### Use Existing Workflow
+
+Alternatively, if you already have a workflow that performs the database operations, you can use that workflow in the `beforeAll` or `beforeEach` hook. This is useful if the database operations are complex and are already encapsulated in a workflow.
+
+For example, you can modify the `beforeAll` hook to use the `createBrandWorkflow`:
+
+```ts title="integration-tests/http/workflow-brand-delete.spec.ts" highlights={workflowBrandDeleteHighlights2}
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { deleteBrandWorkflow } from "../../src/workflows/delete-brand"
+import { createBrandWorkflow } from "../../src/workflows/create-brand"
+import { BRAND_MODULE } from "../../src/modules/brand"
+
+medusaIntegrationTestRunner({
+  testSuite: ({ getContainer }) => {
+    let brandId: string
+
+    beforeAll(async () => {
+      const container = getContainer()
+      
+      const { result: brand } = await createBrandWorkflow(container)
+        .run({
+          input: {
+            name: "Test Brand",
+          },
+        })
+
+      brandId = brand.id
+    })
+
+    describe("Test delete brand workflow", () => {
+      it("deletes a brand", async () => {
+        const container = getContainer()
+        const { result } = await deleteBrandWorkflow(container)
+          .run({
+            input: {
+              id: brandId,
+            },
+          })
+
+        expect(result.success).toBe(true)
+
+        const brandModuleService = container.resolve(BRAND_MODULE)
+        await expect(brandModuleService.retrieveBrand(brandId))
+          .rejects.toThrow()
+      })
+    })
+  },
+})
+```
+
+In this example, you:
+
+1. Use the `beforeAll` hook to run the `createBrandWorkflow`, which creates a brand before running the workflow that deletes it.
+2. Create a test that runs the `deleteBrandWorkflow` to delete the created brand.
+3. Verify that the brand was deleted successfully by checking that retrieving it throws an error.
 
 
 # Write Tests for Modules
@@ -5293,9 +6079,15 @@ If you receive a type error on `import.meta.env`, create the file `src/admin/vit
 
 ```ts title="src/admin/vite-env.d.ts"
 /// <reference types="vite/client" />
+
+declare const __BASE__: string
+declare const __BACKEND_URL__: string
+declare const __STOREFRONT_URL__: string
 ```
 
 This file tells TypeScript to recognize the `import.meta.env` object and enhances the types of your custom environment variables.
+
+Note that the `__BASE__`, `__BACKEND_URL__`, and `__STOREFRONT_URL__` variables are global variables available in your admin customizations. Learn more in the [Tips for Admin Customizations](https://docs.medusajs.com/learn/fundamentals/admin/tips#global-variables-in-admin-customizations/index.html.md) chapter.
 
 ***
 
@@ -5349,6 +6141,16 @@ export const config = defineWidgetConfig({
 })
 
 export default ProductWidget
+```
+
+To fix possible type errors, create the file `src/admin/vite-env.d.ts` and add the global variables:
+
+```ts title="src/admin/vite-env.d.ts"
+/// <reference types="vite/client" />
+
+declare const __BACKEND_URL__: string
+declare const __BASE__: string
+declare const __STOREFRONT_URL__: string
 ```
 
 
@@ -5698,6 +6500,16 @@ In your admin customizations, you can use the following global variables:
 - `__BASE__`: The base path of the Medusa Admin, as set in the [admin.path](https://docs.medusajs.com/learn/configurations/medusa-config#path/index.html.md) configuration in `medusa-config.ts`.
 - `__BACKEND_URL__`: The URL to the Medusa backend, as set in the [admin.backendUrl](https://docs.medusajs.com/learn/configurations/medusa-config#backendurl/index.html.md) configuration in `medusa-config.ts`.
 - `__STOREFRONT_URL__`: The URL to the storefront, as set in the [admin.storefrontUrl](https://docs.medusajs.com/learn/configurations/medusa-config#storefrontUrl/index.html.md) configuration in `medusa-config.ts`.
+
+If you get type errors while using these variables, you can create the file `src/admin/vite-env.d.ts` with the following content:
+
+```ts title="src/admin/vite-env.d.ts"
+/// <reference types="vite/client" />
+
+declare const __BASE__: string
+declare const __BACKEND_URL__: string
+declare const __STOREFRONT_URL__: string
+```
 
 ***
 
@@ -7873,7 +8685,9 @@ The response of this API route has the status code `201`.
 
 To return response data other than a JSON object, use the `writeHead` method of the `MedusaResponse` object. It allows you to set the response headers, including the content type.
 
-For example, to create an API route that returns an event stream:
+### Example: Server-Sent Events (SSE)
+
+For example, to create an API route that returns server-sent events (SSE), you can set the `Content-Type` header to `text/event-stream`:
 
 ```ts highlights={streamHighlights}
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
@@ -7889,9 +8703,14 @@ export const GET = async (
   })
 
   const interval = setInterval(() => {
-    res.write("Streaming data...\n")
+    res.write("data: Streaming data...\n\n")
   }, 3000)
 
+  req.on("close", () => {
+    clearInterval(interval)
+    res.end()
+  })
+  
   req.on("end", () => {
     clearInterval(interval)
     res.end()
@@ -7905,6 +8724,12 @@ The `writeHead` method accepts two parameters:
 2. The second parameter is an object of key-value pairs to set the response headers.
 
 This API route opens a stream by setting the `Content-Type` to `text/event-stream`. It then simulates a stream by creating an interval that writes the stream data every three seconds.
+
+### Tip: Fetching Stream with JS SDK
+
+The JS SDK has a `fetchStream` method that you can use to fetch data from an API route that returns a stream.
+
+Learn more in the [JS SDK](https://docs.medusajs.com/resources/js-sdk/index.html.md) documentation.
 
 ***
 
@@ -8818,6 +9643,243 @@ class BlogModuleService extends MedusaService({ Post }) {
 ```
 
 
+# JSON Properties in Data Models
+
+In this chapter, you'll learn how to use and manage [JSON properties](https://docs.medusajs.com/learn/fundamentals/data-models/properties#json/index.html.md) in data models.
+
+## What is a JSON Property?
+
+A JSON property in a data model is a flexible object that can contain various types of values.
+
+For example, you can create a `Brand` data model with a `metadata` JSON property to store additional information about the brand:
+
+```ts highlights={[["6"]]}
+import { model } from "@medusajs/framework/utils"
+
+const Brand = model.define("brand", {
+  id: model.id().primaryKey(),
+  name: model.text(),
+  metadata: model.json(),
+})
+```
+
+### Accepted Values in JSON Property
+
+JSON properties are made up of key-value pairs. The keys are strings, and the values can be one of the following types:
+
+- **Strings**: Text values.
+  - Empty strings remove the property from the JSON object. Learn more in the [Remove a Property from the JSON Property](#remove-a-property-from-the-json-property) section.
+- **Numbers**: Numeric values.
+- **Booleans**: `true` or `false` values.
+- **Nested Objects**: Objects within objects.
+- **Arrays**: Lists of values of any of the above types.
+
+For example, a `metadata` JSON property can look like this:
+
+```json
+{
+  "category": "electronics",
+  "views": 1500,
+  "is_featured": true,
+  "tags": ["new", "sale"],
+  "details": {
+    "warranty": "2 years",
+    "origin": "USA"
+  }
+}
+```
+
+### What are JSON Properties Useful For?
+
+JSON properties allow you to store flexible and dynamic data structures that can evolve over time without requiring changes to the database schema.
+
+Most data models in Medusa's Commerce Modules have a `metadata` property that is a JSON object. `metadata` allows you to store custom information that is not part of the core data model.
+
+Some examples of data to store in JSON properties:
+
+- Custom gift message for line items in an order.
+- Product's ID in a third-party system.
+- Brand's category or tags.
+
+### What are JSON Properties Not Useful For?
+
+JSON properties are not suitable for structured data that requires strict validation or relationships with other data models.
+
+For example, if you want to re-use brands across different products, it's better to create a `Brand` data model and [define a link](https://docs.medusajs.com/learn/fundamentals/module-links/index.html.md) to the `Product` data model instead of storing brand information in the product's `metadata` JSON property.
+
+***
+
+## How to Manage JSON Properties?
+
+### How Medusa Updates JSON Properties
+
+Consider a Brand Module with a `Brand` data model as shown [in the previous section](#what-is-a-json-property). The [module's service](https://docs.medusajs.com/learn/fundamentals/modules#2-create-service/index.html.md) will extend `MedusaService`, which generates methods like [updateBrands](https://docs.medusajs.com/resources/service-factory-reference/methods/update/index.html.md) to update a brand.
+
+When you pass a JSON property in the `updateBrands` method, Medusa will merge the provided JSON object with the existing one in the database. So, only the properties you pass will be updated, and the rest will remain unchanged.
+
+The following sections show examples of how to add, update, and remove properties in a JSON property.
+
+The following examples assume you have a `brandModuleService` that is resolved from the [Medusa container](https://docs.medusajs.com/learn/fundamentals/medusa-container/index.html.md). For example:
+
+```ts
+const brandModuleService = container.resolve(BRAND_MODULE)
+```
+
+### Add a Property to the JSON Property
+
+Continuing with the Brand example, to add a `category` property to the `metadata` property, pass the new property in the `update` or `create` methods:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    category: "electronics",
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to include the new `category` property:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics"
+  }
+}
+```
+
+If you want to add another `is_featured` property later, you can do so by passing it in the update method again without affecting the existing properties:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    is_featured: true,
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to include both `category` and `is_featured` properties:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics",
+    "is_featured": true
+  }
+}
+```
+
+### Update an Existing Property in the JSON Property
+
+To update an existing property in the JSON property, pass the updated value in the `update` method.
+
+Continuing with the Brand example, to update the `category` property in the `metadata`:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    category: "home appliances",
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to reflect the new `category` value, and existing properties will remain unchanged:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "home appliances",
+    "is_featured": true
+  }
+}
+```
+
+### Caveat: Updating Nested Objects
+
+If you want to update a nested object within the JSON property, you need to provide the entire nested object in the update method.
+
+For example, consider that you have a `details` object within the `metadata`:
+
+```json
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics",
+    "details": {
+      "warranty": "1 year",
+      "origin": "China"
+    }
+  }
+}
+```
+
+To update the `warranty` property within the `details` object, you need to provide the entire `details` object in the update method:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    details: {
+      warranty: "2 years",
+      origin: "China",
+    },
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated with the new `warranty` value:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "electronics",
+    "details": {
+      "warranty": "2 years",
+      "origin": "China"
+    }
+  }
+}
+```
+
+### Remove a Property from the JSON Property
+
+To remove a property from the JSON property, you can pass an empty string as the value of the property in the update method.
+
+For example, to remove the `is_featured` property from the `metadata`:
+
+```ts
+const brand = await brandModuleService.updateBrands({
+  id: "brand_123",
+  metadata: {
+    is_featured: "",
+  },
+})
+```
+
+The brand record will now have the `metadata` property updated to remove the `is_featured` property:
+
+```json title="Result"
+{
+  "id": "brand_123",
+  "metadata": {
+    "category": "home appliances"
+  }
+}
+```
+
+### Manage JSON Properties in API Routes
+
+The instructions above also apply when managing JSON properties in API routes, since they typically use a service's `update` method under the hood.
+
+Refer to the [API reference](https://docs.medusajs.com/api/store#manage-metadata) to learn more about managing JSON properties, such as `metadata`, in API routes.
+
+
 # Manage Relationships
 
 In this chapter, you'll learn how to manage relationships between data models when creating, updating, or retrieving records using the module's main service.
@@ -9328,7 +10390,7 @@ export default Post
 
 ### json
 
-The `json` method defines a property whose value is a stringified JSON object.
+The `json` method defines a property whose value is stored as a stringified JSON object in the database.
 
 For example:
 
@@ -9342,6 +10404,8 @@ const Post = model.define("post", {
 
 export default Post
 ```
+
+Learn more in the [JSON Properties](https://docs.medusajs.com/learn/fundamentals/data-models/json-properties/index.html.md) chapter.
 
 ### array
 
@@ -13914,9 +14978,9 @@ Your workflow can use services of both custom and Commerce Modules, supporting y
 
 # Module Container
 
-In this chapter, you'll learn about the module's container and how to resolve resources in that container.
+In this chapter, you'll learn about the module container and how to resolve resources from it.
 
-Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), each module has a local container only used by the resources of that module.
+Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), each module has a local container used only by the resources of that module.
 
 So, resources in the module, such as services or loaders, can only resolve other resources registered in the module's container, and some Framework tools that the Medusa application registers in the module's container.
 
@@ -13926,13 +14990,13 @@ Find a list of resources or dependencies registered in a module's container in [
 
 ***
 
-## Resolve Resources
+## Resolve Resources from the Module Container
 
-### Services
+### Resolve in Services
 
-A service's constructor accepts as a first parameter an object used to resolve resources registered in the module's container.
+A service's constructor accepts as a first parameter an object used to resolve resources registered in the module's container. To resolve a resource, add the resource's registration name as a property of the object.
 
-For example:
+For example, to resolve the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) from the container:
 
 ```ts highlights={[["4"], ["10"]]}
 import { Logger } from "@medusajs/framework/types"
@@ -13954,11 +15018,13 @@ export default class BlogModuleService {
 }
 ```
 
-### Loader
+You can then use the logger in the service's methods.
 
-A loader function accepts as a parameter an object having the property `container`. Its value is the module's container used to resolve resources.
+### Resolve in Loaders
 
-For example:
+[Loaders](https://docs.medusajs.com/learn/fundamentals/modules/loaders/index.html.md) accept an object parameter with the property `container`. Its value is the module's container that can be used to resolve resources using its `resolve` method.
+
+For example, to resolve the [Logger](https://docs.medusajs.com/learn/debugging-and-testing/logging/index.html.md) in a loader:
 
 ```ts highlights={[["9"]]}
 import {
@@ -13976,6 +15042,72 @@ export default async function helloWorldLoader({
   logger.info("[helloWorldLoader]: Hello, World!")
 }
 ```
+
+You can then use the logger in the loader's code.
+
+***
+
+## Caveat: Resolving Module Services in Loaders
+
+Consider a module that has a main service `BrandModuleService`, and an internal service `CmsService`. Medusa will register both of these services in the module's container.
+
+However, loaders are executed before any services are initialized and registered in the module's container. So, you can't resolve the `BrandModuleService` and `CmsService` in a loader.
+
+Instead, if your main service extends the `MedusaService` [service factory](https://docs.medusajs.com/learn/fundamentals/modules/service-factory/index.html.md), you can resolve the internal services generated for each data model passed to the `MedusaService` function.
+
+For example, if the `BrandModuleService` is defined as follows:
+
+```ts
+import { MedusaService } from "@medusajs/framework/utils"
+import Brand from "./models/brand"
+
+class BrandModuleService extends MedusaService({
+  Brand,
+}) {
+}
+
+export default BrandModuleService
+```
+
+Then, you can resolve the `brandService` that allows you to manage brands in the module's loader:
+
+```ts
+import {
+  LoaderOptions,
+} from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const brandService = container.resolve("brandService")
+
+  const brands = await brandService.list()
+
+  console.log("[helloWorldLoader]: Brands:", brands)
+}
+```
+
+Refer to the [Service Factory reference](https://docs.medusajs.com/resources/service-factory-reference/index.html.md) for details on the available methods in the generated services.
+
+***
+
+## Alternative to Resolving Other Modules' Services
+
+Since modules are [isolated](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md), you can't resolve resources that belong to other modules from the module's container. For example, you can't resolve the Product Module's service in the Blog Module's service.
+
+Instead, to build commerce features that span multiple modules, you can create [workflows](https://docs.medusajs.com/learn/fundamentals/workflows/index.html.md). In those workflows, you can resolve services of all modules registered in the Medusa application, including the services of the Product and Blog modules.
+
+Then, you can execute the workflows in [API routes](https://docs.medusajs.com/learn/fundamentals/api-routes/index.html.md), [subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers/index.html.md), or [scheduled jobs](https://docs.medusajs.com/learn/fundamentals/scheduled-jobs/index.html.md).
+
+Learn more and find examples in the [Module Isolation](https://docs.medusajs.com/learn/fundamentals/modules/isolation/index.html.md) chapter.
+
+***
+
+## Avoid Circular Dependencies
+
+When resolving resources in a module's services, make sure you don't create circular dependencies. For example, if `BlogModuleService` resolves `CmsService`, and `CmsService` resolves `BlogModuleService`, it will cause a circular dependency error.
+
+Instead, you should generally only resolve services within the main service. For example, `BlogModuleService` can resolve `CmsService`, but `CmsService` should not resolve `BlogModuleService`.
 
 
 # Perform Database Operations in a Service
@@ -15811,9 +16943,9 @@ In this chapter, you’ll learn about what the service factory is and how to use
 
 Medusa provides a service factory that your module’s main service can extend.
 
-The service factory generates data management methods for your data models in the database, so you don't have to implement these methods manually.
+The service factory generates data management methods for your data models, saving you time on implementing these methods manually.
 
-Your service provides data-management functionalities of your data models.
+Your service provides data-management functionality for your data models.
 
 ***
 
@@ -15838,7 +16970,7 @@ export default BlogModuleService
 
 ### MedusaService Parameters
 
-The `MedusaService` function accepts one parameter, which is an object of data models to generate data-management methods for.
+The `MedusaService` function accepts one parameter, which is an object of data models for which to generate data-management methods.
 
 In the example above, since the `BlogModuleService` extends `MedusaService`, it has methods to manage the `Post` data model, such as `createPosts`.
 
@@ -15846,7 +16978,7 @@ In the example above, since the `BlogModuleService` extends `MedusaService`, it 
 
 The service factory generates methods to manage the records of each of the data models provided in the first parameter in the database.
 
-The method's names are the operation's name, suffixed by the data model's key in the object parameter passed to `MedusaService`.
+The method names are the operation name, suffixed by the data model's key in the object parameter passed to `MedusaService`.
 
 For example, the following methods are generated for the service above:
 
@@ -15958,7 +17090,7 @@ await blogModuleService.softDeletePosts({
 
 ### Using a Constructor
 
-If you implement the `constructor` of your service, make sure to call `super` passing it `...arguments`.
+If you implement a `constructor` in your service, make sure to call `super` and pass it `...arguments`.
 
 For example:
 
@@ -15975,6 +17107,48 @@ class BlogModuleService extends MedusaService({
 }
 
 export default BlogModuleService
+```
+
+***
+
+## Generated Internal Services
+
+The service factory also generates internal services for each data model passed to the `MedusaService` function. These services are registered in the module's container and can be resolved using their camel-cased names.
+
+For example, if the `BlogModuleService` is defined as follows:
+
+```ts
+import { MedusaService } from "@medusajs/framework/utils"
+import Post from "./models/post"
+
+class BlogModuleService extends MedusaService({
+  Post,
+}){
+}
+
+export default BlogModuleService
+```
+
+Then, you'll have a `postService` registered in the module's container that allows you to manage posts.
+
+Generated internal services have the same methods as the `BlogModuleService`, such as `create`, `retrieve`, `update`, and `delete`, but without the data model name suffix.
+
+These services are useful when you need to perform database operations in loaders, as they are executed before the module's services are registered. Learn more in the [Module Container](https://docs.medusajs.com/learn/fundamentals/modules/container/index.html.md) documentation.
+
+For example, you can create a loader that logs the number of posts in the database:
+
+```ts
+import { LoaderOptions } from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const postService = container.resolve("postService")
+
+  const [_, count] = await postService.listAndCount()
+
+  console.log(`[helloWorldLoader]: There are ${count} posts in the database.`)
+}
 ```
 
 
@@ -17411,11 +18585,9 @@ Instead, refer to the [Error Handling](https://docs.medusajs.com/learn/fundament
 
 ***
 
-## Step Constraints
+## Returned Value Constraints
 
-### Returned Values
-
-A step must only return serializable values, such as [primitive values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#primitive_values) or an object.
+Data returned from workflows and steps are serialized, allowing Medusa to store them in the database. So, you must only return serializable values, such as [primitive values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#primitive_values) or an object, from workflows and steps.
 
 Values of other types, such as Maps, aren't allowed.
 
@@ -17457,6 +18629,69 @@ const step1 = createStep(
     })
   }
 )
+```
+
+### Buffer Example
+
+In some cases, you may need to return a buffer. For example, when your workflow generates a file and you want to return it as a buffer.
+
+In those cases, you can return an object containing the buffer as a property. Then, in customizations that execute the workflow, you can recreate the buffer from the serialized data.
+
+For example, consider the following workflow that returns a buffer:
+
+```ts
+import { 
+  createWorkflow,
+  createStep,
+  WorkflowResponse,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  (_, { container }) => {
+    const buffer = Buffer.from("Hello, World!")
+
+    return new StepResponse({
+      buffer,
+    })
+  }
+)
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function () {
+    const step1Response = step1()
+
+    return new WorkflowResponse({
+      buffer: step1Response.buffer,
+    })
+  }
+)
+```
+
+Then, in an API route that executes this workflow, you can recreate the buffer from the serialized data using `Buffer.from`:
+
+```ts
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import myWorkflow from "../../workflows/hello-world"
+
+export async function GET(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await myWorkflow(req.scope)
+    .run()
+
+  const buffer = Buffer.from(result.buffer)
+
+  res.setHeader("Content-Type", "application/octet-stream")
+  res.setHeader("Content-Disposition", "attachment; filename=hello.txt")
+  res.send(buffer)
+}
 ```
 
 
@@ -17705,15 +18940,17 @@ In this example, if the `actionThatThrowsError` step throws an error, the `moreA
 You can then access the error that occurred in that step as explained in the [Disable Error Throwing](#disable-error-throwing-in-workflow) section.
 
 
-# Execute Another Workflow
+# Execute Nested Workflows
 
-In this chapter, you'll learn how to execute a workflow in another.
+In this chapter, you'll learn how to execute a workflow in another workflow.
 
-## Execute in a Workflow
+## How to Execute a Workflow in Another?
 
-To execute a workflow in another, use the `runAsStep` method that every workflow has.
+In many cases, you may have a workflow that you want to re-use in another workflow. This is most common when you build custom workflows and you want to utilize Medusa's [existing workflows](https://docs.medusajs.com/resources/medusa-workflows-reference/index.html.md).
 
-For example:
+Executing a workflow within another is slightly different from how you usually execute a workflow. Instead of invoking the workflow, passing it the container, then running its `run` method, you use the `runAsStep` method of the workflow. This will pass the Medusa container and workflow context to the nested workflow.
+
+For example, to execute the [createProductsWorkflow](https://docs.medusajs.com/resources/references/medusa-workflows/createProductsWorkflow/index.html.md) in your custom workflow:
 
 ```ts highlights={workflowsHighlights} collapsibleLines="1-7" expandMoreButton="Show Imports"
 import {
@@ -17739,17 +18976,21 @@ const workflow = createWorkflow(
 )
 ```
 
-Instead of invoking the workflow and passing it the container, you use its `runAsStep` method and pass it an object as a parameter.
+The `runAsStep` method accepts an `input` property to pass input to the workflow.
 
-The object has an `input` property to pass input to the workflow.
+### Returned Data
+
+Notice that you don't need to use `await` when executing the nested workflow, as it's not a promise in this scenario.
+
+You also receive the workflow's output as a return value from the `runAsStep` method. This is different from the usual workflow response, where you receive the output in a `result` property.
 
 ***
 
-## Preparing Input Data
+## Prepare Input Data
 
-If you need to perform some data manipulation to prepare the other workflow's input data, use `transform` from the Workflows SDK.
+Since Medusa creates an internal representation of your workflow's constructor function, you can't manipulate data directly in the workflow constructor. You can learn more about this in the [Data Manipulation](https://docs.medusajs.com/learn/fundamentals/workflows/variable-manipulation/index.html.md) chapter.
 
-Learn about transform in [this chapter](https://docs.medusajs.com/learn/fundamentals/workflows/variable-manipulation/index.html.md).
+If you need to perform some data manipulation to prepare the nested workflow's input data, use `transform` from the Workflows SDK.
 
 For example:
 
@@ -17788,15 +19029,15 @@ const workflow = createWorkflow(
 )
 ```
 
-In this example, you use the `transform` function to prepend `Hello` to the title of the product. Then, you pass the result as an input to the `createProductsWorkflow`.
+In this example, you use the `transform` function to prepend `Hello` to the title of the product. Then, you pass the result as input to the `createProductsWorkflow`.
+
+Learn more about `transform` in the [Data Manipulation](https://docs.medusajs.com/learn/fundamentals/workflows/variable-manipulation/index.html.md) chapter.
 
 ***
 
 ## Run Workflow Conditionally
 
-To run a workflow in another based on a condition, use when-then from the Workflows SDK.
-
-Learn about when-then in [this chapter](https://docs.medusajs.com/learn/fundamentals/workflows/conditions/index.html.md).
+Similar to the [previous section](#prepare-input-data), you can't use conditional statements directly in the workflow constructor. Instead, you can use the `when-then` function from the Workflows SDK to run a workflow conditionally.
 
 For example:
 
@@ -17832,7 +19073,29 @@ const workflow = createWorkflow(
 )
 ```
 
-In this example, you use when-then to run the `createProductsWorkflow` only if `should_create` (passed in the `input`) is enabled.
+In this example, you use `when-then` to run the `createProductsWorkflow` only if `should_create` (passed in the `input`) is enabled.
+
+Learn more about `when-then` in the [When-Then Conditions](https://docs.medusajs.com/learn/fundamentals/workflows/conditions/index.html.md) chapter.
+
+***
+
+## Errors in Nested Workflows
+
+A nested workflow behaves similarly to a step in a workflow. So, if the nested workflow fails, it will throw an error that stops the parent workflow's execution and compensates previous steps.
+
+In addition, if another step fails after the nested workflow, the nested workflow's steps will be compensated as part of the compensation process.
+
+Learn more about handling errors in workflows in the [Error Handling](https://docs.medusajs.com/learn/fundamentals/workflows/errors/index.html.md) chapter.
+
+***
+
+## Nested Long-Running Workflows
+
+When you execute a long-running workflow within another workflow, the parent workflow becomes a long-running workflow as well.
+
+So, the parent workflow will wait for the nested workflow to finish before continuing its execution.
+
+Refer to the [Long-Running Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow/index.html.md) chapter for more information on how to handle long-running workflows.
 
 
 # Long-Running Workflows
@@ -17913,6 +19176,7 @@ A workflow is also considered long-running if:
 
 - One of its steps has its `async` configuration set to `true` and doesn't return a step response.
 - One of its steps has its `retryInterval` option set as explained in the [Retry Failed Steps chapter](https://docs.medusajs.com/learn/fundamentals/workflows/retry-failed-steps/index.html.md).
+- One of its [nested workflows](https://docs.medusajs.com/learn/fundamentals/workflows/execute-another-workflow/index.html.md) is a long-running workflow.
 
 ***
 
@@ -18121,7 +19385,7 @@ To find a full example of a long-running workflow, refer to the [restaurant-deli
 In the recipe, you use a long-running workflow that moves an order from placed to completed. The workflow waits for the restaurant to accept the order, the driver to pick up the order, and other external actions.
 
 
-# Multiple Step Usage in Workflow
+# Multiple Step Usage in Workflows
 
 In this chapter, you'll learn how to use a step multiple times in a workflow.
 
@@ -18131,7 +19395,7 @@ In some cases, you may need to use a step multiple times in the same workflow.
 
 The most common example is using the `useQueryGraphStep` multiple times in a workflow to retrieve multiple unrelated data, such as customers and products.
 
-Each workflow step must have a unique ID, which is the ID passed as a first parameter when creating the step:
+Steps must have a unique ID, which you pass as the first parameter of the `createStep` function.
 
 ```ts
 const useQueryGraphStep = createStep(
@@ -18140,7 +19404,7 @@ const useQueryGraphStep = createStep(
 )
 ```
 
-This causes an error when you use the same step multiple times in a workflow, as it's registered in the workflow as two steps having the same ID:
+So, when a step is used multiple times in a workflow, it's registered multiple times in the workflow with the same ID, which causes an error.
 
 ```ts
 const helloWorkflow = createWorkflow(
@@ -18170,7 +19434,7 @@ When you execute a step in a workflow, you can chain a `config` method to it to 
 
 Use the `config` method to change a step's ID for a single execution.
 
-So, this is the correct way to write the example above:
+For example, this is the correct way to write the example above:
 
 ```ts highlights={highlights}
 const helloWorkflow = createWorkflow(
@@ -18190,7 +19454,7 @@ const helloWorkflow = createWorkflow(
 )
 ```
 
-The `config` method accepts an object with a `name` property. Its value is a new ID of the step to use for this execution only.
+The `config` method accepts an object with a `name` property. Its value is the new ID for the step to use for this execution only.
 
 The first `useQueryGraphStep` usage has the ID `use-query-graph`, and the second `useQueryGraphStep` usage has the ID `fetch-customers`.
 
@@ -20494,7 +21758,7 @@ For example, if you extended the `CartService` in v1 to add items with custom pr
 import { 
   createWorkflow,
   transform,
-  WorkflowResponse
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { addToCartWorkflow } from "@medusajs/medusa/core-flows"
 import { 
@@ -20596,7 +21860,7 @@ For example:
 ```ts title="src/workflows/hello-world.ts"
 import { 
   createWorkflow, 
-  WorkflowResponse
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 
 export const helloWorldWorkflow = createWorkflow(
@@ -21230,7 +22494,7 @@ If your use case is complex and these rules are not enough, you can create a new
 
 Medusa v1 has gift card features out-of-the-box.
 
-In Medusa v2, gift card features are now only available to [Medusa Cloud](https://medusajs.com/cloud/) users.
+In Medusa v2, gift card features are now only available to [Cloud](https://medusajs.com/cloud/) users.
 
 ***
 
@@ -21983,7 +23247,7 @@ npx medusa db:migrate
 In the Medusa codebase, our team uses the following [TSDoc](https://tsdoc.org/) tags to indicate changes made in the latest version for a specific piece of code:
 
 - `@deprecated`: Indicates that a piece of code is deprecated and will be removed in a future version. The tag's message will include details on what to use instead. However, our updates are always backward-compatible, allowing you to update your codebase at your own pace.
-- `@version`: Indicates the version when a piece of code was available from. A piece of code that has this tag will only be available starting from the specified version.
+- `@since`: Indicates the version when a piece of code was available from. A piece of code that has this tag will only be available starting from the specified version.
 
 ***
 
@@ -21998,22 +23262,51 @@ npm  install
 
 # API Key Concepts
 
-In this document, you’ll learn about the different types of API keys, their expiration and verification.
+In this guide, you’ll learn about the different types of API keys, their expiration and verification.
 
 ## API Key Types
 
 There are two types of API keys:
 
 - `publishable`: A public key used in client applications, such as a storefront.
+  - This API key is useful for operations that do not require authentication, such as fetching product data or categories.
 - `secret`: A secret key used for authentication and verification purposes, such as an admin user’s authentication token or a password reset token.
+  - This API key is useful for operations that require authentication, such as creating orders or managing products as an admin user.
 
 The API key’s type is stored in the `type` property of the [ApiKey data model](https://docs.medusajs.com/references/api-key/models/ApiKey/index.html.md).
+
+### Default Scopes and Permissions
+
+In your Medusa application, a `publishable` API key is only useful to send requests to the [Store API routes](https://docs.medusajs.com/api/store). Learn more about it in the [Publishable API Keys](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/sales-channel/publishable-api-keys/index.html.md) guide.
+
+In addition, a `secret` API key allows you to access the [Admin API routes](https://docs.medusajs.com/api/admin) and perform actions as the admin user that the key was created for. The `created_by` property of the [ApiKey data model](https://docs.medusajs.com/references/api-key/models/ApiKey/index.html.md) indicates the ID of the associated admin user.
+
+***
+
+## API Key Creation
+
+When using the [Medusa Admin](https://docs.medusajs.com/user-guide/settings/developer/index.html.md) or [API routes](https://docs.medusajs.com/api/admin#api-keys), only admin users can create API keys.
+
+You can also create API keys in your customizations using the [createApiKeysWorkflow](https://docs.medusajs.com/references/medusa-workflows/createApiKeysWorkflow/index.html.md).
+
+***
+
+## API Key Tokens
+
+The API key data model has a `token` property that contains the actual key used for authentication.
+
+This token is created using the `salt` property in the data model, which is a random string generated when the API key is created. The salt is a `64`-character hexadecimal string generated randomly using the `crypto` module in Node.js.
+
+For display purposes, the API key data model also has a `redacted` property that contains the first six characters of the token, followed by `...`, then the last three characters of the token. You can use this property to show the API key in the UI without revealing the full token.
 
 ***
 
 ## API Key Expiration
 
-An API key expires when it’s revoked using the [revoke method of the module’s main service](https://docs.medusajs.com/references/api-key/revoke/index.html.md).
+An API key expires when it’s revoked using the [revokeApiKeysWorkflow](https://docs.medusajs.com/references/medusa-workflows/revokeApiKeysWorkflow/index.html.md). This method will set the following properties in the API key:
+
+- `revoked_at`: The date and time when the API key was revoked.
+- `revoked_by`: The ID of the user who revoked the API key.
 
 The associated token is no longer usable or verifiable.
 
@@ -23755,23 +25048,72 @@ Medusa provides the following authentication providers out-of-the-box. You can u
 ***
 
 
-# How to Handle Password Reset Token Event
+# Send Reset Password Email Notification
 
-In this guide, you'll learn how to handle the `auth.password_reset` event, which is emitted when a request is sent to the [Generate Reset Password Token API route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#generate-reset-password-token-route/index.html.md).
+In this guide, you'll learn how to handle the `auth.password_reset` event to send a reset password email (or other notification type) to users.
 
 Refer to this [Medusa Admin User Guide](https://docs.medusajs.com/user-guide/reset-password/index.html.md) to learn how to reset your user admin password using the dashboard.
 
-You'll create a subscriber that listens to the event. When the event is emitted, the subscriber sends an email notification to the user.
+## Reset Password Flow Overview
 
-### Prerequisites
+![Diagram showcasing the reset password flow detailed below](https://res.cloudinary.com/dza7lstvk/image/upload/v1754050032/Medusa%20Resources/reset-password_qheixj.jpg)
 
-- [A notification provider module, such as SendGrid](https://docs.medusajs.com/infrastructure-modules/notification/sendgrid/index.html.md)
+Users of any actor type (admin, customer, or custom actor type) can request to reset their password. The flow for resetting a password is as follows:
 
-## 1. Create Subscriber
+1. The user requests to reset their password either through the frontend (for example, [Medusa Admin](https://docs.medusajs.com/user-guide/reset-password/index.html.md)) or the [Generate Reset Password Token API route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#generate-reset-password-token-route/index.html.md).
+2. The Medusa application generates a password reset token and emits the `auth.password_reset` event.
+   - At this point, you can handle the event to send a notification to the user with instructions on how to reset their password.
+3. The user receives the notification and clicks on the link to reset their password.
+   - The user can reset their password either through the frontend (for example, [Medusa Admin](https://docs.medusajs.com/user-guide/reset-password/index.html.md)) or the [Reset Password API route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#reset-password-route/index.html.md).
 
-The first step is to create a subscriber that listens to the `auth.password_reset` and sends the user a notification with instructions to reset their password.
+In this guide, you'll implement a subscriber that handles the `auth.password_reset` event to send an email notification to the user with instructions on how to reset their password.
 
-Create the file `src/subscribers/handle-reset.ts` with the following content:
+After adding the subscriber, you will have a complete reset password flow you can utilize using the Medusa Admin, storefront, or API routes.
+
+***
+
+## Prerequisites: Notification Module Provider
+
+To send an email or notification to the user, you must have a Notification Module Provider set up.
+
+Medusa provides providers like [SendGrid](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) and [Resend](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), and you can also [create your own custom provider](https://docs.medusajs.com/references/notification-provider-module/index.html.md).
+
+Refer to the [Notification Module](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification#what-is-a-notification-module-provider/index.html.md) documentation for a list of available providers and how to set them up.
+
+### Testing with the Local Notification Module Provider
+
+For testing purposes, you can use the [Local Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/local/index.html.md) by adding this to your `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          // ...
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: {
+              channels: ["email"],
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+The Local provider logs email details to your terminal instead of sending actual emails, which is useful for development and testing.
+
+***
+
+## Create the Reset Password Subscriber
+
+To create a [subscriber](https://docs.medusajs.com/docs/learn/fundamentals/events-and-subscribers/index.html.md) that handles the `auth.password_reset` event, create the file `src/subscribers/password-reset.ts` with the following content:
 
 ```ts title="src/subscribers/handle-reset.ts" highlights={highlights} collapsibleLines="1-6" expandMoreLabel="Show Imports"
 import {
@@ -23791,18 +25133,27 @@ export default async function resetPasswordTokenHandler({
   const notificationModuleService = container.resolve(
     Modules.NOTIFICATION
   )
+  const config = container.resolve("configModule")
 
-  const urlPrefix = actor_type === "customer" ? 
-    "https://storefront.com" : 
-    "https://admin.com/app"
+  let urlPrefix = ""
+
+  if (actor_type === "customer") {
+    urlPrefix = config.admin.storefrontUrl || "https://storefront.com"
+  } else {
+    const backendUrl = config.admin.backendUrl !== "/" ? config.admin.backendUrl :
+      "http://localhost:9000"
+    const adminPath = config.admin.path
+    urlPrefix = `${backendUrl}${adminPath}`
+  }
 
   await notificationModuleService.createNotifications({
     to: email,
     channel: "email",
-    template: "reset-password-template",
+    // TODO replace with template ID in notification provider
+    template: "password-reset",
     data: {
       // a URL to a frontend application
-      url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
+      reset_url: `${urlPrefix}/reset-password?token=${token}&email=${email}`,
     },
   })
 }
@@ -23812,7 +25163,7 @@ export const config: SubscriberConfig = {
 }
 ```
 
-You subscribe to the `auth.password_reset` event. The event has a data payload object with the following properties:
+The subscriber receives the following data through the event payload:
 
 - `entity_id`: The identifier of the user. When using the `emailpass` provider, it's the user's email.
 - `token`: The token to reset the user's password.
@@ -23820,41 +25171,46 @@ You subscribe to the `auth.password_reset` event. The event has a data payload o
 
 This event's payload previously had an `actorType` field. It was renamed to `actor_type` after [Medusa v2.0.7](https://github.com/medusajs/medusa/releases/tag/v2.0.7).
 
-In the subscriber, you:
+### Reset Password URL
 
-- Decide the frontend URL based on whether the user is a customer or admin user by checking the value of `actor_type`.
-- Resolve the Notification Module and use its `createNotifications` method to send the notification.
-- You pass to the `createNotifications` method an object having the following properties:
-  - `to`: The identifier to send the notification to, which in this case is the email.
-  - `channel`: The channel to send the notification through, which in this case is email.
-  - `template`: The template ID in the third-party service.
-  - `data`: The data payload to pass to the template. You pass the URL to redirect the user to. You must pass the token and email in the URL so that the frontend can send them later to the Medusa application when reseting the password.
+Based on the user's actor type, you set the URL prefix to redirect the user to the appropriate frontend page to reset their password:
 
-***
+- If the user is a customer, you set the URL prefix to the storefront URL.
+- If the user is an admin, you set the URL prefix to the backend URL, which is constructed from the `config.admin.backendUrl` and `config.admin.path` values.
 
-## 2. Test it Out: Generate Reset Password Token
+Note that the Medusa Admin has a reset password form at `/reset-password?token={token}&email={email}`.
 
-To test the subscriber out, send a request to the `/auth/{actor_type}/{auth_provider}/reset-password` API route, replacing `{actor_type}` and `{auth_provider}` with the user's actor type and provider used for authentication respectively.
+### Notification Configurations
 
-For example, to generate a reset password token for an admin user using the `emailpass` provider, send the following request:
+For the notification, you can configure the following fields:
 
-```bash
-curl --location 'http://localhost:9000/auth/user/emailpass/reset-password' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "identifier": "admin-test@gmail.com"
-}'
+- `to`: The identifier to send the notification to, which in this case is the email.
+- `channel`: The channel to send the notification through, which in this case is email.
+- `template`: The template ID of the email to send. This ID depends on the Notification Module provider you use. For example, if you use SendGrid, this would be the ID of the SendGrid template.
+  - Refer to the [Example Notification Templates](#example-notification-templates) section below for examples of notification templates to use.
+- `data`: The data payload to pass to the template. You can pass additional fields, if necessary.
+
+### Test It Out
+
+After you set up the Notification Module Provider, create a template in the provider, and create the subscriber, you can test the reset password flow.
+
+Start the Medusa application with the following command:
+
+```bash npm2yarn
+npm run dev
 ```
 
-In the request body, you must pass an `identifier` parameter. Its value is the user's identifier, which is the email in this case.
+Then, open the Medusa Admin (locally at `http://localhost:9000/app`) and click on "Reset" in the login form. Then, enter the email of the user you want to reset the password for.
 
-If the token is generated successfully, the request returns a response with `201` status code. In the terminal, you'll find the following message indicating that the `auth.password_reset` event was emitted and your subscriber ran:
+Once you reset the password, you should see that the `auth.password_reset` event is emitted in the server's logs:
 
-```plain
+```bash
 info:    Processing auth.password_reset which has 1 subscribers
 ```
 
-The notification is sent to the user with the frontend URL to enter a new password.
+If you're using an email Notification Module Provider, check the user's email inbox for the reset password email with the link to reset their password.
+
+If you're using the Local provider, check your terminal for the logged email details.
 
 ***
 
@@ -23864,9 +25220,304 @@ In your frontend, you must have a page that accepts `token` and `email` query pa
 
 The page shows the user password fields to enter their new password, then submits the new password, token, and email to the [Reset Password Route](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/authentication-route#reset-password-route/index.html.md).
 
+The Medusa Admin already has a reset password page at `/reset-password?token={token}&email={email}`. So, you only need to implement this page in your storefront or custom admin dashboard.
+
 ### Examples
 
 - [Storefront Guide: Reset Customer Password](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/storefront-development/customers/reset-password/index.html.md)
+
+***
+
+## Example Notification Templates
+
+The following section provides example notification templates for some Notification Module Providers.
+
+### SendGrid
+
+Refer to the [SendGrid Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) documentation for more details on how to set up SendGrid.
+
+The following HTML template can be used with SendGrid to send a reset password email:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 465px;
+            margin: 40px auto;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .title {
+            color: #000000;
+            font-size: 24px;
+            font-weight: normal;
+            margin: 0;
+        }
+        .content {
+            margin: 32px 0;
+        }
+        .text {
+            color: #000000;
+            font-size: 14px;
+            line-height: 24px;
+            margin: 0 0 16px 0;
+        }
+        .button-container {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .reset-button {
+            background-color: #000000;
+            border-radius: 3px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            padding: 12px 20px;
+            display: inline-block;
+        }
+        .reset-button:hover {
+            background-color: #333333;
+        }
+        .url-section {
+            margin: 32px 0;
+        }
+        .url-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 24px;
+            word-break: break-all;
+        }
+        .disclaimer {
+            margin: 32px 0;
+        }
+        .disclaimer-text {
+            color: #666666;
+            font-size: 12px;
+            line-height: 24px;
+            margin: 0 0 8px 0;
+        }
+        .security-footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        .security-text {
+            color: #666666;
+            font-size: 12px;
+            line-height: 24px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Reset Your Password</h1>
+        </div>
+
+        <div class="content">
+            <p class="text">
+                Hello{{#if email}} {{email}}{{/if}},
+            </p>
+            <p class="text">
+                We received a request to reset your password. Click the button below to create a new password for your account.
+            </p>
+        </div>
+
+        <div class="button-container">
+            <a href="{{reset_url}}" class="reset-button">
+                Reset Password
+            </a>
+        </div>
+
+        <div class="url-section">
+            <p class="text">
+                Or copy and paste this URL into your browser:
+            </p>
+            <a href="{{reset_url}}" class="url-link">
+                {{reset_url}}
+            </a>
+        </div>
+
+        <div class="disclaimer">
+            <p class="disclaimer-text">
+                This password reset link will expire soon for security reasons.
+            </p>
+            <p class="disclaimer-text">
+                If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+            </p>
+        </div>
+
+        <div class="security-footer">
+            <p class="security-text">
+                For security reasons, never share this reset link with anyone. If you're having trouble with the button above, copy and paste the URL into your web browser.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+Make sure to pass the `reset_url` variable to the template, which contains the URL to reset the password.
+
+You can also customize the template further to show other information.
+
+### Resend
+
+If you've integrated Resend as explained in the [Resend Integration Guide](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), you can add a new template for password reset emails at `src/modules/resend/emails/password-reset.tsx`:
+
+```tsx title="src/modules/resend/emails/password-reset.tsx"
+import { 
+  Text, 
+  Container, 
+  Heading, 
+  Html, 
+  Section, 
+  Tailwind, 
+  Head, 
+  Preview, 
+  Body, 
+  Link,
+  Button, 
+} from "@react-email/components"
+
+type PasswordResetEmailProps = {
+  reset_url: string
+  email?: string
+}
+
+function PasswordResetEmailComponent({ reset_url, email }: PasswordResetEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Reset your password</Preview>
+      <Tailwind>
+        <Body className="bg-white my-auto mx-auto font-sans px-2">
+          <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
+            <Section className="mt-[32px]">
+              <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
+                Reset Your Password
+              </Heading>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Hello{email ? ` ${email}` : ""},
+              </Text>
+              <Text className="text-black text-[14px] leading-[24px]">
+                We received a request to reset your password. Click the button below to create a new password for your account.
+              </Text>
+            </Section>
+
+            <Section className="text-center mt-[32px] mb-[32px]">
+              <Button
+                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
+                href={reset_url}
+              >
+                Reset Password
+              </Button>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Or copy and paste this URL into your browser:
+              </Text>
+              <Link
+                href={reset_url}
+                className="text-blue-600 no-underline text-[14px] leading-[24px] break-all"
+              >
+                {reset_url}
+              </Link>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
+                This password reset link will expire soon for security reasons.
+              </Text>
+              <Text className="text-[#666666] text-[12px] leading-[24px] mt-2">
+                If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
+              </Text>
+            </Section>
+
+            <Section className="mt-[32px] pt-[20px] border-t border-solid border-[#eaeaea]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
+                For security reasons, never share this reset link with anyone. If you're having trouble with the button above, copy and paste the URL into your web browser.
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
+  )
+}
+
+export const passwordResetEmail = (props: PasswordResetEmailProps) => (
+  <PasswordResetEmailComponent {...props} />
+)
+
+// Mock data for preview/development
+const mockPasswordReset: PasswordResetEmailProps = {
+  reset_url: "https://your-app.com/reset-password?token=sample-reset-token-123",
+  email: "user@example.com",
+}
+
+export default () => <PasswordResetEmailComponent {...mockPasswordReset} />
+```
+
+Feel free to customize the email template further to match your branding and style, or to add additional information.
+
+Then, in the Resend Module's service at `src/modules/resend/service.ts`, add the new template to the `templates` object and `Templates` type:
+
+```ts title="src/modules/resend/service.ts"
+// other imports...
+import { passwordResetEmail } from "./emails/password-reset"
+
+enum Templates {
+  // ...
+  PASSWORD_RESET = "password-reset",
+}
+
+const templates: {[key in Templates]?: (props: unknown) => React.ReactNode} = {
+  // ...
+  [Templates.PASSWORD_RESET]: passwordResetEmail,
+}
+```
+
+Finally, find the `getTemplateSubject` function in the `ResendNotificationProviderService` and add a case for the `USER_INVITED` template:
+
+```ts title="src/modules/resend/service.ts"
+class ResendNotificationProviderService extends AbstractNotificationProviderService {
+  // ...
+
+  private getTemplateSubject(template: Templates) {
+    // ...
+    switch (template) {
+      // ...
+      case Templates.PASSWORD_RESET:
+        return "Reset Your Password"
+    }
+  }
+}
+```
 
 
 # Retrieve Cart Totals using Query
@@ -23879,7 +25530,9 @@ Refer to the [Retrieve Cart Totals in Storefront](https://docs.medusajs.com/User
 
 ## How to Retrieve Cart Totals with Query
 
-To retrieve cart totals, pass the `total` field within the `fields` option of Query. For example:
+To retrieve cart totals, you mainly need to pass the `total` field within the `fields` option of the Query. This will return the cart's grand total, along with the totals of its line items and shipping methods. You can also pass additional total fields that you need for your use case.
+
+For example, to retrieve all totals of a cart:
 
 Use `useQueryGraphStep` in workflows, and `query.graph` in custom API routes, scheduled jobs, and subscribers.
 
@@ -23898,6 +25551,28 @@ export const myWorkflow = createWorkflow(
         "id",
         "currency_code",
         "total",
+        "subtotal",
+        "tax_total",
+        "discount_total",
+        "discount_subtotal",
+        "discount_tax_total",
+        "original_total",
+        "original_tax_total",
+        "item_total",
+        "item_subtotal",
+        "item_tax_total",
+        "original_item_total",
+        "original_item_subtotal",
+        "original_item_tax_total",
+        "shipping_total",
+        "shipping_subtotal",
+        "shipping_tax_total",
+        "original_shipping_tax_total",
+        "original_shipping_subtotal",
+        "original_shipping_total",
+        "credit_line_subtotal",
+        "credit_line_tax_total",
+        "credit_line_total",
         "items.*",
         "shipping_methods.*",
       ],
@@ -23920,22 +25595,66 @@ const { data: [cart] } = await query.graph({
     "id",
     "currency_code",
     "total",
+    "subtotal",
+    "tax_total",
+    "discount_total",
+    "discount_subtotal",
+    "discount_tax_total",
+    "original_total",
+    "original_tax_total",
+    "item_total",
+    "item_subtotal",
+    "item_tax_total",
+    "original_item_total",
+    "original_item_subtotal",
+    "original_item_tax_total",
+    "shipping_total",
+    "shipping_subtotal",
+    "shipping_tax_total",
+    "original_shipping_tax_total",
+    "original_shipping_subtotal",
+    "original_shipping_total",
+    "credit_line_subtotal",
+    "credit_line_tax_total",
+    "credit_line_total",
     "items.*",
     "shipping_methods.*",
   ],
   filters: {
     id: "cart_123", // Specify the cart ID
-  }
+  },
 })
 ```
 
-By specifying the `total` field, you retrieve totals related to the cart, line items, and shipping methods. The returned `cart` object will look like this:
+The returned `cart` object will look like this:
 
 ```json
 {
   "id": "cart_123",
   "currency_code": "usd",
   "total": 10,
+  "subtotal": 10,
+  "tax_total": 0,
+  "discount_total": 0,
+  "discount_subtotal": 0,
+  "discount_tax_total": 0,
+  "original_total": 10,
+  "original_tax_total": 0,
+  "item_total": 10,
+  "item_subtotal": 10,
+  "item_tax_total": 0,
+  "original_item_total": 10,
+  "original_item_subtotal": 10,
+  "original_item_tax_total": 0,
+  "shipping_total": 10,
+  "shipping_subtotal": 10,
+  "shipping_tax_total": 0,
+  "original_shipping_tax_total": 0,
+  "original_shipping_subtotal": 10,
+  "original_shipping_total": 10,
+  "credit_line_subtotal": 0,
+  "credit_line_tax_total": 0,
+  "credit_line_total": 0,
   "items": [
     {
       "id": "cali_123",
@@ -23944,8 +25663,8 @@ By specifying the `total` field, you retrieve totals related to the cart, line i
       "subtotal": 10,
       "total": 0,
       "original_total": 10,
-      "discount_total": 10,
-      "discount_subtotal": 10,
+      "discount_total": 0,
+      "discount_subtotal": 0,
       "discount_tax_total": 0,
       "tax_total": 0,
       "original_tax_total": 0,
@@ -23969,9 +25688,33 @@ By specifying the `total` field, you retrieve totals related to the cart, line i
 }
 ```
 
-### Cart Grand Total
+### Cart Totals
 
-The cart's grand total is the `total` field in the `cart` object. It represents the total amount of the cart, including all line items, shipping methods, taxes, and discounts.
+The cart will include the following total fields:
+
+- `total`: The grand total of the cart, including all line items, shipping methods, taxes, and discounts.
+- `subtotal`: The cart's total excluding taxes, including promotions.
+- `tax_total`: The total tax amount applied to the cart.
+- `discount_total`: The total amount of discounts applied to the cart.
+- `discount_subtotal`: The total amount of discounts applied to the cart's subtotal.
+- `discount_tax_total`: The total amount of discounts applied to the cart's tax.
+- `original_total`: The cart's total including taxes, excluding promotions.
+- `original_tax_total`: The cart items' tax total including promotions.
+- `item_total`: The cart items' total including taxes and promotions.
+- `item_subtotal`: The cart items' total excluding taxes, including promotions.
+- `item_tax_total`: The cart items' tax total including promotions.
+- `original_item_total`: The cart items' total including taxes, excluding promotions.
+- `original_item_subtotal`: The cart items' total excluding taxes, including promotions.
+- `original_item_tax_total`: The cart items' tax total excluding promotions.
+- `shipping_total`: The cart's shipping total including taxes and promotions.
+- `shipping_subtotal`: The cart's shipping total excluding taxes, including promotions.
+- `shipping_tax_total`: The total taxes applied to the cart's shipping amount.
+- `original_shipping_tax_total`: The total taxes applied to the cart's shipping amount, excluding promotions.
+- `original_shipping_subtotal`: The cart's shipping total excluding taxes, including promotions.
+- `original_shipping_total`: The cart's shipping total including taxes, excluding promotions.
+- `credit_line_subtotal`: The subtotal of the credit line applied to the cart.
+- `credit_line_tax_total`: The total tax amount applied to the credit line.
+- `credit_line_total`: The total amount of the credit line applied to the cart.
 
 ### Cart Line Item Totals
 
@@ -24005,7 +25748,7 @@ The `shipping_methods` array in the `cart` object contains total fields for each
 
 ## Caveats of Retrieving Cart Totals
 
-### Using Astrisk (\*) in Cart's Query
+### Using Asterisk (\*) in Cart's Query
 
 Cart totals are calculated based on the cart's line items, shipping methods, taxes, and any discounts applied. They are not stored in the `Cart` data model.
 
@@ -24033,7 +25776,7 @@ const { data: [cart] } = await query.graph({
   fields: ["*"],
   filters: {
     id: "cart_123",
-  }
+  },
 })
 
 // cart doesn't include cart totals
@@ -24065,7 +25808,7 @@ const { data: [cart] } = await query.graph({
   fields: ["*", "total"],
   filters: {
     id: "cart_123",
-  }
+  },
 })
 
 // cart doesn't include cart totals
@@ -27848,13 +29591,15 @@ The following table lists the possible `action` values that Medusa uses and what
 
 In this guide, you'll learn how to retrieve order totals in your Medusa application using [Query](https://docs.medusajs.com/docs/learn/fundamentals/module-links/query/index.html.md).
 
-You may need to retrieve order totals in your Medusa customizations, such as workflows or custom API routes, to perform custom actions with them. The ideal way to retrieve totals is with Query.
+You may need to retrieve order totals in your Medusa customizations, such as workflows or custom API routes, to perform custom actions with them. The ideal way to retrieve totals is using Query.
 
 Refer to the [Order Confirmation in Storefront](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/storefront-development/checkout/order-confirmation#show-order-totals/index.html.md) guide for a storefront-specific approach.
 
 ## How to Retrieve Order Totals with Query
 
-To retrieve order totals, pass the `total` field within the `fields` option of the Query. For example:
+To retrieve order totals, you mainly need to pass the `total` field within the `fields` option of the Query. This will return the order's grand total, along with the totals of its line items and shipping methods. You can also pass additional total fields that you need for your use case.
+
+For example, to retrieve all totals of an order:
 
 Use `useQueryGraphStep` in workflows, and `query.graph` in custom API routes, scheduled jobs, and subscribers.
 
@@ -27873,8 +29618,30 @@ export const myWorkflow = createWorkflow(
         "id",
         "currency_code",
         "total",
+        "subtotal",
+        "tax_total",
+        "original_total",
+        "original_subtotal",
+        "original_tax_total",
+        "discount_total",
+        "discount_tax_total",
+        "shipping_total",
+        "shipping_subtotal",
+        "shipping_tax_total",
+        "original_shipping_total",
+        "original_shipping_subtotal",
+        "original_shipping_tax_total",
+        "item_total",
+        "item_tax_total",
+        "item_subtotal",
+        "original_item_total",
+        "original_item_tax_total",
+        "original_item_subtotal",
+        "gift_card_total",
+        "gift_card_tax_total",
         "items.*",
         "shipping_methods.*",
+        "summary.*",
       ],
       filters: {
         id: "order_123", // Specify the order ID
@@ -27895,49 +29662,64 @@ const { data: [order] } = await query.graph({
     "id",
     "currency_code",
     "total",
+    "subtotal",
+    "tax_total",
+    "original_total",
+    "original_subtotal",
+    "original_tax_total",
+    "discount_total",
+    "discount_tax_total",
+    "shipping_total",
+    "shipping_subtotal",
+    "shipping_tax_total",
+    "original_shipping_total",
+    "original_shipping_subtotal",
+    "original_shipping_tax_total",
+    "item_total",
+    "item_tax_total",
+    "item_subtotal",
+    "original_item_total",
+    "original_item_tax_total",
+    "original_item_subtotal",
+    "gift_card_total",
+    "gift_card_tax_total",
     "items.*",
     "shipping_methods.*",
+    "summary.*",
   ],
   filters: {
     id: "order_123", // Specify the order ID
-  }
+  },
 })
 ```
 
-By specifying the `total` field, you retrieve totals related to the order, line items, and shipping methods. The returned `order` object will look like this:
+The returned `order` object will look like this:
 
 ```json
 {
-  "id": "order_123",
-  "currency_code": "usd",
-  "total": 28,
+  "id": "order_01K1GEZ6Y1V9651AJNYG1WV3TC",
+  "currency_code": "eur",
+  "total": 20,
+  "subtotal": 20,
+  "tax_total": 0,
+  "original_total": 20,
+  "original_tax_total": 0,
+  "discount_total": 0,
+  "discount_tax_total": 0,
+  "shipping_total": 10,
+  "shipping_subtotal": 10,
+  "shipping_tax_total": 0,
+  "original_shipping_total": 10,
+  "original_shipping_subtotal": 10,
+  "original_shipping_tax_total": 0,
+  "item_total": 10,
+  "item_tax_total": 0,
+  "item_subtotal": 10,
+  "original_item_total": 10,
+  "original_item_tax_total": 0,
+  "original_item_subtotal": 10,
   "items": [
     {
-      "id": "ordli_01K10AZQZ0F86MSTT4FKFNNN8X",
-      // ...
-      "unit_price": 10,
-      "subtotal": 10,
-      "total": 0,
-      "original_total": 10,
-      "discount_total": 10,
-      "discount_subtotal": 10,
-      "discount_tax_total": 0,
-      "tax_total": 0,
-      "original_tax_total": 0,
-      "refundable_total_per_unit": 0,
-      "refundable_total": 0,
-      "fulfilled_total": 0,
-      "shipped_total": 0,
-      "return_requested_total": 0,
-      "return_received_total": 0,
-      "return_dismissed_total": 0,
-      "write_off_total": 0,
-    }
-  ],
-  "shipping_methods": [
-    {
-      "id": "ordsm_01K10AZQYZ1PVCX0DPEAY1G9B9",
-      // ...
       "subtotal": 10,
       "total": 10,
       "original_total": 10,
@@ -27946,14 +29728,69 @@ By specifying the `total` field, you retrieve totals related to the order, line 
       "discount_tax_total": 0,
       "tax_total": 0,
       "original_tax_total": 0,
+      "refundable_total_per_unit": 10,
+      "refundable_total": 10,
+      "fulfilled_total": 0,
+      "shipped_total": 0,
+      "return_requested_total": 0,
+      "return_received_total": 0,
+      "return_dismissed_total": 0,
+      "write_off_total": 0,
+      // ...
     }
-  ]
+  ],
+  "shipping_methods": [
+    {
+      "subtotal": 10,
+      "total": 10,
+      "original_total": 10,
+      "discount_total": 0,
+      "discount_subtotal": 0,
+      "discount_tax_total": 0,
+      "tax_total": 0,
+      "original_tax_total": 0,
+      // ...
+    }
+  ],
+  "summary": {
+    "paid_total": 0,
+    "refunded_total": 0,
+    "accounting_total": 20,
+    "credit_line_total": 0,
+    "transaction_total": 0,
+    "pending_difference": 20,
+    "current_order_total": 20,
+    "original_order_total": 20
+  }
 }
 ```
 
-### Order Grand Total
+### Order Totals
 
-The order's grand total is the `total` field in the `order` object. It represents the total amount of the order, including all line items, shipping methods, taxes, and discounts.
+The order will include the following total fields:
+
+- `total`: The grand total of the order, including all line items, shipping methods, taxes, and discounts.
+- `subtotal`: The order's total excluding taxes, including promotions.
+- `tax_total`: The order's tax total including promotions.
+- `original_total`: The order's total including taxes, excluding promotions.
+- `original_subtotal`: The order's total excluding taxes, including promotions.
+- `original_tax_total`: The order's tax total excluding promotions.
+- `discount_total`: The order's discount or promotions total.
+- `discount_tax_total`: The tax total of the order's discount or promotion.
+- `shipping_total`: The order's shipping total including taxes and promotions.
+- `shipping_subtotal`: The order's shipping total excluding taxes, including promotions.
+- `shipping_tax_total`: The tax total of the order's shipping.
+- `original_shipping_total`: The order's shipping total including taxes, excluding promotions.
+- `original_shipping_subtotal`: The order's shipping total excluding taxes, including promotions.
+- `original_shipping_tax_total`: The tax total of the order's shipping excluding promotions.
+- `item_total`: The total of all line items in the order, including taxes and promotions.
+- `item_tax_total`: The tax total of all line items in the order, including promotions.
+- `item_subtotal`: The subtotal of all line items in the order, excluding taxes, including promotions.
+- `original_item_total`: The total of all line items in the order, including taxes, excluding promotions.
+- `original_item_tax_total`: The tax total of all line items in the order, excluding promotions.
+- `original_item_subtotal`: The subtotal of all line items in the order, excluding taxes, including promotions.
+- `gift_card_total`: The total amount of gift cards applied to the order.
+- `gift_card_tax_total`: The tax total of the gift cards applied to the order.
 
 ### Order Line Item Totals
 
@@ -27993,11 +29830,24 @@ The `shipping_methods` array in the `order` object contains total fields for eac
 - `tax_total`: The total tax amount applied to the shipping method.
 - `original_tax_total`: The total tax amount applied to the shipping method before any discounts.
 
+### Order Summary Totals
+
+The `summary` object in the `order` object provides an overview of the order's transactions. It includes the following fields:
+
+- `paid_total`: The total amount that has been paid for the order.
+- `refunded_total`: The total amount that has been refunded for the order.
+- `accounting_total`: The order's total without the credit-line total.
+- `credit_line_total`: The total amount of credit lines applied to the order.
+- `transaction_total`: The total amount of transactions associated with the order.
+- `pending_difference`: The difference between the order's total and the paid total.
+- `current_order_total`: The current total of the order. It's useful if the order has been edited or modified.
+- `original_order_total`: The original total of the order before any modifications.
+
 ***
 
 ## Caveats of Retrieving Order Totals
 
-### Using Asterisk (\*) in Order's Query
+### Using Asterisk (\*) in Order Query
 
 Order totals are calculated based on the order's line items, shipping methods, taxes, and any discounts applied. They are not stored in the `Order` data model.
 
@@ -28025,7 +29875,7 @@ const { data: [order] } = await query.graph({
   fields: ["*"],
   filters: {
     id: "order_123",
-  }
+  },
 })
 
 // order doesn't include order totals
@@ -28057,7 +29907,7 @@ const { data: [order] } = await query.graph({
   fields: ["*", "total"],
   filters: {
     id: "order_123",
-  }
+  },
 })
 
 // order doesn't include order totals
@@ -35142,6 +36992,431 @@ You can use Medusa's default tax provider or create a custom one, allowing you t
 Learn more about tax providers in the [Tax Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/tax/tax-provider/index.html.md) guide.
 
 
+# Send Invite User Email Notification
+
+In this guide, you'll learn how to handle the `invite.created` and `invite.resent` events to send an invite email (or other notification type) to the user.
+
+Refer to the [Manage Invites](https://docs.medusajs.com/user-guide/settings/users/invites/index.html.md) user guide to learn how to manage invites using the Medusa Admin.
+
+## User Invite Flow Overview
+
+![Diagram showcasing the user invite flow detailed below](https://res.cloudinary.com/dza7lstvk/image/upload/v1754047213/Medusa%20Resources/invite-user_uqspsv.jpg)
+
+Admin users can add new users to their store by sending them an invite. The flow for inviting users is as follows:
+
+1. An admin user invites a user either through the [Medusa Admin](https://docs.medusajs.com/user-guide/settings/users/invites/index.html.md) or using the [Create Invite API route](https://docs.medusajs.com/api/admin#invites_postinvites).
+2. The invite is created and the `invite.created` event is emitted.
+   - At this point, you can handle the event to send an email or notification to the user.
+3. The invited user receives the invite and can accept it, which creates a new user.
+   - The invited user can accept the invite either through the Medusa Admin or using the [Accept Invite API route](https://docs.medusajs.com/api/admin#invites_postinvitesaccept).
+
+The admin user can also resend the invite if the invited user doesn't receive the invite or doesn't accept it before expiry, which emits the `invite.resent` event.
+
+In this guide, you'll implement a subscriber that handles the `invite.created` and `invite.resent` events to send an email to the user.
+
+After adding the subscriber, you will have a complete user invite flow that you can utilize either through the Medusa Admin or using the Admin APIs.
+
+***
+
+## Prerequisites: Notification Module Provider
+
+To send an email or notification to the user, you must have a Notification Module Provider set up.
+
+Medusa provides providers like [SendGrid](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) and [Resend](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), and you can also [create your own custom provider](https://docs.medusajs.com/references/notification-provider-module/index.html.md).
+
+Refer to the [Notification Module](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification#what-is-a-notification-module-provider/index.html.md) documentation for a list of available providers and how to set them up.
+
+### Testing with the Local Notification Module Provider
+
+For testing purposes, you can use the [Local Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/local/index.html.md) by adding this to your `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          // ...
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: {
+              channels: ["email"],
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+The Local provider logs email details to your terminal instead of sending actual emails, which is useful for development and testing.
+
+***
+
+## Create the Invite User Subscriber
+
+To create a [subscriber](https://docs.medusajs.com/docs/learn/fundamentals/events-and-subscribers/index.html.md) that handles the `invite.created` and `invite.resent` events, create the file `src/subscribers/user-invited.ts` with the following content:
+
+```ts title="src/subscribers/user-invited.ts" highlights={highlights}
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+
+export default async function inviteCreatedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{
+  id: string
+}>) {
+  const query = container.resolve("query")
+  const notificationModuleService = container.resolve(
+    "notification"
+  )
+  const config = container.resolve("configModule")
+
+  const { data: [invite] } = await query.graph({
+    entity: "invite",
+    fields: [
+      "email",
+      "token",
+    ],
+    filters: {
+      id: data.id,
+    },
+  })
+
+  const backend_url = config.admin.backendUrl !== "/" ? config.admin.backendUrl :
+    "http://localhost:9000"
+  const adminPath = config.admin.path
+
+  await notificationModuleService.createNotifications({
+    to: invite.email,
+    // TODO replace with template ID in notification provider
+    template: "user-invited",
+    channel: "email",
+    data: {
+      invite_url: `${backend_url}${adminPath}/invite?token=${invite.token}`,
+    },
+  })
+}
+
+export const config: SubscriberConfig = {
+  event: [
+    "invite.created",
+    "invite.resent",
+  ],
+}
+```
+
+The subscriber receives the ID of the invite in the event payload. You resolve [Query](https://docs.medusajs.com/docs/learn/fundamentals/module-links/query/index.html.md) to fetch the invite details, including the email and token.
+
+### Invite URL
+
+You then use the Notification Module's service to send an email to the user with the invite link. The invite link is constructed using:
+
+1. The backend URL of the Medusa application, since the Medusa Admin is hosted on the same URL.
+2. The admin path, which is the path to the Medusa Admin (for example, `/app`).
+
+Note that the Medusa Admin has an invite form at `/invite?token=`, which accepts the invite token as a query parameter.
+
+### Notification Configurations
+
+For the notification, you can configure the following fields:
+
+- `template`: The template ID of the email to send. This ID depends on the Notification Module provider you use. For example, if you use SendGrid, this would be the ID of the SendGrid template.
+  - Refer to the [Example Notification Templates](#example-notification-templates) section below for examples of notification templates to use.
+- `channel`: The channel to send the notification through. In this case, it's set to `email`.
+- `data`: The data to pass to the notification template. You can add additional fields as needed, such as the invited user's email.
+
+### Test It Out
+
+After you set up the Notification Module Provider, create a template in the provider, and create the subscriber, you can test the full invite flow.
+
+Start the Medusa application with the following command:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, open the Medusa Admin (locally at `http://localhost:9000/app`) and go to Settings → Users. Create an invite as explained in the [Manage Invites](https://docs.medusajs.com/user-guide/settings/users/invites/index.html.md) user guide.
+
+Once you create the invite, you should see that the `invite.created` event is emitted in the server's logs:
+
+```bash
+info:    Processing invite.created which has 1 subscribers
+```
+
+If you're using an email Notification Module Provider, check the recipient's email inbox for the invite email with the link to accept the invite.
+
+If you're using the Local provider, check your terminal for the logged email details.
+
+***
+
+## Example Notification Templates
+
+The following section provides example notification templates for some Notification Module Providers.
+
+### SendGrid
+
+Refer to the [SendGrid Notification Module Provider](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/infrastructure-modules/notification/sendgrid/index.html.md) documentation for more details on how to set up SendGrid.
+
+The following HTML template can be used with SendGrid to send an invite email:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 465px;
+            margin: 40px auto;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .title {
+            color: #000000;
+            font-size: 24px;
+            font-weight: normal;
+            margin: 0;
+        }
+        .content {
+            margin: 32px 0;
+        }
+        .text {
+            color: #000000;
+            font-size: 14px;
+            line-height: 24px;
+            margin: 0 0 16px 0;
+        }
+        .button-container {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .invite-button {
+            background-color: #000000;
+            border-radius: 3px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            padding: 12px 20px;
+            display: inline-block;
+        }
+        .invite-button:hover {
+            background-color: #333333;
+        }
+        .url-section {
+            margin: 32px 0;
+        }
+        .url-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 24px;
+            word-break: break-all;
+        }
+        .footer {
+            margin-top: 32px;
+        }
+        .footer-text {
+            color: #666666;
+            font-size: 12px;
+            line-height: 24px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">You're Invited!</h1>
+        </div>
+
+        <div class="content">
+            <p class="text">
+                Hello{{#if email}} {{email}}{{/if}},
+            </p>
+            <p class="text">
+                You've been invited to join our platform. Click the button below to accept your invitation and set up your account.
+            </p>
+        </div>
+
+        <div class="button-container">
+            <a href="{{invite_url}}" class="invite-button">
+                Accept Invitation
+            </a>
+        </div>
+
+        <div class="url-section">
+            <p class="text">
+                Or copy and paste this URL into your browser:
+            </p>
+            <a href="{{invite_url}}" class="url-link">
+                {{invite_url}}
+            </a>
+        </div>
+
+        <div class="footer">
+            <p class="footer-text">
+                If you weren't expecting this invitation, you can ignore this email.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+Make sure to pass the `invite_url` variable to the template, which contains the URL to accept the invite.
+
+You can also customize the template further to show other information, such as the user's email.
+
+### Resend
+
+If you've integrated Resend as explained in the [Resend Integration Guide](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/integrations/guides/resend/index.html.md), you can add a new template for user invites at `src/modules/resend/emails/user-invited.tsx`:
+
+```tsx title="src/modules/resend/emails/user-invited.tsx"
+import { 
+  Text, 
+  Container, 
+  Heading, 
+  Html, 
+  Section, 
+  Tailwind, 
+  Head, 
+  Preview, 
+  Body, 
+  Link,
+  Button, 
+} from "@react-email/components"
+
+type UserInvitedEmailProps = {
+  invite_url: string
+  email?: string
+}
+
+function UserInvitedEmailComponent({ invite_url, email }: UserInvitedEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>You've been invited to join our platform</Preview>
+      <Tailwind>
+        <Body className="bg-white my-auto mx-auto font-sans px-2">
+          <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
+            <Section className="mt-[32px]">
+              <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
+                You're Invited!
+              </Heading>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Hello{email ? ` ${email}` : ""},
+              </Text>
+              <Text className="text-black text-[14px] leading-[24px]">
+                You've been invited to join our platform. Click the button below to accept your invitation and set up your account.
+              </Text>
+            </Section>
+
+            <Section className="text-center mt-[32px] mb-[32px]">
+              <Button
+                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center px-5 py-3"
+                href={invite_url}
+              >
+                Accept Invitation
+              </Button>
+            </Section>
+
+            <Section className="my-[32px]">
+              <Text className="text-black text-[14px] leading-[24px]">
+                Or copy and paste this URL into your browser:
+              </Text>
+              <Link
+                href={invite_url}
+                className="text-blue-600 no-underline text-[14px] leading-[24px] break-all"
+              >
+                {invite_url}
+              </Link>
+            </Section>
+
+            <Section className="mt-[32px]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
+                If you weren't expecting this invitation, you can ignore this email.
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
+  )
+}
+
+export const userInvitedEmail = (props: UserInvitedEmailProps) => (
+  <UserInvitedEmailComponent {...props} />
+)
+
+// Mock data for preview/development
+const mockInvite: UserInvitedEmailProps = {
+  invite_url: "https://your-app.com/app/invite/sample-token-123",
+  email: "user@example.com",
+}
+
+export default () => <UserInvitedEmailComponent {...mockInvite} />
+```
+
+Feel free to customize the email template further to match your branding and style, or to add additional information such as the user's email.
+
+Then, in the Resend Module's service at `src/modules/resend/service.ts`, add the new template to the `templates` object and `Templates` type:
+
+```ts title="src/modules/resend/service.ts"
+// other imports...
+import { userInvitedEmail } from "./emails/user-invited"
+
+enum Templates {
+  // ...
+  USER_INVITED = "user-invited",
+}
+
+const templates: {[key in Templates]?: (props: unknown) => React.ReactNode} = {
+  // ...
+  [Templates.USER_INVITED]: userInvitedEmail,
+}
+```
+
+Finally, find the `getTemplateSubject` function in the `ResendNotificationProviderService` and add a case for the `USER_INVITED` template:
+
+```ts title="src/modules/resend/service.ts"
+class ResendNotificationProviderService extends AbstractNotificationProviderService {
+  // ...
+
+  private getTemplateSubject(template: Templates) {
+    // ...
+    switch (template) {
+      // ...
+      case Templates.USER_INVITED:
+        return "You've been invited to join our platform"
+    }
+  }
+}
+```
+
+
 # User Module Options
 
 In this document, you'll learn about the options of the User Module.
@@ -37264,10 +39539,6 @@ Add the module into the `providers` array of the Notification Module:
 Only one provider can be defined for a channel.
 
 ```ts title="medusa-config.ts"
-import { Modules } from "@medusajs/framework/utils"
-
-// ...
-
 module.exports = defineConfig({
   // ...
   modules: [
@@ -41474,6 +43745,151 @@ The `fetch` method accepts as a first parameter the route's path relative to the
 In the second parameter, you can pass an object of [request configurations](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit). You don't need to configure the content-type to be JSON, or stringify the `body` or `query` value, as that's handled by the method.
 
 The method returns a Promise that, when resolved, has the data returned by the request. If the request returns a JSON object, it'll be automatically parsed to a JavaScript object and returned.
+
+***
+
+## Stream Server-Sent Events
+
+The JS SDK supports streaming server-sent events (SSE) using the `client.fetchStream` method. This method is useful when you want to receive real-time updates from the server.
+
+For example, consider you have the following custom API route at `src/api/admin/stream/route.ts`:
+
+```ts title="src/api/admin/stream/route.ts"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  })
+
+  const interval = setInterval(() => {
+    res.write("data: Streaming data...\n\n")
+  }, 3000)
+
+  req.on("close", () => {
+    clearInterval(interval)
+    res.end()
+  })
+  
+  req.on("end", () => {
+    clearInterval(interval)
+    res.end()
+  })
+}
+```
+
+Then, you can use the `client.fetchStream` method in a UI route to receive the streaming data:
+
+```tsx title="src/admin/route/stream/page.tsx"
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { Container, Heading, Button, Text } from "@medusajs/ui"
+import { useState } from "react"
+import { sdk } from "../../lib/sdk"
+
+const StreamTestPage = () => {
+  const [messages, setMessages] = useState<string[]>([])
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [abortStream, setAbortStream] = useState<(() => void) | null>(null)
+
+  const startStream = async () => {
+    setIsStreaming(true)
+    setMessages([])
+    
+    const { stream, abort } = await sdk.client.fetchStream("/admin/stream")
+
+    if (!stream) {
+      console.error("Failed to start stream")
+      setIsStreaming(false)
+      return
+    }
+
+    // Store the abort function for the abort button
+    setAbortStream(() => abort)
+
+    try {
+      for await (const chunk of stream) {
+        // Since the server sends plain text, convert to string
+        const message = typeof chunk === "string" ? chunk : (chunk.data || String(chunk))
+        setMessages((prev) => [...prev, message.trim()])
+      }
+    } catch (error) {
+      // Don't log abort errors as they're expected when user clicks abort
+      if (error instanceof Error && error.name !== "AbortError") {
+        console.error("Stream error:", error)
+      }
+    } finally {
+      setIsStreaming(false)
+      setAbortStream(null)
+    }
+  }
+
+  const handleAbort = () => {
+    if (abortStream) {
+      abortStream()
+      setIsStreaming(false)
+      setAbortStream(null)
+    }
+  }
+
+  return (
+    <Container className="p-6">
+      <Heading level="h1" className="mb-6">
+        fetchStream Example
+      </Heading>
+      
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <Button 
+            onClick={startStream} 
+            disabled={isStreaming}
+            variant="primary"
+          >
+            {isStreaming ? "Streaming..." : "Start Stream"}
+          </Button>
+          
+          <Button 
+            onClick={handleAbort} 
+            disabled={!isStreaming}
+            variant="secondary"
+          >
+            Abort Stream
+          </Button>
+        </div>
+        
+        <div className="border rounded p-4 h-64 overflow-y-auto bg-ui-bg-subtle">
+          {messages.length === 0 ? (
+            <Text className="text-ui-fg-muted">No messages yet...</Text>
+          ) : (
+            messages.map((msg, index) => (
+              <div key={index} className="mb-2 text-sm">
+                {msg}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Stream Test",
+})
+
+export default StreamTestPage
+```
+
+`fetchStream` accepts the same parameters as `fetch`, but it returns an object having two properties:
+
+- `stream`: An [AsyncGenerator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator) that you can use to iterate over the streaming data.
+- `abort`: A function that you can call to abort the stream. This is useful when you want to stop receiving data from the server.
+
+In this example, when the user clicks the "Start Stream" button, you start the stream and listen for incoming data. The data is received as chunks, which you can process and display in the UI.
 
 ***
 
@@ -69910,6 +72326,15 @@ If you check the inbox of the email address you specified in the shipping addres
 
 You've now integrated Medusa with Resend. You can add more templates for other emails, such as customer registration confirmation, user invites, and more. Check out the [Events Reference](https://docs.medusajs.com/references/events/index.html.md) for a list of all events that the Medusa application emits.
 
+### More Resend Email Templates
+
+Find more email templates to use with the Resend Module Provider in the following guides:
+
+- [Send Invite User Email](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/user/invite-user-subscriber/index.html.md).
+- [Send Reset Password Email](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/auth/reset-password/index.html.md).
+
+### Learn More About Medusa
+
 If you're new to Medusa, check out the [main documentation](https://docs.medusajs.com/docs/learn/index.html.md), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 
 To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](https://docs.medusajs.com/Users/shahednasser/medusa/www/apps/resources/app/commerce-modules/index.html.md).
@@ -76934,6 +79359,8 @@ To learn more about the commerce features that Medusa provides, check out Medusa
 
 # Action Menu - Admin Components
 
+In this guide, you'll learn how to add an action menu to your Medusa Admin customizations.
+
 The Medusa Admin often provides additional actions in a dropdown shown when users click a three-dot icon.
 
 ![Example of an action menu in the Medusa Admin](https://res.cloudinary.com/dza7lstvk/image/upload/v1728291319/Medusa%20Resources/action-menu_jnus6k.png)
@@ -77158,6 +79585,8 @@ export default ProductWidget
 
 
 # Container - Admin Components
+
+In this guide, you'll learn how to create a container component that matches the Medusa Admin's design conventions.
 
 The Medusa Admin wraps each section of a page in a container.
 
@@ -77705,6 +80134,8 @@ export default CustomPage
 
 # Forms - Admin Components
 
+In this guide, you'll learn how to create forms that match the Medusa Admin's design conventions.
+
 The Medusa Admin has two types of forms:
 
 1. Create forms, created using the [FocusModal UI component](https://docs.medusajs.com/ui/components/focus-modal/index.html.md).
@@ -77756,7 +80187,7 @@ export const CreateForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -77822,7 +80253,7 @@ export const CreateForm = () => {
 
 Unlike other components in this documentation, this form component isn't reusable. You have to create one for every resource that has a create form in the admin.
 
-Start by creating the file `src/admin/components/create-form.tsx` that you'll create the form in.
+Start by creating the file `src/admin/components/create-form.tsx` in which you'll create the form.
 
 ### Create Validation Schema
 
@@ -77858,7 +80289,7 @@ export const CreateForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -78039,7 +80470,7 @@ export const EditForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -78099,7 +80530,7 @@ export const EditForm = () => {
 
 Unlike other components in this documentation, this form component isn't reusable. You have to create one for every resource that has an edit form in the admin.
 
-Start by creating the file `src/admin/components/edit-form.tsx` that you'll create the form in.
+Start by creating the file `src/admin/components/edit-form.tsx` in which you'll create the form.
 
 ### Create Validation Schema
 
@@ -78135,7 +80566,7 @@ export const EditForm = () => {
   })
 
   const handleSubmit = form.handleSubmit(({ name }) => {
-    // TODO submit to backend
+    // TODO: submit to backend
     console.log(name)
   })
 
@@ -78277,6 +80708,8 @@ It will add at the top of a product's details page a new section, and in its hea
 
 
 # Header - Admin Components
+
+In this guide, you'll learn how to create a header component that matches the Medusa Admin's design conventions.
 
 Each section in the Medusa Admin has a header with a title, and optionally a subtitle with buttons to perform an action.
 
@@ -78423,6 +80856,8 @@ This widget also uses a [Container](https://docs.medusajs.com/Users/shahednasser
 
 
 # JSON View - Admin Components
+
+In this guide, you'll learn how to create a JSON view section that matches the Medusa Admin's design conventions.
 
 Detail pages in the Medusa Admin show a JSON section to view the current page's details in JSON format.
 
@@ -78651,6 +81086,8 @@ This shows the JSON section at the top of the product page, passing it the objec
 
 
 # Section Row - Admin Components
+
+In this guide, you'll learn how to create a section row component that matches the Medusa Admin's design conventions.
 
 The Medusa Admin often shows information in rows of label-values, such as when showing a product's details.
 
@@ -79034,6 +81471,8 @@ To test it out, log into the Medusa Admin and open `http://localhost:9000/app/cu
 
 # Single Column Layout - Admin Components
 
+In this guide, you'll learn how to create a layout component that matches the Medusa Admin's design conventions for pages with a single column of content.
+
 The Medusa Admin has pages with a single column of content.
 
 This doesn't include the sidebar, only the main content.
@@ -79093,6 +81532,8 @@ This UI route also uses a [Container](https://docs.medusajs.com/Users/shahednass
 
 
 # Two Column Layout - Admin Components
+
+In this guide, you'll learn how to create a layout component that matches the Medusa Admin's design conventions for pages with two columns of content.
 
 The Medusa Admin has pages with two columns of content.
 
@@ -79875,19 +82316,60 @@ Learn more about accepted filters in [this documentation](https://docs.medusajs.
 
 The method returns an array of objects of updated records.
 
+***
+
+## Update a JSON Property
+
+```ts
+const post = await postModuleService.updatePosts({
+  id: "123",
+  name: "My Post",
+  metadata: {
+    category: "news",
+    tags: ["update", "json"],
+  },
+})
+```
+
+When you have a JSON property in your data model, you can update it by adding, updating, or removing properties within that JSON object. Medusa will merge the properties you pass in the `update` method with the existing JSON object.
+
+### Remove a Property from the JSON Property
+
+```ts
+const post = await postModuleService.updatePosts({
+  id: "123",
+  metadata: {
+    is_featured: "",
+  },
+})
+```
+
+To remove a property from the JSON object, you can set its value to an empty string.
+
+### Learn More about Updating JSON Properties
+
+Refer to the [JSON Properties](https://docs.medusajs.com/docs/learn/fundamentals/data-models/json-properties/index.html.md) documentation to learn more about how JSON properties work in Medusa and how to update them.
+
 
 # Service Factory Reference
 
-This section of the documentation provides a reference of the methods generated for services extending the service factory (`MedusaService`), and how to use them.
+This section of the documentation provides a reference to the methods generated for services extending the service factory (`MedusaService`) and how to use them.
 
-Learn more about the service factory in [this documentation](https://docs.medusajs.com/docs/learn/fundamentals/modules/service-factory/index.html.md).
+Refer to the [Service Factory](https://docs.medusajs.com/docs/learn/fundamentals/modules/service-factory/index.html.md) documentation to learn more.
 
 ## Method Names
 
-Generated method names are of the format `{operationName}_{dataModelName}`, where:
+When your module's main service extends the service factory, Medusa will:
+
+1. Generate data-management methods in your main service for each of the data models passed to the `MedusaService` function.
+2. Generate internal services for each of the data models passed to the `MedusaService` function, which can be resolved in loaders.
+
+### Main Service Methods
+
+The names of the generated methods for a service extending the service factory are of the format `{operationName}_{dataModelName}`, where:
 
 - `{operationName}` is the name of the operation. For example, `create`.
-- `{dataModelName}` is the pascal-case version of the data model's key that's passed in the object parameter of `MedusaService`. The name is pluralized for all operations except for the `retrieve` operation.
+- `{dataModelName}` is the pascal-case version of the data model's key that's passed in the object parameter of `MedusaService`. The name is pluralized for all operations except the `retrieve` operation.
 
 Some examples of method names:
 
@@ -79895,6 +82377,14 @@ Some examples of method names:
 - `createMyPosts`
 - `retrievePost`
 - `listPosts`
+
+### Internal Generated Service Methods
+
+The internal services are useful when you need to perform database operations in loaders, as they're executed before the module's services are registered. Learn more in the [Module Container](https://docs.medusajs.com/docs/learn/fundamentals/modules/container/index.html.md) documentation.
+
+For the internal services, the method names are only the operation name, without the data model name.
+
+For example, a `Post` data model would have a `postService` with methods like `create`, `retrieve`, `update`, and `delete`.
 
 ***
 
@@ -82015,7 +84505,7 @@ const data = [
   {
     id: "1",
     title: "Shirt",
-    price: 10
+    price: 10,
   },
   // other data...
 ]
@@ -82054,7 +84544,7 @@ import {
 Then, inside the component that will render `DataTable`, create a table instance using the `useDataTable` hook:
 
 ```tsx
-export default function ProductTable () {
+export default function ProductTable() {
   const table = useDataTable({
     columns,
     data,
@@ -82078,7 +84568,7 @@ The `useDataTable` hook accepts an object with the following properties:
 Finally, render the `DataTable` component with the table instance created using the `useDataTable` hook:
 
 ```tsx
-export default function ProductTable () {
+export default function ProductTable() {
   // ...
   return (
     <DataTable instance={table}>
@@ -82317,14 +84807,14 @@ const products = [
     id: "1",
     title: "Shirt",
     price: 10,
-    is_active: true
+    is_active: true,
   },
   {
     id: "2",
     title: "Pants",
     price: 20,
-    is_active: true
-  }
+    is_active: true,
+  },
 ]
 
 const columnHelper = createDataTableColumnHelper<typeof products[0]>()
@@ -82339,7 +84829,7 @@ const columns = [
           {isActive ? "Active" : "Inactive"}
         </Badge>
       )
-    }
+    },
   }),
   // ...
 ]
@@ -82424,8 +84914,8 @@ const table = useDataTable({
   // ...
   search: {
     state: search,
-    onSearchChange: setSearch
-  }
+    onSearchChange: setSearch,
+  },
 })
 ```
 
@@ -82454,8 +84944,8 @@ const table = useDataTable({
   // Pass the state and onSearchChange to the table instance.
   search: {
     state: search,
-    onSearchChange: setSearch
-  }
+    onSearchChange: setSearch,
+  },
 })
 ```
 
@@ -82696,7 +85186,7 @@ const table = useDataTable({
     onPaginationChange: setPagination,
   },
   isLoading: false,
-});
+})
 ```
 
 Finally, render the `DataTable.Pagination` component as part of the `DataTable`'s children:
@@ -82855,8 +85345,8 @@ const filters = [
     label: "Title",
     options: products.map((product) => ({
       label: product.title,
-      value: product.title.toLowerCase()
-    }))
+      value: product.title.toLowerCase(),
+    })),
   }),
 ]
 ```
@@ -82949,7 +85439,7 @@ const table = useDataTable({
     state: filtering,
     onFilteringChange: setFiltering,
   },
-  filters
+  filters,
 })
 ```
 
@@ -83137,24 +85627,24 @@ const filters = [
         label: "Today",
         value: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0)).toString(),
-          $lte: new Date(new Date().setHours(23, 59, 59, 999)).toString()
-        }
+          $lte: new Date(new Date().setHours(23, 59, 59, 999)).toString(),
+        },
       },
       {
         label: "Yesterday",
         value: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0) - 24 * 60 * 60 * 1000).toString(),
-          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString()
-        }
+          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString(),
+        },
       },
       {
         label: "Last Week",
         value: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0) - 7 * 24 * 60 * 60 * 1000).toString(),
-          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString()
+          $lte: new Date(new Date().setHours(0, 0, 0, 0)).toString(),
         },
       },
-    ]
+    ],
   }),
 ]
 ```
@@ -83323,7 +85813,7 @@ If you want to set initial filter values, you can set the initial state of the `
 
 ```tsx
 const [filtering, setFiltering] = useState<DataTableFilteringState>({
-  title: ["shirt"]
+  title: ["shirt"],
 })
 ```
 
@@ -83451,11 +85941,11 @@ Next, in the component rendering the `DataTable` component, create a state varia
 ```tsx
 import {
   // ...
-  DataTableSortingState
+  DataTableSortingState,
 } from "@medusajs/ui"
 
-export default function ProductTable () {
-  const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
+export default function ProductTable() {
+  const [sorting, setSorting] = useState<DataTableSortingState | null>(null)
 
   const table = useDataTable({
     // ...
@@ -83481,7 +85971,7 @@ You must also implement the sorting logic, such as sending the sorting condition
 For example, when using a simple array as in the example above, this is how you sort the data based on the sorting conditions:
 
 ```tsx
-const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
+const [sorting, setSorting] = useState<DataTableSortingState | null>(null)
 
 const shownProducts = useMemo(() => {
   if (!sorting) {
@@ -83764,8 +86254,8 @@ const useCommands = () => {
         const productsToDeleteIds = Object.keys(selection)
 
         // TODO remove products from the server
-      }
-    })
+      },
+    }),
   ]
 }
 ```
@@ -87370,50 +89860,60 @@ npm install @medusajs/ui
 The configuration of the UI package is handled by the `@medusajs/admin` package. Therefore, you do not need to any additional configuration to use the UI package in your Admin extensions.
 
 
-# Standalone Project
+# Medusa UI Installation in Standalone Projects
 
-How to install and use Medusa UI in a standalone project.
+Learn how to install and use Medusa UI in a standalone project.
 
-## Installation
+Medusa UI is a React UI library that, while intended for usage within Medusa projects, can also be used in any React project.
+
+The icons package is installed independently from Medusa UI. Learn how to install it in the [Icons](../icons/overview.mdx) guide.
+
+## Medusa UI Compatibility
+
+To use Medusa UI in your standalone project, you must have:
+
+- React 18+ installed. Most React-based frameworks and libraries, such as Next.js and Vite, are compatible with this requirement.
+- [Tailwind CSS](https://v3.tailwindcss.com/) installed. The components in Medusa UI are styled using Tailwind CSS, so you will need to install it in your project as well.
+  - Medusa UI was built with Tailwind CSS v3, but it may generally support v4 as well.
 
 ***
 
-Medusa UI is a React UI library and while it's intended for usage within Medusa projects, it can also be used in any React project.
+## Step 1: Install Medusa UI
 
-### Install Medusa UI
-
-Install the React UI library with the following command:
+In your standalone project, install the Medusa UI package with the following command:
 
 ```bash
 npm install @medusajs/ui
 ```
 
-### Configuring Tailwind CSS
+***
 
-The components are styled using Tailwind CSS, and in order to use them, you will need to install Tailwind CSS in your project as well.
-For more information on how to install Tailwind CSS, please refer to the [Tailwind CSS documentation](https://tailwindcss.com/docs/installation).
+## Step 2: Install UI Presets
 
-All of the classes used for Medusa UI are shipped as a Tailwind CSS customization.
-You can install it with the following command:
+Medusa UI customizes Tailwind CSS classes to implement its design system. So, you must also install the Medusa UI preset package.
+
+To install the Medusa UI preset, run the following command:
 
 ```bash
 npm install @medusajs/ui-preset
 ```
 
-After you have installed Tailwind CSS and the Medusa UI preset, you need to add the following to your `tailwind.config.js`file:
+***
 
-```tsx
+## Step 3: Configure Tailwind CSS
+
+Next, you'll need to configure Tailwind CSS to use the Medusa UI preset and explicitly add the paths to the Medusa UI components as content files.
+
+### Tailwind CSS v3 Configurations
+
+In Tailwind CSS v3, which is the recommended version to use with Medusa UI, you need to add the following configurations to your `tailwind.config.js` or `tailwind.config.ts` file:
+
+1. Add the Medusa UI preset to the `presets` array.
+2. Ensure that the `content` field includes the path to the Medusa UI package.
+
+```js title="tailwind.config.js"
 module.exports = {
   presets: [require("@medusajs/ui-preset")],
-  // ...
-}
-```
-
-In order for the styles to be applied correctly to the components, you will also need to ensure that
-`@medusajs/ui` is included in the content field of your `tailwind.config.js` file:
-
-```tsx
-module.exports = {
   content: [
     // ...
     "./node_modules/@medusajs/ui/dist/**/*.{js,jsx,ts,tsx}",
@@ -87422,9 +89922,9 @@ module.exports = {
 }
 ```
 
-If you are working within a monorepo, you may need to add the path to the `@medusajs/ui` package in your `tailwind.config.js` like so:
+If your project is in a monorepo, you'll need to resolve the path to the `@medusajs/ui` package from the monorepo root:
 
-```tsx
+```tsx title="tailwind.config.js"
 const path = require("path")
 
 const uiPath = path.resolve(
@@ -87434,6 +89934,7 @@ const uiPath = path.resolve(
 )
 
 module.exports = {
+  presets: [require("@medusajs/ui-preset")],
   content: [
     // ...
     uiPath,
@@ -87443,26 +89944,55 @@ module.exports = {
 
 ```
 
-## Start building
+### Tailwind CSS v4 Configurations
 
-***
+Medusa UI isn't officially compatible with Tailwind CSS v4 yet, so use it with caution.
 
-You are now ready to start building your application with Medusa UI. You can import the components like so:
+In your CSS file that imports Tailwind CSS, add the following `@config` and `@source` directives:
 
-```tsx
-import { Button, Drawer } from "@medusajs/ui"
+```css
+@import "tailwindcss";
+@source "../node_modules/@medusajs/ui";
+@config "@medusajs/ui-preset";
 ```
 
-## Updating UI Packages
+This will explicitly include the Medusa UI preset and its components in your Tailwind CSS build, and will apply the preset styles to your project.
 
 ***
 
-Medusa's design-system packages, including `@medusajs/ui`, `@medusajs/ui-preset`, and `@medusajs/ui-icons`, are versioned independently. However, they're still part of the latest Medusa release. So, you can browse the [release notes](https://github.com/medusajs/medusa/releases) to see if there are any breaking changes to these packages.
+## Step 4: Use Medusa UI in Standalone Projects
 
-To update these packages, update their version in your `package.json` file and re-install dependencies. For example:
+You can now start building your application with Medusa UI.
 
-```bash
-npm install @medusajs/ui
+For example, you can use the `Button` in your custom components:
+
+```tsx
+import { Button } from "@medusajs/ui"
+
+export function ButtonDemo() {
+  return <Button>Button</Button>
+}
+```
+
+Refer to the documentation of each component to learn about its props and usage.
+
+***
+
+## Update UI Packages in Standalone Projects
+
+Medusa's design-system packages, including `@medusajs/ui` and `@medusajs/ui-preset`, are versioned independently from other `@medusajs/*` packages. However, they're still released as part of Medusa's releases.
+
+So, to find latest updates and breaking changes to any of these packages, refer to the [release notes in the Medusa GitHub repository](https://github.com/medusajs/medusa/releases).
+
+To update these packages in your standalone project, update their version in your `package.json` file and re-install dependencies. For example:
+
+```json title="package.json"
+{
+  "dependencies": {
+    "@medusajs/ui": "4.0.0",
+    "@medusajs/ui-preset": "4.0.0"
+  }
+}
 ```
 
 
@@ -101382,7 +103912,7 @@ Medusa's [Framework](https://docs.medusajs.com/docs/learn/fundamentals/framework
 
 In a marketplace, a business or a vendor has a user, and they can use that user to authenticate and manage the vendor's data.
 
-You can create a marketplace module that implements data models for vendors, their admins, and any other data models that fits your use case.
+You can create a marketplace module that implements data models for vendors, their admins, and any other data models that fit your use case.
 
 - [Create a Module](https://docs.medusajs.com/docs/learn/fundamentals/modules/index.html.md): Learn how to create a module.
 - [Create Data Models](https://docs.medusajs.com/docs/learn/fundamentals/modules#1-create-data-model/index.html.md): Create data models in the module.
@@ -101442,7 +103972,7 @@ The Medusa Admin is an extensible application within your Medusa application. Yo
 
 ***
 
-## Build Dashbord for Vendors
+## Build Dashboard for Vendors
 
 For more complex use cases, customizing the Medusa Admin may not be enough to allow vendors to manage their data.
 

@@ -276,6 +276,11 @@ export const sidebars = [
               },
               {
                 type: "link",
+                path: "/learn/fundamentals/data-models/json-properties",
+                title: "JSON Properties",
+              },
+              {
+                type: "link",
                 path: "/learn/fundamentals/data-models/relationships",
                 title: "Relationships",
               },
@@ -436,12 +441,17 @@ export const sidebars = [
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/execute-another-workflow",
-                title: "Execute Another Workflow",
+                title: "Execute Nested Workflows",
               },
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/multiple-step-usage",
                 title: "Multiple Step Usage",
+              },
+              {
+                type: "ref",
+                path: "/learn/debugging-and-testing/debug-workflows",
+                title: "Debug Workflows",
               },
             ],
           },
@@ -603,6 +613,11 @@ export const sidebars = [
             type: "link",
             path: "/learn/debugging-and-testing/testing-tools/modules-tests",
             title: "Modules Tests",
+          },
+          {
+            type: "link",
+            path: "/learn/debugging-and-testing/debug-workflows",
+            title: "Debug Workflows",
           },
           {
             type: "link",
