@@ -36,6 +36,10 @@
   },
   "author": "Sebastian Rindom",
   "license": "MIT",
+  "homepage": "https://medusajs.com",
+  "llms": "https://docs.medusajs.com/llms.txt",
+  "llmsFull": "https://docs.medusajs.com/llms-full.txt",
+  "mcpServer": "https://docs.medusajs.com/mcp",
   "scripts": {
     "watch": "tsc --build --watch",
     "build": "rimraf dist && tsc --build",

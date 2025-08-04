@@ -652,6 +652,10 @@ export const filesMap = [
     "pathname": "/commerce-modules/user/admin-widget-zones"
   },
   {
+    "filePath": "/www/apps/resources/app/commerce-modules/user/invite-user-subscriber/page.mdx",
+    "pathname": "/commerce-modules/user/invite-user-subscriber"
+  },
+  {
     "filePath": "/www/apps/resources/app/commerce-modules/user/js-sdk/page.mdx",
     "pathname": "/commerce-modules/user/js-sdk"
   },

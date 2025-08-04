@@ -4,7 +4,7 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/create-actor-type"
   },
   {
-    "title": "Handle Password Reset Event",
+    "title": "Reset Password Email",
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
   },
   {
@@ -42,6 +42,10 @@ export const server = [
   {
     "title": "Extend Promotion",
     "path": "https://docs.medusajs.com/resources/commerce-modules/promotion/extend"
+  },
+  {
+    "title": "Invite User Email",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber"
   },
   {
     "title": "Implement Custom Line Item Pricing in Medusa",

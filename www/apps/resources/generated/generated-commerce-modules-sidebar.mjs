@@ -16775,6 +16775,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/commerce-modules/user/invite-user-subscriber",
+              "title": "Invite User Email",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/commerce-modules/user/user-creation-flows",
               "title": "User Creation Flows",
               "children": []
