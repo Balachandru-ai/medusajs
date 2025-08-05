@@ -6106,6 +6106,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Generate Invoices",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Implement Loyalty Points",
               "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points",
               "children": []

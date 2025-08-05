@@ -481,6 +481,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Generate Invoices",
+          "path": "/how-to-tutorials/tutorials/invoice-generator",
+          "description": "Learn how to generate invoices for orders in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Localization with Contentful",
           "path": "/integrations/guides/contentful",

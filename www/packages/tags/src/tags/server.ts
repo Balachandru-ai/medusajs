@@ -68,6 +68,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
   {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
+  },
+  {
     "title": "Loyalty Points",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
   },
