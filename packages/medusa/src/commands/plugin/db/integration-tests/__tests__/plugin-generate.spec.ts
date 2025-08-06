@@ -1,9 +1,21 @@
-import { logger } from "@medusajs/framework/logger"
 import { FileSystem } from "@medusajs/framework/utils"
 import { join } from "path"
 import main from "../../generate"
 
-jest.mock("@medusajs/framework/logger")
+const logger = {
+  info: jest.fn(),
+  error: jest.fn(),
+}
+
+jest.mock("@medusajs/framework/config", () => {
+  return {
+    configLoader: jest.fn().mockImplementation(() => {
+      return {
+        logger,
+      }
+    }),
+  }
+})
 
 describe("plugin-generate", () => {
   beforeEach(() => {
