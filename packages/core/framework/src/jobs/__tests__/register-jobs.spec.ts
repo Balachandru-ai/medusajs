@@ -1,6 +1,11 @@
 import { WorkflowManager, WorkflowScheduler } from "@medusajs/orchestration"
-import { createMedusaContainer } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  createMedusaContainer,
+} from "@medusajs/utils"
+import { asValue } from "awilix"
 import { join } from "path"
+import { logger } from "../../logger"
 import { MockSchedulerStorage } from "../__fixtures__/mock-scheduler-storage"
 import { JobLoader } from "../job-loader"
 
@@ -13,6 +18,7 @@ describe("register jobs", () => {
 
   it("should registers jobs from plugins", async () => {
     const container = createMedusaContainer()
+    container.register(ContainerRegistrationKeys.LOGGER, asValue(logger))
 
     const jobLoader: JobLoader = new JobLoader(
       join(__dirname, "../__fixtures__/plugin/jobs"),
@@ -29,6 +35,8 @@ describe("register jobs", () => {
 
   it("should not load non js/ts files", async () => {
     const container = createMedusaContainer()
+    container.register(ContainerRegistrationKeys.LOGGER, asValue(logger))
+
     const jobLoader: JobLoader = new JobLoader(
       join(__dirname, "../__fixtures__/plugin/jobs-with-other-files"),
       container

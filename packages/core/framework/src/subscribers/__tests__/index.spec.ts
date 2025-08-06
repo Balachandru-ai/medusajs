@@ -1,7 +1,8 @@
-import { Modules } from "@medusajs/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
 import { asValue } from "awilix"
 import { join } from "path"
 import { container } from "../../container"
+import { logger } from "../../logger"
 import { eventBusServiceMock } from "../__mocks__"
 import { SubscriberLoader } from "../subscriber-loader"
 
@@ -18,6 +19,7 @@ describe("SubscriberLoader", () => {
 
   beforeAll(async () => {
     container.register(Modules.EVENT_BUS, asValue(eventBusServiceMock))
+    container.register(ContainerRegistrationKeys.LOGGER, asValue(logger))
 
     const paths = await new SubscriberLoader(
       rootDir,
