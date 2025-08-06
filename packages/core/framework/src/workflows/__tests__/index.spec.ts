@@ -1,14 +1,23 @@
-import { join } from "path"
-import { WorkflowLoader } from "../workflow-loader"
 import { WorkflowManager } from "@medusajs/orchestration"
-import { orderWorkflowId } from "../__fixtures__/workflows/order-notifier"
+import {
+  ContainerRegistrationKeys,
+  createMedusaContainer,
+} from "@medusajs/utils"
+import { asValue } from "awilix"
+import { join } from "path"
+import { logger } from "../../logger"
 import { productWorkflowId } from "../__fixtures__/workflows/deep-workflows/product-updater"
+import { orderWorkflowId } from "../__fixtures__/workflows/order-notifier"
+import { WorkflowLoader } from "../workflow-loader"
 
 describe("WorkflowLoader", () => {
   const rootDir = join(__dirname, "../__fixtures__", "workflows")
 
   beforeAll(async () => {
-    await new WorkflowLoader(rootDir).load()
+    const container = createMedusaContainer()
+    container.register(ContainerRegistrationKeys.LOGGER, asValue(logger))
+
+    await new WorkflowLoader(rootDir, container).load()
   })
 
   it("should register each workflow in the '/workflows' folder and sub folder", async () => {

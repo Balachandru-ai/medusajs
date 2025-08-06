@@ -1,16 +1,11 @@
 import type { SchedulerOptions } from "@medusajs/orchestration"
 import { MedusaContainer } from "@medusajs/types"
-import {
-  ContainerRegistrationKeys,
-  isObject,
-  MedusaError,
-} from "@medusajs/utils"
+import { isObject, MedusaError } from "@medusajs/utils"
 import {
   createStep,
   createWorkflow,
   StepResponse,
 } from "@medusajs/workflows-sdk"
-import { Logger } from "../types"
 import { ResourceLoader } from "../utils/resource-loader"
 
 type CronJobConfig = {
@@ -25,14 +20,8 @@ export class JobLoader extends ResourceLoader {
   protected resourceName = "job"
 
   constructor(sourceDir: string | string[], container: MedusaContainer) {
-    super(sourceDir)
-    this.container = container
-    this.logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+    super(sourceDir, container)
   }
-
-  protected container: MedusaContainer
-
-  protected logger: Logger
 
   protected async onFileLoaded(
     path: string,

@@ -1,11 +1,10 @@
 import {
   Event,
   IEventBusModuleService,
-  Logger,
   MedusaContainer,
   Subscriber,
 } from "@medusajs/types"
-import { ContainerRegistrationKeys, kebabCase, Modules } from "@medusajs/utils"
+import { kebabCase, Modules } from "@medusajs/utils"
 import { parse } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
@@ -34,16 +33,13 @@ export class SubscriberLoader extends ResourceLoader {
    */
   #subscriberDescriptors: Map<string, SubscriberModule<any>> = new Map()
 
-  protected logger: Logger
-
   constructor(
     sourceDir: string | string[],
     options: Record<string, unknown> = {},
     container: MedusaContainer
   ) {
-    super(sourceDir)
+    super(sourceDir, container)
     this.#pluginOptions = options
-    this.logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   }
 
   protected async onFileLoaded(

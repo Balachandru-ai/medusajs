@@ -1,18 +1,18 @@
-import { logger } from "../logger"
+import { MedusaContainer } from "@medusajs/types"
 import { ResourceLoader } from "../utils/resource-loader"
 
 export class WorkflowLoader extends ResourceLoader {
   protected resourceName = "workflow"
 
-  constructor(sourceDir: string | string[]) {
-    super(sourceDir)
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
+    super(sourceDir, container)
   }
 
   protected async onFileLoaded(
     path: string,
     fileExports: Record<string, unknown>
   ) {
-    logger.debug(`Registering workflows from ${path}.`)
+    this.logger.debug(`Registering workflows from ${path}.`)
   }
 
   /**
@@ -22,6 +22,6 @@ export class WorkflowLoader extends ResourceLoader {
   async load() {
     await super.discoverResources()
 
-    logger.debug(`Workflows registered.`)
+    this.logger.debug(`Workflows registered.`)
   }
 }

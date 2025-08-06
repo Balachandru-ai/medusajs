@@ -184,7 +184,7 @@ export default async ({
   } = await new MedusaAppLoader().load()
 
   const workflowsSourcePaths = plugins.map((p) => join(p.resolve, "workflows"))
-  const workflowLoader = new WorkflowLoader(workflowsSourcePaths)
+  const workflowLoader = new WorkflowLoader(workflowsSourcePaths, container)
   await workflowLoader.load()
 
   const entrypointsShutdown = await loadEntrypoints(
