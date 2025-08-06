@@ -1,12 +1,16 @@
 import type { SchedulerOptions } from "@medusajs/orchestration"
 import { MedusaContainer } from "@medusajs/types"
-import { isObject, MedusaError } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  isObject,
+  MedusaError,
+} from "@medusajs/utils"
 import {
   createStep,
   createWorkflow,
   StepResponse,
 } from "@medusajs/workflows-sdk"
-import { logger } from "../logger"
+import { Logger } from "../types"
 import { ResourceLoader } from "../utils/resource-loader"
 
 type CronJobConfig = {
@@ -20,9 +24,15 @@ type CronJobHandler = (container: MedusaContainer) => Promise<any>
 export class JobLoader extends ResourceLoader {
   protected resourceName = "job"
 
-  constructor(sourceDir: string | string[]) {
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
     super(sourceDir)
+    this.container = container
+    this.logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   }
+
+  protected container: MedusaContainer
+
+  protected logger: Logger
 
   protected async onFileLoaded(
     path: string,
@@ -32,7 +42,7 @@ export class JobLoader extends ResourceLoader {
     }
   ) {
     this.validateConfig(fileExports.config)
-    logger.debug(`Registering job from ${path}.`)
+    this.logger.debug(`Registering job from ${path}.`)
     this.register({
       config: fileExports.config,
       handler: fileExports.default,
@@ -92,7 +102,7 @@ export class JobLoader extends ResourceLoader {
           const res = await handler(container)
           return new StepResponse(res, res)
         } catch (error) {
-          logger.error(
+          this.logger.error(
             `Scheduled job ${config.name} failed with error: ${error.message}`
           )
           throw error
@@ -121,6 +131,6 @@ export class JobLoader extends ResourceLoader {
   async load() {
     await super.discoverResources()
 
-    logger.debug(`Jobs registered.`)
+    this.logger.debug(`Jobs registered.`)
   }
 }

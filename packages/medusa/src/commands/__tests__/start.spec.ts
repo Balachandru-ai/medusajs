@@ -1,9 +1,23 @@
-import { registerInstrumentation } from "../start"
 import * as utils from "@medusajs/framework/utils"
-import * as logger from "@medusajs/framework/logger"
+import path from "path"
 import * as instrumentationFixture from "../__fixtures__/instrumentation"
 import * as instrumentationFailureFixture from "../__fixtures__/instrumentation-failure/instrumentation"
-import path from "path"
+import { registerInstrumentation } from "../start"
+
+const logger = {
+  info: jest.fn(),
+  error: jest.fn(),
+}
+
+jest.mock("@medusajs/framework/config", () => {
+  return {
+    configLoader: jest.fn().mockImplementation(() => {
+      return {
+        logger,
+      }
+    }),
+  }
+})
 
 describe("start", () => {
   beforeEach(() => {
@@ -32,7 +46,7 @@ describe("start", () => {
         "exists",
         "" as never
       )
-      const loggerSpy = jest.spyOn(logger.logger, "info", "" as never)
+      const loggerSpy = jest.spyOn(logger, "info", "" as never)
 
       await registerInstrumentation(
         path.join(__dirname, "../__fixtures__/instrumentation-no-register")

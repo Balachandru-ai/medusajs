@@ -14,7 +14,7 @@ import { asFunction } from "awilix"
 import { join, normalize } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
-import { logger } from "../logger"
+import { Logger } from "../types"
 import { FlagSettings } from "./types"
 
 export const featureFlagRouter = new FlagRouter({})
@@ -30,7 +30,11 @@ const flagConfig: Record<string, boolean | Record<string, boolean>> = {}
 
 function registerFlag(
   flag: FlagSettings,
-  projectConfigFlags: Record<string, string | boolean | Record<string, boolean>>
+  projectConfigFlags: Record<
+    string,
+    string | boolean | Record<string, boolean>
+  >,
+  logger: Logger
 ) {
   flagConfig[flag.key] = isTruthy(flag.default_val)
 
@@ -87,7 +91,7 @@ function registerFlag(
 export async function featureFlagsLoader(
   sourcePath?: string
 ): Promise<FlagRouter> {
-  const { featureFlags: projectConfigFlags = {} } = configManager.config
+  const { featureFlags: projectConfigFlags = {}, logger } = configManager.config
 
   if (!sourcePath) {
     return featureFlagRouter
@@ -119,7 +123,7 @@ export async function featureFlagsLoader(
         return
       }
 
-      registerFlag(featureFlag, projectConfigFlags)
+      registerFlag(featureFlag, projectConfigFlags, logger!)
       return
     })
   })

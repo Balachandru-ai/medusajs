@@ -19,7 +19,11 @@ describe("SubscriberLoader", () => {
   beforeAll(async () => {
     container.register(Modules.EVENT_BUS, asValue(eventBusServiceMock))
 
-    const paths = await new SubscriberLoader(rootDir, pluginOptions).load()
+    const paths = await new SubscriberLoader(
+      rootDir,
+      pluginOptions,
+      container
+    ).load()
 
     if (paths) {
       registeredPaths = [...registeredPaths, ...paths]
