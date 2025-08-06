@@ -14,7 +14,10 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
+import {
+  useDeleteUpload,
+  useUpdateProduct,
+} from "../../../../../hooks/api/products"
 import { HttpTypes } from "@medusajs/types"
 
 type ProductMedisaSectionProps = {
@@ -39,7 +42,8 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
     })
   }
 
-  const { mutateAsync } = useUpdateProduct(product.id)
+  const { mutateAsync: deleteUpload } = useDeleteUpload()
+  const { mutateAsync: updateProduct } = useUpdateProduct(product.id)
 
   const handleDelete = async () => {
     const ids = Object.keys(selection)
@@ -64,11 +68,25 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       return
     }
 
-    const mediaToKeep = product.images
-      .filter((i) => !ids.includes(i.id))
-      .map((i) => ({ url: i.url}))
+    // Delete uploads one by one
+    for (const imageId of ids) {
+      const filename = media
+        .find((m) => m.id === imageId)
+        ?.url.split("/")
+        .pop()
+      if (!filename) {
+        return
+      }
+      await deleteUpload(filename)
+    }
 
-    await mutateAsync(
+    // After all uploads are deleted, update the product
+    const mediaToKeep =
+      product.images
+        ?.filter((i) => !ids.includes(i.id))
+        .map((i) => ({ url: i.url })) || []
+
+    await updateProduct(
       {
         images: mediaToKeep,
         thumbnail: includingThumbnail ? "" : undefined,

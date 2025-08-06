@@ -12,7 +12,10 @@ import { Link, useLocation } from "react-router-dom"
 
 import { HttpTypes } from "@medusajs/types"
 import { RouteFocusModal } from "../../../../../components/modals"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
+import {
+  useDeleteUpload,
+  useUpdateProduct,
+} from "../../../../../hooks/api/products"
 
 type ProductMediaGalleryProps = {
   product: HttpTypes.AdminProduct
@@ -24,9 +27,13 @@ export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {
 
   const { t } = useTranslation()
   const prompt = usePrompt()
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync: deleteUpload, isPending: isDeletingUpload } =
+    useDeleteUpload()
+  const { mutateAsync: updateProduct, isPending: isUpdatingProduct } =
+    useUpdateProduct(product.id)
 
   const media = getMedia(product.images, product.thumbnail)
+  const isPending = isDeletingUpload || isUpdatingProduct
 
   const next = useCallback(() => {
     if (isPending) {
@@ -87,18 +94,29 @@ export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {
       return
     }
 
-    const mediaToKeep =
-      product.images
-        ?.filter((i) => i.id !== current.id)
-        .map((i) => ({ url: i.url })) || []
-
     if (curr === media.length - 1) {
       setCurr((prev) => prev - 1)
     }
 
-    await mutateAsync({
-      images: mediaToKeep,
-      thumbnail: current.isThumbnail ? "" : undefined,
+    const filename = current.url.split("/").pop()
+
+    if (!filename) {
+      return
+    }
+
+    await deleteUpload(filename, {
+      onSuccess: async () => {
+        // After successfully deleting the upload, update the product
+        const mediaToKeep =
+          product.images
+            ?.filter((i) => i.id !== current.id)
+            .map((i) => ({ url: i.url })) || []
+
+        await updateProduct({
+          images: mediaToKeep,
+          thumbnail: current.isThumbnail ? "" : undefined,
+        })
+      },
     })
   }
 

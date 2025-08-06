@@ -419,3 +419,15 @@ export const useConfirmImportProducts = (
     ...options,
   })
 }
+
+export const useDeleteUpload = (
+  options?: UseMutationOptions<HttpTypes.AdminFileDeleteResponse, FetchError, string>
+) => {
+  return useMutation({
+    mutationFn: (filename: string) => sdk.admin.upload.delete(filename),
+    onSuccess: (data, variables, context) => {
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
