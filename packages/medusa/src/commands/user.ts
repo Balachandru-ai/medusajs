@@ -1,7 +1,7 @@
-import { logger } from "@medusajs/framework/logger"
+import { configLoader } from "@medusajs/framework"
 import { Modules } from "@medusajs/framework/utils"
-import express from "express"
 import { track } from "@medusajs/telemetry"
+import express from "express"
 import loaders from "../loaders"
 
 export default async function ({
@@ -12,6 +12,9 @@ export default async function ({
   keepAlive,
   invite,
 }) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   track("CLI_USER", { with_id: !!id })
   const app = express()
   try {

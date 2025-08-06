@@ -1,6 +1,6 @@
 import type { MedusaAppLoader } from "@medusajs/framework"
-import { Logger, MedusaContainer } from "@medusajs/framework/types"
 import { logger } from "@medusajs/framework/logger"
+import { Logger, MedusaContainer } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,

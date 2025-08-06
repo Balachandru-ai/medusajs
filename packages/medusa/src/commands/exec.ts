@@ -1,10 +1,10 @@
-import loaders from "../loaders"
-import express from "express"
-import path from "path"
-import { existsSync } from "fs"
-import { logger } from "@medusajs/framework/logger"
+import { configLoader } from "@medusajs/framework/config"
 import { ExecArgs } from "@medusajs/framework/types"
 import { dynamicImport } from "@medusajs/framework/utils"
+import express from "express"
+import { existsSync } from "fs"
+import path from "path"
+import loaders from "../loaders"
 
 type Options = {
   file: string
@@ -12,6 +12,9 @@ type Options = {
 }
 
 export default async function exec({ file, args }: Options) {
+  const config = await configLoader(process.cwd(), "medusa-config")
+  const logger = config.logger!
+
   logger.info(`Executing script at ${file}...`)
   const app = express()
   const directory = process.cwd()

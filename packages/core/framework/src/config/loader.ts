@@ -1,9 +1,9 @@
-import { ConfigModule } from "./types"
 import { ContainerRegistrationKeys, getConfigFile } from "@medusajs/utils"
+import { asFunction } from "awilix"
+import { container } from "../container"
 import { logger } from "../logger"
 import { ConfigManager } from "./config"
-import { container } from "../container"
-import { asFunction } from "awilix"
+import { ConfigModule } from "./types"
 
 const handleConfigError = (error: Error): void => {
   logger.error(`Error in loading config: ${error.message}`)
@@ -28,7 +28,7 @@ container.register(
  */
 export async function configLoader(
   entryDirectory: string,
-  configFileName: string
+  configFileName: string = "medusa-config"
 ): Promise<ConfigModule> {
   const config = await getConfigFile<ConfigModule>(
     entryDirectory,

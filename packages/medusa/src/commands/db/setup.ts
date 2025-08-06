@@ -1,4 +1,4 @@
-import { logger } from "@medusajs/framework/logger"
+import { configLoader } from "@medusajs/framework/config"
 import { dbCreate } from "./create"
 import { migrate } from "./migrate"
 
@@ -11,6 +11,9 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   try {
     const created = await dbCreate({ directory, interactive, db })
     if (!created) {

@@ -1,7 +1,5 @@
-import slugify from "slugify"
-import { basename } from "path"
 import input from "@inquirer/input"
-import { logger } from "@medusajs/framework/logger"
+import { configLoader } from "@medusajs/framework/config"
 import {
   createClient,
   createDb,
@@ -9,6 +7,8 @@ import {
   EnvEditor,
   parseConnectionString,
 } from "@medusajs/framework/utils"
+import { basename } from "path"
+import slugify from "slugify"
 
 async function connectClient(client: ReturnType<typeof createClient>) {
   try {
@@ -32,6 +32,9 @@ export async function dbCreate({
   directory: string
   interactive: boolean
 }): Promise<boolean> {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   let dbName = db
 
   /**
@@ -155,6 +158,9 @@ export async function dbCreate({
 }
 
 const main = async function ({ directory, interactive, db }) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   try {
     const created = await dbCreate({ directory, interactive, db })
     process.exit(created ? 0 : 1)

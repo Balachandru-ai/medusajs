@@ -1,8 +1,7 @@
 import checkbox from "@inquirer/checkbox"
-import { MedusaAppLoader } from "@medusajs/framework"
+import { configLoader, MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
-import { LinkMigrationsPlannerAction } from "@medusajs/framework/types"
+import { LinkMigrationsPlannerAction, Logger } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -52,13 +51,14 @@ function buildLinkDescription(action: LinkMigrationsPlannerAction) {
  */
 function logActions(
   title: string,
-  actionsOrContext: LinkMigrationsPlannerAction[]
+  actionsOrContext: LinkMigrationsPlannerAction[],
+  logger: Logger
 ) {
   const actionsList = actionsOrContext
     .map((action) => `  - ${buildLinkDescription(action)}`)
     .join("\n")
 
-  console.log(boxen(`${title}\n${actionsList}`, { padding: 1 }))
+  logger.info(boxen(`${title}\n${actionsList}`, { padding: 1 }))
 }
 
 /**
@@ -67,9 +67,10 @@ function logActions(
  */
 async function askForLinkActionsToPerform(
   message: string,
-  actions: LinkMigrationsPlannerAction[]
+  actions: LinkMigrationsPlannerAction[],
+  logger: Logger
 ) {
-  console.log(boxen(message, { borderColor: "red", padding: 1 }))
+  logger.info(boxen(message, { borderColor: "red", padding: 1 }))
 
   return await checkbox({
     message: "Select tables to act upon",
@@ -95,11 +96,16 @@ export async function syncLinks(
   {
     executeAll,
     executeSafe,
+    directory,
   }: {
     executeSafe: boolean
     executeAll: boolean
+    directory: string
   }
 ) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   const planner = await medusaAppLoader.getLinksExecutionPlanner()
 
   logger.info("Syncing links...")
@@ -120,7 +126,8 @@ export async function syncLinks(
         `Select the tables to ${chalk.red(
           "DELETE"
         )}. The following links have been removed`,
-        groupActionPlan.delete
+        groupActionPlan.delete,
+        logger
       )
     }
   }
@@ -140,7 +147,8 @@ export async function syncLinks(
         `Select the tables to ${chalk.red(
           "UPDATE"
         )}. The following links have been updated`,
-        groupActionPlan.notify
+        groupActionPlan.notify,
+        logger
       )
     }
 
@@ -163,13 +171,13 @@ export async function syncLinks(
   await planner.executePlan(actionsToExecute)
 
   if (toCreate.length) {
-    logActions("Created following links tables", toCreate)
+    logActions("Created following links tables", toCreate, logger)
   }
   if (toUpdate.length) {
-    logActions("Updated following links tables", toUpdate)
+    logActions("Updated following links tables", toUpdate, logger)
   }
   if (toDelete.length) {
-    logActions("Deleted following links tables", toDelete)
+    logActions("Deleted following links tables", toDelete, logger)
   }
 
   if (actionsToExecute.length) {
@@ -180,8 +188,10 @@ export async function syncLinks(
 }
 
 const main = async function ({ directory, executeSafe, executeAll }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
-    const container = await initializeContainer(directory)
     await ensureDbExists(container)
 
     const configModule = container.resolve(
@@ -198,7 +208,7 @@ const main = async function ({ directory, executeSafe, executeAll }) {
     )
     await new LinkLoader(linksSourcePaths).load()
 
-    await syncLinks(medusaAppLoader, { executeAll, executeSafe })
+    await syncLinks(medusaAppLoader, { executeAll, executeSafe, directory })
     process.exit()
   } catch (error) {
     logger.error(error)

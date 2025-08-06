@@ -1,6 +1,5 @@
 import { MEDUSA_CLI_PATH, MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -8,11 +7,13 @@ import {
 } from "@medusajs/framework/utils"
 import { join } from "path"
 
+import { configLoader } from "@medusajs/framework/config"
 import { fork } from "child_process"
 import path from "path"
 import { initializeContainer } from "../../loaders"
 import { ensureDbExists } from "../utils"
 import { syncLinks } from "./sync-links"
+
 const TERMINAL_SIZE = process.stdout.columns
 
 const cliPath = path.resolve(MEDUSA_CLI_PATH, "..", "..", "cli.js")
@@ -38,6 +39,8 @@ export async function migrate({
    * Setup
    */
   const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   await ensureDbExists(container)
 
   const medusaAppLoader = new MedusaAppLoader()
@@ -71,6 +74,7 @@ export async function migrate({
     await syncLinks(medusaAppLoader, {
       executeAll: executeAllLinks,
       executeSafe: executeSafeLinks,
+      directory,
     })
   }
 
@@ -104,6 +108,9 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   try {
     const migrated = await migrate({
       directory,

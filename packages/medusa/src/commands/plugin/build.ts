@@ -1,6 +1,10 @@
 import { Compiler } from "@medusajs/framework/build-tools"
-import { logger } from "@medusajs/framework/logger"
+import { configLoader } from "@medusajs/framework/config"
+
 export default async function build({ directory }: { directory: string }) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   logger.info("Starting build...")
   const compiler = new Compiler(directory, logger)
 

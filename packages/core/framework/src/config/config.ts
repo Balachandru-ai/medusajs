@@ -1,6 +1,6 @@
-import { ConfigModule } from "./types"
 import { deepCopy, isDefined } from "@medusajs/utils"
 import { logger } from "../logger"
+import { ConfigModule } from "./types"
 
 export class ConfigManager {
   /**
@@ -184,6 +184,7 @@ export class ConfigManager {
       modules: projectConfig.modules ?? {},
       featureFlags: projectConfig.featureFlags ?? {},
       plugins: projectConfig.plugins ?? [],
+      logger: projectConfig.logger ?? logger,
     }
 
     return this.#config

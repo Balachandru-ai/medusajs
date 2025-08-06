@@ -1,6 +1,5 @@
 import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -15,11 +14,14 @@ import { ensureDbExists } from "../utils"
 const TERMINAL_SIZE = process.stdout.columns
 
 const main = async function ({ directory, modules }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     /**
      * Setup
      */
-    const container = await initializeContainer(directory)
+
     await ensureDbExists(container)
 
     const medusaAppLoader = new MedusaAppLoader()

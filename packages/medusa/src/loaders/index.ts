@@ -125,11 +125,12 @@ async function loadEntrypoints(
 export async function initializeContainer(
   rootDirectory: string
 ): Promise<MedusaContainer> {
-  await configLoader(rootDirectory, "medusa-config")
+  const configDir = await configLoader(rootDirectory, "medusa-config")
   await featureFlagsLoader(join(__dirname, "feature-flags"))
 
+  const customLogger = configDir.logger ?? logger
   container.register({
-    [ContainerRegistrationKeys.LOGGER]: asValue(logger),
+    [ContainerRegistrationKeys.LOGGER]: asValue(customLogger),
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
   })
 

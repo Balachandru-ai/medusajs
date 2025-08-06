@@ -12,9 +12,9 @@ import {
 } from "../modules-sdk"
 import { isObject } from "./is-object"
 import { isString } from "./is-string"
-import { tryConvertToNumber } from "./try-convert-to-number"
 import { normalizeImportPathWithSource } from "./normalize-import-path-with-source"
 import { resolveExports } from "./resolve-exports"
+import { tryConvertToNumber } from "./try-convert-to-number"
 
 const MEDUSA_CLOUD_EXECUTION_CONTEXT = "medusa-cloud"
 const DEFAULT_SECRET = "supersecret"
@@ -56,6 +56,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
     plugins: config.plugins || [],
     admin: adminConfig,
     modules: modules,
+    logger: config.logger,
   }
 }
 

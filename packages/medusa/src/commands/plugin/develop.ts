@@ -1,14 +1,17 @@
-import path from "path"
+import { Compiler } from "@medusajs/framework/build-tools"
+import { configLoader } from "@medusajs/framework/config"
 import * as swcCore from "@swc/core"
 import { execFile } from "child_process"
-import { logger } from "@medusajs/framework/logger"
-import { Compiler } from "@medusajs/framework/build-tools"
+import path from "path"
 
 export default async function developPlugin({
   directory,
 }: {
   directory: string
 }) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   let isBusy = false
   const compiler = new Compiler(directory, logger)
   const parsedConfig = await compiler.loadTSConfigFile()

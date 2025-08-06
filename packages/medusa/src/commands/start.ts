@@ -1,25 +1,25 @@
+import { track } from "@medusajs/telemetry"
+import cluster from "cluster"
+import express from "express"
+import http from "http"
+import { scheduleJob } from "node-schedule"
 import os from "os"
 import path from "path"
-import http from "http"
-import express from "express"
-import cluster from "cluster"
-import { track } from "@medusajs/telemetry"
-import { scheduleJob } from "node-schedule"
 
 import {
   dynamicImport,
   FileSystem,
+  generateContainerTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
   isPresent,
-  generateContainerTypes,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
-import loaders from "../loaders"
+import { configLoader } from "@medusajs/framework"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import { parse } from "url"
+import loaders from "../loaders"
 
 const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
@@ -32,6 +32,9 @@ const INSTRUMENTATION_FILE = "instrumentation"
  * errors.
  */
 export async function registerInstrumentation(directory: string) {
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
+
   const fileSystem = new FileSystem(directory)
   const exists =
     (await fileSystem.exists(`${INSTRUMENTATION_FILE}.ts`)) ||
@@ -135,6 +138,9 @@ async function start(args: {
   cluster?: number
 }) {
   const { port = 9000, host, directory, types } = args
+
+  const config = await configLoader(directory, "medusa-config")
+  const logger = config.logger!
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")
