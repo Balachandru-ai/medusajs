@@ -52,7 +52,7 @@ export async function migrate({
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   /**
    * Run migrations
@@ -61,14 +61,14 @@ export async function migrate({
   await medusaAppLoader.runModulesMigrations({
     action: "run",
   })
-  console.log(new Array(TERMINAL_SIZE).join("-"))
+  logger.log(new Array(TERMINAL_SIZE).join("-"))
   logger.info("Migrations completed")
 
   /**
    * Sync links
    */
   if (!skipLinks) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     await syncLinks(medusaAppLoader, {
       executeAll: executeAllLinks,
       executeSafe: executeSafeLinks,
@@ -81,7 +81,7 @@ export async function migrate({
     /**
      * Run migration scripts
      */
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     const childProcess = fork(cliPath, ["db:migrate:scripts"], {
       cwd: directory,
       env: process.env,

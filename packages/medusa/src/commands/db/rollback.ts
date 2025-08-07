@@ -34,7 +34,7 @@ const main = async function ({ directory, modules }) {
     const linksSourcePaths = plugins.map((plugin) =>
       join(plugin.resolve, "links")
     )
-    await new LinkLoader(linksSourcePaths).load()
+    await new LinkLoader(linksSourcePaths, logger).load()
 
     /**
      * Reverting migrations
@@ -44,12 +44,12 @@ const main = async function ({ directory, modules }) {
       moduleNames: modules,
       action: "revert",
     })
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migrations reverted")
 
     process.exit()
   } catch (error) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    defaultLogger.log(new Array(TERMINAL_SIZE).join("-"))
     if (error.code && error.code === MedusaError.Codes.UNKNOWN_MODULES) {
       defaultLogger.error(error.message)
       const modulesList = error.allModules.map(

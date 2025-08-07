@@ -5,7 +5,7 @@ import { featureFlagsLoader } from "@medusajs/framework/feature-flags"
 import { expressLoader } from "@medusajs/framework/http"
 import { JobLoader } from "@medusajs/framework/jobs"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { SubscriberLoader } from "@medusajs/framework/subscribers"
 import {
   ConfigModule,
@@ -120,6 +120,7 @@ async function loadEntrypoints(
 
   const { shutdown } = await expressLoader({
     app: expressApp,
+    container,
   })
 
   await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
@@ -141,7 +142,7 @@ export async function initializeContainer(
   const configDir = await configLoader(rootDirectory, "medusa-config")
   await featureFlagsLoader(join(__dirname, "feature-flags"))
 
-  const customLogger = configDir.logger ?? logger
+  const customLogger = configDir.logger ?? defaultLogger
   container.register({
     [ContainerRegistrationKeys.LOGGER]: asValue(customLogger),
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
@@ -168,6 +169,7 @@ export default async ({
   const configModule = container.resolve(
     ContainerRegistrationKeys.CONFIG_MODULE
   )
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const plugins = await getResolvedPlugins(rootDirectory, configModule, true)
   mergePluginModules(configModule, plugins)
@@ -179,7 +181,7 @@ export default async ({
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   const {
     onApplicationStart,

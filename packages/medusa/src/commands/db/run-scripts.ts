@@ -10,7 +10,7 @@ import {
 import { dirname, join } from "path"
 
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
-import { MedusaContainer, PluginDetails } from "@medusajs/types"
+import { Logger, MedusaContainer, PluginDetails } from "@medusajs/types"
 import { initializeContainer } from "../../loaders"
 import { ensureDbExists } from "../utils"
 
@@ -44,7 +44,7 @@ export async function runMigrationScripts({
 
     mergePluginModules(configModule, plugins)
 
-    const resources = await loadResources(plugins)
+    const resources = await loadResources(plugins, logger)
     onApplicationPrepareShutdown = resources.onApplicationPrepareShutdown
     onApplicationShutdown = resources.onApplicationShutdown
 
@@ -64,15 +64,15 @@ export async function runMigrationScripts({
       return true
     }
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Pending migration scripts to execute")
     logger.info(`${pendingScripts.join("\n")}`)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Running migration scripts...")
     await migrator.run(scriptsSourcePaths)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migration scripts completed")
 
     return true
@@ -82,7 +82,10 @@ export async function runMigrationScripts({
   }
 }
 
-async function loadResources(plugins: any): Promise<{
+async function loadResources(
+  plugins: any,
+  logger: Logger
+): Promise<{
   onApplicationPrepareShutdown: () => Promise<void>
   onApplicationShutdown: () => Promise<void>
 }> {
@@ -98,7 +101,7 @@ async function loadResources(plugins: any): Promise<{
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   const medusaAppResources = await new MedusaAppLoader().load()
   const onApplicationPrepareShutdown =

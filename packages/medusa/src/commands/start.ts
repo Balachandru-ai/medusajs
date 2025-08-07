@@ -82,10 +82,10 @@ function displayAdminUrl({
     return
   }
 
-  const logger = container.resolve("logger")
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const {
     admin: { path: adminPath, disable },
-  } = container.resolve("configModule")
+  } = container.resolve(ContainerRegistrationKeys.CONFIG_MODULE)
 
   if (disable) {
     return

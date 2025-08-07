@@ -1,9 +1,9 @@
+import { ConfigModule } from "@medusajs/framework/config"
+import { ApiLoader } from "@medusajs/framework/http"
+import { MedusaContainer, PluginDetails } from "@medusajs/framework/types"
 import { Express } from "express"
 import { join } from "path"
 import qs from "qs"
-import { ApiLoader } from "@medusajs/framework/http"
-import { MedusaContainer, PluginDetails } from "@medusajs/framework/types"
-import { ConfigModule } from "@medusajs/framework/config"
 
 type Options = {
   app: Express
@@ -59,6 +59,7 @@ export default async ({ app, container, plugins }: Options) => {
       app: app,
       sourceDir: sourcePaths,
       baseRestrictedFields: restrictedFields?.store,
+      container,
     }).load()
   } catch (err) {
     throw Error(

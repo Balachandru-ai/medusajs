@@ -202,6 +202,7 @@ const main = async function ({ directory, executeSafe, executeAll }) {
     const configModule = container.resolve(
       ContainerRegistrationKeys.CONFIG_MODULE
     )
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
     const medusaAppLoader = new MedusaAppLoader()
 
@@ -211,7 +212,7 @@ const main = async function ({ directory, executeSafe, executeAll }) {
     const linksSourcePaths = plugins.map((plugin) =>
       join(plugin.resolve, "links")
     )
-    await new LinkLoader(linksSourcePaths).load()
+    await new LinkLoader(linksSourcePaths, logger).load()
 
     await syncLinks(medusaAppLoader, {
       executeAll,
