@@ -6,11 +6,12 @@ import { ConfigManager } from "./config"
 import { ConfigModule } from "./types"
 
 const handleConfigError = (error: Error): void => {
+  console.log(error)
   defaultLogger.error(`Error in loading config: ${error.message}`)
   if (error.stack) {
     defaultLogger.error(error.stack)
   }
-  process.exit(1)
+  // process.exit(1)
 }
 
 export const configManager = new ConfigManager()

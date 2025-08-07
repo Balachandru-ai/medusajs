@@ -11,6 +11,9 @@ const logger = {
 
 jest.mock("@medusajs/framework/config", () => {
   return {
+    configManager: {
+      config: {},
+    },
     configLoader: jest.fn().mockImplementation(() => {
       return {
         logger,
@@ -22,6 +25,12 @@ jest.mock("@medusajs/framework/config", () => {
 describe("start", () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.doMock("@medusajs/framework/utils", () => ({
+      ...jest.requireActual("@medusajs/framework/utils"),
+      createMedusaContainer: jest.fn(() => ({
+        resolve: jest.fn(() => logger),
+      })),
+    }))
   })
 
   describe("registerInstrumentation", () => {
