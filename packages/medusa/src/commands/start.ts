@@ -7,6 +7,7 @@ import os from "os"
 import path from "path"
 
 import {
+  ContainerRegistrationKeys,
   dynamicImport,
   FileSystem,
   generateContainerTypes,
@@ -15,11 +16,10 @@ import {
   isPresent,
 } from "@medusajs/framework/utils"
 
-import { configLoader } from "@medusajs/framework"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import { parse } from "url"
-import loaders from "../loaders"
+import loaders, { initializeContainer } from "../loaders"
 
 const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
@@ -32,8 +32,10 @@ const INSTRUMENTATION_FILE = "instrumentation"
  * errors.
  */
 export async function registerInstrumentation(directory: string) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const fileSystem = new FileSystem(directory)
   const exists =
@@ -139,8 +141,8 @@ async function start(args: {
 }) {
   const { port = 9000, host, directory, types } = args
 
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")

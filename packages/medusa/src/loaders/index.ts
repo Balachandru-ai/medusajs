@@ -133,7 +133,10 @@ async function loadEntrypoints(
 }
 
 export async function initializeContainer(
-  rootDirectory: string
+  rootDirectory: string,
+  options?: {
+    skipDbConnection?: boolean
+  }
 ): Promise<MedusaContainer> {
   const configDir = await configLoader(rootDirectory, "medusa-config")
   await featureFlagsLoader(join(__dirname, "feature-flags"))
@@ -144,7 +147,10 @@ export async function initializeContainer(
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
   })
 
-  await pgConnectionLoader()
+  if (!options?.skipDbConnection) {
+    await pgConnectionLoader()
+  }
+
   return container
 }
 

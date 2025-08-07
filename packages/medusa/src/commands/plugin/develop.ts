@@ -1,16 +1,19 @@
 import { Compiler } from "@medusajs/framework/build-tools"
-import { configLoader } from "@medusajs/framework/config"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import * as swcCore from "@swc/core"
 import { execFile } from "child_process"
 import path from "path"
+import { initializeContainer } from "../../loaders"
 
 export default async function developPlugin({
   directory,
 }: {
   directory: string
 }) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   let isBusy = false
   const compiler = new Compiler(directory, logger)

@@ -1,4 +1,6 @@
-import { configLoader } from "@medusajs/framework/config"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { initializeContainer } from "../../loaders"
 import { dbCreate } from "./create"
 import { migrate } from "./migrate"
 
@@ -11,11 +13,11 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
-
   try {
-    const created = await dbCreate({ directory, interactive, db })
+    const container = await initializeContainer(directory)
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
+    const created = await dbCreate({ directory, interactive, db, logger })
     if (!created) {
       process.exit(1)
     }
@@ -33,7 +35,7 @@ const main = async function ({
     if (error.name === "ExitPromptError") {
       process.exit()
     }
-    logger.error(error)
+    defaultLogger.error(error)
     process.exit(1)
   }
 }

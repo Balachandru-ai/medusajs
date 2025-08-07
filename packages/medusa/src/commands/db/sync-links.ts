@@ -1,7 +1,12 @@
 import checkbox from "@inquirer/checkbox"
-import { configLoader, MedusaAppLoader } from "@medusajs/framework"
+import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { LinkMigrationsPlannerAction, Logger } from "@medusajs/framework/types"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
+import {
+  LinkMigrationsPlannerAction,
+  Logger,
+  MedusaContainer,
+} from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -97,14 +102,15 @@ export async function syncLinks(
     executeAll,
     executeSafe,
     directory,
+    container,
   }: {
     executeSafe: boolean
     executeAll: boolean
     directory: string
+    container: MedusaContainer
   }
 ) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const planner = await medusaAppLoader.getLinksExecutionPlanner()
 
@@ -188,10 +194,9 @@ export async function syncLinks(
 }
 
 const main = async function ({ directory, executeSafe, executeAll }) {
-  const container = await initializeContainer(directory)
-  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-
   try {
+    const container = await initializeContainer(directory)
+
     await ensureDbExists(container)
 
     const configModule = container.resolve(
@@ -208,10 +213,15 @@ const main = async function ({ directory, executeSafe, executeAll }) {
     )
     await new LinkLoader(linksSourcePaths).load()
 
-    await syncLinks(medusaAppLoader, { executeAll, executeSafe, directory })
+    await syncLinks(medusaAppLoader, {
+      executeAll,
+      executeSafe,
+      directory,
+      container,
+    })
     process.exit()
   } catch (error) {
-    logger.error(error)
+    defaultLogger.error(error)
     process.exit(1)
   }
 }

@@ -1,14 +1,14 @@
 import { ContainerRegistrationKeys, getConfigFile } from "@medusajs/utils"
 import { asFunction } from "awilix"
 import { container } from "../container"
-import { logger } from "../logger"
+import { logger as defaultLogger } from "../logger"
 import { ConfigManager } from "./config"
 import { ConfigModule } from "./types"
 
 const handleConfigError = (error: Error): void => {
-  logger.error(`Error in loading config: ${error.message}`)
+  defaultLogger.error(`Error in loading config: ${error.message}`)
   if (error.stack) {
-    logger.error(error.stack)
+    defaultLogger.error(error.stack)
   }
   process.exit(1)
 }

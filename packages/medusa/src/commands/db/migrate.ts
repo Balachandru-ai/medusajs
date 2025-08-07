@@ -1,15 +1,13 @@
 import { MEDUSA_CLI_PATH, MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { join } from "path"
-
-import { configLoader } from "@medusajs/framework/config"
 import { fork } from "child_process"
-import path from "path"
+import path, { join } from "path"
 import { initializeContainer } from "../../loaders"
 import { ensureDbExists } from "../utils"
 import { syncLinks } from "./sync-links"
@@ -75,6 +73,7 @@ export async function migrate({
       executeAll: executeAllLinks,
       executeSafe: executeSafeLinks,
       directory,
+      container,
     })
   }
 
@@ -108,9 +107,6 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
-
   try {
     const migrated = await migrate({
       directory,
@@ -121,7 +117,7 @@ const main = async function ({
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {
-    logger.error(error)
+    defaultLogger.error(error)
     process.exit(1)
   }
 }

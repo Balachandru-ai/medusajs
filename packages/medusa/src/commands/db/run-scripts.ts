@@ -1,5 +1,6 @@
-import { configLoader, MedusaAppLoader } from "@medusajs/framework"
+import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { MigrationScriptsMigrator } from "@medusajs/framework/migrations"
 import {
   ContainerRegistrationKeys,
@@ -30,10 +31,9 @@ export async function runMigrationScripts({
 
   let plugins: PluginDetails[]
 
-  const container_ = await initializeContainer(directory)
-  const logger = container_.resolve(ContainerRegistrationKeys.LOGGER)
-
   try {
+    const container_ = await initializeContainer(directory)
+    const logger = container_.resolve(ContainerRegistrationKeys.LOGGER)
     await ensureDbExists(container_)
 
     const configModule = container_.resolve(
@@ -118,16 +118,13 @@ const main = async function ({
   directory: string
   container?: MedusaContainer
 }) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
-
   try {
     const migrated = await runMigrationScripts({
       directory,
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {
-    logger.error(error)
+    defaultLogger.error(error)
     process.exit(1)
   }
 }

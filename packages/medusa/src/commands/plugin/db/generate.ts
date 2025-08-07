@@ -1,16 +1,17 @@
+import { logger as defaultLogger } from "@medusajs/framework/logger"
+import type { Logger } from "@medusajs/framework/types"
 import {
+  ContainerRegistrationKeys,
   defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
   toUnixSlash,
 } from "@medusajs/framework/utils"
-import { glob } from "glob"
-import { dirname, join } from "path"
-
-import { configLoader } from "@medusajs/framework/config"
-import type { Logger } from "@medusajs/framework/types"
 import { MetadataStorage } from "@mikro-orm/core"
 import { MikroORM } from "@mikro-orm/postgresql"
+import { glob } from "glob"
+import { dirname, join } from "path"
+import { initializeContainer } from "../../../loaders"
 
 const TERMINAL_SIZE = process.stdout.columns
 
@@ -18,10 +19,12 @@ const TERMINAL_SIZE = process.stdout.columns
  * Generate migrations for all scanned modules in a plugin
  */
 const main = async function ({ directory }) {
-  const config = await configLoader(directory, "medusa-config")
-  const logger = config.logger!
-
   try {
+    const container = await initializeContainer(directory, {
+      skipDbConnection: true,
+    })
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
     const moduleDescriptors = [] as {
       serviceName: string
       migrationsPath: string
@@ -51,14 +54,14 @@ const main = async function ({ directory }) {
 
     await generateMigrations(moduleDescriptors, logger)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migrations generated")
 
     process.exit()
   } catch (error) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    defaultLogger.log(new Array(TERMINAL_SIZE).join("-"))
 
-    logger.error(error.message, error)
+    defaultLogger.error(error.message, error)
     process.exit(1)
   }
 }
