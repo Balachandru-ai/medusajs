@@ -3,13 +3,10 @@ import {
   ApplicationMethodAllocation,
   ApplicationMethodType,
 } from "../../promotion"
-import { MathBN } from "../math"
+import { MathBN, MEDUSA_EPSILON } from "../math"
 
 function getPromotionValueForPercentage(promotion, lineItemAmount) {
-  return MathBN.convert(
-    MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount),
-    2
-  )
+  return MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount)
 }
 
 function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
@@ -28,10 +25,7 @@ function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
       promotionValueForItem
     )
 
-    return MathBN.convert(
-      MathBN.mult(promotionValueForItem, MathBN.div(percentage, 100)),
-      2
-    )
+    return MathBN.mult(promotionValueForItem, MathBN.div(percentage, 100))
   }
   return promotion.value
 }
@@ -104,8 +98,8 @@ export function calculateAdjustmentAmountFromPromotion(
     )
     const applicableAmount = MathBN.sub(lineItemAmount, promotion.applied_value)
 
-    if (MathBN.lte(applicableAmount, 0)) {
-      return applicableAmount
+    if (MathBN.lte(applicableAmount, MEDUSA_EPSILON)) {
+      return MathBN.convert(0)
     }
 
     const promotionValue = getPromotionValue(
@@ -153,7 +147,7 @@ export function calculateAdjustmentAmountFromPromotion(
     maximumPromotionAmount
   )
 
-  if (MathBN.lte(applicableAmount, 0)) {
+  if (MathBN.lte(applicableAmount, MEDUSA_EPSILON)) {
     return MathBN.convert(0)
   }
 

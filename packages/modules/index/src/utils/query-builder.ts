@@ -9,6 +9,9 @@ import { Knex } from "@mikro-orm/knex"
 import { OrderBy, QueryFormat, QueryOptions, Select } from "@types"
 import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 
+const AND_OPERATOR = "$and"
+const OR_OPERATOR = "$or"
+
 function escapeJsonPathString(val: string): string {
   // Escape for JSONPath string
   return val.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/'/g, "\\'")
@@ -102,7 +105,25 @@ export class QueryBuilder {
   }
 
   private getStructureKeys(structure) {
-    return Object.keys(structure ?? {}).filter((key) => key !== "entity")
+    const collectKeys = (obj: any, keys = new Set<string>()) => {
+      if (!isObject(obj)) {
+        return keys
+      }
+
+      Object.keys(obj).forEach((key) => {
+        if (key === AND_OPERATOR || key === OR_OPERATOR) {
+          if (Array.isArray(obj[key])) {
+            obj[key].forEach((item) => collectKeys(item, keys))
+          }
+        } else if (key !== "entity") {
+          keys.add(key)
+        }
+      })
+
+      return keys
+    }
+
+    return [...collectKeys(structure ?? {})]
   }
 
   private getEntity(
@@ -123,6 +144,10 @@ export class QueryBuilder {
   }
 
   private getGraphQLType(path, field) {
+    if (field === AND_OPERATOR || field === OR_OPERATOR) {
+      return "JSON"
+    }
+
     const entity = this.getEntity(path)?.ref?.entity!
     const fieldRef = this.entityMap[entity]._fields[field]
 
@@ -209,12 +234,14 @@ export class QueryBuilder {
   private parseWhere(
     aliasMapping: { [path: string]: string },
     obj: object,
-    builder: Knex.QueryBuilder
+    builder: Knex.QueryBuilder,
+    parentPath: string = ""
   ) {
     const keys = Object.keys(obj)
 
     const getPathAndField = (key: string) => {
-      const path = key.split(".")
+      const fullKey = parentPath ? `${parentPath}.${key}` : key
+      const path = fullKey.split(".")
       const field = [path.pop()]
 
       while (!aliasMapping[path.join(".")] && path.length > 0) {
@@ -241,115 +268,151 @@ export class QueryBuilder {
     }
 
     keys.forEach((key) => {
+      const pathAsArray = (parentPath ? `${parentPath}.${key}` : key).split(".")
+      const fieldOrLogicalOperator = pathAsArray.pop()
       let value = obj[key]
 
-      if ((key === "$and" || key === "$or") && !Array.isArray(value)) {
+      if (
+        (fieldOrLogicalOperator === AND_OPERATOR ||
+          fieldOrLogicalOperator === OR_OPERATOR) &&
+        !Array.isArray(value)
+      ) {
         value = [value]
       }
 
-      if (key === "$and" && Array.isArray(value)) {
+      if (fieldOrLogicalOperator === AND_OPERATOR && Array.isArray(value)) {
         builder.where((qb) => {
           value.forEach((cond) => {
             qb.andWhere((subBuilder) =>
-              this.parseWhere(aliasMapping, cond, subBuilder)
+              this.parseWhere(
+                aliasMapping,
+                cond,
+                subBuilder,
+                pathAsArray.join(".")
+              )
             )
           })
         })
-      } else if (key === "$or" && Array.isArray(value)) {
+      } else if (
+        fieldOrLogicalOperator === OR_OPERATOR &&
+        Array.isArray(value)
+      ) {
         builder.where((qb) => {
           value.forEach((cond) => {
             qb.orWhere((subBuilder) =>
-              this.parseWhere(aliasMapping, cond, subBuilder)
+              this.parseWhere(
+                aliasMapping,
+                cond,
+                subBuilder,
+                pathAsArray.join(".")
+              )
             )
           })
         })
-      } else if (isObject(value) && !Array.isArray(value)) {
+      } else if (
+        isObject(value) &&
+        !Array.isArray(value) &&
+        fieldOrLogicalOperator !== AND_OPERATOR &&
+        fieldOrLogicalOperator !== OR_OPERATOR
+      ) {
+        const currentPath = parentPath ? `${parentPath}.${key}` : key
+
         const subKeys = Object.keys(value)
-        subKeys.forEach((subKey) => {
-          let operator = OPERATOR_MAP[subKey]
-          if (operator) {
-            const { field, attr } = getPathAndField(key)
-            const nested = new Array(field.length).join("->?")
+        const hasOperators = subKeys.some((subKey) => OPERATOR_MAP[subKey])
 
-            const subValue = this.transformValueToType(
-              attr,
-              field,
-              value[subKey]
-            )
+        if (hasOperators) {
+          const { field, attr } = getPathAndField(key)
 
-            let val = operator === "IN" ? subValue : [subValue]
-            if (operator === "=" && subValue === null) {
-              operator = "IS"
-            } else if (operator === "!=" && subValue === null) {
-              operator = "IS NOT"
-            }
+          const subKeys = Object.keys(value)
+          subKeys.forEach((subKey) => {
+            let operator = OPERATOR_MAP[subKey]
+            if (operator) {
+              const nested = new Array(field.length).join("->?")
 
-            if (operator === "=") {
-              const hasId = field[field.length - 1] === "id"
-              if (hasId) {
-                builder.whereRaw(`${aliasMapping[attr]}.id = ?`, subValue)
+              const subValue = this.transformValueToType(
+                attr,
+                field,
+                value[subKey]
+              )
+
+              let val = operator === "IN" ? subValue : [subValue]
+              if (operator === "=" && subValue === null) {
+                operator = "IS"
+              } else if (operator === "!=" && subValue === null) {
+                operator = "IS NOT"
+              }
+
+              if (operator === "=") {
+                const hasId = field[field.length - 1] === "id"
+                if (hasId) {
+                  builder.whereRaw(`${aliasMapping[attr]}.id = ?`, subValue)
+                } else {
+                  builder.whereRaw(
+                    `${aliasMapping[attr]}.data @> '${getPathOperation(
+                      attr,
+                      field as string[],
+                      subValue
+                    )}'::jsonb`
+                  )
+                }
+              } else if (operator === "IN") {
+                if (val && !Array.isArray(val)) {
+                  val = [val]
+                }
+                if (!val || val.length === 0) {
+                  return
+                }
+
+                const inPlaceholders = val.map(() => "?").join(",")
+                const hasId = field[field.length - 1] === "id"
+                if (hasId) {
+                  builder.whereRaw(
+                    `${aliasMapping[attr]}.id IN (${inPlaceholders})`,
+                    val
+                  )
+                } else {
+                  const targetField = field[field.length - 1] as string
+
+                  const jsonbValues = val.map((item) =>
+                    JSON.stringify({
+                      [targetField]: item === null ? null : item,
+                    })
+                  )
+
+                  builder.whereRaw(
+                    `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
+                    jsonbValues
+                  )
+                }
               } else {
-                builder.whereRaw(
-                  `${aliasMapping[attr]}.data @> '${getPathOperation(
-                    attr,
-                    field as string[],
-                    subValue
-                  )}'::jsonb`
-                )
-              }
-            } else if (operator === "IN") {
-              if (val && !Array.isArray(val)) {
-                val = [val]
-              }
-              if (!val || val.length === 0) {
-                return
-              }
+                const potentialIdFields = field[field.length - 1]
+                const hasId = potentialIdFields === "id"
 
-              const inPlaceholders = val.map(() => "?").join(",")
-              const hasId = field[field.length - 1] === "id"
-              if (hasId) {
-                builder.whereRaw(
-                  `${aliasMapping[attr]}.id IN (${inPlaceholders})`,
-                  val
-                )
-              } else {
-                const targetField = field[field.length - 1] as string
+                if (hasId) {
+                  builder.whereRaw(`(${aliasMapping[attr]}.id) ${operator} ?`, [
+                    ...val,
+                  ])
+                } else {
+                  const targetField = field[field.length - 1] as string
 
-                const jsonbValues = val.map((item) =>
-                  JSON.stringify({
-                    [targetField]: item === null ? null : item,
-                  })
-                )
+                  const jsonPath = buildSafeJsonPathQuery(
+                    targetField,
+                    operator,
+                    val[0]
+                  )
 
-                builder.whereRaw(
-                  `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
-                  jsonbValues
-                )
+                  builder.whereRaw(`${aliasMapping[attr]}.data${nested} @@ ?`, [
+                    jsonPath,
+                  ])
+                }
               }
             } else {
-              const potentialIdFields = field[field.length - 1]
-              const hasId = potentialIdFields === "id"
-              if (hasId) {
-                builder.whereRaw(`(${aliasMapping[attr]}.id) ${operator} ?`, [
-                  ...val,
-                ])
-              } else {
-                const targetField = field[field.length - 1] as string
-
-                const jsonPath = buildSafeJsonPathQuery(
-                  targetField,
-                  operator,
-                  val[0]
-                )
-                builder.whereRaw(`${aliasMapping[attr]}.data${nested} @@ ?`, [
-                  jsonPath,
-                ])
-              }
+              throw new Error(`Unsupported operator: ${subKey}`)
             }
-          } else {
-            throw new Error(`Unsupported operator: ${subKey}`)
-          }
-        })
+          })
+        } else {
+          this.parseWhere(aliasMapping, value, builder, currentPath)
+        }
       } else {
         const { field, attr } = getPathAndField(key)
         const nested = new Array(field.length).join("->?")
@@ -667,7 +730,6 @@ export class QueryBuilder {
     selectParts[currentAliasPath + ".id"] = `${alias}.id`
 
     const children = this.getStructureKeys(structure)
-
     for (const child of children) {
       const childStructure = structure[child] as Select
 
@@ -859,6 +921,7 @@ export class QueryBuilder {
           )
         }),
       ]
+
       innerQueryBuilder.whereRaw(
         `(${searchWhereParts.join(" OR ")})`,
         Array(searchWhereParts.length).fill(textSearchQuery)
