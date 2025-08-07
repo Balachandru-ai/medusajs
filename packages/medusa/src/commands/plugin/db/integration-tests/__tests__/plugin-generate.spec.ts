@@ -1,17 +1,22 @@
+import { logger as defaultLogger } from "@medusajs/framework/logger"
+
 import { FileSystem } from "@medusajs/framework/utils"
 import { join } from "path"
 import main from "../../generate"
 
 const logger = {
+  log: jest.fn(),
   info: jest.fn(),
   error: jest.fn(),
+  warn: jest.fn(),
 }
 
-jest.mock("@medusajs/framework/config", () => {
+jest.mock("@medusajs/framework/logger")
+jest.mock("../../../../../loaders", () => {
   return {
-    configLoader: jest.fn().mockImplementation(() => {
+    initializeContainer: jest.fn().mockImplementation(() => {
       return {
-        logger,
+        resolve: jest.fn(() => logger),
       }
     }),
   }
@@ -25,6 +30,8 @@ describe("plugin-generate", () => {
       .mockImplementation((code?: string | number | null) => {
         return code as never
       })
+
+    jest.mock("@medusajs/framework/logger")
   })
 
   afterEach(async () => {
@@ -94,7 +101,7 @@ describe("plugin-generate", () => {
           "plugins-1-no-default"
         ),
       })
-      expect(logger.error).toHaveBeenCalledWith(
+      expect(defaultLogger.error).toHaveBeenCalledWith(
         "The module should default export the `Module()`",
         new Error("The module should default export the `Module()`")
       )
