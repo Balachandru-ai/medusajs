@@ -912,6 +912,10 @@ export const filesMap = [
     "pathname": "/integrations/guides/mailchimp"
   },
   {
+    "filePath": "/www/apps/resources/app/integrations/guides/payload/page.mdx",
+    "pathname": "/integrations/guides/payload"
+  },
+  {
     "filePath": "/www/apps/resources/app/integrations/guides/resend/page.mdx",
     "pathname": "/integrations/guides/resend"
   },
