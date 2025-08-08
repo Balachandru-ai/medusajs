@@ -299,7 +299,7 @@ export const CreatePromotionForm = () => {
   const formData = form.getValues()
   let campaignQuery: object = {}
 
-  if (isFixedValueType && formData.application_method.currency_code) {
+  if (formData.application_method.currency_code) {
     campaignQuery = {
       budget: { currency_code: formData.application_method.currency_code },
     }
