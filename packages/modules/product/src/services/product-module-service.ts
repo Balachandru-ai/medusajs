@@ -1876,12 +1876,13 @@ export default class ProductModuleService
           )
           return {
             title: option.title,
-            values: option.values?.map((value) => {
+            values: option.values?.map((valueContainer) => {
               const dbValue = dbOption?.values?.find(
-                (val) => val.value === value
+                (val) => val.value === valueContainer.value
               )
               return {
-                value: value,
+                value: valueContainer.value,
+                metadata: valueContainer.metadata,
                 ...(dbValue ? { id: dbValue.id } : {}),
               }
             }),

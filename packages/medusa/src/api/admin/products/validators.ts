@@ -101,9 +101,16 @@ export const AdminUpdateProductTag = z.object({
 })
 
 export type AdminCreateProductOptionType = z.infer<typeof CreateProductOption>
+
+  const ProductOptionValues = z.array(z.object({
+    value: z.string(),
+    metadata: z.record(z.unknown()).nullish(),
+  }));
+
 export const CreateProductOption = z.object({
   title: z.string(),
-  values: z.array(z.string()),
+  values: ProductOptionValues,
+  metadata: z.record(z.unknown()).nullish(),
 })
 export const AdminCreateProductOption = WithAdditionalData(CreateProductOption)
 
@@ -111,7 +118,8 @@ export type AdminUpdateProductOptionType = z.infer<typeof UpdateProductOption>
 export const UpdateProductOption = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
-  values: z.array(z.string()).optional(),
+  values: ProductOptionValues.optional(),
+  metadata: z.record(z.unknown()).nullish(),
 })
 
 export const AdminUpdateProductOption = WithAdditionalData(UpdateProductOption)

@@ -10,8 +10,8 @@ export const getProductFixture = (
   images: [{ url: "test-image.png" }, { url: "test-image-2.png" }],
   // BREAKING: Options input changed from {title: string}[] to {title: string, values: string[]}[]
   options: [
-    { title: "size", values: ["large", "small"] },
-    { title: "color", values: ["green"] },
+    { title: "size", values: [{value: "large"}, {value: 'small'}] },
+    { title: "color", values: [{value: 'green'}] },
   ],
   variants: [
     {
