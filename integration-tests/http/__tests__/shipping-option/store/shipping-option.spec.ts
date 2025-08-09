@@ -79,8 +79,8 @@ medusaIntegrationTestRunner({
             {
               title: "Test fixture",
               options: [
-                { title: "size", values: ["large", "small"] },
-                { title: "color", values: ["green"] },
+                { title: "size", values: [{value: "large"}, {value: "small"}] },
+                { title: "color", values: [{value: "green"}] },
               ],
               shipping_profile_id: shippingProfile.id,
               variants: [
@@ -635,8 +635,8 @@ medusaIntegrationTestRunner({
             {
               title: "Test prod",
               options: [
-                { title: "size", values: ["large", "small"] },
-                { title: "color", values: ["green"] },
+                { title: "size", values: [{value: "large"}, {value: "small"}] },
+                { title: "color", values: [{value: "green"}] },
               ],
               shipping_profile_id: shippingProfile.id,
               variants: [

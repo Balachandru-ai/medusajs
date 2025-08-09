@@ -12,7 +12,7 @@ export const createProductsStepId = "create-products"
  *   options: [
  *     {
  *       title: "Size",
- *       values: ["S", "M", "L"]
+ *       values: [{value: "S", {value: "M", {value: "L"]
  *     }
  *   ],
  *   variants: [

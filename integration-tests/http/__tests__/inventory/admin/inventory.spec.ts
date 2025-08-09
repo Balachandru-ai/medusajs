@@ -999,7 +999,7 @@ medusaIntegrationTestRunner({
               "/admin/products",
               {
                 title: "product 1",
-                options: [{ title: "size", values: ["large"] }],
+                options: [{ title: "size", values: [{value: "large"}] }],
                 shipping_profile_id: shippingProfile.id,
                 variants: [
                   {

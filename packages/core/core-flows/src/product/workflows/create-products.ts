@@ -47,7 +47,7 @@ const validateProductInputStepId = "validate-product-input"
  *       options: [
  *         {
  *           title: "Size",
- *           values: ["S", "M", "L"]
+ *           values: [{value: "S", {value: "M", {value: "L"]
  *         }
  *       ],
  *       variants: [
@@ -126,7 +126,7 @@ export const createProductsWorkflowId = "create-products"
  *         options: [
  *           {
  *             title: "Size",
- *             values: ["S", "M", "L"]
+ *             values: [{value: "S", {value: "M", {value: "L"]
  *           }
  *         ],
  *         variants: [

@@ -682,8 +682,8 @@ medusaIntegrationTestRunner({
               title: `Test fixture`,
               shipping_profile_id: shippingProfile.id,
               options: [
-                { title: "size", values: ["large", "small"] },
-                { title: "color", values: ["green"] },
+                { title: "size", values: [{value: "large"}, {value: "small"}] },
+                { title: "color", values: [{value: "green"}] },
               ],
               variants: [
                 {
@@ -769,8 +769,8 @@ medusaIntegrationTestRunner({
             {
               title: `Test fixture 2`,
               options: [
-                { title: "size", values: ["large", "small"] },
-                { title: "color", values: ["green"] },
+                { title: "size", values: [{value: "large"}, {value: "small"}] },
+                { title: "color", values: [{value: "green"}] },
               ],
               variants: [
                 {
@@ -806,8 +806,8 @@ medusaIntegrationTestRunner({
               title: `Test fixture 3`,
               shipping_profile_id: shippingProfile.id,
               options: [
-                { title: "size", values: ["large", "small"] },
-                { title: "color", values: ["green"] },
+                { title: "size", values: [{value: "large"}, {value: "small"}] },
+                { title: "color", values: [{value: "green"}] },
               ],
               variants: [
                 {
@@ -851,8 +851,8 @@ medusaIntegrationTestRunner({
               title: `Test fixture 4`,
               shipping_profile_id: shippingProfileOverride.id,
               options: [
-                { title: "size", values: ["large", "small"] },
-                { title: "color", values: ["green"] },
+                { title: "size", values: [{value: "large"}, {value: "small"}] },
+                { title: "color", values: [{value: "green"}] },
               ],
               variants: [
                 {
@@ -1208,7 +1208,7 @@ medusaIntegrationTestRunner({
             {
               title: `Wooden table`,
               shipping_profile_id: shippingProfile.id,
-              options: [{ title: "color", values: ["green"] }],
+              options: [{ title: "color", values: [{value: "green"}] }],
               variants: [
                 {
                   title: "Green table",
@@ -1372,7 +1372,7 @@ medusaIntegrationTestRunner({
             {
               title: `Tablet`,
               shipping_profile_id: shippingProfile.id,
-              options: [{ title: "color", values: ["green"] }],
+              options: [{ title: "color", values: [{value: "green"}] }],
               variants: [
                 {
                   title: "Green tablet",
@@ -1793,7 +1793,7 @@ medusaIntegrationTestRunner({
             {
               title: `Bottle Packs`,
               shipping_profile_id: shippingProfile.id,
-              options: [{ title: "packs", values: ["one", "two", "three"] }],
+              options: [{ title: "packs", values: [{value: "one"}, {value: "two"}, {value: "three"}] }],
               variants: [
                 {
                   title: "One Pack",
@@ -2529,7 +2529,7 @@ medusaIntegrationTestRunner({
               {
                 title: `Wooden table`,
                 shipping_profile_id: shippingProfile.id,
-                options: [{ title: "color", values: ["green"] }],
+                options: [{ title: "color", values: [{value: "green"}] }],
                 variants: [
                   {
                     title: "Green table",

@@ -59,7 +59,7 @@ export const batchProductsWorkflowId = "batch-products"
  *         options: [
  *           {
  *             title: "Color",
- *             values: ["Red", "Brown"]
+ *             values: [{value: "Red", {value: "Brown"]
  *           }
  *         ],
  *         variants: [

@@ -34,7 +34,7 @@ async function populateData(api: any) {
       description: "test-product-description",
       origin_country: "USA",
       shipping_profile_id: shippingProfile.id,
-      options: [{ title: "Denominations", values: ["100"] }],
+      options: [{ title: "Denominations", values: [{value: "100"}] }],
       variants: [
         {
           title: `Test variant 1`,
@@ -60,7 +60,7 @@ async function populateData(api: any) {
       description: "extra description",
       status: "published",
       shipping_profile_id: shippingProfile.id,
-      options: [{ title: "Colors", values: ["Red"] }],
+      options: [{ title: "Colors", values: [{value: "Red"}] }],
       variants: new Array(2).fill(0).map((_, i) => ({
         title: `extra variant ${i}`,
         sku: `extra-variant-${i}`,

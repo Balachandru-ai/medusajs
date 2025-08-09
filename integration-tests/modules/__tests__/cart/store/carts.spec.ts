@@ -666,11 +666,11 @@ medusaIntegrationTestRunner({
           options: [
             {
               title: "Size",
-              values: ["S"],
+              values: [{value: "S"}],
             },
             {
               title: "Color",
-              values: ["Black", "White"],
+              values: [{value: "Black"}, {value: "White"}],
             },
           ],
           variants: [
@@ -1219,8 +1219,8 @@ medusaIntegrationTestRunner({
               {
                 title: "Test fixture",
                 options: [
-                  { title: "size", values: ["large", "small"] },
-                  { title: "color", values: ["green"] },
+                  { title: "size", values: [{value: "large"}, {value: "small"}] },
+                  { title: "color", values: [{value: "green"}] },
                 ],
                 variants: [
                   {

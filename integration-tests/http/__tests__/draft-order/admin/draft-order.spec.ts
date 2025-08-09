@@ -316,7 +316,7 @@ medusaIntegrationTestRunner({
             {
               title: "Shirt",
               options: [
-                { title: "size", values: ["large", "medium", "small"] },
+                { title: "size", values: [{value: "large"}, {value: "medium"}, {value: "small"}] },
               ],
               variants: [
                 {
@@ -540,7 +540,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: "Shirt",
-              options: [{ title: "size", values: ["large", "small"] }],
+              options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
               variants: [
                 {
                   title: "L shirt",

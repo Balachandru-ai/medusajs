@@ -9,7 +9,7 @@ export const createProductOptionsStepId = "create-product-options"
  * @example
  * const data = createProductOptionsStep([{
  *   title: "Size",
- *   values: ["S", "M", "L"]
+ *   values: [{value: "S", {value: "M", {value: "L"]
  * }])
  */
 export const createProductOptionsStep = createStep(

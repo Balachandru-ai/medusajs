@@ -37,7 +37,7 @@ async function populateData(
     is_giftcard: true,
     shipping_profile_id: shippingProfile.id,
     description: "test-giftcard-description" + a,
-    options: [{ title: "Denominations", values: ["100"] }],
+    options: [{ title: "Denominations", values: [{value: "100"}] }],
     variants: new Array(variantCount).fill(0).map((_, i) => ({
       title: `Test variant ${i}`,
       sku: `test-variant-${i}${a}`,

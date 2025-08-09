@@ -82,7 +82,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "Test product",
-            options: [{ title: "size", values: ["large", "small"] }],
+            options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -107,7 +107,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "Extra product",
-            options: [{ title: "size", values: ["large", "small"] }],
+            options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {

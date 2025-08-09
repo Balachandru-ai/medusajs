@@ -922,7 +922,7 @@ medusaIntegrationTestRunner({
                 options: [
                   {
                     title: "Size",
-                    values: ["S", "M"],
+                    values: [{value: "S"}, {value: "M"}],
                   },
                 ],
                 variants: [
@@ -2561,7 +2561,7 @@ medusaIntegrationTestRunner({
               "/admin/products",
               {
                 title: "Test product 1",
-                options: [{ title: "size", values: ["large", "small"] }],
+                options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
                 shipping_profile_id: shippingProfile.id,
               },
               adminHeaders
@@ -2573,7 +2573,7 @@ medusaIntegrationTestRunner({
               "/admin/products",
               {
                 title: "Test product 2",
-                options: [{ title: "size", values: ["large", "small"] }],
+                options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
                 shipping_profile_id: shippingProfile.id,
               },
               adminHeaders

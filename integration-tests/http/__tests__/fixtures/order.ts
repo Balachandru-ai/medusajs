@@ -116,8 +116,8 @@ export async function createOrderSeeder({
           title: `Test fixture ${shippingProfile.id}`,
           shipping_profile_id: withoutShipping ? undefined : shippingProfile.id,
           options: [
-            { title: "size", values: ["large", "small"] },
-            { title: "color", values: ["green"] },
+            { title: "size", values: [{value: "large"}, {value: "small"}] },
+            { title: "color", values: [{value: "green"}] },
           ],
           variants: [
             {

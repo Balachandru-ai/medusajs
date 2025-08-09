@@ -41,7 +41,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "Test product",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {

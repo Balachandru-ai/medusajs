@@ -368,7 +368,7 @@ medusaIntegrationTestRunner({
             {
               title: "test name",
               shipping_profile_id: shippingProfile.id,
-              options: [{ title: "size", values: ["large"] }],
+              options: [{ title: "size", values: [{value: "large"}] }],
             },
             adminHeaders
           )

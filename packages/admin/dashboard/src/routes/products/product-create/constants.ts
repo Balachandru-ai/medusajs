@@ -48,7 +48,7 @@ export type ProductCreateVariantSchema = z.infer<
 
 const ProductCreateOptionSchema = z.object({
   title: z.string(),
-  values: z.array(z.string()).min(1),
+  values: z.array(z.string()).min(1),//TODO
 })
 
 export type ProductCreateOptionSchema = z.infer<
@@ -127,7 +127,7 @@ export const PRODUCT_CREATE_FORM_DEFAULTS: Partial<
   options: [
     {
       title: "Default option",
-      values: ["Default option value"],
+      values: [{value: "Default option value"}],
     },
   ],
   variants: decorateVariantsWithDefaultValues([

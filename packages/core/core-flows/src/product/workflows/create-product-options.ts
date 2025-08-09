@@ -36,11 +36,11 @@ export const createProductOptionsWorkflowId = "create-product-options"
  *     product_options: [
  *       {
  *         title: "Size",
- *         values: ["S", "M", "L", "XL"]
+ *         values: [{value: "S", {value: "M", {value: "L", {value: "XL"]
  *       },
  *       {
  *         title: "Color",
- *         values: ["Red", "Blue", "Green"]
+ *         values: [{value: "Red", {value: "Blue", {value: "Green"]
  *       }
  *     ],
  *     additional_data: {

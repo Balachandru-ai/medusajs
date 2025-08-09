@@ -134,7 +134,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: [
               {
                 title: "opt-title",
-                values: ["val-1", "val-2"],
+                values: [{value: "val-1"}, {value: "val-2"}],
               },
             ],
             variants: [
@@ -154,11 +154,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: [
               {
                 title: "size",
-                values: ["large", "small"],
+                values: [{value: "large"}, {value: "small"}],
               },
               {
                 title: "color",
-                values: ["red", "blue"],
+                values: [{value: "red"}, {value: "blue"}],
               },
             ],
             variants: [
@@ -208,7 +208,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: [
               {
                 title: "opt-title",
-                values: ["val-1", "val-2"],
+                values: [{value: "val-1"}, {value: "val-2"}],
               },
             ],
             tag_ids: [tags[0].id],
@@ -334,8 +334,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
               title: "New product",
               description: "New description",
               options: [
-                { title: "size", values: ["x", "l"] },
-                { title: "color", values: ["red", "green"] },
+                { title: "size", values: [{value: "x"}, {value: "l"}] },
+                { title: "color", values: [{value: "red"}, {value: "green"}] },
               ],
               variants: [
                 {
@@ -509,15 +509,15 @@ moduleIntegrationTestRunner<IProductModuleService>({
               options: [
                 {
                   title: "size",
-                  values: ["large", "small"],
+                  values: [{value: "large"}, {value: "small"}],
                 },
                 {
                   title: "color",
-                  values: ["red"],
+                  values: [{value: "red"}],
                 },
                 {
                   title: "material",
-                  values: ["cotton"],
+                  values: [{value: "cotton"}],
                 },
               ],
             },
@@ -857,7 +857,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
         it("should simultaneously update options and variants", async () => {
           const updateData = {
             id: productTwo.id,
-            options: [{ title: "material", values: ["cotton", "silk"] }],
+            options: [{ title: "material", values: [{value: "cotton"}, {value: "silk"}] }],
             variants: [{ title: "variant 1", options: { material: "cotton" } }],
           }
 
@@ -1116,8 +1116,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
               {
                 title: "Product with variants and options",
                 options: [
-                  { title: "opt1", values: ["1", "2"] },
-                  { title: "opt2", values: ["3", "4"] },
+                  { title: "opt1", values: [{value: "1"}, {value: "2"}] },
+                  { title: "opt2", values: [{value: "3"}, {value: "4"}] },
                 ],
                 variants: [
                   {
@@ -1142,9 +1142,9 @@ moduleIntegrationTestRunner<IProductModuleService>({
             images,
             thumbnail: images[0].url,
             options: [
-              { title: "size", values: ["large", "small"] },
-              { title: "color", values: ["red", "blue"] },
-              { title: "material", values: ["cotton", "polyester"] },
+              { title: "size", values: [{value: "large"}, {value: "small"}] },
+              { title: "color", values: [{value: "red"}, {value: "blue"}] },
+              { title: "material", values: [{value: "cotton"}, {value: "polyester"}] },
             ],
             variants: [
               {
@@ -1451,7 +1451,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           const resp = await service.createProducts([
             buildProductAndRelationsData({
               collection_id: productCollectionOne.id,
-              options: [{ title: "size", values: ["large", "small"] }],
+              options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
               variants: [{ title: "variant 1", options: { size: "small" } }],
               tag_ids: [tags[0].id],
             }),

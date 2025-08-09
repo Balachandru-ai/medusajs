@@ -301,7 +301,7 @@ medusaIntegrationTestRunner({
           is_giftcard: true,
           shipping_profile_id: shippingProfile.id,
           description: "test-giftcard-description",
-          options: [{ title: "Denominations", values: ["100"] }],
+          options: [{ title: "Denominations", values: [{value: "100"}] }],
           variants: [
             {
               title: "Test variant",

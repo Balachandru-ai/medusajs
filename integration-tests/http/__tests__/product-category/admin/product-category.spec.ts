@@ -1357,7 +1357,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "product 1",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             categories: [{ id: productCategory.id }],
             shipping_profile_id: shippingProfile.id,
           },
@@ -1368,7 +1368,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "product 2",
-            options: [{ title: "color", values: ["r", "g"] }],
+            options: [{ title: "color", values: [{value: "r"}, {value: "g"}] }],
             shipping_profile_id: shippingProfile.id,
           },
           adminHeaders

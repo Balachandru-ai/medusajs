@@ -7,11 +7,11 @@ export const medusaTshirtProduct = {
   options: [
     {
       title: "Size",
-      values: ["S"],
+      values: [{value: "S"}],
     },
     {
       title: "Color",
-      values: ["Black", "White"],
+      values: [{value: "Black"}, {value: "White"}],
     },
   ],
   variants: [

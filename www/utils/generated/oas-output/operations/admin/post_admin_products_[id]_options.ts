@@ -59,7 +59,7 @@
  *         "prod_123",
  *         {
  *           title: "Color",
- *           values: ["Green", "Blue"]
+ *           values: [{value: "Green", {value: "Blue"]
  *         }
  *       )
  *       .then(({ product }) => {

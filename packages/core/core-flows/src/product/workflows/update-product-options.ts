@@ -41,7 +41,7 @@ export const updateProductOptionsWorkflowId = "update-product-options"
  *       title: "Color"
  *     },
  *     update: {
- *       values: ["Red", "Blue", "Green"]
+ *       values: [{value: "Red", {value: "Blue", {value: "Green"]
  *     },
  *     additional_data: {
  *       erp_id: "123"

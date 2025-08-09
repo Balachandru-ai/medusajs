@@ -623,7 +623,7 @@ medusaIntegrationTestRunner({
             title: "Test Giftcard",
             is_giftcard: true,
             description: "test-giftcard-description",
-            options: [{ title: "Denominations", values: ["100"] }],
+            options: [{ title: "Denominations", values: [{value: '100'}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -712,7 +712,7 @@ medusaIntegrationTestRunner({
             title: "Test Giftcard",
             is_giftcard: true,
             description: "test-giftcard-description",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: 'l'}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -1344,7 +1344,7 @@ medusaIntegrationTestRunner({
           const payload = {
             title: "Test product - 1",
             handle: "test-1",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -1388,7 +1388,7 @@ medusaIntegrationTestRunner({
           const payload = {
             title: "Test product - 1",
             handle: "test-1",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -1590,7 +1590,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: "Test create",
-              options: [{ title: "size", values: ["x", "l"] }],
+              options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
               shipping_profile_id: shippingProfile.id,
               variants: [
                 {
@@ -1644,7 +1644,7 @@ medusaIntegrationTestRunner({
             images: [{ url: "test-image.png" }, { url: "test-image-2.png" }],
             collection_id: baseCollection.id,
             tags: [{ id: baseTag1.id }, { id: baseTag2.id }],
-            options: [{ title: "size", values: ["large"] }],
+            options: [{ title: "size", values: [{value:"large"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -1677,7 +1677,7 @@ medusaIntegrationTestRunner({
             images: [{ url: "test-image.png" }, { url: "test-image-2.png" }],
             collection_id: baseCollection.id,
             tags: [{ id: baseTag1.id }, { id: baseTag2.id }],
-            options: [{ title: "size", values: ["l", "x"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -1729,7 +1729,7 @@ medusaIntegrationTestRunner({
             title: "Test Giftcard",
             is_giftcard: true,
             description: "test-giftcard-description",
-            options: [{ title: "size", values: ["large"] }],
+            options: [{ title: "size", values: [{value: "large"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -1836,7 +1836,7 @@ medusaIntegrationTestRunner({
             length: 100,
             width: 100,
             height: 100,
-            options: [{ title: "size", values: ["large", "small"] }],
+            options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
             variants: [
               {
                 options: { size: "large" },
@@ -2602,10 +2602,10 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("add option", async () => {
+        it.only("add option", async () => {
           const payload = {
             title: "should_add",
-            values: ["100"],
+            values: [{value: "100"}],
           }
 
           const response = await api
@@ -2663,7 +2663,7 @@ medusaIntegrationTestRunner({
           const payload = {
             title: "Test product - 1",
             handle: "test-1",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -2777,7 +2777,7 @@ medusaIntegrationTestRunner({
           const payload = {
             title: "Test product - 1",
             handle: "test-1",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -2829,7 +2829,7 @@ medusaIntegrationTestRunner({
           const payload = {
             title: "Test product - 1",
             handle: "test-1",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -3004,7 +3004,7 @@ medusaIntegrationTestRunner({
               {
                 title: "Test product - 1",
                 handle: "test-1",
-                options: [{ title: "size", values: ["l"] }],
+                options: [{ title: "size", values: [{value: "l"}] }],
                 shipping_profile_id: shippingProfile.id,
                 variants: [
                   {
@@ -3035,7 +3035,7 @@ medusaIntegrationTestRunner({
             {
               title: "Test product - 2",
               handle: "test-2",
-              options: [{ title: "size", values: ["l"] }],
+              options: [{ title: "size", values: [{value: "l"}] }],
               shipping_profile_id: shippingProfile.id,
               variants: [
                 {
@@ -3120,7 +3120,7 @@ medusaIntegrationTestRunner({
               {
                 title: "Test product - 1",
                 handle: "test-1",
-                options: [{ title: "size", values: ["l"] }],
+                options: [{ title: "size", values: [{value: "l"}] }],
                 shipping_profile_id: shippingProfile.id,
                 variants: [
                   {
@@ -3257,7 +3257,7 @@ medusaIntegrationTestRunner({
           const payload = {
             title: baseProduct.title,
             handle: baseProduct.handle,
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {
@@ -3290,7 +3290,7 @@ medusaIntegrationTestRunner({
             title: baseProduct.title,
             handle: baseProduct.handle,
             description: "test-product-description",
-            options: [{ title: "size", values: ["x", "l"] }],
+            options: [{ title: "size", values: [{value: "x"}, {value: "l"}] }],
             shipping_profile_id: shippingProfile.id,
             variants: [
               {

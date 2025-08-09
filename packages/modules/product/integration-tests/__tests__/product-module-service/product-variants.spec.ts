@@ -48,11 +48,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
           options: [
             {
               title: "size",
-              values: ["large", "small"],
+              values: [{value: "large"}, {value: "small"}],
             },
             {
               title: "color",
-              values: ["red", "blue"],
+              values: [{value: "red"}, {value: "blue"}],
             },
           ],
         } as CreateProductDTO)
@@ -319,11 +319,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: [
               {
                 title: "size",
-                values: ["large", "small"],
+                values: [{value: "large"}, {value: "small"}],
               },
               {
                 title: "color",
-                values: ["red", "yellow"],
+                values: [{value: "red"}, {value: "yellow"}],
               },
             ],
           } as CreateProductDTO)
@@ -395,11 +395,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: [
               {
                 title: "size",
-                values: ["large", "small"],
+                values: [{value: "large"}, {value: "small"}],
               },
               {
                 title: "color",
-                values: ["red", "blue"],
+                values: [{value: "red"}, {value: "blue"}],
               },
             ],
           } as CreateProductDTO)
@@ -460,11 +460,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: [
               {
                 title: "size",
-                values: ["large", "small"],
+                values: [{value: "large"}, {value: "small"}],
               },
               {
                 title: "color",
-                values: ["red", "blue"],
+                values: [{value: "red"}, {value: "blue"}],
               },
             ],
             variants: [

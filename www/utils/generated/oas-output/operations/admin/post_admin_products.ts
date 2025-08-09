@@ -52,7 +52,7 @@
  *         title: "Shirt",
  *         options: [{
  *           title: "Default",
- *           values: ["Default Option"]
+ *           values: [{value: "Default Option"]
  *         }],
  *         variants: [
  *           {
@@ -79,7 +79,7 @@
  *         "options": [
  *           {
  *             "title": "Default option",
- *             "values": ["Default option value"]
+ *             "values": [{value: "Default option value"]
  *           }
  *         ]
  *       }'

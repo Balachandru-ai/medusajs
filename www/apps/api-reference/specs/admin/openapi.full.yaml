@@ -32766,7 +32766,7 @@ paths:
               title: "Shirt",
               options: [{
                 title: "Default",
-                values: ["Default Option"]
+                values: [{value: "Default Option"}]
               }],
               variants: [
                 {
@@ -32793,7 +32793,7 @@ paths:
               "options": [
                 {
                   "title": "Default option",
-                  "values": ["Default option value"]
+                  "values": [{value: "Default option value"}]
                 }
               ]
             }'
@@ -32884,7 +32884,7 @@ paths:
                   title: "Shirt",
                   options: [{
                     title: "Default",
-                    values: ["Default Option"]
+                    values: [{value: "Default Option"}]
                   }],
                   variants: [
                     {
@@ -33825,7 +33825,7 @@ paths:
               "prod_123",
               {
                 title: "Color",
-                values: ["Green", "Blue"]
+                values: [{value: "Green"}, {value: "Blue"}]
               }
             )
             .then(({ product }) => {

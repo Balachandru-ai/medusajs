@@ -813,7 +813,7 @@ medusaIntegrationTestRunner({
               title: "product 1",
               shipping_profile_id: shippingProfile.id,
               options: [
-                { title: "size", values: ["large", "medium", "small"] },
+                { title: "size", values: [{value: "large"}, {value: "medium"}, {value: "small"}] },
               ],
               variants: [
                 {

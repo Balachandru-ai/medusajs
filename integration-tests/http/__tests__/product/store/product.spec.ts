@@ -523,8 +523,8 @@ medusaIntegrationTestRunner({
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           options: [
-            { title: "size", values: ["large", "small"] },
-            { title: "color", values: ["green"] },
+            { title: "size", values: [{value: "large"}, {value: "small"}] },
+            { title: "color", values: [{value: "green"}] },
           ],
           tags: [{ id: tag.id }],
           variants: [
@@ -562,8 +562,8 @@ medusaIntegrationTestRunner({
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
           options: [
-            { title: "size", values: ["large", "small"] },
-            { title: "material", values: ["cotton", "polyester"] },
+            { title: "size", values: [{value: "large"}, {value: "small"}] },
+            { title: "material", values: [{value: "cotton"}, {value: "polyester"}] },
           ],
           variants: [
             {
@@ -581,7 +581,7 @@ medusaIntegrationTestRunner({
           title: "product not in price list",
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          options: [{ title: "size", values: ["large", "small"] }],
+          options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
           variants: [
             { title: "test variant 3", prices: [], options: { size: "large" } },
           ],
@@ -590,7 +590,7 @@ medusaIntegrationTestRunner({
           title: "draft product",
           status: ProductStatus.DRAFT,
           shipping_profile_id: shippingProfile.id,
-          options: [{ title: "size", values: ["large", "small"] }],
+          options: [{ title: "size", values: [{value: "large"}, {value: "small"}] }],
           variants: [
             { title: "test variant 4", prices: [], options: { size: "large" } },
           ],
@@ -1573,7 +1573,7 @@ medusaIntegrationTestRunner({
           const product = await productService.createProducts({
             status: "published",
             title: "my prod",
-            options: [{ title: "color", values: ["green", "blue"] }],
+            options: [{ title: "color", values: [{value: "green"}, {value: "blue"}] }],
             variants: [
               { title: "variant one", options: { color: "green" } },
               { title: "variant two", options: { color: "blue" } },
@@ -1845,7 +1845,7 @@ medusaIntegrationTestRunner({
           title: "test product 1",
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          options: [{ title: "size", values: ["large"] }],
+          options: [{ title: "size", values: [{value: "large"}] }],
           variants: [
             {
               title: "test variant 1",
