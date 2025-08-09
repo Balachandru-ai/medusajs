@@ -157,13 +157,21 @@ get:
         oneOf:
           - type: string
             title: province_code
-            description: Filter by a province code.
+            description: Filter by a ISO 3166-2 province code. Must be lower-case.
+            example: us-ca
+            externalDocs:
+              url: https://en.wikipedia.org/wiki/ISO_3166-2
+              description: Learn more about ISO 3166-2
           - type: array
-            description: Filter by province codes.
+            description: Filter by ISO 3166-2 province codes.
             items:
               type: string
               title: province_code
-              description: A province code.
+              description: A ISO 3166-2 province code.
+              example: us-ca
+              externalDocs:
+                url: https://en.wikipedia.org/wiki/ISO_3166-2
+                description: Learn more about ISO 3166-2
           - type: object
             description: Apply filters on the province code.
             properties:
@@ -1251,11 +1259,23 @@ get:
         items:
           type: object
         title: $or
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   security:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_tax-regions/get.js
     - lang: Shell
       label: cURL
       source:
@@ -1346,6 +1366,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminCreateTaxRegion.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_tax-regions/post.js
     - lang: Shell
       label: cURL
       source:
@@ -1372,3 +1396,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createTaxRegionsWorkflow
+  x-events: []

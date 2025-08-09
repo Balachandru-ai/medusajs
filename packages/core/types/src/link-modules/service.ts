@@ -22,6 +22,7 @@ export interface ILinkModule extends IModuleService {
       | string[]
       | [string | string[], string, Record<string, unknown>?][],
     foreignKeyData?: string,
+    extraFields?: Record<string, unknown>,
     sharedContext?: Context
   ): Promise<unknown[]>
 

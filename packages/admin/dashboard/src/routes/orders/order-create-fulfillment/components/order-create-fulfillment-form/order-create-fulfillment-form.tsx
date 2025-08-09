@@ -23,6 +23,7 @@ import {
   useReservationItems,
   useShippingOptions,
 } from "../../../../../hooks/api"
+import { getReservationsLimitCount } from "../../../../../lib/orders"
 
 type OrderCreateFulfillmentFormProps = {
   order: AdminOrder
@@ -41,6 +42,7 @@ export function OrderCreateFulfillmentForm({
 
   const { reservations } = useReservationItems({
     line_item_id: order.items.map((i) => i.id),
+    limit: getReservationsLimitCount(order),
   })
 
   const itemReservedQuantitiesMap = useMemo(
@@ -111,30 +113,35 @@ export function OrderCreateFulfillmentForm({
       return
     }
 
-    const selectedShippingProfileId =
-      selectedShippingOption?.shipping_profile_id
+    let items = Object.entries(data.quantity)
+      .map(([id, quantity]) => ({
+        id,
+        quantity,
+      }))
+      .filter(({ quantity }) => !!quantity)
 
-    const itemShippingProfileMap = order.items.reduce(
-      (acc, item) => {
+    /**
+     * If items require shipping fulfill only items with matching shipping profile.
+     */
+    if (requiresShipping) {
+      const selectedShippingProfileId =
+        selectedShippingOption?.shipping_profile_id
+
+      const itemShippingProfileMap = order.items.reduce((acc, item) => {
         acc[item.id] = item.variant?.product?.shipping_profile?.id
         return acc
-      },
-      {} as Record<string, string | null>
-    )
+      }, {} as any)
+
+      items = items.filter(
+        ({ id }) => itemShippingProfileMap[id] === selectedShippingProfileId
+      )
+    }
 
     const payload: HttpTypes.AdminCreateOrderFulfillment = {
       location_id: selectedLocationId,
       shipping_option_id: shippingOptionId,
       no_notification: !data.send_notification,
-      items: Object.entries(data.quantity)
-        .filter(
-          ([id, value]) =>
-            !!value && itemShippingProfileMap[id] === selectedShippingProfileId
-        )
-        .map(([id, quantity]) => ({
-          id,
-          quantity,
-        })),
+      items,
     }
 
     try {
@@ -350,7 +357,9 @@ export function OrderCreateFulfillmentForm({
                             form={form}
                             item={item}
                             locationId={selectedLocationId}
-                            disabled={!isShippingProfileMatching}
+                            disabled={
+                              requiresShipping && !isShippingProfileMatching
+                            }
                             itemReservedQuantitiesMap={
                               itemReservedQuantitiesMap
                             }

@@ -6,19 +6,28 @@ import {
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 import { normalizeForExport } from "../helpers/normalize-for-export"
-import { convertJsonToCsv } from "../utlils"
+import { convertJsonToCsv } from "../utils"
 
 const prodColumnPositions = new Map([
   ["Product Id", 0],
   ["Product Handle", 1],
   ["Product Title", 2],
-  ["Product Status", 3],
+  ["Product Subtitle", 3],
   ["Product Description", 4],
-  ["Product Subtitle", 5],
-  ["Product External Id", 6],
-  ["Product Thumbnail", 7],
-  ["Product Collection Id", 8],
-  ["Product Type Id", 9],
+  ["Product Status", 5],
+  ["Product Thumbnail", 6],
+  ["Product Weight", 7],
+  ["Product Length", 8],
+  ["Product Width", 9],
+  ["Product Height", 10],
+  ["Product HS Code", 11],
+  ["Product Origin Country", 12],
+  ["Product MID Code", 13],
+  ["Product Material", 14],
+  ["Product Collection Id", 15],
+  ["Product Type Id", 16],
+  ["Product Discountable", 17],
+  ["Product External Id", 18],
 ])
 
 const variantColumnPositions = new Map([
@@ -68,11 +77,11 @@ export type GenerateProductCsvStepInput = HttpTypes.AdminProduct[]
  */
 export type GenerateProductCsvStepOutput = {
   /**
-   * The ID of the generated file as returned by the [File Module Provider](https://docs.medusajs.com/resources/architectural-modules/file).
+   * The ID of the generated file as returned by the [File Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/file).
    */
   id: string
   /**
-   * The name of the generated file as returned by the [File Module Provider](https://docs.medusajs.com/resources/architectural-modules/file).
+   * The name of the generated file as returned by the [File Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/file).
    */
   filename: string
 }
@@ -80,14 +89,14 @@ export type GenerateProductCsvStepOutput = {
 export const generateProductCsvStepId = "generate-product-csv"
 /**
  * This step generates a CSV file that exports products. The CSV
- * file is created and stored using the registered [File Module Provider](https://docs.medusajs.com/resources/architectural-modules/file).
- * 
+ * file is created and stored using the registered [File Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/file).
+ *
  * @example
  * const { data: products } = useQueryGraphStep({
  *   entity: "product",
  *   fields: ["*", "variants.*", "collection.*", "categories.*"]
  * })
- * 
+ *
  * // @ts-ignore
  * const data = generateProductCsvStep(products)
  */
@@ -118,7 +127,7 @@ export const generateProductCsvStep = createStep(
     })
 
     return new StepResponse(
-      { id: file.id, filename } as GenerateProductCsvStepOutput, 
+      { id: file.id, filename } as GenerateProductCsvStepOutput,
       file.id
     )
   },

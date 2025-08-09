@@ -20,12 +20,22 @@ medusaIntegrationTestRunner({
         let taxRegion
 
         beforeEach(async () => {
+          const parentRegion = await api.post(
+            "/admin/tax-regions",
+            {
+              country_code: "us",
+              provider_id: "tp_system",
+            },
+            adminHeaders
+          )
+
           taxRegion = (
             await api.post(
               "/admin/tax-regions",
               {
                 country_code: "us",
                 province_code: "tx",
+                parent_id: parentRegion.data.tax_region.id,
                 metadata: { test: "created" },
               },
               adminHeaders
@@ -81,6 +91,49 @@ medusaIntegrationTestRunner({
               metadata: { test: "updated 2" },
             })
           )
+        })
+
+        it("should create a province tax region without a provider", async () => {
+          const response = await api.post(
+            `/admin/tax-regions`,
+            {
+              country_code: "us",
+              parent_id: taxRegion.id,
+              province_code: "ny",
+            },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.tax_region).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              country_code: "us",
+              province_code: "ny",
+              provider_id: null,
+            })
+          )
+        })
+
+        it("should fail to create a country tax region without a provider", async () => {
+          const {
+            response: { status, data },
+          } = await api
+            .post(
+              `/admin/tax-regions`,
+              {
+                country_code: "uk",
+              },
+              adminHeaders
+            )
+            .catch((err) => err)
+
+          expect(status).toEqual(400)
+          expect(data).toEqual({
+            message:
+              "Invalid request: Provider is required when creating a non-province tax region.",
+            type: "invalid_data",
+          })
         })
 
         it("should throw if tax region does not exist", async () => {

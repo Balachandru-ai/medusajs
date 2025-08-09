@@ -1,20 +1,36 @@
-import { CompensateFn, createStep, InvokeFn } from "./create-step"
 import { OrchestrationUtils } from "@medusajs/utils"
-import { CreateWorkflowComposerContext } from "./type"
+import { type ZodSchema } from "zod"
+import {
+  CompensateFn,
+  createStep,
+  InvokeFn,
+  wrapConditionalStep,
+} from "./create-step"
+import { StepResponse } from "./helpers"
 import { createStepHandler } from "./helpers/create-step-handler"
+import type { CreateWorkflowComposerContext } from "./type"
+
+const NOOP_RESULT = Symbol.for("NOOP")
 
 /**
  * Representation of a hook definition.
  */
-export type Hook<Name extends string, Input> = {
+export type Hook<Name extends string, Input, Output> = {
   __type: typeof OrchestrationUtils.SymbolWorkflowHook
   name: Name
+
+  /**
+   * Returns the result of the hook
+   */
+  getResult(): Output | undefined
+
   /**
    * By prefixing a key with a space, we remove it from the
    * intellisense of TypeScript. This is needed because
    * input is not set at runtime. It is a type-only
    * property to infer input data type of a hook
    */
+  " output": Output
   " input": Input
 }
 
@@ -26,7 +42,7 @@ export type Hook<Name extends string, Input> = {
  * Learn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks).
  *
  * @param name - The hook's name. This is used when the hook handler is registered to consume the workflow.
- * @param input - The input to pass to the hook handler.
+ * @param hookInput - The input to pass to the hook handler.
  * @returns A workflow hook.
  *
  * @example
@@ -53,13 +69,34 @@ export type Hook<Name extends string, Input> = {
  *   }
  * )
  */
-export function createHook<Name extends string, TInvokeInput>(
+export function createHook<Name extends string, TInvokeInput, TInvokeOutput>(
   name: Name,
-  input: TInvokeInput
-): Hook<Name, TInvokeInput> {
+  hookInput: TInvokeInput,
+  options: {
+    resultValidator?: ZodSchema<TInvokeOutput>
+  } = {}
+): Hook<Name, TInvokeInput, TInvokeOutput> {
   const context = global[
     OrchestrationUtils.SymbolMedusaWorkflowComposerContext
   ] as CreateWorkflowComposerContext
+
+  const getHookResultStep = createStep(
+    `get-${name}-result`,
+    (_, context) => {
+      const result = context[" getStepResult"](name)
+      if (result === NOOP_RESULT) {
+        return new StepResponse(undefined)
+      }
+      if (options.resultValidator) {
+        return options.resultValidator.parse(result)
+      }
+      if (result === undefined) {
+        return new StepResponse(undefined)
+      }
+      return result
+    },
+    () => void 0
+  )
 
   context.hookBinder(name, function (this: CreateWorkflowComposerContext) {
     /**
@@ -68,24 +105,29 @@ export function createHook<Name extends string, TInvokeInput>(
      */
     createStep(
       name,
-      (_: TInvokeInput) => void 0,
+      (_: TInvokeInput) => new StepResponse(NOOP_RESULT),
       () => void 0
-    )(input)
+    )(hookInput)
 
     function hook<
       TInvokeResultCompensateInput
     >(this: CreateWorkflowComposerContext, invokeFn: InvokeFn<TInvokeInput, unknown, TInvokeResultCompensateInput>, compensateFn?: CompensateFn<TInvokeResultCompensateInput>) {
       const handlers = createStepHandler.bind(this)({
         stepName: name,
-        input,
+        input: hookInput,
         invokeFn,
-        compensateFn,
+        compensateFn: compensateFn ?? (() => void 0),
       })
 
       if (this.hooks_.registered.includes(name)) {
         throw new Error(
           `Cannot define multiple hook handlers for the ${name} hook`
         )
+      }
+
+      const conditional = this.stepConditions_[name]
+      if (conditional) {
+        wrapConditionalStep(conditional.input, conditional.condition, handlers)
       }
 
       this.hooks_.registered.push(name)
@@ -98,5 +140,13 @@ export function createHook<Name extends string, TInvokeInput>(
   return {
     __type: OrchestrationUtils.SymbolWorkflowHook,
     name,
-  } as Hook<Name, TInvokeInput>
+    getResult() {
+      if ("cachedResult" in this) {
+        return this.cachedResult
+      }
+      const result = getHookResultStep()
+      this["cachedResult"] = result
+      return result
+    },
+  } as Hook<Name, TInvokeInput, TInvokeOutput>
 }

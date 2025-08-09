@@ -55,20 +55,44 @@ export function areRulesValidForContext(
   context: Record<string, any>,
   contextScope: ApplicationMethodTargetTypeValues
 ): boolean {
-  return rules.every((rule) => {
-    const validRuleValues = rule.values?.map((ruleValue) => ruleValue.value)
+  if (!rules?.length) {
+    return true
+  }
 
-    if (!rule.attribute) {
+  const isItemScope = contextScope === ApplicationMethodTargetType.ITEMS
+  const isShippingScope =
+    contextScope === ApplicationMethodTargetType.SHIPPING_METHODS
+
+  return rules.every((rule) => {
+    if (!rule.attribute || !rule.values?.length) {
       return false
     }
 
-    const valuesToCheck = pickValueFromObject(
-      fetchRuleAttributeForContext(rule.attribute, contextScope),
-      context
-    )
+    const validRuleValues = rule.values
+      .filter((v) => isString(v.value))
+      .map((v) => v.value as string)
+
+    if (!validRuleValues.length) {
+      return false
+    }
+
+    let ruleAttribute = rule.attribute
+    if (isItemScope) {
+      ruleAttribute = ruleAttribute.replace(
+        `${ApplicationMethodTargetType.ITEMS}.`,
+        ""
+      )
+    } else if (isShippingScope) {
+      ruleAttribute = ruleAttribute.replace(
+        `${ApplicationMethodTargetType.SHIPPING_METHODS}.`,
+        ""
+      )
+    }
+
+    const valuesToCheck = pickValueFromObject(ruleAttribute, context)
 
     return evaluateRuleValueCondition(
-      validRuleValues.filter(isString),
+      validRuleValues,
       rule.operator!,
       valuesToCheck
     )
@@ -76,83 +100,52 @@ export function areRulesValidForContext(
 }
 
 /*
-  The context here can either be either:
-  - a cart context
-  - an item context under a cart
-  - a shipping method context under a cart
-
-  The rule's attributes are set from the perspective of the cart context. For example: items.product.id
-  
-  When the context here is item or shipping_method, we need to drop the "items."" or "shipping_method."
-  from the rule attribute string to accurate pick the values from the context.
+  Optimized evaluateRuleValueCondition by using early returns and cleaner approach
+  for evaluating rule conditions.
 */
-function fetchRuleAttributeForContext(
-  ruleAttribute: string,
-  contextScope: ApplicationMethodTargetTypeValues
-): string {
-  if (contextScope === ApplicationMethodTargetType.ITEMS) {
-    ruleAttribute = ruleAttribute.replace(
-      `${ApplicationMethodTargetType.ITEMS}.`,
-      ""
-    )
-  }
-
-  if (contextScope === ApplicationMethodTargetType.SHIPPING_METHODS) {
-    ruleAttribute = ruleAttribute.replace(
-      `${ApplicationMethodTargetType.SHIPPING_METHODS}.`,
-      ""
-    )
-  }
-
-  return ruleAttribute
-}
-
 export function evaluateRuleValueCondition(
   ruleValues: string[],
   operator: string,
   ruleValuesToCheck: (string | number)[] | (string | number)
-) {
-  if (!Array.isArray(ruleValuesToCheck)) {
-    ruleValuesToCheck = [ruleValuesToCheck]
-  }
+): boolean {
+  const valuesToCheck = Array.isArray(ruleValuesToCheck)
+    ? ruleValuesToCheck
+    : [ruleValuesToCheck]
 
-  if (!ruleValuesToCheck.length) {
+  if (!valuesToCheck.length) {
     return false
   }
 
-  return ruleValuesToCheck.every((ruleValueToCheck: string | number) => {
-    if (operator === "in" || operator === "eq") {
-      return ruleValues.some((ruleValue) => ruleValue === `${ruleValueToCheck}`)
+  switch (operator) {
+    case "eq": {
+      const ruleValueSet = new Set(ruleValues)
+      return valuesToCheck.every((val) => ruleValueSet.has(`${val}`))
     }
-
-    if (operator === "ne") {
-      return ruleValues.some((ruleValue) => ruleValue !== `${ruleValueToCheck}`)
+    case "in": {
+      const ruleValueSet = new Set(ruleValues)
+      return valuesToCheck.some((val) => ruleValueSet.has(`${val}`))
     }
-
-    if (operator === "gt") {
-      return ruleValues.some((ruleValue) =>
-        MathBN.convert(ruleValueToCheck).gt(MathBN.convert(ruleValue))
+    case "ne": {
+      const ruleValueSet = new Set(ruleValues)
+      return valuesToCheck.every((val) => !ruleValueSet.has(`${val}`))
+    }
+    case "gt":
+      return valuesToCheck.every((val) =>
+        ruleValues.some((ruleVal) => MathBN.gt(val, ruleVal))
       )
-    }
-
-    if (operator === "gte") {
-      return ruleValues.some((ruleValue) =>
-        MathBN.convert(ruleValueToCheck).gte(MathBN.convert(ruleValue))
+    case "gte":
+      return valuesToCheck.every((val) =>
+        ruleValues.some((ruleVal) => MathBN.gte(val, ruleVal))
       )
-    }
-
-    if (operator === "lt") {
-      return ruleValues.some((ruleValue) =>
-        MathBN.convert(ruleValueToCheck).lt(MathBN.convert(ruleValue))
+    case "lt":
+      return valuesToCheck.every((val) =>
+        ruleValues.some((ruleVal) => MathBN.lt(val, ruleVal))
       )
-    }
-
-    if (operator === "lte") {
-      return ruleValues.some((ruleValue) =>
-        MathBN.convert(ruleValueToCheck).lte(MathBN.convert(ruleValue))
+    case "lte":
+      return valuesToCheck.every((val) =>
+        ruleValues.some((ruleVal) => MathBN.lte(val, ruleVal))
       )
-    }
-
-    return false
-  })
+    default:
+      return false
+  }
 }

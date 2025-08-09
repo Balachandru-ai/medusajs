@@ -133,13 +133,21 @@
  *       oneOf:
  *         - type: string
  *           title: province_code
- *           description: Filter by a province code.
+ *           description: Filter by a ISO 3166-2 province code. Must be lower-case.
+ *           example: us-ca
+ *           externalDocs:
+ *             url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *             description: Learn more about ISO 3166-2
  *         - type: array
- *           description: Filter by province codes.
+ *           description: Filter by ISO 3166-2 province codes.
  *           items:
  *             type: string
  *             title: province_code
- *             description: A province code.
+ *             description: A ISO 3166-2 province code.
+ *             example: us-ca
+ *             externalDocs:
+ *               url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *               description: Learn more about ISO 3166-2
  *         - type: object
  *           description: Apply filters on the province code.
  *           properties:
@@ -981,11 +989,36 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.taxRegion.list()
+ *       .then(({ tax_regions, count, limit, offset }) => {
+ *         console.log(tax_regions)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

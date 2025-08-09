@@ -7,8 +7,10 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "prepublishOnly": "cross-env NODE_ENV=production tsc --build",
-    "generate:oas": "yarn start run ../../../../packages/medusa/src/api --type oas && yarn start clean:oas",
-    "generate:dml": "yarn start run ../../../../packages/modules --type dml && yarn start clean:dml"
+    "generate:oas": "yarn generate:route-examples && yarn generate:events && yarn start run ../../../../packages/medusa/src/api --type oas && yarn start clean:oas",
+    "generate:dml": "yarn start run ../../../../packages/modules --type dml && yarn start clean:dml",
+    "generate:route-examples": "yarn start run ../../../../packages/core/js-sdk/src --type route-examples",
+    "generate:events": "yarn start run ../../../../packages/core/utils/src/core-flows/events.ts --type events"
   },
   "publishConfig": {
     "access": "public"
@@ -22,6 +24,7 @@
     "commander": "^11.1.0",
     "dotenv": "^16.3.1",
     "eslint": "8.56.0",
+    "glob": "^11.0.2",
     "minimatch": "^9.0.3",
     "openai": "^4.29.1",
     "openapi-types": "^12.1.3",

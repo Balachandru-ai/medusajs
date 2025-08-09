@@ -1,12 +1,12 @@
 {
-	"id": 38655,
+	"id": 41955,
 	"name": "file",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 38656,
+			"id": 41956,
 			"name": "AbstractFileProviderService",
 			"variant": "declaration",
 			"kind": 128,
@@ -25,7 +25,7 @@
 			},
 			"children": [
 				{
-					"id": 38657,
+					"id": 41957,
 					"name": "identifier",
 					"variant": "declaration",
 					"kind": 1024,
@@ -60,7 +60,7 @@
 							},
 							{
 								"kind": "text",
-								"text": " \nproperty in the "
+								"text": "\nproperty in the "
 							},
 							{
 								"kind": "code",
@@ -86,9 +86,9 @@
 					"sources": [
 						{
 							"fileName": "abstract-file-provider.ts",
-							"line": 61,
+							"line": 62,
 							"character": 9,
-							"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L61"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L62"
 						}
 					],
 					"type": {
@@ -97,7 +97,7 @@
 					}
 				},
 				{
-					"id": 38658,
+					"id": 41958,
 					"name": "validateOptions",
 					"variant": "declaration",
 					"kind": 2048,
@@ -107,14 +107,14 @@
 					"sources": [
 						{
 							"fileName": "abstract-file-provider.ts",
-							"line": 83,
+							"line": 84,
 							"character": 9,
-							"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L83"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L84"
 						}
 					],
 					"signatures": [
 						{
-							"id": 38659,
+							"id": 41959,
 							"name": "validateOptions",
 							"variant": "signature",
 							"kind": 4096,
@@ -149,14 +149,14 @@
 							"sources": [
 								{
 									"fileName": "abstract-file-provider.ts",
-									"line": 83,
+									"line": 84,
 									"character": 9,
-									"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L83"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L84"
 								}
 							],
 							"parameters": [
 								{
-									"id": 38660,
+									"id": 41960,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
@@ -198,21 +198,21 @@
 					]
 				},
 				{
-					"id": 38661,
+					"id": 41961,
 					"name": "constructor",
 					"variant": "declaration",
 					"kind": 512,
 					"flags": {},
 					"signatures": [
 						{
-							"id": 38662,
+							"id": 41962,
 							"name": "AbstractFileProviderService",
 							"variant": "signature",
 							"kind": 16384,
 							"flags": {},
 							"type": {
 								"type": "reference",
-								"target": 38656,
+								"target": 41956,
 								"name": "AbstractFileProviderService",
 								"package": "@medusajs/utils"
 							}
@@ -220,7 +220,7 @@
 					]
 				},
 				{
-					"id": 38665,
+					"id": 41965,
 					"name": "upload",
 					"variant": "declaration",
 					"kind": 2048,
@@ -228,14 +228,14 @@
 					"sources": [
 						{
 							"fileName": "abstract-file-provider.ts",
-							"line": 114,
+							"line": 121,
 							"character": 8,
-							"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L114"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L121"
 						}
 					],
 					"signatures": [
 						{
-							"id": 38666,
+							"id": 41966,
 							"name": "upload",
 							"variant": "signature",
 							"kind": 4096,
@@ -244,7 +244,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "This method uploads a file using your provider's custom logic."
+										"text": "This method uploads a file using your provider's custom logic. In this method, you can upload the file\ninto your provider's storage, and return the uploaded file's details.\n\nThis method will be used when uploading product images, CSV files for imports, or other\ncustom file uploads."
 									}
 								],
 								"blockTags": [
@@ -262,7 +262,7 @@
 										"content": [
 											{
 												"kind": "code",
-												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async upload(\n    file: ProviderUploadFileDTO\n  ): Promise<ProviderFileResultDTO> {\n    // TODO upload file to third-party provider\n    // or using custom logic\n\n    return {\n      url: \"some-url.com\",\n      key: \"file-name\"\n    }\n  }\n}\n```"
+												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async upload(\n    file: ProviderUploadFileDTO\n  ): Promise<ProviderFileResultDTO> {\n    // TODO upload file to third-party provider\n    // or using custom logic\n    // for example:\n    this.client.upload(file)\n\n    return {\n      url: \"some-url.com\",\n      key: \"file-name-or-id\"\n    }\n  }\n}\n```"
 											}
 										]
 									}
@@ -271,14 +271,14 @@
 							"sources": [
 								{
 									"fileName": "abstract-file-provider.ts",
-									"line": 114,
+									"line": 121,
 									"character": 8,
-									"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L114"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L121"
 								}
 							],
 							"parameters": [
 								{
-									"id": 38667,
+									"id": 41967,
 									"name": "file",
 									"variant": "param",
 									"kind": 32768,
@@ -287,7 +287,7 @@
 										"summary": [
 											{
 												"kind": "text",
-												"text": "The file to upload"
+												"text": "The file to upload."
 											}
 										]
 									},
@@ -336,7 +336,7 @@
 					}
 				},
 				{
-					"id": 38668,
+					"id": 41968,
 					"name": "delete",
 					"variant": "declaration",
 					"kind": 2048,
@@ -344,14 +344,14 @@
 					"sources": [
 						{
 							"fileName": "abstract-file-provider.ts",
-							"line": 137,
+							"line": 151,
 							"character": 8,
-							"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L137"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L151"
 						}
 					],
 					"signatures": [
 						{
-							"id": 38669,
+							"id": 41969,
 							"name": "delete",
 							"variant": "signature",
 							"kind": 4096,
@@ -360,7 +360,7 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "This method deletes the file from storage."
+										"text": "This method deletes one or more files from the storage. It's used when an admin user\ndeletes a product image, or other custom file deletions."
 									}
 								],
 								"blockTags": [
@@ -369,7 +369,7 @@
 										"content": [
 											{
 												"kind": "text",
-												"text": "Resolves when the file is deleted."
+												"text": "Resolves when the files are deleted."
 											}
 										]
 									},
@@ -378,7 +378,7 @@
 										"content": [
 											{
 												"kind": "code",
-												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async delete(file: ProviderDeleteFileDTO): Promise<void> {\n    // TODO logic to remove the file from storage\n    // Use the `file.fileKey` to delete the file\n    // for example:\n    this.client.delete(file.fileKey)\n  }\n}\n```"
+												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async delete(\n    files: FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]\n  ): Promise<void> {\n    // TODO logic to remove the file from storage\n    // Use the `file.fileKey` to delete the file, which is the identifier of the file\n   // in the provider's storage.\n    // for example:\n    const fileArray = Array.isArray(files) ? files : [files]\n    for (const file of fileArray) {\n      this.client.delete(file.fileKey)\n    }\n  }\n}\n```"
 											}
 										]
 									}
@@ -387,15 +387,15 @@
 							"sources": [
 								{
 									"fileName": "abstract-file-provider.ts",
-									"line": 137,
+									"line": 151,
 									"character": 8,
-									"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L137"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L151"
 								}
 							],
 							"parameters": [
 								{
-									"id": 38670,
-									"name": "file",
+									"id": 41970,
+									"name": "files",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
@@ -403,18 +403,35 @@
 										"summary": [
 											{
 												"kind": "text",
-												"text": "The details of the file to delete."
+												"text": "The details of the files to delete."
 											}
 										]
 									},
 									"type": {
-										"type": "reference",
-										"target": {
-											"sourceFileName": "../../../../packages/core/types/src/file/provider.ts",
-											"qualifiedName": "ProviderDeleteFileDTO"
-										},
-										"name": "ProviderDeleteFileDTO",
-										"package": "@medusajs/types"
+										"type": "union",
+										"types": [
+											{
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/types/src/file/provider.ts",
+													"qualifiedName": "ProviderDeleteFileDTO"
+												},
+												"name": "ProviderDeleteFileDTO",
+												"package": "@medusajs/types"
+											},
+											{
+												"type": "array",
+												"elementType": {
+													"type": "reference",
+													"target": {
+														"sourceFileName": "../../../../packages/core/types/src/file/provider.ts",
+														"qualifiedName": "ProviderDeleteFileDTO"
+													},
+													"name": "ProviderDeleteFileDTO",
+													"package": "@medusajs/types"
+												}
+											}
+										]
 									}
 								}
 							],
@@ -447,7 +464,7 @@
 					}
 				},
 				{
-					"id": 38671,
+					"id": 41971,
 					"name": "getPresignedDownloadUrl",
 					"variant": "declaration",
 					"kind": 2048,
@@ -455,14 +472,14 @@
 					"sources": [
 						{
 							"fileName": "abstract-file-provider.ts",
-							"line": 165,
+							"line": 182,
 							"character": 8,
-							"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L165"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L182"
 						}
 					],
 					"signatures": [
 						{
-							"id": 38672,
+							"id": 41972,
 							"name": "getPresignedDownloadUrl",
 							"variant": "signature",
 							"kind": 4096,
@@ -489,7 +506,7 @@
 										"content": [
 											{
 												"kind": "code",
-												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async getPresignedDownloadUrl(\n    fileData: ProviderGetFileDTO\n  ): Promise<string> {\n    // TODO logic to get the presigned URL\n    // Use the `file.fileKey` to delete the file\n    // for example:\n    return this.client.getPresignedUrl(fileData.fileKey)\n  }\n}\n```"
+												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async getPresignedDownloadUrl(\n    fileData: ProviderGetFileDTO\n  ): Promise<string> {\n    // TODO logic to get the presigned URL\n    // Use the `file.fileKey` to delete the file, which is the identifier of the file\n   // in the provider's storage.\n    // for example:\n    return this.client.getPresignedUrl(fileData.fileKey)\n  }\n}\n```"
 											}
 										]
 									}
@@ -498,14 +515,14 @@
 							"sources": [
 								{
 									"fileName": "abstract-file-provider.ts",
-									"line": 165,
+									"line": 182,
 									"character": 8,
-									"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L165"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L182"
 								}
 							],
 							"parameters": [
 								{
-									"id": 38673,
+									"id": 41973,
 									"name": "fileData",
 									"variant": "param",
 									"kind": 32768,
@@ -556,37 +573,291 @@
 						"target": -1,
 						"name": "IFileProvider.getPresignedDownloadUrl"
 					}
+				},
+				{
+					"id": 41974,
+					"name": "getDownloadStream",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "abstract-file-provider.ts",
+							"line": 209,
+							"character": 2,
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L209"
+						}
+					],
+					"signatures": [
+						{
+							"id": 41975,
+							"name": "getDownloadStream",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "This method retrieves an uploaded file as a stream. This is useful when streaming\na file to clients or you want to process the file in chunks."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "The file's stream."
+											}
+										]
+									},
+									{
+										"tag": "@version",
+										"content": [
+											{
+												"kind": "text",
+												"text": "2.8.0"
+											}
+										]
+									},
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "code",
+												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async getAsStream(file: ProviderDeleteFileDTO): Promise<Readable> {\n   // TODO logic to get the file as a stream\n   // Use the `file.fileKey` to get the file, which is the identifier of the file\n   // in the provider's storage.\n   // for example:\n    this.client.getAsStream(file.fileKey)\n  }\n}\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "abstract-file-provider.ts",
+									"line": 209,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L209"
+								}
+							],
+							"parameters": [
+								{
+									"id": 41976,
+									"name": "fileData",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The details of the file to get its stream."
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../../../packages/core/types/src/file/provider.ts",
+											"qualifiedName": "ProviderGetFileDTO"
+										},
+										"name": "ProviderGetFileDTO",
+										"package": "@medusajs/types"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../node_modules/@types/node/stream.d.ts",
+											"qualifiedName": "internal.Readable"
+										},
+										"name": "Readable",
+										"package": "@types/node",
+										"qualifiedName": "internal.Readable"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							},
+							"implementationOf": {
+								"type": "reference",
+								"target": -1,
+								"name": "IFileProvider.getDownloadStream"
+							}
+						}
+					],
+					"implementationOf": {
+						"type": "reference",
+						"target": -1,
+						"name": "IFileProvider.getDownloadStream"
+					}
+				},
+				{
+					"id": 41977,
+					"name": "getAsBuffer",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "abstract-file-provider.ts",
+							"line": 234,
+							"character": 2,
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L234"
+						}
+					],
+					"signatures": [
+						{
+							"id": 41978,
+							"name": "getAsBuffer",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "This method retrieves an uploaded file as a buffer. This is useful when you want to\nprocess the entire file in memory or send it as a response."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "The file's buffer."
+											}
+										]
+									},
+									{
+										"tag": "@version",
+										"content": [
+											{
+												"kind": "text",
+												"text": "2.8.0"
+											}
+										]
+									},
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "code",
+												"text": "```ts\nclass MyFileProviderService extends AbstractFileProviderService {\n  // ...\n  async getAsBuffer(file: ProviderDeleteFileDTO): Promise<Buffer> {\n    // TODO logic to get the file as a buffer\n    // Use the `file.fileKey` to get the file, which is the identifier of the file\n    // in the provider's storage.\n    // for example:\n    this.client.getAsBuffer(file.fileKey)\n  }\n}\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "abstract-file-provider.ts",
+									"line": 234,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L234"
+								}
+							],
+							"parameters": [
+								{
+									"id": 41979,
+									"name": "fileData",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The details of the file to get its buffer."
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../../../packages/core/types/src/file/provider.ts",
+											"qualifiedName": "ProviderGetFileDTO"
+										},
+										"name": "ProviderGetFileDTO",
+										"package": "@medusajs/types"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../node_modules/@types/node/buffer.d.ts",
+											"qualifiedName": "__global.Buffer"
+										},
+										"name": "Buffer",
+										"package": "@types/node",
+										"qualifiedName": "__global.Buffer"
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							},
+							"implementationOf": {
+								"type": "reference",
+								"target": -1,
+								"name": "IFileProvider.getAsBuffer"
+							}
+						}
+					],
+					"implementationOf": {
+						"type": "reference",
+						"target": -1,
+						"name": "IFileProvider.getAsBuffer"
+					}
 				}
 			],
 			"groups": [
 				{
 					"title": "Constructors",
 					"children": [
-						38661
+						41961
 					]
 				},
 				{
 					"title": "Properties",
 					"children": [
-						38657
+						41957
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						38658,
-						38665,
-						38668,
-						38671
+						41958,
+						41965,
+						41968,
+						41971,
+						41974,
+						41977
 					]
 				}
 			],
 			"sources": [
 				{
 					"fileName": "abstract-file-provider.ts",
-					"line": 49,
+					"line": 50,
 					"character": 13,
-					"url": "https://github.com/medusajs/medusa/blob/03344a0ee0b6540944f49fcebffd8d10e6bf67b1/packages/core/utils/src/file/abstract-file-provider.ts#L49"
+					"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/utils/src/file/abstract-file-provider.ts#L50"
 				}
 			],
 			"implementedTypes": [
@@ -606,69 +877,93 @@
 		{
 			"title": "Classes",
 			"children": [
-				38656
+				41956
 			]
 		}
 	],
 	"packageName": "@medusajs/utils",
 	"symbolIdMap": {
-		"38655": {
+		"41955": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": ""
 		},
-		"38656": {
+		"41956": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService"
 		},
-		"38657": {
+		"41957": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.identifier"
 		},
-		"38658": {
+		"41958": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.validateOptions"
 		},
-		"38659": {
+		"41959": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.validateOptions"
 		},
-		"38660": {
+		"41960": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "options"
 		},
-		"38665": {
+		"41965": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.upload"
 		},
-		"38666": {
+		"41966": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.upload"
 		},
-		"38667": {
+		"41967": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "file"
 		},
-		"38668": {
+		"41968": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.delete"
 		},
-		"38669": {
+		"41969": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.delete"
 		},
-		"38670": {
+		"41970": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
-			"qualifiedName": "file"
+			"qualifiedName": "files"
 		},
-		"38671": {
-			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
-			"qualifiedName": "AbstractFileProviderService.getPresignedDownloadUrl"
-		},
-		"38672": {
+		"41971": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "AbstractFileProviderService.getPresignedDownloadUrl"
 		},
-		"38673": {
+		"41972": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "AbstractFileProviderService.getPresignedDownloadUrl"
+		},
+		"41973": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "fileData"
+		},
+		"41974": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "AbstractFileProviderService.getDownloadStream"
+		},
+		"41975": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "AbstractFileProviderService.getDownloadStream"
+		},
+		"41976": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "fileData"
+		},
+		"41977": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "AbstractFileProviderService.getAsBuffer"
+		},
+		"41978": {
+			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
+			"qualifiedName": "AbstractFileProviderService.getAsBuffer"
+		},
+		"41979": {
 			"sourceFileName": "../../../../packages/core/utils/src/file/abstract-file-provider.ts",
 			"qualifiedName": "fileData"
 		}
@@ -678,7 +973,7 @@
 			"1": "../../../../packages/core/utils/src/file/abstract-file-provider.ts"
 		},
 		"reflections": {
-			"1": 38655
+			"1": 41955
 		}
 	}
 }

@@ -1,6 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 import {
   ArrowDownRightMini,
@@ -19,6 +19,7 @@ import {
   AdminOrderLineItem,
   AdminOrderPreview,
   AdminPaymentCollection,
+  AdminPlugin,
   AdminRegion,
   AdminReturn,
 } from "@medusajs/types"
@@ -37,7 +38,9 @@ import {
 } from "@medusajs/ui"
 
 import { AdminReservation } from "@medusajs/types/src/http"
+import { format } from "date-fns"
 import { ActionMenu } from "../../../../../components/common/action-menu"
+import DisplayId from "../../../../../components/common/display-id/display-id"
 import { Thumbnail } from "../../../../../components/common/thumbnail"
 import { useClaims } from "../../../../../hooks/api/claims"
 import { useExchanges } from "../../../../../hooks/api/exchanges"
@@ -46,13 +49,16 @@ import { useMarkPaymentCollectionAsPaid } from "../../../../../hooks/api/payment
 import { useReservationItems } from "../../../../../hooks/api/reservations"
 import { useReturns } from "../../../../../hooks/api/returns"
 import { useDate } from "../../../../../hooks/use-date"
+import { getTotalCreditLines } from "../../../../../lib/credit-line"
 import { formatCurrency } from "../../../../../lib/format-currency"
+import { getReservationsLimitCount } from "../../../../../lib/orders"
 import {
   getLocaleAmount,
   getStylizedAmount,
   isAmountLessThenRoundingError,
 } from "../../../../../lib/money-amount-helpers"
 import { getTotalCaptured } from "../../../../../lib/payment"
+import { getLoyaltyPlugin } from "../../../../../lib/plugins"
 import { getReturnableQuantity } from "../../../../../lib/rma"
 import { CopyPaymentLink } from "../copy-payment-link/copy-payment-link"
 import ReturnInfoPopover from "./return-info-popover"
@@ -60,16 +66,20 @@ import ShippingInfoPopover from "./shipping-info-popover"
 
 type OrderSummarySectionProps = {
   order: AdminOrder
+  plugins: AdminPlugin[]
 }
 
-export const OrderSummarySection = ({ order }: OrderSummarySectionProps) => {
+export const OrderSummarySection = ({
+  order,
+  plugins,
+}: OrderSummarySectionProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const prompt = usePrompt()
 
   const { reservations } = useReservationItems(
     {
       line_item_id: order?.items?.map((i) => i.id),
+      limit: getReservationsLimitCount(order),
     },
     { enabled: Array.isArray(order?.items) }
   )
@@ -115,7 +125,7 @@ export const OrderSummarySection = ({ order }: OrderSummarySectionProps) => {
     }
 
     return false
-  }, [reservations])
+  }, [order.items, reservations])
 
   const unpaidPaymentCollection = order.payment_collections.find(
     (pc) => pc.status === "not_paid"
@@ -134,8 +144,7 @@ export const OrderSummarySection = ({ order }: OrderSummarySectionProps) => {
 
   const showPayment =
     unpaidPaymentCollection && pendingDifference > 0 && isAmountSignificant
-  const showRefund =
-    unpaidPaymentCollection && pendingDifference < 0 && isAmountSignificant
+  const showRefund = pendingDifference < 0 && isAmountSignificant
 
   const handleMarkAsPaid = async (
     paymentCollection: AdminPaymentCollection
@@ -182,6 +191,7 @@ export const OrderSummarySection = ({ order }: OrderSummarySectionProps) => {
       <Header order={order} orderPreview={orderPreview} />
       <ItemBreakdown order={order} reservations={reservations!} />
       <CostBreakdown order={order} />
+      <CreditLinesBreakdown order={order} plugins={plugins} />
       <Total order={order} />
 
       {(showAllocateButton || showReturns || showPayment || showRefund) && (
@@ -399,12 +409,7 @@ const Item = ({
         <div className="flex items-start gap-x-4">
           <Thumbnail src={item.thumbnail} />
           <div>
-            <Text
-              size="small"
-              leading="compact"
-              weight="plus"
-              className="text-ui-fg-base"
-            >
+            <Text size="small" leading="compact" className="text-ui-fg-base">
               {item.title}
             </Text>
 
@@ -742,6 +747,109 @@ const CostBreakdown = ({
   )
 }
 
+const CreditLinesBreakdown = ({
+  order,
+  plugins,
+}: {
+  order: AdminOrder & { region?: AdminRegion | null }
+  plugins: AdminPlugin[]
+}) => {
+  const { t } = useTranslation()
+  const [isCreditLinesOpen, setIsCreditLinesOpen] = useState(false)
+  const creditLines = order.credit_lines ?? []
+  const loyaltyPlugin = getLoyaltyPlugin(plugins)
+
+  if (creditLines.length === 0) {
+    return null
+  }
+
+  return (
+    <div className="text-ui-fg-subtle flex flex-col">
+      <>
+        <div
+          onClick={() => setIsCreditLinesOpen((o) => !o)}
+          className="bg-ui-bg-component flex cursor-pointer items-center justify-between border border-dashed px-6 py-4"
+        >
+          <div className="flex items-center gap-2">
+            <TriangleDownMini
+              style={{
+                transform: `rotate(${isCreditLinesOpen ? 0 : -90}deg)`,
+              }}
+            />
+            <span className="text-ui-fg-muted txt-small select-none">
+              {loyaltyPlugin
+                ? t("orders.giftCardsStoreCreditLines")
+                : t("orders.creditLines.title")}
+            </span>
+          </div>
+
+          <div>
+            <Text size="small" leading="compact">
+              {getLocaleAmount(order.credit_line_total, order.currency_code)}
+            </Text>
+          </div>
+        </div>
+
+        {isCreditLinesOpen && (
+          <div className="flex flex-col">
+            {creditLines.map((creditLine) => {
+              const prettyReference = creditLine.reference
+                ?.split("_")
+                .join(" ")
+                .split("-")
+                .join(" ")
+
+              const prettyReferenceId = creditLine.reference_id ? (
+                <DisplayId id={creditLine.reference_id} />
+              ) : null
+
+              return (
+                <div
+                  className="text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr] items-center px-6 py-4 py-4 sm:grid-cols-[1fr_1fr_1fr]"
+                  key={creditLine.id}
+                >
+                  <div className="w-full min-w-[60px] overflow-hidden">
+                    <Text
+                      size="small"
+                      leading="compact"
+                      weight="plus"
+                      className="truncate"
+                    >
+                      <DisplayId id={creditLine.id} />
+                    </Text>
+
+                    <Text size="small" leading="compact">
+                      {format(
+                        new Date(creditLine.created_at),
+                        "dd MMM, yyyy, HH:mm:ss"
+                      )}
+                    </Text>
+                  </div>
+
+                  <div className="hidden items-center justify-end gap-x-2 sm:flex">
+                    <Text size="small" leading="compact" className="capitalize">
+                      {prettyReference} ({prettyReferenceId})
+                    </Text>
+                  </div>
+
+                  <div className="flex items-center justify-end">
+                    <Text size="small" leading="compact">
+                      {getLocaleAmount(
+                        creditLine.amount as number,
+                        order.currency_code
+                      )}
+                    </Text>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </>
+    </div>
+  )
+}
+
 const InventoryKitBreakdown = ({ item }: { item: AdminOrderLineItem }) => {
   const { t } = useTranslation()
 
@@ -1029,41 +1137,34 @@ const Total = ({ order }: { order: AdminOrder }) => {
   return (
     <div className=" flex flex-col gap-y-2 px-6 py-4">
       <div className="text-ui-fg-base flex items-center justify-between">
-        <Text
-          weight="plus"
-          className="text-ui-fg-subtle"
-          size="small"
-          leading="compact"
-        >
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {t("fields.total")}
         </Text>
-        <Text
-          weight="plus"
-          className="text-ui-fg-subtle"
-          size="small"
-          leading="compact"
-        >
-          {getStylizedAmount(order.total, order.currency_code)}
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {getStylizedAmount(order.original_total, order.currency_code)}
         </Text>
       </div>
 
       <div className="text-ui-fg-base flex items-center justify-between">
-        <Text
-          weight="plus"
-          className="text-ui-fg-subtle"
-          size="small"
-          leading="compact"
-        >
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {t("fields.paidTotal")}
         </Text>
-        <Text
-          weight="plus"
-          className="text-ui-fg-subtle"
-          size="small"
-          leading="compact"
-        >
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {getStylizedAmount(
             getTotalCaptured(order.payment_collections || []),
+            order.currency_code
+          )}
+        </Text>
+      </div>
+
+      <div className="text-ui-fg-base flex items-center justify-between">
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {t("fields.creditTotal")}
+        </Text>
+
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {getStylizedAmount(
+            getTotalCreditLines(order.credit_lines ?? []),
             order.currency_code
           )}
         </Text>
@@ -1074,7 +1175,6 @@ const Total = ({ order }: { order: AdminOrder }) => {
           className="text-ui-fg-subtle text-semibold"
           size="small"
           leading="compact"
-          weight="plus"
         >
           {t("orders.returns.outstandingAmount")}
         </Text>
@@ -1082,7 +1182,6 @@ const Total = ({ order }: { order: AdminOrder }) => {
           className="text-ui-fg-subtle text-bold"
           size="small"
           leading="compact"
-          weight="plus"
         >
           {getStylizedAmount(
             order.summary.pending_difference || 0,

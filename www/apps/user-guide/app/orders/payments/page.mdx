@@ -1,6 +1,13 @@
 ---
 sidebar_position: 2
-sidebar_label: Manage Payments
+sidebar_label: "Manage Order Payments"
+tags:
+    - user guide
+    - order
+    - payment
+products:
+  - order
+  - payment
 ---
 
 import { 
@@ -9,7 +16,7 @@ import {
 import { Table } from "docs-ui"
 
 export const metadata = {
-  title: `Manage Order Payments`,
+  title: `Manage Order Payments in Medusa Admin`,
 }
 
 # {metadata.title}
@@ -69,7 +76,7 @@ Capturing an order's payment triggers its processing with the chosen payment pro
 
 <Note>
 
-If you're unsure whether your payment provider is configured to automatically capture payments, please contact your technical team.
+If you're unsure whether your payment provider is configured to automatically capture payments, please contact your technical team to debug the [integrated payment service](!resources!/commerce-modules/payment/payment-provider).
 
 </Note>
 
@@ -148,8 +155,6 @@ The link is then copied and you can share it with the customer to authorize the 
 
 <Note title="Tip">
 
-{/* TODO add link to guide once available */}
-
-If the payment link doesn't start with a domain or has a domain that doesn't match your storefront, refer your technical team to [this guide](#) to set up the storefront domain.
+If the payment link doesn't start with a domain or has a domain that doesn't match your storefront, refer your technical team to [this guide](!docs!/learn/configurations/medusa-config#storefronturl) to set up the storefront domain.
 
 </Note>

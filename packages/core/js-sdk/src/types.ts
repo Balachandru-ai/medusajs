@@ -13,7 +13,12 @@ export type Config = {
   auth?: {
     type?: "jwt" | "session"
     jwtTokenStorageKey?: string
-    jwtTokenStorageMethod?: "local" | "session" | "memory" | "custom" | "nostore"
+    jwtTokenStorageMethod?:
+      | "local"
+      | "session"
+      | "memory"
+      | "custom"
+      | "nostore"
     fetchCredentials?: "include" | "omit" | "same-origin"
     storage?: CustomStorage
   }

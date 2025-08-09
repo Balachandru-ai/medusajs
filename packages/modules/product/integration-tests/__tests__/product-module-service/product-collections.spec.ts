@@ -384,6 +384,22 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
+        it("should respond with collections when products are updated", async () => {
+          const collections = await service.updateProductCollections(
+            collectionId,
+            {
+              title: "Updated Collection",
+            }
+          )
+
+          expect(collections).toEqual(
+            expect.objectContaining({
+              id: collectionId,
+              title: "Updated Collection",
+            })
+          )
+        })
+
         it("should throw an error when an id does not exist", async () => {
           let error
 

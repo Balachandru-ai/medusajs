@@ -4,6 +4,7 @@ sidebar_label: deleteProductOptionsWorkflow
 sidebar_description: Delete one or more product option.
 tags:
   - product
+  - link
   - event bus
   - workflow
 ---
@@ -14,15 +15,15 @@ import { TypeList, WorkflowDiagram } from "docs-ui"
 
 This documentation provides a reference to the `deleteProductOptionsWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
 
-This workflow deletes one or more product options. It's used by the 
+This workflow deletes one or more product options. It's used by the
 [Delete Product Option Admin API Route](https://docs.medusajs.com/api/admin#products\_deleteproductsidoptionsoption\_id).
 
-This workflow has a hook that allows you to perform custom actions after the product options are deleted. For example, 
+This workflow has a hook that allows you to perform custom actions after the product options are deleted. For example,
 you can delete custom records linked to the product colleciton.
 
 You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around product-option deletion.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/product/workflows/delete-product-options.ts#L46" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/product/workflows/delete-product-options.ts#L48" />
 
 ## Examples
 
@@ -131,7 +132,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"deleteProductOptionsWorkflow","steps":[{"type":"step","name":"deleteProductOptionsStep","description":"This step deletes one or more product options.","link":"../../../Steps_Product/functions/core_flows.Product.Steps_Product.deleteProductOptionsStep/page.mdx","depth":1},{"type":"hook","name":"productOptionsDeleted","description":"This hook is executed after the options are deleted. You can consume this hook to perform custom actions on the deleted options.","link":"#productOptionsDeleted","depth":2},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3}]}} />
+<WorkflowDiagram workflow={{"name":"deleteProductOptionsWorkflow","steps":[{"type":"step","name":"deleteProductOptionsStep","description":"This step deletes one or more product options.","link":"../../../Steps_Product/functions/core_flows.Product.Steps_Product.deleteProductOptionsStep/page.mdx","depth":1},{"type":"hook","name":"productOptionsDeleted","description":"This hook is executed after the options are deleted. You can consume this hook to perform custom actions on the deleted options.","link":"#productOptionsDeleted","depth":2},{"type":"step","name":"removeRemoteLinkStep","description":"This step deletes linked records of a record.\n\nLearn more in the [Remote Link documentation](https://docs.medusajs.com/learn/fundamentals/module-links/remote-link#cascade-delete-linked-records)","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.removeRemoteLinkStep/page.mdx","depth":3},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3}]}} />
 
 ## Input
 
@@ -163,4 +164,56 @@ deleteProductOptionsWorkflow.hooks.productOptionsDeleted(
 
 Handlers consuming this hook accept the following input.
 
-<TypeList types={[{"name":"input","type":"object","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"ids","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="productOptionsDeleted"/>
+<TypeList types={[{"name":"input","type":"[input](../../../core_flows.Product.Workflows_Product/page.mdx#__type-16)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"ids","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="productOptionsDeleted"/>
+
+## Emitted Events
+
+This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
+
+You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+Event
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Description
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Payload
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Action
+</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+`product-option.deleted`
+</Table.Cell>
+      <Table.Cell>
+Emitted when product options are deleted.
+</Table.Cell>
+      <Table.Cell>
+```ts blockStyle="inline"
+[{
+  id, // The ID of the product option
+}]
+```
+</Table.Cell>
+      <Table.Cell>
+<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
+        event: "product-option.deleted",
+        payload: `\`\`\`ts
+[{
+  id, // The ID of the product option
+}]
+\`\`\``
+        }}/>
+</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

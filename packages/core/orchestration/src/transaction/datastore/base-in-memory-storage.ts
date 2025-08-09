@@ -41,4 +41,6 @@ export class BaseInMemoryDistributedTransactionStorage extends DistributedTransa
       this.storage.set(key, data)
     }
   }
+
+  async clearExpiredExecutions(): Promise<void> {}
 }

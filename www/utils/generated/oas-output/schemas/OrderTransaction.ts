@@ -6,6 +6,7 @@
  * required:
  *   - id
  *   - order_id
+ *   - version
  *   - order
  *   - amount
  *   - currency_code
@@ -46,6 +47,9 @@
  *   metadata:
  *     type: object
  *     description: The transaction's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -58,6 +62,10 @@
  *     description: The date that the transaction was updated.
  *   order:
  *     $ref: "#/components/schemas/Order"
+ *   version:
+ *     type: number
+ *     title: version
+ *     description: The order version that the transaction belongs to.
  * 
 */
 

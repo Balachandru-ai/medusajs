@@ -45,6 +45,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminTransferOrder.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_orders_{id}_transfer/post.js
     - lang: Shell
       label: cURL
       source:
@@ -71,3 +75,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: requestOrderTransferWorkflow
+  x-events:
+    - name: order.transfer_requested
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the order
+          order_change_id, // The ID of the order change created for the transfer
+        }
+        ```
+      description: |-
+        Emitted when an order is requested to be transferred to
+        another customer.
+      deprecated: false

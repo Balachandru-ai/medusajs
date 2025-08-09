@@ -4,13 +4,31 @@ const commonHiddenFields = [
   "application_method.allocation",
 ]
 
+const amountOfOrderHiddenFields = [...commonHiddenFields]
+const amountOfProductHiddenFields = [...commonHiddenFields]
+
+const percentageOfOrderHiddenFields = [
+  ...commonHiddenFields,
+  "is_tax_inclusive",
+]
+const percentageOfProductHiddenFields = [
+  ...commonHiddenFields,
+  "is_tax_inclusive",
+]
+
+const buyGetHiddenFields = [
+  ...commonHiddenFields,
+  "application_method.value",
+  "is_tax_inclusive",
+]
+
 export const templates = [
   {
     id: "amount_off_products",
     type: "standard",
     title: "Amount off products",
     description: "Discount specific products or collection of products",
-    hiddenFields: [...commonHiddenFields],
+    hiddenFields: amountOfProductHiddenFields,
     defaults: {
       is_automatic: "false",
       type: "standard",
@@ -26,7 +44,7 @@ export const templates = [
     type: "standard",
     title: "Amount off order",
     description: "Discounts the total order amount",
-    hiddenFields: [...commonHiddenFields],
+    hiddenFields: amountOfOrderHiddenFields,
     defaults: {
       is_automatic: "false",
       type: "standard",
@@ -42,7 +60,7 @@ export const templates = [
     type: "standard",
     title: "Percentage off product",
     description: "Discounts a percentage off selected products",
-    hiddenFields: [...commonHiddenFields],
+    hiddenFields: percentageOfProductHiddenFields,
     defaults: {
       is_automatic: "false",
       type: "standard",
@@ -58,7 +76,7 @@ export const templates = [
     type: "standard",
     title: "Percentage off order",
     description: "Discounts a percentage of the total order amount",
-    hiddenFields: [...commonHiddenFields],
+    hiddenFields: percentageOfOrderHiddenFields,
     defaults: {
       is_automatic: "false",
       type: "standard",
@@ -74,7 +92,7 @@ export const templates = [
     type: "buy_get",
     title: "Buy X Get Y",
     description: "Buy X product(s), get Y product(s)",
-    hiddenFields: [...commonHiddenFields, "application_method.value"],
+    hiddenFields: buyGetHiddenFields,
     defaults: {
       is_automatic: "false",
       type: "buyget",

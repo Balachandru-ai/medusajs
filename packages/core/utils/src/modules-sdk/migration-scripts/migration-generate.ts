@@ -3,6 +3,7 @@ import { mikroOrmCreateConnection } from "../../dal"
 import { loadDatabaseConfig } from "../load-module-database-config"
 import { Migrations } from "../../migrations"
 import { toMikroOrmEntities } from "../../dml"
+import { kebabCase } from "../../common/to-kebab-case"
 
 const TERMINAL_SIZE = process.stdout.columns
 
@@ -34,15 +35,20 @@ export function buildGenerateMigrationScript({
   > = {}) {
     logger ??= console as unknown as Logger
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
-    console.log("")
+    logger.info(new Array(TERMINAL_SIZE).join("-"))
+    logger.info("")
     logger.info(`MODULE: ${moduleName}`)
 
     const dbData = loadDatabaseConfig(moduleName, options)!
 
     const normalizedModels = toMikroOrmEntities(models)
     const orm = await mikroOrmCreateConnection(
-      dbData,
+      {
+        ...dbData,
+        snapshotName: `.snapshot-${kebabCase(
+          moduleName.replace("Service", "")
+        )}`,
+      },
       normalizedModels,
       pathToMigrations
     )

@@ -83,7 +83,7 @@ class OasGenerator extends AbstractGenerator {
   isFileIncluded(fileName: string): boolean {
     return (
       super.isFileIncluded(fileName) &&
-      minimatch(getBasePath(fileName), "packages/medusa/**/api**/**", {
+      minimatch(getBasePath(fileName), "**/api**/**", {
         matchBase: true,
       })
     )

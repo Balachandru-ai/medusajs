@@ -1,3 +1,8 @@
+---
+products:
+  - product
+---
+
 import { Prerequisites } from "docs-ui"
 
 export const metadata = {
@@ -31,7 +36,7 @@ Medusa's existing API routes accept a `fields` query parameter that allows you t
 
 <Note>
 
-Learn more about selecting fields and relations in the [API Reference](!api!/admin#select-fields-and-relations).
+Learn more about using the `fields` query parameter to retrieve custom linked data models in the [Retrieve Custom Linked Data Models from Medusa's API Routes](../../../fundamentals/api-routes/retrieve-custom-links/page.mdx) chapter.
 
 </Note>
 
@@ -65,6 +70,12 @@ Any product that is linked to a brand will have a `brand` property in its object
 ```
 
 By using the `fields` query parameter, you don't have to re-create existing API routes to get custom data models that you linked to core data models.
+
+### Limitations: Filtering by Brands in Existing API Routes
+
+While you can retrieve linked records using the `fields` query parameter of an existing API route, you can't filter by linked records.
+
+Instead, you'll have to create a custom API route that uses Query to retrieve linked records with filters, as explained in the [Query documentation](../../../fundamentals/module-links/query/page.mdx#apply-filters-and-pagination-on-linked-records).
 
 ---
 
@@ -151,6 +162,12 @@ This returns the brands in your store with their linked products. For example:
   ]
 }
 ```
+
+### Limitations: Filtering by Brand in Query
+
+While you can use Query to retrieve linked records, you can't filter by linked records.
+
+For an alternative approach, refer to the [Query documentation](../../../fundamentals/module-links/query/page.mdx#apply-filters-and-pagination-on-linked-records).
 
 ---
 

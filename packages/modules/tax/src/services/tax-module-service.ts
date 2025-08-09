@@ -20,13 +20,14 @@ import {
   promiseAll,
 } from "@medusajs/framework/utils"
 import { TaxProvider, TaxRate, TaxRateRule, TaxRegion } from "@models"
+import { TaxProviderService } from "@services"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
   taxRateService: ModulesSdkTypes.IMedusaInternalService<any>
   taxRegionService: ModulesSdkTypes.IMedusaInternalService<any>
   taxRateRuleService: ModulesSdkTypes.IMedusaInternalService<any>
-  taxProviderService: ModulesSdkTypes.IMedusaInternalService<any>
+  taxProviderService: TaxProviderService
   [key: `tp_${string}`]: ITaxProvider
 }
 
@@ -57,9 +58,7 @@ export default class TaxModuleService
   protected taxRateRuleService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof TaxRateRule>
   >
-  protected taxProviderService_: ModulesSdkTypes.IMedusaInternalService<
-    InferEntityType<typeof TaxProvider>
-  >
+  protected taxProviderService_: TaxProviderService
 
   constructor(
     {
@@ -445,7 +444,7 @@ export default class TaxModuleService
     )
 
     const taxLines = await this.getTaxLinesFromProvider(
-      parentRegion.provider_id,
+      parentRegion.provider_id as string,
       toReturn,
       calculationContext
     )
@@ -454,20 +453,11 @@ export default class TaxModuleService
   }
 
   private async getTaxLinesFromProvider(
-    rawProviderId: string | null,
+    providerId: string,
     items: ItemWithRates[],
     calculationContext: TaxTypes.TaxCalculationContext
   ) {
-    const providerId = rawProviderId || "system"
-    let provider: ITaxProvider
-    try {
-      provider = this.container_[`tp_${providerId}`] as ITaxProvider
-    } catch (err) {
-      throw new MedusaError(
-        MedusaError.Types.NOT_FOUND,
-        `Failed to resolve Tax Provider with id: ${providerId}. Make sure it's installed and configured in the Tax Module's options.`
-      )
-    }
+    const provider = this.taxProviderService_.retrieveProvider(providerId)
 
     const [itemLines, shippingLines] = items.reduce(
       (acc, line) => {
@@ -730,27 +720,4 @@ export default class TaxModuleService
   private normalizeRegionCodes(code: string) {
     return code.toLowerCase()
   }
-
-  // @InjectTransactionManager()
-  // async createProvidersOnLoad(@MedusaContext() sharedContext: Context = {}) {
-  //   const providersToLoad = this.container_["tax_providers"] as ITaxProvider[]
-
-  //   const ids = providersToLoad.map((p) => p.getIdentifier())
-
-  //   const existing = await this.taxProviderService_.update(
-  //     { selector: { id: { $in: ids } }, data: { is_enabled: true } },
-  //     sharedContext
-  //   )
-
-  //   const existingIds = existing.map((p) => p.id)
-  //   const diff = arrayDifference(ids, existingIds)
-  //   await this.taxProviderService_.create(
-  //     diff.map((id) => ({ id, is_enabled: true }))
-  //   )
-
-  //   await this.taxProviderService_.update({
-  //     selector: { id: { $nin: ids } },
-  //     data: { is_enabled: false },
-  //   })
-  // }
 }

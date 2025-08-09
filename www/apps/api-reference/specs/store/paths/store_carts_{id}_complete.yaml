@@ -41,6 +41,10 @@ post:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_carts_{id}_complete/post.js
     - lang: Shell
       label: cURL
       source:
@@ -123,3 +127,17 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: completeCartWorkflow
+  x-events:
+    - name: order.placed
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the order
+        }
+        ```
+      description: >-
+        Emitted when an order is placed, or when a draft order is converted to
+        an
+
+        order.
+      deprecated: false

@@ -301,17 +301,22 @@ export const theme = {
           "muted": {
             "DEFAULT": "var(--fg-muted)"
           }
+        },
+        "alpha": {
+          "250": {
+            "DEFAULT": "var(--alpha-250)"
+          },
+          "400": {
+            "DEFAULT": "var(--alpha-400)"
+          }
         }
       }
     },
     "boxShadow": {
-      "borders-interactive-with-active": "var(--borders-interactive-with-active)",
       "buttons-danger-focus": "var(--buttons-danger-focus)",
       "details-contrast-on-bg-interactive": "var(--details-contrast-on-bg-interactive)",
-      "borders-interactive-with-focus": "var(--borders-interactive-with-focus)",
       "borders-error": "var(--borders-error)",
       "borders-focus": "var(--borders-focus)",
-      "borders-interactive-with-shadow": "var(--borders-interactive-with-shadow)",
       "buttons-danger": "var(--buttons-danger)",
       "buttons-inverted-focus": "var(--buttons-inverted-focus)",
       "elevation-card-hover": "var(--elevation-card-hover)",
@@ -325,9 +330,12 @@ export const theme = {
       "elevation-flyout": "var(--elevation-flyout)",
       "elevation-tooltip": "var(--elevation-tooltip)",
       "elevation-modal": "var(--elevation-modal)",
-      "elevation-commandbar": "var(--elevation-commandbar)",
       "elevation-code-block": "var(--elevation-code-block)",
-      "buttons-inverted": "var(--buttons-inverted)"
+      "buttons-inverted": "var(--buttons-inverted)",
+      "elevation-commandbar": "var(--elevation-commandbar)",
+      "borders-interactive-with-focus": "var(--borders-interactive-with-focus)",
+      "borders-interactive-with-shadow": "var(--borders-interactive-with-shadow)",
+      "borders-interactive-with-active": "var(--borders-interactive-with-active)"
     }
   }
 }

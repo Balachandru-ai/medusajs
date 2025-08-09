@@ -24,8 +24,8 @@ import {
   isPresent,
   upperCaseFirst,
 } from "@medusajs/utils"
-import { pgConnectionLoader } from "./database"
 
+import type { Knex } from "@mikro-orm/knex"
 import { aliasTo, asValue } from "awilix"
 import { configManager } from "./config"
 import {
@@ -33,7 +33,6 @@ import {
   container as mainContainer,
   MedusaContainer,
 } from "./container"
-import type { Knex } from "@mikro-orm/knex"
 
 export class MedusaAppLoader {
   /**
@@ -88,6 +87,7 @@ export class MedusaAppLoader {
       const def = {} as ModuleDefinition
       def.key ??= key
       def.label ??= ModulesDefinition[key]?.label ?? upperCaseFirst(key)
+      def.dependencies ??= ModulesDefinition[key]?.dependencies
       def.isQueryable = ModulesDefinition[key]?.isQueryable ?? true
 
       const orignalDef = value?.definition ?? ModulesDefinition[key]
@@ -115,16 +115,20 @@ export class MedusaAppLoader {
       ),
     }
 
+    const driverOptions = {
+      ...(configManager.config.projectConfig.databaseDriverOptions ?? {}),
+    }
+    const pool = (driverOptions.pool as Record<string, unknown>) ?? {}
+    delete driverOptions.pool
+
     const sharedResourcesConfig: ModuleServiceInitializeOptions = {
       database: {
         clientUrl:
-          (
-            injectedDependencies[
-              ContainerRegistrationKeys.PG_CONNECTION
-            ] as ReturnType<typeof pgConnectionLoader>
-          )?.client?.config?.connection?.connectionString ??
+          injectedDependencies[ContainerRegistrationKeys.PG_CONNECTION]?.client
+            ?.config?.connection?.connectionString ??
           configManager.config.projectConfig.databaseUrl,
         driverOptions: configManager.config.projectConfig.databaseDriverOptions,
+        pool: pool,
         debug: configManager.config.projectConfig.databaseLogging ?? false,
         schema: configManager.config.projectConfig.databaseSchema,
         database: configManager.config.projectConfig.databaseName,

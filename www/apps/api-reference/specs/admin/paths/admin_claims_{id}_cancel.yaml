@@ -20,6 +20,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostCancelClaimReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_claims_{id}_cancel/post.js
     - lang: Shell
       label: cURL
       source:
@@ -46,3 +50,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelOrderClaimWorkflow
+  x-events: []

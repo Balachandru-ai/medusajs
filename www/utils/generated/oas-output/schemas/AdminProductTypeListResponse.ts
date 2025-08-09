@@ -26,6 +26,11 @@
  *     description: The list of product types.
  *     items:
  *       $ref: "#/components/schemas/AdminProductType"
+ *   estimate_count:
+ *     type: number
+ *     title: estimate_count
+ *     description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+ *     x-featureFlag: index_engine
  * 
 */
 

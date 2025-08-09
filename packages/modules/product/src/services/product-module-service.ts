@@ -26,6 +26,7 @@ import { ProductCategoryService } from "@services"
 import {
   arrayDifference,
   EmitEvents,
+  generateEntityId,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -38,10 +39,10 @@ import {
   MedusaService,
   Modules,
   ProductStatus,
-  promiseAll,
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
+import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
@@ -56,6 +57,7 @@ import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
+  productRepository: ProductRepository
   productService: ModulesSdkTypes.IMedusaInternalService<any, any>
   productVariantService: ModulesSdkTypes.IMedusaInternalService<any, any>
   productTagService: ModulesSdkTypes.IMedusaInternalService<any>
@@ -95,6 +97,9 @@ export default class ProductModuleService
     ProductVariant: {
       dto: ProductTypes.ProductVariantDTO
     }
+    ProductImage: {
+      dto: ProductTypes.ProductImageDTO
+    }
   }>({
     Product,
     ProductCategory,
@@ -104,10 +109,12 @@ export default class ProductModuleService
     ProductTag,
     ProductType,
     ProductVariant,
+    ProductImage,
   })
   implements ProductTypes.IProductModuleService
 {
   protected baseRepository_: DAL.RepositoryService
+  protected readonly productRepository_: ProductRepository
   protected readonly productService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof Product>
   >
@@ -138,6 +145,7 @@ export default class ProductModuleService
   constructor(
     {
       baseRepository,
+      productRepository,
       productService,
       productVariantService,
       productTagService,
@@ -156,6 +164,7 @@ export default class ProductModuleService
     super(...arguments)
 
     this.baseRepository_ = baseRepository
+    this.productRepository_ = productRepository
     this.productService_ = productService
     this.productVariantService_ = productVariantService
     this.productTagService_ = productTagService
@@ -1184,55 +1193,53 @@ export default class ProductModuleService
     )
 
     const collections: InferEntityType<typeof ProductCollection>[] = []
+    const toUpdate: {
+      selector: ProductTypes.FilterableProductProps
+      data: ProductTypes.UpdateProductDTO
+    }[] = []
 
-    const updateSelectorAndData = updatedCollections.flatMap(
-      (collectionData) => {
-        const input = normalizedInput.find((c) => c.id === collectionData.id)
-        const productsToUpdate = (input as any)?.products
+    updatedCollections.forEach((collectionData) => {
+      const input = normalizedInput.find((c) => c.id === collectionData.id)
+      const productsToUpdate = (input as any)?.products
 
-        const dissociateSelector = {
-          collection_id: collectionData.id,
-        }
-        const associateSelector = {}
-
-        if (!!productsToUpdate?.length) {
-          const productIds = productsToUpdate.map((p) => p.id)
-
-          dissociateSelector["id"] = { $nin: productIds }
-          associateSelector["id"] = { $in: productIds }
-        } else if (!isDefined(productsToUpdate)) {
-          return []
-        }
-
-        const result: Record<string, any>[] = [
-          {
-            selector: dissociateSelector,
-            data: {
-              collection_id: null,
-            },
-          },
-        ]
-
-        if (isPresent(associateSelector)) {
-          result.push({
-            selector: associateSelector,
-            data: {
-              collection_id: collectionData.id,
-            },
-          })
-        }
-
-        collections.push({
-          ...collectionData,
-          products: productsToUpdate ?? [],
-        } as InferEntityType<typeof ProductCollection>)
-
-        return result
+      const dissociateSelector = {
+        collection_id: collectionData.id,
       }
-    )
+      const associateSelector = {}
 
-    if (updateSelectorAndData.length) {
-      await this.productService_.update(updateSelectorAndData, sharedContext)
+      if (isDefined(productsToUpdate)) {
+        const productIds = productsToUpdate.map((p) => p.id)
+
+        dissociateSelector["id"] = { $nin: productIds }
+        associateSelector["id"] = { $in: productIds }
+      }
+
+      if (isPresent(dissociateSelector["id"])) {
+        toUpdate.push({
+          selector: dissociateSelector,
+          data: {
+            collection_id: null,
+          },
+        })
+      }
+
+      if (isPresent(associateSelector["id"])) {
+        toUpdate.push({
+          selector: associateSelector,
+          data: {
+            collection_id: collectionData.id,
+          },
+        })
+      }
+
+      collections.push({
+        ...collectionData,
+        products: productsToUpdate ?? [],
+      } as InferEntityType<typeof ProductCollection>)
+    })
+
+    if (toUpdate.length) {
+      await this.productService_.update(toUpdate, sharedContext)
     }
 
     return collections
@@ -1558,86 +1565,91 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
-    const normalizedInput = await promiseAll(
-      data.map(async (d) => {
-        const normalized = await this.normalizeCreateProductInput(
-          d,
-          sharedContext
-        )
-        this.validateProductCreatePayload(normalized)
-        return normalized
-      })
+    const normalizedProducts = await this.normalizeCreateProductInput(
+      data,
+      sharedContext
     )
 
-    const { entities: productData } =
-      await this.productService_.upsertWithReplace(
-        normalizedInput,
+    for (const product of normalizedProducts) {
+      this.validateProductCreatePayload(product)
+    }
+
+    const tagIds = normalizedProducts
+      .flatMap((d) => (d as any).tags ?? [])
+      .map((t) => t.id)
+    let existingTags: InferEntityType<typeof ProductTag>[] = []
+
+    if (tagIds.length) {
+      existingTags = await this.productTagService_.list(
         {
-          relations: ["tags", "categories"],
+          id: tagIds,
         },
+        {},
         sharedContext
       )
+    }
 
-    await promiseAll(
-      // Note: It's safe to rely on the order here as `upsertWithReplace` preserves the order of the input
-      normalizedInput.map(async (product, i) => {
-        const upsertedProduct: any = productData[i]
-        upsertedProduct.options = []
-        upsertedProduct.variants = []
+    const existingTagsMap = new Map(existingTags.map((tag) => [tag.id, tag]))
 
-        if (product.options?.length) {
-          const { entities: productOptions } =
-            await this.productOptionService_.upsertWithReplace(
-              product.options?.map((option) => ({
-                ...option,
-                product_id: upsertedProduct.id,
-              })) ?? [],
-              { relations: ["values"] },
-              sharedContext
-            )
-          upsertedProduct.options = productOptions
-        }
+    const productsToCreate = normalizedProducts.map((product) => {
+      const productId = generateEntityId(product.id, "prod")
+      product.id = productId
 
-        if (product.variants?.length) {
-          const { entities: productVariants } =
-            await this.productVariantService_.upsertWithReplace(
-              ProductModuleService.assignOptionsToVariants(
-                product.variants?.map((v) => ({
-                  ...v,
-                  product_id: upsertedProduct.id,
-                })) ?? [],
-                upsertedProduct.options
-              ),
-              { relations: ["options"] },
-              sharedContext
-            )
-          upsertedProduct.variants = productVariants
-        }
+      if ((product as any).categories?.length) {
+        ;(product as any).categories = (product as any).categories.map(
+          (category: { id: string }) => category.id
+        )
+      }
 
-        if (Array.isArray(product.images)) {
-          if (product.images.length) {
-            const { entities: productImages } =
-              await this.productImageService_.upsertWithReplace(
-                product.images.map((image, rank) => ({
-                  ...image,
-                  product_id: upsertedProduct.id,
-                  rank,
-                })),
-                {},
-                sharedContext
-              )
-            upsertedProduct.images = productImages
-          } else {
-            await this.productImageService_.delete(
-              { product_id: upsertedProduct.id },
-              sharedContext
+      if (product.variants?.length) {
+        const normalizedVariants = product.variants.map((variant) => {
+          const variantId = generateEntityId((variant as any).id, "variant")
+          ;(variant as any).id = variantId
+
+          Object.entries(variant.options ?? {}).forEach(([key, value]) => {
+            const productOption = product.options?.find(
+              (option) => option.title === key
+            )!
+            const productOptionValue = productOption.values?.find(
+              (optionValue) => (optionValue as any).value === value
+            )!
+            ;(productOptionValue as any).variants ??= []
+            ;(productOptionValue as any).variants.push(variant)
+          })
+
+          delete variant.options
+
+          return variant
+        })
+
+        product.variants = normalizedVariants
+      }
+
+      if ((product as any).tags?.length) {
+        ;(product as any).tags = (product as any).tags.map(
+          (tag: { id: string }) => {
+            const existingTag = existingTagsMap.get(tag.id)
+            if (existingTag) {
+              return existingTag
+            }
+
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Tag with id ${tag.id} not found. Please create the tag before associating it with the product.`
             )
           }
-        }
-      })
+        )
+      }
+
+      return product
+    })
+
+    const createdProducts = await this.productService_.create(
+      productsToCreate,
+      sharedContext
     )
 
-    return productData
+    return createdProducts
   }
 
   @InjectTransactionManager()
@@ -1645,135 +1657,20 @@ export default class ProductModuleService
     data: UpdateProductInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
-    const normalizedInput = await promiseAll(
-      data.map(async (d) => {
-        const normalized = await this.normalizeUpdateProductInput(
-          d,
-          sharedContext
-        )
-        this.validateProductUpdatePayload(normalized)
-        return normalized
-      })
+    const normalizedProducts = await this.normalizeUpdateProductInput(
+      data,
+      sharedContext
     )
 
-    const { entities: productData } =
-      await this.productService_.upsertWithReplace(
-        normalizedInput,
-        {
-          relations: ["tags", "categories"],
-        },
-        sharedContext
-      )
+    for (const product of normalizedProducts) {
+      this.validateProductUpdatePayload(product)
+    }
 
-    // There is more than 1-level depth of relations here, so we need to handle the options and variants manually
-    await promiseAll(
-      // Note: It's safe to rely on the order here as `upsertWithReplace` preserves the order of the input
-      normalizedInput.map(async (product, i) => {
-        const upsertedProduct: any = productData[i]
-        let allOptions: any[] = []
-
-        if (product.options?.length) {
-          const { entities: productOptions } =
-            await this.productOptionService_.upsertWithReplace(
-              product.options?.map((option) => ({
-                ...option,
-                product_id: upsertedProduct.id,
-              })) ?? [],
-              { relations: ["values"] },
-              sharedContext
-            )
-          upsertedProduct.options = productOptions
-
-          // Since we handle the options and variants outside of the product upsert, we need to clean up manually
-          await this.productOptionService_.delete(
-            {
-              product_id: upsertedProduct.id,
-              id: {
-                $nin: upsertedProduct.options.map(({ id }) => id),
-              },
-            },
-            sharedContext
-          )
-          allOptions = upsertedProduct.options
-        } else {
-          // If the options weren't affected, but the user is changing the variants, make sure we have all options available locally
-          if (product.variants?.length) {
-            allOptions = await this.productOptionService_.list(
-              { product_id: upsertedProduct.id },
-              { relations: ["values"] },
-              sharedContext
-            )
-          }
-        }
-
-        if (product.variants?.length) {
-          const productVariantsWithOptions =
-            ProductModuleService.assignOptionsToVariants(
-              product.variants.map((v) => ({
-                ...v,
-                product_id: upsertedProduct.id,
-              })) ?? [],
-              allOptions
-            )
-
-          ProductModuleService.checkIfVariantsHaveUniqueOptionsCombinations(
-            productVariantsWithOptions as any
-          )
-
-          const { entities: productVariants } =
-            await this.productVariantService_.upsertWithReplace(
-              productVariantsWithOptions,
-              { relations: ["options"] },
-              sharedContext
-            )
-
-          upsertedProduct.variants = productVariants
-
-          await this.productVariantService_.delete(
-            {
-              product_id: upsertedProduct.id,
-              id: {
-                $nin: upsertedProduct.variants.map(({ id }) => id),
-              },
-            },
-            sharedContext
-          )
-        }
-
-        if (Array.isArray(product.images)) {
-          if (product.images.length) {
-            const { entities: productImages } =
-              await this.productImageService_.upsertWithReplace(
-                product.images.map((image, rank) => ({
-                  ...image,
-                  product_id: upsertedProduct.id,
-                  rank,
-                })),
-                {},
-                sharedContext
-              )
-            upsertedProduct.images = productImages
-
-            await this.productImageService_.delete(
-              {
-                product_id: upsertedProduct.id,
-                id: {
-                  $nin: productImages.map(({ id }) => id),
-                },
-              },
-              sharedContext
-            )
-          } else {
-            await this.productImageService_.delete(
-              { product_id: upsertedProduct.id },
-              sharedContext
-            )
-          }
-        }
-      })
+    return this.productRepository_.deepUpdate(
+      normalizedProducts,
+      ProductModuleService.validateVariantOptions,
+      sharedContext
     )
-
-    return productData
   }
 
   // @ts-expect-error
@@ -1896,79 +1793,125 @@ export default class ProductModuleService
     this.validateProductPayload(productData)
   }
 
-  protected async normalizeCreateProductInput(
-    product: ProductTypes.CreateProductDTO,
+  protected async normalizeCreateProductInput<
+    T extends ProductTypes.CreateProductDTO | ProductTypes.CreateProductDTO[],
+    TOutput = T extends ProductTypes.CreateProductDTO[]
+      ? ProductTypes.CreateProductDTO[]
+      : ProductTypes.CreateProductDTO
+  >(
+    products: T,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<ProductTypes.CreateProductDTO> {
-    const productData = (await this.normalizeUpdateProductInput(
-      product as UpdateProductInput,
+  ): Promise<TOutput> {
+    const products_ = Array.isArray(products) ? products : [products]
+
+    const normalizedProducts = (await this.normalizeUpdateProductInput(
+      products_ as UpdateProductInput[],
       sharedContext
-    )) as ProductTypes.CreateProductDTO
+    )) as ProductTypes.CreateProductDTO[]
 
-    if (!productData.handle && productData.title) {
-      productData.handle = toHandle(productData.title)
+    for (const productData of normalizedProducts) {
+      if (!productData.handle && productData.title) {
+        productData.handle = toHandle(productData.title)
+      }
+
+      if (!productData.status) {
+        productData.status = ProductStatus.DRAFT
+      }
+
+      if (!productData.thumbnail && productData.images?.length) {
+        productData.thumbnail = productData.images[0].url
+      }
+
+      if (productData.images?.length) {
+        productData.images = productData.images.map((image, index) =>
+          (image as { rank?: number }).rank != null
+            ? image
+            : {
+                ...image,
+                rank: index,
+              }
+        )
+      }
     }
 
-    if (!productData.status) {
-      productData.status = ProductStatus.DRAFT
-    }
-
-    if (!productData.thumbnail && productData.images?.length) {
-      productData.thumbnail = productData.images[0].url
-    }
-
-    return productData
+    return (
+      Array.isArray(products) ? normalizedProducts : normalizedProducts[0]
+    ) as TOutput
   }
 
-  protected async normalizeUpdateProductInput(
-    product: UpdateProductInput,
+  protected async normalizeUpdateProductInput<
+    T extends UpdateProductInput | UpdateProductInput[],
+    TOutput = T extends UpdateProductInput[]
+      ? UpdateProductInput[]
+      : UpdateProductInput
+  >(
+    products: T,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<UpdateProductInput> {
-    const productData = { ...product }
-    if (productData.is_giftcard) {
-      productData.discountable = false
-    }
+  ): Promise<TOutput> {
+    const products_ = Array.isArray(products) ? products : [products]
+    const productsIds = products_.map((p) => p.id).filter(Boolean)
 
-    if (productData.options?.length) {
-      const dbOptions = await this.productOptionService_.list(
-        { product_id: productData.id },
+    let dbOptions: InferEntityType<typeof ProductOption>[] = []
+
+    if (productsIds.length) {
+      dbOptions = await this.productOptionService_.list(
+        { product_id: productsIds },
         { relations: ["values"] },
         sharedContext
       )
-
-      ;(productData as any).options = productData.options?.map((option) => {
-        const dbOption = dbOptions.find((o) => o.title === option.title)
-        return {
-          title: option.title,
-          values: option.values?.map((value) => {
-            const dbValue = dbOption?.values?.find((val) => val.value === value)
-            return {
-              value: value,
-              ...(dbValue ? { id: dbValue.id } : {}),
-            }
-          }),
-          ...(dbOption ? { id: dbOption.id } : {}),
-        }
-      })
     }
 
-    if (productData.tag_ids) {
-      ;(productData as any).tags = productData.tag_ids.map((cid) => ({
-        id: cid,
-      }))
-      delete productData.tag_ids
-    }
+    const normalizedProducts: UpdateProductInput[] = []
 
-    if (productData.category_ids) {
-      ;(productData as any).categories = productData.category_ids.map(
-        (cid) => ({
-          id: cid,
+    for (const product of products_) {
+      const productData = { ...product }
+      if (productData.is_giftcard) {
+        productData.discountable = false
+      }
+
+      if (productData.options?.length) {
+        ;(productData as any).options = productData.options?.map((option) => {
+          const dbOption = dbOptions.find(
+            (o) => o.title === option.title && o.product_id === productData.id
+          )
+          return {
+            title: option.title,
+            values: option.values?.map((value) => {
+              const dbValue = dbOption?.values?.find(
+                (val) => val.value === value
+              )
+              return {
+                value: value,
+                ...(dbValue ? { id: dbValue.id } : {}),
+              }
+            }),
+            ...(dbOption ? { id: dbOption.id } : {}),
+          }
         })
-      )
-      delete productData.category_ids
+      }
+
+      if (productData.tag_ids) {
+        ;(productData as any).tags = productData.tag_ids.map((cid) => ({
+          id: cid,
+        }))
+        delete productData.tag_ids
+      }
+
+      if (productData.category_ids) {
+        ;(productData as any).categories = productData.category_ids.map(
+          (cid) => ({
+            id: cid,
+          })
+        )
+        delete productData.category_ids
+      }
+
+      normalizedProducts.push(productData)
     }
 
-    return productData
+    return (
+      Array.isArray(products) ? normalizedProducts : normalizedProducts[0]
+    ) as TOutput
   }
 
   protected static normalizeCreateProductCollectionInput(
@@ -2001,6 +1944,26 @@ export default class ProductModuleService
     return collectionData
   }
 
+  protected static validateVariantOptions(
+    variants:
+      | ProductTypes.CreateProductVariantDTO[]
+      | ProductTypes.UpdateProductVariantDTO[],
+    options: InferEntityType<typeof ProductOption>[]
+  ) {
+    const variantsWithOptions = ProductModuleService.assignOptionsToVariants(
+      variants.map((v) => ({
+        ...v,
+        // adding product_id to the variant to make it valid for the assignOptionsToVariants function
+        ...(options.length ? { product_id: options[0].product_id } : {}),
+      })),
+      options
+    )
+
+    ProductModuleService.checkIfVariantsHaveUniqueOptionsCombinations(
+      variantsWithOptions as any
+    )
+  }
+
   protected static assignOptionsToVariants(
     variants:
       | ProductTypes.CreateProductVariantDTO[]
@@ -2012,7 +1975,6 @@ export default class ProductModuleService
     if (!variants.length) {
       return variants
     }
-
     const variantsWithOptions = variants.map((variant: any) => {
       const numOfProvidedVariantOptionValues = Object.keys(
         variant.options || {}
@@ -2028,7 +1990,7 @@ export default class ProductModuleService
       ) {
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
-          `Product has ${productsOptions.length} but there were ${numOfProvidedVariantOptionValues} provided option values for the variant: ${variant.title}.`
+          `Product has ${productsOptions.length} option values but there were ${numOfProvidedVariantOptionValues} provided option values for the variant: ${variant.title}.`
         )
       }
 

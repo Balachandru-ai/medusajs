@@ -211,6 +211,7 @@
             "partially_authorized",
             "canceled",
             "failed",
+            "partially_captured",
             "completed"
           ],
           "mappedType": "enum"

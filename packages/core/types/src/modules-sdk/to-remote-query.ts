@@ -20,7 +20,7 @@ type ExtractFiltersOperators<
     ? never
     : Key extends ExcludedProps
     ? never
-    : T[Key] extends string | number | boolean | Date
+    : NonNullable<T[Key]> extends string | number | boolean | Date
     ? T[Key] | T[Key][] | OperatorMap<T[Key] | T[Key][]>
     : T[Key] extends Array<infer R>
     ? TypeOnly<R> extends { __typename: any }
@@ -45,10 +45,16 @@ type ExtractFiltersOperators<
     : never
 }
 
+type RemoteQueryFilterOperators<T> = {
+  $or?: (T & RemoteQueryFilterOperators<T>)[]
+  $and?: (T & RemoteQueryFilterOperators<T>)[]
+  $not?: T & RemoteQueryFilterOperators<T>
+}
+
 /**
  * Extract all available filters from a remote entry point deeply
  */
-export type RemoteQueryFilters<
+export type InternalRemoteQueryFilters<
   TEntry extends string,
   RemoteQueryEntryPointsLevel = RemoteQueryEntryPoints,
   Exclusion extends string[] = [],
@@ -70,3 +76,23 @@ export type RemoteQueryFilters<
         >
     : Record<string, any>
   : never
+
+export type RemoteQueryFilters<
+  TEntry extends string,
+  RemoteQueryEntryPointsLevel = RemoteQueryEntryPoints,
+  Exclusion extends string[] = [],
+  Lim extends number = Depth[3]
+> = RemoteQueryFilterOperators<
+  InternalRemoteQueryFilters<
+    TEntry,
+    RemoteQueryEntryPointsLevel,
+    Exclusion,
+    Lim
+  >
+> &
+  InternalRemoteQueryFilters<
+    TEntry,
+    RemoteQueryEntryPointsLevel,
+    Exclusion,
+    Lim
+  >

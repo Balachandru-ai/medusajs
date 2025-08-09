@@ -178,13 +178,13 @@ export function generateGraphQLSchema(
   // Link table relationships
   const primaryField = doesPrimaryExportSchema
     ? `${camelToSnakeCase(primary.alias)}: ${toPascalCase(
-        composeTableName(primary.serviceName)
+        primary.entity ?? composeTableName(primary.serviceName)
       )}`
     : ""
 
   const foreignField = doesForeignExportSchema
     ? `${camelToSnakeCase(foreign.alias)}: ${toPascalCase(
-        composeTableName(foreign.serviceName)
+        foreign.entity ?? composeTableName(foreign.serviceName)
       )}`
     : ""
 

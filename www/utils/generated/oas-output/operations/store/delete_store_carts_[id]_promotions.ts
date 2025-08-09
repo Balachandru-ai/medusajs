@@ -65,6 +65,12 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCartPromotionsWorkflow
+ * requestBody:
+ *   content:
+ *     application/json:
+ *       schema:
+ *         $ref: "#/components/schemas/StoreCartRemovePromotion"
+ * x-events: []
  * 
 */
 

@@ -81,11 +81,13 @@ Each of these methods accepts a string parameter to log in the terminal with the
 
 The available log levels, from lowest to highest levels, are:
 
-1. `silly` (default, meaning messages of all levels are logged)
+1. `silly`
 2. `debug`
-3. `info`
-4. `warn`
-5. `error`
+3. `verbose`
+4. `http` (default, meaning only HTTP requests are logged)
+5. `info`
+6. `warn`
+7. `error`
 
 You can change that by setting the `LOG_LEVEL` environment variable to the minimum level you want to be logged.
 

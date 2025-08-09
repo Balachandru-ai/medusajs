@@ -3,10 +3,15 @@ import {
   WorkflowHandler,
   WorkflowManager,
 } from "@medusajs/orchestration"
-import { LoadedModule, MedusaContainer } from "@medusajs/types"
+import {
+  IWorkflowEngineService,
+  LoadedModule,
+  MedusaContainer,
+} from "@medusajs/types"
 import {
   getCallerFilePath,
   isString,
+  Modules,
   OrchestrationUtils,
 } from "@medusajs/utils"
 import { ulid } from "ulid"
@@ -46,7 +51,6 @@ global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext] = null
  * import {
  *   createProductStep,
  *   getProductStep,
- *   createPricesStep
  * } from "./steps"
  *
  * interface WorkflowInput {
@@ -60,7 +64,6 @@ global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext] = null
  *    // during the execution. Including the data access.
  *
  *     const product = createProductStep(input)
- *     const prices = createPricesStep(product)
  *     return new WorkflowResponse(getProductStep(product.id))
  *   }
  * )
@@ -114,11 +117,13 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
     flow: WorkflowManager.getEmptyTransactionDefinition(),
     isAsync: false,
     handlers,
+    overriddenHandler: new Map(),
     hooks_: {
       declared: [],
       registered: [],
     },
     hooksCallback_: {},
+    stepConditions_: {},
     hookBinder: (name, fn) => {
       context.hooks_.declared.push(name)
       context.hooksCallback_[name] = fn.bind(context)()
@@ -181,49 +186,88 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
   }: {
     input: TData
   }): ReturnType<StepFunction<TData, TResult>> => {
+    // Get current workflow composition context
+    const workflowCompositionContext =
+      global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext]
+
+    const runAsAsync = workflowCompositionContext.isAsync || context.isAsync
     const step = createStep(
       {
         name: `${name}-as-step`,
-        async: context.isAsync,
-        nested: context.isAsync, // if async we flag this is a nested transaction
+        async: runAsAsync,
+        nested: runAsAsync, // if async we flag this is a nested transaction
       },
       async (stepInput: TData, stepContext) => {
         const { container, ...sharedContext } = stepContext
+        const isAsync = stepContext[" stepDefinition"]?.async
 
-        const transaction = await workflow.run({
-          input: stepInput as any,
-          container,
-          context: {
-            ...sharedContext,
-            transactionId:
-              step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
-            parentStepIdempotencyKey: stepContext.idempotencyKey,
-          },
-        })
+        const workflowEngine = container.resolve(Modules.WORKFLOW_ENGINE, {
+          allowUnregistered: true,
+        }) as IWorkflowEngineService
 
-        const { result } = transaction
+        const executionContext = {
+          ...(sharedContext?.context ?? {}),
+          transactionId:
+            step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
+          parentStepIdempotencyKey: stepContext.idempotencyKey,
+          preventReleaseEvents: true,
+        }
+
+        let transaction
+        if (workflowEngine && isAsync) {
+          transaction = await workflowEngine.run(name, {
+            input: stepInput as any,
+            context: executionContext,
+          })
+        } else {
+          transaction = await workflow.run({
+            input: stepInput as any,
+            container,
+            context: executionContext,
+          })
+        }
 
         return new StepResponse(
-          result,
-          context.isAsync ? stepContext.transactionId : transaction
+          transaction.result,
+          isAsync ? stepContext.transactionId : transaction
         )
       },
       async (transaction, stepContext) => {
+        // The step itself has failed, there is nothing to revert
         if (!transaction) {
           return
         }
 
         const { container, ...sharedContext } = stepContext
+        const isAsync = stepContext[" stepDefinition"]?.async
 
-        await workflow(container).cancel({
-          transaction: (transaction as WorkflowResult<any>).transaction,
-          transactionId: isString(transaction) ? transaction : undefined,
-          container,
-          context: {
-            ...sharedContext,
-            parentStepIdempotencyKey: stepContext.idempotencyKey,
-          },
-        })
+        const workflowEngine = container.resolve(Modules.WORKFLOW_ENGINE, {
+          allowUnregistered: true,
+        }) as IWorkflowEngineService
+
+        const executionContext = {
+          ...(sharedContext?.context ?? {}),
+          transactionId:
+            step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
+          parentStepIdempotencyKey: stepContext.idempotencyKey,
+          preventReleaseEvents: true,
+        }
+
+        const transactionId = step.__step__ + "-" + stepContext.transactionId
+
+        if (workflowEngine && isAsync) {
+          await workflowEngine.cancel(name, {
+            transactionId: transactionId,
+            context: executionContext,
+          })
+        } else {
+          await workflow(container).cancel({
+            transaction: (transaction as WorkflowResult<any>)?.transaction,
+            transactionId,
+            container,
+            context: executionContext,
+          })
+        }
       }
     )(input) as ReturnType<StepFunction<TData, TResult>>
 

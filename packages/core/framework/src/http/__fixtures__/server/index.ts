@@ -9,14 +9,14 @@ import express from "express"
 import querystring from "querystring"
 import supertest from "supertest"
 
-import { config } from "../mocks"
 import { MedusaContainer } from "@medusajs/types"
-import { configManager, ConfigModule } from "../../../config"
+import { configManager } from "../../../config"
 import { container } from "../../../container"
 import { featureFlagsLoader } from "../../../feature-flags"
 import { logger } from "../../../logger"
+import { ApiLoader } from "../../router"
 import { MedusaRequest } from "../../types"
-import { RoutesLoader } from "../../router"
+import { config } from "../mocks"
 
 function asArray(resolvers) {
   return {
@@ -44,7 +44,7 @@ export const createServer = async (rootDir) => {
   })
 
   configManager.loadConfig({
-    projectConfig: config as ConfigModule,
+    projectConfig: config,
     baseDir: rootDir,
   })
 
@@ -69,6 +69,7 @@ export const createServer = async (rootDir) => {
   container.register({
     logger: asValue({
       error: () => {},
+      info: () => {},
     }),
     manager: asValue({}),
   })
@@ -94,7 +95,7 @@ export const createServer = async (rootDir) => {
     next()
   })
 
-  await new RoutesLoader({
+  await new ApiLoader({
     app,
     sourceDir: rootDir,
   }).load()
@@ -110,6 +111,7 @@ export const createServer = async (rootDir) => {
         `${url}${queryParams ? "?" + queryParams : ""}`
       )
       headers.Cookie = headers.Cookie || ""
+
       if (opts.adminSession) {
         const token = generateJwtToken(
           {

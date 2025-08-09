@@ -7,6 +7,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   ApiKeyType,
+  ContainerRegistrationKeys,
   Modules,
   PUBLISHABLE_KEY_HEADER,
 } from "@medusajs/framework/utils"
@@ -51,15 +52,19 @@ export const createAdminUser = async (
     },
   })
 
+  const config = container.resolve(ContainerRegistrationKeys.CONFIG_MODULE)
+  const { projectConfig } = config
+  const { jwtSecret, jwtOptions } = projectConfig.http
   const token = jwt.sign(
     {
       actor_id: user.id,
       actor_type: "user",
       auth_identity_id: authIdentity.id,
     },
-    "test",
+    jwtSecret,
     {
       expiresIn: "1d",
+      ...jwtOptions,
     }
   )
 

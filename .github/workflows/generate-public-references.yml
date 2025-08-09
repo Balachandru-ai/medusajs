@@ -35,7 +35,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "yarn"
@@ -56,13 +56,29 @@ jobs:
         working-directory: www
         run: yarn build:packages
 
-      - name: Install Workspace dependencies
+      - name: Install Utils dependencies
         run: yarn install
         working-directory: www/utils
 
-      - name: Build Workspace packages
+      - name: Build Utils packages
         run: yarn build
         working-directory: www/utils
+
+      - name: Run docblock generator
+        run: "yarn generate:dml"
+        working-directory: www/utils
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_OWNER: ${{ github.repository_owner }}
+          GIT_REPO: medusa
+
+      - name: Run docblock generator
+        run: "yarn generate:events"
+        working-directory: www/utils
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_OWNER: ${{ github.repository_owner }}
+          GIT_REPO: medusa
 
       - name: Generate References
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -114,7 +130,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "yarn"
@@ -126,6 +142,14 @@ jobs:
 
       - name: Build Packages
         run: yarn build
+
+      - name: Install Docs dependencies
+        working-directory: www
+        run: yarn install
+
+      - name: Build Docs packages
+        working-directory: www
+        run: yarn build:packages
 
       - name: Install www/utils Dependencies
         run: yarn
@@ -146,6 +170,10 @@ jobs:
       - name: Generate API Reference
         run: yarn openapi:generate
 
+      - name: Run prep script
+        run: yarn prep
+        working-directory: www/apps/api-reference
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
@@ -155,7 +183,10 @@ jobs:
           labels: "type: chore"
           add-paths: |
             www/apps/api-reference/specs
+            www/apps/api-reference/generated
             www/utils/generated/oas-output
+            www/utils/generated/route-examples-output
+            www/utils/generated/events-output.json
           branch: "docs/generate-api-ref"
           branch-suffix: "timestamp"
   dml:
@@ -173,7 +204,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "yarn"
@@ -228,7 +259,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "yarn"
@@ -240,12 +271,20 @@ jobs:
 
       - name: Build Packages
         run: yarn build
+      
+      - name: Install Docs dependencies
+        working-directory: www
+        run: yarn install
 
-      - name: Install Workspace dependencies
+      - name: Build Docs packages
+        working-directory: www
+        run: yarn build:packages
+
+      - name: Install Utils dependencies
         run: yarn install
         working-directory: www/utils
 
-      - name: Build Workspace dependencies
+      - name: Build Utils dependencies
         run: yarn build
         working-directory: www/utils
 
@@ -253,13 +292,25 @@ jobs:
         run: yarn generate:ui
         working-directory: www/utils/packages/react-docs-generator
 
+      - name: Generate Colors
+        run: yarn copy-colors
+        working-directory: www/apps/ui
+
+      - name: Update Medusa Dependencies
+        run: yarn up:medusa
+        working-directory: www
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
-          commit-message: "chore(docs): Generated UI Reference (automated)"
+          commit-message: "chore(docs): Generated + Updated UI Reference (automated)"
           base: "develop"
           title: "chore(docs): Updated UI Reference (automated)"
           labels: "type: chore"
-          add-paths: www/apps/ui/src/specs
+          add-paths: |
+            www/apps/ui/src/specs
+            www/apps/ui/src/config/colors.ts
+            www/**/package.json
+            www/yarn.lock
           branch: "docs/generate-ui-ref"
           branch-suffix: "timestamp"

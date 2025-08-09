@@ -1,10 +1,15 @@
-import { ILockingModule } from "@medusajs/types"
+import { ILockingModule, Logger } from "@medusajs/types"
 
 export class Orchestrator {
   /**
    * Reference to the locking module
    */
   #lockingModule: ILockingModule
+
+  /**
+   * Reference to the logger
+   */
+  #logger: Logger
 
   /**
    * Owner id when acquiring locks
@@ -74,11 +79,13 @@ export class Orchestrator {
     entities: string[],
     options: {
       lockDuration: number
+      logger: Logger
     }
   ) {
     this.#lockingModule = lockingModule
     this.#entities = entities
     this.#options = options
+    this.#logger = options.logger
   }
 
   /**
@@ -104,14 +111,14 @@ export class Orchestrator {
   }
 
   /**
-   * Processes the entity at a given index. If there are no entities
+   * Processes the entity. If there are no entities
    * left, the orchestrator state will be set to completed.
    *
    * - Task runner is the implementation function to execute a task.
    *   Orchestrator has no inbuilt execution logic and it relies on
    *   the task runner for the same.
    */
-  async #processAtIndex(
+  async #processEntity(
     taskRunner: (entity: string) => Promise<void>,
     entity: string
   ) {
@@ -123,10 +130,20 @@ export class Orchestrator {
         this.#state = "error"
         throw error
       } finally {
-        await this.#lockingModule.release(entity, {
-          ownerId: this.#lockingOwner,
-        })
+        await this.#lockingModule
+          .release(entity, {
+            ownerId: this.#lockingOwner,
+          })
+          .catch(() => {
+            this.#logger.error(
+              `[Index engine] failed to release lock for entity '${entity}'`
+            )
+          })
       }
+    } else {
+      this.#logger.warn(
+        `[Index engine] failed to acquire lock for entity '${entity}' on pid ${process.pid}. It means another process is already processing this entity or a lock is still present in your locking provider.`
+      )
     }
   }
 
@@ -152,7 +169,7 @@ export class Orchestrator {
         break
       }
 
-      await this.#processAtIndex(taskRunner, entity)
+      await this.#processEntity(taskRunner, entity)
     }
 
     this.#state = "completed"

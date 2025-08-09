@@ -12,14 +12,14 @@ import {
   removeRemoteLinkStep,
   useQueryGraphStep,
 } from "../../common"
+import { deleteInventoryItemWorkflow } from "../../inventory"
 import { deleteProductsStep } from "../steps/delete-products"
 import { getProductsStep } from "../steps/get-products"
-import { deleteInventoryItemWorkflow } from "../../inventory"
 
 /**
  * The data to delete one or more products.
  */
-export type DeleteProductsWorkflowInput = { 
+export type DeleteProductsWorkflowInput = {
   /**
    * The IDs of the products to delete.
    */
@@ -28,14 +28,14 @@ export type DeleteProductsWorkflowInput = {
 
 export const deleteProductsWorkflowId = "delete-products"
 /**
- * This workflow deletes one or more products. It's used by the 
+ * This workflow deletes one or more products. It's used by the
  * [Delete Products Admin API Route](https://docs.medusajs.com/api/admin#products_deleteproductsid).
- * 
- * This workflow has a hook that allows you to perform custom actions after the products are deleted. For example, 
+ *
+ * This workflow has a hook that allows you to perform custom actions after the products are deleted. For example,
  * you can delete custom records linked to the products.
- * 
+ *
  * You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around product deletion.
- * 
+ *
  * @example
  * const { result } = await deleteProductsWorkflow(container)
  * .run({
@@ -43,11 +43,11 @@ export const deleteProductsWorkflowId = "delete-products"
  *     ids: ["product_123"],
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete one or more products.
- * 
+ *
  * @property hooks.productsDeleted - This hook is executed after the products are deleted. You can consume this hook to perform custom actions on the deleted products.
  */
 export const deleteProductsWorkflow = createWorkflow(

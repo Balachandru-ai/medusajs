@@ -19,6 +19,7 @@ import {
   ProgressStatus,
   ProgressTabs,
   RadioGroup,
+  Switch,
   Text,
   toast,
 } from "@medusajs/ui"
@@ -52,6 +53,7 @@ const defaultValues = {
   type: "standard" as PromotionTypeValues,
   status: "draft" as PromotionStatusValues,
   rules: [],
+  is_tax_inclusive: false,
   application_method: {
     allocation: "each" as ApplicationMethodAllocationValues,
     type: "fixed" as ApplicationMethodTypeValues,
@@ -89,6 +91,7 @@ export const CreatePromotionForm = () => {
       const {
         campaign_choice: _campaignChoice,
         is_automatic,
+        is_tax_inclusive,
         template_id: _templateId,
         application_method,
         rules,
@@ -142,6 +145,7 @@ export const CreatePromotionForm = () => {
             target_rules: buildRulesData(targetRulesData),
             buy_rules: buildRulesData(buyRulesData),
           },
+          is_tax_inclusive,
           is_automatic: is_automatic === "true",
         },
         {
@@ -582,6 +586,49 @@ export const CreatePromotionForm = () => {
                       }}
                     />
                   </div>
+
+                  {!currentTemplate?.hiddenFields?.includes(
+                    "is_tax_inclusive"
+                  ) && (
+                    <>
+                      <Divider />
+                      <div className="flex gap-x-2 gap-y-4">
+                        <Form.Field
+                          control={form.control}
+                          name="is_tax_inclusive"
+                          render={({
+                            field: { onChange, value, ...field },
+                          }) => {
+                            return (
+                              <Form.Item className="basis-full">
+                                <div className="flex items-center justify-between">
+                                  <div className="block">
+                                    <Form.Label>
+                                      {t("promotions.form.taxInclusive.title")}
+                                    </Form.Label>
+                                    <Form.Hint className="!mt-1">
+                                      {t(
+                                        "promotions.form.taxInclusive.description"
+                                      )}
+                                    </Form.Hint>
+                                  </div>
+                                  <Form.Control className="mr-2 self-center">
+                                    <Switch
+                                      className="mt-[2px]"
+                                      checked={!!value}
+                                      onCheckedChange={onChange}
+                                      {...field}
+                                    />
+                                  </Form.Control>
+                                </div>
+                                <Form.ErrorMessage />
+                              </Form.Item>
+                            )
+                          }}
+                        />
+                      </div>
+                    </>
+                  )}
 
                   {!currentTemplate?.hiddenFields?.includes("type") && (
                     <Form.Field

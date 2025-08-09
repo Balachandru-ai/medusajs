@@ -1,7 +1,6 @@
-import { ITaxModuleService } from "@medusajs/types"
-
-import { Modules } from "@medusajs/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { ITaxModuleService } from "@medusajs/types"
+import { Modules } from "@medusajs/utils"
 import { createAdminUser } from "../../../../helpers/create-admin-user"
 
 jest.setTimeout(50000)
@@ -25,6 +24,20 @@ medusaIntegrationTestRunner({
 
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
+      })
+
+      it("should load local provider and custom provider", async () => {
+        const providers = await service.listTaxProviders()
+
+        expect(providers).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ id: "tp_system", is_enabled: true }),
+            expect.objectContaining({
+              id: "tp_system_system_2",
+              is_enabled: true,
+            }),
+          ])
+        )
       })
 
       it("can retrieve a tax rate", async () => {

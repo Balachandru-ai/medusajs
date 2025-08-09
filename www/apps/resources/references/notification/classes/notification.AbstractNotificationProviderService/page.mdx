@@ -1,12 +1,25 @@
 ---
 slug: /references/notification-provider-module
+tags:
+  - notification
+  - server
+  - how to
+sidebar_label: Create Notification Provider
 ---
 
 import { TypeList } from "docs-ui"
 
-# How to Create a Notification Provider Module
+# How to Create a Notification Module Provider
 
-In this document, you’ll learn how to create a notification provider module and the methods you must implement in it.
+In this document, you’ll learn how to create a Notification Module Provider and the methods you must implement in it.
+
+---
+
+## Implementation Example
+      
+As you implement your Notification Module Provider, it can be useful to refer to an existing provider and how it's implemeted.
+
+If you need to refer to an existing implementation as an example, check the [SendGrid Notification Module Provider in the Medusa repository](https://github.com/medusajs/medusa/tree/develop/packages/modules/providers/notification-sendgrid).
 
 ---
 
@@ -15,6 +28,7 @@ In this document, you’ll learn how to create a notification provider module an
 Start by creating a new directory for your module provider.
 
 If you're creating the module provider in a Medusa application, create it under the `src/modules` directory. For example, `src/modules/my-notification`.
+
 If you're creating the module provider in a plugin, create it under the `src/providers` directory. For example, `src/providers/my-notification`.
 
 <Note>
@@ -25,11 +39,11 @@ The rest of this guide always uses the `src/modules/my-notification` directory a
 
 ---
 
-## 2. Create the Notification Provider Service
+## 2. Create the Notification Module Provider's Service
 
 Create the file `src/modules/my-notification/service.ts` that holds the implementation of the notification service.
 
-The Notification Provider Module's main service must extend the `AbstractNotificationProviderService` class imported from `@medusajs/framework/utils`:
+The Notification Module Provider's main service must extend the `AbstractNotificationProviderService` class imported from `@medusajs/framework/utils`:
 
 ```ts title="src/modules/my-notification/service.ts"
 import { 
@@ -158,15 +172,15 @@ class MyNotificationProviderService extends AbstractNotificationProviderService 
 
 #### Parameters
 
-<TypeList types={[{"name":"notification","type":"[ProviderSendNotificationDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationDTO/page.mdx)","description":"The details of the\nnotification to send.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"to","type":"`string`","description":"The recipient of the notification. It can be email, phone number, or username, depending on the channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"channel","type":"`string`","description":"The channel through which the notification is sent, such as 'email' or 'sms'","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"template","type":"`string`","description":"The template name in the provider's system.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"from","type":"`null` \\| `string`","description":"The sender of the notification. It can be email, phone number, or username, depending on the channel.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"attachments","type":"`null` \\| [Attachment](../../../types/NotificationTypes/interfaces/types.NotificationTypes.Attachment/page.mdx)[]","description":"Optional attachments for the notification.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"content","type":"`string`","description":"The content of the attachment, encoded as a base64 string.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"filename","type":"`string`","description":"The filename of the attachment.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"content_type","type":"`string`","description":"The MIME type of the attachment.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"disposition","type":"`string`","description":"The disposition of the attachment, For example, \"inline\" or \"attachment\".","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"id","type":"`string`","description":"The ID, if the attachment is meant to be referenced within the body of the message.","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"data","type":"`null` \\| `Record<string, unknown>`","description":"The data that gets passed over to the provider for rendering the notification.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"content","type":"`null` \\| [NotificationContent](../../../types/NotificationTypes/interfaces/types.NotificationTypes.NotificationContent/page.mdx)","description":"The content that gets passed to the provider.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"subject","type":"`string`","description":"the subject of the notification","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"text","type":"`string`","description":"the text content of the notification","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"html","type":"`string`","description":"the html content of the notification","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="send"/>
+<TypeList types={[{"name":"notification","type":"[ProviderSendNotificationDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationDTO/page.mdx)","description":"The details of the\nnotification to send.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"to","type":"`string`","description":"The recipient of the notification. It can be email, phone number, or username, depending on the channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"channel","type":"`string`","description":"The channel through which the notification is sent, such as 'email' or 'sms'","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"template","type":"`string`","description":"The template name in the provider's system.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"from","type":"`null` \\| `string`","description":"The sender of the notification. It can be email, phone number, or username, depending on the channel.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"attachments","type":"`null` \\| [Attachment](../../../types/NotificationTypes/interfaces/types.NotificationTypes.Attachment/page.mdx)[]","description":"Optional attachments for the notification.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`null` \\| `Record<string, unknown>`","description":"The data that gets passed over to the provider for rendering the notification.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"content","type":"`null` \\| [NotificationContent](../../../types/NotificationTypes/interfaces/types.NotificationTypes.NotificationContent/page.mdx)","description":"The content that gets passed to the provider.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="send"/>
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[ProviderSendNotificationResultsDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationResultsDTO/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The result of sending\nthe notification.","expandable":false,"children":[{"name":"ProviderSendNotificationResultsDTO","type":"[ProviderSendNotificationResultsDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationResultsDTO/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the notification in the external system, if provided in the response","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="send"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[ProviderSendNotificationResultsDTO](../../../types/NotificationTypes/interfaces/types.NotificationTypes.ProviderSendNotificationResultsDTO/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The result of sending\nthe notification.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="send"/>
 
 ---
 
-## 3. Create Module Definition File
+## 3. Create Module Provider Definition File
 
 Create the file `src/modules/my-notification/index.ts` with the following content:
 
@@ -182,11 +196,17 @@ export default ModuleProvider(Modules.NOTIFICATION, {
 })
 ```
 
-This exports the module's definition, indicating that the `MyNotificationProviderService` is the module's service.
+This exports the module provider's definition, indicating that the `MyNotificationProviderService` is the module provider's service.
+
+<Note title="Tip">
+
+A notification module provider can have export multiple provider services, where each are registered as a separate notification provider.
+
+</Note>
 
 ---
 
-## 4. Use Module
+## 4. Use Module Provider
 
 To use your Notification Module Provider, add it to the `providers` array of the Notification Module in `medusa-config.ts`:
 
@@ -253,11 +273,15 @@ export default async function userCreatedHandler({
   const notificationModuleService = container.resolve(
     Modules.NOTIFICATION
   )
-  const userModule = container.resolve(
-    Modules.USER
-  )
+  const query = container.resolve("query")
 
-  const user = await userModule.retrieveUser(data.id)
+  const { data: [user] } = await query.graph({
+    entity: "user",
+    fields: ["*"],
+    filters: {
+      id: data.id,
+    }
+  })
 
   await notificationModuleService.createNotifications({
     to: user.email,

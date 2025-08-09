@@ -20,7 +20,7 @@ This workflow updates sales channels matching the specified conditions. It's use
 You can use this workflow within your customizations or your own custom workflows, allowing you to
 update sales channels within your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/sales-channel/workflows/update-sales-channels.ts#L60" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/sales-channel/workflows/update-sales-channels.ts#L60" />
 
 ## Examples
 
@@ -158,3 +158,55 @@ const myWorkflow = createWorkflow(
 ## Output
 
 <TypeList types={[{"name":"UpdateSalesChannelsWorkflowOutput","type":"[UpdateSalesChannelsWorkflowOutput](../../../../types/core_flows.UpdateSalesChannelsWorkflowOutput/page.mdx)","optional":false,"defaultValue":"","description":"The updated sales channels.","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"description","type":"`null` \\| `string`","description":"The description of the sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_disabled","type":"`boolean`","description":"Whether the sales channel is disabled.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, unknown>`","description":"Holds custom data in key-value pairs.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"locations","type":"[SalesChannelLocationDTO](../../../../../sales_channel/interfaces/sales_channel.SalesChannelLocationDTO/page.mdx)[]","description":"The locations of the sales channel.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"sales_channel_id","type":"`string`","description":"The associated sales channel's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"location_id","type":"`string`","description":"The associated location's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"sales_channel","type":"[SalesChannelDTO](../../../../../sales_channel/interfaces/sales_channel.SalesChannelDTO/page.mdx)","description":"The associated sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"description","type":"`null` \\| `string`","description":"The description of the sales channel.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_disabled","type":"`boolean`","description":"Whether the sales channel is disabled.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, unknown>`","description":"Holds custom data in key-value pairs.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"locations","type":"[SalesChannelLocationDTO](../../../../../sales_channel/interfaces/sales_channel.SalesChannelLocationDTO/page.mdx)[]","description":"The locations of the sales channel.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="updateSalesChannelsWorkflow"/>
+
+## Emitted Events
+
+This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
+
+You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+Event
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Description
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Payload
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Action
+</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+`sales-channel.updated`
+</Table.Cell>
+      <Table.Cell>
+Emitted when sales channels are updated.
+</Table.Cell>
+      <Table.Cell>
+```ts blockStyle="inline"
+[{
+  id, // The ID of the sales channel
+}]
+```
+</Table.Cell>
+      <Table.Cell>
+<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
+        event: "sales-channel.updated",
+        payload: `\`\`\`ts
+[{
+  id, // The ID of the sales channel
+}]
+\`\`\``
+        }}/>
+</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

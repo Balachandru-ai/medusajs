@@ -14,6 +14,7 @@ import {
 import { useRemoteQueryStep } from "../../common"
 import { updatePaymentCollectionStep } from "../../payment-collection"
 import { createOrderPaymentCollectionWorkflow } from "./create-order-payment-collection"
+import { cancelPaymentCollectionWorkflow } from "../../payment-collection/workflows/cancel-payment-collection"
 
 /**
  * The details of the order payment collection to create or update.
@@ -37,10 +38,10 @@ export const createOrUpdateOrderPaymentCollectionWorkflowId =
 /**
  * This workflow creates or updates payment collection for an order. It's used by other order-related workflows,
  * such as {@link createOrderPaymentCollectionWorkflow} to update an order's payment collections based on changes made to the order.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * creating or updating payment collections for an order.
- * 
+ *
  * @example
  * const { result } = await createOrUpdateOrderPaymentCollectionWorkflow(container)
  * .run({
@@ -49,9 +50,9 @@ export const createOrUpdateOrderPaymentCollectionWorkflowId =
  *     amount: 20
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create or update payment collection for an order.
  */
 export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
@@ -88,11 +89,27 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
       variables: {
         filters: {
           id: orderPaymentCollectionIds,
-          status: [PaymentCollectionStatus.NOT_PAID],
+          status: [
+            // To update the collection amoun
+            PaymentCollectionStatus.NOT_PAID,
+            PaymentCollectionStatus.AWAITING,
+            // To cancel the authorized payments and create a new collection
+            PaymentCollectionStatus.AUTHORIZED,
+            PaymentCollectionStatus.PARTIALLY_AUTHORIZED,
+          ],
         },
       },
       list: false,
     }).config({ name: "payment-collection-query" })
+
+    const shouldRecreate = transform(
+      { existingPaymentCollection },
+      ({ existingPaymentCollection }) =>
+        existingPaymentCollection?.status ===
+          PaymentCollectionStatus.AUTHORIZED ||
+        existingPaymentCollection?.status ===
+          PaymentCollectionStatus.PARTIALLY_AUTHORIZED
+    )
 
     const amountPending = transform({ order, input }, ({ order, input }) => {
       const amountToCharge = input.amount ?? 0
@@ -110,9 +127,13 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
     })
 
     const updatedPaymentCollections = when(
-      { existingPaymentCollection, amountPending },
-      ({ existingPaymentCollection, amountPending }) => {
-        return !!existingPaymentCollection?.id && MathBN.gt(amountPending, 0)
+      { existingPaymentCollection, amountPending, shouldRecreate },
+      ({ existingPaymentCollection, amountPending, shouldRecreate }) => {
+        return (
+          !!existingPaymentCollection?.id &&
+          !shouldRecreate &&
+          MathBN.gt(amountPending, 0)
+        )
       }
     ).then(() => {
       return updatePaymentCollectionStep({
@@ -124,9 +145,12 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
     })
 
     const createdPaymentCollection = when(
-      { existingPaymentCollection, amountPending },
-      ({ existingPaymentCollection, amountPending }) => {
-        return !!!existingPaymentCollection?.id && MathBN.gt(amountPending, 0)
+      { existingPaymentCollection, amountPending, shouldRecreate },
+      ({ existingPaymentCollection, amountPending, shouldRecreate }) => {
+        return (
+          (!existingPaymentCollection?.id || shouldRecreate) &&
+          MathBN.gt(amountPending, 0)
+        )
       }
     ).then(() => {
       return createOrderPaymentCollectionWorkflow.runAsStep({
@@ -135,6 +159,23 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
           amount: amountPending,
         },
       }) as PaymentCollectionDTO[]
+    })
+
+    when(
+      { existingPaymentCollection, amountPending, shouldRecreate },
+      ({ existingPaymentCollection, amountPending, shouldRecreate }) => {
+        return (
+          !!existingPaymentCollection?.id &&
+          shouldRecreate &&
+          MathBN.gt(amountPending, 0)
+        )
+      }
+    ).then(() => {
+      cancelPaymentCollectionWorkflow.runAsStep({
+        input: {
+          payment_collection_id: existingPaymentCollection.id,
+        },
+      })
     })
 
     const paymentCollections = transform(

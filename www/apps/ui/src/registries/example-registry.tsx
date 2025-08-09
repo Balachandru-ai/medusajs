@@ -92,6 +92,13 @@ export const ExampleRegistry: ExampleRegistryType = {
     component: React.lazy(async () => import("@/examples/data-table-demo")),
     file: "src/examples/data-table-demo.tsx",
   },
+  "data-table-row-click": {
+    name: "data-table-row-click",
+    component: React.lazy(
+      async () => import("@/examples/data-table-row-click")
+    ),
+    file: "src/examples/data-table-row-click.tsx",
+  },
   "data-table-custom-cell": {
     name: "data-table-custom-cell",
     component: React.lazy(
@@ -188,9 +195,29 @@ export const ExampleRegistry: ExampleRegistryType = {
     file: "src/examples/icon-badge-base.tsx",
   },
   "icon-badge-large": {
-    name: "icon-badge-small",
+    name: "icon-badge-large",
     component: React.lazy(async () => import("@/examples/icon-badge-large")),
     file: "src/examples/icon-badge-large.tsx",
+  },
+  "inline-tip-demo": {
+    name: "inline-tip-demo",
+    component: React.lazy(async () => import("@/examples/inline-tip-demo")),
+    file: "src/examples/inline-tip-demo.tsx",
+  },
+  "inline-tip-warning": {
+    name: "inline-tip-warning",
+    component: React.lazy(async () => import("@/examples/inline-tip-warning")),
+    file: "src/examples/inline-tip-warning.tsx",
+  },
+  "inline-tip-error": {
+    name: "inline-tip-error",
+    component: React.lazy(async () => import("@/examples/inline-tip-error")),
+    file: "src/examples/inline-tip-error.tsx",
+  },
+  "inline-tip-success": {
+    name: "inline-tip-success",
+    component: React.lazy(async () => import("@/examples/inline-tip-success")),
+    file: "src/examples/inline-tip-success.tsx",
   },
   "button-demo": {
     name: "button-demo",
@@ -241,6 +268,44 @@ export const ExampleRegistry: ExampleRegistryType = {
     name: "date-picker-demo",
     component: React.lazy(async () => import("@/examples/date-picker-demo")),
     file: "src/examples/date-picker-demo.tsx",
+  },
+  "date-picker-controlled": {
+    name: "date-picker-controlled",
+    component: React.lazy(
+      async () => import("@/examples/date-picker-controlled")
+    ),
+    file: "src/examples/date-picker-controlled.tsx",
+  },
+  "date-picker-with-time": {
+    name: "date-picker-with-time",
+    component: React.lazy(
+      async () => import("@/examples/date-picker-with-time")
+    ),
+    file: "src/examples/date-picker-with-time.tsx",
+  },
+  "date-picker-min-max": {
+    name: "date-picker-min-max",
+    component: React.lazy(async () => import("@/examples/date-picker-min-max")),
+    file: "src/examples/date-picker-min-max.tsx",
+  },
+  "date-picker-business-hours": {
+    name: "date-picker-business-hours",
+    component: React.lazy(
+      async () => import("@/examples/date-picker-business-hours")
+    ),
+    file: "src/examples/date-picker-business-hours.tsx",
+  },
+  "date-picker-granularity": {
+    name: "date-picker-granularity",
+    component: React.lazy(
+      async () => import("@/examples/date-picker-granularity")
+    ),
+    file: "src/examples/date-picker-granularity.tsx",
+  },
+  "date-picker-form": {
+    name: "date-picker-form",
+    component: React.lazy(async () => import("@/examples/date-picker-form")),
+    file: "src/examples/date-picker-form.tsx",
   },
   "drawer-demo": {
     name: "drawer-demo",
@@ -707,6 +772,11 @@ export const ExampleRegistry: ExampleRegistryType = {
       async () => import("@/examples/code-block-no-header")
     ),
     file: "src/examples/code-block-no-header.tsx",
+  },
+  "code-block-no-copy": {
+    name: "code-block-no-copy",
+    component: React.lazy(async () => import("@/examples/code-block-no-copy")),
+    file: "src/examples/code-block-no-copy.tsx",
   },
   "container-layout": {
     name: "container-layout",

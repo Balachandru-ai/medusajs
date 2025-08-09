@@ -1,5 +1,9 @@
 import { OrderChangeDTO, OrderDTO } from "@medusajs/framework/types"
-import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
+import {
+  ChangeActionType,
+  OrderChangeStatus,
+  OrderEditWorkflowEvents,
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   createStep,
@@ -7,7 +11,7 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { emitEventStep, useRemoteQueryStep } from "../../../common"
 import { deleteOrderChangesStep, deleteOrderShippingMethods } from "../../steps"
 import {
   throwIfIsCancelled,
@@ -31,14 +35,14 @@ export type CancelBeginOrderEditValidationStepInput = {
 /**
  * This step validates that a requested order edit can be canceled.
  * If the order is canceled or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = cancelBeginOrderEditValidationStep({
  *   order: {
@@ -76,10 +80,10 @@ export const cancelBeginOrderEditWorkflowId = "cancel-begin-order-edit"
 /**
  * This workflow cancels a requested edit for an order. It's used by the
  * [Cancel Order Edit Admin API Route](https://docs.medusajs.com/api/admin#order-edits_deleteordereditsid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to cancel an order edit
  * in your custom flow.
- * 
+ *
  * @example
  * const { result } = await cancelBeginOrderEditWorkflow(container)
  * .run({
@@ -87,9 +91,9 @@ export const cancelBeginOrderEditWorkflowId = "cancel-begin-order-edit"
  *     order_id: "order_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Cancel a requested order edit.
  */
 export const cancelBeginOrderEditWorkflow = createWorkflow(
@@ -128,9 +132,23 @@ export const cancelBeginOrderEditWorkflow = createWorkflow(
       }
     )
 
+    const eventData = transform(
+      { order, orderChange },
+      ({ order, orderChange }) => {
+        return {
+          order_id: order.id,
+          actions: orderChange.actions,
+        }
+      }
+    )
+
     parallelize(
       deleteOrderChangesStep({ ids: [orderChange.id] }),
-      deleteOrderShippingMethods({ ids: shippingToRemove })
+      deleteOrderShippingMethods({ ids: shippingToRemove }),
+      emitEventStep({
+        eventName: OrderEditWorkflowEvents.CANCELED,
+        data: eventData,
+      })
     )
   }
 )

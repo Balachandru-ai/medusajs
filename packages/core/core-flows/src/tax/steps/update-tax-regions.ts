@@ -17,7 +17,7 @@ export type UpdateTaxRegionsStepInput = UpdateTaxRegionDTO[]
 export const updateTaxRegionsStepId = "update-tax-regions"
 /**
  * This step updates tax regions.
- * 
+ *
  * @example
  * const data = updateTaxRegionsStep([
  *   {
@@ -45,6 +45,7 @@ export const updateTaxRegionsStep = createStep(
         id: d.id,
         province_code: d.province_code,
         metadata: d.metadata,
+        provider_id: d.provider_id,
       }))
     )
 

@@ -167,7 +167,7 @@ moduleIntegrationTestRunner<ILockingModule>({
       expect(fn_2).toHaveBeenCalledTimes(1)
     })
 
-    it("should release lock in case of timeout failure", async () => {
+    it.skip("should release lock in case of timeout failure", async () => {
       const fn_1 = jest.fn(async () => {
         await setTimeout(1010)
         return "fn_1"

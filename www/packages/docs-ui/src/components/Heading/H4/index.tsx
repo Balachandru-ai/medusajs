@@ -7,7 +7,7 @@ export const H4 = ({
 }: React.HTMLAttributes<HTMLHeadingElement>) => {
   return (
     <h4
-      className={clsx("mb-docs_0.5 text-medusa-fg-base text-h4", className)}
+      className={clsx("mb-docs_1 text-medusa-fg-base text-h4", className)}
       {...props}
     />
   )

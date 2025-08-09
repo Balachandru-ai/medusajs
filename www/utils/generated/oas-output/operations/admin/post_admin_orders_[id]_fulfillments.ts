@@ -77,6 +77,30 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The fulfillment's details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.order.createFulfillment("order_123", {
+ *         items: [
+ *           {
+ *             id: "orli_123",
+ *             quantity: 1
+ *           }
+ *         ]
+ *       })
+ *       .then(({ order }) => {
+ *         console.log(order)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -115,6 +139,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createOrderFulfillmentWorkflow
+ * x-events:
+ *   - name: order.fulfillment_created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         fulfillment_id, // The ID of the fulfillment
+ *         no_notification, // (boolean) Whether to notify the customer
+ *       }
+ *       ```
+ *     description: Emitted when a fulfillment is created for an order.
+ *     deprecated: false
  * 
 */
 

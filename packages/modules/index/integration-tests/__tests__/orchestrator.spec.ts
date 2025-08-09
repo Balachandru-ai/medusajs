@@ -1,5 +1,5 @@
 import { asValue } from "awilix"
-import { container } from "@medusajs/framework"
+import { container, logger } from "@medusajs/framework"
 import type { IndexTypes } from "@medusajs/types"
 import { Orchestrator } from "@utils"
 
@@ -12,7 +12,7 @@ function creatingFakeLockingModule() {
       }
       this.lockEntities.add(key)
     },
-    release(key: string) {
+    async release(key: string) {
       this.lockEntities.delete(key)
     },
   }
@@ -55,6 +55,7 @@ describe("Orchestrator", () => {
       entities.map((e) => e.entity),
       {
         lockDuration: 60 * 1000,
+        logger: logger,
       }
     )
 
@@ -101,6 +102,7 @@ describe("Orchestrator", () => {
       entities.map((e) => e.entity),
       {
         lockDuration: 60 * 1000,
+        logger: logger,
       }
     )
 
@@ -150,6 +152,7 @@ describe("Orchestrator", () => {
       entityNames,
       {
         lockDuration: 60 * 1000,
+        logger: logger,
       }
     )
 
@@ -162,6 +165,7 @@ describe("Orchestrator", () => {
       entityNames,
       {
         lockDuration: 60 * 1000,
+        logger: logger,
       }
     )
 
@@ -169,16 +173,18 @@ describe("Orchestrator", () => {
       orchestrator.process(taskRunner),
       orchestrator1.process(taskRunner2),
     ])
-    expect(processedEntities).toEqual([
-      {
-        entity: "brand",
-        owner: "instance-1",
-      },
-      {
-        entity: "product",
-        owner: "instance-2",
-      },
-    ])
+    expect(processedEntities).toEqual(
+      expect.arrayContaining([
+        {
+          entity: "brand",
+          owner: "instance-1",
+        },
+        {
+          entity: "product",
+          owner: "instance-2",
+        },
+      ])
+    )
     expect(lockingModule.lockEntities.size).toEqual(0)
   })
 
@@ -221,6 +227,7 @@ describe("Orchestrator", () => {
       entities.map((e) => e.entity),
       {
         lockDuration: 60 * 1000,
+        logger: logger,
       }
     )
 
@@ -269,6 +276,7 @@ describe("Orchestrator", () => {
       entities.map((e) => e.entity),
       {
         lockDuration: 60 * 1000,
+        logger: logger,
       }
     )
 

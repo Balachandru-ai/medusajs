@@ -72,6 +72,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createLinksWorkflow
+ * x-events: []
  * 
 */
 

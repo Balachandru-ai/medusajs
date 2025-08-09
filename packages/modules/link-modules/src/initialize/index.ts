@@ -15,6 +15,7 @@ import {
   composeTableName,
   ContainerRegistrationKeys,
   Modules,
+  promiseAll,
   simpleHash,
   toPascalCase,
 } from "@medusajs/framework/utils"
@@ -42,130 +43,135 @@ export const initialize = async (
     pluginLinksDefinitions ?? []
   )
 
-  for (const linkDefinition of allLinksToLoad) {
-    const definition: ModuleJoinerConfig = JSON.parse(
-      JSON.stringify(linkDefinition)
-    )
-
-    const [primary, foreign] = definition.relationships ?? []
-
-    if (definition.relationships?.length !== 2 && !definition.isReadOnlyLink) {
-      throw new Error(
-        `Link module ${definition.serviceName} can only link 2 modules.`
+  await promiseAll(
+    allLinksToLoad.map(async (linkDefinition) => {
+      const definition: ModuleJoinerConfig = JSON.parse(
+        JSON.stringify(linkDefinition)
       )
-    } else if (
-      foreign?.foreignKey?.split(",").length > 1 &&
-      !definition.isReadOnlyLink
-    ) {
-      throw new Error(`Foreign key cannot be a composed key.`)
-    }
 
-    if (Array.isArray(definition.extraDataFields)) {
-      const extraDataFields = definition.extraDataFields
-      const definedDbFields = Object.keys(
-        definition.databaseConfig?.extraFields || {}
-      )
-      const difference = arrayDifference(extraDataFields, definedDbFields)
+      const [primary, foreign] = definition.relationships ?? []
 
-      if (difference.length) {
+      if (
+        definition.relationships?.length !== 2 &&
+        !definition.isReadOnlyLink
+      ) {
         throw new Error(
-          `extraDataFields (fieldNames: ${difference.join(
-            ","
-          )}) need to be configured under databaseConfig (serviceName: ${
-            definition.serviceName
-          }).`
+          `Link module ${definition.serviceName} can only link 2 modules.`
         )
+      } else if (
+        foreign?.foreignKey?.split(",").length > 1 &&
+        !definition.isReadOnlyLink
+      ) {
+        throw new Error(`Foreign key cannot be a composed key.`)
       }
-    }
 
-    const serviceKey = !definition.isReadOnlyLink
-      ? definition.serviceName ??
-        composeLinkName(
-          primary.serviceName,
-          primary.foreignKey,
-          foreign.serviceName,
-          foreign.foreignKey
+      if (Array.isArray(definition.extraDataFields)) {
+        const extraDataFields = definition.extraDataFields
+        const definedDbFields = Object.keys(
+          definition.databaseConfig?.extraFields || {}
         )
-      : simpleHash(JSON.stringify(definition.extends))
+        const difference = arrayDifference(extraDataFields, definedDbFields)
 
-    if (modulesLoadedKeys.includes(serviceKey)) {
-      continue
-    } else if (serviceKey in allLinks) {
-      throw new Error(`Link module ${serviceKey} already defined.`)
-    }
-
-    if (definition.isReadOnlyLink) {
-      const extended: any[] = []
-      for (const extension of definition.extends ?? []) {
-        if (
-          modulesLoadedKeys.includes(extension.serviceName) &&
-          modulesLoadedKeys.includes(extension.relationship.serviceName)
-        ) {
-          extended.push(extension)
+        if (difference.length) {
+          throw new Error(
+            `extraDataFields (fieldNames: ${difference.join(
+              ","
+            )}) need to be configured under databaseConfig (serviceName: ${
+              definition.serviceName
+            }).`
+          )
         }
       }
 
-      definition.extends = extended
-      if (extended.length === 0) {
-        continue
+      const serviceKey = !definition.isReadOnlyLink
+        ? definition.serviceName ??
+          composeLinkName(
+            primary.serviceName,
+            primary.foreignKey,
+            foreign.serviceName,
+            foreign.foreignKey
+          )
+        : simpleHash(JSON.stringify(definition.extends))
+
+      if (modulesLoadedKeys.includes(serviceKey)) {
+        return
+      } else if (serviceKey in allLinks) {
+        throw new Error(`Link module ${serviceKey} already defined.`)
       }
-    } else if (
-      !modulesLoadedKeys.includes(primary.serviceName) ||
-      !modulesLoadedKeys.includes(foreign.serviceName)
-    ) {
-      continue
-    }
 
-    const logger =
-      injectedDependencies?.[ContainerRegistrationKeys.LOGGER] ?? console
+      if (definition.isReadOnlyLink) {
+        const extended: any[] = []
+        for (const extension of definition.extends ?? []) {
+          if (
+            modulesLoadedKeys.includes(extension.serviceName) &&
+            modulesLoadedKeys.includes(extension.relationship.serviceName)
+          ) {
+            extended.push(extension)
+          }
+        }
 
-    definition.schema = generateGraphQLSchema(definition, primary, foreign, {
-      logger,
+        definition.extends = extended
+        if (extended.length === 0) {
+          return
+        }
+      } else if (
+        !modulesLoadedKeys.includes(primary.serviceName) ||
+        !modulesLoadedKeys.includes(foreign.serviceName)
+      ) {
+        return
+      }
+
+      const logger =
+        injectedDependencies?.[ContainerRegistrationKeys.LOGGER] ?? console
+
+      definition.schema = generateGraphQLSchema(definition, primary, foreign, {
+        logger,
+      })
+
+      if (!Array.isArray(definition.alias)) {
+        definition.alias = definition.alias ? [definition.alias] : []
+      }
+
+      for (const alias of definition.alias) {
+        alias.args ??= {}
+
+        alias.entity = toPascalCase(
+          "Link_" +
+            (definition.databaseConfig?.tableName ??
+              composeTableName(
+                primary.serviceName,
+                primary.foreignKey,
+                foreign.serviceName,
+                foreign.foreignKey
+              ))
+        )
+      }
+
+      const moduleDefinition = getLinkModuleDefinition(
+        definition,
+        primary,
+        foreign
+      ) as ModuleExports
+
+      const linkModuleDefinition: LinkModuleDefinition = {
+        key: serviceKey,
+        label: serviceKey,
+        dependencies: [Modules.EVENT_BUS],
+        defaultModuleDeclaration: {
+          scope: MODULE_SCOPE.INTERNAL,
+        },
+      }
+
+      const loaded = await MedusaModule.bootstrapLink({
+        definition: linkModuleDefinition,
+        declaration: options as InternalModuleDeclaration,
+        moduleExports: moduleDefinition,
+        injectedDependencies,
+      })
+
+      allLinks[serviceKey as string] = Object.values(loaded)[0]
     })
-
-    if (!Array.isArray(definition.alias)) {
-      definition.alias = definition.alias ? [definition.alias] : []
-    }
-
-    for (const alias of definition.alias) {
-      alias.args ??= {}
-
-      alias.entity = toPascalCase(
-        "Link_" +
-          (definition.databaseConfig?.tableName ??
-            composeTableName(
-              primary.serviceName,
-              primary.foreignKey,
-              foreign.serviceName,
-              foreign.foreignKey
-            ))
-      )
-    }
-
-    const moduleDefinition = getLinkModuleDefinition(
-      definition,
-      primary,
-      foreign
-    ) as ModuleExports
-
-    const linkModuleDefinition: LinkModuleDefinition = {
-      key: serviceKey,
-      label: serviceKey,
-      dependencies: [Modules.EVENT_BUS],
-      defaultModuleDeclaration: {
-        scope: MODULE_SCOPE.INTERNAL,
-      },
-    }
-
-    const loaded = await MedusaModule.bootstrapLink({
-      definition: linkModuleDefinition,
-      declaration: options as InternalModuleDeclaration,
-      moduleExports: moduleDefinition,
-      injectedDependencies,
-    })
-
-    allLinks[serviceKey as string] = Object.values(loaded)[0]
-  }
+  )
 
   return allLinks
 }

@@ -6,6 +6,16 @@
 
 {{{ startSections }}}
 
+{{#ifEventsReference}}
+
+{{#with model}}
+
+{{{ eventsListing }}}
+
+{{/with}}
+
+{{else}}
+
 {{#with model}}
 
 {{#if (sectionEnabled "reflection_comment")}}
@@ -147,5 +157,7 @@
 {{> main}}
 
 {{/with}}
+
+{{/ifEventsReference}}
 
 {{{ endSections }}}

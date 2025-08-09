@@ -35,6 +35,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -98,45 +102,12 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The propeties to update in the region.
-          properties:
-            name:
-              type: string
-              title: name
-              description: The region's name.
-            currency_code:
-              type: string
-              title: currency_code
-              description: The region's currency code.
-            countries:
-              type: array
-              description: The region's countries.
-              items:
-                type: string
-                title: countries
-                description: A country code.
-            automatic_taxes:
-              type: boolean
-              title: automatic_taxes
-              description: >-
-                Whether taxes are calculated automatically for carts in the
-                region.
-            payment_providers:
-              type: array
-              description: The payment providers enabled in the region.
-              items:
-                type: string
-                title: payment_providers
-                description: A payment provider's ID.
-            metadata:
-              type: object
-              description: The region's metadata. Can hold custom key-value pairs.
-            is_tax_inclusive:
-              type: boolean
-              title: is_tax_inclusive
-              description: Whether the prices in the region are tax inclusive.
+          $ref: ../components/schemas/AdminUpdateRegion.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -163,6 +134,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateRegionsWorkflow
+  x-events:
+    - name: region.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the region
+        }]
+        ```
+      description: Emitted when regions are updated.
+      deprecated: false
 delete:
   operationId: DeleteRegionsId
   summary: Delete a Region
@@ -180,6 +161,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -225,3 +210,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteRegionsWorkflow
+  x-events:
+    - name: region.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the region
+        }]
+        ```
+      description: Emitted when regions are deleted.
+      deprecated: false

@@ -4,13 +4,13 @@ import {
 } from "@medusajs/framework/types"
 import {
   composeTableName,
+  compressName,
   mikroOrmSoftDeletableFilterOptions,
   simpleHash,
   SoftDeletableFilterKey,
 } from "@medusajs/framework/utils"
 
 import { EntitySchema } from "@mikro-orm/core"
-import { compressName } from "./compress-name"
 
 function getClass(...properties) {
   return class LinkModel {

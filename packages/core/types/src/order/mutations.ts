@@ -6,6 +6,7 @@ import {
   OrderItemDTO,
   OrderLineItemDTO,
   OrderReturnReasonDTO,
+  OrderStatus,
   OrderTransactionDTO,
   ReturnDTO,
 } from "./common"
@@ -66,7 +67,7 @@ export interface UpsertOrderAddressDTO {
   country_code?: string
 
   /**
-   * The province of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province of the address.
    */
   province?: string
 
@@ -158,6 +159,11 @@ export interface CreateOrderDTO {
   billing_address?: CreateOrderAddressDTO | UpdateOrderAddressDTO
 
   /**
+   * The credit lines of the order.
+   */
+  credit_lines?: CreateOrderCreditLineDTO[]
+
+  /**
    * Whether the customer should receive notifications about
    * order updates.
    */
@@ -217,6 +223,16 @@ export interface UpdateOrderDTO {
    * The associated sales channel's ID.
    */
   sales_channel_id?: string
+
+  /**
+   * The status of the order.
+   */
+  status?: OrderStatus
+
+  /**
+   * Whether the order is a draft order.
+   */
+  is_draft_order?: boolean
 
   /**
    * The items of the order.
@@ -280,6 +296,11 @@ export interface CreateOrderAdjustmentDTO {
    * The associated provider's ID.
    */
   provider_id?: string
+
+  /**
+   * Whether the adjustment is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
 }
 
 /**
@@ -2262,4 +2283,34 @@ export interface UpdateOrderReturnReasonWithSelectorDTO {
    * The data of the return reasons to update.
    */
   data: Partial<UpdateOrderReturnReasonDTO>
+}
+
+/**
+ * The order credit line details.
+ */
+export interface CreateOrderCreditLineDTO {
+  /**
+   * The ID of the order that the credit line belongs to.
+   */
+  order_id: string
+
+  /**
+   * The amount of the credit line.
+   */
+  amount: BigNumberInput
+
+  /**
+   * The reference model name that the credit line is generated from
+   */
+  reference?: string | null
+
+  /**
+   * The reference model id that the credit line is generated from
+   */
+  reference_id?: string | null
+
+  /**
+   * The metadata of the order detail
+   */
+  metadata?: Record<string, unknown> | null
 }

@@ -85,12 +85,13 @@ export class DataSynchronizer {
       fields: string
       fields_hash: string
     }[],
-    lockDuration: number = 1000 * 60 * 5
+    lockDuration: number = 60 // 1 minute
   ) {
     this.#isReadyOrThrow()
     const entitiesToSync = entities.map((entity) => entity.entity)
     this.#orchestrator = new Orchestrator(this.#locking, entitiesToSync, {
       lockDuration,
+      logger: this.#logger,
     })
     await this.#orchestrator.process(this.#taskRunner.bind(this))
   }
@@ -156,26 +157,23 @@ export class DataSynchronizer {
       ack: async (ack) => {
         const endTime = performance.now()
         const chunkElapsedTime = (endTime - chunkStartTime).toFixed(2)
-        const promises: Promise<any>[] = []
 
         if (ack.lastCursor) {
           this.#logger.debug(
             `[Index engine] syncing entity '${entity}' updating last cursor to ${ack.lastCursor} (+${chunkElapsedTime}ms)`
           )
 
-          promises.push(
-            this.#indexSyncService.update({
-              data: {
-                last_key: ack.lastCursor,
-              },
-              selector: {
-                entity,
-              },
-            })
-          )
+          await this.#indexSyncService.update({
+            data: {
+              last_key: ack.lastCursor,
+            },
+            selector: {
+              entity,
+            },
+          })
 
           if (!ack.done && !ack.err) {
-            promises.push(this.#orchestrator.renewLock(entity))
+            await this.#orchestrator.renewLock(entity)
           }
         }
 
@@ -191,8 +189,6 @@ export class DataSynchronizer {
             `[Index engine] syncing entity '${entity}' done (+${elapsedTime}ms)`
           )
         }
-
-        await promiseAll(promises)
 
         chunkStartTime = performance.now()
       },
@@ -250,6 +246,10 @@ export class DataSynchronizer {
     const isLink = !!moduleConfig?.isLink
 
     if (!alias) {
+      this.#logger.info(
+        `[Index engine] Cannot find Entity '${entityName}' alias. Skipping.`
+      )
+
       const acknoledgement = {
         lastCursor: pagination.cursor ?? null,
         done: true,
@@ -290,7 +290,7 @@ export class DataSynchronizer {
         filters["updated_at"] = { $gt: pagination.updated_at }
       }
 
-      const { data } = await this.#query.graph({
+      const queryResult = await this.#query.graph({
         entity: alias,
         fields: [entityPrimaryKey],
         filters,
@@ -302,9 +302,11 @@ export class DataSynchronizer {
         },
       })
 
-      if (!data.length) {
+      if (!queryResult?.data?.length) {
         break
       }
+
+      const data = queryResult.data
 
       const envelop: Event = {
         data,
@@ -326,7 +328,7 @@ export class DataSynchronizer {
         break
       }
 
-      await setTimeout(0)
+      await setTimeout(0, undefined, { ref: false })
     }
 
     let acknoledgement: { lastCursor: string; done?: boolean; err?: Error } = {

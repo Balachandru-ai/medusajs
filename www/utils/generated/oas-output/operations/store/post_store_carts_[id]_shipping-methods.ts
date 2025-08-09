@@ -39,22 +39,34 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The shipping method's details.
- *         required:
- *           - option_id
- *         properties:
- *           option_id:
- *             type: string
- *             title: option_id
- *             description: The ID of the shipping option this method is created from.
- *           data:
- *             type: object
- *             description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
- *             externalDocs:
- *               url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
- *               description: Learn more about the data parameter.
+ *         $ref: "#/components/schemas/StoreAddCartShippingMethods"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.cart.addShippingMethod("cart_123", {
+ *         option_id: "so_123",
+ *         data: {
+ *           // custom data for fulfillment provider.
+ *         }
+ *       })
+ *       .then(({ cart }) => {
+ *         console.log(cart)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -86,6 +98,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: addShippingMethodToCartWorkflow
+ * x-events:
+ *   - name: cart.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *       }
+ *       ```
+ *     description: Emitted when a cart's details are updated.
+ *     deprecated: false
  * 
 */
 

@@ -1,11 +1,17 @@
 ---
 sidebar_position: 6
+sidebar_label: "Manage Tax Regions"
+tags:
+    - user guide
+    - tax
+products:
+    - tax
 ---
 
 import { EllipsisHorizontal } from "@medusajs/icons"
 
 export const metadata = {
-  title: `Tax Regions`,
+  title: `Manage Tax Regions in Medusa Admin`,
 }
 
 # {metadata.title}
@@ -41,7 +47,7 @@ To create a tax region:
     - Under the "Default tax rate" section, you can optionally enter a name, tax rate, and tax code in their respective fields.
 4. Once you're done, click the Save button.
 
-![Create tax region form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739971037/User%20Guide/Screenshot_2025-02-19_at_3.17.05_PM_vc0uqk.png)
+![Create tax region form](https://res.cloudinary.com/dza7lstvk/image/upload/v1746803850/User%20Guide/Screenshot_2025-05-09_at_6.14.41_PM_vzpyza.png)
 
 ---
 
@@ -54,7 +60,21 @@ To view the details of a tax region:
 
 This opens the tax region's details page where you can also manage the tax region.
 
-![Tax region details](https://res.cloudinary.com/dza7lstvk/image/upload/v1739970845/User%20Guide/Screenshot_2025-02-19_at_3.13.51_PM_fjoyyu.png)
+![Tax region details](https://res.cloudinary.com/dza7lstvk/image/upload/v1746796437/User%20Guide/Screenshot_2025-05-09_at_4.13.06_PM_m23ili.png)
+
+---
+
+## Edit Tax Region
+
+To edit a tax region:
+
+1. Go to the tax region's details page.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the right of the tax region's name.
+3. Choose Edit from the dropdown.
+4. In the side window that opens, you can edit the tax region's default tax provider.
+5. Once you're done, click the Save button.
+
+![Edit tax region form](https://res.cloudinary.com/dza7lstvk/image/upload/v1746803872/User%20Guide/Screenshot_2025-05-09_at_6.15.25_PM_ebb76k.png)
 
 ---
 
@@ -62,7 +82,7 @@ This opens the tax region's details page where you can also manage the tax regio
 
 To edit the default tax rate of the region:
 
-1. Go to the region's details page.
+1. Go to the tax region's details page.
 2. In the first section, you'll find details of the default tax rate, including its tax rate and code. Click on the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at its right.
 
 ![The icon to click on](https://res.cloudinary.com/dza7lstvk/image/upload/v1739974452/User%20Guide/Screenshot_2025-02-19_at_4.13.51_PM_zclvnp.png)
@@ -146,7 +166,7 @@ To create a sublevel tax region in a tax region:
 2. In the "Sublevels" section or its equivalent (such as States, Province, or Cantons), click the "Create" button.
 3. In the form that opens:
     - If the country supports a sublevel by default, you'll find an input to select a state, province, or canton.
-    - If the country doesn't support a sublevel by default, you'll find an input to enter the ISO 3166-2 code of the sublevel.
+    - If the country doesn't support a sublevel by default, you'll find an input to enter the lower-case [ISO 3166-2 code](https://en.wikipedia.org/wiki/ISO_3166-2) of the sublevel.
     - Under the "Default tax rate" section, you can optionally enter a name, tax rate, and tax code in their respective fields.
     - If the tax region's rates should be combined with the parent's rates, enable the "Combinable" toggle.
 4. Once you're done, click the Save button.
@@ -167,3 +187,35 @@ This opens the sublevel tax region's details page where you can also manage the 
 ### Manage Sublevel Tax Region's Rates
 
 You can manage the sublevel tax region's [default](#edit-default-tax-rate) and [override](#manage-tax-rate-overrides) rates the same way you manage the parent tax region's rates.
+
+### Delete Sublevel Tax Region
+
+<Note type="warning">
+
+Deleting a sublevel tax region is irreversible.
+
+</Note>
+
+To delete a sublevel tax region:
+
+1. Go to the sublevel tax region's details page.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the right of the sublevel tax region's name.
+3. Choose Delete from the dropdown.
+4. Confirm deleting the sublevel tax region by clicking the Delete button in the pop-up.
+
+---
+
+## Delete Tax Region
+
+<Note type="warning">
+
+Deleting a tax region is irreversible.
+
+</Note>
+
+To delete a tax region:
+
+1. Go to the tax region's details page.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the right of the tax region's name.
+3. Choose Delete from the dropdown.
+4. Confirm deleting the tax region by clicking the Delete button in the pop-up.

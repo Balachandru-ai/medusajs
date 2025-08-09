@@ -42,6 +42,29 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The product option's details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.createOption(
+ *         "prod_123",
+ *         {
+ *           title: "Color",
+ *           values: ["Green", "Blue"]
+ *         }
+ *       )
+ *       .then(({ product }) => {
+ *         console.log(product)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -76,6 +99,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createProductOptionsWorkflow
+ * x-events:
+ *   - name: product-option.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product option
+ *       }]
+ *       ```
+ *     description: Emitted when product options are created.
+ *     deprecated: false
  * 
 */
 

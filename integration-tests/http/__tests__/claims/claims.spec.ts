@@ -331,6 +331,17 @@ medusaIntegrationTestRunner({
         },
       ])
 
+      // create reservation for inventory item that is initially on the order
+      const inventoryModule = container.resolve(Modules.INVENTORY)
+      await inventoryModule.createReservationItems([
+        {
+          inventory_item_id: inventoryItem.id,
+          location_id: location.id,
+          quantity: 2,
+          line_item_id: order.items[0].id,
+        },
+      ])
+
       const shippingOptionPayload = {
         name: "Return shipping",
         service_zone_id: fulfillmentSet.service_zones[0].id,
@@ -751,14 +762,39 @@ medusaIntegrationTestRunner({
         })
 
         it("should go through cancel flow successfully", async () => {
-          await api.post(`/admin/claims/${claimId}/cancel`, {}, adminHeaders)
-
-          const [claim] = (
+          // fetch claim to get return id
+          let claim = (
             await api.get(
-              `/admin/claims?fields=*claim_items,*additional_items`,
+              `/admin/claims/${claimId}?fields=return_id`,
               adminHeaders
             )
-          ).data.claims
+          ).data.claim
+
+          // fetch return and fulfillment
+          const return_ = (
+            await api.get(
+              `/admin/returns/${claim.return_id}?fields=fulfillments.id`,
+              adminHeaders
+            )
+          ).data.return
+
+          /**
+           * Claim cannot be canceled unless all fulfillments are not canceled
+           */
+          await api.post(
+            `/admin/fulfillments/${return_.fulfillments[0].id}/cancel`,
+            {},
+            adminHeaders
+          )
+
+          await api.post(`/admin/claims/${claimId}/cancel`, {}, adminHeaders)
+
+          claim = (
+            await api.get(
+              `/admin/claims/${claimId}?fields=*claim_items,*additional_items`,
+              adminHeaders
+            )
+          ).data.claim
 
           expect(claim.canceled_at).toBeDefined()
 

@@ -49,11 +49,61 @@ export interface IAuthModuleService extends IModuleService {
     providerData: AuthenticationInput
   ): Promise<AuthenticationResponse>
 
+  /**
+   * This method is used to register a user using a provider. The `register` method of the
+   * underlying provider is called, passing it the `providerData` parameter as a parameter. The method
+   * returns the data returned by the provider.
+   *
+   * Refer to [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route) to learn more about the authentication flows.
+   * 
+   * @param {string} provider - The ID of the provider to register the user with.
+   * @param {AuthenticationInput} providerData - The data to pass to the provider to register the user.
+   * @returns {Promise<AuthenticationResponse>} The details of the registration result.
+   * 
+   * @example
+   * The following example is in the context of an API route, where
+   * `req` is an instance of the `MedusaRequest` object:
+   * 
+   * ```ts
+   * const { success, authIdentity, location, error } =
+   *   await authModuleService.register("emailpass", {
+   *     url: req.url,
+   *     headers: req.headers,
+   *     query: req.query,
+   *     body: req.body,
+   *     protocol: req.protocol,
+   *   } as AuthenticationInput)
+   * ```
+   */
   register(
     provider: string,
     providerData: AuthenticationInput
   ): Promise<AuthenticationResponse>
 
+  /**
+   * This method updates an auth identity's details using the provider that created it. It uses the `update` method of the
+   * underlying provider, passing it the `providerData` parameter as a parameter. The method
+   * returns the data returned by the provider.
+   * 
+   * @param {string} provider - The ID of the provider to update the auth identity with.
+   * @param {Record<string, unknown>} providerData - The data to pass to the provider to update the auth identity.
+   * @returns {Promise<AuthenticationResponse>} The details of the update result.
+   * 
+   * @example
+   * The following example is in the context of an API route, where
+   * `req` is an instance of the `MedusaRequest` object:
+   * 
+   * ```ts
+   * const { success, authIdentity, location, error } =
+   *   await authModuleService.updateProvider("emailpass", {
+   *     email: "user@example.com",
+   *     password: "password",
+   *     // The ID of a user, customer, or custom actor type that is being updated.
+   *     // For example, `user_123`.
+   *     entity_id: req.auth_context.actor_id,
+   *   })
+   * ```
+   */
   updateProvider(
     provider: string,
     providerData: Record<string, unknown>

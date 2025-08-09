@@ -44,6 +44,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the inventory items:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const inventoryItems = await inventoryModuleService.listInventoryItems(
@@ -97,6 +104,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the inventory items:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [inventoryItems, count] =
@@ -152,6 +166,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the reservation items:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const reservationItems =
@@ -207,6 +228,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the reservation items:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [reservationItems, count] =
@@ -262,6 +290,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the inventory levels:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const inventoryLevels =
@@ -324,6 +359,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the inventory levels:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [inventoryLevels, count] =
@@ -370,6 +412,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const inventoryItem = await inventoryModuleService.retrieveInventoryItem(
@@ -427,7 +476,14 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const inventoryLevel =
    *   await inventoryModuleService.retrieveInventoryLevel(
@@ -464,6 +520,13 @@ export interface IInventoryService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const reservationItem =

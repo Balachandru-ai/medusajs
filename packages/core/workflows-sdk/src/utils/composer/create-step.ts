@@ -4,7 +4,7 @@ import {
   WorkflowStepHandler,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
-import { isString, OrchestrationUtils } from "@medusajs/utils"
+import { isDefined, isString, OrchestrationUtils } from "@medusajs/utils"
 import { ulid } from "ulid"
 import { resolveValue, StepResponse } from "./helpers"
 import { createStepHandler } from "./helpers/create-step-handler"
@@ -143,9 +143,9 @@ export function applyStep<
 
     this.isAsync ||= !!(stepConfig.async || stepConfig.compensateAsync)
 
-    if (!this.handlers.has(stepName)) {
-      this.handlers.set(stepName, handler)
-    }
+    this.overriddenHandler.set(stepName, this.handlers.get(stepName)!)
+
+    this.handlers.set(stepName, handler)
 
     const ret = {
       __type: OrchestrationUtils.SymbolWorkflowStep,
@@ -173,7 +173,11 @@ export function applyStep<
         ...localConfig,
       }
 
-      delete localConfig.name
+      if (isDefined(newConfig.nested)) {
+        newConfig.nested ||= newConfig.async
+      }
+
+      delete newConfig.name
 
       const handler = createStepHandler.bind(this)({
         stepName: newStepName,
@@ -182,17 +186,22 @@ export function applyStep<
         compensateFn,
       })
 
-      wrapAsyncHandler(stepConfig, handler)
+      wrapAsyncHandler(newConfig, handler)
+
+      this.handlers.set(stepName, this.overriddenHandler.get(stepName)!)
+      this.overriddenHandler.delete(stepName)
 
       this.handlers.set(newStepName, handler)
 
       this.flow.replaceAction(stepConfig.uuid!, newStepName, newConfig)
       this.isAsync ||= !!(newConfig.async || newConfig.compensateAsync)
 
+      const stepCondition = this.stepConditions_[stepName]
+      delete this.stepConditions_[stepName]
+      this.stepConditions_[newStepName] = stepCondition
+
       ret.__step__ = newStepName
       WorkflowManager.update(this.workflowId, this.flow, this.handlers)
-
-      //const confRef = proxify(ret)
 
       if (global[OrchestrationUtils.SymbolMedusaWorkflowComposerCondition]) {
         const flagSteps =
@@ -213,6 +222,11 @@ export function applyStep<
     ): WorkflowData<TInvokeResultOutput> => {
       if (typeof condition !== "function") {
         throw new Error("Condition must be a function")
+      }
+
+      this.stepConditions_[ret.__step__] = {
+        condition,
+        input,
       }
 
       wrapConditionalStep(input, condition, handler)
@@ -295,7 +309,7 @@ function wrapAsyncHandler(
  * @param condition
  * @param handle
  */
-function wrapConditionalStep(
+export function wrapConditionalStep(
   input: any,
   condition: (...args: any) => boolean | WorkflowData,
   handle: {
@@ -306,6 +320,7 @@ function wrapConditionalStep(
   const originalInvoke = handle.invoke
   handle.invoke = async (stepArguments: WorkflowStepHandlerArguments) => {
     const args = await resolveValue(input, stepArguments)
+
     const canContinue = await condition(args, stepArguments)
 
     if (stepArguments.step.definition?.async) {
@@ -343,12 +358,12 @@ function wrapConditionalStep(
  *   "createProductStep",
  *   async function (
  *     input: CreateProductInput,
- *     context
+ *     { container }
  *   ) {
- *     const productService = context.container.resolve(
- *       "productService"
+ *     const productModuleService = container.resolve(
+ *       "product"
  *     )
- *     const product = await productService.createProducts(input)
+ *     const product = await productModuleService.createProducts(input)
  *     return new StepResponse({
  *       product
  *     }, {
@@ -357,12 +372,15 @@ function wrapConditionalStep(
  *   },
  *   async function (
  *     input,
- *     context
+ *     { container }
  *   ) {
- *     const productService = context.container.resolve(
- *       "productService"
+ *     if (!input) {
+ *       return
+ *     }
+ *     const productModuleService = container.resolve(
+ *       "product"
  *     )
- *     await productService.deleteProducts(input.product_id)
+ *     await productModuleService.deleteProducts([input.product_id])
  *   }
  * )
  */

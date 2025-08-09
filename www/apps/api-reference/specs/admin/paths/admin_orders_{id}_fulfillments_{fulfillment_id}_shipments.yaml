@@ -111,6 +111,11 @@ post:
                     `additional_data` parameter.
           description: The shipment's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_orders_{id}_fulfillments_{fulfillment_id}_shipments/post.js
     - lang: Shell
       label: cURL
       source:
@@ -138,3 +143,14 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createOrderShipmentWorkflow
+  x-events:
+    - name: shipment.created
+      payload: |-
+        ```ts
+        {
+          id, // the ID of the shipment
+          no_notification, // (boolean) whether to notify the customer
+        }
+        ```
+      description: Emitted when a shipment is created for an order.
+      deprecated: false

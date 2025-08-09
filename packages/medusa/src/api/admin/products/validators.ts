@@ -1,6 +1,6 @@
-import { BatchMethodRequest } from "@medusajs/framework/types"
+import { BatchMethodRequest, HttpTypes } from "@medusajs/framework/types"
 import { ProductStatus } from "@medusajs/framework/utils"
-import { z } from "zod"
+import { z, ZodType } from "zod"
 import {
   applyAndAndOrOperators,
   booleanString,
@@ -25,6 +25,9 @@ export const AdminGetProductVariantsParamsFields = z.object({
   id: z.union([z.string(), z.array(z.string())]).optional(),
   manage_inventory: booleanString().optional(),
   allow_backorder: booleanString().optional(),
+  ean: z.union([z.string(), z.array(z.string())]).optional(),
+  upc: z.union([z.string(), z.array(z.string())]).optional(),
+  barcode: z.union([z.string(), z.array(z.string())]).optional(),
   created_at: createOperatorMap().optional(),
   updated_at: createOperatorMap().optional(),
   deleted_at: createOperatorMap().optional(),
@@ -41,9 +44,13 @@ export const AdminGetProductVariantsParams = createFindParams({
   .merge(applyAndAndOrOperators(AdminGetProductVariantsParamsFields))
 
 export const AdminGetProductsParamsDirectFields = z.object({
-  variants: AdminGetProductVariantsParamsFields.merge(
-    applyAndAndOrOperators(AdminGetProductVariantsParamsFields)
-  ).optional(),
+  variants: AdminGetProductVariantsParamsFields.omit({ q: true })
+    .merge(
+      applyAndAndOrOperators(
+        AdminGetProductVariantsParamsFields.omit({ q: true })
+      )
+    )
+    .optional(),
   status: statusEnum.array().optional(),
 })
 
@@ -61,7 +68,7 @@ export const AdminGetProductsParams = createFindParams({
       .merge(applyAndAndOrOperators(AdminGetProductsParamsDirectFields))
       .merge(GetProductsParams)
   )
-  .transform(transformProductParams)
+  .transform(transformProductParams as any)
 
 export const AdminGetProductOptionsParamsFields = z.object({
   q: z.string().optional(),
@@ -341,3 +348,12 @@ export type AdminBatchVariantInventoryItemsType = BatchMethodRequest<
   AdminBatchUpdateVariantInventoryItemType,
   AdminBatchDeleteVariantInventoryItemType
 >
+
+export const AdminImportProducts = z.object({
+  file_key: z.string(),
+  originalname: z.string(),
+  extension: z.string(),
+  size: z.number(),
+  mime_type: z.string(),
+}) satisfies ZodType<HttpTypes.AdminImportProductsRequest>
+export type AdminImportProductsType = z.infer<typeof AdminImportProducts>

@@ -1,7 +1,7 @@
 import { Prerequisites } from "docs-ui"
 
 export const metadata = {
-  title: `${pageNumber} Guide: Sync Brands from Medusa to CMS`,
+  title: `${pageNumber} Guide: Sync Brands from Medusa to Third-Party`,
 }
 
 # {metadata.title}
@@ -157,10 +157,10 @@ Learn more about compensation functions in [this chapter](../../../fundamentals/
 You can now create the workflow that uses the above step. Add the workflow to the same `src/workflows/sync-brands-to-cms.ts` file:
 
 export const syncWorkflowHighlights = [
-  ["19", "useQueryGraphStep", "Retrieve the brand's details."],
-  ["23", "id", "Filter by the brand's ID."],
-  ["26", "throwIfKeyNotFound", "Throw an error if a brand with the specified ID doesn't exist."],
-  ["30", "syncBrandToCmsStep", "Create the brand in the third-party CMS."]
+  ["18", "useQueryGraphStep", "Retrieve the brand's details."],
+  ["22", "id", "Filter by the brand's ID."],
+  ["25", "throwIfKeyNotFound", "Throw an error if a brand with the specified ID doesn't exist."],
+  ["29", "syncBrandToCmsStep", "Create the brand in the third-party CMS."]
 ]
 
 ```ts title="src/workflows/sync-brands-to-cms.ts" highlights={syncWorkflowHighlights}
@@ -181,7 +181,6 @@ type SyncBrandToCmsWorkflowInput = {
 export const syncBrandToCmsWorkflow = createWorkflow(
   "sync-brand-to-cms",
   (input: SyncBrandToCmsWorkflowInput) => {
-    // @ts-ignore
     const { data: brands } = useQueryGraphStep({
       entity: "brand",
       fields: ["*"],
@@ -264,7 +263,7 @@ A subscriber file must export:
 The subscriber function accepts an object parameter that has two properties:
 
 - `event`: An object of event details. Its `data` property holds the event's data payload, which is the brand's ID.
-- `container`: The Medusa container used to resolve framework and commerce tools.
+- `container`: The Medusa container used to resolve Framework and commerce tools.
 
 In the function, you execute the `syncBrandToCmsWorkflow`, passing it the data payload as an input. So, everytime a brand is created, Medusa will execute this function, which in turn executes the workflow to sync the brand to the CMS.
 

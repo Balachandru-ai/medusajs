@@ -31,21 +31,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the shipping profile.
- *         properties:
- *           name:
- *             type: string
- *             title: name
- *             description: The shipping profile's name.
- *           type:
- *             type: string
- *             title: type
- *             description: The shipping profile's type.
- *           metadata:
- *             type: object
- *             description: The shipping profile's metadata.
+ *         $ref: "#/components/schemas/AdminUpdateShippingProfile"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.shippingProfile.update("sp_123", {
+ *         name: "Updated Shipping Profile",
+ *       })
+ *       .then(({ shipping_profile }) => {
+ *         console.log(shipping_profile)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -77,6 +83,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateShippingProfilesWorkflow
+ * x-events: []
  * 
 */
 

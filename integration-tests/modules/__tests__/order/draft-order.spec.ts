@@ -17,7 +17,7 @@ import {
 } from "../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../fixtures"
 
-jest.setTimeout(50000)
+jest.setTimeout(100000)
 
 const env = { MEDUSA_FF_MEDUSA_V2: true }
 
@@ -165,6 +165,14 @@ medusaIntegrationTestRunner({
               inventory_item_id: inventoryItem.id,
             },
           },
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product_2.variants[0].id,
+            },
+            [Modules.INVENTORY]: {
+              inventory_item_id: inventoryItem.id,
+            },
+          },
         ])
 
         await setupTaxStructure(taxModule)
@@ -238,8 +246,8 @@ medusaIntegrationTestRunner({
               }),
               items: expect.arrayContaining([
                 expect.objectContaining({
-                  title: "Test variant",
-                  subtitle: "Test product",
+                  title: "Test product",
+                  subtitle: "Test variant",
                   product_title: "Test product",
                   product_description: null,
                   product_subtitle: null,
@@ -305,8 +313,8 @@ medusaIntegrationTestRunner({
                   }),
                 }),
                 expect.objectContaining({
-                  title: "Variant variable",
-                  subtitle: "Another product",
+                  title: "Another product",
+                  subtitle: "Variant variable",
                   raw_unit_price: expect.objectContaining({
                     value: "200",
                   }),

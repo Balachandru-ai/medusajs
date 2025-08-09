@@ -33,10 +33,9 @@ export default class Helper {
             ? dotPos
             : Math.min(dotPos, parenPos)
 
-    return nameWithoutQuotes.substring(
-      0,
-      endIndex === -1 ? nameWithoutQuotes.length : endIndex
-    )
+    return nameWithoutQuotes
+      .substring(0, endIndex === -1 ? nameWithoutQuotes.length : endIndex)
+      .trim()
   }
 
   /**

@@ -14,7 +14,7 @@ import {
 import { AdminUpdateTaxRegionType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminUpdateTaxRegion>,
   res: MedusaResponse<HttpTypes.AdminTaxRegionResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

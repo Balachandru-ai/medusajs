@@ -32,16 +32,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment details.
- *         required:
- *           - order_id
- *         properties:
- *           order_id:
- *             type: string
- *             title: order_id
- *             description: The ID of the order associated with the payment collection.
+ *         $ref: "#/components/schemas/AdminMarkPaymentCollectionPaid"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.paymentCollection.markAsPaid("paycol_123", {
+ *         order_id: "order_123"
+ *       })
+ *       .then(({ payment_collection }) => {
+ *         console.log(payment_collection)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -73,6 +84,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: markPaymentCollectionAsPaid
+ * x-events:
+ *   - name: payment.captured
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // the ID of the payment
+ *       }
+ *       ```
+ *     description: Emitted when a payment is captured.
+ *     deprecated: false
  * 
 */
 

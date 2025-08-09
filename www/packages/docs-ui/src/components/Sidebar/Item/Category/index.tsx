@@ -3,34 +3,37 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from "react"
-import { SidebarItemCategory as SidebarItemCategoryType } from "types"
-import { Loading, SidebarItem, useSidebar } from "../../../.."
+import { Sidebar } from "types"
+import { Badge, Loading, SidebarItem, useSidebar } from "../../../.."
 import clsx from "clsx"
-import { MinusMini, PlusMini } from "@medusajs/icons"
+import { TriangleDownMini, TriangleUpMini } from "@medusajs/icons"
 
-export type SidebarItemCategory = {
-  item: SidebarItemCategoryType
-  expandItems?: boolean
+export type SidebarItemCategoryProps = {
+  item: Sidebar.SidebarItemCategory
 } & React.AllHTMLAttributes<HTMLDivElement>
 
 export const SidebarItemCategory = ({
   item,
-  expandItems = true,
   className,
-}: SidebarItemCategory) => {
+}: SidebarItemCategoryProps) => {
   const [showLoading, setShowLoading] = useState(false)
   const [open, setOpen] = useState(
-    item.initialOpen !== undefined ? item.initialOpen : expandItems
+    item.initialOpen !== undefined ? item.initialOpen : false
   )
   const {
-    isChildrenActive,
+    isItemActive,
     updatePersistedCategoryState,
     getPersistedCategoryState,
-    persistState,
+    persistCategoryState,
   } = useSidebar()
   const itemShowLoading = useMemo(() => {
     return !item.loaded || (item.showLoadingIfEmpty && !item.children?.length)
   }, [item])
+  const isActive = useMemo(() => {
+    return isItemActive({
+      item,
+    })
+  }, [isItemActive, item])
 
   useEffect(() => {
     if (open && itemShowLoading) {
@@ -45,25 +48,29 @@ export const SidebarItemCategory = ({
   }, [itemShowLoading, showLoading])
 
   useEffect(() => {
-    const isActive = isChildrenActive(item)
-
     if (isActive && !open) {
       setOpen(true)
     }
-  }, [isChildrenActive, item.children])
+  }, [isActive, item.children])
 
   useEffect(() => {
-    if (!persistState) {
+    if (!persistCategoryState) {
       return
     }
     const persistedOpen = getPersistedCategoryState(item.title)
-    if (persistedOpen !== undefined) {
+    if (persistedOpen !== undefined && !isActive) {
       setOpen(persistedOpen)
     }
-  }, [persistState])
+  }, [persistCategoryState])
 
   const handleOpen = () => {
-    item.onOpen?.()
+    if (!open) {
+      item.onOpen?.()
+    }
+    if (persistCategoryState) {
+      updatePersistedCategoryState(item.title, !open)
+    }
+    setOpen((prev) => !prev)
   }
 
   const isTitleOneWord = useMemo(
@@ -86,15 +93,7 @@ export const SidebarItemCategory = ({
             !isTitleOneWord && "break-words"
           )}
           tabIndex={-1}
-          onClick={() => {
-            if (!open) {
-              handleOpen()
-            }
-            if (persistState) {
-              updatePersistedCategoryState(item.title, !open)
-            }
-            setOpen((prev) => !prev)
-          }}
+          onClick={handleOpen}
         >
           <span
             className={clsx(
@@ -105,10 +104,13 @@ export const SidebarItemCategory = ({
             {item.title}
           </span>
           {item.additionalElms}
+          {item.badge && (
+            <Badge variant={item.badge.variant}>{item.badge.text}</Badge>
+          )}
           {!item.additionalElms && (
             <>
-              {open && <MinusMini />}
-              {!open && <PlusMini />}
+              {open && <TriangleDownMini />}
+              {!open && <TriangleUpMini />}
             </>
           )}
         </div>
@@ -122,6 +124,13 @@ export const SidebarItemCategory = ({
             !open && "overflow-hidden m-0 h-0"
           )}
         >
+          {item.children?.map((childItem, index) => (
+            <SidebarItem
+              item={childItem}
+              key={index}
+              isParentCategoryOpen={open}
+            />
+          ))}
           {showLoading && (
             <Loading
               count={3}
@@ -129,13 +138,6 @@ export const SidebarItemCategory = ({
               barClassName="h-[20px]"
             />
           )}
-          {item.children?.map((childItem, index) => (
-            <SidebarItem
-              item={childItem}
-              key={index}
-              expandItems={expandItems}
-            />
-          ))}
         </ul>
       )}
     </div>

@@ -1,7 +1,11 @@
 import type { MedusaAppLoader } from "@medusajs/framework"
+import { Logger, MedusaContainer } from "@medusajs/framework/types"
+import { logger } from "@medusajs/framework/logger"
+import {
+  ContainerRegistrationKeys,
+  getResolvedPlugins,
+} from "@medusajs/framework/utils"
 import { join } from "path"
-import { MedusaContainer } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 /**
  * Initiates the database connection
@@ -11,7 +15,7 @@ export async function initDb() {
     "@medusajs/framework"
   )
 
-  const pgConnection = pgConnectionLoader()
+  const pgConnection = await pgConnectionLoader()
   await featureFlagsLoader()
 
   return pgConnection
@@ -24,7 +28,7 @@ export async function migrateDatabase(appLoader: MedusaAppLoader) {
   try {
     await appLoader.runModulesMigrations()
   } catch (err) {
-    console.error("Something went wrong while running the migrations")
+    logger.error("Something went wrong while running the migrations")
     throw err
   }
 }
@@ -35,7 +39,8 @@ export async function migrateDatabase(appLoader: MedusaAppLoader) {
 export async function syncLinks(
   appLoader: MedusaAppLoader,
   directory: string,
-  container: MedusaContainer
+  container: MedusaContainer,
+  logger: Logger
 ) {
   try {
     await loadCustomLinks(directory, container)
@@ -43,21 +48,16 @@ export async function syncLinks(
     const planner = await appLoader.getLinksExecutionPlanner()
     const actionPlan = await planner.createPlan()
     actionPlan.forEach((action) => {
-      console.log(`Sync links: "${action.action}" ${action.tableName}`)
+      logger.info(`Sync links: "${action.action}" ${action.tableName}`)
     })
     await planner.executePlan(actionPlan)
   } catch (err) {
-    console.error("Something went wrong while syncing links")
+    logger.error("Something went wrong while syncing links")
     throw err
   }
 }
 
 async function loadCustomLinks(directory: string, container: MedusaContainer) {
-  // TODO: move to framework once settle down
-  const {
-    getResolvedPlugins,
-  } = require("@medusajs/medusa/loaders/helpers/resolve-plugins")
-
   const configModule = container.resolve(
     ContainerRegistrationKeys.CONFIG_MODULE
   )

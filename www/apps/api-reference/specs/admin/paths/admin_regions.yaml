@@ -546,11 +546,23 @@ get:
               type: string
               title: currency_code
               description: The currency code's details.
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   security:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions/get.js
     - lang: Shell
       label: cURL
       source:
@@ -641,6 +653,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminCreateRegion.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_regions/post.js
     - lang: Shell
       label: cURL
       source:
@@ -667,3 +683,13 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createRegionsWorkflow
+  x-events:
+    - name: region.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the region
+        }]
+        ```
+      description: Emitted when regions are created.
+      deprecated: false

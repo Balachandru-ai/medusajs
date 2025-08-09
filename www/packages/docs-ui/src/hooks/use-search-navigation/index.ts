@@ -65,8 +65,18 @@ export const useSearchNavigation = ({
         // find if there's a data-hit item before this one
         const beforeItem = findPrevSibling(focusedItem, "[data-hit]")
         if (!beforeItem) {
-          // focus the input
-          focusInput()
+          // check if there's a data-group before this one
+          const beforeGroup = focusedItem.parentElement
+            ? (findPrevSibling(focusedItem.parentElement, "[data-group]")
+                ?.lastElementChild as HTMLElement)
+            : null
+          if (beforeGroup) {
+            // focus the last item in the previous group
+            beforeGroup.focus()
+          } else {
+            // focus the input
+            focusInput()
+          }
         } else {
           // focus the previous item
           beforeItem.focus()
@@ -77,7 +87,7 @@ export const useSearchNavigation = ({
       if (isInput) {
         // go to the first data-hit item
         const nextItem = modalRef.current?.querySelector(
-          "[data-hit]"
+          "[data-index]:not(.hidden) [data-hit]"
         ) as HTMLElement
         nextItem?.focus()
       } else {
@@ -87,6 +97,15 @@ export const useSearchNavigation = ({
         if (afterItem) {
           // focus the next item
           afterItem.focus()
+        } else if (focusedItem.parentElement) {
+          // try to go to next hit in the next group
+          const nextGroupFirstItem = findNextSibling(
+            focusedItem.parentElement,
+            "[data-group]"
+          )?.firstElementChild as HTMLElement
+          if (nextGroupFirstItem) {
+            nextGroupFirstItem.focus()
+          }
         }
       }
     }

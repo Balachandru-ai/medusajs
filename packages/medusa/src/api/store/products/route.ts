@@ -1,6 +1,6 @@
 import { featureFlagRouter } from "@medusajs/framework"
 import { MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
+import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   isPresent,
@@ -36,7 +36,7 @@ async function getProductsWithIndexEngine(
 ) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const context: object = {}
+  const context: QueryContextType = {}
   const withInventoryQuantity = req.queryConfig.fields.some((field) =>
     field.includes("variants.inventory_quantity")
   )
@@ -80,7 +80,8 @@ async function getProductsWithIndexEngine(
   await wrapProductsWithTaxPrices(req, products)
   res.json({
     products,
-    count: metadata!.count,
+    count: metadata!.estimate_count,
+    estimate_count: metadata!.estimate_count,
     offset: metadata!.skip,
     limit: metadata!.take,
   })

@@ -39,11 +39,38 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The cart's details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.cart.create({
+ *         region_id: "reg_123"
+ *       })
+ *       .then(({ cart }) => {
+ *         console.log(cart)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/carts' \
- *       -H 'x-publishable-api-key: {your_publishable_api_key}'
+ *       -H 'Content-Type: application/json' \
+ *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
+ *       --data-raw '{
+ *         "region_id": "reg_123"
+ *       }'
  * tags:
  *   - Carts
  * responses:
@@ -66,6 +93,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createCartWorkflow
+ * x-events:
+ *   - name: cart.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *       }
+ *       ```
+ *     description: Emitted when a cart is created.
+ *     deprecated: false
  * 
 */
 

@@ -34,16 +34,8 @@ const Providers = ({ children, aiAssistantProps = {} }: ProvidersProps) => {
                     <SearchProvider>
                       <AiAssistantProvider
                         {...aiAssistantProps}
-                        apiUrl={
-                          process.env.NEXT_PUBLIC_AI_ASSISTANT_URL || "temp"
-                        }
-                        websiteId={
-                          process.env.NEXT_PUBLIC_AI_WEBSITE_ID || "temp"
-                        }
-                        recaptchaSiteKey={
-                          process.env
-                            .NEXT_PUBLIC_AI_API_ASSISTANT_RECAPTCHA_SITE_KEY ||
-                          "temp"
+                        integrationId={
+                          process.env.NEXT_PUBLIC_INTEGRATION_ID || "temp"
                         }
                       >
                         <HooksLoader

@@ -1,6 +1,6 @@
 "use client"
 
-import type { SchemaObject } from "@/types/openapi"
+import type { OpenAPI } from "types"
 import TagOperationParametersDefault from "../Default"
 import dynamic from "next/dynamic"
 import type { TagOperationParametersProps } from "../.."
@@ -33,9 +33,10 @@ const Details = dynamic<DetailsProps>(
 
 export type TagOperationParametersObjectProps = {
   name?: string
-  schema: SchemaObject
+  schema: OpenAPI.SchemaObject
   isRequired?: boolean
   topLevel?: boolean
+  isExpanded?: boolean
 }
 
 const TagOperationParametersObject = ({
@@ -43,6 +44,7 @@ const TagOperationParametersObject = ({
   schema,
   isRequired,
   topLevel = false,
+  isExpanded = false,
 }: TagOperationParametersObjectProps) => {
   const isPropertiesEmpty = useMemo(
     () => !schema.properties || !Object.values(schema.properties).length,
@@ -112,6 +114,7 @@ const TagOperationParametersObject = ({
                 properties[property].isRequired ||
                 checkRequired(schema, property)
               }
+              isExpanded={isExpanded}
             />
           </Fragment>
         ))}
@@ -141,6 +144,7 @@ const TagOperationParametersObject = ({
     <Details
       summaryElm={getPropertyDescriptionElm(true)}
       className="!border-y-0"
+      openInitial={isExpanded}
     >
       {getPropertyParameterElms(true)}
     </Details>

@@ -49,7 +49,11 @@
  *       province:
  *         type: string
  *         title: province
- *         description: The address's province.
+ *         description: The address's ISO 3166-2 province code. Must be lower-case.
+ *         example: us-ca
+ *         externalDocs:
+ *           url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *           description: Learn more about ISO 3166-2
  *       postal_code:
  *         type: string
  *         title: postal_code
@@ -57,6 +61,9 @@
  *       metadata:
  *         type: object
  *         description: The address's metadata, can hold custom key-value pairs.
+ *         externalDocs:
+ *           url: https://docs.medusajs.com/api/admin#manage-metadata
+ *           description: Learn how to manage metadata
  *   billing_address:
  *     type: object
  *     description: The order's billing address.
@@ -97,7 +104,11 @@
  *       province:
  *         type: string
  *         title: province
- *         description: The address's province.
+ *         description: The address's ISO 3166-2 province code. Must be lower-case.
+ *         example: us-ca
+ *         externalDocs:
+ *           url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *           description: Learn more about ISO 3166-2
  *       postal_code:
  *         type: string
  *         title: postal_code
@@ -105,9 +116,15 @@
  *       metadata:
  *         type: object
  *         description: The address's metadata, can hold custom key-value pairs.
+ *         externalDocs:
+ *           url: https://docs.medusajs.com/api/admin#manage-metadata
+ *           description: Learn how to manage metadata
  *   metadata:
  *     type: object
  *     description: The order's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  * 
 */
 

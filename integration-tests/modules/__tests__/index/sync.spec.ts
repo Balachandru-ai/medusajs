@@ -66,15 +66,11 @@ medusaIntegrationTestRunner({
 
     describe("Index engine syncing", () => {
       it("should sync the data to the index based on the indexation configuration", async () => {
-        console.info("[Index engine] Creating products")
-
         await populateData(api, {
           productCount: 2,
           variantCount: 2,
           priceCount: 2,
         })
-
-        console.info("[Index engine] Creating products done")
 
         await setTimeout(1000)
         await dbConnection.raw('TRUNCATE TABLE "index_data";')
@@ -96,11 +92,9 @@ medusaIntegrationTestRunner({
         // Prevent storage provider to be triggered though
         ;(indexEngine as any).storageProvider_.onApplicationStart = jest.fn()
 
-        console.info("[Index engine] Triggering sync")
         // Trigger a sync
+        ;(indexEngine as any).schemaObjectRepresentation_ = null
         await (indexEngine as any).onApplicationStart_()
-
-        console.info("[Index engine] Sync done")
 
         // 28 ms - 6511 records
         const { data: results } = await indexEngine.query<"product">({
@@ -122,11 +116,7 @@ medusaIntegrationTestRunner({
     })
 
     it("should sync the data to the index based on the updated indexation configuration", async () => {
-      console.info("[Index engine] Creating products")
-
       await populateData(api)
-
-      console.info("[Index engine] Creating products done")
 
       await setTimeout(1000)
       await dbConnection.raw('TRUNCATE TABLE "index_data";')
@@ -148,11 +138,9 @@ medusaIntegrationTestRunner({
       // Prevent storage provider to be triggered though
       ;(indexEngine as any).storageProvider_.onApplicationStart = jest.fn()
 
-      console.info("[Index engine] Triggering sync")
       // Trigger a sync
+      ;(indexEngine as any).schemaObjectRepresentation_ = null
       await (indexEngine as any).onApplicationStart_()
-
-      console.info("[Index engine] Sync done")
 
       const { data: results } = await indexEngine.query<"product">({
         fields: [
@@ -186,8 +174,8 @@ medusaIntegrationTestRunner({
   }
         `,
       }
-
       // Trigger a sync
+      ;(indexEngine as any).schemaObjectRepresentation_ = null
       await (indexEngine as any).onApplicationStart_()
       await setTimeout(3000)
 

@@ -20,7 +20,10 @@ Do not install Tanstack Query as that will cause unexpected errors in your devel
 
 First, create the file `src/admin/lib/config.ts` to setup the SDK for use in your customizations:
 
-```ts
+<CodeTabs>
+  <CodeTab label="Medusa Project" value="medusa-project">
+
+```ts title="src/admin/lib/config.ts"
 import Medusa from "@medusajs/js-sdk"
 
 export const sdk = new Medusa({
@@ -32,7 +35,24 @@ export const sdk = new Medusa({
 })
 ```
 
-Notice that you use `import.meta.env` to access environment variables in your customizations, as explained in [this chapter](../environment-variables/page.mdx).
+  </CodeTab>
+  <CodeTab label="Medusa Plugin" value="medusa-plugin">
+
+```ts title="src/admin/lib/config.ts"
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: __BACKEND_URL__ || "/",
+  auth: {
+    type: "session",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+Notice that you use `import.meta.env` in a Medusa project to access environment variables in your customizations, whereas in a plugin you use the global variable `__BACKEND_URL__` to access the backend URL. You can learn more in the [Admin Environment Variables](../environment-variables/page.mdx) chapter.
 
 <Note>
 
@@ -136,58 +156,29 @@ export default ProductWidget
 
 You can also send requests to custom routes as explained in the [JS SDK reference](!resources!/js-sdk).
 
+### Use Route Loaders for Initial Data
+
+You may need to retrieve data before your component is rendered, or you may need to pass some initial data to your component to be used while data is being fetched. In those cases, you can use a [route loader](../routing/page.mdx).
+
 ---
 
 ## Global Variables in Admin Customizations
 
 In your admin customizations, you can use the following global variables:
 
-- `__BASE__`: The base path of the Medusa Admin, as set in the [admin.path](!resources!/references/medusa-config#path) configuration in `medusa-config.ts`.
-- `__BACKEND_URL__`: The URL to the Medusa backend, as set in the [admin.backendUrl](!resources!/references/medusa-config#backendurl) configuration in `medusa-config.ts`.
-- `__STOREFRONT_URL__`: The URL to the storefront, as set in the [admin.storefrontUrl](!resources!/references/medusa-config#storefrontUrl) configuration in `medusa-config.ts`.
+- `__BASE__`: The base path of the Medusa Admin, as set in the [admin.path](../../../configurations/medusa-config/page.mdx#path) configuration in `medusa-config.ts`.
+- `__BACKEND_URL__`: The URL to the Medusa backend, as set in the [admin.backendUrl](../../../configurations/medusa-config/page.mdx#backendurl) configuration in `medusa-config.ts`.
+- `__STOREFRONT_URL__`: The URL to the storefront, as set in the [admin.storefrontUrl](../../../configurations/medusa-config/page.mdx#storefrontUrl) configuration in `medusa-config.ts`.
 
----
+If you get type errors while using these variables, you can create the file `src/admin/vite-env.d.ts` with the following content:
 
-## Routing Functionalities
+```ts title="src/admin/vite-env.d.ts"
+/// <reference types="vite/client" />
 
-To navigate or link to other pages, or perform other routing functionalities, use the [react-router-dom](https://reactrouter.com/en/main) package. It's installed in your project through the Medusa Admin.
-
-For example:
-
-export const highlights = [
-  ["9", "Link", "Add a link to another page"],
-  ["9", '"/orders', "Add the path without the `/app` prefix."]
-]
-
-```tsx title="src/admin/widgets/product-widget.tsx" highlights={highlights}
-import { defineWidgetConfig } from "@medusajs/admin-sdk"
-import { Container } from "@medusajs/ui"
-import { Link } from "react-router-dom"
-
-// The widget
-const ProductWidget = () => {
-  return (
-    <Container className="divide-y p-0">
-      <Link to={"/orders"}>View Orders</Link>
-    </Container>
-  )
-}
-
-// The widget's configurations
-export const config = defineWidgetConfig({
-  zone: "product.details.before",
-})
-
-export default ProductWidget
+declare const __BASE__: string
+declare const __BACKEND_URL__: string
+declare const __STOREFRONT_URL__: string
 ```
-
-This adds a widget in a product's details page with a link to the Orders page. The link's path must be without the `/app` prefix.
-
-<Note title="Learn more">
-
-Refer to [react-router-dom’s documentation](https://reactrouter.com/en/main) for other available components and hooks.
-
-</Note>
 
 ---
 
@@ -195,4 +186,4 @@ Refer to [react-router-dom’s documentation](https://reactrouter.com/en/main) f
 
 The Medusa Admin dashboard can be displayed in languages other than English, which is the default. Other languages are added through community contributions.
 
-Learn how to add a new language translation for the Medusa Admin in [this guide](!resources!/contribution-guidelines/admin-translations).
+Learn how to add a new language translation for the Medusa Admin in [this guide](../../../resources/contribution-guidelines/admin-translations/page.mdx).

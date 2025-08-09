@@ -1,7 +1,7 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useRef } from "react"
-import { SchemaObject } from "../../../../types/openapi"
+import { Suspense, useEffect, useMemo } from "react"
+import { OpenAPI } from "types"
 import TagOperationParameters from "../../Operation/Parameters"
 import {
   Badge,
@@ -13,8 +13,6 @@ import {
   useScrollController,
   useSidebar,
 } from "docs-ui"
-import { SidebarItemSections } from "types"
-import getSectionId from "../../../../utils/get-section-id"
 import DividedLayout from "../../../../layouts/Divided"
 import SectionContainer from "../../../Section/Container"
 import useSchemaExample from "../../../../hooks/use-schema-example"
@@ -23,14 +21,15 @@ import checkElementInViewport from "../../../../utils/check-element-in-viewport"
 import { singular } from "pluralize"
 import clsx from "clsx"
 import { useArea } from "../../../../providers/area"
+import { getSectionId } from "docs-utils"
 
 export type TagSectionSchemaProps = {
-  schema: SchemaObject
+  schema: OpenAPI.SchemaObject
   tagName: string
 }
 
 const TagSectionSchema = ({ schema, tagName }: TagSectionSchemaProps) => {
-  const { addItems, setActivePath, activePath } = useSidebar()
+  const { setActivePath, activePath, shownSidebar, updateItems } = useSidebar()
   const { displayedArea } = useArea()
   const formattedName = useMemo(
     () => singular(tagName).replaceAll(" ", ""),
@@ -56,31 +55,6 @@ const TagSectionSchema = ({ schema, tagName }: TagSectionSchemaProps) => {
 
     return isElmWindow(scrollableElement) ? document.body : scrollableElement
   }, [isBrowser, scrollableElement])
-
-  useEffect(() => {
-    addItems(
-      [
-        {
-          type: "link",
-          path: schemaSlug,
-          title: `${formattedName} Object`,
-          additionalElms: <Badge variant="neutral">Schema</Badge>,
-          loaded: true,
-        },
-      ],
-      {
-        section: SidebarItemSections.DEFAULT,
-        parent: {
-          type: "category",
-          title: tagName,
-          path: "",
-          changeLoaded: true,
-        },
-        indexPosition: 0,
-      }
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formattedName])
 
   useEffect(() => {
     if (!isBrowser) {

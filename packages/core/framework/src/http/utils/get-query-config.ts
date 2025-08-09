@@ -3,6 +3,7 @@ import {
   isDefined,
   isPresent,
   MedusaError,
+  buildOrder,
   stringToSelectRelationObject,
 } from "@medusajs/utils"
 import { pick } from "lodash"
@@ -100,7 +101,13 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
     defaultLimit = 50,
     isList,
   } = queryConfig
-  const { order, fields, limit = defaultLimit, offset = 0 } = validated
+  const {
+    order,
+    fields,
+    limit = defaultLimit,
+    offset = 0,
+    with_deleted,
+  } = validated
 
   // e.g *product.variants meaning that we want all fields from the product.variants
   // in that case it wont be part of the select but it will be part of the relations.
@@ -197,9 +204,8 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
   if (isDefined(order)) {
     let orderField = order
     if (order.startsWith("-")) {
-      const [, field] = order.split("-")
-      orderField = field
-      orderBy = { [field]: "DESC" }
+      orderField = order.slice(1)
+      orderBy = { [orderField]: "DESC" }
     } else {
       orderBy = { [order]: "ASC" }
     }
@@ -212,7 +218,7 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
     }
   }
 
-  const finalOrder = isPresent(orderBy) ? orderBy : undefined
+  const finalOrder = isPresent(orderBy) ? buildOrder(orderBy) : undefined
   return {
     listConfig: {
       select: select.length ? select : undefined,
@@ -220,6 +226,7 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
       skip: offset,
       take: limit,
       order: finalOrder,
+      withDeleted: with_deleted,
     },
     remoteQueryConfig: {
       // Add starFields that are relations only on which we want all properties with a dedicated format to the remote query
@@ -234,6 +241,7 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
             order: finalOrder,
           }
         : {},
+      withDeleted: with_deleted,
     },
   }
 }
@@ -255,6 +263,7 @@ export function prepareRetrieveQuery<T extends RequestQueryFields, TEntity>(
     remoteQueryConfig: {
       fields: remoteQueryConfig.fields,
       pagination: {},
+      withDeleted: remoteQueryConfig.withDeleted,
     },
   }
 }

@@ -7,13 +7,17 @@ import { capitalize, kebabToTitle } from "utils"
 import { parse, stringify } from "yaml"
 import { DEFAULT_OAS_RESPONSES, SUMMARY_PLACEHOLDER } from "../../constants.js"
 import {
+  OasEvent,
   OpenApiDocument,
   OpenApiOperation,
   OpenApiSchema,
 } from "../../types/index.js"
 import formatOas from "../../utils/format-oas.js"
 import getCorrectZodTypeName from "../../utils/get-correct-zod-type-name.js"
-import { getOasOutputBasePath } from "../../utils/get-output-base-paths.js"
+import {
+  getEventsOutputBasePath,
+  getOasOutputBasePath,
+} from "../../utils/get-output-base-paths.js"
 import isZodObject from "../../utils/is-zod-object.js"
 import parseOas, { ExistingOas } from "../../utils/parse-oas.js"
 import OasExamplesGenerator from "../examples/oas.js"
@@ -32,6 +36,7 @@ import {
   isLevelExceeded,
   maybeIncrementLevel,
 } from "../../utils/level-utils.js"
+import { MedusaEvent } from "types"
 
 const RES_STATUS_REGEX = /^res[\s\S]*\.status\((\d+)\)/
 
@@ -52,6 +57,8 @@ type AuthRequests = {
   exact?: string
   startsWith?: string
   requiresAuthentication: boolean
+  allowedAuthTypes?: string[]
+  httpMethods?: string[]
 }
 
 /**
@@ -62,6 +69,17 @@ class OasKindGenerator extends FunctionKindGenerator {
   public name = "oas"
   protected allowedKinds: SyntaxKind[] = [ts.SyntaxKind.FunctionDeclaration]
   private MAX_LEVEL = 7
+  readonly METHOD_NAMES = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+    "HEAD",
+    "TRACE",
+    "CONNECT",
+  ]
   readonly REQUEST_TYPE_NAMES = [
     "MedusaRequest",
     "RequestWithContext",
@@ -88,10 +106,38 @@ class OasKindGenerator extends FunctionKindGenerator {
       exact: "store/orders/[id]/transfer/cancel",
       requiresAuthentication: true,
     },
+    {
+      exact: "admin/invites/accept",
+      httpMethods: ["post"],
+      requiresAuthentication: true,
+      allowedAuthTypes: ["cookie_auth", "jwt_token"],
+    },
+    {
+      startsWith: "admin/invites",
+      requiresAuthentication: true,
+    },
+    {
+      startsWith: "admin/users",
+      requiresAuthentication: true,
+      allowedAuthTypes: ["cookie_auth", "jwt_token"],
+    },
+    {
+      exact: "store/gift-cards/[idOrCode]/redeem",
+      requiresAuthentication: true,
+    },
+    {
+      startsWith: "store/store-credit-accounts",
+      requiresAuthentication: true,
+    },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
   readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
-  readonly PAGINATION_QUERY_PARAMS = ["limit", "offset", "order"]
+  readonly PAGINATION_QUERY_PARAMS = [
+    "limit",
+    "offset",
+    "order",
+    "with_deleted",
+  ]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,
@@ -106,6 +152,7 @@ class OasKindGenerator extends FunctionKindGenerator {
   protected oasSchemaHelper: OasSchemaHelper
   protected schemaFactory: SchemaFactory
   protected typesHelper: TypesHelper
+  protected events: MedusaEvent[] = []
 
   constructor(options: GeneratorOptions) {
     super(options)
@@ -146,8 +193,13 @@ class OasKindGenerator extends FunctionKindGenerator {
     const functionNode = ts.isFunctionDeclaration(node)
       ? node
       : this.extractFunctionNode(node as VariableNode)
+    const functionName = this.getFunctionName(node as FunctionOrVariableNode)
 
-    if (!functionNode || functionNode.parameters.length !== 2) {
+    if (
+      !functionNode ||
+      !this.METHOD_NAMES.includes(functionName) ||
+      functionNode.parameters.length !== 2
+    ) {
       return false
     }
 
@@ -206,10 +258,10 @@ class OasKindGenerator extends FunctionKindGenerator {
     node: ts.Node | FunctionOrVariableNode,
     options?: GetDocBlockOptions
   ): Promise<string> {
-    // TODO use AiGenerator to generate descriptions + examples
     if (!this.isAllowed(node)) {
       return await super.getDocBlock(node, options)
     }
+    this.readEventsJson()
 
     const actualNode = ts.isVariableStatement(node)
       ? this.extractFunctionNode(node)
@@ -259,8 +311,12 @@ class OasKindGenerator extends FunctionKindGenerator {
     const { oasPath, normalized: normalizedOasPath } = this.getOasPath(node)
     const splitOasPath = oasPath.split("/")
     const oasPrefix = this.getOasPrefix(methodName, normalizedOasPath)
-    const { isAdminAuthenticated, isStoreAuthenticated, isAuthenticated } =
-      this.getAuthenticationDetails(node, oasPath)
+    const {
+      isAdminAuthenticated,
+      isStoreAuthenticated,
+      isAuthenticated,
+      allowedAuthTypes,
+    } = this.getAuthenticationDetails(node, oasPath, methodName)
     const tagName = this.getTagName(splitOasPath)
     const { summary, description } =
       this.knowledgeBaseFactory.tryToGetOasMethodSummaryAndDescription({
@@ -312,49 +368,41 @@ class OasKindGenerator extends FunctionKindGenerator {
       tagName,
     })
 
-    // retrieve code examples
-    // only generate cURL examples, and for the rest
-    // check if the --generate-examples option is enabled
-    oas["x-codeSamples"] = [
-      {
-        ...OasExamplesGenerator.CURL_CODESAMPLE_DATA,
-        source: this.oasExamplesGenerator.generateCurlExample({
-          method: methodName,
-          path: normalizedOasPath,
-          isAdminAuthenticated,
-          isStoreAuthenticated,
-          requestSchema,
-        }),
-      },
-    ]
+    const curlExample = this.oasExamplesGenerator.generateCurlExample({
+      method: methodName,
+      path: normalizedOasPath,
+      isAdminAuthenticated,
+      isStoreAuthenticated,
+      requestSchema,
+    })
+    const jsSdkExample = this.oasExamplesGenerator.generateJsSdkExanmple({
+      method: methodName,
+      path: normalizedOasPath,
+    })
 
-    if (this.options.generateExamples) {
-      oas["x-codeSamples"].push(
-        {
-          ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
-          source: this.oasExamplesGenerator.generateJSClientExample({
-            oasPath,
-            httpMethod: methodName,
-            area: splitOasPath[0] as OasArea,
-            tag: tagName || "",
-            isAdminAuthenticated,
-            isStoreAuthenticated,
-            parameters: (oas.parameters as OpenAPIV3.ParameterObject[])?.filter(
-              (parameter) => parameter.in === "path"
-            ),
-            requestBody: requestSchema,
-            responseBody: responseSchema,
-          }),
-        },
-        {
-          ...OasExamplesGenerator.MEDUSAREACT_CODESAMPLE_DATA,
-          source: "EXAMPLE", // TODO figure out if we can generate examples for medusa react
-        }
-      )
+    // retrieve code examples
+    oas["x-codeSamples"] = []
+
+    if (jsSdkExample) {
+      oas["x-codeSamples"].push({
+        ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
+        source: jsSdkExample,
+      })
+    }
+
+    if (curlExample) {
+      oas["x-codeSamples"].push({
+        ...OasExamplesGenerator.CURL_CODESAMPLE_DATA,
+        source: curlExample,
+      })
     }
 
     // add security details if applicable
-    oas.security = this.getSecurity({ isAdminAuthenticated, isAuthenticated })
+    oas.security = this.getSecurity({
+      isAdminAuthenticated,
+      isAuthenticated,
+      auth_types: allowedAuthTypes,
+    })
 
     if (tagName) {
       oas.tags = [tagName]
@@ -393,6 +441,34 @@ class OasKindGenerator extends FunctionKindGenerator {
 
     // get associated workflow
     oas["x-workflow"] = this.getAssociatedWorkflow(node)
+
+    if (oas["x-workflow"]) {
+      // get associated events
+      oas["x-events"] = this.getOasEvents(oas["x-workflow"])
+    }
+
+    // check deprecation and version in tags
+    const { deprecatedTag, sinceTag, featureFlagTag } =
+      this.getInformationFromTags(node)
+
+    if (deprecatedTag) {
+      oas.deprecated = true
+      oas["x-deprecated_message"] = deprecatedTag.comment
+        ? (deprecatedTag.comment as string)
+        : undefined
+    }
+
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
+        : undefined
+    }
+
+    if (featureFlagTag) {
+      oas["x-featureFlag"] = featureFlagTag.comment
+        ? (featureFlagTag.comment as string)
+        : undefined
+    }
 
     return formatOas(oas, oasPrefix)
   }
@@ -468,11 +544,19 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check if authentication details (including security) should be updated
-    const { isAdminAuthenticated, isStoreAuthenticated, isAuthenticated } =
-      this.getAuthenticationDetails(node, oasPath)
+    const {
+      isAdminAuthenticated,
+      isStoreAuthenticated,
+      isAuthenticated,
+      allowedAuthTypes,
+    } = this.getAuthenticationDetails(node, oasPath, methodName)
 
     oas["x-authenticated"] = isAuthenticated
-    oas.security = this.getSecurity({ isAdminAuthenticated, isAuthenticated })
+    oas.security = this.getSecurity({
+      isAdminAuthenticated,
+      isAuthenticated,
+      auth_types: allowedAuthTypes,
+    })
 
     let parametersUpdated = false
 
@@ -579,7 +663,12 @@ class OasKindGenerator extends FunctionKindGenerator {
       // check if it has a success response of a type other than JSON
       if (!this.hasResponseType(node, oas)) {
         // remove response schema by only keeping the default responses
-        oas.responses = DEFAULT_OAS_RESPONSES
+        oas.responses = {
+          ...DEFAULT_OAS_RESPONSES,
+          [newStatus]: {
+            description: "OK",
+          },
+        }
       }
     } else {
       // check if response status should be changed
@@ -624,44 +713,6 @@ class OasKindGenerator extends FunctionKindGenerator {
       }
     }
 
-    // update examples if the --generate-examples option is enabled
-    if (this.options.generateExamples) {
-      const oldJsExampleIndex = oas["x-codeSamples"]
-        ? oas["x-codeSamples"].findIndex(
-            (example) =>
-              example.label ==
-              OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA.label
-          )
-        : -1
-
-      if (oldJsExampleIndex === -1) {
-        // only generate a new example if it doesn't have an example
-        const newJsExample = this.oasExamplesGenerator.generateJSClientExample({
-          oasPath,
-          httpMethod: methodName,
-          area: splitOasPath[0] as OasArea,
-          tag: tagName || "",
-          isAdminAuthenticated,
-          isStoreAuthenticated,
-          parameters: (oas.parameters as OpenAPIV3.ParameterObject[])?.filter(
-            (parameter) => parameter.in === "path"
-          ),
-          requestBody: updatedRequestSchema?.schema,
-          responseBody: updatedResponseSchema,
-        })
-
-        oas["x-codeSamples"] = [
-          ...(oas["x-codeSamples"] || []),
-          {
-            ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
-            source: newJsExample,
-          },
-        ]
-      }
-
-      // TODO add for Medusa React once we figure out how to generate it
-    }
-
     // check if cURL example should be updated.
     const oldCurlExampleIndex = oas["x-codeSamples"]
       ? oas["x-codeSamples"].findIndex(
@@ -695,6 +746,49 @@ class OasKindGenerator extends FunctionKindGenerator {
       )
     }
 
+    // generate JS SDK example
+    const oldJsSdkExampleIndex = oas["x-codeSamples"]
+      ? oas["x-codeSamples"].findIndex(
+          (example) =>
+            example.label ===
+            OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA.label
+        )
+      : -1
+    const jsSdkExample = this.oasExamplesGenerator.generateJsSdkExanmple({
+      method: methodName,
+      path: normalizedOasPath,
+    })
+    if (jsSdkExample) {
+      if (oldJsSdkExampleIndex === -1) {
+        oas["x-codeSamples"] = [
+          ...(oas["x-codeSamples"] || []),
+          {
+            ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
+            source: jsSdkExample,
+          },
+        ]
+      } else {
+        oas["x-codeSamples"]![oldJsSdkExampleIndex] = {
+          ...OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA,
+          source: jsSdkExample,
+        }
+      }
+    } else if (oldJsSdkExampleIndex !== -1) {
+      // output a warning that maybe the JS SDK should be updated
+      console.warn(
+        chalk.yellow(
+          `[WARNING] The JS SDK example of ${methodName} ${oasPath} is missing from generated route examples. Consider updating it.`
+        )
+      )
+    }
+
+    // sort the code samples to show JS SDK first
+    oas["x-codeSamples"] = oas["x-codeSamples"]?.sort((a) => {
+      return a.label === OasExamplesGenerator.JSCLIENT_CODESAMPLE_DATA.label
+        ? -1
+        : 1
+    })
+
     // push new tags to the tags property
     if (tagName) {
       const areaTags = this.tags.get(splitOasPath[0] as OasArea)
@@ -703,6 +797,41 @@ class OasKindGenerator extends FunctionKindGenerator {
 
     // get associated workflow
     oas["x-workflow"] = this.getAssociatedWorkflow(node)
+
+    if (oas["x-workflow"]) {
+      // get associated events
+      oas["x-events"] = this.getOasEvents(oas["x-workflow"])
+    }
+
+    // check deprecation and version in tags
+    const { deprecatedTag, sinceTag, featureFlagTag } =
+      this.getInformationFromTags(node)
+
+    if (deprecatedTag) {
+      oas.deprecated = true
+      oas["x-deprecated_message"] = deprecatedTag.comment
+        ? (deprecatedTag.comment as string)
+        : undefined
+    } else {
+      delete oas.deprecated
+      delete oas["x-deprecated_message"]
+    }
+
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
+        : undefined
+    } else {
+      delete oas["x-since"]
+    }
+
+    if (featureFlagTag) {
+      oas["x-featureFlag"] = featureFlagTag.comment
+        ? (featureFlagTag.comment as string)
+        : undefined
+    } else {
+      delete oas["x-featureFlag"]
+    }
 
     return formatOas(oas, oasPrefix)
   }
@@ -753,8 +882,10 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     return (
-      node as ts.VariableStatement
-    ).declarationList.declarations[0].name.getText()
+      (
+        node as ts.VariableStatement
+      ).declarationList?.declarations[0].name.getText() || ""
+    )
   }
 
   /**
@@ -797,7 +928,8 @@ class OasKindGenerator extends FunctionKindGenerator {
    */
   getAuthenticationDetails(
     node: FunctionNode,
-    oasPath: string
+    oasPath: string,
+    httpMethod: string
   ): {
     /**
      * Whether the OAS operation requires admin authentication.
@@ -811,34 +943,42 @@ class OasKindGenerator extends FunctionKindGenerator {
      * Whether the OAS operation requires authentication in genral.
      */
     isAuthenticated: boolean
+    /**
+     * Override the default security requirements.
+     */
+    allowedAuthTypes?: string[]
   } {
     const isAuthenticationDisabled = node
       .getSourceFile()
       .statements.some((statement) =>
         statement.getText().includes("AUTHENTICATE = false")
       )
-    const hasAuthenticationOverride =
-      this.AUTH_REQUESTS.find((authRequest) => {
-        return (
-          authRequest.exact === oasPath ||
-          (authRequest.startsWith && oasPath.startsWith(authRequest.startsWith))
-        )
-      })?.requiresAuthentication === true
+    const hasAuthenticationOverride = this.AUTH_REQUESTS.find((authRequest) => {
+      const pathMatch =
+        authRequest.exact === oasPath ||
+        (authRequest.startsWith && oasPath.startsWith(authRequest.startsWith))
+      const httpMethodMatch =
+        !authRequest.httpMethods || authRequest.httpMethods.includes(httpMethod)
+      return pathMatch && httpMethodMatch
+    })
+    const isAuthRequired =
+      hasAuthenticationOverride?.requiresAuthentication === true
     const isAdminAuthenticated =
-      (!isAuthenticationDisabled || hasAuthenticationOverride) &&
+      (!isAuthenticationDisabled || isAuthRequired) &&
       oasPath.startsWith("admin")
-    const isStoreAuthenticated = hasAuthenticationOverride
+    const isStoreAuthenticated = isAuthRequired
       ? oasPath.startsWith("store")
       : !isAuthenticationDisabled &&
-        hasAuthenticationOverride &&
+        isAuthRequired &&
         oasPath.startsWith("store")
     const isAuthenticated =
-      isAdminAuthenticated || isStoreAuthenticated || hasAuthenticationOverride
+      isAdminAuthenticated || isStoreAuthenticated || isAuthRequired
 
     return {
       isAdminAuthenticated,
       isStoreAuthenticated,
       isAuthenticated,
+      allowedAuthTypes: hasAuthenticationOverride?.allowedAuthTypes,
     }
   }
 
@@ -885,6 +1025,7 @@ class OasKindGenerator extends FunctionKindGenerator {
   getSecurity({
     isAdminAuthenticated,
     isAuthenticated,
+    auth_types,
   }: {
     /**
      * Whether the operation requires admin authentication.
@@ -894,22 +1035,35 @@ class OasKindGenerator extends FunctionKindGenerator {
      * Whether the operation requires general authentication.
      */
     isAuthenticated: boolean
+    /**
+     * Override the default security requirements.
+     */
+    auth_types?: string[]
   }): OpenAPIV3.SecurityRequirementObject[] | undefined {
     const security: OpenAPIV3.SecurityRequirementObject[] = []
-    if (isAdminAuthenticated) {
+    const allowed_auth_types =
+      auth_types ||
+      [
+        "cookie_auth",
+        "jwt_token",
+        isAdminAuthenticated ? "api_token" : undefined,
+      ].filter(Boolean)
+    if (isAdminAuthenticated && allowed_auth_types.includes("api_token")) {
       security.push({
         api_token: [],
       })
     }
     if (isAuthenticated) {
-      security.push(
-        {
+      if (allowed_auth_types.includes("cookie_auth")) {
+        security.push({
           cookie_auth: [],
-        },
-        {
+        })
+      }
+      if (allowed_auth_types.includes("jwt_token")) {
+        security.push({
           jwt_token: [],
-        }
-      )
+        })
+      }
     }
 
     return security.length ? security : undefined
@@ -1103,6 +1257,7 @@ class OasKindGenerator extends FunctionKindGenerator {
               descriptionOptions,
               context: "query",
               saveSchema: !forUpdate,
+              symbol: property,
             }),
           })
         )
@@ -1203,7 +1358,7 @@ class OasKindGenerator extends FunctionKindGenerator {
       )
     }
 
-    if (methodName !== "delete" && methodName !== "get") {
+    if (methodName !== "get") {
       requestSchema = requestBodyParameterSchema
     }
 
@@ -1332,6 +1487,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     disallowedChildren,
     zodObjectTypeName,
     saveSchema = true,
+    symbol: originalSymbol,
     ...rest
   }: {
     /**
@@ -1374,6 +1530,10 @@ class OasKindGenerator extends FunctionKindGenerator {
      * Whether to save object schemas. Useful when only getting schemas to update.
      */
     saveSchema?: boolean
+    /**
+     * The symbol of the node to retrieve the schema from.
+     */
+    symbol?: ts.Symbol
   }): OpenApiSchema {
     if (isLevelExceeded(level, this.MAX_LEVEL)) {
       return {}
@@ -1413,6 +1573,45 @@ class OasKindGenerator extends FunctionKindGenerator {
       (itemType.symbol.parent as ts.Symbol)?.valueDeclaration?.kind ===
         ts.SyntaxKind.EnumDeclaration
 
+    const commentsAndTags = originalSymbol?.valueDeclaration
+      ? ts.getJSDocCommentsAndTags(originalSymbol?.valueDeclaration)
+      : symbol?.valueDeclaration
+        ? ts.getJSDocCommentsAndTags(symbol?.valueDeclaration)
+        : []
+
+    // check if type is now deprecated
+    const isDeprecated =
+      commentsAndTags.some((comment) => {
+        if (!("tags" in comment)) {
+          return false
+        }
+
+        return comment.tags?.some((tag) => {
+          return tag.tagName.getText() === "deprecated"
+        })
+      }) || undefined // avoid showing it as false in the generated OAS
+
+    let featureFlag: string | undefined
+
+    commentsAndTags.some((comment) => {
+      if (!("tags" in comment)) {
+        return false
+      }
+
+      comment.tags?.some((tag) => {
+        if (tag.tagName.getText() !== "featureFlag" || !tag.comment) {
+          return false
+        }
+
+        featureFlag =
+          typeof tag.comment === "string" ? tag.comment : tag.comment.join(" ")
+
+        return true
+      })
+
+      return featureFlag !== undefined
+    })
+
     switch (true) {
       case isEnum || isEnumParent:
         const enumMembers: string[] = []
@@ -1434,6 +1633,8 @@ class OasKindGenerator extends FunctionKindGenerator {
           type: "string",
           description,
           enum: enumMembers,
+          deprecated: isDeprecated,
+          "x-featureFlag": featureFlag,
         }
       case itemType.isLiteral() || typeAsString === "RegExp":
         const isString =
@@ -1451,6 +1652,8 @@ class OasKindGenerator extends FunctionKindGenerator {
             typeName: typeAsString,
             name: title,
           }),
+          deprecated: isDeprecated,
+          "x-featureFlag": featureFlag,
         }
       case itemType.flags === ts.TypeFlags.String ||
         itemType.flags === ts.TypeFlags.Number ||
@@ -1470,6 +1673,8 @@ class OasKindGenerator extends FunctionKindGenerator {
             typeName: typeAsString,
             name: title,
           }),
+          deprecated: isDeprecated,
+          "x-featureFlag": featureFlag,
         }
       case ("intrinsicName" in itemType &&
         itemType.intrinsicName === "boolean") ||
@@ -1481,11 +1686,14 @@ class OasKindGenerator extends FunctionKindGenerator {
           default: symbol?.valueDeclaration
             ? this.getDefaultValue(symbol?.valueDeclaration)
             : undefined,
+          deprecated: isDeprecated,
+          "x-featureFlag": featureFlag,
         }
       case this.checker.isArrayType(itemType):
         return {
           type: "array",
           description,
+          deprecated: isDeprecated,
           items: this.typeToSchema({
             itemType: this.checker.getTypeArguments(
               itemType as ts.TypeReference
@@ -1502,6 +1710,7 @@ class OasKindGenerator extends FunctionKindGenerator {
             saveSchema,
             ...rest,
           }),
+          "x-featureFlag": featureFlag,
         }
       case itemType.isUnion():
         // if it's a union of literal types,
@@ -1517,9 +1726,11 @@ class OasKindGenerator extends FunctionKindGenerator {
           return {
             type: "string",
             description,
+            deprecated: isDeprecated,
             enum: cleanedUpTypes.map(
               (unionType) => (unionType as ts.LiteralType).value
             ),
+            "x-featureFlag": featureFlag,
           }
         }
 
@@ -1535,11 +1746,17 @@ class OasKindGenerator extends FunctionKindGenerator {
         )
 
         if (oneOfItems.length === 1) {
-          return oneOfItems[0]
+          return {
+            ...oneOfItems[0],
+            "x-featureFlag": oneOfItems[0]["x-featureFlag"] || featureFlag,
+            deprecated: oneOfItems[0].deprecated || isDeprecated,
+          }
         }
 
         return {
           oneOf: oneOfItems,
+          deprecated: isDeprecated,
+          "x-featureFlag": featureFlag,
         }
       case itemType.isIntersection():
         const allOfItems = this.typesHelper
@@ -1556,11 +1773,17 @@ class OasKindGenerator extends FunctionKindGenerator {
           })
 
         if (allOfItems.length === 1) {
-          return allOfItems[0]
+          return {
+            ...allOfItems[0],
+            "x-featureFlag": allOfItems[0]["x-featureFlag"] || featureFlag,
+            deprecated: allOfItems[0].deprecated || isDeprecated,
+          }
         }
 
         return {
           allOf: allOfItems,
+          deprecated: isDeprecated,
+          "x-featureFlag": featureFlag,
         }
       case typeAsString.startsWith("Pick"):
         const pickTypeArgs =
@@ -1641,6 +1864,7 @@ class OasKindGenerator extends FunctionKindGenerator {
         const objSchema: OpenApiSchema = {
           type: "object",
           description,
+          deprecated: isDeprecated,
           "x-schemaName":
             itemType.isClassOrInterface() ||
             itemType.isTypeParameter() ||
@@ -1649,6 +1873,7 @@ class OasKindGenerator extends FunctionKindGenerator {
               : undefined,
           // this is changed later
           required: undefined,
+          "x-featureFlag": featureFlag,
         }
 
         const properties: Record<
@@ -1747,6 +1972,7 @@ class OasKindGenerator extends FunctionKindGenerator {
                 parentName: title || descriptionOptions?.parentName,
               },
               saveSchema,
+              symbol: property,
               ...rest,
             })
 
@@ -2300,6 +2526,32 @@ class OasKindGenerator extends FunctionKindGenerator {
         newSchemaObj?.description || SUMMARY_PLACEHOLDER
     }
 
+    if (oldSchemaObj?.deprecated !== newSchemaObj?.deprecated) {
+      // avoid many changes to exising OAS
+      if (!newSchemaObj?.deprecated) {
+        if (oldSchemaObj!.deprecated) {
+          wasUpdated = true
+        }
+        delete oldSchemaObj!.deprecated
+      } else {
+        oldSchemaObj!.deprecated = newSchemaObj.deprecated
+        wasUpdated = true
+      }
+    }
+
+    if (oldSchemaObj?.["x-featureFlag"] !== newSchemaObj?.["x-featureFlag"]) {
+      // avoid many changes to exising OAS
+      if (!newSchemaObj?.["x-featureFlag"]) {
+        if (oldSchemaObj!["x-featureFlag"]) {
+          wasUpdated = true
+        }
+        delete oldSchemaObj!["x-featureFlag"]
+      } else {
+        oldSchemaObj!["x-featureFlag"] = newSchemaObj["x-featureFlag"]
+        wasUpdated = true
+      }
+    }
+
     if (!wasUpdated) {
       const requiredChanged =
         oldSchemaObj!.required?.length !== newSchemaObj?.required?.length ||
@@ -2528,6 +2780,39 @@ class OasKindGenerator extends FunctionKindGenerator {
     return Object.keys(responseContent).some((responseType) =>
       fnText.includes(responseType)
     )
+  }
+
+  readEventsJson() {
+    if (this.events.length) {
+      return
+    }
+
+    const eventsJsonPath = getEventsOutputBasePath()
+
+    this.events = JSON.parse(readFileSync(eventsJsonPath, "utf-8"))
+  }
+
+  getOasEvents(workflow: string): OasEvent[] {
+    const events: OasEvent[] = []
+
+    const workflowEvents = this.events.filter((event) =>
+      event.workflows.includes(workflow)
+    )
+
+    if (workflowEvents.length) {
+      events.push(
+        ...workflowEvents.map((event) => ({
+          name: event.name,
+          payload: event.payload,
+          description: event.description,
+          deprecated: event.deprecated,
+          deprecated_message: event.deprecated_message,
+          since: event.since,
+        }))
+      )
+    }
+
+    return events
   }
 }
 

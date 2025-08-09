@@ -1,4 +1,8 @@
 import { Prettify } from "../common"
+import {
+  IndexQueryInput,
+  QueryResultSet,
+} from "../index-data/query-config/query-input-config"
 import { RemoteJoinerOptions, RemoteJoinerQuery } from "../joiner"
 import { RemoteQueryEntryPoints } from "./remote-query-entry-points"
 import {
@@ -6,7 +10,6 @@ import {
   RemoteQueryObjectConfig,
   RemoteQueryObjectFromStringResult,
 } from "./remote-query-object-from-string"
-import { RemoteQueryFilters } from "./to-remote-query"
 
 /*type ExcludedProps = "__typename"*/
 
@@ -40,17 +43,14 @@ export type QueryGraphFunction = {
 }
 
 /**
- * QueryIndexFunction is a wrapper on top of remoteQuery
+ * QueryIndexFunction is a wrapper on top of indexModule
  * that simplifies the input it accepts and returns
  * a normalized/consistent output.
  */
 export type QueryIndexFunction = {
-  <const TEntry extends string>(
-    queryOptions: RemoteQueryInput<TEntry> & {
-      joinFilters?: RemoteQueryFilters<TEntry>
-    },
-    options?: RemoteJoinerOptions
-  ): Promise<Prettify<GraphResultSet<TEntry>>>
+  <const TEntry extends string>(queryOptions: IndexQueryInput<TEntry>): Promise<
+    Prettify<QueryResultSet<TEntry>>
+  >
 }
 
 /*export type RemoteQueryReturnedData<TEntry extends string> =

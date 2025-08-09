@@ -60,6 +60,11 @@ post:
                 url: >-
                   https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/store_shipping-options_{id}_calculate/post.js
     - lang: Shell
       label: cURL
       source:
@@ -86,3 +91,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: calculateShippingOptionsPricesWorkflow
+  x-events: []

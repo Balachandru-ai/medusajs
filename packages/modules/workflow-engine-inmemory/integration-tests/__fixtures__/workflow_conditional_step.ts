@@ -1,3 +1,4 @@
+import { isPresent } from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
@@ -14,7 +15,7 @@ const step_1 = createStep(
 )
 
 export const conditionalStep2Invoke = jest.fn((input, context) => {
-  if (input) {
+  if (isPresent(input)) {
     return new StepResponse({ notAsyncResponse: input.hey })
   }
 })

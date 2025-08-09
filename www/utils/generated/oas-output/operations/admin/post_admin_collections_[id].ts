@@ -31,8 +31,48 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminUpdateCollection"
+ *         allOf:
+ *           - type: object
+ *             description: The details to update in a collection.
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 title: title
+ *                 description: The collection's title.
+ *               handle:
+ *                 type: string
+ *                 title: handle
+ *                 description: The collection's handle.
+ *               metadata:
+ *                 type: object
+ *                 description: The collection's metadata.
+ *           - type: object
+ *             description: The details to update in a collection.
+ *             properties:
+ *               additional_data:
+ *                 type: object
+ *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+ *         description: The details to update in a collection.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.productCollection.update("pcol_123", {
+ *         title: "Summer Collection"
+ *       })
+ *       .then(({ collection }) => {
+ *         console.log(collection)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -64,6 +104,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCollectionsWorkflow
+ * x-events:
+ *   - name: product-collection.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product collection
+ *       }]
+ *       ```
+ *     description: Emitted when product collections are updated.
+ *     deprecated: false
  * 
 */
 

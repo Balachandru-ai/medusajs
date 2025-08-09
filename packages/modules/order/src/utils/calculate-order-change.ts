@@ -101,10 +101,12 @@ export class OrderChangeProcessing {
   }
 
   public processActions() {
-    let creditLineTotal = (this.order.credit_lines || []).reduce(
-      (acc, creditLine) => MathBN.add(acc, creditLine.amount),
-      MathBN.convert(0)
-    )
+    let newCreditLineTotal = (this.order.credit_lines ?? [])
+      .filter((cl) => !("id" in cl))
+      .reduce(
+        (acc, creditLine) => MathBN.add(acc, creditLine.amount),
+        MathBN.convert(0)
+      )
 
     for (const action of this.actions) {
       this.processAction_(action)
@@ -133,7 +135,11 @@ export class OrderChangeProcessing {
       }
 
       if (action.action === ChangeActionType.CREDIT_LINE_ADD) {
-        creditLineTotal = MathBN.add(creditLineTotal, amount)
+        newCreditLineTotal = MathBN.add(newCreditLineTotal, amount)
+        summary.current_order_total = MathBN.sub(
+          summary.current_order_total,
+          amount
+        )
       } else {
         summary.current_order_total = MathBN.add(
           summary.current_order_total,
@@ -142,19 +148,11 @@ export class OrderChangeProcessing {
       }
     }
 
-    summary.credit_line_total = creditLineTotal
-    summary.accounting_total = MathBN.sub(
-      summary.current_order_total,
-      creditLineTotal
-    )
+    summary.credit_line_total = newCreditLineTotal
+    summary.accounting_total = summary.current_order_total
 
     summary.transaction_total = MathBN.sum(
       ...this.transactions.map((tr) => tr.amount)
-    )
-
-    summary.current_order_total = MathBN.sub(
-      summary.current_order_total,
-      creditLineTotal
     )
 
     summary.pending_difference = MathBN.sub(
@@ -241,35 +239,32 @@ export class OrderChangeProcessing {
       accounting_total: new BigNumber(summary_.accounting_total),
     } as any
 
-    orderSummary.accounting_total = new BigNumber(
-      MathBN.sub(
-        orderSummary.current_order_total,
-        orderSummary.credit_line_total
-      )
-    )
-
-    orderSummary.current_order_total = new BigNumber(
-      MathBN.sub(
-        orderSummary.current_order_total,
-        orderSummary.credit_line_total
-      )
-    )
+    orderSummary.accounting_total = orderSummary.current_order_total
 
     orderSummary.pending_difference = MathBN.sub(
       orderSummary.current_order_total,
       orderSummary.transaction_total
     )
 
-    // return requested becomes pending difference
+    // return total becomes pending difference
     for (const item of order.items ?? []) {
       const item_ = item as any
 
-      if (MathBN.gt(item_.return_requested_total, 0)) {
-        orderSummary.pending_difference = MathBN.sub(
-          orderSummary.pending_difference,
-          item_.return_requested_total
-        )
-      }
+      ;[
+        "return_requested_total",
+        "return_received_total",
+        // TODO: revisit this when we settle on which dismissed items need to be refunded
+        // "return_dismissed_total",
+      ].forEach((returnTotalKey) => {
+        const returnTotal = item_[returnTotalKey]
+
+        if (MathBN.gt(returnTotal, 0)) {
+          orderSummary.pending_difference = MathBN.sub(
+            orderSummary.pending_difference,
+            returnTotal
+          )
+        }
+      })
     }
     orderSummary.pending_difference = new BigNumber(
       orderSummary.pending_difference

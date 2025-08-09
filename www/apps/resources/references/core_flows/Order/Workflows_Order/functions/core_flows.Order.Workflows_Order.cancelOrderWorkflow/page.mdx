@@ -3,7 +3,6 @@ slug: /references/medusa-workflows/cancelOrderWorkflow
 sidebar_label: cancelOrderWorkflow
 sidebar_description: Cancel an order.
 tags:
-  - query
   - inventory
   - logger
   - payment
@@ -29,7 +28,7 @@ make changes to custom models linked to the order.
 
 You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around canceling an order.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/order/workflows/cancel-order.ts#L127" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/order/workflows/cancel-order.ts#L127" />
 
 ## Examples
 
@@ -138,7 +137,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"cancelOrderWorkflow","steps":[{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":1},{"type":"step","name":"cancelValidateOrder","description":"This step validates that an order can be canceled. If the order has fulfillments that\naren't canceled, or the order was canceled previously, the step throws an error.\n\n:::note\n\nYou can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Order.Workflows_Order.cancelValidateOrder/page.mdx","depth":2},{"type":"step","name":"deleteReservationsByLineItemsStep","description":"This step deletes reservations by their associated line items.","link":"../../../../Reservation/Steps_Reservation/functions/core_flows.Reservation.Steps_Reservation.deleteReservationsByLineItemsStep/page.mdx","depth":3},{"type":"step","name":"cancelPaymentStep","description":"This step cancels one or more payments.","link":"../../../../Payment/Steps_Payment/functions/core_flows.Payment.Steps_Payment.cancelPaymentStep/page.mdx","depth":3},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3},{"type":"when","condition":"{\n      return !!paymentCollectionids?.length\n    }","depth":"4","steps":[{"type":"step","name":"updatePaymentCollectionStep","description":"This step updates payment collections matching the specified filters.","link":"../../../../Payment_Collection/Steps_Payment_Collection/functions/core_flows.Payment_Collection.Steps_Payment_Collection.updatePaymentCollectionStep/page.mdx","depth":4}]},{"type":"step","name":"cancelOrdersStep","description":"This step cancels one or more orders.","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.cancelOrdersStep/page.mdx","depth":5},{"type":"hook","name":"orderCanceled","description":"This hook is executed after the order is canceled. You can consume this hook to perform custom actions on the canceled order.","link":"#orderCanceled","depth":6}]}} />
+<WorkflowDiagram workflow={{"name":"cancelOrderWorkflow","steps":[{"type":"step","name":"cancelValidateOrder","description":"This step validates that an order can be canceled. If the order has fulfillments that\naren't canceled, or the order was canceled previously, the step throws an error.\n\n:::note\n\nYou can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Order.Workflows_Order.cancelValidateOrder/page.mdx","depth":1},{"type":"step","name":"deleteReservationsByLineItemsStep","description":"This step deletes reservations by their associated line items.","link":"../../../../Reservation/Steps_Reservation/functions/core_flows.Reservation.Steps_Reservation.deleteReservationsByLineItemsStep/page.mdx","depth":2},{"type":"step","name":"cancelPaymentStep","description":"This step cancels one or more payments.","link":"../../../../Payment/Steps_Payment/functions/core_flows.Payment.Steps_Payment.cancelPaymentStep/page.mdx","depth":2},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2},{"type":"when","condition":"{\n      return !!paymentCollectionids?.length\n    }","depth":"3","steps":[{"type":"step","name":"updatePaymentCollectionStep","description":"This step updates payment collections matching the specified filters.","link":"../../../../Payment_Collection/Steps_Payment_Collection/functions/core_flows.Payment_Collection.Steps_Payment_Collection.updatePaymentCollectionStep/page.mdx","depth":3}]},{"type":"step","name":"cancelOrdersStep","description":"This step cancels one or more orders.","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.cancelOrdersStep/page.mdx","depth":4},{"type":"hook","name":"orderCanceled","description":"This hook is executed after the order is canceled. You can consume this hook to perform custom actions on the canceled order.","link":"#orderCanceled","depth":5}]}} />
 
 ## Input
 
@@ -170,4 +169,56 @@ cancelOrderWorkflow.hooks.orderCanceled(
 
 Handlers consuming this hook accept the following input.
 
-<TypeList types={[{"name":"input","type":"object","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"order","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="orderCanceled"/>
+<TypeList types={[{"name":"input","type":"[input](../../../core_flows.Order.Workflows_Order/page.mdx#__type-2)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"order","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="orderCanceled"/>
+
+## Emitted Events
+
+This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
+
+You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+Event
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Description
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Payload
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Action
+</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+`order.canceled`
+</Table.Cell>
+      <Table.Cell>
+Emitted when an order is canceld.
+</Table.Cell>
+      <Table.Cell>
+```ts blockStyle="inline"
+{
+  id, // The ID of the order
+}
+```
+</Table.Cell>
+      <Table.Cell>
+<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
+        event: "order.canceled",
+        payload: `\`\`\`ts
+{
+  id, // The ID of the order
+}
+\`\`\``
+        }}/>
+</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

@@ -123,6 +123,7 @@ export interface IPromotionModuleService extends IModuleService {
    *   {
    *     code: "50OFF",
    *     type: "standard",
+   *     status: "active",
    *     application_method: {
    *       type: "percentage",
    *       target_type: "items",
@@ -132,6 +133,7 @@ export interface IPromotionModuleService extends IModuleService {
    *   {
    *     code: "FREESHIPPING",
    *     type: "standard",
+   *     status: "active",
    *     application_method: {
    *       type: "percentage",
    *       target_type: "shipping_methods",
@@ -141,6 +143,7 @@ export interface IPromotionModuleService extends IModuleService {
    *   {
    *     code: "BUY2GET1",
    *     type: "buyget",
+   *     status: "active",
    *     application_method: {
    *       type: "fixed",
    *       target_type: "items",
@@ -173,6 +176,7 @@ export interface IPromotionModuleService extends IModuleService {
    * const promotionA = await promotionModuleService.createPromotions({
    *   code: "50OFF",
    *   type: "standard",
+   *   status: "active",
    *   application_method: {
    *     type: "percentage",
    *     target_type: "items",
@@ -183,6 +187,7 @@ export interface IPromotionModuleService extends IModuleService {
    * const promotionB = await promotionModuleService.createPromotions({
    *   code: "FREESHIPPING",
    *   type: "standard",
+   *   status: "active",
    *   application_method: {
    *     type: "percentage",
    *     target_type: "shipping_methods",
@@ -193,6 +198,7 @@ export interface IPromotionModuleService extends IModuleService {
    * const promotionC = await promotionModuleService.createPromotions({
    *   code: "BUY2GET1",
    *   type: "buyget",
+   *   status: "active",
    *   application_method: {
    *     type: "fixed",
    *     target_type: "items",
@@ -270,6 +276,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the promotions:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const promotions = await promotionModuleService.listPromotions(
@@ -323,6 +336,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the promotions:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [promotions, count] =
@@ -376,6 +396,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const promotion = await promotionModuleService.retrievePromotion(
@@ -717,6 +744,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the promotion rules:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const promotionRules =
@@ -792,6 +826,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the campaigns:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const campaigns = await promotionModuleService.listCampaigns(
@@ -845,6 +886,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the campaigns:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [campaigns, count] =
@@ -898,6 +946,13 @@ export interface IPromotionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const campaign =

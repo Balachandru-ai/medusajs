@@ -1,12 +1,18 @@
 ---
 sidebar_position: 6
+sidebar_label: "Import Products"
+tags:
+    - user guide
+    - product
+products:
+    - product
 ---
 
 import { ArrowDownTray, Trash, BellAlert, EllipsisHorizontal } from "@medusajs/icons"
 import { Prerequisites, Table } from "docs-ui"
 
 export const metadata = {
-  title: `Import Products`,
+  title: `Import Products in Medusa Admin`,
 }
 
 # {metadata.title}
@@ -23,7 +29,15 @@ When you import the CSV file, Medusa will either create or update products based
 
 In the import form, you can download a template CSV file to see the format required for the import.
 
-Each row in the CSV file represents a product variant to create or update. The columns in the CSV file holds the details of the product variant and its associated product. The CSV file can have the following columns:
+#### CSV File Rows
+
+Each row in the CSV file represents a product variant to create or update. So, if a product has multiple variants, each variant will have its own row in the CSV file.
+
+For example, a product with two variants (red and blue) will have two rows in the CSV file, one for the red variant and one for the blue variant.
+
+#### CSV File Columns
+
+The columns in the CSV file holds the details of the product variant and its associated product. The CSV file can have the following columns:
 
 <Table>
   <Table.Header>
@@ -78,14 +92,6 @@ Each row in the CSV file represents a product variant to create or update. The c
       <Table.Cell>The ID of a product category, where `*` is the number of the category, allowing you to add more than one category. For example, `Product Category 1`. </Table.Cell>
     </Table.Row>
     <Table.Row>
-      <Table.Cell>`Product Created At`</Table.Cell>
-      <Table.Cell>The date and time when the product was created.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Product Deleted At`</Table.Cell>
-      <Table.Cell>The date and time when the product was deleted.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>`Product Discountable`</Table.Cell>
       <Table.Cell>Whether the product can be discounted. Can be `true` or `false`.</Table.Cell>
     </Table.Row>
@@ -124,10 +130,6 @@ Each row in the CSV file represents a product variant to create or update. The c
     <Table.Row>
       <Table.Cell>`Product Sales Channel *`</Table.Cell>
       <Table.Cell>The ID of a sales channel the product is available in, where `*` is the sales channel's number, allowing you to add more than one sales channel. For example, `Product Sales Channel 1`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Product Updated At`</Table.Cell>
-      <Table.Cell>The date and time when the product was last updated.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>`Product Weight`</Table.Cell>
@@ -178,14 +180,6 @@ Each row in the CSV file represents a product variant to create or update. The c
       <Table.Cell>The barcode of the variant.</Table.Cell>
     </Table.Row>
     <Table.Row>
-      <Table.Cell>`Variant Created At`</Table.Cell>
-      <Table.Cell>The date and time when the variant was created.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Variant Deleted At`</Table.Cell>
-      <Table.Cell>The date and time when the variant was deleted.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>`Variant Height`</Table.Cell>
       <Table.Cell>The height of the variant.</Table.Cell>
     </Table.Row>
@@ -220,14 +214,6 @@ Each row in the CSV file represents a product variant to create or update. The c
     <Table.Row>
       <Table.Cell>`Variant Price [X] Y`</Table.Cell>
       <Table.Cell>The price of the variant in a region, where `X` is the region's name, and `Y` is the ISO currency code of the region. For example, `Variant Price Europe [EUR]`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Variant Product Id`</Table.Cell>
-      <Table.Cell>The ID of the product the variant belongs to.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>`Variant Updated At`</Table.Cell>
-      <Table.Cell>The date and time when the variant was last updated.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>`Variant Variant Rank`</Table.Cell>
@@ -275,7 +261,7 @@ To import products:
 
 <Note>
 
-If you face any errors or difficulties, please contact your technical support team as this could be an issue in the storage integration used.
+If you face any errors or difficulties, please contact your technical support team as this could be an issue in the [storage integration](!resources!/infrastructure-modules/file) used.
 
 </Note>
 

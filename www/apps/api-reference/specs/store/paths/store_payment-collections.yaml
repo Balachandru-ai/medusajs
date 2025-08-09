@@ -42,6 +42,10 @@ post:
         schema:
           $ref: ../components/schemas/StoreCreatePaymentCollection.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_payment-collections/post.js
     - lang: Shell
       label: cURL
       source:
@@ -68,3 +72,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createPaymentCollectionForCartWorkflow
+  x-events: []

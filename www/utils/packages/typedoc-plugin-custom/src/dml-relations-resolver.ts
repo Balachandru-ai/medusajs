@@ -137,14 +137,16 @@ export class DmlRelationsResolver {
     properties: DeclarationReflection[]
   ): DeclarationReflection | undefined {
     return this.dmlReflectionsAndProperties.find(({ properties: refProps }) => {
-      return properties.every((property) => {
-        return refProps.find(
-          (refProp) =>
-            refProp.name === property.name &&
-            (refProp.type as ReferenceType).name ===
-              (property.type as ReferenceType).name
-        )
-      })
+      return (
+        properties.every((property) => {
+          return refProps.find(
+            (refProp) =>
+              refProp.name === property.name &&
+              (refProp.type as ReferenceType).name ===
+                (property.type as ReferenceType).name
+          )
+        }) && properties.length === refProps.length
+      )
     })?.reflection
   }
 

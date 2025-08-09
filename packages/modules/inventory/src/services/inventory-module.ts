@@ -26,6 +26,8 @@ import {
   MedusaContext,
   MedusaError,
   MedusaService,
+  moduleEventBuilderFactory,
+  Modules,
   partitionArray,
 } from "@medusajs/framework/utils"
 import { InventoryItem, InventoryLevel, ReservationItem } from "@models"
@@ -247,16 +249,15 @@ export default class InventoryModuleService
     const toCreate = Array.isArray(input) ? input : [input]
     const created = await this.createReservationItems_(toCreate, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      created.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.CREATED,
+      object: "reservation-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.RESERVATION_ITEM_CREATED,
+    })({
+      data: created,
+      sharedContext: context,
+    })
 
     const serializedReservations = await this.baseRepository_.serialize<
       InventoryTypes.ReservationItemDTO[] | InventoryTypes.ReservationItemDTO
@@ -349,16 +350,15 @@ export default class InventoryModuleService
     )
     const result = await this.createInventoryItems_(toCreate, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      result.map((inventoryItem) => ({
-        eventName: InventoryEvents.INVENTORY_ITEM_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "inventory-item",
-        context,
-        data: { id: inventoryItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.CREATED,
+      object: "inventory-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.INVENTORY_ITEM_CREATED,
+    })({
+      data: result,
+      sharedContext: context,
+    })
 
     const serializedItems = await this.baseRepository_.serialize<
       InventoryTypes.InventoryItemDTO | InventoryTypes.InventoryItemDTO[]
@@ -405,16 +405,15 @@ export default class InventoryModuleService
 
     const created = await this.createInventoryLevels_(toCreate, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      created.map((inventoryLevel) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "inventory-level",
-        context,
-        data: { id: inventoryLevel.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.CREATED,
+      object: "inventory-level",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.INVENTORY_LEVEL_CREATED,
+    })({
+      data: created,
+      sharedContext: context,
+    })
 
     const serialized = await this.baseRepository_.serialize<
       InventoryTypes.InventoryLevelDTO[] | InventoryTypes.InventoryLevelDTO
@@ -461,16 +460,15 @@ export default class InventoryModuleService
 
     const result = await this.updateInventoryItems_(updates, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      result.map((inventoryItem) => ({
-        eventName: InventoryEvents.INVENTORY_ITEM_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "inventory-item",
-        context,
-        data: { id: inventoryItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.UPDATED,
+      object: "inventory-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.INVENTORY_ITEM_UPDATED,
+    })({
+      data: result,
+      sharedContext: context,
+    })
 
     const serializedItems = await this.baseRepository_.serialize<
       InventoryTypes.InventoryItemDTO | InventoryTypes.InventoryItemDTO[]
@@ -502,16 +500,15 @@ export default class InventoryModuleService
       context
     )
 
-    context.messageAggregator?.saveRawMessageData(
-      result[0].map((inventoryLevel) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_DELETED,
-        source: this.constructor.name,
-        action: CommonEvents.DELETED,
-        object: "inventory-level",
-        context,
-        data: { id: inventoryLevel.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.DELETED,
+      object: "inventory-level",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.INVENTORY_LEVEL_DELETED,
+    })({
+      data: result[0],
+      sharedContext: context,
+    })
 
     return result
   }
@@ -523,6 +520,7 @@ export default class InventoryModuleService
    * @param context
    */
   @InjectTransactionManager()
+  @EmitEvents()
   async deleteInventoryLevel(
     inventoryItemId: string,
     locationId: string,
@@ -534,20 +532,21 @@ export default class InventoryModuleService
       context
     )
 
-    context.messageAggregator?.saveRawMessageData({
-      eventName: InventoryEvents.INVENTORY_LEVEL_DELETED,
-      source: this.constructor.name,
+    moduleEventBuilderFactory({
       action: CommonEvents.DELETED,
       object: "inventory-level",
-      context,
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.INVENTORY_LEVEL_DELETED,
+    })({
       data: { id: inventoryLevel.id },
+      sharedContext: context,
     })
 
     if (!inventoryLevel) {
       return
     }
 
-    return await this.inventoryLevelService_.delete(inventoryLevel.id, context)
+    await this.inventoryLevelService_.delete(inventoryLevel.id, context)
   }
 
   // @ts-ignore
@@ -578,16 +577,15 @@ export default class InventoryModuleService
 
     const levels = await this.updateInventoryLevels_(input, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      levels.map((inventoryLevel) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "inventory-level",
-        context,
-        data: { id: inventoryLevel.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.UPDATED,
+      object: "inventory-level",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
+    })({
+      data: levels,
+      sharedContext: context,
+    })
 
     const updatedLevels = await this.baseRepository_.serialize<
       InventoryTypes.InventoryLevelDTO | InventoryTypes.InventoryLevelDTO[]
@@ -661,16 +659,15 @@ export default class InventoryModuleService
     const update = Array.isArray(input) ? input : [input]
     const result = await this.updateReservationItems_(update, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      result.map((reservationItem) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.UPDATED,
+      object: "reservation-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.RESERVATION_ITEM_UPDATED,
+    })({
+      data: result,
+      sharedContext: context,
+    })
 
     const serialized = await this.baseRepository_.serialize<
       InventoryTypes.ReservationItemDTO | InventoryTypes.ReservationItemDTO[]
@@ -866,16 +863,15 @@ export default class InventoryModuleService
       context
     )
 
-    context.messageAggregator?.saveRawMessageData(
-      reservations.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_DELETED,
-        source: this.constructor.name,
-        action: CommonEvents.DELETED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.DELETED,
+      object: "reservation-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.RESERVATION_ITEM_DELETED,
+    })({
+      data: reservations,
+      sharedContext: context,
+    })
 
     await this.adjustInventoryLevelsForReservationsDeletion(
       reservations,
@@ -908,16 +904,15 @@ export default class InventoryModuleService
       context
     )
 
-    context.messageAggregator?.saveRawMessageData(
-      reservations.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_DELETED,
-        source: this.constructor.name,
-        action: CommonEvents.DELETED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.DELETED,
+      object: "reservation-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.RESERVATION_ITEM_DELETED,
+    })({
+      data: reservations,
+      sharedContext: context,
+    })
   }
 
   /**
@@ -945,16 +940,15 @@ export default class InventoryModuleService
       context
     )
 
-    context.messageAggregator?.saveRawMessageData(
-      reservations.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      action: CommonEvents.CREATED,
+      object: "reservation-item",
+      source: Modules.INVENTORY,
+      eventName: InventoryEvents.RESERVATION_ITEM_CREATED,
+    })({
+      data: reservations,
+      sharedContext: context,
+    })
   }
 
   /**
@@ -1015,13 +1009,14 @@ export default class InventoryModuleService
       )
       results.push(result)
 
-      context.messageAggregator?.saveRawMessageData({
-        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
-        source: this.constructor.name,
+      moduleEventBuilderFactory({
         action: CommonEvents.UPDATED,
         object: "inventory-level",
-        context,
+        source: Modules.INVENTORY,
+        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
+      })({
         data: { id: result.id },
+        sharedContext: context,
       })
     }
 
@@ -1057,7 +1052,7 @@ export default class InventoryModuleService
       context
     )
 
-    return result[0]
+    return result
   }
 
   @InjectManager()

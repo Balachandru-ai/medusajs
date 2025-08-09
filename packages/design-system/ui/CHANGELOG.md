@@ -1,5 +1,110 @@
 # @medusajs/ui
 
+## 4.0.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.8
+
+## 4.0.17
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.7
+
+## 4.0.16
+
+### Patch Changes
+
+- [#12855](https://github.com/medusajs/medusa/pull/12855) [`4b224d5effda952d7d87b96dd30407178edf4115`](https://github.com/medusajs/medusa/commit/4b224d5effda952d7d87b96dd30407178edf4115) Thanks [@peterlgh7](https://github.com/peterlgh7)! - fix: fix onScroll in Select.Content
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.6
+
+## 4.0.15
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.5
+
+## 4.0.14
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.4
+
+## 4.0.13
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.3
+
+## 4.0.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.2
+
+## 4.0.11
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.1
+
+## 4.0.10
+
+### Patch Changes
+
+- [#12309](https://github.com/medusajs/medusa/pull/12309) [`4f6362b1cb1b84f01cc4cd277981aae7ae5797c9`](https://github.com/medusajs/medusa/commit/4f6362b1cb1b84f01cc4cd277981aae7ae5797c9) Thanks [@fPolic](https://github.com/fPolic)! - fix(design-system): filter/sorting menu tooltip error
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.0
+
+## 4.0.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.7.1
+
+## 4.0.8
+
+### Patch Changes
+
+- [#11442](https://github.com/medusajs/medusa/pull/11442) [`c40fb01d9200283c5d69f3295e65fccc56a9a76f`](https://github.com/medusajs/medusa/commit/c40fb01d9200283c5d69f3295e65fccc56a9a76f) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(ui): Disable select cells if the row cannot be selected
+
+- Updated dependencies [[`cc4c5c86e227a6693d53ea6b5b9e62d0a7c57fa2`](https://github.com/medusajs/medusa/commit/cc4c5c86e227a6693d53ea6b5b9e62d0a7c57fa2)]:
+  - @medusajs/icons@2.7.0
+
+## 4.0.7
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies [[`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861)]:
+  - @medusajs/icons@2.6.1
+
+## 4.0.6
+
+### Patch Changes
+
+- [#11575](https://github.com/medusajs/medusa/pull/11575) [`38a57b1ddcaabeba78dba626b7ec7985df107d07`](https://github.com/medusajs/medusa/commit/38a57b1ddcaabeba78dba626b7ec7985df107d07) Thanks [@shahednasser](https://github.com/shahednasser)! - chore(ui): explicitely specify the props type of InlineTip
+
+- [#11462](https://github.com/medusajs/medusa/pull/11462) [`b53ea77658aa4f17b41bf52c9f51c5b7a425556b`](https://github.com/medusajs/medusa/commit/b53ea77658aa4f17b41bf52c9f51c5b7a425556b) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - feat(ui,dashboard): Move InlineTip to UI package
+
+- [#11414](https://github.com/medusajs/medusa/pull/11414) [`47edd01deec79b394552cea349f1e41b7b88723b`](https://github.com/medusajs/medusa/commit/47edd01deec79b394552cea349f1e41b7b88723b) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(admin-vite-plugin,admin-bundler,ui,icons,dashboard,framework,types): Update Vite dependencies
+
+- Updated dependencies [[`47edd01deec79b394552cea349f1e41b7b88723b`](https://github.com/medusajs/medusa/commit/47edd01deec79b394552cea349f1e41b7b88723b)]:
+  - @medusajs/icons@2.5.1
+
 ## 4.0.5
 
 ### Patch Changes

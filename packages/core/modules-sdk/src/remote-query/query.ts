@@ -155,10 +155,11 @@ export class Query {
     queryOptions: RemoteQueryInput<TEntry>,
     options?: RemoteJoinerOptions
   ): Promise<GraphResultSet<TEntry>> {
-    const normalizedQuery = toRemoteQuery<TEntry>(
+    const normalizedQuery = toRemoteQuery(
       queryOptions,
       this.#remoteQuery.getEntitiesMap()
     )
+
     let response:
       | any[]
       | { rows: any[]; metadata: RemoteQueryFunctionReturnPagination }
@@ -203,7 +204,7 @@ export class Query {
 
     const mainEntity = queryOptions.entity
 
-    const fields = queryOptions.fields.map((field) => mainEntity + "." + field)
+    const fields = [mainEntity + ".id"]
     const filters = queryOptions.filters
       ? { [mainEntity]: queryOptions.filters }
       : ({} as any)
@@ -222,15 +223,30 @@ export class Query {
       filters,
       joinFilters,
       pagination,
+      idsOnly: true,
     })) as unknown as GraphResultSet<TEntry>
 
-    delete queryOptions.pagination
     delete queryOptions.filters
+
+    const idFilters = {
+      id: indexResponse.data.map((item) => item.id),
+    } as any
+
+    queryOptions.filters = idFilters
+
+    const graphOptions: RemoteQueryInput<TEntry> = {
+      ...queryOptions,
+      pagination: {
+        // We pass through `take` to force the `select-in` query strategy
+        //   There might be a better way to do this, but for now this should do
+        take: queryOptions.pagination?.take ?? indexResponse.data.length,
+      },
+    }
 
     let finalResultset: GraphResultSet<TEntry> = indexResponse
 
     if (indexResponse.data.length) {
-      finalResultset = await this.graph(queryOptions, {
+      finalResultset = await this.graph(graphOptions, {
         ...options,
         initialData: indexResponse.data,
       })

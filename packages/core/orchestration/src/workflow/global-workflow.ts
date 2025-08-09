@@ -52,11 +52,11 @@ export class GlobalWorkflow extends WorkflowManager {
 
     const orchestrator = workflow.orchestrator
 
-    const transaction = await orchestrator.beginTransaction(
-      uniqueTransactionId,
-      workflow.handler(this.container, this.context),
-      input
-    )
+    const transaction = await orchestrator.beginTransaction({
+      transactionId: uniqueTransactionId,
+      handler: workflow.handler(this.container, this.context),
+      payload: input,
+    })
 
     if (this.subscribe.onStepBegin) {
       transaction.once("stepBegin", this.subscribe.onStepBegin)
@@ -104,12 +104,11 @@ export class GlobalWorkflow extends WorkflowManager {
       }
     })
 
-    return await workflow.orchestrator.registerStepSuccess(
-      idempotencyKey,
-      workflow.handler(this.container, this.context),
-      undefined,
-      response
-    )
+    return await workflow.orchestrator.registerStepSuccess({
+      responseIdempotencyKey: idempotencyKey,
+      handler: workflow.handler(this.container, this.context),
+      response,
+    })
   }
 
   async registerStepFailure(
@@ -137,10 +136,10 @@ export class GlobalWorkflow extends WorkflowManager {
       }
     })
 
-    return await workflow.orchestrator.registerStepFailure(
-      idempotencyKey,
+    return await workflow.orchestrator.registerStepFailure({
+      responseIdempotencyKey: idempotencyKey,
       error,
-      workflow.handler(this.container, this.context)
-    )
+      handler: workflow.handler(this.container, this.context),
+    })
   }
 }

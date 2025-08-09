@@ -1,18 +1,26 @@
 import { CodeTabs, CodeTab } from "docs-ui"
 
 export const metadata = {
-  title: `Accept Payment Flow`,
+  title: `Accept Payment in Checkout Flow`,
 }
 
 # {metadata.title}
 
-In this document, you’ll learn how to implement an accept-payment flow using workflows or the Payment Module's main service.
+In this guide, you'll learn how to implement it using workflows or the Payment Module.
 
-<Note>
+## Why Implement the Payment Flow?
 
-It's highly recommended to use Medusa's workflows to implement this flow. Use the Payment Module's main service for more complex cases.
+Medusa already provides a built-in payment flow that allows you to accept payments from customers, which you can learn about in the [Accept Payment Flow in Checkout](../payment-checkout-flow/page.mdx) guide.
 
-</Note>
+You may need to implement a custom payment flow if you have a different use case, or you're using the Payment Module separately from the Medusa application.
+
+This guide will help you understand how to implement a payment flow using the Payment Module's main service or workflows.
+
+You can also follow this guide to get a general understanding of how the payment flow works in the Medusa application.
+
+---
+
+## How to Implement the Accept Payment Flow?
 
 <Note title="Tip">
 
@@ -20,15 +28,17 @@ For a guide on how to implement this flow in the storefront, check out [this gui
 
 </Note>
 
-## Flow Overview
+<Note>
 
-![A diagram showcasing the payment flow's steps](https://res.cloudinary.com/dza7lstvk/image/upload/v1711566781/Medusa%20Resources/payment-flow_jblrvw.jpg)
+It's highly recommended to use Medusa's workflows to implement this flow. Use the Payment Module's main service for more complex cases.
 
----
+</Note>
 
-## 1. Create a Payment Collection
+### 1. Create a Payment Collection
 
 A payment collection holds all details related to a resource’s payment operations. So, you start off by creating a payment collection.
+
+In the Medusa application, you associate the payment collection with a cart, which is the resource that the customer is trying to pay for.
 
 For example:
 
@@ -40,7 +50,7 @@ import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-fl
 
 // ...
 
-await createPaymentCollectionForCartWorkflow(req.scope)
+await createPaymentCollectionForCartWorkflow(container)
   .run({
     input: {
       cart_id: "cart_123",
@@ -62,13 +72,50 @@ const paymentCollection =
   </CodeTab>
 </CodeTabs>
 
----
+### 2. Show Payment Providers
 
-## 2. Create Payment Sessions
+Next, you'll show the customer the available payment providers to choose from.
+
+In the Medusa application, you need to use [Query](!docs!/learn/fundamentals/module-links/query) to retrieve the available payment providers in a region.
+
+<CodeTabs group="query-service">
+  <CodeTab label="Using Query" value="query">
+
+```ts
+const query = container.resolve("query")
+
+const { data: regionPaymentProviders } = await query.graph({
+  entryPoint: "region_payment_provider",
+  variables: {
+    filters: {
+      region_id: "reg_123",
+    },
+  },
+  fields: ["payment_providers.*"],
+})
+
+const paymentProviders = regionPaymentProviders.map(
+  (relation) => relation.payment_providers
+)
+```
+
+  </CodeTab>
+  <CodeTab label="Using Service" value="service">
+
+```ts
+const paymentProviders = await paymentModuleService.listPaymentProviders()
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### 3. Create Payment Sessions
 
 The payment collection has one or more payment sessions, each being a payment amount to be authorized by a payment provider.
 
-So, after creating the payment collection, create at least one payment session for a provider.
+So, once the customer selects a payment provider, create a payment session for the selected payment provider.
+
+This will also initialize the payment session in the third-party payment provider.
 
 For example:
 
@@ -80,11 +127,11 @@ import { createPaymentSessionsWorkflow } from "@medusajs/medusa/core-flows"
 
 // ...
 
-const { result: paymentSesion } = await createPaymentSessionsWorkflow(req.scope)
+const { result: paymentSesion } = await createPaymentSessionsWorkflow(container)
   .run({
     input: {
       payment_collection_id: "paycol_123",
-      provider_id: "stripe",
+      provider_id: "pp_stripe_stripe",
     },
   })
 ```
@@ -97,7 +144,7 @@ const paymentSession =
   await paymentModuleService.createPaymentSession(
     paymentCollection.id,
     {
-      provider_id: "stripe",
+      provider_id: "pp_stripe_stripe",
       currency_code: "usd",
       amount: 5000,
       data: {
@@ -111,11 +158,9 @@ const paymentSession =
   </CodeTab>
 </CodeTabs>
 
----
+### 4. Authorize Payment Session
 
-## 3. Authorize Payment Session
-
-Once the customer chooses a payment session, start the authorization process. This may involve some action performed by the third-party payment provider, such as entering a 3DS code.
+Once the customer places the order, you need to authorize the payment session with the third-party payment provider.
 
 For example:
 
@@ -148,7 +193,7 @@ const payment = authorizePaymentSessionStep({
 
 When the payment authorization is successful, a payment is created and returned.
 
-### Handling Additional Action
+#### Handling Additional Action
 
 <Note>
 
@@ -184,14 +229,13 @@ try {
 }
 ```
 
----
-
-## 4. Payment Flow Complete
+### 5. Payment Flow Complete
 
 The payment flow is complete once the payment session is authorized and the payment is created.
 
 You can then:
 
+- Complete the cart using the [completeCartWorkflow](/references/medusa-workflows/completeCartWorkflow) if you're using the Medusa application.
 - Capture the payment either using the [capturePaymentWorkflow](/references/medusa-workflows/capturePaymentWorkflow) or [capturePayment method](/references/payment/capturePayment). 
 - Refund captured amounts using the [refundPaymentWorkflow](/references/medusa-workflows/refundPaymentWorkflow) or [refundPayment method](/references/payment/refundPayment).
 

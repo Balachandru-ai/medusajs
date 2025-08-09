@@ -8,6 +8,7 @@
  *   - title
  *   - requires_shipping
  *   - is_discountable
+ *   - is_giftcard
  *   - is_tax_inclusive
  *   - unit_price
  *   - quantity
@@ -142,6 +143,9 @@
  *   metadata:
  *     type: object
  *     description: The item's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   original_total:
  *     type: number
  *     title: original_total
@@ -198,6 +202,10 @@
  *     type: string
  *     title: product_type_id
  *     description: The ID of the associated product's type.
+ *   is_giftcard:
+ *     type: boolean
+ *     title: is_giftcard
+ *     description: Whether the item is a gift card.
  * 
 */
 

@@ -8,12 +8,15 @@ import {
   MODULE_PACKAGE_NAMES,
   Modules,
   REVERSED_MODULE_PACKAGE_NAMES,
+  TEMPORARY_REDIS_MODULE_PACKAGE_NAMES,
 } from "../modules-sdk"
 import { isObject } from "./is-object"
 import { isString } from "./is-string"
+import { tryConvertToNumber } from "./try-convert-to-number"
 import { normalizeImportPathWithSource } from "./normalize-import-path-with-source"
 import { resolveExports } from "./resolve-exports"
 
+const MEDUSA_CLOUD_EXECUTION_CONTEXT = "medusa-cloud"
 const DEFAULT_SECRET = "supersecret"
 const DEFAULT_ADMIN_URL = "/"
 const DEFAULT_STORE_CORS = "http://localhost:8000"
@@ -39,71 +42,19 @@ export const DEFAULT_STORE_RESTRICTED_FIELDS = [
  * to override configuration as needed.
  */
 export function defineConfig(config: InputConfig = {}): ConfigModule {
-  const { http, redisOptions, ...restOfProjectConfig } =
-    config.projectConfig || {}
-
-  /**
-   * The defaults to use for the project config. They are shallow merged
-   * with the user defined config. However,
-   */
-  const projectConfig: ConfigModule["projectConfig"] = {
-    databaseUrl: process.env.DATABASE_URL || DEFAULT_DATABASE_URL,
-    http: {
-      storeCors: process.env.STORE_CORS || DEFAULT_STORE_CORS,
-      adminCors: process.env.ADMIN_CORS || DEFAULT_ADMIN_CORS,
-      authCors: process.env.AUTH_CORS || DEFAULT_ADMIN_CORS,
-      jwtSecret: process.env.JWT_SECRET || DEFAULT_SECRET,
-      cookieSecret: process.env.COOKIE_SECRET || DEFAULT_SECRET,
-      restrictedFields: {
-        store: DEFAULT_STORE_RESTRICTED_FIELDS,
-      },
-      ...http,
-    },
-    redisOptions: {
-      retryStrategy(retries) {
-        /**
-         * Exponentially increase delay with every retry
-         * attempt. Max to 4s
-         */
-        const delay = Math.min(Math.pow(2, retries) * 50, 4000)
-
-        /**
-         * Add a random jitter to not choke the server when multiple
-         * clients are retrying at the same time
-         */
-        const jitter = Math.floor(Math.random() * 200)
-        return delay + jitter
-      },
-      ...redisOptions,
-    },
-    ...restOfProjectConfig,
+  const options = {
+    isCloud: process.env.EXECUTION_CONTEXT === MEDUSA_CLOUD_EXECUTION_CONTEXT,
   }
 
-  /**
-   * The defaults to use for the admin config.  They are shallow merged
-   * with the user defined config
-   */
-  const admin: ConfigModule["admin"] = {
-    backendUrl: process.env.MEDUSA_BACKEND_URL || DEFAULT_ADMIN_URL,
-    path: "/app",
-    ...config.admin,
-  }
-
-  /**
-   * The defaults to use for the feature flags config. They are shallow merged
-   * with the user defined config
-   */
-  const featureFlags: ConfigModule["featureFlags"] = {
-    ...config.featureFlags,
-  }
-
-  const modules = resolveModules(config.modules)
+  const projectConfig = normalizeProjectConfig(config.projectConfig, options)
+  const adminConfig = normalizeAdminConfig(config.admin)
+  const modules = resolveModules(config.modules, options, config.projectConfig)
 
   return {
     projectConfig,
-    featureFlags,
+    featureFlags: (config.featureFlags ?? {}) as ConfigModule["featureFlags"],
     plugins: config.plugins || [],
-    admin,
+    admin: adminConfig,
     modules: modules,
   }
 }
@@ -180,18 +131,11 @@ export function transformModules(
  * @param configModules
  */
 function resolveModules(
-  configModules: InputConfig["modules"]
+  configModules: InputConfig["modules"],
+  { isCloud }: { isCloud: boolean },
+  projectConfig: InputConfig["projectConfig"]
 ): Exclude<ConfigModule["modules"], undefined> {
-  /**
-   * The default set of modules to always use. The end user can swap
-   * the modules by providing an alternate implementation via their
-   * config. But they can never remove a module from this list.
-   */
-  const modules: InputConfig["modules"] = [
-    { resolve: MODULE_PACKAGE_NAMES[Modules.CACHE] },
-    { resolve: MODULE_PACKAGE_NAMES[Modules.EVENT_BUS] },
-    { resolve: MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE] },
-    { resolve: MODULE_PACKAGE_NAMES[Modules.LOCKING] },
+  const sharedModules = [
     { resolve: MODULE_PACKAGE_NAMES[Modules.STOCK_LOCATION] },
     { resolve: MODULE_PACKAGE_NAMES[Modules.INVENTORY] },
     { resolve: MODULE_PACKAGE_NAMES[Modules.PRODUCT] },
@@ -223,18 +167,10 @@ function resolveModules(
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.USER],
       options: {
-        jwt_secret: process.env.JWT_SECRET ?? DEFAULT_SECRET,
-      },
-    },
-    {
-      resolve: MODULE_PACKAGE_NAMES[Modules.FILE],
-      options: {
-        providers: [
-          {
-            resolve: "@medusajs/medusa/file-local",
-            id: "local",
-          },
-        ],
+        jwt_secret: projectConfig?.http?.jwtSecret ?? DEFAULT_SECRET,
+        jwt_options: projectConfig?.http?.jwtOptions,
+        jwt_verify_options: projectConfig?.http?.jwtVerifyOptions,
+        jwt_public_key: projectConfig?.http?.jwtPublicKey,
       },
     },
     {
@@ -265,6 +201,87 @@ function resolveModules(
     },
   ]
 
+  const defaultModules = [
+    ...sharedModules,
+    { resolve: MODULE_PACKAGE_NAMES[Modules.CACHE] },
+    { resolve: MODULE_PACKAGE_NAMES[Modules.EVENT_BUS] },
+    { resolve: MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE] },
+    { resolve: MODULE_PACKAGE_NAMES[Modules.LOCKING] },
+
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.FILE],
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/file-local",
+            id: "local",
+          },
+        ],
+      },
+    },
+  ]
+
+  const cloudModules = [
+    ...sharedModules,
+    {
+      resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE],
+      options: {
+        redis: { url: process.env.REDIS_URL },
+      },
+    },
+    {
+      resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.CACHE],
+      options: { redisUrl: process.env.REDIS_URL },
+    },
+    {
+      resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
+      options: { redisUrl: process.env.REDIS_URL },
+    },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.LOCKING],
+      options: {
+        providers: [
+          {
+            id: "locking-redis",
+            resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.LOCKING],
+            is_default: true,
+            options: {
+              redisUrl: process.env.REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.FILE],
+      options: {
+        providers: [
+          {
+            id: "s3",
+            resolve: "@medusajs/medusa/file-s3",
+            options: {
+              authentication_method: "s3-iam-role",
+              file_url: process.env.S3_FILE_URL,
+              prefix: process.env.S3_PREFIX,
+              region: process.env.S3_REGION,
+              bucket: process.env.S3_BUCKET,
+              endpoint: process.env.S3_ENDPOINT,
+            },
+          },
+        ],
+      },
+    },
+  ]
+
+  /**
+   * The default set of modules to always use. The end user can swap
+   * the modules by providing an alternate implementation via their
+   * config. But they can never remove a module from this list.
+   */
+  const modules: InputConfig["modules"] = isCloud
+    ? cloudModules
+    : defaultModules
+
   /**
    * Backward compatibility for the old way of defining modules (object vs array)
    */
@@ -292,4 +309,91 @@ function resolveModules(
   }
 
   return transformModules(modules)
+}
+
+function normalizeProjectConfig(
+  projectConfig: InputConfig["projectConfig"],
+  { isCloud }: { isCloud: boolean }
+): ConfigModule["projectConfig"] {
+  const { http, redisOptions, sessionOptions, ...restOfProjectConfig } =
+    projectConfig || {}
+
+  /**
+   * The defaults to use for the project config. They are shallow merged
+   * with the user defined config.
+   */
+  const config = {
+    ...(isCloud ? { redisUrl: process.env.REDIS_URL } : {}),
+    databaseUrl: process.env.DATABASE_URL || DEFAULT_DATABASE_URL,
+    http: {
+      storeCors: process.env.STORE_CORS || DEFAULT_STORE_CORS,
+      adminCors: process.env.ADMIN_CORS || DEFAULT_ADMIN_CORS,
+      authCors: process.env.AUTH_CORS || DEFAULT_ADMIN_CORS,
+      jwtSecret: process.env.JWT_SECRET || DEFAULT_SECRET,
+      jwtPublicKey: process.env.JWT_PUBLIC_KEY,
+      cookieSecret: process.env.COOKIE_SECRET || DEFAULT_SECRET,
+      restrictedFields: {
+        store: DEFAULT_STORE_RESTRICTED_FIELDS,
+      },
+      ...http,
+    },
+    redisOptions: {
+      retryStrategy(retries) {
+        /**
+         * Exponentially increase delay with every retry
+         * attempt. Max to 4s
+         */
+        const delay = Math.min(Math.pow(2, retries) * 50, 4000)
+
+        /**
+         * Add a random jitter to not choke the server when multiple
+         * clients are retrying at the same time
+         */
+        const jitter = Math.floor(Math.random() * 200)
+        return delay + jitter
+      },
+      ...redisOptions,
+    },
+    sessionOptions: {
+      ...(isCloud && process.env.SESSION_STORE === "dynamodb"
+        ? {
+            dynamodbOptions: {
+              prefix: process.env.DYNAMO_DB_SESSIONS_PREFIX ?? "sess:",
+              hashKey: process.env.DYNAMO_DB_SESSIONS_HASH_KEY ?? "id",
+              initialized: process.env.DYNAMO_DB_SESSIONS_CREATE_TABLE
+                ? false
+                : true,
+              table: process.env.DYNAMO_DB_SESSIONS_TABLE ?? "medusa-sessions",
+              readCapacityUnits: tryConvertToNumber(
+                process.env.DYNAMO_DB_SESSIONS_READ_UNITS,
+                5
+              ),
+              writeCapacityUnits: tryConvertToNumber(
+                process.env.DYNAMO_DB_SESSIONS_WRITE_UNITS,
+                5
+              ),
+              skipThrowMissingSpecialKeys: true,
+            },
+          }
+        : {}),
+      ...sessionOptions,
+    },
+    ...restOfProjectConfig,
+  } satisfies ConfigModule["projectConfig"]
+
+  return config
+}
+
+function normalizeAdminConfig(
+  adminConfig: InputConfig["admin"]
+): ConfigModule["admin"] {
+  /**
+   * The defaults to use for the admin config.  They are shallow merged
+   * with the user defined config
+   */
+  return {
+    backendUrl: process.env.MEDUSA_BACKEND_URL || DEFAULT_ADMIN_URL,
+    path: "/app",
+    ...adminConfig,
+  }
 }

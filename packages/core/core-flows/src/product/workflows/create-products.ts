@@ -108,6 +108,13 @@ export const createProductsWorkflowId = "create-products"
  * This workflow has a hook that allows you to perform custom actions on the created products. You can see an example in [this guide](https://docs.medusajs.com/resources/commerce-modules/product/extend).
  *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around product creation.
+ * 
+ * :::note
+ * 
+ * Learn more about adding rules to the product variant's prices in the Pricing Module's 
+ * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
+ * 
+ * :::
  *
  * @example
  * const { result } = await createProductsWorkflow(container)
@@ -137,10 +144,10 @@ export const createProductsWorkflowId = "create-products"
  *             ],
  *             manage_inventory: true,
  *           },
- *         ]
+ *         ],
+ *         shipping_profile_id: "sp_123",
  *       }
  *     ],
- *     shipping_profile_id: "sp_123",
  *     additional_data: {
  *       erp_id: "123"
  *     }

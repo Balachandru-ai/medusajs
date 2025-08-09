@@ -63,7 +63,7 @@ export const POST = async (
 
 You export a route handler function with its name (`POST`) being the HTTP method of the API route you're exposing.
 
-The function receives two parameters: a `MedusaRequest` object to access request details, and `MedusaResponse` object to return or manipulate the response. The `MedusaRequest` object's `scope` property is the [Medusa container](../../../fundamentals/medusa-container/page.mdx) that holds framework tools and custom and core modules' services.
+The function receives two parameters: a `MedusaRequest` object to access request details, and `MedusaResponse` object to return or manipulate the response. The `MedusaRequest` object's `scope` property is the [Medusa container](../../../fundamentals/medusa-container/page.mdx) that holds Framework tools and custom and core modules' services.
 
 <Note title="Tip">
 
@@ -157,7 +157,7 @@ You define the middlewares using the `defineMiddlewares` function and export its
 
 In the middleware object, you define three properties:
 
-- `matcher`: a string or regular expression indicating the API route path to apply the middleware on. You pass the create brand's route `/admin/brand`.
+- `matcher`: a string or regular expression indicating the API route path to apply the middleware on. You pass the create brand's route `/admin/brands`.
 - `method`: The HTTP method to restrict the middleware to, which is `POST`.
 - `middlewares`: An array of middlewares to apply on the route. You pass the `validateAndTransformBody` middleware, passing it the Zod schema you created earlier.
 

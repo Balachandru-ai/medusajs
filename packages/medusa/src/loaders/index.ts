@@ -15,9 +15,11 @@ import {
 } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
+  getResolvedPlugins,
   GraphQLSchema,
   mergePluginModules,
   promiseAll,
+  validateModuleName,
 } from "@medusajs/framework/utils"
 import { WorkflowLoader } from "@medusajs/framework/workflows"
 import { asValue } from "awilix"
@@ -27,7 +29,6 @@ import requestIp from "request-ip"
 import { v4 } from "uuid"
 import adminLoader from "./admin"
 import apiLoader from "./api"
-import { getResolvedPlugins } from "./helpers/resolve-plugins"
 
 type Options = {
   directory: string
@@ -88,10 +89,10 @@ async function loadEntrypoints(
     return async () => {}
   }
 
-  const { shutdown } = await expressLoader({
-    app: expressApp,
-  })
-
+  /**
+   * The scope and the ip address must be fetched before we execute any other
+   * middleware
+   */
   expressApp.use((req: Request, res: Response, next: NextFunction) => {
     req.scope = container.createScope() as MedusaContainer
     req.requestId = (req.headers["x-request-id"] as string) ?? v4()
@@ -105,6 +106,10 @@ async function loadEntrypoints(
       ip_address: ipAddress,
     }
     next()
+  })
+
+  const { shutdown } = await expressLoader({
+    app: expressApp,
   })
 
   await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
@@ -128,7 +133,7 @@ export async function initializeContainer(
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
   })
 
-  pgConnectionLoader()
+  await pgConnectionLoader()
   return container
 }
 
@@ -149,6 +154,10 @@ export default async ({
 
   const plugins = await getResolvedPlugins(rootDirectory, configModule, true)
   mergePluginModules(configModule, plugins)
+
+  Object.keys(configModule.modules ?? {}).forEach((key) => {
+    validateModuleName(key)
+  })
 
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")

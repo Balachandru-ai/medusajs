@@ -84,3 +84,33 @@ export class NonSerializableCheckPointError extends Error {
     this.name = "NonSerializableCheckPointError"
   }
 }
+
+export class SkipExecutionError extends Error {
+  static isSkipExecutionError(error: Error): error is SkipExecutionError {
+    return (
+      error instanceof SkipExecutionError ||
+      error?.name === "SkipExecutionError"
+    )
+  }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipExecutionError"
+  }
+}
+
+export class SkipCancelledExecutionError extends Error {
+  static isSkipCancelledExecutionError(
+    error: Error
+  ): error is SkipCancelledExecutionError {
+    return (
+      error instanceof SkipCancelledExecutionError ||
+      error?.name === "SkipCancelledExecutionError"
+    )
+  }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipCancelledExecutionError"
+  }
+}

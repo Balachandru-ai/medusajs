@@ -77,6 +77,16 @@ moduleIntegrationTestRunner<IPricingModuleService>({
               rules_count: 0,
             },
             {
+              id: "price-PLN-min-quantity-only",
+              title: "price PLN - min quantity only",
+              price_set_id: "price-set-PLN",
+              currency_code: "PLN",
+              amount: 1250,
+              min_quantity: 20,
+              max_quantity: null,
+              rules_count: 0,
+            },
+            {
               id: "price-ETH",
               title: "price ETH",
               price_set_id: "price-set-ETH",
@@ -284,6 +294,219 @@ moduleIntegrationTestRunner<IPricingModuleService>({
             pricesData,
             priceRuleData,
           })
+        })
+
+        it("should successfully calculate prices with complex context", async () => {
+          const context = {
+            id: "cart_01JRDH08QD8CZ0KJDVE410KM1J",
+            currency_code: "PLN",
+            email: "tony@stark-industries.com",
+            region_id: "reg_01JRDH08ENY3276P6133BVXGWJ",
+            created_at: "2025-04-09T14:59:24.526Z",
+            updated_at: "2025-04-09T14:59:24.526Z",
+            completed_at: null,
+            total: 1500,
+            subtotal: 1428.5714285714287,
+            tax_total: 71.42857142857143,
+            discount_total: 0,
+            discount_subtotal: 0,
+            discount_tax_total: 0,
+            original_total: 1500,
+            original_tax_total: 71.42857142857143,
+            item_total: 1500,
+            item_subtotal: 1428.5714285714287,
+            item_tax_total: 71.42857142857143,
+            original_item_total: 1500,
+            original_item_subtotal: 1428.5714285714287,
+            original_item_tax_total: 71.42857142857143,
+            shipping_total: 0,
+            shipping_subtotal: 0,
+            shipping_tax_total: 0,
+            original_shipping_tax_total: 0,
+            original_shipping_subtotal: 0,
+            original_shipping_total: 0,
+            credit_line_subtotal: 0,
+            credit_line_tax_total: 0,
+            credit_line_total: 0,
+            metadata: null,
+            sales_channel_id: "sc_01JRDH08KWX1AR5SB0A3THWWQQ",
+            shipping_address_id: "caaddr_01JRDH08QDXHV9SJXKHT04TXK0",
+            customer_id: "cus_01JRDH08ATYB5AMFEZDTWCQWNK",
+            items: [
+              {
+                id: "cali_01JRDH08QDQH3CB1DE4S79HREC",
+                thumbnail: null,
+                variant_id: "variant_01JRDH08GJCZQB4GZCDDTYMD1V",
+                product_id: "prod_01JRDH08FPZ6QBZQ096B310RM7",
+                product_type_id: null,
+                product_title: "Medusa T-Shirt",
+                product_description: null,
+                product_subtitle: null,
+                product_type: null,
+                product_collection: null,
+                product_handle: "t-shirt",
+                variant_sku: "SHIRT-S-BLACK",
+                variant_barcode: null,
+                variant_title: "S / Black",
+                requires_shipping: true,
+                metadata: {},
+                created_at: "2025-04-09T14:59:24.526Z",
+                updated_at: "2025-04-09T14:59:24.526Z",
+                title: "S / Black",
+                quantity: 1,
+                unit_price: 1500,
+                compare_at_unit_price: null,
+                is_tax_inclusive: true,
+                tax_lines: [
+                  {
+                    id: "calitxl_01JRDH08RJEQ4WXXDTJYWV7B4M",
+                    description: "CA Default Rate",
+                    code: "CADEFAULT",
+                    rate: 5,
+                    provider_id: "system",
+                  },
+                ],
+                adjustments: [],
+                product: {
+                  id: "prod_01JRDH08FPZ6QBZQ096B310RM7",
+                  collection_id: null,
+                  type_id: null,
+                  categories: [],
+                  tags: [],
+                },
+              },
+            ],
+            shipping_methods: [],
+            shipping_address: {
+              id: "caaddr_01JRDH08QDXHV9SJXKHT04TXK0",
+              first_name: null,
+              last_name: null,
+              company: null,
+              address_1: "test address 1",
+              address_2: "test address 2",
+              city: "SF",
+              postal_code: "94016",
+              country_code: "US",
+              province: "CA",
+              phone: null,
+            },
+            billing_address: null,
+            credit_lines: [],
+            customer: {
+              id: "cus_01JRDH08ATYB5AMFEZDTWCQWNK",
+              email: "tony@stark-industries.com",
+              groups: [],
+            },
+            region: {
+              id: "reg_01JRDH08ENY3276P6133BVXGWJ",
+              name: "US",
+              currency_code: "usd",
+              automatic_taxes: true,
+              countries: [
+                {
+                  iso_2: "us",
+                  iso_3: "usa",
+                  num_code: "840",
+                  name: "UNITED STATES",
+                  display_name: "United States",
+                  region_id: "reg_01JRDH08ENY3276P6133BVXGWJ",
+                  metadata: null,
+                  created_at: "2025-04-09T14:59:20.275Z",
+                  updated_at: "2025-04-09T14:59:24.250Z",
+                  deleted_at: null,
+                },
+              ],
+            },
+            promotions: [],
+          }
+
+          const calculatedPrice = await service.calculatePrices(
+            { id: ["price-set-EUR", "price-set-PLN"] },
+            { context: context as any }
+          )
+
+          expect(calculatedPrice).toEqual([
+            {
+              id: "price-set-PLN",
+              is_calculated_price_price_list: false,
+              is_calculated_price_tax_inclusive: false,
+              calculated_amount: 1000,
+              raw_calculated_amount: {
+                value: "1000",
+                precision: 20,
+              },
+              is_original_price_price_list: false,
+              is_original_price_tax_inclusive: false,
+              original_amount: 1000,
+              raw_original_amount: {
+                value: "1000",
+                precision: 20,
+              },
+              currency_code: "PLN",
+              calculated_price: {
+                id: "price-PLN",
+                price_list_id: null,
+                price_list_type: null,
+                min_quantity: 1,
+                max_quantity: 10,
+              },
+              original_price: {
+                id: "price-PLN",
+                price_list_id: null,
+                price_list_type: null,
+                min_quantity: 1,
+                max_quantity: 10,
+              },
+            },
+          ])
+        })
+
+        it("should successfully calculate prices where only min quantity is set", async () => {
+          const context = {
+            currency_code: "PLN",
+            region_id: "PL",
+            quantity: 255,
+          }
+
+          const calculatedPrice = await service.calculatePrices(
+            { id: ["price-set-EUR", "price-set-PLN"] },
+            { context }
+          )
+
+          expect(calculatedPrice).toEqual([
+            {
+              id: "price-set-PLN",
+              is_calculated_price_price_list: false,
+              is_calculated_price_tax_inclusive: false,
+              calculated_amount: 1250,
+              raw_calculated_amount: {
+                value: "1250",
+                precision: 20,
+              },
+              is_original_price_price_list: false,
+              is_original_price_tax_inclusive: false,
+              original_amount: 1250,
+              raw_original_amount: {
+                value: "1250",
+                precision: 20,
+              },
+              currency_code: "PLN",
+              calculated_price: {
+                id: "price-PLN-min-quantity-only",
+                price_list_id: null,
+                price_list_type: null,
+                min_quantity: 20,
+                max_quantity: null,
+              },
+              original_price: {
+                id: "price-PLN-min-quantity-only",
+                price_list_id: null,
+                price_list_type: null,
+                min_quantity: 20,
+                max_quantity: null,
+              },
+            },
+          ])
         })
 
         it("should throw an error when currency code is not set", async () => {
@@ -1009,11 +1232,27 @@ moduleIntegrationTestRunner<IPricingModuleService>({
             ])
           })
 
-          it("should return best price list price first when price list conditions match", async () => {
-            await createPriceLists(service)
+          it("should return cheapest price list price first when price list conditions match", async () => {
             await createPriceLists(
               service,
+              {
+                title: "Test Price List One",
+                description: "test description",
+                type: PriceListType.OVERRIDE,
+                status: PriceListStatus.ACTIVE,
+              },
               {},
+              defaultPriceListPrices
+            )
+
+            await createPriceLists(
+              service,
+              {
+                title: "Test Price List Two",
+                description: "test description",
+                type: PriceListType.OVERRIDE,
+                status: PriceListStatus.ACTIVE,
+              },
               {},
               defaultPriceListPrices.map((price) => {
                 return { ...price, amount: price.amount / 2 }
@@ -1021,7 +1260,7 @@ moduleIntegrationTestRunner<IPricingModuleService>({
             )
 
             const priceSetsResult = await service.calculatePrices(
-              { id: ["price-set-EUR", "price-set-PLN"] },
+              { id: ["price-set-PLN"] },
               {
                 context: {
                   currency_code: "PLN",
@@ -1037,32 +1276,32 @@ moduleIntegrationTestRunner<IPricingModuleService>({
                 id: "price-set-PLN",
                 is_calculated_price_price_list: true,
                 is_calculated_price_tax_inclusive: false,
-                calculated_amount: 232,
+                calculated_amount: 116,
                 raw_calculated_amount: {
-                  value: "232",
+                  value: "116",
                   precision: 20,
                 },
-                is_original_price_price_list: false,
+                is_original_price_price_list: true,
                 is_original_price_tax_inclusive: false,
-                original_amount: 400,
+                original_amount: 116,
                 raw_original_amount: {
-                  value: "400",
+                  value: "116",
                   precision: 20,
                 },
                 currency_code: "PLN",
                 calculated_price: {
                   id: expect.any(String),
                   price_list_id: expect.any(String),
-                  price_list_type: "sale",
+                  price_list_type: "override",
                   min_quantity: null,
                   max_quantity: null,
                 },
                 original_price: {
                   id: expect.any(String),
-                  price_list_id: null,
-                  price_list_type: null,
-                  min_quantity: 1,
-                  max_quantity: 5,
+                  price_list_id: expect.any(String),
+                  price_list_type: "override",
+                  min_quantity: null,
+                  max_quantity: null,
                 },
               },
             ])
@@ -1754,6 +1993,149 @@ moduleIntegrationTestRunner<IPricingModuleService>({
             ])
           })
 
+          it("should return price list prices for multiple price lists with customer groups", async () => {
+            const [{ id }] = await createPriceLists(
+              service,
+              { type: "override" },
+              {
+                ["customer.groups.id"]: ["vip-customer-group-id"],
+              },
+              [
+                {
+                  amount: 600,
+                  currency_code: "EUR",
+                  price_set_id: "price-set-EUR",
+                },
+              ]
+            )
+
+            const [{ id: idTwo }] = await createPriceLists(
+              service,
+              { type: "override" },
+              {
+                ["customer.groups.id"]: ["vip-customer-group-id-1"],
+              },
+              [
+                {
+                  amount: 400,
+                  currency_code: "EUR",
+                  price_set_id: "price-set-EUR",
+                },
+              ]
+            )
+
+            const priceSetsResult = await service.calculatePrices(
+              { id: ["price-set-EUR"] },
+              {
+                context: {
+                  currency_code: "EUR",
+                  // @ts-ignore
+                  customer: {
+                    groups: {
+                      id: ["vip-customer-group-id", "vip-customer-group-id-1"],
+                    },
+                  },
+                },
+              }
+            )
+
+            expect(priceSetsResult).toEqual([
+              {
+                id: "price-set-EUR",
+                is_calculated_price_price_list: true,
+                is_calculated_price_tax_inclusive: false,
+                calculated_amount: 400,
+                raw_calculated_amount: {
+                  value: "400",
+                  precision: 20,
+                },
+                is_original_price_price_list: true,
+                is_original_price_tax_inclusive: false,
+                original_amount: 400,
+                raw_original_amount: {
+                  value: "400",
+                  precision: 20,
+                },
+                currency_code: "EUR",
+                calculated_price: {
+                  id: expect.any(String),
+                  price_list_id: idTwo,
+                  price_list_type: "override",
+                  min_quantity: null,
+                  max_quantity: null,
+                },
+                original_price: {
+                  id: expect.any(String),
+                  price_list_id: idTwo,
+                  price_list_type: "override",
+                  min_quantity: null,
+                  max_quantity: null,
+                },
+              },
+            ])
+          })
+
+          it("should return price list prices when price list conditions match within prices", async () => {
+            await createPriceLists(service, {}, { region_id: ["DE", "PL"] }, [
+              ...defaultPriceListPrices,
+              {
+                amount: 111,
+                currency_code: "PLN",
+                price_set_id: "price-set-PLN",
+                rules: {
+                  region_id: "DE",
+                },
+              },
+            ])
+
+            const priceSetsResult = await service.calculatePrices(
+              { id: ["price-set-EUR", "price-set-PLN"] },
+              {
+                context: {
+                  currency_code: "PLN",
+                  region_id: "DE",
+                  customer_group_id: "vip-customer-group-id",
+                  company_id: "medusa-company-id",
+                },
+              }
+            )
+
+            expect(priceSetsResult).toEqual([
+              {
+                id: "price-set-PLN",
+                is_calculated_price_price_list: true,
+                is_calculated_price_tax_inclusive: false,
+                calculated_amount: 111,
+                raw_calculated_amount: {
+                  value: "111",
+                  precision: 20,
+                },
+                is_original_price_price_list: false,
+                is_original_price_tax_inclusive: false,
+                original_amount: 400,
+                raw_original_amount: {
+                  value: "400",
+                  precision: 20,
+                },
+                currency_code: "PLN",
+                calculated_price: {
+                  id: expect.any(String),
+                  price_list_id: expect.any(String),
+                  price_list_type: "sale",
+                  min_quantity: null,
+                  max_quantity: null,
+                },
+                original_price: {
+                  id: expect.any(String),
+                  price_list_id: null,
+                  price_list_type: null,
+                  min_quantity: 1,
+                  max_quantity: 5,
+                },
+              },
+            ])
+          })
+
           it("should not return price list prices when price list conditions are met but price rules are not", async () => {
             await createPriceLists(service, {}, { region_id: ["DE", "PL"] }, [
               ...defaultPriceListPrices,
@@ -1854,11 +2236,7 @@ moduleIntegrationTestRunner<IPricingModuleService>({
               }),
             ])
 
-            const test = await service.softDeletePrices(
-              priceList.prices.map((p) => p.id)
-            )
-
-            console.log("test -- ", JSON.stringify(test, null, 4))
+            await service.softDeletePrices(priceList.prices.map((p) => p.id))
 
             const priceSetsResult2 = await service.calculatePrices(
               { id: ["price-set-EUR", "price-set-PLN"] },

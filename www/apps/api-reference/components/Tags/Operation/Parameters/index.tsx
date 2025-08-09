@@ -1,4 +1,4 @@
-import type { SchemaObject } from "@/types/openapi"
+import type { OpenAPI } from "types"
 import dynamic from "next/dynamic"
 import type { TagOperationParametersObjectProps } from "./Types/Object"
 import type { TagOperationParametersDefaultProps } from "./Types/Default"
@@ -41,10 +41,11 @@ const TagOperationParamatersOneOf = dynamic<TagOperationParamatersOneOfProps>(
 ) as React.FC<TagOperationParamatersOneOfProps>
 
 export type TagOperationParametersProps = {
-  schemaObject: SchemaObject
+  schemaObject: OpenAPI.SchemaObject
   topLevel?: boolean
   className?: string
   isRequired?: boolean
+  isExpanded?: boolean
 }
 
 const TagOperationParameters = ({
@@ -52,6 +53,7 @@ const TagOperationParameters = ({
   className,
   topLevel = false,
   isRequired: originalIsRequired = false,
+  isExpanded = false,
 }: TagOperationParametersProps) => {
   const isRequired =
     originalIsRequired || checkRequired(schemaObject, schemaObject.title)
@@ -95,6 +97,7 @@ const TagOperationParameters = ({
           schema={schemaObject}
           topLevel={topLevel}
           isRequired={isRequired}
+          isExpanded={isExpanded}
         />
       )
     }

@@ -32,21 +32,28 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The fulfillment set to create.
- *         required:
- *           - type
- *           - name
- *         properties:
- *           name:
- *             type: string
- *             title: name
- *             description: The fulfillment set's name.
- *           type:
- *             type: string
- *             title: type
- *             description: The fulfillment set's type.
+ *         $ref: "#/components/schemas/AdminCreateStockLocationFulfillmentSet"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.stockLocation.createFulfillmentSet("sloc_123", {
+ *         name: "Shipping",
+ *         type: "shipping",
+ *       })
+ *       .then(({ stock_location }) => {
+ *         console.log(stock_location)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -79,6 +86,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createLocationFulfillmentSetWorkflow
+ * x-events: []
  * 
 */
 

@@ -1,4 +1,4 @@
-import { ChildDocs } from "docs-ui"
+import { CardList, Card } from "docs-ui"
 
 export const metadata = {
   title: `Deployments`,
@@ -6,25 +6,27 @@ export const metadata = {
 
 # {metadata.title}
 
-Find guides to deploy your Medusa application, Medusa Admin, and Next.js storefront.
+Find guides to deploy your Medusa application, Medusa Admin, and Next.js Starter Storefront.
 
-## Medusa Cloud
+## Cloud
 
-Medusa Cloud is our managed services offering for Medusa applications. Medusa Cloud hosts your server, Admin dashboard, database, and Redis instance. The infrastructure is security-compliant and optimized for Medusa and supports:
+Cloud is our managed services offering for Medusa applications. Cloud hosts your server, Admin dashboard, database, and Redis instance. The infrastructure is security-compliant and optimized for Medusa and supports:
 
 - Zero configuration.
 - Built-in autoscaling.
 - Deploy to regions around the world.
 - 99.99% uptime guarantee.
 
-With Medusa Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+With Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
 
 - Push to deploy.
 - Multiple testing environments.
 - Preview environments for new PRs.
 - Test on production-like data.
 
-[Sign up and learn more about Medusa Cloud](https://medusajs.com/contact)
+Cloud users also gets early access to new features (for example, Gift Cards and Draft Orders).
+
+[Sign up and learn more about Cloud](!cloud!)
 
 ---
 
@@ -32,7 +34,20 @@ With Medusa Cloud, you maintain full customization control as you deploy your ow
 
 To host and maintain Medusa on your own, check out the following guides.
 
-<ChildDocs showItems={["Self-Hosting"]} hideTitle={true} />
+<CardList
+  items={[
+    {
+      title: "General Guide",
+      href: "https://docs.medusajs.com/learn/deployment/general",
+      text: "General steps to deploy Medusa.",
+    },
+    {
+      title: "Railway",
+      href: "/deployment/medusa-application/railway",
+      text: "Deploy Medusa on Railway.",
+    }
+  ]}
+/>
 
 ---
 
@@ -40,4 +55,8 @@ To host and maintain Medusa on your own, check out the following guides.
 
 Learn how to deploy the Next.js Starter Storefront.
 
-<ChildDocs showItems={["Next.js Starter"]} hideTitle={true} />
+<Card
+  title="Vercel"
+  href="/deployment/storefront/vercel"
+  text="Deploy the Next.js Starter Storefront on Vercel."
+/>

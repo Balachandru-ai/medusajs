@@ -35,6 +35,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_sales-channels_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -100,6 +104,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminUpdateSalesChannel.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_sales-channels_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -126,6 +134,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateSalesChannelsWorkflow
+  x-events:
+    - name: sales-channel.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the sales channel
+        }]
+        ```
+      description: Emitted when sales channels are updated.
+      deprecated: false
 delete:
   operationId: DeleteSalesChannelsId
   summary: Delete a Sales Channel
@@ -143,6 +161,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_sales-channels_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -169,3 +191,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteSalesChannelsWorkflow
+  x-events:
+    - name: sales-channel.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the sales channel
+        }]
+        ```
+      description: Emitted when sales channels are deleted.
+      deprecated: false

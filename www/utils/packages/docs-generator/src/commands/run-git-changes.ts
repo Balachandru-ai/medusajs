@@ -5,6 +5,8 @@ import { GitManager } from "../classes/helpers/git-manager.js"
 import { CommonCliOptions } from "../types/index.js"
 import OasGenerator from "../classes/generators/oas.js"
 import DmlGenerator from "../classes/generators/dml.js"
+import RouteExamplesGenerator from "../classes/generators/route-examples.js"
+import EventsGenerator from "../classes/generators/events.js"
 
 export default async function runGitChanges({
   type,
@@ -51,6 +53,24 @@ export default async function runGitChanges({
     })
 
     await dmlGenerator.run()
+  }
+
+  if (type === "all" || type === "route-examples") {
+    const routeExamplesGenerator = new RouteExamplesGenerator({
+      paths: files,
+      ...options,
+    })
+
+    await routeExamplesGenerator.run()
+  }
+
+  if (type === "all" || type === "events") {
+    const eventsGenerator = new EventsGenerator({
+      paths: files,
+      ...options,
+    })
+
+    await eventsGenerator.run()
   }
 
   console.log(`Finished generating docs for ${files.length} files.`)

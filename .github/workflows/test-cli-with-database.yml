@@ -6,6 +6,8 @@ jobs:
   test-cli-with-database:
     env:
       NODE_ENV: CI
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
       REDIS_URL: redis://localhost:6379
       DATABASE_URL: "postgres://postgres:postgres@localhost/cli-test"
     services:
@@ -40,22 +42,32 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup development server
-        uses: ./.github/actions/setup-server
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
         with:
-          cache-extension: "cli-test"
           node-version: 20
+          cache: "yarn"
+
+      - name: Install dependencies
+        uses: ./.github/actions/cache-deps
+        with:
+          extension: cli-database
 
       - name: Install Medusa cli
-        run: npm i -g @medusajs/cli@latest
+        run: npm i -g @medusajs/cli@preview
 
       - name: Create Medusa project
-        run: |
-          medusa new cli-test --skip-db --v2 --branch ci
         working-directory: ..
+        run: |
+          medusa new cli-test --skip-db --v2 --branch ci-custom
 
-      - name: run medusa dev
-        run: medusa-dev --force-install
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install new app dependencies (via resolutions)
+        run: rm package-lock.json && yarn install --no-immutable
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
         working-directory: ../cli-test
 
       - name: Run migrations

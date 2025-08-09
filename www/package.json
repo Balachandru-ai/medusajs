@@ -18,7 +18,8 @@
     "lint": "turbo run lint",
     "lint:content": "turbo run lint:content",
     "watch": "turbo run watch",
-    "prep": "turbo run prep"
+    "prep": "turbo run prep",
+    "up:medusa": "yarn workspaces foreach -v --topological-dev --recursive exec yarn up @medusajs/icons @medusajs/ui @medusajs/ui-preset --exact"
   },
   "dependencies": {
     "autoprefixer": "10.4.14",
@@ -33,7 +34,7 @@
     "@babel/eslint-parser": "^7.25.9",
     "@eslint/js": "9.13.0",
     "@types/eslint__js": "8.42.3",
-    "eslint-config-next": "15.0.4",
+    "eslint-config-next": "15.3.5",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-turbo": "2.2.3",
     "eslint-plugin-markdown": "5.1.0",

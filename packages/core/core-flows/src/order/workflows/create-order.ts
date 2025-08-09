@@ -1,5 +1,10 @@
 import { AdditionalData, CreateOrderDTO } from "@medusajs/framework/types"
-import { MedusaError, isDefined, isPresent } from "@medusajs/framework/utils"
+import {
+  MedusaError,
+  deduplicate,
+  isDefined,
+  isPresent,
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -14,10 +19,12 @@ import { findOrCreateCustomerStep } from "../../cart/steps/find-or-create-custom
 import { findSalesChannelStep } from "../../cart/steps/find-sales-channel"
 import { validateLineItemPricesStep } from "../../cart/steps/validate-line-item-prices"
 import { validateVariantPricesStep } from "../../cart/steps/validate-variant-prices"
+import { requiredVariantFieldsForInventoryConfirmation } from "../../cart/utils/prepare-confirm-inventory-input"
 import {
   PrepareLineItemDataInput,
   prepareLineItemData,
 } from "../../cart/utils/prepare-line-item-data"
+import { pricingContextResult } from "../../cart/utils/schemas"
 import { confirmVariantInventoryWorkflow } from "../../cart/workflows/confirm-variant-inventory"
 import { useRemoteQueryStep } from "../../common"
 import { createOrdersStep } from "../steps"
@@ -86,13 +93,13 @@ export const createOrdersWorkflowId = "create-orders"
 /**
  * This workflow creates an order. It's used by the [Create Draft Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftorders), but
  * you can also use it to create any order.
- * 
- * This workflow has a hook that allows you to perform custom actions on the created order. For example, you can pass under `additional_data` custom data that 
+ *
+ * This workflow has a hook that allows you to perform custom actions on the created order. For example, you can pass under `additional_data` custom data that
  * allows you to create custom data models linked to the order.
- * 
+ *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around creating an order. For example,
  * you can create a workflow that imports orders from an external system, then uses this workflow to create the orders in Medusa.
- * 
+ *
  * @example
  * const { result } = await createOrderWorkflow(container)
  * .run({
@@ -121,12 +128,46 @@ export const createOrdersWorkflowId = "create-orders"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create an order.
- * 
+ *
  * @property hooks.orderCreated - This hook is executed after the order is created. You can consume this hook to perform custom actions on the created order.
+ * @property hooks.setPricingContext - This hook is executed after the order is retrieved and before the line items are created. You can consume this hook to return any custom context useful for the prices retrieval of the variants to be added to the order.
+ *
+ * For example, assuming you have the following custom pricing rule:
+ *
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ *
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ *
+ * ```ts
+ * import { createOrderWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ *
+ * createOrderWorkflow.hooks.setPricingContext((
+ *   { variantIds, region, customerData, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ *
+ * The variants' prices will now be retrieved using the context you return.
+ *
+ * :::note
+ *
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ *
+ * :::
  */
 export const createOrderWorkflow = createWorkflow(
   createOrdersWorkflowId,
@@ -150,15 +191,30 @@ export const createOrderWorkflow = createWorkflow(
       })
     )
 
+    const setPricingContext = createHook(
+      "setPricingContext",
+      {
+        variantIds,
+        region,
+        customerData,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: pricingContextResult,
+      }
+    )
+    const setPricingContextResult = setPricingContext.getResult()
+
     // TODO: This is on par with the context used in v1.*, but we can be more flexible.
     const pricingContext = transform(
-      { input, region, customerData },
+      { input, region, customerData, setPricingContextResult },
       (data) => {
         if (!data.region) {
           throw new MedusaError(MedusaError.Types.NOT_FOUND, "Region not found")
         }
 
         return {
+          ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
           currency_code: data.input.currency_code ?? data.region.currency_code,
           region_id: data.region.id,
           customer_id: data.customerData.customer?.id,
@@ -171,7 +227,10 @@ export const createOrderWorkflow = createWorkflow(
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "variants",
-        fields: productVariantsFields,
+        fields: deduplicate([
+          ...productVariantsFields,
+          ...requiredVariantFieldsForInventoryConfirmation,
+        ]),
         variables: {
           id: variantIds,
           calculated_price: {
@@ -222,7 +281,7 @@ export const createOrderWorkflow = createWorkflow(
     })
 
     return new WorkflowResponse(order, {
-      hooks: [orderCreated],
+      hooks: [orderCreated, setPricingContext] as const,
     })
   }
 )

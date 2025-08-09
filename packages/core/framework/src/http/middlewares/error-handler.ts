@@ -1,8 +1,9 @@
-import { NextFunction, Response } from "express"
+import { ErrorRequestHandler, NextFunction, Response } from "express"
+import { fromZodIssue } from "zod-validation-error"
 
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils"
-import { formatException } from "./exception-formatter"
 import { MedusaRequest } from "../types"
+import { formatException } from "./exception-formatter"
 
 const QUERY_RUNNER_RELEASED = "QueryRunnerAlreadyReleasedError"
 const TRANSACTION_STARTED = "TransactionAlreadyStartedError"
@@ -13,20 +14,25 @@ const INVALID_REQUEST_ERROR = "invalid_request_error"
 const INVALID_STATE_ERROR = "invalid_state_error"
 
 export function errorHandler() {
-  return (
+  return function coreErrorHandler(
     err: MedusaError,
     req: MedusaRequest,
     res: Response,
-    next: NextFunction
-  ) => {
-    const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER)
+    _: NextFunction
+  ) {
+    const logger = req.scope
+      ? req.scope.resolve(ContainerRegistrationKeys.LOGGER)
+      : console
+
+    if (!req.scope) {
+      logger.error(
+        "req.scope is missing unexpectedly. It should be defined in all the cases"
+      )
+    }
 
     err = formatException(err)
 
-    logger.error(err)
-
     const errorType = err.type || err.name
-
     const errObj = {
       code: err.code,
       type: err.type,
@@ -75,8 +81,23 @@ export function errorHandler() {
         break
     }
 
+    if (statusCode >= 500) {
+      logger.error(err)
+    } else {
+      logger.info(err.message)
+    }
+
+    if ("issues" in err && Array.isArray(err.issues)) {
+      const messages = err.issues.map((issue) => fromZodIssue(issue).toString())
+      res.status(statusCode).json({
+        type: MedusaError.Types.INVALID_DATA,
+        message: messages.join("\n"),
+      })
+      return
+    }
+
     res.status(statusCode).json(errObj)
-  }
+  } as unknown as ErrorRequestHandler
 }
 
 /**

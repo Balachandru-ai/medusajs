@@ -1,5 +1,113 @@
 # Change Log
 
+## 2.8.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12882](https://github.com/medusajs/medusa/pull/12882) [`779ed018b9c1328d6554a0f3d3569147edaeae56`](https://github.com/medusajs/medusa/commit/779ed018b9c1328d6554a0f3d3569147edaeae56) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(create-medusa-app): Allow to create project with specific medusa version
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12707](https://github.com/medusajs/medusa/pull/12707) [`774702153f389e59476ea0a027b8caeb5075f92a`](https://github.com/medusajs/medusa/commit/774702153f389e59476ea0a027b8caeb5075f92a) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): remove "Created admin user" message
+
+- [#12714](https://github.com/medusajs/medusa/pull/12714) [`2e861a94492a486e2cbdb8d442f25611be1bc3bf`](https://github.com/medusajs/medusa/commit/2e861a94492a486e2cbdb8d442f25611be1bc3bf) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): ensure the same package manager is used consistently
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.5
+
+## 2.8.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.4
+
+## 2.8.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.3
+
+## 2.8.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.2
+
+## 2.8.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.1
+
+## 2.8.0
+
+### Patch Changes
+
+- [#12360](https://github.com/medusajs/medusa/pull/12360) [`f74586e772f2800952e52b6eaceb25de93c1691c`](https://github.com/medusajs/medusa/commit/f74586e772f2800952e52b6eaceb25de93c1691c) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): updates to text and prompts
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.0
+
+## 2.7.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.7.1
+
+## 2.7.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.7.0
+
+## 2.6.1
+
+### Patch Changes
+
+- [#11738](https://github.com/medusajs/medusa/pull/11738) [`3b470f41427e487c68f89b8ee8155de716ffe861`](https://github.com/medusajs/medusa/commit/3b470f41427e487c68f89b8ee8155de716ffe861) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Remove ranges on Medusa packages
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.6.1
+
+## 2.6.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.6.0
+
+## 2.5.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.5.1
+
 ## 2.5.0
 
 ### Patch Changes

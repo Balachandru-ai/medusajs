@@ -4,6 +4,7 @@ sidebar_label: markOrderFulfillmentAsDeliveredWorkflow
 sidebar_description: Mark a fulfillment in an order as delivered.
 tags:
   - remote query
+  - order
   - event bus
   - workflow
   - fulfillment
@@ -21,7 +22,7 @@ This workflow marks a fulfillment in an order as delivered. It's used by the
 You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
 marking a fulfillment as delivered.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/order/workflows/mark-order-fulfillment-as-delivered.ts#L165" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/order/workflows/mark-order-fulfillment-as-delivered.ts#L214" />
 
 ## Examples
 
@@ -134,8 +135,60 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"markOrderFulfillmentAsDeliveredWorkflow","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":1},{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":2},{"type":"step","name":"orderFulfillmentDeliverablilityValidationStep","description":"This step validates that the order fulfillment can be delivered. If the order is cancelled,\nthe items to mark as delivered don't exist in the order, or the fulfillment doesn't exist in the order,\nthe step will throw an error.\n\n:::note\n\nYou can retrieve an order and fulfillment's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Order.Workflows_Order.orderFulfillmentDeliverablilityValidationStep/page.mdx","depth":3},{"type":"workflow","name":"markFulfillmentAsDeliveredWorkflow","description":"Mark a fulfillment as delivered.","link":"../../../../Fulfillment/Workflows_Fulfillment/functions/core_flows.Fulfillment.Workflows_Fulfillment.markFulfillmentAsDeliveredWorkflow/page.mdx","depth":4},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":5}]}} />
+<WorkflowDiagram workflow={{"name":"markOrderFulfillmentAsDeliveredWorkflow","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":1},{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":2},{"type":"step","name":"orderFulfillmentDeliverablilityValidationStep","description":"This step validates that the order fulfillment can be delivered. If the order is cancelled,\nthe items to mark as delivered don't exist in the order, or the fulfillment doesn't exist in the order,\nthe step will throw an error.\n\n:::note\n\nYou can retrieve an order and fulfillment's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Order.Workflows_Order.orderFulfillmentDeliverablilityValidationStep/page.mdx","depth":3},{"type":"workflow","name":"markFulfillmentAsDeliveredWorkflow","description":"Mark a fulfillment as delivered.","link":"../../../../Fulfillment/Workflows_Fulfillment/functions/core_flows.Fulfillment.Workflows_Fulfillment.markFulfillmentAsDeliveredWorkflow/page.mdx","depth":4},{"type":"step","name":"registerOrderDeliveryStep","description":"This step registers a delivery for an order fulfillment.","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.registerOrderDeliveryStep/page.mdx","depth":4},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":5}]}} />
 
 ## Input
 
 <TypeList types={[{"name":"MarkOrderFulfillmentAsDeliveredWorkflowInput","type":"[MarkOrderFulfillmentAsDeliveredWorkflowInput](../../../../types/core_flows.MarkOrderFulfillmentAsDeliveredWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The details to mark a fulfillment in an order as delivered.","expandable":false,"children":[{"name":"orderId","type":"`string`","description":"The ID of the order to mark the fulfillment as delivered in.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillmentId","type":"`string`","description":"The ID of the fulfillment to mark as delivered.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="markOrderFulfillmentAsDeliveredWorkflow"/>
+
+## Emitted Events
+
+This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
+
+You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+Event
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Description
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Payload
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Action
+</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+`delivery.created`
+</Table.Cell>
+      <Table.Cell>
+Emitted when a fulfillment is marked as delivered.
+</Table.Cell>
+      <Table.Cell>
+```ts blockStyle="inline"
+{
+  id, // the ID of the fulfillment
+}
+```
+</Table.Cell>
+      <Table.Cell>
+<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
+        event: "delivery.created",
+        payload: `\`\`\`ts
+{
+  id, // the ID of the fulfillment
+}
+\`\`\``
+        }}/>
+</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

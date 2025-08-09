@@ -582,7 +582,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             )
 
             expect(createdShippingOptions).toHaveLength(2)
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(6)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(3)
 
             let i = 0
             for (const data_ of createData) {
@@ -619,19 +619,31 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.SHIPPING_OPTION_CREATED,
                     action: "created",
                     object: "shipping_option",
-                    data: { id: createdShippingOptions[i].id },
+                    data: {
+                      id: expect.arrayContaining([
+                        createdShippingOptions[i].id,
+                      ]),
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.SHIPPING_OPTION_TYPE_CREATED,
                     action: "created",
                     object: "shipping_option_type",
-                    data: { id: createdShippingOptions[i].type.id },
+                    data: {
+                      id: expect.arrayContaining([
+                        createdShippingOptions[i].type.id,
+                      ]),
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.SHIPPING_OPTION_RULE_CREATED,
                     action: "created",
                     object: "shipping_option_rule",
-                    data: { id: createdShippingOptions[i].rules[0].id },
+                    data: {
+                      id: expect.arrayContaining([
+                        createdShippingOptions[i].rules[0].id,
+                      ]),
+                    },
                   }),
                 ]),
                 {

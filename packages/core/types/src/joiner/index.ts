@@ -21,6 +21,7 @@ export type JoinerRelationship = {
 export interface JoinerServiceConfigAlias {
   name: string | string[]
   entity?: string
+  filterable?: string[]
   /**
    * Extra arguments to pass to the remoteFetchData callback
    */
@@ -85,6 +86,7 @@ export interface RemoteJoinerOptions {
   throwIfKeyNotFound?: boolean
   throwIfRelationNotFound?: boolean | string[]
   initialData?: object | object[]
+  initialDataOnly?: boolean
 }
 
 export interface RemoteNestedExpands {

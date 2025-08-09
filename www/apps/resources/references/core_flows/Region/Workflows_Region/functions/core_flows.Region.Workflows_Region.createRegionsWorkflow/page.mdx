@@ -24,7 +24,7 @@ This workflow creates one or more regions. It's used by the
 You can use this workflow within your own customizations or custom workflows, allowing you
 to create regions in your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/region/workflows/create-regions.ts#L41" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/region/workflows/create-regions.ts#L41" />
 
 ## Examples
 
@@ -158,3 +158,55 @@ const myWorkflow = createWorkflow(
 ## Output
 
 <TypeList types={[{"name":"CreateRegionsWorkflowOutput","type":"[CreateRegionsWorkflowOutput](../../../../../types/WorkflowTypes/RegionWorkflow/types/types.WorkflowTypes.RegionWorkflow.CreateRegionsWorkflowOutput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the region.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the region.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"currency_code","type":"`string`","description":"The currency code of the region.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"automatic_taxes","type":"`boolean`","description":"Setting to indicate whether taxes need to be applied automatically","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"countries","type":"[RegionCountryDTO](../../../../../region/interfaces/region.RegionCountryDTO/page.mdx)[]","description":"The countries of the region.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the country.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"iso_2","type":"`string`","description":"The ISO 2 code of the country.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"iso_3","type":"`string`","description":"The ISO 3 code of the country.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"num_code","type":"`string`","description":"The country's code number.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the country.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"display_name","type":"`string`","description":"The display name of the country.","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"payment_providers","type":"[PaymentProviderDTO](../../../../../region/interfaces/region.PaymentProviderDTO/page.mdx)[]","description":"Payment providers available in the region","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the payment provider.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_enabled","type":"`boolean`","description":"Whether the payment provider is enabled.","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"created_at","type":"`string`","description":"The date the region was created.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string`","description":"The date the region was updated.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`Record<string, any>`","description":"Holds custom data in key-value pairs.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createRegionsWorkflow"/>
+
+## Emitted Events
+
+This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
+
+You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+Event
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Description
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Payload
+</Table.HeaderCell>
+      <Table.HeaderCell>
+Action
+</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+`region.created`
+</Table.Cell>
+      <Table.Cell>
+Emitted when regions are created.
+</Table.Cell>
+      <Table.Cell>
+```ts blockStyle="inline"
+[{
+  id, // The ID of the region
+}]
+```
+</Table.Cell>
+      <Table.Cell>
+<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
+        event: "region.created",
+        payload: `\`\`\`ts
+[{
+  id, // The ID of the region
+}]
+\`\`\``
+        }}/>
+</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

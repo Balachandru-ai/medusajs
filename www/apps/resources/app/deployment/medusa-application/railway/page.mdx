@@ -21,7 +21,7 @@ In this document, you’ll learn how to deploy your Medusa application to [Railw
 
 <Note>
 
-The same Medusa project is used to deploy the server and worker modes. Learn more about the `workerMode` configuration in [this document](/references/medusa-config#workermode).
+The same Medusa project is used to deploy the server and worker modes. Learn more about the `workerMode` configuration in [this document](!docs!/learn/configurations/medusa-config#workermode).
 
 </Note>
 
@@ -74,7 +74,7 @@ The `redisUrl` configuration specifies the connection URL to Redis to store the 
 
 <Note>
 
-Learn more in the [Medusa Configuration documentation](/references/medusa-config#redisurl).
+Learn more in the [Medusa Configuration documentation](!docs!/learn/configurations/medusa-config#redisurl).
 
 </Note>
 
@@ -110,11 +110,11 @@ So, add the following script in `package.json`:
 
 By default, your Medusa application uses modules and providers useful for development, such as the In-Memory Cache Module or the Local File Module Provider. It’s highly recommended to instead use modules and providers suitable for production, including:
 
-- [Redis Cache Module](../../../architectural-modules/cache/redis/page.mdx)
-- [Redis Event Bus Module](../../../architectural-modules/event/redis/page.mdx)
-- [Workflow Engine Redis Module](../../../architectural-modules/workflow-engine/redis/page.mdx)
-- [S3 File Module Provider](../../../architectural-modules/file/s3/page.mdx) (or other file module providers production-ready).
-- [SendGrid Notification Module Provider](../../../architectural-modules/notification/sendgrid/page.mdx) (or other notification module providers production-ready).
+- [Redis Cache Module](../../../infrastructure-modules/cache/redis/page.mdx)
+- [Redis Event Bus Module](../../../infrastructure-modules/event/redis/page.mdx)
+- [Workflow Engine Redis Module](../../../infrastructure-modules/workflow-engine/redis/page.mdx)
+- [S3 File Module Provider](../../../infrastructure-modules/file/s3/page.mdx) (or other file module providers production-ready).
+- [SendGrid Notification Module Provider](../../../infrastructure-modules/notification/sendgrid/page.mdx) (or other notification module providers production-ready).
 
 For example, add the following modules to `medusa-config.ts`:
 
@@ -150,7 +150,7 @@ module.exports = defineConfig({
 
 <Note title="Tip">
 
-Check out the [Integrations](../../../integrations/page.mdx) and [Architectural Modules](../../../architectural-modules/page.mdx) documentation for other modules and providers to use.
+Check out the [Integrations](../../../integrations/page.mdx) and [Infrastructure Modules](../../../infrastructure-modules/page.mdx) documentation for other modules and providers to use.
 
 </Note>
 
@@ -240,7 +240,7 @@ To set the `start` command of your Medusa application in server mode:
 5. Enter the following in the input and click the check mark button:
 
 ```bash npm2yarn
-cd .medusa/server && npm run predeploy && npm run start
+cd .medusa/server && npm install && npm run predeploy && npm run start
 ```
 
 ### Deploy Changes
@@ -346,7 +346,7 @@ To set the `start` command of your Medusa application in worker mode:
 5. Enter the following in the input and click the check mark button:
 
 ```bash npm2yarn
-cd .medusa/server && npm run start
+cd .medusa/server && npm install && npm run start
 ```
 
 ### Deploy Changes

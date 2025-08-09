@@ -1,4 +1,7 @@
 import { MetadataType } from "../common"
+import { BaseFilterable } from "../dal"
+import { OperatorMap } from "../dal"
+import { TaxProviderDTO } from "./common"
 
 /**
  * The tax rate to be created.
@@ -47,6 +50,37 @@ export interface CreateTaxRateDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: MetadataType
+}
+
+/**
+ * The tax provider to be created.
+ */
+export interface CreateTaxProviderDTO {
+  /**
+   * The provider's ID.
+   */
+  id: string
+
+  /**
+   * Whether the provider is enabled.
+   */
+  is_enabled?: boolean
+}
+
+/**
+ * The filters to apply on the retrieved tax providers.
+ */
+export interface FilterableTaxProviderProps
+  extends BaseFilterable<TaxProviderDTO> {
+  /**
+   * The IDs to filter the tax provider by.
+   */
+  id?: string | string[] | OperatorMap<string | string[]>
+
+  /**
+   * Filter by whether the tax provider is enabled.
+   */
+  is_enabled?: boolean
 }
 
 /**
@@ -157,7 +191,7 @@ export interface CreateTaxRegionDTO {
   country_code: string
 
   /**
-   * The province code of the tax region.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province or state code of the tax region.
    */
   province_code?: string | null
 
@@ -165,6 +199,11 @@ export interface CreateTaxRegionDTO {
    * The ID of the tax region's parent.
    */
   parent_id?: string | null
+
+  /**
+   * The ID of the tax provider for the region.
+   */
+  provider_id?: string | null
 
   /**
    * Holds custom data in key-value pairs.
@@ -216,9 +255,14 @@ export interface UpdateTaxRegionDTO {
   id: string
 
   /**
-   * The province code of the tax region.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province or state code of the tax region.
    */
   province_code?: string | null
+
+  /**
+   * The ID of the tax provider for the region.
+   */
+  provider_id?: string | null
 
   /**
    * Holds custom data in key-value pairs.

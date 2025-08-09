@@ -9,6 +9,7 @@ import { parse } from "yaml"
 import formatOas from "../../utils/format-oas.js"
 import pluralize from "pluralize"
 import { capitalize, wordsToPascal } from "utils"
+import chalk from "chalk"
 import { OasArea } from "../kinds/oas.js"
 import {
   isLevelExceeded,
@@ -307,7 +308,7 @@ class OasSchemaHelper {
       return
     }
 
-    return this.parseSchema(schemaFileContent)
+    return this.parseSchema(schemaFileContent, true)
   }
 
   /**
@@ -316,7 +317,10 @@ class OasSchemaHelper {
    * @param content - The schema comment string
    * @returns If the schema is valid and parsed successfully, the schema and its prefix are retrieved.
    */
-  parseSchema(content: string): ParsedSchema | undefined {
+  parseSchema(
+    content: string,
+    failOnParseError = false
+  ): ParsedSchema | undefined {
     const schemaFileContent = content
       .replace(`/**\n`, "")
       .replaceAll(DOCBLOCK_LINE_ASTRIX, "")
@@ -334,8 +338,11 @@ class OasSchemaHelper {
     try {
       schema = parse(splitContent.slice(1).join("\n"))
     } catch (e) {
-      // couldn't parse the OAS, so consider it
-      // not existent
+      if (failOnParseError) {
+        throw e
+      }
+
+      console.error(chalk.red(e))
     }
 
     return schema
@@ -357,7 +364,7 @@ class OasSchemaHelper {
       .replace("DTO", "")
       .replace(this.schemaRefPrefix, "")
       .replace(
-        /(?<!(AdminProduct|CreateProduct|StoreShippingOption|AdminShippingOption|CreateShippingOption|BaseProduct|StoreProduct))Type$/,
+        /(?<!(AdminProduct|CreateProduct|UpdateProduct|StoreShippingOption|AdminShippingOption|CreateShippingOption|BaseProduct|StoreProduct))Type$/,
         ""
       )
   }

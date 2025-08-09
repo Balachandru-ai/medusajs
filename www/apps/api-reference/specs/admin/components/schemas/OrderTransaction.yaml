@@ -4,6 +4,7 @@ x-schemaName: OrderTransaction
 required:
   - id
   - order_id
+  - version
   - order
   - amount
   - currency_code
@@ -47,6 +48,9 @@ properties:
   metadata:
     type: object
     description: The transaction's metadata, can hold custom key-value pairs.
+    externalDocs:
+      url: https://docs.medusajs.com/api/store#manage-metadata
+      description: Learn how to manage metadata
   created_at:
     type: string
     format: date-time
@@ -59,3 +63,7 @@ properties:
     description: The date that the transaction was updated.
   order:
     type: object
+  version:
+    type: number
+    title: version
+    description: The order version that the transaction belongs to.

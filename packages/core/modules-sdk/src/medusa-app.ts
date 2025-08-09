@@ -234,6 +234,7 @@ function cleanAndMergeSchema(loadedSchema) {
   const defaultMedusaSchema = `
     scalar DateTime
     scalar JSON
+    directive @enumValue(value: String) on ENUM_VALUE
   `
   const { schema: cleanedSchema, notFound } = GraphQLUtils.cleanGraphQLSchema(
     defaultMedusaSchema + loadedSchema

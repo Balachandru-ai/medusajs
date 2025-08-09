@@ -31,22 +31,25 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The refund's details.
- *         properties:
- *           amount:
- *             type: number
- *             title: amount
- *             description: The amount to refund.
- *           refund_reason_id:
- *             type: string
- *             title: refund_reason_id
- *             description: The ID of a refund reason.
- *           note:
- *             type: string
- *             title: note
- *             description: A note to attach to the refund.
+ *         $ref: "#/components/schemas/AdminCreatePaymentRefund"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.payment.refund("paycol_123", {})
+ *       .then(({ payment }) => {
+ *         console.log(payment)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -74,6 +77,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: refundPaymentWorkflow
+ * x-events:
+ *   - name: payment.refunded
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // the ID of the payment
+ *       }
+ *       ```
+ *     description: Emitted when a payment is refunded.
+ *     deprecated: false
  * 
 */
 

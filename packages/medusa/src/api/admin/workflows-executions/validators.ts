@@ -16,6 +16,7 @@ export const AdminGetWorkflowExecutionsParams = createFindParams({
   limit: 100,
 }).merge(
   z.object({
+    q: z.string().optional(),
     transaction_id: z.union([z.string(), z.array(z.string())]).optional(),
     workflow_id: z.union([z.string(), z.array(z.string())]).optional(),
   })

@@ -13,7 +13,7 @@ A standard Medusa project is made up of:
 - Medusa application: The Medusa server and the Medusa Admin.
 - One or more storefronts
 
-![Diagram showcasing the connection between the three deployed components](https://res.cloudinary.com/dza7lstvk/image/upload/v1708600807/Medusa%20Book/deployment-options_ceuuvo.jpg)
+![Medusa deployment architecture showing the relationship between three main components: the Medusa server (backend API), Medusa Admin dashboard (for store management), and customer-facing storefronts, all connected to facilitate complete ecommerce functionality](https://res.cloudinary.com/dza7lstvk/image/upload/v1708600807/Medusa%20Book/deployment-options_ceuuvo.jpg)
 
 You deploy the Medusa application, with the server and admin, separately from the storefront.
 
@@ -25,24 +25,37 @@ You must deploy the Medusa application before the storefront, as it connects to 
 
 The Medusa application must be deployed to a hosting provider supporting Node.js server deployments, such as Railway, DigitalOcean, AWS, Heroku, etc…
 
-![Diagram showcasing how the Medusa server and its associated services would be deployed](https://res.cloudinary.com/dza7lstvk/image/upload/v1708600972/Medusa%20Book/backend_deployment_pgexo3.jpg)
+![Medusa server deployment infrastructure diagram illustrating the backend services ecosystem: the Node.js Medusa server connected to essential services including PostgreSQL database for data storage, and Redis for caching and session management](https://res.cloudinary.com/dza7lstvk/image/upload/v1708600972/Medusa%20Book/backend_deployment_pgexo3.jpg)
 
 Your server connects to a PostgreSQL database, Redis, and other services relevant for your setup. Most hosting providers support deploying and managing these databases along with your Medusa server (such as Railway and DigitalOcean).
 
 When you deploy your Medusa application, you also deploy the Medusa Admin. For optimal experience, your hosting provider and plan must offer at least 2GB of RAM.
 
+### Deploy Server and Worker Instances
+
+By default, Medusa runs all processes in a single instance. This includes the server that handles incoming requests and the worker that processes background tasks. While this works for development, it’s not optimal for production environments as many background tasks can be long-running or resource-heavy.
+
+Instead, you should deploy two instances:
+
+- A server instance, which handles incoming requests to the application’s API routes.
+- A worker instance, which processes background tasks, including scheduled jobs and subscribers.
+
+You don’t need to set up different projects for each instance. Instead, you can configure the Medusa application to run in different modes based on environment variables.
+
+Learn more about worker modes and how to configure them in the [Worker Mode chapter](../production/worker-mode/page.mdx).
+
 ### How to Deploy Medusa?
 
-Medusa Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Medusa Cloud hosts your server, Admin dashboard, database, and Redis instance.
+Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Cloud hosts your server, Admin dashboard, database, and Redis instance.
 
-With Medusa Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+With Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
 
 - Push to deploy.
 - Multiple testing environments.
 - Preview environments for new PRs.
 - Test on production-like data.
 
-[Sign up and learn more about Medusa Cloud](https://medusajs.com/contact)
+[Sign up and learn more about Cloud](!cloud!)
 
 To self-host Medusa, the [next chapter](./general/page.mdx) explains the general steps to deploy your Medusa application. Refer to [this reference](!resources!/deployment) to find how-to deployment guides for general and specific hosting providers.
 

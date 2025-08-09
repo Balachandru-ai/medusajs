@@ -22,10 +22,9 @@ export function InjectTransactionManager(
 
     const argIndex = target.MedusaContextIndex_[propertyKey]
     descriptor.value = async function (...args: any[]) {
-      const context: Context = args[argIndex] ?? {}
       const originalContext = args[argIndex] ?? {}
 
-      if (context?.transactionManager) {
+      if (originalContext?.transactionManager) {
         return await originalMethod.apply(this, args)
       }
 
@@ -41,6 +40,7 @@ export function InjectTransactionManager(
             }
 
             Object.defineProperty(copiedContext, key, {
+              enumerable: true,
               get: function () {
                 return originalContext[key]
               },
@@ -63,10 +63,10 @@ export function InjectTransactionManager(
           return await originalMethod.apply(this, args)
         },
         {
-          transaction: context?.transactionManager,
-          isolationLevel: (context as Context)?.isolationLevel,
+          transaction: originalContext?.transactionManager,
+          isolationLevel: (originalContext as Context)?.isolationLevel,
           enableNestedTransactions:
-            (context as Context).enableNestedTransactions ?? false,
+            (originalContext as Context).enableNestedTransactions ?? false,
         }
       )
     }

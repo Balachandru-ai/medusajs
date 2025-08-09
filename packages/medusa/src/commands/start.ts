@@ -268,7 +268,7 @@ async function start(args: {
         if (!isShuttingDown) {
           cluster.fork()
         } else if (!isPresent(cluster.workers)) {
-          setTimeout(killMainProccess, 100)
+          setTimeout(killMainProccess, 100).unref()
         }
       })
 

@@ -40,6 +40,11 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_{variant_id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -123,6 +128,11 @@ post:
                     `additional_data` parameter.
           description: The properties to update in the variant.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_{variant_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -150,6 +160,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateProductVariantsWorkflow
+  x-events:
+    - name: product-variant.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product variant
+        }]
+        ```
+      description: Emitted when product variants are updated.
+      deprecated: false
 delete:
   operationId: DeleteProductsIdVariantsVariant_id
   summary: Delete Product Variant
@@ -192,6 +212,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_products_{id}_variants_{variant_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -219,3 +244,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteProductVariantsWorkflow
+  x-events:
+    - name: product-variant.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product variant
+        }]
+        ```
+      description: Emitted when product variants are deleted.
+      deprecated: false

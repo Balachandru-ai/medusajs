@@ -38,6 +38,10 @@ post:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_fulfillments_{id}_cancel/post.js
     - lang: Shell
       label: cURL
       source:
@@ -64,3 +68,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelFulfillmentWorkflow
+  x-events: []

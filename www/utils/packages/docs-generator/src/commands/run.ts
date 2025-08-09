@@ -1,7 +1,9 @@
 import DmlGenerator from "../classes/generators/dml.js"
 import DocblockGenerator from "../classes/generators/docblock.js"
+import EventsGenerator from "../classes/generators/events.js"
 import { Options } from "../classes/generators/index.js"
 import OasGenerator from "../classes/generators/oas.js"
+import RouteExamplesGenerator from "../classes/generators/route-examples.js"
 import { CommonCliOptions } from "../types/index.js"
 
 export default async function run(
@@ -35,6 +37,24 @@ export default async function run(
     })
 
     await dmlGenerator.run()
+  }
+
+  if (type === "all" || type === "route-examples") {
+    const routeExamplesGenerator = new RouteExamplesGenerator({
+      paths,
+      ...options,
+    })
+
+    await routeExamplesGenerator.run()
+  }
+
+  if (type === "all" || type === "events") {
+    const eventsGenerator = new EventsGenerator({
+      paths,
+      ...options,
+    })
+
+    await eventsGenerator.run()
   }
 
   console.log(`Finished running.`)

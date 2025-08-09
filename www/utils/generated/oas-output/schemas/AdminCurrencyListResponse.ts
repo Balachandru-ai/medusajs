@@ -26,6 +26,11 @@
  *     description: The list of currencies.
  *     items:
  *       $ref: "#/components/schemas/AdminCurrency"
+ *   estimate_count:
+ *     type: number
+ *     title: estimate_count
+ *     description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+ *     x-featureFlag: index_engine
  * 
 */
 

@@ -325,6 +325,17 @@ medusaIntegrationTestRunner({
         },
       ])
 
+      // create reservation for inventory item that is initially on the order
+      const inventoryModule = container.resolve(Modules.INVENTORY)
+      await inventoryModule.createReservationItems([
+        {
+          inventory_item_id: inventoryItem.id,
+          location_id: location.id,
+          quantity: 2,
+          line_item_id: order.items[0].id,
+        },
+      ])
+
       const shippingOptionPayload = {
         name: "Return shipping",
         service_zone_id: fulfillmentSet.service_zones[0].id,
@@ -570,6 +581,23 @@ medusaIntegrationTestRunner({
         expect(result).toHaveLength(2)
         expect(result[0].additional_items).toHaveLength(1)
         expect(result[0].canceled_at).toBeNull()
+
+        const return_ = (
+          await api.get(
+            `/admin/returns/${result[0].return_id}?fields=*fulfillments`,
+            adminHeaders
+          )
+        ).data.return
+
+        expect(return_.fulfillments).toHaveLength(1)
+        expect(return_.fulfillments[0].canceled_at).toBeNull()
+
+        // all exchange return fulfillments should be canceled before canceling the exchange
+        await api.post(
+          `/admin/fulfillments/${return_.fulfillments[0].id}/cancel`,
+          {},
+          adminHeaders
+        )
 
         await api.post(
           `/admin/exchanges/${exchangeId}/cancel`,

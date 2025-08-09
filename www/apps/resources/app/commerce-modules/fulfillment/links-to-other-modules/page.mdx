@@ -1,4 +1,12 @@
-import { CodeTabs, CodeTab } from "docs-ui"
+---
+products:
+  - order
+  - pricing
+  - product
+  - stock location
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
 
 export const metadata = {
   title: `Links between Fulfillment Module and Other Modules`,
@@ -6,18 +14,116 @@ export const metadata = {
 
 # {metadata.title}
 
-This document showcases the module links defined between the Fulfillment Module and other commerce modules.
+This document showcases the module links defined between the Fulfillment Module and other Commerce Modules.
 
 ## Summary
 
 The Fulfillment Module has the following links to other modules:
 
-- [`Order` data model of the Order Module \<\> `Fulfillment` data model](#order-module).
-- [`Return` data model of the Order Module \<\> `Fulfillment` data model](#order-module).
-- [`PriceSet` data model of the Pricing Module \<\> `ShippingOption` data model](#pricing-module).
-- [`Product` data model of the Product Module \<\> `ShippingProfile` data model](#product-module).
-- [`StockLocation` data model of the Stock Location Module \<\> `FulfillmentProvider` data model](#stock-location-module).
-- [`StockLocation` data model of the Stock Location Module \<\> `FulfillmentSet` data model](#stock-location-module).
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order) in [Order Module](../../order/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [Fulfillment](/references/fulfillment/models/Fulfillment)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#order-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Return](/references/order/models/Return) in [Order Module](../../order/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [Fulfillment](/references/fulfillment/models/Fulfillment)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#order-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [PriceSet](/references/pricing/models/PriceSet) in [Pricing Module](../../pricing/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [ShippingOption](/references/fulfillment/models/ShippingOption)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#pricing-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Product](/references/product/models/Product) in [Product Module](../../product/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [ShippingProfile](/references/fulfillment/models/ShippingProfile)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#product-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [FulfillmentProvider](/references/fulfillment/models/FulfillmentProvider)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#stock-location-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [FulfillmentSet](/references/fulfillment/models/FulfillmentSet)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#stock-location-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
 
 ---
 
@@ -143,11 +249,11 @@ To retrieve the price set of a shipping option with [Query](!docs!/learn/fundame
 const { data: shippingOptions } = await query.graph({
   entity: "shipping_option",
   fields: [
-    "price_set.*",
+    "price_set_link.*",
   ],
 })
 
-// shippingOptions.price_set
+// shippingOptions[0].price_set_link?.price_set_id
 ```
 
   </CodeTab>
@@ -161,11 +267,11 @@ import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
 const { data: shippingOptions } = useQueryGraphStep({
   entity: "shipping_option",
   fields: [
-    "price_set.*",
+    "price_set_link.*",
   ],
 })
 
-// shippingOptions.price_set
+// shippingOptions[0].price_set_link?.price_set_id
 ```
 
   </CodeTab>
@@ -242,7 +348,7 @@ const { data: shippingProfiles } = await query.graph({
   ],
 })
 
-// shippingProfiles.products
+// shippingProfiles[0].products
 ```
 
   </CodeTab>
@@ -260,7 +366,7 @@ const { data: shippingProfiles } = useQueryGraphStep({
   ],
 })
 
-// shippingProfiles.products
+// shippingProfiles[0].products
 ```
 
   </CodeTab>
@@ -345,7 +451,7 @@ const { data: fulfillmentSets } = await query.graph({
   ],
 })
 
-// fulfillmentSets.location
+// fulfillmentSets[0].location
 ```
 
   </CodeTab>
@@ -363,7 +469,7 @@ const { data: fulfillmentSets } = useQueryGraphStep({
   ],
 })
 
-// fulfillmentSets.location
+// fulfillmentSets[0].location
 ```
 
   </CodeTab>

@@ -27,19 +27,30 @@ export type StepFunctionReturnConfig<TOutput> = {
 type KeysOfUnion<T> = T extends T ? keyof T : never
 export type HookHandler = (...args: any[]) => void | Promise<void>
 
+type ConvertHookToObject<THook> = THook extends Hook<
+  infer Name,
+  infer Input,
+  infer Output
+>
+  ? {
+      [K in Name]: <TCompensateInput>(
+        invoke: InvokeFn<Input, Output, TCompensateInput>,
+        compensate?: CompensateFn<TCompensateInput>
+      ) => void
+    }
+  : never
+
 /**
  * Helper to convert an array of hooks to functions
  */
-type ConvertHooksToFunctions<THooks extends any[]> = {
-  [K in keyof THooks]: THooks[K] extends Hook<infer Name, infer Input>
-    ? {
-        [Fn in Name]: <TOutput, TCompensateInput>(
-          invoke: InvokeFn<Input, TOutput, TCompensateInput>,
-          compensate?: CompensateFn<TCompensateInput>
-        ) => void
-      }
-    : never
-}[number]
+type ConvertHooksToFunctions<THooks extends any[]> = THooks extends [
+  infer A,
+  ...infer R
+]
+  ? ConvertHookToObject<A> & ConvertHooksToFunctions<R>
+  : {}
+
+export type Void = { " $$type": "void" }
 
 /**
  * A step function to be used in a workflow.
@@ -53,7 +64,9 @@ export type StepFunction<
 > = (KeysOfUnion<TInput> extends []
   ? // Function that doesn't expect any input
     {
-      (): WorkflowData<TOutput> & StepFunctionReturnConfig<TOutput>
+      (): TOutput & {} extends never
+        ? WorkflowData<Void> & StepFunctionReturnConfig<TOutput>
+        : WorkflowData<TOutput> & StepFunctionReturnConfig<TOutput>
     }
   : // function that expects an input object
     {
@@ -100,11 +113,21 @@ export type CreateWorkflowComposerContext = {
   flow: OrchestratorBuilder
   isAsync: boolean
   handlers: WorkflowHandler
+  overriddenHandler: WorkflowHandler
   stepBinder: <TOutput = unknown>(
     fn: StepFunctionResult
   ) => WorkflowData<TOutput>
   hookBinder: (name: string, fn: () => HookHandler) => void
-  parallelizeBinder: <TOutput extends WorkflowData[] = WorkflowData[]>(
+  stepConditions_: Record<
+    string,
+    {
+      condition: (...args: any[]) => boolean | WorkflowData
+      input: any
+    }
+  >
+  parallelizeBinder: <
+    TOutput extends (WorkflowData | undefined)[] = WorkflowData[]
+  >(
     fn: (this: CreateWorkflowComposerContext) => TOutput
   ) => TOutput
 }
@@ -132,6 +155,11 @@ export interface StepExecutionContext {
    * The idempoency key of the parent step.
    */
   parentStepIdempotencyKey?: string
+
+  /**
+   * Whether to prevent release events.
+   */
+  preventReleaseEvents?: boolean
 
   /**
    * The name of the step.
@@ -163,6 +191,19 @@ export interface StepExecutionContext {
    * A string indicating the ID of the current transaction.
    */
   transactionId?: string
+
+  /**
+   * Get access to the result returned by a named step. Returns undefined
+   * when step is not found or when nothing was returned.
+   *
+   * Adding a space hides the method from the autocomplete
+   */
+  " getStepResult"(stepId: string, action?: "invoke" | "compensate"): any
+
+  /**
+   * Get access to the definition of the step.
+   */
+  " stepDefinition": TransactionStepsDefinition
 }
 
 export type WorkflowTransactionContext = StepExecutionContext &

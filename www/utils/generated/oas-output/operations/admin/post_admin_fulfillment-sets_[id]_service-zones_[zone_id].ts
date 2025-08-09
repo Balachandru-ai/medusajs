@@ -38,140 +38,31 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The service zone's details.
- *         properties:
- *           name:
- *             type: string
- *             title: name
- *             description: The service zone's name.
- *           geo_zones:
- *             type: array
- *             description: The service zone's associated geo zones.
- *             items:
- *               oneOf:
- *                 - type: object
- *                   description: A country geo zone.
- *                   required:
- *                     - type
- *                     - metadata
- *                     - country_code
- *                   properties:
- *                     type:
- *                       type: string
- *                       title: type
- *                       description: The geo zone's type.
- *                       default: country
- *                     metadata:
- *                       type: object
- *                       description: The geo zone's metadata.
- *                     country_code:
- *                       type: string
- *                       title: country_code
- *                       description: The geo zone's country code.
- *                     id:
- *                       type: string
- *                       title: id
- *                       description: The ID of an existing geo zone.
- *                 - type: object
- *                   description: A province geo zone.
- *                   required:
- *                     - type
- *                     - metadata
- *                     - country_code
- *                     - province_code
- *                   properties:
- *                     type:
- *                       type: string
- *                       title: type
- *                       description: The geo zone's type.
- *                       default: province
- *                     metadata:
- *                       type: object
- *                       description: The geo zone's metadata.
- *                     country_code:
- *                       type: string
- *                       title: country_code
- *                       description: The geo zone's country code.
- *                     province_code:
- *                       type: string
- *                       title: province_code
- *                       description: The geo zone's province code.
- *                     id:
- *                       type: string
- *                       title: id
- *                       description: The ID of an existing geo zone.
- *                 - type: object
- *                   description: A city geo zone
- *                   required:
- *                     - type
- *                     - metadata
- *                     - city
- *                     - country_code
- *                     - province_code
- *                   properties:
- *                     type:
- *                       type: string
- *                       title: type
- *                       description: The geo zone's type.
- *                       default: city
- *                     metadata:
- *                       type: object
- *                       description: The geo zone's metadata.
- *                     city:
- *                       type: string
- *                       title: city
- *                       description: The geo zone's city.
- *                     country_code:
- *                       type: string
- *                       title: country_code
- *                       description: The geo zone's country code.
- *                     province_code:
- *                       type: string
- *                       title: province_code
- *                       description: The geo zone's province code.
- *                     id:
- *                       type: string
- *                       title: id
- *                       description: The ID of an existing geo zone.
- *                 - type: object
- *                   description: A ZIP geo zone.
- *                   required:
- *                     - type
- *                     - metadata
- *                     - city
- *                     - country_code
- *                     - province_code
- *                     - postal_expression
- *                   properties:
- *                     type:
- *                       type: string
- *                       title: type
- *                       description: The geo zone's type.
- *                       default: zip
- *                     metadata:
- *                       type: object
- *                       description: The geo zone's metadata.
- *                     city:
- *                       type: string
- *                       title: city
- *                       description: The geo zone's city.
- *                     country_code:
- *                       type: string
- *                       title: country_code
- *                       description: The geo zone's country code.
- *                     province_code:
- *                       type: string
- *                       title: province_code
- *                       description: The geo zone's province code.
- *                     postal_expression:
- *                       type: object
- *                       description: The geo zone's postal expression or ZIP code.
- *                     id:
- *                       type: string
- *                       title: id
- *                       description: The ID of an existing geo zone.
+ *         $ref: "#/components/schemas/AdminUpdateFulfillmentSetServiceZones"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.fulfillmentSet.updateServiceZone(
+ *         "fset_123", 
+ *         "serzo_123",
+ *         {
+ *           name: "Europe Service Zone",
+ *         }
+ *       )
+ *       .then(({ fulfillment_set }) => {
+ *         console.log(fulfillment_set)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -203,6 +94,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateServiceZonesWorkflow
+ * x-events: []
  * 
 */
 

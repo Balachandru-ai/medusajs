@@ -43,7 +43,7 @@ export class MessageAggregator implements IMessageAggregator {
         object: message.object,
         action: message.action,
         options,
-        context: sharedContext,
+        context: message.context ?? sharedContext,
       })
     })
     this.save(composedMessages)

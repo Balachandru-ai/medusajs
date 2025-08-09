@@ -2,6 +2,7 @@ import { isDefined } from "@medusajs/utils"
 import { EventEmitter } from "events"
 import { IDistributedTransactionStorage } from "./datastore/abstract-storage"
 import { BaseInMemoryDistributedTransactionStorage } from "./datastore/base-in-memory-storage"
+import { NonSerializableCheckPointError } from "./errors"
 import { TransactionOrchestrator } from "./transaction-orchestrator"
 import { TransactionStep, TransactionStepHandler } from "./transaction-step"
 import {
@@ -9,7 +10,6 @@ import {
   TransactionHandlerType,
   TransactionState,
 } from "./types"
-import { NonSerializableCheckPointError } from "./errors"
 
 /**
  * @typedef TransactionMetadata
@@ -79,6 +79,7 @@ export class TransactionPayload {
 class DistributedTransaction extends EventEmitter {
   public modelId: string
   public transactionId: string
+  public runId: string
 
   private readonly errors: TransactionStepError[] = []
   private readonly context: TransactionContext = new TransactionContext()
@@ -109,7 +110,7 @@ class DistributedTransaction extends EventEmitter {
 
     this.transactionId = flow.transactionId
     this.modelId = flow.modelId
-
+    this.runId = flow.runId
     if (errors) {
       this.errors = errors
     }
@@ -220,7 +221,8 @@ class DistributedTransaction extends EventEmitter {
 
   public static async loadTransaction(
     modelId: string,
-    transactionId: string
+    transactionId: string,
+    options?: { isCancelling?: boolean }
   ): Promise<TransactionCheckpoint | null> {
     const key = TransactionOrchestrator.getKeyName(
       DistributedTransaction.keyPrefix,
@@ -228,11 +230,13 @@ class DistributedTransaction extends EventEmitter {
       transactionId
     )
 
-    const options = TransactionOrchestrator.getWorkflowOptions(modelId)
-    const loadedData = await DistributedTransaction.keyValueStore.get(
-      key,
-      options
-    )
+    const workflowOptions = TransactionOrchestrator.getWorkflowOptions(modelId)
+
+    const loadedData = await DistributedTransaction.keyValueStore.get(key, {
+      ...workflowOptions,
+      isCancelling: options?.isCancelling,
+    })
+
     if (loadedData) {
       return loadedData
     }
@@ -248,7 +252,6 @@ class DistributedTransaction extends EventEmitter {
       return
     }
 
-    await this.saveCheckpoint()
     await DistributedTransaction.keyValueStore.scheduleRetry(
       this,
       step,
@@ -267,7 +270,6 @@ class DistributedTransaction extends EventEmitter {
       return
     }
 
-    await this.saveCheckpoint()
     await DistributedTransaction.keyValueStore.scheduleTransactionTimeout(
       this,
       Date.now(),

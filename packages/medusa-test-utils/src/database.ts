@@ -5,6 +5,8 @@ import {
   SqlEntityManager,
 } from "@mikro-orm/postgresql"
 import { createDatabase, dropDatabase } from "pg-god"
+import { logger } from "@medusajs/framework/logger"
+import { execOrTimeout } from "./medusa-test-runner-utils"
 
 const DB_HOST = process.env.DB_HOST ?? "localhost"
 const DB_USERNAME = process.env.DB_USERNAME ?? ""
@@ -123,31 +125,43 @@ export function getMikroOrmWrapper({
         schema: this.schema,
       })
 
-      // Initializing the ORM
-      this.orm = await MikroORM.init(OrmConfig)
-
-      this.manager = this.orm.em
-
       try {
-        await this.orm.getSchemaGenerator().ensureDatabase()
-      } catch (err) {
-        console.log(err)
-      }
+        this.orm = await MikroORM.init(OrmConfig)
+        this.manager = this.orm.em
 
-      await this.manager?.execute(
-        `CREATE SCHEMA IF NOT EXISTS "${this.schema ?? "public"}";`
-      )
+        try {
+          await this.orm.getSchemaGenerator().ensureDatabase()
+        } catch (err) {
+          logger.error("Error ensuring database:", err)
+          throw err
+        }
 
-      const pendingMigrations = await this.orm
-        .getMigrator()
-        .getPendingMigrations()
+        await this.manager?.execute(
+          `CREATE SCHEMA IF NOT EXISTS "${this.schema ?? "public"}";`
+        )
 
-      if (pendingMigrations && pendingMigrations.length > 0) {
-        await this.orm
+        const pendingMigrations = await this.orm
           .getMigrator()
-          .up({ migrations: pendingMigrations.map((m) => m.name!) })
-      } else {
-        await this.orm.schema.refreshDatabase() // ensure db exists and is fresh
+          .getPendingMigrations()
+
+        if (pendingMigrations && pendingMigrations.length > 0) {
+          await this.orm
+            .getMigrator()
+            .up({ migrations: pendingMigrations.map((m) => m.name!) })
+        } else {
+          await this.orm.schema.refreshDatabase()
+        }
+      } catch (error) {
+        if (this.orm) {
+          try {
+            await this.orm.close()
+          } catch (closeError) {
+            logger.error("Error closing ORM:", closeError)
+          }
+        }
+        this.orm = null
+        this.manager = null
+        throw error
       }
     },
 
@@ -156,20 +170,30 @@ export function getMikroOrmWrapper({
         throw new Error("ORM not configured")
       }
 
-      await this.manager?.execute(
-        `DROP SCHEMA IF EXISTS "${this.schema ?? "public"}" CASCADE;`
-      )
-
-      await this.manager?.execute(
-        `CREATE SCHEMA IF NOT EXISTS "${this.schema ?? "public"}";`
-      )
-
       try {
-        await this.orm.close()
-      } catch {}
+        await this.manager?.execute(
+          `DROP SCHEMA IF EXISTS "${this.schema ?? "public"}" CASCADE;`
+        )
 
-      this.orm = null
-      this.manager = null
+        await this.manager?.execute(
+          `CREATE SCHEMA IF NOT EXISTS "${this.schema ?? "public"}";`
+        )
+
+        const closePromise = this.orm.close()
+
+        await execOrTimeout(closePromise)
+      } catch (error) {
+        logger.error("Error clearing database:", error)
+        try {
+          await this.orm?.close()
+        } catch (closeError) {
+          logger.error("Error during forced ORM close:", closeError)
+        }
+        throw error
+      } finally {
+        this.orm = null
+        this.manager = null
+      }
     },
   }
 }
@@ -178,10 +202,15 @@ export const dbTestUtilFactory = (): any => ({
   pgConnection_: null,
 
   create: async function (dbName: string) {
-    await createDatabase(
-      { databaseName: dbName, errorIfExist: false },
-      pgGodCredentials
-    )
+    try {
+      await createDatabase(
+        { databaseName: dbName, errorIfExist: false },
+        pgGodCredentials
+      )
+    } catch (error) {
+      logger.error("Error creating database:", error)
+      throw error
+    }
   },
 
   teardown: async function ({ schema }: { schema?: string } = {}) {
@@ -189,30 +218,77 @@ export const dbTestUtilFactory = (): any => ({
       return
     }
 
-    const runRawQuery = this.pgConnection_.raw.bind(this.pgConnection_)
+    try {
+      const runRawQuery = this.pgConnection_.raw.bind(this.pgConnection_)
+      schema ??= "public"
 
-    schema ??= "public"
+      await runRawQuery(`SET session_replication_role = 'replica';`)
+      const { rows: tableNames } = await runRawQuery(`SELECT table_name
+                                              FROM information_schema.tables
+                                              WHERE table_schema = '${schema}';`)
 
-    await runRawQuery(`SET session_replication_role = 'replica';`)
-    const { rows: tableNames } = await runRawQuery(`SELECT table_name
-                                            FROM information_schema.tables
-                                            WHERE table_schema = '${schema}';`)
+      const skipIndexPartitionPrefix = "cat_"
+      const mainPartitionTables = ["index_data", "index_relation"]
+      let hasIndexTables = false
 
-    for (const { table_name } of tableNames) {
-      await runRawQuery(`DELETE
-                           FROM ${schema}."${table_name}";`)
+      for (const { table_name } of tableNames) {
+        if (mainPartitionTables.includes(table_name)) {
+          hasIndexTables = true
+        }
+
+        if (
+          table_name.startsWith(skipIndexPartitionPrefix) ||
+          mainPartitionTables.includes(table_name)
+        ) {
+          continue
+        }
+
+        await runRawQuery(`DELETE FROM ${schema}."${table_name}";`)
+      }
+
+      if (hasIndexTables) {
+        await runRawQuery(`TRUNCATE TABLE ${schema}.index_data;`)
+        await runRawQuery(`TRUNCATE TABLE ${schema}.index_relation;`)
+      }
+
+      await runRawQuery(`SET session_replication_role = 'origin';`)
+    } catch (error) {
+      logger.error("Error during database teardown:", error)
+      throw error
     }
-
-    await runRawQuery(`SET session_replication_role = 'origin';`)
   },
 
   shutdown: async function (dbName: string) {
-    await this.pgConnection_?.context?.destroy()
-    await this.pgConnection_?.destroy()
+    try {
+      const cleanupPromises: Promise<any>[] = []
 
-    return await dropDatabase(
-      { databaseName: dbName, errorIfNonExist: false },
-      pgGodCredentials
-    )
+      if (this.pgConnection_?.context) {
+        cleanupPromises.push(
+          execOrTimeout(this.pgConnection_.context.destroy())
+        )
+      }
+
+      if (this.pgConnection_) {
+        cleanupPromises.push(execOrTimeout(this.pgConnection_.destroy()))
+      }
+
+      await Promise.all(cleanupPromises)
+
+      return await dropDatabase(
+        { databaseName: dbName, errorIfNonExist: false },
+        pgGodCredentials
+      )
+    } catch (error) {
+      logger.error("Error during database shutdown:", error)
+      try {
+        await this.pgConnection_?.context?.destroy()
+        await this.pgConnection_?.destroy()
+      } catch (cleanupError) {
+        logger.error("Error during forced cleanup:", cleanupError)
+      }
+      throw error
+    } finally {
+      this.pgConnection_ = null
+    }
   },
 })

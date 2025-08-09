@@ -38,14 +38,12 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The payment's details.
-          properties:
-            amount:
-              type: number
-              title: amount
-              description: The amount to capture.
+          $ref: ../components/schemas/AdminCreatePaymentCapture.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_payments_{id}_capture/post.js
     - lang: Shell
       label: cURL
       source:
@@ -72,3 +70,13 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: capturePaymentWorkflow
+  x-events:
+    - name: payment.captured
+      payload: |-
+        ```ts
+        {
+          id, // the ID of the payment
+        }
+        ```
+      description: Emitted when a payment is captured.
+      deprecated: false

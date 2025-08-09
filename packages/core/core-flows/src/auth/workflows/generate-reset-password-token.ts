@@ -9,21 +9,22 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
+import { ProjectConfigOptions } from "@medusajs/framework/types"
 
 /**
  * This workflow generates a reset password token for a user. It's used by the
  * [Generate Reset Password Token for Admin](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerresetpassword)
  * and [Generate Reset Password Token for Customer](https://docs.medusajs.com/api/store#auth_postactor_typeauth_providerresetpassword)
  * API Routes.
- * 
+ *
  * The workflow emits the `auth.password_reset` event, which you can listen to in
  * a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). Follow
  * [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password) to learn
  * how to handle this event.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * generate reset password tokens within your custom flows.
- * 
+ *
  * @example
  * const { result } = await generateResetPasswordTokenWorkflow(container)
  * .run({
@@ -34,9 +35,9 @@ import { emitEventStep, useRemoteQueryStep } from "../../common"
  *     secret: "jwt_123" // jwt secret
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Generate a reset password token for a user or customer.
  */
 export const generateResetPasswordTokenWorkflow = createWorkflow(
@@ -45,7 +46,8 @@ export const generateResetPasswordTokenWorkflow = createWorkflow(
     entityId: string
     actorType: string
     provider: string
-    secret: string
+    secret: ProjectConfigOptions["http"]["jwtSecret"]
+    jwtOptions?: ProjectConfigOptions["http"]["jwtOptions"]
   }) => {
     const providerIdentities = useRemoteQueryStep({
       entry_point: "provider_identity",
@@ -79,6 +81,7 @@ export const generateResetPasswordTokenWorkflow = createWorkflow(
           {
             secret: input.secret,
             expiresIn: "15m",
+            jwtOptions: input.jwtOptions,
           }
         )
 
@@ -90,11 +93,6 @@ export const generateResetPasswordTokenWorkflow = createWorkflow(
       eventName: AuthWorkflowEvents.PASSWORD_RESET,
       data: {
         entity_id: input.entityId,
-        /**
-         * Use `actor_type` instead. Will be removed in a future version.
-         * @deprecated
-         */
-        actorType: input.actorType,
         actor_type: input.actorType,
         token,
       },

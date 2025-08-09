@@ -34,6 +34,25 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminPostReturnsConfirmRequestReqSchema"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.return.confirmReceive("return_123", {
+ *         no_notification: true,
+ *       })
+ *       .then(({ return }) => {
+ *         console.log(return)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -61,6 +80,17 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: confirmReturnReceiveWorkflow
+ * x-events:
+ *   - name: order.return_received
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         return_id, // The ID of the return
+ *       }
+ *       ```
+ *     description: Emitted when a return is marked as received.
+ *     deprecated: false
  * 
 */
 

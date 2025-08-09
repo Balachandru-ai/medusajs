@@ -1,3 +1,7 @@
+---
+generate_toc: true
+---
+
 import { CodeTabs, CodeTab, ChildDocs } from "docs-ui"
 
 export const metadata = {
@@ -8,7 +12,13 @@ export const metadata = {
 
 In this section of the documentation, you will find resources to learn more about the Payment Module and how to use it in your application.
 
-Medusa has payment related features available out-of-the-box through the Payment Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in commerce modules, such as this Payment Module.
+<Note title="Looking for no-code docs?">
+
+Refer to the [Medusa Admin User Guide](!user-guide!/orders/payments) to learn how to manage order payments using the dashboard.
+
+</Note>
+
+Medusa has payment related features available out-of-the-box through the Payment Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Payment Module.
 
 <Note>
 
@@ -28,7 +38,7 @@ Learn more about why modules are isolated in [this documentation](!docs!/learn/f
 
 ## How to Use the Payment Module
 
-In your Medusa application, you build flows around commerce modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
+In your Medusa application, you build flows around Commerce Modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
 
 You can build custom workflows and steps. You can also re-use Medusa's workflows and steps, which are provided by the `@medusajs/medusa/core-flows` package.
 

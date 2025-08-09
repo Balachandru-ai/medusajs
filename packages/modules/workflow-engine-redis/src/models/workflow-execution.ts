@@ -6,6 +6,7 @@ export const WorkflowExecution = model
     id: model.id({ prefix: "wf_exec" }),
     workflow_id: model.text().primaryKey(),
     transaction_id: model.text().primaryKey(),
+    run_id: model.text().primaryKey(),
     execution: model.json().nullable(),
     context: model.json().nullable(),
     state: model.enum(TransactionState),
@@ -25,7 +26,7 @@ export const WorkflowExecution = model
       where: "deleted_at IS NULL",
     },
     {
-      on: ["workflow_id", "transaction_id"],
+      on: ["workflow_id", "transaction_id", "run_id"],
       unique: true,
       where: "deleted_at IS NULL",
     },

@@ -15,6 +15,7 @@ const linearClient = new LinearClient({
 })
 
 const __dirname = getDirname(import.meta.url)
+const monorepoRoot = path.join(__dirname, "..", "..", "..", "..", "..")
 
 let freshnessCheckLabelId = ""
 let documentationTeamId = ""
@@ -28,7 +29,7 @@ async function scanDirectory(startPath: string) {
     const filePath = path.join(startPath, file.name)
     if (file.isDirectory()) {
       //if it's references directory, skip
-      if (file.name !== "references" && file.name !== "upgrade-guides") {
+      if (file.name !== "references") {
         await scanDirectory(filePath)
       }
       continue
@@ -40,12 +41,14 @@ async function scanDirectory(startPath: string) {
     }
 
     //if it is a file, check its commits in GitHub
+    // retrieve relative path to monorepo root
+    const relativeFilePath = path.relative(monorepoRoot, filePath)
     const commitResponse = await octokit.request(
       "GET /repos/{owner}/{repo}/commits",
       {
         owner: "medusajs",
         repo: "medusa",
-        path: filePath,
+        path: relativeFilePath,
         per_page: 1,
       }
     )
@@ -62,7 +65,7 @@ async function scanDirectory(startPath: string) {
       commitResponse.data[0].commit.committer.date
     )
     const monthsSinceEdited = getMonthDifference(lastEditedDate, today)
-    const monthsThreshold = 2
+    const monthsThreshold = 6
 
     if (monthsSinceEdited > monthsThreshold) {
       //file was edited more than 6 months ago.
@@ -73,7 +76,7 @@ async function scanDirectory(startPath: string) {
             gte: subtractMonths(monthsSinceEdited - monthsThreshold, today),
           },
           title: {
-            containsIgnoreCase: `Freshness check for ${filePath}`,
+            containsIgnoreCase: relativeFilePath,
           },
           labels: {
             some: {
@@ -91,14 +94,14 @@ async function scanDirectory(startPath: string) {
         continue
       }
 
-      console.log(`Creating an issue for ${filePath}...`)
+      console.log(`Creating an issue for ${relativeFilePath}...`)
 
       //there are no issues in the past 6 months. Create an issue
-      await linearClient.issueCreate({
+      await linearClient.createIssue({
         teamId: documentationTeamId,
-        title: `Freshness check for ${filePath}`,
+        title: `Freshness check for ${relativeFilePath}`,
         labelIds: [freshnessCheckLabelId],
-        description: `File \`${filePath}\` was last edited on ${lastEditedDate.toDateString()}.`,
+        description: `File \`${relativeFilePath}\` was last edited on ${lastEditedDate.toDateString()}. Please review and update the content if necessary.`,
       })
     }
   }
@@ -109,14 +112,14 @@ async function main() {
   const documentationTeam = await linearClient.teams({
     filter: {
       name: {
-        eqIgnoreCase: "Documentation",
+        eqIgnoreCase: "DX",
       },
     },
     first: 1,
   })
 
   if (!documentationTeam.nodes.length) {
-    console.log("Please add Documentation team in Linear first then try again")
+    console.log("Please add DX team in Linear first then try again")
     process.exit(1)
   }
 
@@ -138,19 +141,24 @@ async function main() {
 
   if (!freshnessCheckLabel.nodes.length) {
     console.log(
-      "Please add freshness check label in Linear under the documentation team first then try again"
+      "Please add freshness check label in Linear under the DX team first then try again"
     )
     process.exit(1)
   }
 
   freshnessCheckLabelId = freshnessCheckLabel.nodes[0].id
 
+  await scanDirectory(path.join(monorepoRoot, "www", "apps", "book", "app"))
   await scanDirectory(
-    path.join(__dirname, "..", "..", "..", "..", "apps", "book", "app")
+    path.join(monorepoRoot, "www", "apps", "resources", "app")
   )
   await scanDirectory(
-    path.join(__dirname, "..", "..", "..", "..", "apps", "resources", "app")
+    path.join(monorepoRoot, "www", "apps", "user-guide", "app")
   )
+  await scanDirectory(
+    path.join(monorepoRoot, "www", "apps", "ui", "src", "content", "docs")
+  )
+  await scanDirectory(path.join(monorepoRoot, "www", "apps", "cloud", "app"))
 }
 
 function getMonthDifference(startDate: Date, endDate: Date) {

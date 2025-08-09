@@ -1,38 +1,58 @@
 export const metadata = {
-  title: `Webhook Events`,
+  title: `Payment Webhook Events`,
 }
 
 # {metadata.title}
 
-In this document, you’ll learn how the Payment Module supports listening to webhook events.
+In this guide, you’ll learn how you can handle payment webhook events in your Medusa application and using the Payment Module.
 
-## What's a Webhook Event?
+## What's a Payment Webhook Event?
 
-A webhook event is sent from a third-party payment provider to your application. It indicates a change in a payment’s status.
+A payment webhook event is a request sent from a third-party payment provider to your application. It indicates a change in a payment’s status.
 
-This is useful in many cases such as when a payment is being processed asynchronously or when a request is interrupted and the payment provider is sending details on the process later.
+This is useful in many cases such as:
+
+- When a payment is processed (authorized or captured) asynchronously.
+- When a payment is managed on the third-party payment provider's side.
+- When a payment action on the frontend was interrupted, leading the payment to be processed without an order being created in the Medusa application.
+
+So, it's essential to handle webhook events to ensure that your application is aware of updated payment statuses and can take appropriate actions.
 
 ---
 
-## getWebhookActionAndData Method
+## How to Handle Payment Webhook Events
 
-The Payment Module’s main service has a [getWebhookActionAndData method](/references/payment/getWebhookActionAndData) used to handle incoming webhook events from third-party payment services. The method delegates the handling to the associated payment provider, which returns the event's details.
+### Webhook Listener API Route
 
-Medusa implements a webhook listener route at the `/hooks/payment/[identifier]_[provider]` API route, where:
+The Medusa application has a `/hooks/payment/[identifier]_[provider]` API route out-of-the-box that allows you to listen to webhook events from third-party payment providers, where:
 
 - `[identifier]` is the `identifier` static property defined in the payment provider. For example, `stripe`.
 - `[provider]` is the ID of the provider. For example, `stripe`.
 
-For example, when integrating basic Stripe payments with the [Stripe Module Provider](../payment-provider/stripe/page.mdx), the webhook listener route is `/hooks/payment/stripe_stripe`. If you're integrating Stripe's Bancontact payments, the webhook listener route is `/hooks/payment/stripe-bancontact_stripe`.
+For example, when integrating basic Stripe payments with the [Stripe Module Provider](../payment-provider/stripe/page.mdx), the webhook listener route is `/hooks/payment/stripe_stripe`.
 
-Use that webhook listener in your third-party payment provider's configurations.
+You can use this webhook listener when configuring webhook events in your third-party payment provider.
+
+### getWebhookActionAndData Method
+
+The webhook listener API route executes the [getWebhookActionAndData method](/references/payment/getWebhookActionAndData) of the Payment Module's main service. This method delegates handling of incoming webhook events to the relevant payment provider.
+
+<Note title="Tip">
+
+Payment providers have a similar [getWebhookActionAndData method](/references/payment/provider) to process the webhook event. So, if you're implementing a custom payment provider, make sure to implement it to handle webhook events.
+
+</Note>
 
 ![A diagram showcasing the steps of how the getWebhookActionAndData method words](https://res.cloudinary.com/dza7lstvk/image/upload/v1711567415/Medusa%20Resources/payment-webhook_seaocg.jpg)
 
-If the event's details indicate that the payment should be authorized, then the [authorizePaymentSession method of the main service](/references/payment/authorizePaymentSession) is executed on the specified payment session.
+If the `getWebhookActionAndData` method returns an `authorized` or `captured` action, the Medusa application will perform one of the following actions:
 
-If the event's details indicate that the payment should be captured, then the [capturePayment method of the main service](/references/payment/capturePayment) is executed on the payment of the specified payment session.
+<Note>
 
-### Actions After Webhook Payment Processing
+View the full flow of the webhook event processing in the [processPaymentWorkflow](/references/medusa-workflows/processPaymentWorkflow) reference.
 
-After the payment webhook actions are processed and the payment is authorized or captured, the Medusa application completes the cart associated with the payment's collection if it's not completed yet.
+</Note>
+
+- If the method returns an `authorized` action, Medusa will set the associated payment session to `authorized`.
+- If the method returns a `captured` action, Medusa will set the associated payment session to `captured`.
+- In either cases, if the cart associated with the payment session is not completed yet, Medusa will complete the cart.

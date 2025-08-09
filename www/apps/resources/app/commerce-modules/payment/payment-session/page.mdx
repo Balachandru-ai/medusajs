@@ -18,9 +18,23 @@ A payment collection can have multiple payment sessions. Using this feature, you
 
 ## data Property
 
-Payment providers may need additional data to process the payment later. The `PaymentSession` data model has a `data` property used to store that data.
+Payment providers may need additional data to process the payment later. For example, the ID of the session in the third-party provider.
 
-For example, the customer's ID in Stripe is stored in the `data` property.
+The `PaymentSession` data model has a `data` property used to store that data. It's set by the [payment provider in Medusa](../payment-provider/page.mdx) when the payment is initialized.
+
+Then, when the payment session is authorized, the `data` property is used by the payment provider in Medusa to process the payment with the third-party provider.
+
+<Note title="Tip">
+
+If you're building a custom payment provider, learn more about initializing the payment session and setting the `data` property in the [Create Payment Provider](/references/payment/provider) guide.
+
+</Note>
+
+### data Property in the Storefront
+
+This `data` property is accessible in the storefront as well. So, only store in it data that can be publicly shared, and data that is useful in the storefront.
+
+For example, you can also store the client token used to initialize the payment session in the storefront with the third-party provider.
 
 ---
 

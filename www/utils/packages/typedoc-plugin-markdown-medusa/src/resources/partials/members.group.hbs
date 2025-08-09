@@ -24,7 +24,7 @@ ___
 
 {{#if (shouldExpandProperties title)}}
 
-{{#each children}}
+{{#each (getAllChildren)}}
 
 {{> member }}
 
@@ -32,7 +32,7 @@ ___
 
 {{else if (showPropertiesAsComponent title)}}
 
-{{#with children}}
+{{#with (getAllChildren)}}
 
 {{{parameterComponent sectionTitle=../owningReflection.name}}}
 
@@ -40,7 +40,7 @@ ___
 
 {{else}}
 
-{{#each children}}
+{{#each (getAllChildren)}}
 
 {{> member }}
 
@@ -76,7 +76,7 @@ ___
 
 {{#if (shouldExpandProperties title)}}
 
-{{#each children}}
+{{#each (getAllChildren)}}
 
 {{> member }}
 
@@ -84,7 +84,7 @@ ___
 
 {{else if (showPropertiesAsComponent title)}}
 
-{{#with children}}
+{{#with (getAllChildren)}}
 
 {{{parameterComponent sectionTitle=../owningReflection.name}}}
 
@@ -92,7 +92,7 @@ ___
 
 {{else}}
 
-{{#each children}}
+{{#each (getAllChildren)}}
 
 {{> member}}
 

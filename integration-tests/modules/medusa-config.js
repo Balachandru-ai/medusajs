@@ -10,6 +10,13 @@ process.env.LOG_LEVEL = "error"
 
 const enableMedusaV2 = process.env.MEDUSA_FF_MEDUSA_V2 == "true"
 
+const customTaxProviderRegistration = {
+  resolve: {
+    services: [require("@medusajs/tax/dist/providers/system").default],
+  },
+  id: "system_2",
+}
+
 const customPaymentProvider = {
   resolve: {
     services: [require("@medusajs/payment/dist/providers/system").default],
@@ -20,6 +27,12 @@ const customPaymentProvider = {
 const customFulfillmentProvider = {
   resolve: "@medusajs/fulfillment-manual",
   id: "test-provider",
+}
+
+const customFulfillmentProviderCalculated = {
+  resolve: require("./dist/utils/providers/fulfillment-manual-calculated")
+    .default,
+  id: "test-provider-calculated",
 }
 
 module.exports = {
@@ -83,7 +96,12 @@ module.exports = {
     [Modules.WORKFLOW_ENGINE]: true,
     [Modules.API_KEY]: true,
     [Modules.STORE]: true,
-    [Modules.TAX]: true,
+    [Modules.TAX]: {
+      resolve: "@medusajs/tax",
+      options: {
+        providers: [customTaxProviderRegistration],
+      },
+    },
     [Modules.CURRENCY]: true,
     [Modules.ORDER]: true,
     [Modules.PAYMENT]: {
@@ -96,7 +114,10 @@ module.exports = {
     [Modules.FULFILLMENT]: {
       /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
       options: {
-        providers: [customFulfillmentProvider],
+        providers: [
+          customFulfillmentProvider,
+          customFulfillmentProviderCalculated,
+        ],
       },
     },
     [Modules.NOTIFICATION]: {

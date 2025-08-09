@@ -1,7 +1,7 @@
 delete:
   operationId: DeleteOrderEditsId
   summary: Cancel Order Edit
-  description: Cancel an order edit.
+  description: Cancel a requested order edit.
   x-authenticated: true
   parameters:
     - name: id
@@ -15,6 +15,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_order-edits_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -60,3 +64,15 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelBeginOrderEditWorkflow
+  x-events:
+    - name: order-edit.canceled
+      payload: |-
+        ```ts
+        {
+          order_id, // The ID of the order
+          actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
+        }
+        ```
+      description: Emitted when an order edit request is canceled.
+      deprecated: false
+      since: 2.8.0

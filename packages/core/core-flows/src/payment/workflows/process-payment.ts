@@ -1,25 +1,25 @@
 import { WebhookActionResult } from "@medusajs/types"
 import { PaymentActions } from "@medusajs/utils"
 import { createWorkflow, when } from "@medusajs/workflows-sdk"
-import { completeCartWorkflow } from "../../cart/workflows/complete-cart"
 import { useQueryGraphStep } from "../../common"
 import { authorizePaymentSessionStep } from "../steps"
+import { completeCartAfterPaymentStep } from "../steps/complete-cart-after-payment"
 import { capturePaymentWorkflow } from "./capture-payment"
 
 /**
  * The data to process a payment from a webhook action.
  */
-interface ProcessPaymentWorkflowInput extends WebhookActionResult {}
+export interface ProcessPaymentWorkflowInput extends WebhookActionResult {}
 
 export const processPaymentWorkflowId = "process-payment-workflow"
 /**
  * This workflow processes a payment to either complete its associated cart,
  * capture the payment, or authorize the payment session. It's used when a
  * [Webhook Event is received](https://docs.medusajs.com/resources/commerce-modules/payment/webhook-events).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to process a payment in your custom flows based on a webhook action.
- * 
+ *
  * @example
  * const { result } = await processPaymentWorkflow(container)
  * .run({
@@ -31,9 +31,9 @@ export const processPaymentWorkflowId = "process-payment-workflow"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Process a payment based on a webhook event.
  */
 export const processPaymentWorkflow = createWorkflow(
@@ -66,31 +66,46 @@ export const processPaymentWorkflow = createWorkflow(
       name: "cart-payment-query",
     })
 
-    when({ cartPaymentCollection }, ({ cartPaymentCollection }) => {
-      return !!cartPaymentCollection.data.length
-    }).then(() => {
-      completeCartWorkflow
-        .runAsStep({
-          input: {
-            id: cartPaymentCollection.data[0].cart_id,
-          },
-        })
-        .config({
-          continueOnPermanentFailure: true, // Continue payment processing even if cart completion fails
-        })
-    })
-
     when({ input, paymentData }, ({ input, paymentData }) => {
       return (
         input.action === PaymentActions.SUCCESSFUL && !!paymentData.data.length
       )
     }).then(() => {
-      capturePaymentWorkflow.runAsStep({
-        input: {
-          payment_id: paymentData.data[0].id,
-          amount: input.data?.amount,
-        },
+      capturePaymentWorkflow
+        .runAsStep({
+          input: {
+            payment_id: paymentData.data[0].id,
+            amount: input.data?.amount,
+          },
+        })
+        .config({
+          name: "capture-payment",
+        })
+    })
+
+    when({ input, paymentData }, ({ input, paymentData }) => {
+      // payment is captured with the provider but we dont't have any payment data which means we didn't call authorize yet - autocapture flow
+      return (
+        input.action === PaymentActions.SUCCESSFUL && !paymentData.data.length
+      )
+    }).then(() => {
+      const payment = authorizePaymentSessionStep({
+        id: input.data!.session_id,
+        context: {},
+      }).config({
+        name: "authorize-payment-session-autocapture",
       })
+
+      capturePaymentWorkflow
+        .runAsStep({
+          input: {
+            payment_id: payment.id,
+            amount: input.data?.amount,
+          },
+        })
+        .config({
+          name: "capture-payment-autocapture",
+        })
     })
 
     when(
@@ -108,6 +123,18 @@ export const processPaymentWorkflow = createWorkflow(
       authorizePaymentSessionStep({
         id: input.data!.session_id,
         context: {},
+      }).config({
+        name: "authorize-payment-session",
+      })
+    })
+
+    when({ cartPaymentCollection }, ({ cartPaymentCollection }) => {
+      return !!cartPaymentCollection.data.length
+    }).then(() => {
+      completeCartAfterPaymentStep({
+        cart_id: cartPaymentCollection.data[0].cart_id,
+      }).config({
+        continueOnPermanentFailure: true, // Continue payment processing even if cart completion fails
       })
     })
   }

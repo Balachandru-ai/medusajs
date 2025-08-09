@@ -113,13 +113,21 @@ describe("Remote Link", function () {
       },
     ])
 
-    expect(ProductInventoryLinkModule.create).toBeCalledWith([
-      ["var_123", "inv_123"],
-      ["var_abc", "inv_abc"],
-    ])
-    expect(InventoryStockLocationLink.create).toBeCalledWith([
-      ["ilev_123", "loc_123"],
-    ])
+    expect(ProductInventoryLinkModule.create).toBeCalledWith(
+      [
+        ["var_123", "inv_123"],
+        ["var_abc", "inv_abc"],
+      ],
+      undefined,
+      undefined,
+      {}
+    )
+    expect(InventoryStockLocationLink.create).toBeCalledWith(
+      [["ilev_123", "loc_123"]],
+      undefined,
+      undefined,
+      {}
+    )
   })
 
   it("Should call delete in cascade all the modules involved in the link", async function () {
@@ -167,18 +175,21 @@ describe("Remote Link", function () {
     expect(ProductInventoryLinkModule.softDelete).toHaveBeenNthCalledWith(
       1,
       { variant_id: ["var_123"] },
-      { returnLinkableKeys: ["variant_id", "inventory_item_id"] }
+      { returnLinkableKeys: ["variant_id", "inventory_item_id"] },
+      {}
     )
 
     expect(ProductInventoryLinkModule.softDelete).toHaveBeenNthCalledWith(
       2,
       { variant_id: ["var_abc"] },
-      { returnLinkableKeys: ["variant_id", "inventory_item_id"] }
+      { returnLinkableKeys: ["variant_id", "inventory_item_id"] },
+      {}
     )
 
     expect(ProductModule.softDelete).toBeCalledWith(
       { id: ["var_123"] },
-      { returnLinkableKeys: ["product_id", "variant_id"] }
+      { returnLinkableKeys: ["product_id", "variant_id"] },
+      {}
     )
 
     expect(InventoryModule.softDelete).toBeCalledWith(
@@ -189,14 +200,16 @@ describe("Remote Link", function () {
           "inventory_level_id",
           "reservation_item_id",
         ],
-      }
+      },
+      {}
     )
 
     expect(InventoryStockLocationLink.softDelete).toBeCalledWith(
       {
         inventory_level_id: ["ilev_123"],
       },
-      { returnLinkableKeys: ["inventory_level_id", "stock_location_id"] }
+      { returnLinkableKeys: ["inventory_level_id", "stock_location_id"] },
+      {}
     )
   })
 })

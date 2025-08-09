@@ -1,5 +1,4 @@
 import { ExcludedProps, TypeOnly } from "./common"
-
 type Marker = [never, 0, 1, 2, 3, 4]
 
 type RawBigNumberPrefix = "raw_"
@@ -17,7 +16,7 @@ export type ObjectToIndexFields<
   MaybeT,
   Depth extends number = 2,
   Exclusion extends string[] = [],
-  T = TypeOnly<MaybeT>
+  T = TypeOnly<MaybeT> & { "*": "*" }
 > = Depth extends never
   ? never
   : T extends object

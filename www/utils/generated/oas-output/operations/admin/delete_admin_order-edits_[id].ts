@@ -2,7 +2,7 @@
  * @oas [delete] /admin/order-edits/{id}
  * operationId: DeleteOrderEditsId
  * summary: Cancel Order Edit
- * description: Cancel an order edit.
+ * description: Cancel a requested order edit.
  * x-authenticated: true
  * parameters:
  *   - name: id
@@ -16,6 +16,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.orderEdit.cancelRequest("ordch_123")
+ *       .then(({ deleted }) => {
+ *         console.log(deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -62,6 +79,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: cancelBeginOrderEditWorkflow
+ * x-events:
+ *   - name: order-edit.canceled
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
+ *       }
+ *       ```
+ *     description: Emitted when an order edit request is canceled.
+ *     deprecated: false
+ *     since: 2.8.0
  * 
 */
 

@@ -24,8 +24,11 @@ get:
         Comma-separated fields that should be included in the returned data. if
         a field is prefixed with `+` it will be added to the default fields,
         using `-` will remove it from the default fields. without prefix it will
-        replace the entire default fields. NOTE: This route doesn't allow
-        expanding custom relations.
+        replace the entire default fields. This API route restricts the fields
+        that can be selected. Learn how to override the retrievable fields in
+        the [Retrieve Custom
+        Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+        documentation.
       required: false
       schema:
         type: string
@@ -34,8 +37,11 @@ get:
           Comma-separated fields that should be included in the returned data.
           if a field is prefixed with `+` it will be added to the default
           fields, using `-` will remove it from the default fields. without
-          prefix it will replace the entire default fields. NOTE: This route
-          doesn't allow expanding custom relations.
+          prefix it will replace the entire default fields. This API route
+          restricts the fields that can be selected. Learn how to override the
+          retrievable fields in the [Retrieve Custom
+          Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+          documentation.
         externalDocs:
           url: '#select-fields-and-relations'
   security:
@@ -43,6 +49,11 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_customers_{id}_addresses_{address_id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -94,8 +105,11 @@ post:
         Comma-separated fields that should be included in the returned data. if
         a field is prefixed with `+` it will be added to the default fields,
         using `-` will remove it from the default fields. without prefix it will
-        replace the entire default fields. NOTE: This route doesn't allow
-        expanding custom relations.
+        replace the entire default fields. This API route restricts the fields
+        that can be selected. Learn how to override the retrievable fields in
+        the [Retrieve Custom
+        Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+        documentation.
       required: false
       schema:
         type: string
@@ -104,8 +118,11 @@ post:
           Comma-separated fields that should be included in the returned data.
           if a field is prefixed with `+` it will be added to the default
           fields, using `-` will remove it from the default fields. without
-          prefix it will replace the entire default fields. NOTE: This route
-          doesn't allow expanding custom relations.
+          prefix it will replace the entire default fields. This API route
+          restricts the fields that can be selected. Learn how to override the
+          retrievable fields in the [Retrieve Custom
+          Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+          documentation.
         externalDocs:
           url: '#select-fields-and-relations'
   security:
@@ -180,7 +197,11 @@ post:
                 province:
                   type: string
                   title: province
-                  description: The address's province.
+                  description: The address's ISO 3166-2 province code. Must be lower-case.
+                  example: us-ca
+                  externalDocs:
+                    url: https://en.wikipedia.org/wiki/ISO_3166-2
+                    description: Learn more about ISO 3166-2
                 postal_code:
                   type: string
                   title: postal_code
@@ -203,6 +224,11 @@ post:
                     `additional_data` parameter.
           description: The address's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_customers_{id}_addresses_{address_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -230,6 +256,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCustomerAddressesWorkflow
+  x-events: []
 delete:
   operationId: DeleteCustomersIdAddressesAddress_id
   summary: Remove an Address from Customer
@@ -254,8 +281,11 @@ delete:
         Comma-separated fields that should be included in the returned data. if
         a field is prefixed with `+` it will be added to the default fields,
         using `-` will remove it from the default fields. without prefix it will
-        replace the entire default fields. NOTE: This route doesn't allow
-        expanding custom relations.
+        replace the entire default fields. This API route restricts the fields
+        that can be selected. Learn how to override the retrievable fields in
+        the [Retrieve Custom
+        Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+        documentation.
       required: false
       schema:
         type: string
@@ -264,8 +294,11 @@ delete:
           Comma-separated fields that should be included in the returned data.
           if a field is prefixed with `+` it will be added to the default
           fields, using `-` will remove it from the default fields. without
-          prefix it will replace the entire default fields. NOTE: This route
-          doesn't allow expanding custom relations.
+          prefix it will replace the entire default fields. This API route
+          restricts the fields that can be selected. Learn how to override the
+          retrievable fields in the [Retrieve Custom
+          Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+          documentation.
         externalDocs:
           url: '#select-fields-and-relations'
   security:
@@ -273,6 +306,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_customers_{id}_addresses_{address_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -325,3 +363,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteCustomerAddressesWorkflow
+  x-events: []

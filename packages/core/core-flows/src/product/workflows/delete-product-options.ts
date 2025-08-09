@@ -1,18 +1,20 @@
-import { ProductOptionWorkflowEvents } from "@medusajs/framework/utils"
+import { Modules, ProductOptionWorkflowEvents } from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
   createHook,
   createWorkflow,
+  parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
+import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
 import { deleteProductOptionsStep } from "../steps"
 
 /**
  * The data to delete one or more product options.
  */
-export type DeleteProductOptionsWorkflowInput = { 
+export type DeleteProductOptionsWorkflowInput = {
   /**
    * The IDs of the options to delete.
    */
@@ -21,14 +23,14 @@ export type DeleteProductOptionsWorkflowInput = {
 
 export const deleteProductOptionsWorkflowId = "delete-product-options"
 /**
- * This workflow deletes one or more product options. It's used by the 
+ * This workflow deletes one or more product options. It's used by the
  * [Delete Product Option Admin API Route](https://docs.medusajs.com/api/admin#products_deleteproductsidoptionsoption_id).
- * 
- * This workflow has a hook that allows you to perform custom actions after the product options are deleted. For example, 
+ *
+ * This workflow has a hook that allows you to perform custom actions after the product options are deleted. For example,
  * you can delete custom records linked to the product colleciton.
- * 
+ *
  * You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around product-option deletion.
- * 
+ *
  * @example
  * const { result } = await deleteProductOptionsWorkflow(container)
  * .run({
@@ -36,11 +38,11 @@ export const deleteProductOptionsWorkflowId = "delete-product-options"
  *     ids: ["poption_123"],
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete one or more product option.
- * 
+ *
  * @property hooks.productOptionsDeleted - This hook is executed after the options are deleted. You can consume this hook to perform custom actions on the deleted options.
  */
 export const deleteProductOptionsWorkflow = createWorkflow(
@@ -57,10 +59,15 @@ export const deleteProductOptionsWorkflow = createWorkflow(
       })
     })
 
-    emitEventStep({
-      eventName: ProductOptionWorkflowEvents.DELETED,
-      data: optionIdEvents,
-    })
+    parallelize(
+      removeRemoteLinkStep({
+        [Modules.PRODUCT]: { product_option_id: input.ids },
+      }),
+      emitEventStep({
+        eventName: ProductOptionWorkflowEvents.DELETED,
+        data: optionIdEvents,
+      })
+    )
 
     return new WorkflowResponse(deletedProductOptions, {
       hooks: [productOptionsDeleted],

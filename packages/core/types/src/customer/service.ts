@@ -44,6 +44,13 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const customer = await customerModuleService.retrieveCustomer(
@@ -665,6 +672,13 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the addresses:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const addresses = await customerModuleService.listCustomerAddresses(
@@ -718,7 +732,14 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the addresses:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const [addresses, count] =
    *   await customerModuleService.listAndCountCustomerAddresses(
@@ -773,6 +794,13 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the customer-group relations:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const customerGroupCustomerRels =
@@ -827,6 +855,13 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the customers:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const customers = await customerModuleService.listCustomers(
@@ -879,6 +914,13 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the customers:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [customers, count] = await customerModuleService.listAndCountCustomers(
@@ -932,7 +974,14 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the customer groups:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const customerGroups =
    *   await customerModuleService.listCustomerGroups(
@@ -987,7 +1036,14 @@ export interface ICustomerModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the customer groups:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const [customerGroups, count] =
    *   await customerModuleService.listCustomerGroups(

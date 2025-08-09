@@ -27,11 +27,15 @@ export const defaultStoreCartFields = [
   "original_shipping_tax_total",
   "original_shipping_subtotal",
   "original_shipping_total",
+  "credit_line_subtotal",
+  "credit_line_tax_total",
+  "credit_line_total",
   "metadata",
   "sales_channel_id",
   "promotions.id",
   "promotions.code",
   "promotions.is_automatic",
+  "promotions.is_tax_inclusive",
   "promotions.application_method.value",
   "promotions.application_method.type",
   "promotions.application_method.currency_code",
@@ -74,6 +78,7 @@ export const defaultStoreCartFields = [
   "items.adjustments.code",
   "items.adjustments.promotion_id",
   "items.adjustments.amount",
+  "items.adjustments.is_tax_inclusive",
   "customer.id",
   "customer.email",
   "customer.groups.id",
@@ -121,6 +126,7 @@ export const defaultStoreCartFields = [
   "*region.countries",
   "*payment_collection",
   "*payment_collection.payment_sessions",
+  "*credit_lines",
 ]
 
 export const retrieveTransformQueryConfig = {

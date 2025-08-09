@@ -32,13 +32,15 @@ const execute = async (
     const childProcess = spawnSync(commandStr, {
       ...options,
       shell: true,
-      stdio: needOutput
-        ? "pipe"
-        : [process.stdin, process.stdout, process.stderr],
+      stdio: needOutput ? 
+        "pipe" : 
+        [process.stdin, process.stdout, process.stderr],
     })
 
-    if (childProcess.error) {
-      throw childProcess.error
+    if (childProcess.error || childProcess.status !== 0) {
+      throw childProcess.error || 
+        childProcess.stderr?.toString() || 
+        `${commandStr} failed with status ${childProcess.status}`
     }
 
     if (

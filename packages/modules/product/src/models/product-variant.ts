@@ -25,6 +25,7 @@ const ProductVariant = model
       .belongsTo(() => Product, {
         mappedBy: "variants",
       })
+      .searchable()
       .nullable(),
     options: model.manyToMany(() => ProductOptionValue, {
       pivotTable: "product_variant_option",
@@ -35,9 +36,13 @@ const ProductVariant = model
   })
   .indexes([
     {
+      name: "IDX_product_variant_id_product_id",
+      on: ["id", "product_id"],
+      where: "deleted_at IS NULL",
+    },
+    {
       name: "IDX_product_variant_product_id",
       on: ["product_id"],
-      unique: false,
       where: "deleted_at IS NULL",
     },
     {

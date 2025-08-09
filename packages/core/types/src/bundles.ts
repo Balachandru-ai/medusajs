@@ -1,4 +1,5 @@
 export * as AdminTypes from "./admin"
+export * as AnalyticsTypes from "./analytics"
 export * as ApiKeyTypes from "./api-key"
 export * as AuthTypes from "./auth"
 export * as CacheTypes from "./cache"

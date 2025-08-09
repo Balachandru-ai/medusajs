@@ -196,7 +196,7 @@ export interface BaseOrderAddress {
    */
   country_code?: string
   /**
-   * The address's province.
+   * The address's lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province.
    */
   province?: string
   /**
@@ -884,6 +884,10 @@ export interface BaseOrder {
    * The tax total applied on the order's shipping methods, excluding promotions.
    */
   original_shipping_tax_total: number
+  /**
+   * The total of the order's credit lines.
+   */
+  credit_line_total: number
 }
 
 export interface BaseOrderFilters
@@ -939,6 +943,7 @@ export interface BaseOrderChange {
     | "edit"
     | "return_request"
     | "transfer"
+    | "update_order"
 
   /**
    * The ID of the associated order

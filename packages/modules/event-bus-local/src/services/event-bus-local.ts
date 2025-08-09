@@ -82,13 +82,14 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   // This is useful in the event of a distributed transaction where you'd want to emit
   // events only once the transaction ends.
   private async groupOrEmitEvent<T = unknown>(eventData: Message<T>) {
-    const { options, ...eventBody } = eventData
+    const eventData_ = JSON.parse(JSON.stringify(eventData))
+    const { options, ...eventBody } = eventData_
     const eventGroupId = eventBody.metadata?.eventGroupId
 
     if (eventGroupId) {
-      await this.groupEvent(eventGroupId, eventData)
+      await this.groupEvent(eventGroupId, eventData_)
     } else {
-      const { options, ...eventBody } = eventData
+      const { options, ...eventBody } = eventData_
 
       const options_ = options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
@@ -112,7 +113,8 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   }
 
   async releaseGroupedEvents(eventGroupId: string) {
-    const groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
+    let groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
+    groupedEvents = JSON.parse(JSON.stringify(groupedEvents))
 
     for (const event of groupedEvents) {
       const { options, ...eventBody } = event

@@ -1,5 +1,7 @@
+export * from "./steps/create-entities"
 export * from "./steps/create-remote-links"
 export * from "./steps/dismiss-remote-links"
+export * from "./steps/delete-entities"
 export * from "./steps/emit-event"
 export * from "./steps/remove-remote-links"
 export * from "./steps/update-remote-links"

@@ -3,8 +3,10 @@ import {
   AbstractFileProviderService,
   MedusaError,
 } from "@medusajs/framework/utils"
+import { createReadStream } from "fs"
 import fs from "fs/promises"
 import path from "path"
+import type { Readable } from "stream"
 
 export class LocalFileService extends AbstractFileProviderService {
   static identifier = "localfs"
@@ -64,23 +66,51 @@ export class LocalFileService extends AbstractFileProviderService {
     }
   }
 
-  async delete(file: FileTypes.ProviderDeleteFileDTO): Promise<void> {
+  async delete(
+    files: FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]
+  ): Promise<void> {
+    files = Array.isArray(files) ? files : [files]
+
+    await Promise.all(
+      files.map(async (file) => {
+        const baseDir = file.fileKey.startsWith("private-")
+          ? this.privateUploadDir_
+          : this.uploadDir_
+
+        const filePath = this.getUploadFilePath(baseDir, file.fileKey)
+        try {
+          await fs.access(filePath, fs.constants.W_OK)
+          await fs.unlink(filePath)
+        } catch (e) {
+          // The file does not exist, we don't do anything
+          if (e.code !== "ENOENT") {
+            throw e
+          }
+        }
+      })
+    )
+
+    return
+  }
+
+  async getDownloadStream(
+    file: FileTypes.ProviderGetFileDTO
+  ): Promise<Readable> {
     const baseDir = file.fileKey.startsWith("private-")
       ? this.privateUploadDir_
       : this.uploadDir_
 
     const filePath = this.getUploadFilePath(baseDir, file.fileKey)
-    try {
-      await fs.access(filePath, fs.constants.W_OK)
-      await fs.unlink(filePath)
-    } catch (e) {
-      // The file does not exist, we don't do anything
-      if (e.code !== "ENOENT") {
-        throw e
-      }
-    }
+    return createReadStream(filePath)
+  }
 
-    return
+  async getAsBuffer(file: FileTypes.ProviderGetFileDTO): Promise<Buffer> {
+    const baseDir = file.fileKey.startsWith("private-")
+      ? this.privateUploadDir_
+      : this.uploadDir_
+
+    const filePath = this.getUploadFilePath(baseDir, file.fileKey)
+    return fs.readFile(filePath)
   }
 
   // The local file provider doesn't support presigned URLs for private files (i.e files not placed in /static).
@@ -102,6 +132,27 @@ export class LocalFileService extends AbstractFileProviderService {
     }
 
     return this.getUploadFileUrl(file.fileKey)
+  }
+
+  /**
+   * Returns the pre-signed URL that the client (frontend) can use to trigger
+   * a file upload. In this case, the Medusa backend will implement the
+   * "/upload" endpoint to perform the file upload.
+   */
+  async getPresignedUploadUrl(
+    fileData: FileTypes.ProviderGetPresignedUploadUrlDTO
+  ): Promise<FileTypes.ProviderFileResultDTO> {
+    if (!fileData?.filename) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `No filename provided`
+      )
+    }
+
+    return {
+      url: "/admin/uploads",
+      key: fileData.filename,
+    }
   }
 
   private getUploadFilePath = (baseDir: string, fileKey: string) => {

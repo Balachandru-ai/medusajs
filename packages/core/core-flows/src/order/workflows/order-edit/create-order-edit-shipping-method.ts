@@ -1,4 +1,5 @@
 import {
+  AdditionalData,
   BigNumberInput,
   OrderChangeDTO,
   OrderDTO,
@@ -7,6 +8,7 @@ import {
 import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   WorkflowResponse,
+  createHook,
   createStep,
   createWorkflow,
   transform,
@@ -21,6 +23,7 @@ import {
 import { prepareShippingMethod } from "../../utils/prepare-shipping-method"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
+import { pricingContextResult } from "../../../cart/utils/schemas"
 
 /**
  * The data to validate that a shipping method can be created for an order edit.
@@ -39,14 +42,14 @@ export type CreateOrderEditShippingMethodValidationStepInput = {
 /**
  * This step validates that a shipping method can be created for an order edit.
  * If the order is canceled or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = createOrderEditShippingMethodValidationStep({
  *   order: {
@@ -94,10 +97,10 @@ export const createOrderEditShippingMethodWorkflowId =
 /**
  * This workflow creates a shipping method for an order edit. It's used by the
  * [Add Shipping Method API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsidshippingmethod).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to create a shipping method
  * for an order edit in your in your own custom flows.
- * 
+ *
  * @example
  * const { result } = await createOrderEditShippingMethodWorkflow(container)
  * .run({
@@ -106,14 +109,51 @@ export const createOrderEditShippingMethodWorkflowId =
  *     shipping_option_id: "so_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create a shipping method for an order edit.
+ * 
+ * @property hooks.setPricingContext - This hook is executed before the shipping method is created. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
+ * 
+ * For example, assuming you have the following custom pricing rule:
+ * 
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ * 
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ * 
+ * ```ts
+ * import { createOrderEditShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ * 
+ * createOrderEditShippingMethodWorkflow.hooks.setPricingContext((
+ *   { order, shipping_option_id, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ * 
+ * The price of the shipping method's option will now be retrieved using the context you return.
+ * 
+ * :::note
+ * 
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ * 
+ * :::
  */
 export const createOrderEditShippingMethodWorkflow = createWorkflow(
   createOrderEditShippingMethodWorkflowId,
-  function (input: CreateOrderEditShippingMethodWorkflowInput): WorkflowResponse<OrderPreviewDTO> {
+  function (
+    input: CreateOrderEditShippingMethodWorkflowInput & AdditionalData
+  ) {
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["id", "status", "currency_code", "canceled_at"],
@@ -121,6 +161,29 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
       list: false,
       throw_if_key_not_found: true,
     }).config({ name: "order-query" })
+
+    const setPricingContext = createHook(
+      "setPricingContext",
+      {
+        order,
+        shipping_option_id: input.shipping_option_id,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: pricingContextResult,
+      }
+    )
+    const setPricingContextResult = setPricingContext.getResult()
+
+    const pricingContext = transform(
+      { order, setPricingContextResult },
+      (data) => {
+        return {
+          ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
+          currency_code: data.order.currency_code,
+        }
+      }
+    )
 
     const shippingOptions = useRemoteQueryStep({
       entry_point: "shipping_option",
@@ -133,7 +196,7 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
       variables: {
         id: input.shipping_option_id,
         calculated_price: {
-          context: { currency_code: order.currency_code },
+          context: pricingContext,
         },
       },
     }).config({ name: "fetch-shipping-option" })
@@ -152,6 +215,7 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
 
     const shippingMethodInput = transform(
       {
+        relatedEntity: { order_id: order.id },
         shippingOptions,
         customPrice: input.custom_amount,
         orderChange,
@@ -182,7 +246,6 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
         createdMethods,
         customPrice: input.custom_amount,
         orderChange,
-        input,
       },
       ({
         shippingOptions,
@@ -190,7 +253,6 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
         createdMethods,
         customPrice,
         orderChange,
-        input,
       }) => {
         const shippingOption = shippingOptions[0]
         const createdMethod = createdMethods[0]
@@ -212,6 +274,11 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
       input: [orderChangeActionInput],
     })
 
-    return new WorkflowResponse(previewOrderChangeStep(order.id))
+    return new WorkflowResponse(
+      previewOrderChangeStep(order.id) as OrderPreviewDTO,
+      {
+        hooks: [setPricingContext] as const,
+      }
+    )
   }
 )

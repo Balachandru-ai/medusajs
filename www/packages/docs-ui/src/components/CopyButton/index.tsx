@@ -5,6 +5,10 @@ import clsx from "clsx"
 import { Tooltip } from "@/components"
 import { useCopy } from "../../hooks"
 
+export type CopyButtonChildFn = (props: {
+  isCopied: boolean
+}) => React.ReactNode
+
 export type CopyButtonProps = {
   text: string
   buttonClassName?: string
@@ -17,7 +21,8 @@ export type CopyButtonProps = {
       | React.TouchEvent<HTMLSpanElement>
   ) => void
   handleTouch?: boolean
-} & Omit<React.HTMLAttributes<HTMLDivElement>, "onCopy">
+  children?: React.ReactNode | CopyButtonChildFn
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "onCopy" | "children">
 
 export const CopyButton = ({
   text,
@@ -64,7 +69,7 @@ export const CopyButton = ({
           }
         }}
       >
-        {children}
+        {typeof children === "function" ? children({ isCopied }) : children}
       </span>
     </Tooltip>
   )

@@ -5,8 +5,7 @@ import "./globals.css"
 import { BareboneLayout, TightLayout } from "docs-ui"
 import { config } from "@/config"
 import clsx from "clsx"
-import Feedback from "../components/Feedback"
-import EditButton from "../components/EditButton"
+import Footer from "../components/Footer"
 
 const ogImage =
   "https://res.cloudinary.com/dza7lstvk/image/upload/v1732200992/Medusa%20Resources/opengraph-image_daq6nx.jpg"
@@ -63,15 +62,8 @@ export default function RootLayout({
       htmlClassName={clsx(inter.variable, robotoMono.variable)}
       gaId={process.env.NEXT_PUBLIC_GA_ID}
     >
-      <TightLayout
-        sidebarProps={{
-          expandItems: true,
-        }}
-        ProvidersComponent={Providers}
-      >
+      <TightLayout ProvidersComponent={Providers} footerComponent={<Footer />}>
         {children}
-        <Feedback className="my-2" />
-        <EditButton />
       </TightLayout>
     </BareboneLayout>
   )

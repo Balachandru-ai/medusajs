@@ -13,6 +13,11 @@ describe("GraphQL builder", () => {
       isVerified: model.boolean(),
     })
 
+    enum DepartmentEnum {
+      FinanceDept = "finance",
+      MarketingDept = "marketing",
+    }
+
     const user = model.define("user", {
       id: model.id(),
       username: model.text(),
@@ -21,8 +26,9 @@ describe("GraphQL builder", () => {
       phones: model.array(),
       group: model.belongsTo(() => group, { mappedBy: "users" }),
       role: model
-        .enum(["moderator", "admin", "guest", "new_user"])
+        .enum(["moderator", "admin", "guest", "new-user"])
         .default("guest"),
+      department: model.enum(DepartmentEnum),
       tags: model.manyToMany(() => tag, {
         pivotTable: "custom_user_tags",
       }),
@@ -38,6 +44,9 @@ describe("GraphQL builder", () => {
     const toGql = toGraphQLSchema([tag, email, user, group])
 
     const expected = `
+      scalar DateTime
+      scalar JSON
+      directive @enumValue(value: String) on ENUM_VALUE
       type Tag {
         id: ID!
         value: String!
@@ -59,21 +68,27 @@ describe("GraphQL builder", () => {
       }
 
       enum UserRoleEnum {
-        MODERATOR
-        ADMIN
-        GUEST
-        NEW_USER
+        MODERATOR @enumValue(value: "moderator")
+        ADMIN @enumValue(value: "admin")
+        GUEST @enumValue(value: "guest")
+        NEW_USER @enumValue(value: "new-user")
+      }
+
+      enum UserDepartmentEnum {
+        FINANCE @enumValue(value: "finance")
+        MARKETING @enumValue(value: "marketing")
       }
 
       type User {
         id: ID!
         username: String!
         email: Email!
-        spend_limit: String!
+        spend_limit: Float!
         phones: [String]!
         group_id:String!
         group: Group!
         role: UserRoleEnum!
+        department: UserDepartmentEnum!
         tags: [Tag]!
         raw_spend_limit: JSON!
         created_at: DateTime!

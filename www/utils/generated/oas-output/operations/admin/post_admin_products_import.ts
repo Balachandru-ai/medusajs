@@ -14,6 +14,25 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminImportProductRequest"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.import({
+ *         file // uploaded File instance
+ *       })
+ *       .then(({ transaction_id }) => {
+ *         console.log(transaction_id)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -41,6 +60,45 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: importProductsWorkflow
+ * x-events:
+ *   - name: product-variant.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product variant
+ *       }]
+ *       ```
+ *     description: Emitted when product variants are created.
+ *     deprecated: false
+ *   - name: product.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product
+ *       }]
+ *       ```
+ *     description: Emitted when products are updated.
+ *     deprecated: false
+ *   - name: product.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product
+ *       }]
+ *       ```
+ *     description: Emitted when products are created.
+ *     deprecated: false
+ *   - name: product.deleted
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product
+ *       }]
+ *       ```
+ *     description: Emitted when products are deleted.
+ *     deprecated: false
+ * deprecated: true
+ * x-deprecated_message: use `POST /admin/products/imports` instead.
  * 
 */
 

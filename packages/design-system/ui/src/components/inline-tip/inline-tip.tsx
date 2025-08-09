@@ -2,14 +2,7 @@ import { clx } from "@/utils/clx"
 import * as React from "react"
 
 interface InlineTipProps extends React.ComponentPropsWithoutRef<"div"> {
-  /**
-   * The label to display in the tip.
-   */
   label: string
-  /**
-   * The variant of the tip.
-   * @default "info"
-   */
   variant?: "info" | "warning" | "error" | "success"
 }
 
@@ -17,7 +10,20 @@ interface InlineTipProps extends React.ComponentPropsWithoutRef<"div"> {
  * This component is based on the `div` element and supports all of its props.
  */
 export const InlineTip = React.forwardRef<HTMLDivElement, InlineTipProps>(
-  ({ variant = "info", label, className, children, ...props }, ref) => {
+  (
+    { 
+      /**
+       * The variant of the tip.
+       */
+      variant = "info", 
+      /**
+       * The label to display in the tip.
+       */
+      label, 
+      className, 
+      children, 
+      ...props
+    }: InlineTipProps, ref) => {
     return (
       <div
         ref={ref}

@@ -21,9 +21,8 @@ export default [
   {
     ignores: [
       "**/references/**/*",
-      "**/events-reference/**/*",
-      "**/events/_content/**/*",
-      "**/events/_content.mdx",
+      // TODO remove this once we support v1 comments
+      "**/nextjs-starter/guides/customize-stripe/**",
     ],
   },
   {
@@ -157,6 +156,7 @@ export default [
       "@typescript-eslint/ban-types": "off",
       "@typescript-eslint/no-unused-expressions": "warn",
       "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-empty-object-type": "warn",
     },
   },
 ]

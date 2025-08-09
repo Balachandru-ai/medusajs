@@ -10,7 +10,7 @@ curl -X POST '{backend_url}/admin/customers/{id}/addresses' \
   "address_2": "{value}",
   "city": "{value}",
   "country_code": "{value}",
-  "province": "{value}",
+  "province": "us-ca",
   "postal_code": "{value}",
   "phone": "{value}",
   "metadata": {}

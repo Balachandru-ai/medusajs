@@ -1,5 +1,5 @@
 import React from "react"
-import { Badge, Link, Tooltip } from "@/components"
+import { Badge, Tooltip } from "@/components"
 
 export type FeatureFlagNoticeProps = {
   featureFlag: string
@@ -22,12 +22,8 @@ export const FeatureFlagNotice = ({
         <span className={tooltipTextClassName}>
           To use this {type}, make sure to
           <br />
-          <Link
-            href="https://docs.medusajs.com/development/feature-flags/toggle"
-            target="__blank"
-          >
-            enable its feature flag: <code>{featureFlag}</code>
-          </Link>
+          {/* TODO add doc link once available */}
+          enable its feature flag: <code>{featureFlag}</code>
         </span>
       }
       clickable

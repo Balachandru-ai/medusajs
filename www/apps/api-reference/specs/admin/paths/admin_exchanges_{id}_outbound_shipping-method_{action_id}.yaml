@@ -52,6 +52,11 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostExchangesShippingActionReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_exchanges_{id}_outbound_shipping-method_{action_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -79,6 +84,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateExchangeShippingMethodWorkflow
+  x-events: []
 delete:
   operationId: DeleteExchangesIdOutboundShippingMethodAction_id
   summary: Remove Outbound Shipping Method from Exchange
@@ -128,6 +134,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_exchanges_{id}_outbound_shipping-method_{action_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -155,3 +166,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: removeExchangeShippingMethodWorkflow
+  x-events: []

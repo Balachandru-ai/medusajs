@@ -45,6 +45,7 @@ type InternalParseExpandsParams = {
   implodeMapping: InternalImplodeMapping[]
   options?: RemoteJoinerOptions
   initialData?: any[]
+  initialDataOnly?: boolean
 }
 
 export class RemoteJoiner {
@@ -317,7 +318,8 @@ export class RemoteJoiner {
           service_.relationships?.set(aliasName, rel)
         }
 
-        Object.assign(service_.fieldAlias ?? {}, extend.fieldAlias)
+        // Multiple "fieldAlias" w/ same name need the entity to handle different paths
+        this.mergeFieldAlias(service_, extend)
       }
     }
 
@@ -362,6 +364,38 @@ export class RemoteJoiner {
     }
 
     return serviceConfigs
+  }
+
+  private mergeFieldAlias(service_, extend) {
+    for (const [alias, fieldAlias] of Object.entries(extend.fieldAlias ?? {})) {
+      const objAlias = isString(fieldAlias)
+        ? { path: fieldAlias }
+        : (fieldAlias as object)
+
+      if (service_.fieldAlias[alias]) {
+        if (!Array.isArray(service_.fieldAlias[alias])) {
+          service_.fieldAlias[alias] = [service_.fieldAlias[alias]]
+        }
+
+        if (
+          service_.fieldAlias[alias].some((f) => f.entity === extend.entity)
+        ) {
+          throw new Error(
+            `Cannot add alias "${alias}" for "${extend.serviceName}". It is already defined for Entity "${extend.entity}".`
+          )
+        }
+
+        service_.fieldAlias[alias].push({
+          ...objAlias,
+          entity: extend.entity,
+        })
+      } else {
+        service_.fieldAlias[alias] = {
+          ...objAlias,
+          entity: extend.entity,
+        }
+      }
+    }
   }
 
   private getServiceConfig({
@@ -889,6 +923,7 @@ export class RemoteJoiner {
       implodeMapping,
       options,
       initialData,
+      initialDataOnly,
     } = params
 
     const { parsedExpands, aliasRealPathMap } = this.parseProperties({
@@ -899,7 +934,7 @@ export class RemoteJoiner {
       implodeMapping,
     })
 
-    if (initialData?.length) {
+    if (initialData?.length && initialDataOnly) {
       this.createFilterFromInitialData({
         initialData: options?.initialData as any,
         parsedExpands,
@@ -1081,7 +1116,23 @@ export class RemoteJoiner {
   }) {
     const serviceConfig = currentServiceConfig
     const fieldAlias = currentServiceConfig.fieldAlias ?? {}
-    const alias = fieldAlias[property] as any
+    let alias = fieldAlias[property] as any
+
+    // Handle multiple shortcuts for the same property
+    if (Array.isArray(alias)) {
+      const currentPathEntity = parsedExpands.get(
+        [BASE_PATH, ...currentPath].join(".")
+      )?.entity
+
+      alias = alias.find((a) => a.entity == currentPathEntity)
+      if (!alias) {
+        throw new Error(
+          `Cannot resolve alias path "${currentPath.join(
+            "."
+          )}" that matches entity ${currentPathEntity}.`
+        )
+      }
+    }
 
     const path = isString(alias) ? alias : alias.path
     const fieldAliasIsList = isString(alias) ? false : !!alias.isList
@@ -1475,6 +1526,7 @@ export class RemoteJoiner {
       implodeMapping,
       options,
       initialData: iniDataArray,
+      initialDataOnly: options?.initialDataOnly,
     }
 
     const parsedExpands = this.parseExpands(parseExpandsConfig)

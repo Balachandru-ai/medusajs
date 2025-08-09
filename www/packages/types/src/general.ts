@@ -1,3 +1,1 @@
-export type Ref<T> =
-  | React.MutableRefObject<T | null>
-  | ((instance: T | null) => void)
+export type Ref<T> = React.RefObject<T | null> | ((instance: T | null) => void)

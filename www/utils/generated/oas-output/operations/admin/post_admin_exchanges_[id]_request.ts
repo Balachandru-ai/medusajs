@@ -28,6 +28,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.exchange.request("exchange_123", {})
+ *       .then(({ exchange }) => {
+ *         console.log(exchange)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -55,6 +72,17 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: confirmExchangeRequestWorkflow
+ * x-events:
+ *   - name: order.exchange_created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         exchange_id, // The ID of the exchange
+ *       }
+ *       ```
+ *     description: Emitted when an exchange is created for an order.
+ *     deprecated: false
  * 
 */
 

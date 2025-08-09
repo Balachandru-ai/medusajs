@@ -54,7 +54,7 @@ export interface AdminExportProductResponse {
 
 export interface AdminImportProductResponse {
   /**
-   * The ID of the import product workflow execution's transaction. 
+   * The ID of the import product workflow execution's transaction.
    * This is useful to confirm the import using the `/admin/products/:transaction-id/import` API route.
    */
   transaction_id: string
@@ -72,6 +72,9 @@ export interface AdminImportProductResponse {
     toUpdate: number
   }
 }
+
+export interface AdminImportProductsResponse
+  extends AdminImportProductResponse {}
 
 export interface AdminBatchProductVariantResponse
   extends BatchResponse<AdminProductVariant> {}

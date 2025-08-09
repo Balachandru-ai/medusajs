@@ -31,25 +31,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the reservation.
- *         properties:
- *           location_id:
- *             type: string
- *             title: location_id
- *             description: The ID of the associated location.
- *           quantity:
- *             type: number
- *             title: quantity
- *             description: The reserved quantity.
- *           description:
- *             type: string
- *             title: description
- *             description: The reservation's description.
- *           metadata:
- *             type: object
- *             description: The reservation's metadata. Can hold custom key-value pairs.
+ *         $ref: "#/components/schemas/AdminUpdateReservation"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.reservation.update("res_123", {
+ *         quantity: 20,
+ *       })
+ *       .then(({ reservation }) => {
+ *         console.log(reservation)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -82,6 +84,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateReservationsWorkflow
+ * x-events: []
  * 
 */
 

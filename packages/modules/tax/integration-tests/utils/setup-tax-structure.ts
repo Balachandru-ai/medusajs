@@ -27,14 +27,17 @@ export const setupTaxStructure = async (service: ITaxModuleService) => {
   const [us, dk, de, ca] = await service.createTaxRegions([
     {
       country_code: "US",
+      provider_id: "tp_system",
       default_tax_rate: { name: "US Default Rate", rate: 2, code: "US" },
     },
     {
       country_code: "DK",
+      provider_id: "tp_system",
       default_tax_rate: { name: "Denmark Default Rate", rate: 25, code: "DK" },
     },
     {
       country_code: "DE",
+      provider_id: "tp_system",
       default_tax_rate: {
         code: "DE19",
         name: "Germany Default Rate",
@@ -43,6 +46,7 @@ export const setupTaxStructure = async (service: ITaxModuleService) => {
     },
     {
       country_code: "CA",
+      provider_id: "tp_system",
       default_tax_rate: { name: "Canada Default Rate", rate: 5, code: "CA" },
     },
   ])

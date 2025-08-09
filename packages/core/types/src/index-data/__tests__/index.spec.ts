@@ -9,6 +9,7 @@ describe("IndexQueryConfig", () => {
 
     expectTypeOf<IndexConfig["fields"]>().toEqualTypeOf<
       (
+        | "*"
         | "id"
         | "title"
         | "variants.*"
@@ -22,14 +23,34 @@ describe("IndexQueryConfig", () => {
 
     expectTypeOf<IndexConfig["filters"]>().toEqualTypeOf<
       | {
-          id?: string | string[] | OperatorMap<string>
-          title?: string | string[] | OperatorMap<string>
+          id?: string | string[] | OperatorMap<string | string[] | null> | null
+          title?:
+            | string
+            | string[]
+            | OperatorMap<string | string[] | null>
+            | null
           variants?: {
-            id?: string | string[] | OperatorMap<string>
-            product_id?: string | string[] | OperatorMap<string>
-            sku?: string | string[] | OperatorMap<string>
+            id?:
+              | string
+              | string[]
+              | OperatorMap<string | string[] | null>
+              | null
+            product_id?:
+              | string
+              | string[]
+              | OperatorMap<string | string[] | null>
+              | null
+            sku?:
+              | string
+              | string[]
+              | OperatorMap<string | string[] | null>
+              | null
             prices?: {
-              amount?: number | number[] | OperatorMap<number>
+              amount?:
+                | number
+                | number[]
+                | OperatorMap<number | number[] | null>
+                | null
             }
           }
         }

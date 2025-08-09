@@ -34,6 +34,9 @@ const DataTableFilterMenu = (props: DataTableFilterMenuProps) => {
   }
 
   const Wrapper = props.tooltip ? Tooltip : React.Fragment
+  const wrapperProps = props.tooltip
+    ? { content: props.tooltip, hidden: filterOptions.length === 0 }
+    : ({} as any)
 
   if (instance.showSkeleton) {
     return <DataTableFilterMenuSkeleton />
@@ -41,7 +44,7 @@ const DataTableFilterMenu = (props: DataTableFilterMenuProps) => {
 
   return (
     <DropdownMenu>
-      <Wrapper content={props.tooltip} hidden={filterOptions.length === 0}>
+      <Wrapper {...wrapperProps}>
         <DropdownMenu.Trigger asChild disabled={filterOptions.length === 0}>
           <IconButton size="small">
             <Funnel />
@@ -71,4 +74,3 @@ const DataTableFilterMenuSkeleton = () => {
 
 export { DataTableFilterMenu }
 export type { DataTableFilterMenuProps }
-

@@ -1,4 +1,10 @@
-import { CodeTabs, CodeTab } from "docs-ui"
+---
+products:
+  - fulfillment
+  - product
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
 
 export const metadata = {
   title: `Links between Pricing Module and Other Modules`,
@@ -6,14 +12,60 @@ export const metadata = {
 
 # {metadata.title}
 
-This document showcases the module links defined between the Pricing Module and other commerce modules.
+This document showcases the module links defined between the Pricing Module and other Commerce Modules.
 
 ## Summary
 
 The Pricing Module has the following links to other modules:
 
-- [`ShippingOption` data model of Fulfillment Module \<\> `PriceSet` data model](#fulfillment-module).
-- [`ProductVariant` data model of Product Module \<\> `PriceSet` data model](#product-module).
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [ShippingOption](/references/fulfillment/models/ShippingOption) in [Fulfillment Module](../../fulfillment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [PriceSet](/references/pricing/models/PriceSet)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#fulfillment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [ProductVariant](/references/product/models/ProductVariant) in [Product Module](../../product/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [PriceSet](/references/pricing/models/PriceSet)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#product-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
 
 ---
 
@@ -40,7 +92,7 @@ const { data: priceSets } = await query.graph({
   ],
 })
 
-// priceSets.shipping_option
+// priceSets[0].shipping_option
 ```
 
   </CodeTab>
@@ -58,7 +110,7 @@ const { data: priceSets } = useQueryGraphStep({
   ],
 })
 
-// priceSets.shipping_option
+// priceSets[0].shipping_option
 ```
 
   </CodeTab>
@@ -137,7 +189,7 @@ const { data: priceSets } = await query.graph({
   ],
 })
 
-// priceSets.variant
+// priceSets[0].variant
 ```
 
   </CodeTab>
@@ -155,7 +207,7 @@ const { data: priceSets } = useQueryGraphStep({
   ],
 })
 
-// priceSets.variant
+// priceSets[0].variant
 ```
 
   </CodeTab>

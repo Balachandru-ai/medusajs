@@ -218,7 +218,7 @@ export default class CustomerModuleService
       populate: true,
     })
 
-    return isString(idsOrSelector) ? serialized[0] : serialized
+    return serialized
   }
 
   // @ts-expect-error

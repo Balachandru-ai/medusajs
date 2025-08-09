@@ -6,18 +6,19 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
+import { emitEventStep, useQueryGraphStep } from "../../common"
 import { updateCartsStep } from "../steps"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { CartWorkflowEvents } from "@medusajs/framework/utils"
 
 /**
  * The cart ownership transfer details.
  */
-export type TransferCartCustomerWorkflowInput = { 
+export type TransferCartCustomerWorkflowInput = {
   /**
    * The cart's ID.
    */
-  id: string; 
+  id: string
   /**
    * The ID of the customer to transfer the cart to.
    */
@@ -29,9 +30,9 @@ export const transferCartCustomerWorkflowId = "transfer-cart-customer"
  * This workflow transfers a cart's customer ownership to another customer. It's useful if a customer logs in after
  * adding the items to their cart, allowing you to transfer the cart's ownership to the logged-in customer. This workflow is used
  * by the [Set Cart's Customer Store API Route](https://docs.medusajs.com/api/store#carts_postcartsidcustomer).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to set the cart's customer within your custom flows.
- * 
+ *
  * @example
  * const { result } = await transferCartCustomerWorkflow(container)
  * .run({
@@ -40,11 +41,11 @@ export const transferCartCustomerWorkflowId = "transfer-cart-customer"
  *     customer_id: "cus_123"
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Refresh a cart's payment collection details.
- * 
+ *
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const transferCartCustomerWorkflow = createWorkflow(
@@ -108,7 +109,15 @@ export const transferCartCustomerWorkflow = createWorkflow(
         updateCartsStep(cartInput)
 
         refreshCartItemsWorkflow.runAsStep({
-          input: { cart_id: input.id },
+          input: { cart_id: input.id, force_refresh: true },
+        })
+
+        emitEventStep({
+          eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
+          data: {
+            id: input.id,
+            customer_id: customer.customer_id,
+          },
         })
       }
     )

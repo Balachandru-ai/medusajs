@@ -1,9 +1,9 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const paymentSidebar = [
   {
-    type: "category",
+    type: "sidebar",
+    sidebar_id: "payment",
     title: "Payment Module",
-    isChildSidebar: true,
     children: [
       {
         type: "link",
@@ -21,7 +21,6 @@ export const paymentSidebar = [
       {
         type: "category",
         title: "Concepts",
-        initialOpen: false,
         children: [
           {
             type: "link",
@@ -41,7 +40,12 @@ export const paymentSidebar = [
           {
             type: "link",
             path: "/commerce-modules/payment/payment-provider",
-            title: "Payment Provider Module",
+            title: "Payment Module Provider",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/payment/payment-checkout-flow",
+            title: "Payment in Checkout",
           },
           {
             type: "link",
@@ -64,8 +68,8 @@ export const paymentSidebar = [
         type: "category",
         title: "Server Guides",
         autogenerate_tags: "server+payment",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Payment Module in your customizations on the Medusa application server.",
         children: [
@@ -85,8 +89,8 @@ export const paymentSidebar = [
         type: "category",
         title: "Storefront Guides",
         autogenerate_tags: "storefront+payment,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to integrate the Payment Module's features into your storefront.",
       },
@@ -94,24 +98,23 @@ export const paymentSidebar = [
         type: "category",
         title: "Admin Guides",
         autogenerate_tags: "admin+payment,-jsSdk",
-        initialOpen: false,
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize administative features of the Payment Module.",
       },
       {
         type: "category",
-        title: "User Guides",
-        autogenerate_tags: "userGuides+payment",
-        initialOpen: false,
+        title: "Admin User Guides",
+        autogenerate_tags: "userGuide+payment",
         autogenerate_as_ref: true,
+        sort_sidebar: "alphabetize",
         description:
           "Learn how to utilize and manage Payment features in the Medusa Admin dashboard.",
       },
       {
         type: "category",
         title: "Providers",
-        initialOpen: false,
         children: [
           {
             type: "link",
@@ -123,7 +126,6 @@ export const paymentSidebar = [
       {
         type: "category",
         title: "References",
-        initialOpen: false,
         description:
           "Find references for tools and resources related to the Payment Module, such as data models, methods, and more. These are useful for your customizations.",
         children: [
@@ -138,12 +140,14 @@ export const paymentSidebar = [
                 title: "Workflows",
                 autogenerate_tags: "workflow+payment",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "category",
                 title: "Steps",
                 autogenerate_tags: "step+payment",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
@@ -160,6 +164,7 @@ export const paymentSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Store API Routes related to the Payment Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
               {
                 type: "sub-category",
@@ -168,21 +173,29 @@ export const paymentSidebar = [
                 description:
                   "The following methods or properties are used to send requests to Admin API Routes related to the Payment Module.",
                 autogenerate_as_ref: true,
+                sort_sidebar: "alphabetize",
               },
             ],
           },
           {
             type: "link",
-            path: "/commerce-modules/payment/events",
+            path: "/references/payment/events",
             title: "Events Reference",
           },
           {
-            type: "link",
-            path: "/references/payment",
+            type: "sidebar",
+            sidebar_id: "payment-service-reference",
             title: "Main Service Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Payment Module's Main Service Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/payment",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Methods",
@@ -192,12 +205,19 @@ export const paymentSidebar = [
             ],
           },
           {
-            type: "link",
-            path: "/references/payment/models",
+            type: "sidebar",
+            sidebar_id: "payment-models-reference",
             title: "Data Models Reference",
-            isChildSidebar: true,
             childSidebarTitle: "Payment Module Data Models Reference",
             children: [
+              {
+                type: "link",
+                path: "/references/payment/models",
+                title: "Reference Overview",
+              },
+              {
+                type: "separator",
+              },
               {
                 type: "category",
                 title: "Data Models",

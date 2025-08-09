@@ -2,7 +2,11 @@ post:
   operationId: PostOrderEditsIdItemsItemItem_id
   summary: Update Order Item Quantity of Order Edit
   x-sidebar-summary: Update Item Quantity
-  description: Update an existing order item's quantity of an order edit.
+  description: >
+    Update an existing order item's quantity of an order edit.
+
+    You can also use this API route to remove an item from an order by setting
+    its quantity to `0`.
   x-authenticated: true
   parameters:
     - name: id
@@ -28,6 +32,11 @@ post:
           $ref: >-
             ../components/schemas/AdminPostOrderEditsUpdateItemQuantityReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_order-edits_{id}_items_item_{item_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -55,3 +64,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: orderEditUpdateItemQuantityWorkflow
+  x-events: []

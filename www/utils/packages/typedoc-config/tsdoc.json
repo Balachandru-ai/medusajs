@@ -57,6 +57,22 @@
     {
       "tagName": "@tags",
       "syntaxKind": "block"
+    },
+    {
+      "tagName": "@eventName",
+      "syntaxKind": "block"
+    },
+    {
+      "tagName": "@workflows",
+      "syntaxKind": "block"
+    },
+    {
+      "tagName": "@eventPayload",
+      "syntaxKind": "block"
+    },
+    {
+      "tagName": "@workflowEvent",
+      "syntaxKind": "block"
     }
   ]
 }

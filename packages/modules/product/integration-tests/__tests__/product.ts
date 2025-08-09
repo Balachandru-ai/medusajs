@@ -55,7 +55,7 @@ moduleIntegrationTestRunner<Service>({
         service: ProductModuleService,
       }).linkable
 
-      expect(Object.keys(linkable)).toHaveLength(8)
+      expect(Object.keys(linkable)).toHaveLength(9)
       expect(Object.keys(linkable)).toEqual(
         expect.arrayContaining([
           "product",
@@ -66,6 +66,7 @@ moduleIntegrationTestRunner<Service>({
           "productTag",
           "productCollection",
           "productCategory",
+          "productImage",
         ])
       )
 
@@ -151,6 +152,15 @@ moduleIntegrationTestRunner<Service>({
             primaryKey: "id",
             serviceName: "product",
             field: "productCategory",
+          },
+        },
+        productImage: {
+          id: {
+            entity: "ProductImage",
+            field: "productImage",
+            linkable: "product_image_id",
+            primaryKey: "id",
+            serviceName: "product",
           },
         },
       })
@@ -263,6 +273,59 @@ moduleIntegrationTestRunner<Service>({
           const products = await service.update(updateData)
 
           expect(products.length).toEqual(1)
+
+          let result = await service.retrieve(productOne.id)
+          let serialized = JSON.parse(JSON.stringify(result))
+
+          expect(serialized).toEqual(
+            expect.objectContaining({
+              id: productOne.id,
+              title: "update test 1",
+            })
+          )
+        })
+
+        it("should update a product and its allowed relations using selector", async () => {
+          const updateData = [
+            {
+              selector: {
+                id: productOne.id,
+              },
+              data: {
+                title: "update test 1",
+              },
+            },
+          ]
+
+          const products = await service.update(updateData)
+
+          expect(products.length).toEqual(1)
+
+          let result = await service.retrieve(productOne.id)
+          let serialized = JSON.parse(JSON.stringify(result))
+
+          expect(serialized).toEqual(
+            expect.objectContaining({
+              id: productOne.id,
+              title: "update test 1",
+            })
+          )
+        })
+
+        it("should update a single product and its allowed relations", async () => {
+          const updateData = {
+            id: productOne.id,
+            title: "update test 1",
+          }
+
+          const product = await service.update(updateData)
+
+          expect(product).toEqual(
+            expect.objectContaining({
+              id: productOne.id,
+              title: "update test 1",
+            })
+          )
 
           let result = await service.retrieve(productOne.id)
           let serialized = JSON.parse(JSON.stringify(result))

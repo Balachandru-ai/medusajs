@@ -69,6 +69,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCartPromotionsWorkflow
+  x-events: []
 delete:
   operationId: DeleteCartsIdPromotions
   summary: Remove Promotions from Cart
@@ -140,3 +141,9 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCartPromotionsWorkflow
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/StoreCartRemovePromotion.yaml
+  x-events: []

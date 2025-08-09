@@ -31,17 +31,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the product tag.
- *         properties:
- *           value:
- *             type: string
- *             title: value
- *             description: The product tag's value.
- *           metadata:
- *             type: object
- *             description: The product tag's metadata. Can hold custom key-value pairs.
+ *         $ref: "#/components/schemas/AdminUpdateProductTag"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.productTag.update("ptag_123", {
+ *         value: "shirt"
+ *       })
+ *       .then(({ product_tag }) => {
+ *         console.log(product_tag)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -73,6 +83,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateProductTagsWorkflow
+ * x-events:
+ *   - name: product-tag.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product tag
+ *       }]
+ *       ```
+ *     description: Emitted when product tags are updated.
+ *     deprecated: false
  * 
 */
 

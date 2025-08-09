@@ -1,4 +1,5 @@
 import {
+  AdditionalData,
   OrderChangeActionDTO,
   OrderChangeDTO,
   OrderExchangeDTO,
@@ -9,6 +10,7 @@ import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
+  createHook,
   createStep,
   createWorkflow,
   parallelize,
@@ -26,6 +28,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { prepareShippingMethodUpdate } from "../../utils/prepare-shipping-method"
+import { pricingContextResult } from "../../../cart/utils/schemas"
 
 /**
  * The data to validate that an exchange's shipping method can be updated.
@@ -42,7 +45,10 @@ export type UpdateExchangeShippingMethodValidationStepInput = {
   /**
    * The details of the shipping method update.
    */
-  input: Pick<OrderWorkflow.UpdateExchangeShippingMethodWorkflowInput, "exchange_id" | "action_id">
+  input: Pick<
+    OrderWorkflow.UpdateExchangeShippingMethodWorkflowInput,
+    "exchange_id" | "action_id"
+  >
 }
 
 /**
@@ -50,14 +56,14 @@ export type UpdateExchangeShippingMethodValidationStepInput = {
  * If the exchange is canceled, the order change is not active, the shipping method
  * doesn't exist in the exchange, or the action isn't adding a shipping method,
  * the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order exchange and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = updateExchangeShippingMethodValidationStep({
  *   orderChange: {
@@ -109,10 +115,10 @@ export const updateExchangeShippingMethodWorkflowId =
  * This workflow updates an exchange's inbound or outbound shipping method. It's used by the
  * [Update Inbound Shipping Admin API Route](https://docs.medusajs.com/api/admin#exchanges_postexchangesidinboundshippingmethodaction_id)
  * or the [Outbound Inbound Shipping Admin API Route](https://docs.medusajs.com/api/admin#exchanges_postexchangesidoutboundshippingmethodaction_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to update an exchange's
  * inbound or outbound shipping method in your custom flow.
- * 
+ *
  * @example
  * const { result } = await updateExchangeShippingMethodWorkflow(container)
  * .run({
@@ -124,16 +130,53 @@ export const updateExchangeShippingMethodWorkflowId =
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update an exchange's inbound or outbound shipping method.
+ * 
+ * @property hooks.setPricingContext - This hook is executed before the shipping method is updated. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
+ * 
+ * For example, assuming you have the following custom pricing rule:
+ * 
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ * 
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ * 
+ * ```ts
+ * import { updateExchangeShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ * 
+ * updateExchangeShippingMethodWorkflow.hooks.setPricingContext((
+ *   { order_exchange, order_change, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ * 
+ * The price of the shipping method's option will now be retrieved using the context you return.
+ * 
+ * :::note
+ * 
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ * 
+ * :::
  */
 export const updateExchangeShippingMethodWorkflow = createWorkflow(
   updateExchangeShippingMethodWorkflowId,
   function (
-    input: WorkflowData<OrderWorkflow.UpdateExchangeShippingMethodWorkflowInput>
-  ): WorkflowResponse<OrderPreviewDTO> {
+    input: WorkflowData<
+      OrderWorkflow.UpdateExchangeShippingMethodWorkflowInput & AdditionalData
+    >
+  ) {
     const orderExchange: OrderExchangeDTO = useRemoteQueryStep({
       entry_point: "order_exchange",
       fields: [
@@ -161,6 +204,19 @@ export const updateExchangeShippingMethodWorkflow = createWorkflow(
       list: false,
     }).config({ name: "order-change-query" })
 
+    const setPricingContext = createHook(
+      "setPricingContext",
+      {
+        order_exchange: orderExchange,
+        order_change: orderChange,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: pricingContextResult,
+      }
+    )
+    const setPricingContextResult = setPricingContext.getResult()
+
     const shippingOptions = when({ input }, ({ input }) => {
       return input.data?.custom_amount === null
     }).then(() => {
@@ -174,6 +230,18 @@ export const updateExchangeShippingMethodWorkflow = createWorkflow(
           return {
             shipping_method_id: originalAction.reference_id,
             currency_code: (orderExchange as any).order.currency_code,
+          }
+        }
+      )
+
+      const pricingContext = transform(
+        { action, setPricingContextResult },
+        (data) => {
+          return {
+            ...(data.setPricingContextResult
+              ? data.setPricingContextResult
+              : {}),
+            currency_code: data.action.currency_code,
           }
         }
       )
@@ -198,7 +266,7 @@ export const updateExchangeShippingMethodWorkflow = createWorkflow(
         variables: {
           id: shippingMethod.shipping_option_id,
           calculated_price: {
-            context: { currency_code: action.currency_code },
+            context: pricingContext,
           },
         },
       }).config({ name: "fetch-shipping-option" })
@@ -220,6 +288,11 @@ export const updateExchangeShippingMethodWorkflow = createWorkflow(
       updateOrderShippingMethodsStep([updateData.shippingMethod!])
     )
 
-    return new WorkflowResponse(previewOrderChangeStep(orderExchange.order_id))
+    return new WorkflowResponse(
+      previewOrderChangeStep(orderExchange.order_id) as OrderPreviewDTO,
+      {
+        hooks: [setPricingContext] as const,
+      }
+    )
   }
 )

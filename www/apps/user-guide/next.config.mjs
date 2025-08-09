@@ -1,4 +1,5 @@
 import mdx from "@next/mdx"
+import path from "path"
 import rehypeMdxCodeProps from "rehype-mdx-code-props"
 import rehypeSlug from "rehype-slug"
 import remarkDirective from "remark-directive"
@@ -9,13 +10,42 @@ import {
   cloudinaryImgRehypePlugin,
   resolveAdmonitionsPlugin,
   crossProjectLinksPlugin,
+  prerequisitesLinkFixerPlugin,
+  remarkAttachFrontmatterDataPlugin,
+  recmaInjectMdxDataPlugin,
 } from "remark-rehype-plugins"
+import bundleAnalyzer from "@next/bundle-analyzer"
+import withExtractedTableOfContents from "@stefanprobst/rehype-extract-toc"
 
 const withMDX = mdx({
   extension: /\.mdx?$/,
   options: {
     rehypePlugins: [
-      // TODO add V2 to path if necessary
+      [
+        brokenLinkCheckerPlugin,
+        {
+          crossProjects: {
+            docs: {
+              projectPath: path.resolve("..", "book"),
+            },
+            ui: {
+              projectPath: path.resolve("..", "ui"),
+              contentPath: "src/content/docs",
+            },
+            resources: {
+              projectPath: path.resolve("..", "resources"),
+              hasGeneratedSlugs: true,
+            },
+            api: {
+              projectPath: path.resolve("..", "api-reference"),
+              skipSlugValidation: true,
+            },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
+            },
+          },
+        },
+      ],
       [
         crossProjectLinksPlugin,
         {
@@ -34,13 +64,15 @@ const withMDX = mdx({
             api: {
               url: process.env.NEXT_PUBLIC_API_URL,
             },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
+            },
           },
           useBaseUrl:
             process.env.NODE_ENV === "production" ||
             process.env.VERCEL_ENV === "production",
         },
       ],
-      [brokenLinkCheckerPlugin],
       [localLinksRehypePlugin],
       [
         rehypeMdxCodeProps,
@@ -63,12 +95,21 @@ const withMDX = mdx({
           },
         },
       ],
+      [
+        prerequisitesLinkFixerPlugin,
+        {
+          checkLinksType: "value",
+        },
+      ],
+      [withExtractedTableOfContents],
     ],
     remarkPlugins: [
       [remarkFrontmatter],
       [remarkDirective],
       [resolveAdmonitionsPlugin],
+      [remarkAttachFrontmatterDataPlugin],
     ],
+    recmaPlugins: [[recmaInjectMdxDataPlugin]],
     jsx: true,
   },
 })
@@ -79,8 +120,20 @@ const nextConfig = {
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
 
   transpilePackages: ["docs-ui"],
-  // TODO uncomment if we decide on baes path
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || "/user-guide",
+  outputFileTracingIncludes: {
+    "/md\\-content/\\[\\[\\.\\.\\.slug\\]\\]": ["./app/**/*.mdx"],
+  },
+  outputFileTracingExcludes: {
+    "*": ["node_modules/@medusajs/icons"],
+  },
+  experimental: {
+    optimizePackageImports: ["@medusajs/icons", "@medusajs/ui"],
+  },
 }
 
-export default withMDX(nextConfig)
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+})
+
+export default withMDX(withBundleAnalyzer(nextConfig))

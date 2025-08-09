@@ -16,6 +16,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.salesChannel.delete("sc_123")
+ *       .then(({ deleted }) => {
+ *         console.log(deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -43,6 +60,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteSalesChannelsWorkflow
+ * x-events:
+ *   - name: sales-channel.deleted
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the sales channel
+ *       }]
+ *       ```
+ *     description: Emitted when sales channels are deleted.
+ *     deprecated: false
  * 
 */
 

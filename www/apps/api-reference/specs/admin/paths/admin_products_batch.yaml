@@ -32,6 +32,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminBatchProductRequest.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_batch/post.js
     - lang: Shell
       label: cURL
       source:
@@ -58,3 +62,40 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: batchProductsWorkflow
+  x-events:
+    - name: product-variant.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product variant
+        }]
+        ```
+      description: Emitted when product variants are created.
+      deprecated: false
+    - name: product.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product
+        }]
+        ```
+      description: Emitted when products are updated.
+      deprecated: false
+    - name: product.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product
+        }]
+        ```
+      description: Emitted when products are created.
+      deprecated: false
+    - name: product.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product
+        }]
+        ```
+      description: Emitted when products are deleted.
+      deprecated: false

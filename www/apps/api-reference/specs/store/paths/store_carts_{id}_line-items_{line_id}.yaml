@@ -53,6 +53,11 @@ post:
         schema:
           $ref: ../components/schemas/StoreUpdateCartLineItem.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/store_carts_{id}_line-items_{line_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -79,6 +84,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateLineItemInCartWorkflow
+  x-events:
+    - name: cart.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the cart
+        }
+        ```
+      description: Emitted when a cart's details are updated.
+      deprecated: false
 delete:
   operationId: DeleteCartsIdLineItemsLine_id
   summary: Remove Line Item from Cart
@@ -129,6 +144,11 @@ delete:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/store_carts_{id}_line-items_{line_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -182,3 +202,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteLineItemsWorkflow
+  x-events: []

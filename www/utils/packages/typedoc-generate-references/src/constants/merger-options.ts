@@ -8,7 +8,7 @@ import {
   customModuleTitles,
   dmlModules,
 } from "./references-details.js"
-import { AllowedProjectDocumentsOption, FormattingOptionType } from "types"
+import { AllowedProjectDocumentsOption, FormattingOptionsType } from "types"
 import { kebabToCamel, kebabToPascal, kebabToSnake, kebabToTitle } from "utils"
 import baseSectionsOptions from "./base-section-options.js"
 import mergerCustomOptions from "./merger-custom-options/index.js"
@@ -29,6 +29,9 @@ const allowedProjectDocuments: AllowedProjectDocumentsOption = {
   "js-sdk": {
     [ReflectionKind.Method]: true,
     [ReflectionKind.Property]: true,
+  },
+  "module-events": {
+    [ReflectionKind.Namespace]: true,
   },
 }
 
@@ -103,7 +106,18 @@ const mergerOptions: Partial<TypeDocOptions> = {
         : `I${kebabToPascal(moduleName)}ModuleService`
       const isDmlModule = dmlModules.includes(moduleName)
 
+      const customModuleConfig: FormattingOptionsType = {}
+
+      switch (moduleName) {
+        case "order":
+          customModuleConfig[`^${snakeCaseModuleName}/.*/methods`] = {
+            maxLevel: 2,
+          }
+          break
+      }
+
       return Object.assign(obj, {
+        ...customModuleConfig,
         // module config
         [`^${snakeCaseModuleName}`]: {
           sections: {
@@ -194,8 +208,8 @@ You should only use the methods in this reference when implementing complex cust
               }
             : {},
         },
-      } as FormattingOptionType)
-    }, {} as FormattingOptionType),
+      } as FormattingOptionsType)
+    }, {} as FormattingOptionsType),
 
     ...mergerCustomOptions,
   },

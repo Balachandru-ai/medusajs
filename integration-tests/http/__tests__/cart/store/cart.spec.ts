@@ -1,3 +1,4 @@
+import { createCartCreditLinesWorkflow } from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   Modules,
@@ -150,7 +151,7 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts", () => {
-        it("should succesffully create a cart", async () => {
+        it("should successfully create a cart", async () => {
           const response = await api.post(
             `/store/carts`,
             {
@@ -254,10 +255,10 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts/:id/line-items", () => {
-        let shippingOption, shippingOptionExpensive
+        let shippingOption, shippingOptionExpensive, stockLocation
 
         beforeEach(async () => {
-          const stockLocation = (
+          stockLocation = (
             await api.post(
               `/admin/stock-locations`,
               { name: "test location" },
@@ -418,22 +419,22 @@ medusaIntegrationTestRunner({
                   compare_at_unit_price: null,
                   is_tax_inclusive: true,
                   quantity: 2,
-                  tax_lines: [
+                  tax_lines: expect.arrayContaining([
                     expect.objectContaining({
                       description: "CA Default Rate",
                       code: "CADEFAULT",
                       rate: 5,
                       provider_id: "system",
                     }),
-                  ],
-                  adjustments: [
-                    {
+                  ]),
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
                       id: expect.any(String),
                       code: "PROMOTION_APPLIED",
                       promotion_id: promotion.id,
                       amount: 100,
-                    },
-                  ],
+                    }),
+                  ]),
                 }),
               ]),
             })
@@ -455,14 +456,14 @@ medusaIntegrationTestRunner({
               id: cart.id,
               items: expect.arrayContaining([
                 expect.objectContaining({
-                  adjustments: [
-                    {
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
                       id: expect.any(String),
                       code: "PROMOTION_APPLIED",
                       promotion_id: promotion.id,
                       amount: 100,
-                    },
-                  ],
+                    }),
+                  ]),
                 }),
               ]),
             })
@@ -678,7 +679,7 @@ medusaIntegrationTestRunner({
                   unit_price: 1500,
                   compare_at_unit_price: null,
                   is_tax_inclusive: true,
-                  title: "S / Black",
+                  title: "Medusa T-Shirt",
                   quantity: 2,
                   tax_lines: [
                     expect.objectContaining({
@@ -713,7 +714,7 @@ medusaIntegrationTestRunner({
                   compare_at_unit_price: null,
                   is_tax_inclusive: true,
                   quantity: 2,
-                  title: "S / Black",
+                  title: "Medusa T-Shirt",
                   tax_lines: [
                     expect.objectContaining({
                       description: "CA Default Rate",
@@ -728,7 +729,7 @@ medusaIntegrationTestRunner({
                   compare_at_unit_price: null,
                   is_tax_inclusive: true,
                   quantity: 1,
-                  title: "S / White",
+                  title: "Medusa T-Shirt",
                   tax_lines: [
                     expect.objectContaining({
                       description: "CA Default Rate",
@@ -822,22 +823,22 @@ medusaIntegrationTestRunner({
                     compare_at_unit_price: 1500,
                     is_tax_inclusive: true,
                     quantity: 2,
-                    tax_lines: [
+                    tax_lines: expect.arrayContaining([
                       expect.objectContaining({
                         description: "CA Default Rate",
                         code: "CADEFAULT",
                         rate: 5,
                         provider_id: "system",
                       }),
-                    ],
-                    adjustments: [
-                      {
+                    ]),
+                    adjustments: expect.arrayContaining([
+                      expect.objectContaining({
                         id: expect.any(String),
                         code: "PROMOTION_APPLIED",
                         promotion_id: promotion.id,
                         amount: 100,
-                      },
-                    ],
+                      }),
+                    ]),
                   }),
                 ]),
               })
@@ -891,6 +892,67 @@ medusaIntegrationTestRunner({
                 ]),
               })
             )
+          })
+        })
+
+        describe("with manage_inventory true", () => {
+          let inventoryItem
+          beforeEach(async () => {
+            await api.post(
+              `/admin/products/${product.id}/variants/${product.variants[0].id}`,
+              { manage_inventory: true },
+              adminHeaders
+            )
+
+            inventoryItem = (
+              await api.post(
+                `/admin/inventory-items`,
+                { sku: "bottle" },
+                adminHeaders
+              )
+            ).data.inventory_item
+          })
+
+          describe("with allow_backorder true", () => {
+            beforeEach(async () => {
+              await api.post(
+                `/admin/products/${product.id}/variants/${product.variants[0].id}`,
+                { allow_backorder: true },
+                adminHeaders
+              )
+            })
+
+            it("should add item to cart even if no inventory locations", async () => {
+              let response = await api.post(
+                `/store/carts/${cart.id}/line-items`,
+                {
+                  variant_id: product.variants[0].id,
+                  quantity: 1,
+                },
+                storeHeaders
+              )
+
+              expect(response.status).toEqual(200)
+            })
+
+            it("should add item to cart even if inventory is empty", async () => {
+              await api.post(
+                `/admin/inventory-items/${inventoryItem.id}/location-levels/batch`,
+                { create: [{ location_id: stockLocation.id }] },
+                adminHeaders
+              )
+
+              let response = await api.post(
+                `/store/carts/${cart.id}/line-items`,
+                {
+                  variant_id: product.variants[0].id,
+                  quantity: 1,
+                },
+                storeHeaders
+              )
+
+              expect(response.status).toEqual(200)
+            })
           })
         })
       })
@@ -1084,7 +1146,9 @@ medusaIntegrationTestRunner({
               { option_id: shippingOption.id },
               storeHeaders
             )
+          })
 
+          it("should successfully complete cart", async () => {
             const paymentCollection = (
               await api.post(
                 `/store/payment-collections`,
@@ -1098,9 +1162,20 @@ medusaIntegrationTestRunner({
               { provider_id: "pp_system_default" },
               storeHeaders
             )
-          })
 
-          it("should successfully complete cart", async () => {
+            createCartCreditLinesWorkflow.run({
+              input: [
+                {
+                  cart_id: cart.id,
+                  amount: 100,
+                  currency_code: "usd",
+                  reference: "test",
+                  reference_id: "test",
+                },
+              ],
+              container: appContainer,
+            })
+
             const response = await api.post(
               `/store/carts/${cart.id}/complete`,
               {},
@@ -1112,11 +1187,119 @@ medusaIntegrationTestRunner({
               expect.objectContaining({
                 id: expect.any(String),
                 currency_code: "usd",
+                credit_lines: [
+                  expect.objectContaining({
+                    amount: 100,
+                    reference: "test",
+                    reference_id: "test",
+                  }),
+                ],
                 items: expect.arrayContaining([
                   expect.objectContaining({
                     unit_price: 1500,
                     compare_at_unit_price: null,
                     quantity: 1,
+                  }),
+                ]),
+              })
+            )
+          })
+
+          it("should successfully complete cart with credit lines alone", async () => {
+            const oldCart = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            createCartCreditLinesWorkflow.run({
+              input: [
+                {
+                  cart_id: oldCart.id,
+                  amount: oldCart.total,
+                  currency_code: "usd",
+                  reference: "test",
+                  reference_id: "test",
+                },
+              ],
+              container: appContainer,
+            })
+
+            const response = await api.post(
+              `/store/carts/${cart.id}/complete`,
+              {},
+              storeHeaders
+            )
+
+            expect(response.status).toEqual(200)
+            expect(response.data.order).toEqual(
+              expect.objectContaining({
+                id: expect.any(String),
+                currency_code: "usd",
+                credit_line_total: 2395,
+                discount_total: 105,
+                credit_lines: [
+                  expect.objectContaining({
+                    amount: 2395,
+                  }),
+                ],
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    unit_price: 1500,
+                    compare_at_unit_price: null,
+                    quantity: 1,
+                  }),
+                ]),
+              })
+            )
+          })
+
+          it("should successfully complete cart with promotions", async () => {
+            const oldCart = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            createCartCreditLinesWorkflow.run({
+              input: [
+                {
+                  cart_id: oldCart.id,
+                  amount: oldCart.total,
+                  currency_code: "usd",
+                  reference: "test",
+                  reference_id: "test",
+                },
+              ],
+              container: appContainer,
+            })
+
+            const cartResponse = await api.post(
+              `/store/carts/${cart.id}/complete`,
+              {},
+              storeHeaders
+            )
+
+            const orderResponse = await api.get(
+              `/store/orders/${cartResponse.data.order.id}?fields=+promotions.*`,
+              storeHeaders
+            )
+
+            expect(cartResponse.status).toEqual(200)
+            expect(orderResponse.data.order).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: promotion.code,
+                  }),
+                ],
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    unit_price: 1500,
+                    compare_at_unit_price: null,
+                    quantity: 1,
+                    adjustments: expect.arrayContaining([
+                      expect.objectContaining({
+                        amount: 100,
+                        code: promotion.code,
+                      }),
+                    ]),
                   }),
                 ]),
               })
@@ -1160,7 +1343,7 @@ medusaIntegrationTestRunner({
               )
             ).data.product
 
-            let cart = (
+            cart = (
               await api.post(
                 `/store/carts`,
                 {
@@ -1463,8 +1646,6 @@ medusaIntegrationTestRunner({
             })
 
             it("should complete a cart with inventory item shared between variants", async () => {
-              console.log(cart)
-
               const response = await api.post(
                 `/store/carts/${cart.id}/complete`,
                 {},
@@ -1476,11 +1657,11 @@ medusaIntegrationTestRunner({
                 expect.objectContaining({
                   items: expect.arrayContaining([
                     expect.objectContaining({
-                      title: "2-pack",
+                      subtitle: "2-pack",
                       quantity: 1,
                     }),
                     expect.objectContaining({
-                      title: "3-pack",
+                      subtitle: "3-pack",
                       quantity: 1,
                     }),
                   ]),
@@ -1890,6 +2071,56 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should not add a promotion that belongs to a different currency than the cart", async () => {
+          const newPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TEST",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  // Set for EUR currency, different from USD Currency of the cart
+                  currency_code: "eur",
+                  value: 1000,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          await api.post(
+            `/store/carts/${cart.id}/line-items`,
+            {
+              variant_id: product.variants[0].id,
+              quantity: 1,
+            },
+            storeHeaders
+          )
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [newPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              items: [
+                expect.objectContaining({
+                  adjustments: [],
+                }),
+              ],
+            })
+          )
+        })
+
         it("should not generate tax lines if automatic taxes is false", async () => {
           let updated = await api.post(
             `/store/carts/${cart.id}`,
@@ -1931,6 +2162,72 @@ medusaIntegrationTestRunner({
                   tax_lines: [],
                 }),
               ],
+            })
+          )
+        })
+
+        it("should not generate tax lines for gift card products", async () => {
+          const giftCardProduct = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Gift Card",
+                description: "test",
+                is_giftcard: true,
+                options: [
+                  {
+                    title: "Denomination",
+                    values: ["10", "20", "50", "100"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "10",
+                    sku: "special-shirt",
+                    options: {
+                      Denomination: "10",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 1000,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}/line-items?fields=+items.is_giftcard`,
+            { variant_id: giftCardProduct.variants[0].id, quantity: 1 },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_giftcard: false,
+                  tax_lines: [
+                    expect.objectContaining({
+                      description: "CA Default Rate",
+                      code: "CADEFAULT",
+                      rate: 5,
+                      provider_id: "system",
+                    }),
+                  ],
+                }),
+                expect.objectContaining({
+                  is_giftcard: true,
+                  tax_lines: [],
+                }),
+              ]),
             })
           )
         })
@@ -2428,6 +2725,114 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should only apply promotion on discountable items", async () => {
+          const notDiscountableProduct = (
+            await api.post(
+              "/admin/products",
+              {
+                title: "Medusa T-Shirt not discountable",
+                handle: "t-shirt-not-discountable",
+                discountable: false,
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S",
+                    sku: "s-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 1000,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+
+                shipping_profile_id: shippingProfile.id,
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          const cartData = {
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+            region_id: region.id,
+            shipping_address: shippingAddressData,
+            items: [
+              { variant_id: product.variants[0].id, quantity: 1 },
+              {
+                variant_id: notDiscountableProduct.variants[0].id,
+                quantity: 1,
+              },
+            ],
+            promo_codes: [promotion.code],
+          }
+
+          const cart = (
+            await api.post(
+              `/store/carts?fields=+items.is_discountable,+items.total,+items.discount_total`,
+              cartData,
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(cart).toEqual(
+            expect.objectContaining({
+              discount_subtotal: 100,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  variant_id: product.variants[0].id,
+                  is_discountable: true,
+                  unit_price: 1500,
+                  total: 1395,
+                  discount_total: 105,
+                  adjustments: [
+                    expect.objectContaining({
+                      promotion_id: promotion.id,
+                      amount: 100,
+                    }),
+                  ],
+                }),
+                expect.objectContaining({
+                  variant_id: notDiscountableProduct.variants[0].id,
+                  is_discountable: false,
+                  total: 1000,
+                  unit_price: 1000,
+                  discount_total: 0,
+                  adjustments: [],
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should throw an error when adding a promotion that does not exist", async () => {
+          const invalidPromoCode = "SOME_INVALID_PROMO_CODE"
+
+          const { response } = await api
+            .post(
+              `/store/carts/${cart.id}/promotions`,
+              { promo_codes: [invalidPromoCode] },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.status).toEqual(400)
+          expect(response.data.type).toEqual("invalid_data")
+          expect(response.data.message).toEqual(
+            `The promotion code ${invalidPromoCode} is invalid`
+          )
+        })
+
         it("should remove promotion adjustments when promotion is deleted", async () => {
           let cartBeforeRemovingPromotion = (
             await api.get(`/store/carts/${cart.id}`, storeHeaders)
@@ -2438,14 +2843,14 @@ medusaIntegrationTestRunner({
               id: cart.id,
               items: expect.arrayContaining([
                 expect.objectContaining({
-                  adjustments: [
-                    {
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
                       id: expect.any(String),
                       code: "PROMOTION_APPLIED",
                       promotion_id: promotion.id,
                       amount: 100,
-                    },
-                  ],
+                    }),
+                  ]),
                 }),
               ]),
             })
@@ -2468,6 +2873,861 @@ medusaIntegrationTestRunner({
               items: expect.arrayContaining([
                 expect.objectContaining({
                   adjustments: [],
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 100 USD tax exclusive promotion for a 105 USD tax inclusive item and logically result in a 0 total with tax 5%", async () => {
+          const taxExclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_EXCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: false, //Here we apply a tax exclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 100,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxExclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 105,
+              discount_subtotal: 100,
+              discount_tax_total: 5,
+              original_total: 105,
+              total: 0, // 105 - 100 tax excl promotion + 5 promotion tax
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxExclPromotion.code,
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_EXCLUSIVE",
+                  application_method: expect.objectContaining({
+                    value: 100,
+                  }),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 105 USD tax inclusive promotion (fixed, across, apply_to_quantity=1) for a 105 USD tax inclusive item and logically result in a 0 total with tax 5%", async () => {
+          const taxInclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true, //Here we apply a tax inclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 105,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxInclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 105,
+              discount_subtotal: 100,
+              discount_tax_total: 5,
+              original_total: 105,
+              total: 0, // 105 - 100 tax excl promotion + 5 promotion tax
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 105,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_INCLUSIVE",
+                  is_tax_inclusive: true,
+                  application_method: expect.objectContaining({
+                    value: 105,
+                  }),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 105 USD tax inclusive promotion (fixed, across, apply_to_quantity=1) for two 105 USD tax inclusive items and logically result in a 105 total with tax 5%", async () => {
+          const taxInclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true, //Here we apply a tax inclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 105,
+                  apply_to_quantity: 1,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 2,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxInclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 105,
+              discount_subtotal: 100,
+              discount_tax_total: 5,
+              original_total: 210,
+              total: 105, // 210 - 100 tax excl promotion + 5 promotion tax
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 105,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_INCLUSIVE",
+                  is_tax_inclusive: true,
+                  application_method: expect.objectContaining({
+                    value: 105,
+                  }),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 105 USD tax inclusive promotion (fixed, each, max_quantity=2) for two 105 USD tax inclusive items and logically result in a 0 total with tax 5%", async () => {
+          const taxInclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true, //Here we apply a tax inclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 105,
+                  max_quantity: 2,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 2,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxInclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 105,
+              discount_subtotal: 100,
+              discount_tax_total: 5,
+              original_total: 210,
+              total: 105, // 210 - 100 tax excl promotion + 5 promotion tax
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 105,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_INCLUSIVE",
+                  is_tax_inclusive: true,
+                  application_method: expect.objectContaining({
+                    value: 105,
+                  }),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add two tax inclusive promotions (50,100) (fixed, across) for two 105 USD tax inclusive items", async () => {
+          const taxInclPromotion50 = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE_50",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true,
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 50,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const taxInclPromotion100 = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE_100",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true,
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 100,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 105,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 2,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              promo_codes: [taxInclPromotion50.code, taxInclPromotion100.code],
+            },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 150,
+              original_total: 210,
+              total: 60, // 210 - (100 + 50 tax incl promotion)
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion50.code,
+                      amount: 50,
+                      is_tax_inclusive: true,
+                    }),
+                    expect.objectContaining({
+                      code: taxInclPromotion100.code,
+                      amount: 100,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should verify that reapplying the same promotion code after the cart total has been reduced to zero does not incorrectly remove existing adjustments", async () => {
+          const taxInclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true,
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 50,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 50,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              promo_codes: [taxInclPromotion.code],
+            },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 50,
+              original_total: 50,
+              total: 0,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 50,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          let updatedAgain = await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              promo_codes: [taxInclPromotion.code],
+            },
+            storeHeaders
+          )
+
+          expect(updatedAgain.status).toEqual(200)
+          expect(updatedAgain.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 50,
+              original_total: 50,
+              total: 0,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 50,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add a 1500 USD tax inclusive promotion (fixed, across) for 50x 29,95 USD tax inclusive items and logically result in a 0 total with tax 5%", async () => {
+          const taxInclPromotion = (
+            await api.post(
+              `/admin/promotions`,
+              {
+                code: "PROMOTION_TAX_INCLUSIVE",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_tax_inclusive: true, //Here we apply a tax inclusive promotion to a tax inclusive item in a way that the total SHOULD be 0
+                application_method: {
+                  type: "fixed",
+                  target_type: "items",
+                  allocation: "across",
+                  currency_code: "usd",
+                  value: 1500,
+                },
+              },
+              adminHeaders
+            )
+          ).data.promotion
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                title: "Product for free",
+                description: "test",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M", "L", "XL"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S / Black",
+                    sku: "special-shirt",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 29.95,
+                        currency_code: "usd",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeadersWithCustomer
+            )
+          ).data.cart
+
+          cart = (
+            await api.post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[0].id,
+                quantity: 50,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          let updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { promo_codes: [taxInclPromotion.code] },
+            storeHeaders
+          )
+
+          expect(updated.status).toEqual(200)
+          expect(updated.data.cart).toEqual(
+            expect.objectContaining({
+              discount_total: 1497.5,
+              original_total: 1497.5,
+              total: 0,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  is_tax_inclusive: true,
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: taxInclPromotion.code,
+                      amount: 1497.5,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+              promotions: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "PROMOTION_TAX_INCLUSIVE",
+                  is_tax_inclusive: true,
+                  application_method: expect.objectContaining({
+                    value: 1500,
+                  }),
                 }),
               ]),
             })

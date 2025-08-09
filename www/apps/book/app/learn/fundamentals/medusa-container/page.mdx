@@ -8,7 +8,7 @@ In this chapter, you’ll learn about the Medusa container and how to use it.
 
 ## What is the Medusa Container?
 
-The Medusa container is a registry of framework and commerce tools that's accessible across your application. Medusa automatically registers these tools in the container, including custom ones that you've built, so that you can use them in your customizations.
+The Medusa container is a registry of Framework and commerce tools that's accessible across your application. Medusa automatically registers these tools in the container, including custom ones that you've built, so that you can use them in your customizations.
 
 In other platforms, if you have a resource A (for example, a class) that depends on a resource B, you have to manually add resource B to the container or specify it beforehand as A's dependency, which is often done in a file separate from A's code. This becomes difficult to manage as you maintain larger applications with many changing dependencies.
 
@@ -178,3 +178,13 @@ const step1 = createStep("step-1", async (_, { container }) => {
 A [module](../../fundamentals/modules/page.mdx), which is a package of functionalities for a single feature or domain, has its own container, so it can't resolve resources from the Medusa container.
 
 Learn more about the module's container in [this chapter](../../fundamentals/modules/container/page.mdx).
+
+---
+
+## Container Registration Keys Auto-Completion
+
+When you resolve a resource from the Medusa container, you can use auto-completion to find the registration key of the resource.
+
+This is possible due to Medusa's auto-generated types, which are generated in the `.medusa` directory when you run the `dev` command.
+
+Learn more in the [Auto-Generated Types](../generated-types/page.mdx) chapter.

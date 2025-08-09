@@ -118,7 +118,7 @@
     "close": "Schließen",
     "showMore": "Mehr anzeigen",
     "continue": "Weitermachen",
-    "continueWithEmail": "Fahren Sie mit E-Mail fort",
+    "continueWithEmail": "Mit E-Mail anmelden",
     "idCopiedToClipboard": "ID in die Zwischenablage kopiert",
     "addReason": "Grund hinzufügen",
     "addNote": "Notiz hinzufügen",
@@ -233,8 +233,8 @@
         }
       },
       "store": {
-        "label": "Speichern",
-        "storeSettings": "Einstellungen speichern"
+        "label": "Shop",
+        "storeSettings": "Shop-Einstellungen"
       },
       "actions": {
         "logout": "Abmelden"
@@ -525,18 +525,22 @@
     "fields": {
       "title": {
         "label": "Titel",
-        "hint": "Geben Sie Ihrem Produkt einen kurzen und klaren Titel.<0/>50-60 Zeichen ist die empfohlene Länge für Suchmaschinen."
+        "hint": "Geben Sie Ihrem Produkt einen kurzen und klaren Titel.<0/>50-60 Zeichen ist die empfohlene Länge für Suchmaschinen.",
+        "placeholder": "Winterjacke"
       },
       "subtitle": {
-        "label": "Untertitel"
+        "label": "Untertitel",
+        "placeholder": "Warm und gemütlich"
       },
       "handle": {
         "label": "Handle",
-        "tooltip": "Der Handle wird verwendet, um auf das Produkt in Ihrer Storefront zu verweisen. Wenn nicht angegeben, wird das Handle aus dem Produkttitel generiert."
+        "tooltip": "Der Handle wird verwendet, um auf das Produkt in Ihrer Storefront zu verweisen. Wenn nicht angegeben, wird das Handle aus dem Produkttitel generiert.",
+        "placeholder": "winterjacke"
       },
       "description": {
         "label": "Beschreibung",
-        "hint": "Geben Sie Ihrem Produkt eine kurze und klare Beschreibung.<0/>120-160 Zeichen ist die empfohlene Länge für Suchmaschinen."
+        "hint": "Geben Sie Ihrem Produkt eine kurze und klare Beschreibung.<0/>120-160 Zeichen ist die empfohlene Länge für Suchmaschinen.",
+        "placeholder": "Eine warme und gemütliche Jacke"
       },
       "discountable": {
         "label": "Rabattierbar",
@@ -964,7 +968,7 @@
         "authorized": "Autorisiert",
         "partiallyAuthorized": "Teilweise autorisiert",
         "awaiting": "Warten",
-        "captured": "Gefangen",
+        "captured": "Erhalten",
         "partiallyRefunded": "Teilweise erstattet",
         "partiallyCaptured": "Teilweise erfasst",
         "refunded": "Erstattet",
@@ -2159,7 +2163,7 @@
     "invite": "Einladen"
   },
   "store": {
-    "domain": "Speichern",
+    "domain": "Shop",
     "manageYourStoresDetails": "Verwalten Sie die Details Ihres Shops",
     "editStore": "Shop bearbeiten",
     "defaultCurrency": "Standardwährung",
@@ -2454,7 +2458,7 @@
   "login": {
     "forgotPassword": "Passwort vergessen? - <0>Zurücksetzen</0>",
     "title": "Willkommen bei Medusa",
-    "hint": "Melden Sie sich an, um auf den Kontobereich zuzugreifen"
+    "hint": "Melden Sie sich an, um auf ihr Konto zuzugreifen"
   },
   "invite": {
     "title": "Willkommen bei Medusa",
@@ -2503,8 +2507,8 @@
     "transactionIdLabel": "Transaktions-ID",
     "workflowIdLabel": "Workflow-ID",
     "progressLabel": "Fortschritt",
-    "stepsCompletedLabel_one": "{{completed}} von {{count}} Schritt",
-    "stepsCompletedLabel_other": "{{completed}} von {{count}} Schritten",
+    "stepsCompletedLabel_one": "Schritt {{completed}} von {{count}}",
+    "stepsCompletedLabel_other": " Schritt {{completed}} von {{count}}",
     "list": {
       "noRecordsMessage": "Es wurden noch keine Workflows ausgeführt."
     },
@@ -2709,7 +2713,7 @@
     "key": "Schlüssel",
     "customer": "Kunde",
     "date": "Datum",
-    "order": "Befehl",
+    "order": "Bestellung",
     "fulfillment": "Erfüllung",
     "provider": "Anbieter",
     "payment": "Zahlung",

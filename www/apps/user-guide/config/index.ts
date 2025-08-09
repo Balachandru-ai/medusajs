@@ -1,6 +1,7 @@
-import { DocsConfig, SidebarItem } from "types"
-import { generatedSidebar as sidebar } from "@/generated/sidebar.mjs"
+import { DocsConfig, Sidebar } from "types"
+import { generatedSidebars } from "@/generated/sidebar.mjs"
 import { globalConfig } from "docs-ui"
+import { basePathUrl } from "../utils/base-path-url"
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
 
@@ -9,16 +10,25 @@ export const config: DocsConfig = {
   titleSuffix: "Medusa Admin User Guide",
   baseUrl,
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
-  sidebar: {
-    default: sidebar as SidebarItem[],
-    mobile: [],
-  },
+  sidebars: generatedSidebars as Sidebar.Sidebar[],
   project: {
     title: "User Guide",
     key: "user-guide",
   },
-  breadcrumbOptions: {
-    showCategories: true,
-  },
   logo: `${process.env.NEXT_PUBLIC_BASE_PATH}/images/logo.png`,
+  breadcrumbOptions: {
+    startItems: [
+      {
+        title: "Documentation",
+        link: baseUrl,
+      },
+    ],
+  },
+  version: {
+    ...globalConfig.version,
+    bannerImage: {
+      light: basePathUrl("/images/release.png"),
+      dark: basePathUrl("/images/release-dark.png"),
+    },
+  },
 }

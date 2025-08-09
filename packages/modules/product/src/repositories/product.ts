@@ -1,16 +1,181 @@
-import { Product } from "@models"
+import { Product, ProductOption } from "@models"
 
-import { Context, DAL } from "@medusajs/framework/types"
-import { DALUtils } from "@medusajs/framework/utils"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { Context, DAL, InferEntityType } from "@medusajs/framework/types"
+import {
+  arrayDifference,
+  buildQuery,
+  DALUtils,
+  MedusaError,
+  isPresent,
+  mergeMetadata,
+  isDefined,
+} from "@medusajs/framework/utils"
+import { SqlEntityManager, wrap } from "@mikro-orm/postgresql"
 
-// eslint-disable-next-line max-len
 export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
   Product
 ) {
   constructor(...args: any[]) {
     // @ts-ignore
     super(...arguments)
+  }
+
+  /**
+   * Identify the relations to load for the given update.
+   * @param update
+   * @returns
+   */
+  static #getProductDeepUpdateRelationsToLoad(
+    productsToUpdate: any[]
+  ): string[] {
+    const relationsToLoad = new Set<string>()
+    productsToUpdate.forEach((productToUpdate) => {
+      if (productToUpdate.options) {
+        relationsToLoad.add("options")
+        relationsToLoad.add("options.values")
+      }
+      if (productToUpdate.variants) {
+        relationsToLoad.add("options")
+        relationsToLoad.add("options.values")
+        relationsToLoad.add("variants")
+        relationsToLoad.add("variants.options")
+        relationsToLoad.add("variants.options.option")
+      }
+      if (productToUpdate.tags) relationsToLoad.add("tags")
+      if (productToUpdate.categories) relationsToLoad.add("categories")
+      if (productToUpdate.images) relationsToLoad.add("images")
+      if (productToUpdate.collection) relationsToLoad.add("collection")
+      if (productToUpdate.type) relationsToLoad.add("type")
+    })
+    return Array.from(relationsToLoad)
+  }
+
+  // We should probably fix the column types in the database to avoid this
+  // It would also match the types in ProductVariant, which are already numbers
+  static #correctUpdateDTOTypes(productToUpdate: {
+    weight?: string | number
+    length?: string | number
+    height?: string | number
+    width?: string | number
+  }) {
+    if (isDefined(productToUpdate.weight)) {
+      productToUpdate.weight = productToUpdate.weight?.toString()
+    }
+    if (isDefined(productToUpdate.length)) {
+      productToUpdate.length = productToUpdate.length?.toString()
+    }
+    if (isDefined(productToUpdate.height)) {
+      productToUpdate.height = productToUpdate.height?.toString()
+    }
+    if (isDefined(productToUpdate.width)) {
+      productToUpdate.width = productToUpdate.width?.toString()
+    }
+  }
+
+  async deepUpdate(
+    productsToUpdate: ({ id: string } & any)[],
+    validateVariantOptions: (
+      variants: any[],
+      options: InferEntityType<typeof ProductOption>[]
+    ) => void,
+    context: Context = {}
+  ): Promise<InferEntityType<typeof Product>[]> {
+    const productIdsToUpdate: string[] = []
+
+    productsToUpdate.forEach((productToUpdate) => {
+      ProductRepository.#correctUpdateDTOTypes(productToUpdate)
+      productIdsToUpdate.push(productToUpdate.id)
+    })
+
+    const relationsToLoad =
+      ProductRepository.#getProductDeepUpdateRelationsToLoad(productsToUpdate)
+
+    const findOptions = buildQuery(
+      { id: productIdsToUpdate },
+      {
+        relations: relationsToLoad,
+        take: productsToUpdate.length,
+      }
+    )
+
+    const products = await this.find(findOptions, context)
+    const productsMap = new Map(products.map((p) => [p.id, p]))
+
+    const productIds = Array.from(productsMap.keys())
+    const productsNotFound = arrayDifference(productIdsToUpdate, productIds)
+
+    if (productsNotFound.length > 0) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Unable to update the products with ids: ${productsNotFound.join(", ")}`
+      )
+    }
+
+    for (const productToUpdate of productsToUpdate) {
+      const product = productsMap.get(productToUpdate.id)!
+      const wrappedProduct = wrap(product)
+
+      // Assign the options first, so they'll be available for the variants loop below
+      if (productToUpdate.options) {
+        wrappedProduct.assign({ options: productToUpdate.options })
+        delete productToUpdate.options // already assigned above, so no longer necessary
+      }
+
+      if (productToUpdate.variants) {
+        validateVariantOptions(productToUpdate.variants, product.options)
+
+        productToUpdate.variants.forEach((variant: any) => {
+          if (variant.options) {
+            variant.options = Object.entries(variant.options).map(
+              ([key, value]) => {
+                const productOption = product.options.find(
+                  (option) => option.title === key
+                )!
+                const productOptionValue = productOption.values?.find(
+                  (optionValue) => optionValue.value === value
+                )!
+                return productOptionValue.id
+              }
+            )
+          }
+        })
+      }
+
+      if (productToUpdate.tags) {
+        productToUpdate.tags = productToUpdate.tags.map(
+          (t: { id: string }) => t.id
+        )
+      }
+      if (productToUpdate.categories) {
+        productToUpdate.categories = productToUpdate.categories.map(
+          (c: { id: string }) => c.id
+        )
+      }
+      if (productToUpdate.images) {
+        productToUpdate.images = productToUpdate.images.map(
+          (image: any, index: number) => ({
+            ...image,
+            rank: index,
+          })
+        )
+      }
+
+      if (isPresent(productToUpdate.metadata)) {
+        productToUpdate.metadata = mergeMetadata(
+          product.metadata ?? {},
+          productToUpdate.metadata
+        )
+      }
+
+      wrappedProduct.assign(productToUpdate)
+    }
+
+    // Doing this to ensure updates are returned in the same order they were provided,
+    // since some core flows rely on this.
+    // This is a high level of coupling though.
+    return productsToUpdate.map(
+      (productToUpdate) => productsMap.get(productToUpdate.id)!
+    )
   }
 
   /**

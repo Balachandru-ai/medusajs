@@ -23,11 +23,51 @@
  *         fields. without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: province_code
+ *     in: query
+ *     description: Filter by a tax region's province code.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: province_code
+ *       description: Filter by a tax region's province code.
+ *   - name: provider_id
+ *     in: query
+ *     description: Filter by a tax provider ID to retrieve the tax regions using it.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: provider_id
+ *       description: Filter by a tax provider ID to retrieve the tax regions using it.
+ *   - name: metadata
+ *     in: query
+ *     description: Filter by a tax region's metadata. Refer to the [Object Query Parameter](https://docs.medusajs.com/api/admin#object) section to learn how to filter by object fields.
+ *     required: false
+ *     schema:
+ *       type: object
+ *       description: Filter by a tax region's metadata. Refer to the [Object Query Parameter](https://docs.medusajs.com/api/admin#object) section to learn how to filter by object fields.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.taxRegion.retrieve("txreg_123")
+ *       .then(({ tax_region }) => {
+ *         console.log(tax_region)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

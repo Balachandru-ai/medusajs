@@ -68,6 +68,9 @@ const coreFlowsOptions: FormattingOptionsType = {
       suffix: "- Medusa Core Workflows Reference",
     },
   },
+  "^core_flows/(Order|Draft_Order)/.*": {
+    maxLevel: 2,
+  },
 }
 
 export default coreFlowsOptions

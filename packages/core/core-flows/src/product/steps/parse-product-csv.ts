@@ -8,7 +8,7 @@ import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 import { normalizeForImport } from "../helpers/normalize-for-import"
 import { normalizeV1Products } from "../helpers/normalize-v1-import"
-import { convertCsvToJson } from "../utlils"
+import { convertCsvToJson } from "../utils"
 
 /**
  * The CSV file content to parse.

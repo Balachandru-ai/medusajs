@@ -47,6 +47,29 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The properties to update in the cart item.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.cart.update("cart_123", {
+ *         region_id: "reg_123"
+ *       })
+ *       .then(({ cart }) => {
+ *         console.log(cart)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -80,6 +103,27 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCartWorkflow
+ * x-events:
+ *   - name: cart.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *       }
+ *       ```
+ *     description: Emitted when a cart's details are updated.
+ *     deprecated: false
+ *   - name: cart.region_updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *       }
+ *       ```
+ *     description: |-
+ *       Emitted when the cart's region is updated. This
+ *       event is emitted alongside the `cart.updated` event.
+ *     deprecated: false
  * 
 */
 

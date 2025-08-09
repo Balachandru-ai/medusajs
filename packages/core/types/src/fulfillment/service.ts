@@ -72,6 +72,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const fulfillmentSet = await fulfillmentModuleService.retrieveFulfillmentSet(
@@ -107,6 +114,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment set:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const fulfillmentSets = await fulfillmentModuleService.listFulfillmentSets(
@@ -160,7 +174,14 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment set:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const [fulfillmentSets, count] =
    *   await fulfillmentModuleService.listAndCountFulfillmentSets(
@@ -373,7 +394,14 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const serviceZone =
    *   await fulfillmentModuleService.retrieveServiceZone(
@@ -410,6 +438,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the service zone:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const serviceZones =
@@ -465,6 +500,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the service zone:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [serviceZones, count] =
@@ -724,6 +766,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const geoZone =
@@ -758,6 +807,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved within the geo zone:
    *
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const geoZones = await fulfillmentModuleService.listGeoZones(
    *   {
@@ -811,6 +867,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved within the geo zone:
    *
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const [geoZones, count] =
    *   await fulfillmentModuleService.listAndCountGeoZones(
@@ -863,7 +926,7 @@ export interface IFulfillmentModuleService extends IModuleService {
    *     {
    *       type: "city",
    *       service_zone_id: "serzo_321",
-   *       province_code: "VT",
+   *       province_code: "us-vt",
    *       city: "Vermont",
    *       country_code: "us",
    *     },
@@ -912,7 +975,7 @@ export interface IFulfillmentModuleService extends IModuleService {
    *     {
    *       id: "fgz_321",
    *       type: "city",
-   *       province_code: "VT",
+   *       province_code: "us-vt",
    *     },
    *   ])
    */
@@ -1031,7 +1094,14 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const shippingOption =
    *   await fulfillmentModuleService.retrieveShippingOption(
@@ -1068,7 +1138,14 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const shippingOptions =
    *   await fulfillmentModuleService.listShippingOptions(
@@ -1129,6 +1206,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingOptions =
@@ -1191,6 +1275,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [shippingOptions, count] =
@@ -1484,6 +1575,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingProfile =
@@ -1521,7 +1619,14 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping profile:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const shippingProfiles =
    *   await fulfillmentModuleService.listShippingProfiles(
@@ -1578,6 +1683,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping profile:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [shippingProfiles, count] =
@@ -1842,6 +1954,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingOptionRule =
@@ -1880,6 +1999,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved within the shipping option rule:
    *
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const shippingOptionRules =
    *   await fulfillmentModuleService.listShippingOptionRules(
@@ -1936,6 +2062,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option rule:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [shippingOptionRules, count] =
@@ -2118,6 +2251,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingOptionType =
@@ -2155,6 +2295,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option type:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingOptionTypes =
@@ -2212,6 +2359,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option type:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [shippingOptionTypes, count] =
@@ -2299,6 +2453,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const fulfillment =
@@ -2336,6 +2497,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const fulfillments =
@@ -2398,6 +2566,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [fulfillments, count] =

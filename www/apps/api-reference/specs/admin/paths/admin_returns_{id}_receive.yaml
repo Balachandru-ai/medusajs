@@ -40,6 +40,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostReceiveReturnsReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_receive/post.js
     - lang: Shell
       label: cURL
       source:
@@ -66,6 +70,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: beginReceiveReturnWorkflow
+  x-events: []
 delete:
   operationId: DeleteReturnsIdReceive
   summary: Cancel Return Receival
@@ -85,6 +90,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_receive/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -130,3 +139,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelReturnReceiveWorkflow
+  x-events: []

@@ -47,25 +47,12 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The shipping method's details.
-          required:
-            - option_id
-          properties:
-            option_id:
-              type: string
-              title: option_id
-              description: The ID of the shipping option this method is created from.
-            data:
-              type: object
-              description: >-
-                Any additional data relevant for the third-party fulfillment
-                provider to process the shipment.
-              externalDocs:
-                url: >-
-                  https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
-                description: Learn more about the data parameter.
+          $ref: ../components/schemas/StoreAddCartShippingMethods.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_carts_{id}_shipping-methods/post.js
     - lang: Shell
       label: cURL
       source:
@@ -92,3 +79,13 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: addShippingMethodToCartWorkflow
+  x-events:
+    - name: cart.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the cart
+        }
+        ```
+      description: Emitted when a cart's details are updated.
+      deprecated: false

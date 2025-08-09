@@ -4,9 +4,11 @@ import {
   cloudinaryImgRehypePlugin,
   resolveAdmonitionsPlugin,
   crossProjectLinksPlugin,
+  remarkAttachFrontmatterDataPlugin,
 } from "remark-rehype-plugins"
 import remarkFrontmatter from "remark-frontmatter"
 import remarkDirective from "remark-directive"
+import withExtractedTableOfContents from "@stefanprobst/rehype-extract-toc"
 
 /** @type {import("@next/mdx").NextMDXOptions} */
 const mdxPluginOptions = {
@@ -29,6 +31,9 @@ const mdxPluginOptions = {
             },
             api: {
               url: process.env.NEXT_PUBLIC_API_URL,
+            },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
             },
           },
           useBaseUrl:
@@ -57,9 +62,11 @@ const mdxPluginOptions = {
           },
         },
       ],
+      [withExtractedTableOfContents],
     ],
     remarkPlugins: [
       [remarkFrontmatter],
+      [remarkAttachFrontmatterDataPlugin],
       [remarkDirective],
       [resolveAdmonitionsPlugin],
     ],

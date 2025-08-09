@@ -1,3 +1,7 @@
+---
+generate_toc: true
+---
+
 import { CodeTabs, CodeTab } from "docs-ui"
 
 export const metadata = {
@@ -8,7 +12,13 @@ export const metadata = {
 
 In this section of the documentation, you will find resources to learn more about the Pricing Module and how to use it in your application.
 
-Medusa has pricing related features available out-of-the-box through the Pricing Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in commerce modules, such as this Pricing Module.
+<Note title="Looking for no-code docs?">
+
+Refer to the [Medusa Admin User Guide](!user-guide!/price-lists) to learn how to manage price lists using the dashboard.
+
+</Note>
+
+Medusa has pricing related features available out-of-the-box through the Pricing Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Pricing Module.
 
 <Note>
 
@@ -19,7 +29,7 @@ Learn more about why modules are isolated in [this documentation](!docs!/learn/f
 ## Pricing Features
 
 - [Price Management](./concepts/page.mdx): Store and manage prices of a resource, such as a product or a variant.
-- [Advanced Rule Engine](./price-rules/page.mdx): Create prices with custom rules to condition prices based on different contexts.
+- [Advanced Rule Engine](./price-rules/page.mdx): Create prices with tiers and custom rules to condition prices based on different contexts.
 - [Price Lists](./concepts/page.mdx#price-list): Group prices and apply them only in specific conditions with price lists.
 - [Price Calculation Strategy](./price-calculation/page.mdx): Retrieve the best price in a given context and for the specified rule values.
 - [Tax-Inclusive Pricing](./tax-inclusive-pricing/page.mdx): Calculate prices with taxes included in the price, and Medusa will handle calculating the taxes automatically.
@@ -28,7 +38,7 @@ Learn more about why modules are isolated in [this documentation](!docs!/learn/f
 
 ## How to Use the Pricing Module
 
-In your Medusa application, you build flows around commerce modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
+In your Medusa application, you build flows around Commerce Modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
 
 You can build custom workflows and steps. You can also re-use Medusa's workflows and steps, which are provided by the `@medusajs/medusa/core-flows` package.
 

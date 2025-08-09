@@ -16,6 +16,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.orderEdit.request("ordch_123")
+ *       .then(({ order_preview }) => {
+ *         console.log(order_preview)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -43,6 +60,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: requestOrderEditRequestWorkflow
+ * x-events:
+ *   - name: order-edit.requested
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
+ *       }
+ *       ```
+ *     description: Emitted when an order edit is requested.
+ *     deprecated: false
+ *     since: 2.8.0
  * 
 */
 

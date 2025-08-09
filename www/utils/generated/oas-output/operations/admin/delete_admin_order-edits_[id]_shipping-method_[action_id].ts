@@ -53,6 +53,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: removeOrderEditShippingMethodWorkflow
+ * x-events: []
  * 
 */
 

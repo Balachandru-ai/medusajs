@@ -676,10 +676,6 @@ get:
         description: Filter the retrieved products' variants.
         x-schemaName: AdminProductVariantParams
         properties:
-          q:
-            type: string
-            title: q
-            description: Search term to apply on the variant's searchable properties.
           id:
             oneOf:
               - type: string
@@ -1183,11 +1179,48 @@ get:
             items:
               type: object
             title: $or
+          ean:
+            oneOf:
+              - type: string
+                title: ean
+                description: The variant's ean.
+              - type: array
+                description: The variant's ean.
+                items:
+                  type: string
+                  title: ean
+                  description: The ean's details.
+          upc:
+            oneOf:
+              - type: string
+                title: upc
+                description: The variant's upc.
+              - type: array
+                description: The variant's upc.
+                items:
+                  type: string
+                  title: upc
+                  description: The upc's details.
+          barcode:
+            oneOf:
+              - type: string
+                title: barcode
+                description: The variant's barcode.
+              - type: array
+                description: The variant's barcode.
+                items:
+                  type: string
+                  title: barcode
+                  description: The barcode's details.
   security:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products/get.js
     - lang: Shell
       label: cURL
       source:
@@ -1289,6 +1322,10 @@ post:
                     `additional_data` parameter.
           description: The product's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products/post.js
     - lang: Shell
       label: cURL
       source:
@@ -1315,3 +1352,22 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createProductsWorkflow
+  x-events:
+    - name: product-variant.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product variant
+        }]
+        ```
+      description: Emitted when product variants are created.
+      deprecated: false
+    - name: product.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product
+        }]
+        ```
+      description: Emitted when products are created.
+      deprecated: false

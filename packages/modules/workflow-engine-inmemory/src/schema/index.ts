@@ -16,6 +16,7 @@ type WorkflowExecution {
   deleted_at: DateTime
   workflow_id: string
   transaction_id: string
+  run_id: string
   execution: JSON
   context: JSON
   state: TransactionState

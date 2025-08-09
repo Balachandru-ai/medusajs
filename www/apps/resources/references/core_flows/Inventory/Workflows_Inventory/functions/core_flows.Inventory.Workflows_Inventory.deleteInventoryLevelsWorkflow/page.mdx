@@ -19,7 +19,7 @@ This workflow deletes one or more inventory levels. It's used by the
 You can use this workflow within your own customizations or custom workflows, allowing you
 to delete inventory levels in your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/inventory/workflows/delete-inventory-levels.ts#L127" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/inventory/workflows/delete-inventory-levels.ts#L127" />
 
 ## Examples
 
@@ -128,7 +128,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"deleteInventoryLevelsWorkflow","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":1},{"type":"step","name":"validateInventoryLevelsDelete","description":"This step validates that inventory levels are deletable. If the\ninventory levels have reserved or incoming items, or the force\nflag is not set and the inventory levels have stocked items, the\nstep will throw an error.\n\n:::note\n\nYou can retrieve an inventory level's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Inventory.Workflows_Inventory.validateInventoryLevelsDelete/page.mdx","depth":2}]}} />
+<WorkflowDiagram workflow={{"name":"deleteInventoryLevelsWorkflow","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":1},{"type":"step","name":"validateInventoryLevelsDelete","description":"This step validates that inventory levels are deletable. If the\ninventory levels have reserved or incoming items, or the force\nflag is not set and the inventory levels have stocked items, the\nstep will throw an error.\n\n:::note\n\nYou can retrieve an inventory level's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Inventory.Workflows_Inventory.validateInventoryLevelsDelete/page.mdx","depth":2},{"type":"step","name":"deleteEntitiesStep","description":"This step deletes one or more entities using methods in a module's service.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.deleteEntitiesStep/page.mdx","depth":3}]}} />
 
 ## Input
 

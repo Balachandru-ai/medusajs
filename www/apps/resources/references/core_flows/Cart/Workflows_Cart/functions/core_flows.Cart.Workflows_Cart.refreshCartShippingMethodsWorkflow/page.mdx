@@ -3,10 +3,8 @@ slug: /references/medusa-workflows/refreshCartShippingMethodsWorkflow
 sidebar_label: refreshCartShippingMethodsWorkflow
 sidebar_description: Refresh a cart's shipping methods after an update.
 tags:
-  - query
   - cart
   - workflow
-  - remote query
   - fulfillment
 ---
 
@@ -21,7 +19,7 @@ and retrieve their correct pricing after a cart update. This workflow is used by
 
 You can use this workflow within your own customizations or custom workflows, allowing you to refresh the cart's shipping method after making updates to the cart.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/3c25aec00616c44b5bd0a66550749708f21aec3e/packages/core/core-flows/src/cart/workflows/refresh-cart-shipping-methods.ts#L48" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/cart/workflows/refresh-cart-shipping-methods.ts#L52" />
 
 ## Examples
 
@@ -130,11 +128,11 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"refreshCartShippingMethodsWorkflow","steps":[{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":1},{"type":"hook","name":"validate","description":"This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.","link":"#validate","depth":2},{"type":"when","condition":"{\n      return !!listShippingOptionsInput?.length\n    }","depth":"3","steps":[{"type":"workflow","name":"listShippingOptionsForCartWithPricingWorkflow","description":"List a cart's shipping options with prices.","link":"../core_flows.Cart.Workflows_Cart.listShippingOptionsForCartWithPricingWorkflow/page.mdx","depth":3},{"type":"step","name":"removeShippingMethodFromCartStep","description":"This step removes shipping methods from a cart.","link":"../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.removeShippingMethodFromCartStep/page.mdx","depth":3},{"type":"step","name":"updateShippingMethodsStep","description":"This step updates a cart's shipping methods.","link":"../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.updateShippingMethodsStep/page.mdx","depth":3}]}]}} />
+<WorkflowDiagram workflow={{"name":"refreshCartShippingMethodsWorkflow","steps":[{"type":"hook","name":"validate","description":"This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.","link":"#validate","depth":2},{"type":"when","condition":"{\n      return !!listShippingOptionsInput?.length\n    }","depth":"3","steps":[{"type":"workflow","name":"listShippingOptionsForCartWithPricingWorkflow","description":"List a cart's shipping options with prices.","link":"../core_flows.Cart.Workflows_Cart.listShippingOptionsForCartWithPricingWorkflow/page.mdx","depth":3},{"type":"step","name":"removeShippingMethodFromCartStep","description":"This step removes shipping methods from a cart.","link":"../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.removeShippingMethodFromCartStep/page.mdx","depth":3},{"type":"step","name":"updateShippingMethodsStep","description":"This step updates a cart's shipping methods.","link":"../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.updateShippingMethodsStep/page.mdx","depth":3}]}]}} />
 
 ## Input
 
-<TypeList types={[{"name":"RefreshCartShippingMethodsWorkflowInput","type":"[RefreshCartShippingMethodsWorkflowInput](../../../../types/core_flows.RefreshCartShippingMethodsWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The details of the cart to refresh.","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"The cart's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="refreshCartShippingMethodsWorkflow"/>
+<TypeList types={[{"name":"RefreshCartShippingMethodsWorkflowInput","type":"[RefreshCartShippingMethodsWorkflowInput](../../../../types/core_flows.RefreshCartShippingMethodsWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The details of the cart to refresh.","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"The cart's ID.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"cart","type":"`any`","description":"The Cart reference.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="refreshCartShippingMethodsWorkflow"/>
 
 ## Hooks
 
@@ -162,4 +160,4 @@ refreshCartShippingMethodsWorkflow.hooks.validate(
 
 Handlers consuming this hook accept the following input.
 
-<TypeList types={[{"name":"input","type":"object","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"input","type":"[RefreshCartShippingMethodsWorkflowInput](../../../../types/core_flows.RefreshCartShippingMethodsWorkflowInput/page.mdx)","description":"The details of the cart to refresh.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"The cart's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"cart","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="validate"/>
+<TypeList types={[{"name":"input","type":"[input](../../../core_flows.Cart.Workflows_Cart/page.mdx#__type-12)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"input","type":"[RefreshCartShippingMethodsWorkflowInput](../../../../types/core_flows.RefreshCartShippingMethodsWorkflowInput/page.mdx)","description":"The details of the cart to refresh.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"The cart's ID.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"cart","type":"`any`","description":"The Cart reference.","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"cart","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="validate"/>

@@ -1,5 +1,5 @@
 import { HttpTypes, SelectParams } from "@medusajs/types"
-import { Client } from "../client"
+import { Client, FetchError } from "../client"
 import { ClientHeaders } from "../types"
 
 export class Product {
@@ -17,16 +17,16 @@ export class Product {
   /**
    * This method creates a product import. The products are only imported after
    * the import is confirmed using the {@link confirmImport} method.
-   * 
-   * This method sends a request to the 
+   *
+   * This method sends a request to the
    * [Create Product Import](https://docs.medusajs.com/api/admin#products_postproductsimport)
    * API route.
-   * 
+   *
    * @param body - The import's details.
    * @param query - Query parameters to pass to the request.
    * @param headers - Headers to pass in the request.
    * @returns The import's details.
-   * 
+   *
    * @example
    * sdk.admin.product.import({
    *   file // uploaded File instance
@@ -59,16 +59,126 @@ export class Product {
   }
 
   /**
+   * This method creates a product import. The products are only imported after
+   * the import is confirmed using the {@link confirmImport} method.
+   *
+   * This method sends a request to the
+   * [Create Product Import](https://docs.medusajs.com/api/admin#products_postproductsimports)
+   * API route.
+   *
+   * @since 2.8.5
+   *
+   * @param body - The import's details.
+   * @param query - Query parameters to pass to the request.
+   * @param headers - Headers to pass in the request.
+   * @returns The import's details.
+   *
+   * @example
+   * sdk.admin.product.createImport({
+   *   file // uploaded File instance
+   * })
+   * .then(({ transaction_id }) => {
+   *   console.log(transaction_id)
+   * })
+   */
+  async createImport(
+    body: HttpTypes.AdminImportProductRequest,
+    query?: {},
+    headers?: ClientHeaders
+  ) {
+    /**
+     * Get signed URL for file uploads
+     */
+    const response =
+      await this.client.fetch<HttpTypes.AdminUploadPreSignedUrlResponse>(
+        "admin/uploads/presigned-urls",
+        {
+          method: "POST",
+          headers: headers,
+          body: {
+            originalname: body.file.name,
+            mime_type: body.file.type,
+            size: body.file.size,
+          } satisfies HttpTypes.AdminUploadPreSignedUrlRequest,
+          query,
+        }
+      )
+
+    /**
+     * Upload file using the signed URL. We cannot send cookies or any other
+     * special headers in this request, since external services like S3 will
+     * give a CORS error.
+     */
+    if (
+      response.url.startsWith("http://") ||
+      response.url.startsWith("https://")
+    ) {
+      const uploadResponse = await fetch(response.url, {
+        method: "PUT",
+        body: body.file,
+      })
+      if (uploadResponse.status >= 400) {
+        throw new FetchError(
+          uploadResponse.statusText,
+          uploadResponse.statusText,
+          uploadResponse.status
+        )
+      }
+    } else {
+      const form = new FormData()
+      form.append("files", body.file)
+
+      const localUploadResponse = await this.client.fetch<{
+        files: HttpTypes.AdminUploadFile
+      }>("admin/uploads", {
+        method: "POST",
+        headers: {
+          ...headers,
+          // Let the browser determine the content type.
+          "content-type": null,
+        },
+        body: form,
+        query,
+      })
+
+      response.filename = localUploadResponse.files[0].id
+    }
+
+    /**
+     * Perform products import using the uploaded file name
+     */
+    return await this.client.fetch<HttpTypes.AdminImportProductsResponse>(
+      "/admin/products/imports",
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+        },
+        body: {
+          file_key: response.filename,
+          originalname: response.originalname,
+          extension: response.extension,
+          size: response.size,
+          mime_type: response.mime_type,
+        } satisfies HttpTypes.AdminImportProductsRequest,
+        query,
+      }
+    )
+  }
+
+  /**
    * This method confirms a product import created using the method {@link import}.
-   * It sends a request to the 
+   * It sends a request to the
    * [Confirm Product Import](https://docs.medusajs.com/api/admin#products_postproductsimporttransaction_idconfirm)
    * API route.
-   * 
+   *
+   * @since 2.8.5
+   *
    * @param transactionId - The ID of the transaction of the created product import. This is returned
    * by the API route used to create the product import.
    * @param query - Query parameters to pass in the request.
    * @param headers - Headers to pass in the request.
-   * 
+   *
    * @example
    * sdk.admin.product.confirmImport("transaction_123")
    * .then(() => {
@@ -81,7 +191,7 @@ export class Product {
     headers?: ClientHeaders
   ) {
     return await this.client.fetch<{}>(
-      `/admin/products/import/${transactionId}/confirm`,
+      `/admin/products/imports/${transactionId}/confirm`,
       {
         method: "POST",
         headers,
@@ -93,23 +203,23 @@ export class Product {
 
   /**
    * This method starts a product export process to retrieve a CSV of exported products.
-   * 
-   * You'll receive in the response the transaction ID of the workflow generating the CSV file. 
-   * To check the status of the execution, send a `GET` request to 
-   * `/admin/workflows-executions/export-products/:transaction-id`. 
-   * 
-   * Once the execution finishes successfully, a notification is created for the export. 
-   * You can retrieve the notifications using the `/admin/notification` API route to 
+   *
+   * You'll receive in the response the transaction ID of the workflow generating the CSV file.
+   * To check the status of the execution, send a `GET` request to
+   * `/admin/workflows-executions/export-products/:transaction-id`.
+   *
+   * Once the execution finishes successfully, a notification is created for the export.
+   * You can retrieve the notifications using the `/admin/notification` API route to
    * retrieve the file's download URL.
-   * 
+   *
    * This method sends a request to the [Export Product](https://docs.medusajs.com/api/admin#products_postproductsexport)
    * API route.
-   * 
+   *
    * @param body - The export's details.
    * @param query - Filters to specify which products to export.
-   * @param headers - Headers to pass in the request. 
+   * @param headers - Headers to pass in the request.
    * @returns The export's details.
-   * 
+   *
    * @example
    * sdk.admin.product.export({})
    * .then(({ transaction_id }) => {
@@ -133,15 +243,15 @@ export class Product {
   }
 
   /**
-   * This method manages products to create, update, or delete them. It sends a request to the 
+   * This method manages products to create, update, or delete them. It sends a request to the
    * [Manage Products](https://docs.medusajs.com/api/admin#products_postproductsbatch)
    * API route.
-   * 
+   *
    * @param body - The products to create, update, or delete.
    * @param query - Configure the fields to retrieve in the products.
    * @param headers - Headers to pass in the request
    * @returns The batch operations details.
-   * 
+   *
    * @example
    * sdk.admin.product.batch({
    *   create: [
@@ -189,15 +299,15 @@ export class Product {
   }
 
   /**
-   * This method creates a product. It sends a request to the 
+   * This method creates a product. It sends a request to the
    * [Create Product](https://docs.medusajs.com/api/admin#products_postproducts)
    * API route.
-   * 
+   *
    * @param body - The product's details.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * sdk.admin.product.create({
    *   title: "Shirt",
@@ -240,13 +350,13 @@ export class Product {
    * This method updates a product. It sends a request to the
    * [Update Product](https://docs.medusajs.com/api/admin#products_postproductsid)
    * API route.
-   * 
+   *
    * @param id - The product's ID.
    * @param body - The data to update in the product.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * sdk.admin.product.update("prod_123", {
    *   title: "Shirt",
@@ -273,27 +383,27 @@ export class Product {
   }
 
   /**
-   * This method retrieves a paginated list of products. It sends a request to the 
+   * This method retrieves a paginated list of products. It sends a request to the
    * [List Products](https://docs.medusajs.com/api/admin#products_getproducts) API route.
-   * 
-   * @param query - Filters and pagination configurations.
+   *
+   * @param queryParams - Filters and pagination configurations.
    * @param headers - Headers to pass in the request.
    * @returns The paginated list of products.
-   * 
+   *
    * @example
    * To retrieve the list of products:
-   * 
+   *
    * ```ts
    * sdk.admin.product.list()
    * .then(({ products, count, limit, offset }) => {
    *   console.log(products)
    * })
    * ```
-   * 
+   *
    * To configure the pagination, pass the `limit` and `offset` query parameters.
-   * 
+   *
    * For example, to retrieve only 10 items and skip 10 items:
-   * 
+   *
    * ```ts
    * sdk.admin.product.list({
    *   limit: 10,
@@ -303,10 +413,10 @@ export class Product {
    *   console.log(products)
    * })
    * ```
-   * 
+   *
    * Using the `fields` query parameter, you can specify the fields and relations to retrieve
    * in each products:
-   * 
+   *
    * ```ts
    * sdk.admin.product.list({
    *   fields: "id,*variants"
@@ -315,7 +425,7 @@ export class Product {
    *   console.log(products)
    * })
    * ```
-   * 
+   *
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async list(
@@ -332,27 +442,27 @@ export class Product {
   }
 
   /**
-   * This method retrieves a product by its ID. It sends a request to the 
+   * This method retrieves a product by its ID. It sends a request to the
    * [Get Product](https://docs.medusajs.com/api/admin#products_getproductsid)
    * API route.
-   * 
+   *
    * @param id - The product's ID.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * To retrieve a product by its ID:
-   * 
+   *
    * ```ts
    * sdk.admin.product.retrieve("prod_123")
    * .then(({ product }) => {
    *   console.log(product)
    * })
    * ```
-   * 
+   *
    * To specify the fields and relations to retrieve:
-   * 
+   *
    * ```ts
    * sdk.admin.product.retrieve("prod_123", {
    *   fields: "id,*variants"
@@ -361,7 +471,7 @@ export class Product {
    *   console.log(product)
    * })
    * ```
-   * 
+   *
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async retrieve(id: string, query?: SelectParams, headers?: ClientHeaders) {
@@ -378,11 +488,11 @@ export class Product {
    * This method deletes a product. It sends a request to the
    * [Delete Product](https://docs.medusajs.com/api/admin#products_deleteproductsid)
    * API route.
-   * 
+   *
    * @param id - The product's ID.
    * @param headers - Headers to pass in the request
    * @returns The deletion's details.
-   * 
+   *
    * @example
    * sdk.admin.product.delete("prod_123")
    * .then(({ deleted }) => {
@@ -403,13 +513,13 @@ export class Product {
    * This method manages the variants of a product. It sends a request to the
    * [Manage Variants](https://docs.medusajs.com/api/admin#products_postproductsidvariantsbatch)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param body - The variants to create, update, or delete.
    * @param query - Configure the fields to retrieve in the product variants.
    * @param headers - Headers to pass in the request
    * @returns The product variants' details.
-   * 
+   *
    * @example
    * sdk.admin.product.batchVariants("prod_123", {
    *   create: [
@@ -454,13 +564,13 @@ export class Product {
    * This method creates a variant for a product. It sends a request to the
    * [Create Variant](https://docs.medusajs.com/api/admin#products_postproductsidvariants)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param body - The variant's details.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * sdk.admin.product.createVariant("prod_123", {
    *   title: "Blue Shirt",
@@ -499,17 +609,17 @@ export class Product {
    * This method updates a variant of a product. It sends a request to the
    * [Update Variant](https://docs.medusajs.com/api/admin#products_postproductsidvariantsvariant_id)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param id - The variant's ID.
    * @param body - The data to update in the variant.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * sdk.admin.product.updateVariant(
-   *   "prod_123", 
+   *   "prod_123",
    *   "variant_123",
    *     {
    *     title: "Blue Shirt",
@@ -538,28 +648,28 @@ export class Product {
   }
 
   /**
-   * This method retrieves a paginated list of products. It sends a request to the 
+   * This method retrieves a paginated list of products. It sends a request to the
    * [List Products](https://docs.medusajs.com/api/admin#products_getproductsidvariants) API route.
-   * 
+   *
    * @param productId - The ID of the product to retrieve its variants.
    * @param query - Filters and pagination configurations.
    * @param headers - Headers to pass in the request.
    * @returns The paginated list of product variants.
-   * 
+   *
    * @example
    * To retrieve the list of product variants:
-   * 
+   *
    * ```ts
    * sdk.admin.product.listVariants("prod_123")
    * .then(({ variants, count, limit, offset }) => {
    *   console.log(variants)
    * })
    * ```
-   * 
+   *
    * To configure the pagination, pass the `limit` and `offset` query parameters.
-   * 
+   *
    * For example, to retrieve only 10 items and skip 10 items:
-   * 
+   *
    * ```ts
    * sdk.admin.product.listVariants("prod_123", {
    *   limit: 10,
@@ -569,10 +679,10 @@ export class Product {
    *   console.log(variants)
    * })
    * ```
-   * 
+   *
    * Using the `fields` query parameter, you can specify the fields and relations to retrieve
    * in each product variant:
-   * 
+   *
    * ```ts
    * sdk.admin.product.listVariants("prod_123", {
    *   fields: "id,*product"
@@ -581,7 +691,7 @@ export class Product {
    *   console.log(variants)
    * })
    * ```
-   * 
+   *
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async listVariants(
@@ -602,16 +712,16 @@ export class Product {
    * This method retrieves a product's variant. It sends a request to the
    * [Retrieve Variant](https://docs.medusajs.com/api/admin#products_getproductsidvariantsvariant_id)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param id - The variant's ID.
    * @param query - Configure the fields to retrieve in the product variant.
    * @param headers - Headers to pass in the request
    * @returns The product variant's details.
-   * 
+   *
    * @example
    * To retrieve a product variant by its ID:
-   * 
+   *
    * ```ts
    * sdk.admin.product.retrieveVariant(
    *   "prod_123",
@@ -621,9 +731,9 @@ export class Product {
    *   console.log(variant)
    * })
    * ```
-   * 
+   *
    * To specify the fields and relations to retrieve:
-   * 
+   *
    * ```ts
    * sdk.admin.product.retrieveVariant(
    *   "prod_123",
@@ -636,7 +746,7 @@ export class Product {
    *   console.log(variant)
    * })
    * ```
-   * 
+   *
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async retrieveVariant(
@@ -658,12 +768,12 @@ export class Product {
    * This method deletes a product's variant. It sends a request to the
    * [Delete Variant](https://docs.medusajs.com/api/admin#products_deleteproductsidvariantsvariant_id)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param id - The ID of the variant.
    * @param headers - Headers to pass in the request
    * @returns The deletion's details.
-   * 
+   *
    * @example
    * sdk.admin.product.deleteVariant("prod_123", "variant_123")
    * .then(({ deleted }) => {
@@ -681,22 +791,22 @@ export class Product {
   }
 
   /**
-   * This method manages a product's variant's inventories to associate them with inventory items, 
+   * This method manages a product's variant's inventories to associate them with inventory items,
    * update their inventory items, or delete their association with inventory items.
-   * 
-   * It sends a request to the 
+   *
+   * It sends a request to the
    * [Manage Variant Inventory](https://docs.medusajs.com/api/admin#products_postproductsidvariantsinventoryitemsbatch)
    * API route.
-   * 
+   *
    * @param productId - The ID of the product that the variant belongs to.
    * @param body - The inventory items to create, update, or delete.
    * @param query - Pass query parameters in the request.
    * @param headers - Headers to pass in the request
    * @returns The details of the created, updated, or deleted inventory items.
-   * 
+   *
    * @example
    * sdk.admin.product.batchVariantInventoryItems(
-   *   "prod_123", 
+   *   "prod_123",
    *   {
    *     create: [
    *       {
@@ -745,16 +855,16 @@ export class Product {
    * This method creates an option in a product. It sends a request to the
    * [Create Option](https://docs.medusajs.com/api/admin#products_postproductsidoptions)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param body - The option's details.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * sdk.admin.product.createOption(
-   *   "prod_123", 
+   *   "prod_123",
    *   {
    *     title: "Color",
    *     values: ["Green", "Blue"]
@@ -785,17 +895,17 @@ export class Product {
    * This method updates a product's option. It sends a request to the
    * [Update Option](https://docs.medusajs.com/api/admin#products_postproductsidoptionsoption_id)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param id - The ID of the option to update.
    * @param body - The data to update in the option.
    * @param query - Configure the fields to retrieve in the product.
    * @param headers - Headers to pass in the request
    * @returns The product's details.
-   * 
+   *
    * @example
    * sdk.admin.product.updateOption(
-   *   "prod_123", 
+   *   "prod_123",
    *   "prodopt_123",
    *   {
    *     title: "Color"
@@ -824,28 +934,28 @@ export class Product {
   }
 
   /**
-   * This method retrieves a paginated list of product options. It sends a request to the 
+   * This method retrieves a paginated list of product options. It sends a request to the
    * [List Options](https://docs.medusajs.com/api/admin#products_getproductsidoptions) API route.
-   * 
+   *
    * @param productId - The ID of the product to retrieve its options
    * @param query - Filters and pagination configurations.
    * @param headers - Headers to pass in the request.
    * @returns The paginated list of product options.
-   * 
+   *
    * @example
    * To retrieve the list of product options:
-   * 
+   *
    * ```ts
    * sdk.admin.product.listOptions("prod_123")
    * .then(({ product_options, count, limit, offset }) => {
    *   console.log(product_options)
    * })
    * ```
-   * 
+   *
    * To configure the pagination, pass the `limit` and `offset` query parameters.
-   * 
+   *
    * For example, to retrieve only 10 items and skip 10 items:
-   * 
+   *
    * ```ts
    * sdk.admin.product.listOptions("prod_123", {
    *   limit: 10,
@@ -855,10 +965,10 @@ export class Product {
    *   console.log(product_options)
    * })
    * ```
-   * 
+   *
    * Using the `fields` query parameter, you can specify the fields and relations to retrieve
    * in each product options:
-   * 
+   *
    * ```ts
    * sdk.admin.product.listOptions("prod_123", {
    *   fields: "id,title"
@@ -867,7 +977,7 @@ export class Product {
    *   console.log(product_options)
    * })
    * ```
-   * 
+   *
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async listOptions(
@@ -888,16 +998,16 @@ export class Product {
    * This method retrieves a product's option. It sends a request to the
    * [Get Option](https://docs.medusajs.com/api/admin#products_getproductsidoptionsoption_id)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param id - The product option's ID.
    * @param query - Configure the fields to retrieve in the product option.
    * @param headers - Headers to pass in the request
    * @returns The product option's details.
-   * 
+   *
    * @example
    * To retrieve a product option by its ID:
-   * 
+   *
    * ```ts
    * sdk.admin.product.retrieveOption(
    *   "prod_123",
@@ -907,9 +1017,9 @@ export class Product {
    *   console.log(product_option)
    * })
    * ```
-   * 
+   *
    * To specify the fields and relations to retrieve:
-   * 
+   *
    * ```ts
    * sdk.admin.product.retrieveOption(
    *   "prod_123",
@@ -922,7 +1032,7 @@ export class Product {
    *   console.log(product_option)
    * })
    * ```
-   * 
+   *
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async retrieveOption(
@@ -941,15 +1051,15 @@ export class Product {
   }
 
   /**
-   * This method deletes a product's option. It sends a request to the 
+   * This method deletes a product's option. It sends a request to the
    * [Delete Option](https://docs.medusajs.com/api/admin#products_deleteproductsidoptionsoption_id)
    * API route.
-   * 
+   *
    * @param productId - The product's ID.
    * @param id - The option's ID.
    * @param headers - Headers to pass in the request
    * @returns The deletion's details.
-   * 
+   *
    * @example
    * sdk.admin.product.deleteOption("prod_123", "prodopt_123")
    * .then(({ deleted }) => {

@@ -24,6 +24,7 @@ import {
   OrderChangeReturn,
   OrderClaimDTO,
   OrderClaimItemDTO,
+  OrderCreditLineDTO,
   OrderDTO,
   OrderExchangeDTO,
   OrderExchangeItemDTO,
@@ -52,6 +53,7 @@ import {
   CreateOrderChangeDTO,
   CreateOrderClaimDTO,
   CreateOrderClaimItemDTO,
+  CreateOrderCreditLineDTO,
   CreateOrderDTO,
   CreateOrderExchangeDTO,
   CreateOrderExchangeItemDTO,
@@ -117,6 +119,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const order = await orderModuleService.retrieveOrder(
@@ -153,6 +162,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the order:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const orders = await orderModuleService.listOrders({
@@ -200,6 +216,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the order:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [orders, count] = await orderModuleService.listAndCountOrders({
@@ -247,6 +270,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const orderReturn = await orderModuleService.retrieveReturn(
@@ -282,6 +312,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the return:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const returns = await orderModuleService.listReturns({
@@ -328,6 +365,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the return:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [returns, count] = await orderModuleService.listAndCountReturns({
@@ -374,6 +418,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const claim = await orderModuleService.retrieveOrderClaim(
@@ -409,6 +460,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the claim:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const claims = await orderModuleService.listOrderClaims({
@@ -455,6 +513,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the claim:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [claims, count] = await orderModuleService.listAndCountOrderClaims({
@@ -501,6 +566,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const exchange = await orderModuleService.retrieveOrderExchange(
@@ -536,6 +608,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the exchange:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const exchanges = await orderModuleService.listOrderExchanges({
@@ -582,6 +661,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the exchange:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [exchanges, count] = await orderModuleService.listOrderExchanges({
@@ -853,8 +939,8 @@ export interface IOrderModuleService extends IModuleService {
    *     last_name: "Doe",
    *     address_1: "123 Main St",
    *     city: "Anytown",
-   *     country_code: "US",
-   *     province: "AnyState",
+   *     country_code: "us",
+   *     province: "us-ca",
    *     postal_code: "12345"
    *   }
    * ])
@@ -880,8 +966,8 @@ export interface IOrderModuleService extends IModuleService {
    *   last_name: "Doe",
    *   address_1: "123 Main St",
    *   city: "Anytown",
-   *   country_code: "US",
-   *   province: "AnyState",
+   *   country_code: "us",
+   *   province: "us-ca",
    *   postal_code: "12345"
    * })
    * ```
@@ -981,6 +1067,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItem = await orderModuleService.retrieveOrderLineItem(
@@ -1017,6 +1110,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the line item:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItems = await orderModuleService.listOrderLineItems({
@@ -1315,6 +1415,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping method:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingMethods = await orderModuleService.listOrderShippingMethods({
@@ -1509,6 +1616,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the line item adjustment:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItemAdjustment = await orderModuleService.listOrderLineItemAdjustments({
@@ -1720,6 +1834,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping method adjustment:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingMethodAdjustments = await orderModuleService
@@ -1953,6 +2074,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the line item tax line:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItemTaxLines = await orderModuleService
@@ -2169,6 +2297,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping method tax line:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingMethodTaxLines = await orderModuleService
@@ -2399,6 +2534,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the exchange:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const orderChanges = await orderModuleService.listOrderChanges({
@@ -2445,6 +2587,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const orderChange = await orderModuleService.retrieveOrderChange(
@@ -2925,7 +3074,7 @@ export interface IOrderModuleService extends IModuleService {
    * @example
    * const {
    *   items,
-   *   shippingMethods
+   *   shipping_methods
    * } = await orderModuleService.applyPendingOrderActions([
    *   "123", "321"
    * ])
@@ -2955,6 +3104,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping method tax line:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const orderChangeActions = await orderModuleService.listOrderChangeActions({
@@ -3002,6 +3158,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const orderChangeAction = await orderModuleService.retrieveOrderChangeAction(
@@ -3585,6 +3748,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the transaction:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const transactions = await orderModuleService.listOrderTransactions({
@@ -3737,6 +3907,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const returnReason = await orderModuleService.retrieveReturnReason(
@@ -3772,6 +3949,13 @@ export interface IOrderModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the return reason:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const returnReasons = await orderModuleService.listReturnReasons({
@@ -4925,4 +5109,9 @@ export interface IOrderModuleService extends IModuleService {
     data: CancelOrderExchangeDTO,
     sharedContext?: Context
   ): Promise<OrderExchangeDTO>
+
+  createOrderCreditLines(
+    data: CreateOrderCreditLineDTO[],
+    sharedContext?: Context
+  ): Promise<OrderCreditLineDTO[]>
 }

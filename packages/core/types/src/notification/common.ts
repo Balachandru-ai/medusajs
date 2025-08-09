@@ -8,7 +8,7 @@ import { OperatorMap } from "../dal/utils"
  */
 export interface Attachment {
   /**
-   * The content of the attachment, encoded as a base64 string.
+   * The content of the attachment, encoded as a binary string.
    */
   content: string
   /**

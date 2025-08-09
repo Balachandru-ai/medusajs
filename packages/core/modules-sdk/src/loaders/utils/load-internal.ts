@@ -22,7 +22,9 @@ import {
   isString,
   MedusaModuleProviderType,
   MedusaModuleType,
+  Modules,
   ModulesSdkUtils,
+  stringifyCircular,
   toMikroOrmEntities,
 } from "@medusajs/utils"
 import { asFunction, asValue } from "awilix"
@@ -223,7 +225,8 @@ export async function loadInternalModule(args: {
     ContainerRegistrationKeys.MANAGER,
     ContainerRegistrationKeys.CONFIG_MODULE,
     ContainerRegistrationKeys.LOGGER,
-    ContainerRegistrationKeys.PG_CONNECTION
+    ContainerRegistrationKeys.PG_CONNECTION,
+    Modules.EVENT_BUS
   )
 
   for (const dependency of dependencies) {
@@ -662,6 +665,12 @@ async function runLoaders(
     container.register({
       [keyName]: asValue(undefined),
     })
+
+    logger.error(
+      `Loaders for module ${
+        resolution.definition.label
+      } failed with the following error: \n${stringifyCircular(err)}`
+    )
 
     return {
       error: new Error(

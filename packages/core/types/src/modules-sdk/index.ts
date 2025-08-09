@@ -209,7 +209,7 @@ export type ModuleJoinerConfig = Omit<
           isList?: boolean
         }
     > // alias for deeper nested relationships (e.g. { 'price': 'prices.calculated_price_set.amount' })
-    relationship: ModuleJoinerRelationship
+    relationship: Omit<ModuleJoinerRelationship, "hasMany">
   }[]
   serviceName?: string
   primaryKeys?: string[]
@@ -248,6 +248,16 @@ export declare type ModuleJoinerRelationship = JoinerRelationship & {
    * If true, the link joiner will cascade deleting the relationship
    */
   deleteCascade?: boolean
+
+  /**
+   * The fields to be filterable by the Index module using query.index
+   */
+  filterable?: string[]
+  /**
+   * Allow multiple relationships to exist for this
+   * entity
+   */
+  hasMany?: boolean
 }
 
 export type ModuleExports<T = Constructor<any>> = {

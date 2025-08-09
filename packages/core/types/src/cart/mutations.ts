@@ -48,7 +48,7 @@ export interface UpsertAddressDTO {
   country_code?: string
 
   /**
-   * The province of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province/state of the address.
    */
   province?: string
 
@@ -235,6 +235,11 @@ export interface CreateAdjustmentDTO {
    * The amount to adjust the original amount with.
    */
   amount: BigNumberInput
+
+  /**
+   * Whether the adjustment amount includes tax.
+   */
+  is_tax_inclusive?: boolean
 
   /**
    * The description of the adjustment.
@@ -430,12 +435,24 @@ export interface UpdateTaxLineDTO {
 /**
  * The shipping method tax line to be created.
  */
-export interface CreateShippingMethodTaxLineDTO extends CreateTaxLineDTO {}
+export interface CreateShippingMethodTaxLineDTO
+  extends Omit<CreateTaxLineDTO, "item_id"> {
+  /**
+   * The associated shipping method's ID.
+   */
+  shipping_method_id: string
+}
 
 /**
  * The attributes to update in the shipping method tax line.
  */
-export interface UpdateShippingMethodTaxLineDTO extends UpdateTaxLineDTO {}
+export interface UpdateShippingMethodTaxLineDTO
+  extends Omit<UpdateTaxLineDTO, "item_id"> {
+  /**
+   * The associated shipping method's ID.
+   */
+  shipping_method_id?: string
+}
 
 /**
  * The line item tax line to be created.
@@ -616,6 +633,11 @@ export interface UpdateLineItemWithSelectorDTO {
    * The attributes to update in the line items.
    */
   data: Partial<UpdateLineItemDTO>
+}
+
+export interface UpdateLineItemWithoutSelectorDTO
+  extends Omit<Partial<UpdateLineItemDTO>, "id"> {
+  id: string
 }
 
 /**

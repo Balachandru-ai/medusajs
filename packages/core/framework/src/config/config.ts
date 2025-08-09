@@ -80,7 +80,21 @@ export class ConfigManager {
     http.storeCors = http.storeCors ?? ""
     http.adminCors = http.adminCors ?? ""
 
+    http.jwtOptions ??= {}
+    http.jwtOptions.expiresIn = http.jwtExpiresIn
+
     http.jwtSecret = http?.jwtSecret ?? process.env.JWT_SECRET
+    http.jwtPublicKey = http?.jwtPublicKey ?? process.env.JWT_PUBLIC_KEY
+
+    if (
+      http?.jwtPublicKey &&
+      ((http.jwtVerifyOptions && !http.jwtVerifyOptions.algorithms?.length) ||
+        (http.jwtOptions && !http.jwtOptions.algorithm))
+    ) {
+      this.rejectErrors(
+        `JWT public key is provided but no algorithm is set in the 'jwtVerifyOptions' or 'jwtOptions' if 'jwtVerifyOptions' is not provided. It means that the algorithm will be inferred from the public key which can lead to missmatch and invalid algorithm errors.`
+      )
+    }
 
     if (!http.jwtSecret) {
       this.rejectErrors(
@@ -164,7 +178,9 @@ export class ConfigManager {
 
     this.#config = {
       projectConfig: normalizedProjectConfig,
-      admin: projectConfig.admin ?? {},
+      admin: projectConfig.admin ?? {
+        path: "/app",
+      },
       modules: projectConfig.modules ?? {},
       featureFlags: projectConfig.featureFlags ?? {},
       plugins: projectConfig.plugins ?? [],

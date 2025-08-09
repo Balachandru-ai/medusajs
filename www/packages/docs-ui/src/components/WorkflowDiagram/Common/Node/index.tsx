@@ -5,7 +5,7 @@ import clsx from "clsx"
 import Link from "next/link"
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import { WorkflowStepUi } from "types"
-import { InlineCode, MarkdownContent, Tooltip } from "../../.."
+import { CodeBlock, MarkdownContent, Tooltip } from "../../.."
 import { Bolt, InformationCircle } from "@medusajs/icons"
 import { getBrowser } from "../../../../utils"
 
@@ -53,18 +53,33 @@ export const WorkflowDiagramStepNode = ({ step }: WorkflowDiagramNodeProps) => {
     }
   }, [ref.current])
 
+  const unindentLines = (str: string) => {
+    let minIndent = 4
+    return str
+      .split("\n")
+      .reverse()
+      .map((line, index) => {
+        const trimmedStartLine = line.trimStart()
+        const numberOfSpaces = line.length - trimmedStartLine.length
+        if (index === 0) {
+          minIndent = numberOfSpaces || minIndent
+        }
+        if (numberOfSpaces >= minIndent) {
+          return " ".repeat(numberOfSpaces - 4) + trimmedStartLine
+        }
+
+        return line
+      })
+      .reverse()
+      .join("\n")
+  }
+
   return (
     <Tooltip
       tooltipClassName="!text-left max-w-[300px] text-pretty overflow-scroll"
       tooltipChildren={
         <>
           <h4 className="text-compact-x-small-plus">{step.name}</h4>
-          {step.when && (
-            <span className="block py-docs_0.25">
-              Runs only if a <InlineCode>when</InlineCode> condition is
-              satisfied.
-            </span>
-          )}
           {description && (
             <MarkdownContent
               allowedElements={["a", "strong", "code"]}
@@ -72,6 +87,18 @@ export const WorkflowDiagramStepNode = ({ step }: WorkflowDiagramNodeProps) => {
             >
               {description}
             </MarkdownContent>
+          )}
+          {step.when?.condition && (
+            <CodeBlock
+              lang="typescript"
+              source={unindentLines(step.when.condition)}
+              noReport
+              noCopy
+              noAskAi
+              noLineNumbers
+              title="when Condition"
+              wrapperClassName="mt-docs_0.5"
+            />
           )}
         </>
       }

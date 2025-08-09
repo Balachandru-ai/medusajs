@@ -16,7 +16,8 @@ export const useClickOutside = ({
 
   const checkClickOutside = useCallback(
     (e: MouseEvent) => {
-      if (!elmRef.current?.contains(e.target as Node)) {
+      const node = e.target as Node
+      if (!elmRef.current?.contains(node) && node.isConnected) {
         onClickOutside(e)
       }
     },

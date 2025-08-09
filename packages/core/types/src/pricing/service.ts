@@ -124,6 +124,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceSet = await pricingModuleService.retrievePriceSet(
@@ -161,6 +168,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price sets:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceSets = await pricingModuleService.listPriceSets(
@@ -216,6 +230,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price sets:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [priceSets, count] =
@@ -605,6 +626,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the prices:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const prices = await pricingModuleService.listPrices(
@@ -712,6 +740,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the prices:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [prices, count] = await pricingModuleService.listPrices(
@@ -764,6 +799,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceRule =
@@ -799,6 +841,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price rules:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceRules = await pricingModuleService.listPriceRules(
@@ -854,6 +903,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price rules:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [priceRules, count] =
@@ -969,6 +1025,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceList =
@@ -1004,6 +1067,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price lists:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceLists = await pricingModuleService.listPriceLists(
@@ -1059,6 +1129,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price lists:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [priceLists, count] =
@@ -1234,6 +1311,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceListRule =
@@ -1273,6 +1357,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price list rules:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const priceListRules =
@@ -1330,6 +1421,13 @@ export interface IPricingModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the price list rules:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [priceListRules, count] =
@@ -1539,8 +1637,6 @@ export interface IPricingModuleService extends IModuleService {
    *   id: ["prpref_123", "prpref_321"],
    * })
    * ```
-   *
-   * To specify relations that should be retrieved within the price preferences:
    *
    * By default, only the first `15` records are retrieved. You can control pagination by specifying the `skip` and `take` properties of the `config` parameter:
    *

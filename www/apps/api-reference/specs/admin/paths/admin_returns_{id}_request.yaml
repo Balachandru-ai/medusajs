@@ -41,6 +41,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostReturnsConfirmRequestReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_request/post.js
     - lang: Shell
       label: cURL
       source:
@@ -67,6 +71,17 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: confirmReturnRequestWorkflow
+  x-events:
+    - name: order.return_requested
+      payload: |-
+        ```ts
+        {
+          order_id, // The ID of the order
+          return_id, // The ID of the return
+        }
+        ```
+      description: Emitted when a return request is confirmed.
+      deprecated: false
 delete:
   operationId: DeleteReturnsIdRequest
   summary: Cancel Return Request
@@ -84,6 +99,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_returns_{id}_request/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -129,3 +148,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelReturnRequestWorkflow
+  x-events: []

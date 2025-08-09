@@ -25,21 +25,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment collection's details.
- *         required:
- *           - order_id
- *           - amount
- *         properties:
- *           order_id:
- *             type: string
- *             title: order_id
- *             description: The ID of the associated order.
- *           amount:
- *             type: number
- *             title: amount
- *             description: The amount to be paid.
+ *         $ref: "#/components/schemas/AdminCreatePaymentCollection"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.paymentCollection.create({
+ *         order_id: "order_123"
+ *       })
+ *       .then(({ payment_collection }) => {
+ *         console.log(payment_collection)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -71,6 +77,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createOrderPaymentCollectionWorkflow
+ * x-events: []
  * 
 */
 

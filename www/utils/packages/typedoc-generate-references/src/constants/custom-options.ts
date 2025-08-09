@@ -11,6 +11,17 @@ import { modules } from "./references.js"
 import { getCoreFlowNamespaces } from "../utils/get-namespaces.js"
 
 const customOptions: Record<string, Partial<TypeDocOptions>> = {
+  "auth-provider": getOptions({
+    entryPointPath: "packages/core/utils/src/auth/abstract-auth-provider.ts",
+    tsConfigName: "utils.json",
+    name: "auth-provider",
+    parentIgnore: true,
+  }),
+  cache: getOptions({
+    entryPointPath: "packages/core/types/src/cache/service.ts",
+    tsConfigName: "types.json",
+    name: "cache",
+  }),
   "core-flows": getOptions({
     entryPointPath: "packages/core/core-flows/src/index.ts",
     tsConfigName: "core-flows.json",
@@ -20,12 +31,6 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
     enablePathNamespaceGenerator: true,
     // @ts-expect-error there's a typing issue in typedoc
     generatePathNamespaces: getCoreFlowNamespaces(),
-  }),
-  "auth-provider": getOptions({
-    entryPointPath: "packages/core/utils/src/auth/abstract-auth-provider.ts",
-    tsConfigName: "utils.json",
-    name: "auth-provider",
-    parentIgnore: true,
   }),
   dml: getOptions({
     entryPointPath: [
@@ -37,28 +42,52 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
     name: "dml",
     generateCustomNamespaces: true,
   }),
+  event: getOptions({
+    entryPointPath: "packages/core/types/src/event-bus/event-bus-module.ts",
+    tsConfigName: "types.json",
+    name: "event",
+  }),
+  events: getOptions({
+    entryPointPath: "packages/core/utils/src/core-flows/events.ts",
+    tsConfigName: "utils.json",
+    name: "events",
+    enableEventsResolver: true,
+  }),
+  "module-events": getOptions({
+    entryPointPath: "packages/core/utils/src/core-flows/events.ts",
+    tsConfigName: "utils.json",
+    name: "module-events",
+    enableEventsResolver: true,
+    generateCustomNamespaces: true,
+  }),
   file: getOptions({
     entryPointPath: "packages/core/utils/src/file/abstract-file-provider.ts",
     tsConfigName: "utils.json",
     name: "file",
     parentIgnore: true,
   }),
+  "file-service": getOptions({
+    entryPointPath: "packages/core/types/src/file/service.ts",
+    tsConfigName: "types.json",
+    name: "file-service",
+  }),
+  analytics: getOptions({
+    entryPointPath: "packages/core/types/src/analytics/service.ts",
+    tsConfigName: "types.json",
+    name: "analytics",
+    parentIgnore: true,
+  }),
+  "analytics-provider": getOptions({
+    entryPointPath:
+      "packages/core/utils/src/analytics/abstract-analytics-provider.ts",
+    tsConfigName: "utils.json",
+    name: "analytics-provider",
+  }),
   "fulfillment-provider": getOptions({
     entryPointPath: "packages/core/utils/src/fulfillment/provider.ts",
     tsConfigName: "utils.json",
     name: "fulfillment-provider",
     parentIgnore: true,
-  }),
-  "js-sdk": getOptions({
-    entryPointPath: [
-      "packages/core/js-sdk/src/admin/index.ts",
-      "packages/core/js-sdk/src/auth/index.ts",
-      "packages/core/js-sdk/src/store/index.ts",
-    ],
-    tsConfigName: "js-sdk.json",
-    name: "js-sdk",
-    enableInternalResolve: true,
-    exclude: [...(baseOptions.exclude || []), "**/dist/**"],
   }),
   "helper-steps": getOptions({
     entryPointPath: "packages/core/core-flows/src/common/index.ts",
@@ -72,11 +101,21 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
       ),
     ],
   }),
-  "medusa-config": getOptions({
-    entryPointPath: "packages/core/framework/src/config/types.ts",
-    tsConfigName: "framework.json",
-    name: "medusa-config",
+  "js-sdk": getOptions({
+    entryPointPath: [
+      "packages/core/js-sdk/src/admin/index.ts",
+      "packages/core/js-sdk/src/auth/index.ts",
+      "packages/core/js-sdk/src/store/index.ts",
+    ],
+    tsConfigName: "js-sdk.json",
+    name: "js-sdk",
+    enableInternalResolve: true,
     exclude: [...(baseOptions.exclude || []), "**/dist/**"],
+  }),
+  locking: getOptions({
+    entryPointPath: "packages/core/types/src/locking/index.ts",
+    tsConfigName: "types.json",
+    name: "locking",
   }),
   medusa: getOptions({
     entryPointPath: "packages/medusa/src/index.ts",
@@ -105,6 +144,11 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
       "**/modules-config.ts",
     ],
   }),
+  "modules-sdk": getOptions({
+    entryPointPath: "packages/core/modules-sdk/src/index.ts",
+    tsConfigName: "modules-sdk.json",
+    name: "modules-sdk",
+  }),
   notification: getOptions({
     entryPointPath:
       "packages/core/utils/src/notification/abstract-notification-provider.ts",
@@ -112,16 +156,16 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
     name: "notification",
     parentIgnore: true,
   }),
+  "notification-service": getOptions({
+    entryPointPath: "packages/core/types/src/notification/service.ts",
+    tsConfigName: "types.json",
+    name: "notification-service",
+  }),
   "payment-provider": getOptions({
     entryPointPath:
       "packages/core/utils/src/payment/abstract-payment-provider.ts",
     tsConfigName: "utils.json",
     name: "payment-provider",
-  }),
-  search: getOptions({
-    entryPointPath: "packages/core/utils/src/search/abstract-service.ts",
-    tsConfigName: "utils.json",
-    name: "search",
   }),
   "tax-provider": getOptions({
     entryPointPath: "packages/core/types/src/tax/provider.ts",
@@ -139,15 +183,10 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
       ...modules.map((moduleName) =>
         path.join(
           rootPathPrefix,
-          `packages/core/types/src/${moduleName}/**/!(workflows).ts`
+          `packages/core/types/src/${moduleName}/**/!(workflows|provider).ts`
         )
       ),
     ],
-  }),
-  "modules-sdk": getOptions({
-    entryPointPath: "packages/core/modules-sdk/src/index.ts",
-    tsConfigName: "modules-sdk.json",
-    name: "modules-sdk",
   }),
   utils: getOptions({
     entryPointPath: "packages/core/utils/src/index.ts",
@@ -158,6 +197,7 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
     exclude: [
       ...(baseOptions.exclude || []),
       "**/dist/**",
+      "**/analytics/**",
       "**/api-key/**",
       "**/auth/**",
       "**/bundles/**",
@@ -173,7 +213,6 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
       "**/orchestration/**",
       "**/pg/**",
       "**/pricing/builders.ts",
-      "**/search/**",
       "**/totals/**",
     ],
   }),
@@ -181,6 +220,7 @@ const customOptions: Record<string, Partial<TypeDocOptions>> = {
     entryPointPath: "packages/core/workflows-sdk/src/utils/composer/index.ts",
     tsConfigName: "workflows.json",
     name: "workflows",
+    enableInternalResolve: true,
   }),
 }
 

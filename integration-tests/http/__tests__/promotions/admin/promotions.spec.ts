@@ -1,10 +1,11 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { PromotionStatus, PromotionType } from "@medusajs/utils"
+import { Modules, PromotionStatus, PromotionType } from "@medusajs/utils"
 import {
   createAdminUser,
   generatePublishableKey,
   generateStoreHeaders,
 } from "../../../../helpers/create-admin-user"
+import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
 jest.setTimeout(50000)
@@ -30,7 +31,7 @@ const standardPromotionPayload = {
     target_type: "items",
     type: "fixed",
     allocation: "each",
-    currency_code: "USD",
+    currency_code: "usd",
     value: 100,
     max_quantity: 100,
     target_rules: [
@@ -71,6 +72,8 @@ medusaIntegrationTestRunner({
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
 
+        await setupTaxStructure(appContainer.resolve(Modules.TAX))
+
         promotion = standardPromotion = (
           await api.post(
             `/admin/promotions`,
@@ -84,7 +87,7 @@ medusaIntegrationTestRunner({
                 target_type: "items",
                 value: 100,
                 target_rules: [promotionRule],
-                currency_code: "USD",
+                currency_code: "usd",
               },
               rules: [promotionRule],
             },
@@ -177,7 +180,7 @@ medusaIntegrationTestRunner({
                 type: "fixed",
                 target_type: "order",
                 value: 100,
-                currency_code: "USD",
+                currency_code: "usd",
               },
             },
             adminHeaders
@@ -319,7 +322,7 @@ medusaIntegrationTestRunner({
                   allocation: "each",
                   value: 100,
                   max_quantity: 100,
-                  currency_code: "USD",
+                  currency_code: "usd",
                   target_rules: [
                     {
                       attribute: "test.test",
@@ -361,7 +364,7 @@ medusaIntegrationTestRunner({
                   allocation: "each",
                   value: 100,
                   max_quantity: 100,
-                  currency_code: "USD",
+                  currency_code: "usd",
                   buy_rules: [
                     {
                       attribute: "test.test",
@@ -412,7 +415,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 100,
                 apply_to_quantity: 1,
                 buy_rules_min_quantity: 1,
-                currency_code: "USD",
+                currency_code: "usd",
                 target_rules: [
                   {
                     attribute: "test.test",
@@ -554,7 +557,7 @@ medusaIntegrationTestRunner({
                   target_type: "items",
                   type: "fixed",
                   allocation: "each",
-                  currency_code: "USD",
+                  currency_code: "usd",
                   value: 100,
                   max_quantity: 100,
                 },
@@ -617,7 +620,7 @@ medusaIntegrationTestRunner({
                 storeHeaders
               )
             ).data.cart
-            console.log("cartWithPromotion2 -- ", cartWithPromotion2.promotions)
+
             expect(cartWithPromotion2).toEqual(
               expect.objectContaining({
                 promotions: [
@@ -628,6 +631,1057 @@ medusaIntegrationTestRunner({
               })
             )
           })
+        })
+
+        it("should add tax inclusive promotion to cart successfully in a tax inclusive currency", async () => {
+          const publishableKey = await generatePublishableKey(appContainer)
+          const storeHeaders = generateStoreHeaders({ publishableKey })
+
+          const salesChannel = (
+            await api.post(
+              "/admin/sales-channels",
+              { name: "Webshop", description: "channel" },
+              adminHeaders
+            )
+          ).data.sales_channel
+
+          await api.post(
+            "/admin/price-preferences",
+            {
+              attribute: "currency_code",
+              value: "dkk",
+              is_tax_inclusive: true,
+            },
+            adminHeaders
+          )
+
+          const region = (
+            await api.post(
+              "/admin/regions",
+              {
+                name: "DK",
+                currency_code: "dkk",
+                countries: ["dk"],
+              },
+              adminHeaders
+            )
+          ).data.region
+
+          const product = (
+            await api.post("/admin/products", medusaTshirtProduct, adminHeaders)
+          ).data.product
+
+          const response = await api.post(
+            `/admin/promotions`,
+            {
+              code: "FIXED_10",
+              type: PromotionType.STANDARD,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: true,
+              is_automatic: true,
+              application_method: {
+                target_type: "items",
+                type: "fixed",
+                allocation: "across",
+                currency_code: "dkk",
+                value: 100,
+              },
+            },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.promotion).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              code: "FIXED_10",
+              type: "standard",
+              is_tax_inclusive: true,
+              is_automatic: true,
+              application_method: expect.objectContaining({
+                value: 100,
+                type: "fixed",
+                target_type: "items",
+                allocation: "across",
+              }),
+            })
+          )
+
+          const cart = (
+            await api.post(
+              `/store/carts?fields=*items,*items.adjustments`,
+              {
+                currency_code: "dkk",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 1,
+                  },
+                ],
+                promo_codes: [response.data.promotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Orignal total -> 1300 dkk (tax incl.)
+           * Tax rate -> 25%
+           * Promotion -> FIXED 100 dkk (tax incl.)
+           *
+           * We want total to be 1300 dkk - 100 dkk = 1200 dkk
+           */
+          expect(cart).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              subtotal: 1040, // taxable base (item subtotal - discount subtotal) = 1040 - 80 = 960
+              total: 1200, // total = taxable base * (1 + tax rate) = 960 * (1 + 0.25) = 1200
+              tax_total: 240,
+
+              original_total: 1300,
+              original_tax_total: 260,
+
+              discount_total: 100,
+              discount_subtotal: 80,
+              discount_tax_total: 20,
+
+              item_total: 1200,
+              item_subtotal: 1040,
+              item_tax_total: 240,
+
+              original_item_total: 1300,
+              original_item_subtotal: 1040,
+              original_item_tax_total: 260,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1300,
+
+                  subtotal: 1040,
+                  tax_total: 240,
+                  total: 1200,
+
+                  original_total: 1300,
+                  original_tax_total: 260,
+
+                  discount_total: 100,
+                  discount_subtotal: 80,
+                  discount_tax_total: 20,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                      is_tax_inclusive: true,
+                      provider_id: null,
+                      code: "FIXED_10",
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          const paymentCollection = (
+            await api.post(
+              `/store/payment-collections`,
+              { cart_id: cart.id },
+              storeHeaders
+            )
+          ).data.payment_collection
+
+          await api.post(
+            `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+            { provider_id: "pp_system_default" },
+            storeHeaders
+          )
+
+          const order = (
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+          ).data.order
+
+          /**
+           * Orignal total -> 1300 dkk (tax incl.)
+           * Tax rate -> 25%
+           * Promotion -> FIXED 100 dkk (tax incl.)
+           *
+           * We want total to be 1300 dkk - 100 dkk = 1200 dkk
+           */
+          expect(order).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              subtotal: 1040, // taxable base (item subtotal - discount subtotal) = 1040 - 80 = 960
+              total: 1200, // total = taxable base * (1 + tax rate) = 960 * (1 + 0.25) = 1200
+              tax_total: 240,
+
+              original_total: 1300,
+              original_tax_total: 260,
+
+              discount_total: 100,
+              discount_subtotal: 80,
+              discount_tax_total: 20,
+
+              item_total: 1200,
+              item_subtotal: 1040,
+              item_tax_total: 240,
+
+              original_item_total: 1300,
+              original_item_subtotal: 1040,
+              original_item_tax_total: 260,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1300,
+
+                  subtotal: 1040,
+                  tax_total: 240,
+                  total: 1200,
+
+                  original_total: 1300,
+                  original_tax_total: 260,
+
+                  discount_total: 100,
+                  discount_subtotal: 80,
+                  discount_tax_total: 20,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                      is_tax_inclusive: true,
+                      provider_id: null,
+                      code: "FIXED_10",
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add tax inclusive promotion to cart successfully in a tax inclusive currency with 2 items and each allocation", async () => {
+          const publishableKey = await generatePublishableKey(appContainer)
+          const storeHeaders = generateStoreHeaders({ publishableKey })
+
+          const salesChannel = (
+            await api.post(
+              "/admin/sales-channels",
+              { name: "Webshop", description: "channel" },
+              adminHeaders
+            )
+          ).data.sales_channel
+
+          await api.post(
+            "/admin/price-preferences",
+            {
+              attribute: "currency_code",
+              value: "dkk",
+              is_tax_inclusive: true,
+            },
+            adminHeaders
+          )
+
+          const region = (
+            await api.post(
+              "/admin/regions",
+              {
+                name: "DK",
+                currency_code: "dkk",
+                countries: ["dk"],
+              },
+              adminHeaders
+            )
+          ).data.region
+
+          const product = (
+            await api.post(
+              "/admin/products",
+              {
+                title: "Discounted Medusa T-Shirt",
+                handle: "discounted-medusa-t-shirt",
+                options: [
+                  {
+                    title: "Size",
+                    values: ["S", "M"],
+                  },
+                ],
+                variants: [
+                  {
+                    title: "S",
+                    sku: "SHIRT-S",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 1000,
+                        currency_code: "dkk",
+                      },
+                    ],
+                  },
+                  {
+                    title: "M",
+                    sku: "SHIRT-M",
+                    options: {
+                      Size: "S",
+                    },
+                    manage_inventory: false,
+                    prices: [
+                      {
+                        amount: 500,
+                        currency_code: "dkk",
+                      },
+                    ],
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          const response = await api.post(
+            `/admin/promotions`,
+            {
+              code: "FIXED_10",
+              type: PromotionType.STANDARD,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: true,
+              is_automatic: true,
+              application_method: {
+                target_type: "items",
+                type: "fixed",
+                allocation: "each",
+                currency_code: "dkk",
+                value: 100,
+                max_quantity: 2,
+              },
+            },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.promotion).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              code: "FIXED_10",
+              type: "standard",
+              is_tax_inclusive: true,
+              is_automatic: true,
+              application_method: expect.objectContaining({
+                value: 100,
+                type: "fixed",
+                target_type: "items",
+                allocation: "each",
+                max_quantity: 2,
+              }),
+            })
+          )
+
+          const cart = (
+            await api.post(
+              `/store/carts?fields=*items,*items.adjustments`,
+              {
+                currency_code: "dkk",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 1,
+                  },
+                  {
+                    variant_id: product.variants[1].id,
+                    quantity: 1,
+                  },
+                ],
+                promo_codes: [response.data.promotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Orignal total -> 1500 dkk (tax incl.)
+           * Promotion -> FIXED 100 dkk per item (tax incl.)
+           * Tax rate -> 25%
+           *
+           * We want total to be 1500 dkk - 100 dkk - 100 dkk = 1300 dkk
+           */
+          expect(cart).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              total: 1300,
+              subtotal: 1200, // taxable base (item subtotal - discount subtotal) = 1200 - 200 = 1000
+              tax_total: 260,
+
+              discount_total: 200, // 2 * 100 dkk fixed tax inclusive
+              discount_subtotal: 160,
+              discount_tax_total: 40,
+
+              original_total: 1500,
+              original_tax_total: 300,
+
+              item_total: 1300,
+              item_subtotal: 1200,
+              item_tax_total: 260,
+
+              original_item_total: 1500,
+              original_item_subtotal: 1200,
+              original_item_tax_total: 300,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 500,
+
+                  subtotal: 400,
+                  total: 400, // 400 - 80 = 320 -> 320 * 1.25 = 400
+                  tax_total: 80,
+
+                  original_total: 500,
+                  original_tax_total: 100,
+
+                  discount_total: 100,
+                  discount_subtotal: 80,
+                  discount_tax_total: 20,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1000,
+
+                  subtotal: 800, // 800 - 80 = 720 -> 720 * 1.25 = 900
+                  total: 900,
+                  tax_total: 180,
+
+                  original_total: 1000,
+                  original_tax_total: 200,
+
+                  discount_total: 100,
+                  discount_subtotal: 80,
+                  discount_tax_total: 20,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          const paymentCollection = (
+            await api.post(
+              `/store/payment-collections`,
+              { cart_id: cart.id },
+              storeHeaders
+            )
+          ).data.payment_collection
+
+          await api.post(
+            `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+            { provider_id: "pp_system_default" },
+            storeHeaders
+          )
+
+          const order = (
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+          ).data.order
+
+          /**
+           * Orignal total -> 1500 dkk (tax incl.)
+           * Promotion -> FIXED 100 dkk per item (tax incl.)
+           * Tax rate -> 25%
+           *
+           * We want total to be 1500 dkk - 100 dkk - 100 dkk = 1300 dkk
+           */
+          expect(order).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              total: 1300,
+              subtotal: 1200, // taxable base (item subtotal - discount subtotal) = 1200 - 200 = 1000
+              tax_total: 260,
+
+              discount_total: 200, // 2 * 100 dkk fixed tax inclusive
+              discount_subtotal: 160,
+              discount_tax_total: 40,
+
+              original_total: 1500,
+              original_tax_total: 300,
+
+              item_total: 1300,
+              item_subtotal: 1200,
+              item_tax_total: 260,
+
+              original_item_total: 1500,
+              original_item_subtotal: 1200,
+              original_item_tax_total: 300,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 500,
+
+                  subtotal: 400,
+                  total: 400, // 400 - 80 = 320 -> 320 * 1.25 = 400
+                  tax_total: 80,
+
+                  original_total: 500,
+                  original_tax_total: 100,
+
+                  discount_total: 100,
+                  discount_subtotal: 80,
+                  discount_tax_total: 20,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1000,
+
+                  subtotal: 800, // 800 - 80 = 720 -> 720 * 1.25 = 900
+                  total: 900,
+                  tax_total: 180,
+
+                  original_total: 1000,
+                  original_tax_total: 200,
+
+                  discount_total: 100,
+                  discount_subtotal: 80,
+                  discount_tax_total: 20,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                      is_tax_inclusive: true,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add tax exclusive promotion to cart successfully for tax inclusive currency", async () => {
+          const publishableKey = await generatePublishableKey(appContainer)
+          const storeHeaders = generateStoreHeaders({ publishableKey })
+
+          const salesChannel = (
+            await api.post(
+              "/admin/sales-channels",
+              { name: "Webshop", description: "channel" },
+              adminHeaders
+            )
+          ).data.sales_channel
+
+          await api.post(
+            "/admin/price-preferences",
+            {
+              attribute: "currency_code",
+              value: "dkk",
+              is_tax_inclusive: true,
+            },
+            adminHeaders
+          )
+
+          const region = (
+            await api.post(
+              "/admin/regions",
+              {
+                name: "DK",
+                currency_code: "dkk",
+                countries: ["dk"],
+              },
+              adminHeaders
+            )
+          ).data.region
+
+          const product = (
+            await api.post("/admin/products", medusaTshirtProduct, adminHeaders)
+          ).data.product
+
+          const response = await api.post(
+            `/admin/promotions`,
+            {
+              code: "FIXED_10",
+              type: PromotionType.STANDARD,
+              status: PromotionStatus.ACTIVE,
+              is_automatic: true,
+              application_method: {
+                target_type: "items",
+                type: "fixed",
+                allocation: "across",
+                currency_code: "dkk",
+                value: 100,
+              },
+            },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.promotion).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              code: "FIXED_10",
+              type: "standard",
+              is_tax_inclusive: false, // tax exclusive by default
+              is_automatic: true,
+              application_method: expect.objectContaining({
+                value: 100,
+                type: "fixed",
+                target_type: "items",
+                allocation: "across",
+              }),
+            })
+          )
+
+          const cart = (
+            await api.post(
+              `/store/carts?fields=*items,*items.adjustments`,
+              {
+                currency_code: "dkk",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 1,
+                  },
+                ],
+                promo_codes: [response.data.promotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Orignal total -> 1300 dkk (tax incl.)
+           * Tax rate -> 25%
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
+           */
+          expect(cart).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              subtotal: 1040, // taxable base (item subtotal - discount subtotal) = 1040 - 100 = 940
+              total: 1175, // total = taxable base * (1 + tax rate) = 940 * (1 + 0.25) = 1175
+              tax_total: 235,
+
+              original_total: 1300,
+              original_tax_total: 260,
+
+              discount_total: 125,
+              discount_subtotal: 100,
+              discount_tax_total: 25,
+
+              item_total: 1175,
+              item_subtotal: 1040,
+              item_tax_total: 235,
+
+              original_item_total: 1300,
+              original_item_subtotal: 1040,
+              original_item_tax_total: 260,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1300,
+
+                  subtotal: 1040,
+                  tax_total: 235,
+                  total: 1175,
+
+                  original_total: 1300,
+                  original_tax_total: 260,
+
+                  discount_total: 125,
+                  discount_subtotal: 100,
+                  discount_tax_total: 25,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          const paymentCollection = (
+            await api.post(
+              `/store/payment-collections`,
+              { cart_id: cart.id },
+              storeHeaders
+            )
+          ).data.payment_collection
+
+          await api.post(
+            `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+            { provider_id: "pp_system_default" },
+            storeHeaders
+          )
+
+          const order = (
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+          ).data.order
+
+          /**
+           * Orignal total -> 1300 dkk (tax incl.)
+           * Tax rate -> 25%
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
+           */
+          expect(order).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              subtotal: 1040, // taxable base (item subtotal - discount subtotal) = 1040 - 100 = 940
+              total: 1175, // total = taxable base * (1 + tax rate) = 940 * (1 + 0.25) = 1175
+              tax_total: 235,
+
+              original_total: 1300,
+              original_tax_total: 260,
+
+              discount_total: 125,
+              discount_subtotal: 100,
+              discount_tax_total: 25,
+
+              item_total: 1175,
+              item_subtotal: 1040,
+              item_tax_total: 235,
+
+              original_item_total: 1300,
+              original_item_subtotal: 1040,
+              original_item_tax_total: 260,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1300,
+
+                  subtotal: 1040,
+                  tax_total: 235,
+                  total: 1175,
+
+                  original_total: 1300,
+                  original_tax_total: 260,
+
+                  discount_total: 125,
+                  discount_subtotal: 100,
+                  discount_tax_total: 25,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add tax exclusive promotion to cart successfully for tax exclusive currency", async () => {
+          const publishableKey = await generatePublishableKey(appContainer)
+          const storeHeaders = generateStoreHeaders({ publishableKey })
+
+          const salesChannel = (
+            await api.post(
+              "/admin/sales-channels",
+              { name: "Webshop", description: "channel" },
+              adminHeaders
+            )
+          ).data.sales_channel
+
+          await api.post(
+            "/admin/price-preferences",
+            {
+              attribute: "currency_code",
+              value: "dkk",
+              is_tax_inclusive: false,
+            },
+            adminHeaders
+          )
+
+          const region = (
+            await api.post(
+              "/admin/regions",
+              {
+                name: "DK",
+                currency_code: "dkk",
+                countries: ["dk"],
+              },
+              adminHeaders
+            )
+          ).data.region
+
+          const product = (
+            await api.post("/admin/products", medusaTshirtProduct, adminHeaders)
+          ).data.product
+
+          const response = await api.post(
+            `/admin/promotions`,
+            {
+              code: "FIXED_10",
+              type: PromotionType.STANDARD,
+              status: PromotionStatus.ACTIVE,
+              is_automatic: true,
+              application_method: {
+                target_type: "items",
+                type: "fixed",
+                allocation: "across",
+                currency_code: "dkk",
+                value: 100,
+              },
+            },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.promotion).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              code: "FIXED_10",
+              type: "standard",
+              is_tax_inclusive: false, // tax exclusive by default
+              is_automatic: true,
+              application_method: expect.objectContaining({
+                value: 100,
+                type: "fixed",
+                target_type: "items",
+                allocation: "across",
+              }),
+            })
+          )
+
+          const cart = (
+            await api.post(
+              `/store/carts?fields=*items,*items.adjustments`,
+              {
+                currency_code: "dkk",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 1,
+                  },
+                ],
+                promo_codes: [response.data.promotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Orignal total -> 1300 dkk (tax excl.)
+           * Tax rate -> 25%
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
+           */
+          expect(cart).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              subtotal: 1300, // taxable base (item subtotal - discount subtotal) = 1300 - 100 = 1200
+              total: 1500, // total = taxable base * (1 + tax rate) = 1200 * (1 + 0.25) = 1500
+              tax_total: 300,
+
+              original_total: 1625,
+              original_tax_total: 325,
+
+              discount_total: 125,
+              discount_subtotal: 100,
+              discount_tax_total: 25,
+
+              item_total: 1500,
+              item_subtotal: 1300,
+              item_tax_total: 300,
+
+              original_item_total: 1625,
+              original_item_subtotal: 1300,
+              original_item_tax_total: 325,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1300,
+
+                  subtotal: 1300,
+                  total: 1500,
+                  tax_total: 300,
+
+                  discount_total: 125,
+                  discount_subtotal: 100,
+                  discount_tax_total: 25,
+
+                  original_total: 1625,
+                  original_tax_total: 325,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          const paymentCollection = (
+            await api.post(
+              `/store/payment-collections`,
+              { cart_id: cart.id },
+              storeHeaders
+            )
+          ).data.payment_collection
+
+          await api.post(
+            `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+            { provider_id: "pp_system_default" },
+            storeHeaders
+          )
+
+          const order = (
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+          ).data.order
+
+          /**
+           * Orignal total -> 1300 dkk (tax excl.)
+           * Tax rate -> 25%
+           * Promotion -> FIXED 100 dkk (tax exclusive !)
+           */
+          expect(order).toEqual(
+            expect.objectContaining({
+              currency_code: "dkk",
+
+              subtotal: 1300, // taxable base (item subtotal - discount subtotal) = 1300 - 100 = 1200
+              total: 1500, // total = taxable base * (1 + tax rate) = 1200 * (1 + 0.25) = 1500
+              tax_total: 300,
+
+              original_total: 1625,
+              original_tax_total: 325,
+
+              discount_total: 125,
+              discount_subtotal: 100,
+              discount_tax_total: 25,
+
+              item_total: 1500,
+              item_subtotal: 1300,
+              item_tax_total: 300,
+
+              original_item_total: 1625,
+              original_item_subtotal: 1300,
+              original_item_tax_total: 325,
+
+              shipping_total: 0,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+
+              original_shipping_tax_total: 0,
+              original_shipping_subtotal: 0,
+              original_shipping_total: 0,
+
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 1,
+                  unit_price: 1300,
+
+                  subtotal: 1300,
+                  total: 1500,
+                  tax_total: 300,
+
+                  discount_total: 125,
+                  discount_subtotal: 100,
+                  discount_tax_total: 25,
+
+                  original_total: 1625,
+                  original_tax_total: 325,
+
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
         })
       })
 
@@ -673,6 +1727,7 @@ medusaIntegrationTestRunner({
             {
               code: "TEST_TWO",
               application_method: { value: 200 },
+              is_tax_inclusive: true,
             },
             adminHeaders
           )
@@ -685,6 +1740,7 @@ medusaIntegrationTestRunner({
               application_method: expect.objectContaining({
                 value: 200,
               }),
+              is_tax_inclusive: true,
             })
           )
         })
@@ -993,7 +2049,7 @@ medusaIntegrationTestRunner({
                   buy_rules_min_quantity: 1,
                   buy_rules: [promotionRule],
                   target_rules: [promotionRule],
-                  currency_code: "USD",
+                  currency_code: "usd",
                 },
                 rules: [promotionRule],
               },
@@ -1156,7 +2212,7 @@ medusaIntegrationTestRunner({
                 type: PromotionType.BUYGET,
                 application_method: {
                   type: "fixed",
-                  currency_code: "USD",
+                  currency_code: "usd",
                   target_type: "items",
                   allocation: "across",
                   value: 100,

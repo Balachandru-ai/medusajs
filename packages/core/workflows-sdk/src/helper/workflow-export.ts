@@ -91,15 +91,21 @@ function createContextualWorkflowRunner<
       flow.container = executionContainer
     }
 
-    const { eventGroupId, parentStepIdempotencyKey } = context
+    const { eventGroupId, parentStepIdempotencyKey, preventReleaseEvents } =
+      context
 
-    attachOnFinishReleaseEvents(events, flow, { logOnError })
+    if (!preventReleaseEvents) {
+      attachOnFinishReleaseEvents(events, flow, { logOnError })
+    }
 
     const flowMetadata = {
       eventGroupId,
       parentStepIdempotencyKey,
       sourcePath: options?.sourcePath,
+      preventReleaseEvents,
     }
+
+    context.isCancelling = isCancel
 
     const args = [
       transactionOrIdOrIdempotencyKey,
@@ -184,7 +190,7 @@ function createContextualWorkflowRunner<
       __type: MedusaContextType as Context["__type"],
     }
 
-    context.transactionId ??= ulid()
+    context.transactionId ??= "auto-" + ulid()
     context.eventGroupId ??= ulid()
 
     return await originalExecution(

@@ -1,3 +1,15 @@
+---
+sidebar_label: "Build Wishlist Plugin"
+tags:
+    - product
+    - tutorial
+    - server
+products:
+  - product
+  - customer
+  - sales channel
+---
+
 import { Github, PlaySolid } from "@medusajs/icons"
 import { Prerequisites, CardList, WorkflowDiagram } from "docs-ui"
 
@@ -31,7 +43,7 @@ export const metadata = {
 
 In this guide, you'll learn how to build a wishlist [plugin](!docs!/learn/fundamentals/plugins) in Medusa.
 
-When you install a Medusa application, you get a fully-fledged commerce platform with a framework for customization. The Medusa application's commerce features are built around [commerce modules](../../../commerce-modules/page.mdx) which are available out-of-the-box.
+When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. The Medusa application's commerce features are built around [Commerce Modules](../../../commerce-modules/page.mdx) which are available out-of-the-box.
 
 Customers browsing your store may be interested in a product but not ready to buy it yet. They may want to save the product for later or share it with friends and family. A wishlist feature allows customers to save products they like and access them later.
 
@@ -87,7 +99,7 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll be asked for the project's name. You can also optionally choose to install the [Next.js starter storefront](../../../nextjs-starter/page.mdx).
+You'll be asked for the project's name. You can also optionally choose to install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx).
 
 Afterward, the installation process will start, which will install the Medusa application in a directory with your project's name. If you chose to install the Next.js starter, it'll be installed in a separate directory with the `{project-name}-storefront` name.
 
@@ -227,7 +239,9 @@ export const Wishlist = model.define("wishlist", {
   id: model.id().primaryKey(),
   customer_id: model.text(),
   sales_channel_id: model.text(),
-  items: model.hasMany(() => WishlistItem),
+  items: model.hasMany(() => WishlistItem, {
+    mappedBy: "wishlist",
+  }),
 })
 .indexes([
   {
@@ -246,7 +260,7 @@ The `Wishlist` model has the following properties:
 
 <Note>
 
-Learn more about data model [properties](!docs!/learn/fundamentals/data-models/property-types) and [relations](!docs!/learn/fundamentals/data-models/relationships).
+Learn more about data model [properties](!docs!/learn/fundamentals/data-models/properties) and [relations](!docs!/learn/fundamentals/data-models/relationships).
 
 </Note>
 
@@ -388,7 +402,7 @@ The tables of the Wishlist Module's data models are now created in the database.
 
 ## Step 5: Link Wishlist Data Models with Core Models
 
-The Wishlist Module's data models store IDs of records in data models implemented in Medusa's core commerce modules, such as the ID of a customer or a product variant.
+The Wishlist Module's data models store IDs of records in data models implemented in Medusa's core Commerce Modules, such as the ID of a customer or a product variant.
 
 However, modules are [isolated](!docs!/learn/fundamentals/modules/isolation) to ensure they're re-usable and don't have side effects when integrated into the Medusa application. So, to build associations between modules, you define [module links](!docs!/learn/fundamentals/module-links). A Module link associates two modules' data models while maintaining module isolation.
 
@@ -411,7 +425,7 @@ import CustomerModule from "@medusajs/medusa/customer"
 
 export default defineLink(
   {
-    ...WishlistModule.linkable.wishlist.id,
+    linkable: WishlistModule.linkable.wishlist.id,
     field: "customer_id",
   },
   CustomerModule.linkable.customer.id,
@@ -438,7 +452,7 @@ import SalesChannelModule from "@medusajs/medusa/sales-channel"
 
 export default defineLink(
   {
-    ...WishlistModule.linkable.wishlist.id,
+    linkable: WishlistModule.linkable.wishlist.id,
     field: "sales_channel_id",
   },
   SalesChannelModule.linkable.salesChannel,
@@ -461,7 +475,7 @@ import ProductModule from "@medusajs/medusa/product"
 
 export default defineLink(
   {
-    ...WishlistModule.linkable.wishlistItem.id,
+    linkable: WishlistModule.linkable.wishlistItem.id,
     field: "product_variant_id",
   },
   ProductModule.linkable.productVariant,
@@ -583,7 +597,7 @@ You create a step using `createStep` from the Workflows SDK. It accepts two para
 1. The step's name, which is `validate-customer-create-wishlist`.
 1. An async function that executes the step's logic. The function receives two parameters:
    - The input data for the step, which in this case is an object having a `customer_id` property.
-   - An object holding the workflow's context, including the [Medusa Container](!docs!learn/fundamentals/medusa-container) that allows you to resolve framework and commerce tools.
+   - An object holding the workflow's context, including the [Medusa Container](!docs!/learn/fundamentals/medusa-container) that allows you to resolve Framework and commerce tools.
 
 In the step function, you use [Query](!docs!/learn/fundamentals/module-links/query) to retrieve the wishlist based on the specified customer ID. If a wishlist exists, you throw an error, stopping the workflow's execution.
 
@@ -1207,7 +1221,7 @@ export const createWishlistItemWorkflow = createWorkflow(
     })
 
     validateWishlistExistsStep({
-      wishlists
+      wishlists,
     })
 
     validateWishlistSalesChannelStep({
@@ -1410,7 +1424,7 @@ The response will contain a list of products. You can use the `id` of a product'
 Then, send a `POST` request to the `/store/customers/me/wishlists/items` API route to add the variant to the wishlist:
 
 ```bash
-curl -X GET 'localhost:9000/store/customers/me/wishlists/items' \
+curl -X POST 'localhost:9000/store/customers/me/wishlists/items' \
 --header 'Content-Type: application/json'  \
 --header 'x-publishable-api-key: {api_key}' \
 --header 'Authorization: Bearer {token}' \
@@ -1604,7 +1618,7 @@ export const deleteWishlistItemWorkflow = createWorkflow(
     })
     
     validateWishlistExistsStep({
-      wishlists
+      wishlists,
     })
 
     validateItemInWishlistStep({
@@ -1726,7 +1740,7 @@ In this step, you'll add the functionality to allow customers to share their wis
 
 To create the token and decode it later, you'll use the [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) package. So, run the following command in the plugin project to install the package:
 
-```bash npm2yarn title="Plugin project"
+```bash npm2yarn badgeLabel="Plugin project" badgeColor="orange"
 npm install jsonwebtoken
 ```
 
@@ -1796,7 +1810,7 @@ return res.json({
 })
 ```
 
-You first retrieve the [http Medusa configuration](/references/medusa-config#http) which holds configurations related to JWT secrets and expiration times. You then use the `jsonwebtoken` package to sign a token containing the wishlist ID. You return the token in the response.
+You first retrieve the [http Medusa configuration](!docs!/learn/configurations/medusa-config#http) which holds configurations related to JWT secrets and expiration times. You then use the `jsonwebtoken` package to sign a token containing the wishlist ID. You return the token in the response.
 
 ### Test API Route
 
@@ -2165,5 +2179,3 @@ You've now implemented the wishlist functionality in a Medusa plugin. You can pu
 If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 
 To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](../../../commerce-modules/page.mdx).
-
-For other general guides related to [deployment](../../../deployment/page.mdx), [storefront development](../../../storefront-development/page.mdx), [integrations](../../../integrations/page.mdx), and more, check out the [Development Resources](../../../page.mdx).

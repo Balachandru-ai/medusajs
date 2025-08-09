@@ -35,6 +35,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -111,6 +115,10 @@ post:
                     `additional_data` parameter.
           description: The properties to update in a product.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -137,6 +145,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateProductsWorkflow
+  x-events:
+    - name: product.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product
+        }]
+        ```
+      description: Emitted when products are updated.
+      deprecated: false
 delete:
   operationId: DeleteProductsId
   summary: Delete a Product
@@ -154,6 +172,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -180,3 +202,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteProductsWorkflow
+  x-events:
+    - name: product.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product
+        }]
+        ```
+      description: Emitted when products are deleted.
+      deprecated: false

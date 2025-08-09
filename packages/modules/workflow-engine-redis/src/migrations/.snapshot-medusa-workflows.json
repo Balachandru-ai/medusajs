@@ -24,6 +24,15 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "run_id": {
+          "name": "run_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "id": {
           "name": "id",
           "type": "text",
@@ -151,13 +160,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_workflow_execution_transaction_id\" ON \"workflow_execution\" (transaction_id) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_workflow_execution_workflow_id_transaction_id_unique",
+          "keyName": "IDX_workflow_execution_workflow_id_transaction_id_run_id_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_workflow_execution_workflow_id_transaction_id_unique\" ON \"workflow_execution\" (workflow_id, transaction_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_workflow_execution_workflow_id_transaction_id_run_id_unique\" ON \"workflow_execution\" (workflow_id, transaction_id, run_id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_workflow_execution_state",
@@ -172,7 +181,8 @@
           "keyName": "workflow_execution_pkey",
           "columnNames": [
             "workflow_id",
-            "transaction_id"
+            "transaction_id",
+            "run_id"
           ],
           "composite": true,
           "constraint": true,

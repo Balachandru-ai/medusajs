@@ -313,6 +313,7 @@ export class RemoteQuery {
       "sort",
       "order",
       "withDeleted",
+      "options",
     ]
     const availableOptionsAlias = new Map([
       ["limit", "take"],

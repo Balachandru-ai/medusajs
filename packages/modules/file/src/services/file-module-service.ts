@@ -1,7 +1,10 @@
+import type { Readable } from "stream"
 import {
   Context,
   CreateFileDTO,
+  GetUploadFileUrlDTO,
   FileDTO,
+  UploadFileUrlDTO,
   FileTypes,
   FilterableFileProps,
   FindConfig,
@@ -24,6 +27,10 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  getProvider() {
+    return this.fileProviderService_
   }
 
   createFiles(
@@ -49,15 +56,36 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
     return Array.isArray(data) ? result : result[0]
   }
 
+  getUploadFileUrls(
+    data: GetUploadFileUrlDTO[],
+    sharedContext?: Context
+  ): Promise<UploadFileUrlDTO[]>
+  getUploadFileUrls(
+    data: GetUploadFileUrlDTO,
+    sharedContext?: Context
+  ): Promise<UploadFileUrlDTO>
+
+  async getUploadFileUrls(
+    data: GetUploadFileUrlDTO[] | GetUploadFileUrlDTO
+  ): Promise<UploadFileUrlDTO[] | UploadFileUrlDTO> {
+    const input = Array.isArray(data) ? data : [data]
+
+    const result = await Promise.all(
+      input.map((file) => this.fileProviderService_.getPresignedUploadUrl(file))
+    )
+
+    return Array.isArray(data) ? result : result[0]
+  }
+
   async deleteFiles(ids: string[], sharedContext?: Context): Promise<void>
   async deleteFiles(id: string, sharedContext?: Context): Promise<void>
   async deleteFiles(ids: string[] | string): Promise<void> {
     const input = Array.isArray(ids) ? ids : [ids]
-    await Promise.all(
-      input.map((id) => this.fileProviderService_.delete({ fileKey: id }))
+    await this.fileProviderService_.delete(
+      input.map((id) => {
+        return { fileKey: id }
+      })
     )
-
-    return
   }
 
   async retrieveFile(id: string): Promise<FileDTO> {
@@ -76,28 +104,25 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
     config?: FindConfig<FileDTO>,
     sharedContext?: Context
   ): Promise<FileDTO[]> {
-    const id = Array.isArray(filters?.id) ? filters?.id?.[0] : filters?.id
-    if (!id) {
+    if (!filters?.id) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         "Listing of files is only supported when filtering by ID."
       )
     }
 
-    const res = await this.fileProviderService_.getPresignedDownloadUrl({
-      fileKey: id,
-    })
+    const ids = Array.isArray(filters?.id) ? filters?.id : [filters?.id]
 
-    if (!res) {
-      return []
-    }
+    const res = await Promise.all(
+      ids.map(async (id) => {
+        const res = await this.fileProviderService_.getPresignedDownloadUrl({
+          fileKey: id,
+        })
+        return { id, url: res }
+      })
+    )
 
-    return [
-      {
-        id,
-        url: res,
-      },
-    ]
+    return res
   }
 
   async listAndCountFiles(
@@ -105,30 +130,46 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
     config?: FindConfig<FileDTO>,
     sharedContext?: Context
   ): Promise<[FileDTO[], number]> {
-    const id = Array.isArray(filters?.id) ? filters?.id?.[0] : filters?.id
-    if (!id) {
+    if (!filters?.id) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        "Listing and counting of files is only supported when filtering by ID."
+        "Listing of files is only supported when filtering by ID."
       )
     }
 
-    const res = await this.fileProviderService_.getPresignedDownloadUrl({
-      fileKey: id,
-    })
+    const ids = Array.isArray(filters?.id) ? filters?.id : [filters?.id]
 
-    if (!res) {
-      return [[], 0]
-    }
+    const res = await Promise.all(
+      ids.map(async (id) => {
+        const res = await this.fileProviderService_.getPresignedDownloadUrl({
+          fileKey: id,
+        })
+        return { id, url: res }
+      })
+    )
 
-    return [
-      [
-        {
-          id,
-          url: res,
-        },
-      ],
-      1,
-    ]
+    return [res, res.length]
+  }
+
+  /**
+   * Get the file contents as a readable stream.
+   *
+   * @example
+   * const stream = await fileModuleService.getAsStream("file_123")
+   * writeable.pipe(stream)
+   */
+  getDownloadStream(id: string): Promise<Readable> {
+    return this.fileProviderService_.getDownloadStream({ fileKey: id })
+  }
+
+  /**
+   * Get the file contents as a Node.js Buffer
+   *
+   * @example
+   * const contents = await fileModuleService.getAsBuffer("file_123")
+   * contents.toString('utf-8')
+   */
+  getAsBuffer(id: string): Promise<Buffer> {
+    return this.fileProviderService_.getAsBuffer({ fileKey: id })
   }
 }

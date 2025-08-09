@@ -3,6 +3,13 @@
  * type: object
  * description: The return item's details.
  * x-schemaName: StoreReturnItem
+ * required:
+ *   - id
+ *   - quantity
+ *   - received_quantity
+ *   - damaged_quantity
+ *   - item_id
+ *   - return_id
  * properties:
  *   id:
  *     type: string
@@ -39,13 +46,9 @@
  *   metadata:
  *     type: object
  *     description: The item's metadata, can hold custom key-value pairs.
- * required:
- *   - id
- *   - quantity
- *   - received_quantity
- *   - damaged_quantity
- *   - item_id
- *   - return_id
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  * 
 */
 

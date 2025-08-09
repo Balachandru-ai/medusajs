@@ -1,10 +1,11 @@
 import { z } from "zod"
+import { applyAndAndOrOperators } from "../../utils/common-validators"
 import {
   createFindParams,
   createOperatorMap,
   createSelectParams,
+  WithAdditionalData,
 } from "../../utils/validators"
-import { applyAndAndOrOperators } from "../../utils/common-validators"
 
 export const AdminGetCollectionParams = createSelectParams()
 
@@ -27,16 +28,20 @@ export const AdminGetCollectionsParams = createFindParams({
   .merge(AdminGetCollectionsParamsFields)
   .merge(applyAndAndOrOperators(AdminGetCollectionsParamsFields))
 
-export type AdminCreateCollectionType = z.infer<typeof AdminCreateCollection>
-export const AdminCreateCollection = z.object({
+export type AdminCreateCollectionType = z.infer<typeof CreateCollection>
+export const CreateCollection = z.object({
   title: z.string(),
   handle: z.string().optional(),
   metadata: z.record(z.unknown()).nullish(),
 })
 
-export type AdminUpdateCollectionType = z.infer<typeof AdminUpdateCollection>
-export const AdminUpdateCollection = z.object({
+export const AdminCreateCollection = WithAdditionalData(CreateCollection)
+
+export type AdminUpdateCollectionType = z.infer<typeof UpdateCollection>
+export const UpdateCollection = z.object({
   title: z.string().optional(),
   handle: z.string().optional(),
   metadata: z.record(z.unknown()).nullish(),
 })
+
+export const AdminUpdateCollection = WithAdditionalData(UpdateCollection)

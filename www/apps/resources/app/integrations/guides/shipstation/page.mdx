@@ -1,10 +1,17 @@
+---
+products:
+  - fulfillment
+  - cart
+  - order
+---
+
 import { Card, Prerequisites, Details } from "docs-ui"
 import { Github } from "@medusajs/icons"
 
 export const ogImage = "https://res.cloudinary.com/dza7lstvk/image/upload/v1734607836/Medusa%20Resources/integrations-shipstation_nlabgy.jpg"
 
 export const metadata = {
-  title: `Integrate Medusa with ShipStation`,
+  title: `Integrate Medusa with ShipStation (Fulfillment)`,
   openGraph: {
     images: [
       {
@@ -30,6 +37,12 @@ export const metadata = {
 # {metadata.title}
 
 In this guide, you'll learn how to integrate Medusa with ShipStation.
+
+<Note title="Not a technical user?">
+
+Refer your technical team to this guide to integrate ShipStation with your Medusa application. You can then enable it using the Medusa Admin as explained in [this user guide](!user-guide!/settings/locations-and-shipping/locations#manage-fulfillment-providers).
+
+</Note>
 
 When you install a Medusa application, you get a fully-fledged commerce platform with support for customizations. Medusa's [Fulfillment Module](../../../commerce-modules/fulfillment/page.mdx) provides fulfillment-related resources and functionalities in your store, but it delegates the processing and shipment of order fulfillments to providers that you can integrate.
 
@@ -75,9 +88,9 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js storefront, choose `Y` for yes.
+You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js Starter Storefront, choose `Y` for yes.
 
-Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name, and the Next.js storefront in a directory with the `{project-name}-storefront` name.
+Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name, and the Next.js Starter Storefront in a directory with the `{project-name}-storefront` name.
 
 <Note title="Why is the storefront installed separately?">
 
@@ -87,7 +100,7 @@ The Medusa application is composed of a headless Node.js server and an admin das
 
 Once the installation finishes successfully, the Medusa Admin dashboard will open with a form to create a new user. Enter the user's credential and submit the form.
 
-Afterwards, you can login with the new user and explore the dashboard. The Next.js storefront is also running at `http://localhost:8000`.
+Afterwards, you can login with the new user and explore the dashboard. The Next.js Starter Storefront is also running at `http://localhost:8000`.
 
 <Note title="Ran to Errors?">
 
@@ -1404,5 +1417,3 @@ You've now integrated Medusa with ShipStation. You can fulfill orders with many 
 If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 
 To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](../../../commerce-modules/page.mdx).
-
-For other general guides related to deployment, storefront development, integrations, and more, check out the [Development Resources](../../../page.mdx).

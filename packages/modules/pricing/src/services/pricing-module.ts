@@ -40,6 +40,7 @@ import {
   promiseAll,
   removeNullish,
   simpleHash,
+  upperCaseFirst,
 } from "@medusajs/framework/utils"
 
 import {
@@ -76,24 +77,28 @@ const generateMethodForModels = {
   PricePreference,
 }
 
+const BaseClass = ModulesSdkUtils.MedusaService<{
+  PriceSet: { dto: PricingTypes.PriceSetDTO }
+  Price: { dto: PricingTypes.PriceDTO }
+  PriceRule: {
+    dto: PricingTypes.PriceRuleDTO
+    create: PricingTypes.CreatePriceRuleDTO
+    update: PricingTypes.UpdatePriceRuleDTO
+  }
+  PriceList: { dto: PricingTypes.PriceListDTO }
+  PriceListRule: { dto: PricingTypes.PriceListRuleDTO }
+  // PricePreference: { dto: PricingTypes.PricePreferenceDTO }
+  PricePreference: { dto: any }
+}>(generateMethodForModels)
+
 export default class PricingModuleService
-  extends ModulesSdkUtils.MedusaService<{
-    PriceSet: { dto: PricingTypes.PriceSetDTO }
-    Price: { dto: PricingTypes.PriceDTO }
-    PriceRule: {
-      dto: PricingTypes.PriceRuleDTO
-      create: PricingTypes.CreatePriceRuleDTO
-      update: PricingTypes.UpdatePriceRuleDTO
-    }
-    PriceList: { dto: PricingTypes.PriceListDTO }
-    PriceListRule: { dto: PricingTypes.PriceListRuleDTO }
-    // PricePreference: { dto: PricingTypes.PricePreferenceDTO }
-    PricePreference: { dto: any }
-  }>(generateMethodForModels)
+  extends BaseClass
   implements PricingTypes.IPricingModuleService
 {
   protected baseRepository_: DAL.RepositoryService
-  protected readonly pricingRepository_: PricingRepositoryService
+  protected readonly pricingRepository_: PricingRepositoryService & {
+    clearAvailableAttributes?: () => Promise<void>
+  }
   protected readonly priceSetService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof PriceSet>
   >
@@ -161,6 +166,52 @@ export default class PricingModuleService
     config.relations?.splice(fieldIdx, 1)
 
     return pricingContext
+  }
+
+  // @ts-expect-error
+  async createPriceRules(
+    ...args: Parameters<PricingTypes.IPricingModuleService["createPriceRules"]>
+  ): Promise<PricingTypes.PriceRuleDTO | PricingTypes.PriceRuleDTO[]> {
+    try {
+      return await super.createPriceRules(...args)
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
+  }
+
+  // @ts-expect-error
+  async updatePriceRules(
+    ...args: Parameters<PricingTypes.IPricingModuleService["updatePriceRules"]>
+  ): Promise<PricingTypes.PriceRuleDTO | PricingTypes.PriceRuleDTO[]> {
+    try {
+      return await super.updatePriceRules(...args)
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
+  }
+
+  // @ts-expect-error
+  async createPriceListRules(
+    ...args: any[]
+  ): Promise<PricingTypes.PriceListRuleDTO | PricingTypes.PriceListRuleDTO[]> {
+    try {
+      // @ts-ignore
+      return await super.createPriceListRules(...args)
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
+  }
+
+  // @ts-expect-error
+  async updatePriceListRules(
+    ...args: any[]
+  ): Promise<PricingTypes.PriceListRuleDTO | PricingTypes.PriceListRuleDTO[]> {
+    try {
+      // @ts-ignore
+      return await super.updatePriceListRules(...args)
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
@@ -292,6 +343,7 @@ export default class PricingModuleService
         /**
          * When deciding which price to use we follow the following logic:
          * - If the price list is of type OVERRIDE, we always use the price list price.
+         *   - If there are multiple price list prices of type OVERRIDE, we use the one with the lowest amount.
          * - If the price list is of type SALE, we use the lowest price between the price list price and the default price
          */
         if (priceListPrice) {
@@ -317,6 +369,7 @@ export default class PricingModuleService
             }
           }
         }
+
 
         pricesSetPricesMap.set(key, { calculatedPrice, originalPrice })
         priceIds.push(
@@ -457,9 +510,13 @@ export default class PricingModuleService
       return dbPriceSets.find((p) => p.id === priceSet.id)!
     })
 
-    return await this.baseRepository_.serialize<PriceSetDTO[] | PriceSetDTO>(
-      Array.isArray(data) ? results : results[0]
-    )
+    try {
+      return await this.baseRepository_.serialize<PriceSetDTO[] | PriceSetDTO>(
+        Array.isArray(data) ? results : results[0]
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   async upsertPriceSets(
@@ -472,6 +529,7 @@ export default class PricingModuleService
   ): Promise<PriceSetDTO>
 
   @InjectManager()
+  @EmitEvents()
   async upsertPriceSets(
     data: UpsertPriceSetDTO | UpsertPriceSetDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -494,9 +552,14 @@ export default class PricingModuleService
     }
 
     const result = (await promiseAll(operations)).flat()
-    return await this.baseRepository_.serialize<PriceSetDTO[] | PriceSetDTO>(
-      Array.isArray(data) ? result : result[0]
-    )
+
+    try {
+      return await this.baseRepository_.serialize<PriceSetDTO[] | PriceSetDTO>(
+        Array.isArray(data) ? result : result[0]
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   // @ts-expect-error
@@ -513,6 +576,7 @@ export default class PricingModuleService
   ): Promise<PriceSetDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updatePriceSets(
     idOrSelector: string | PricingTypes.FilterablePriceSetProps,
@@ -545,7 +609,11 @@ export default class PricingModuleService
       PriceSetDTO[] | PriceSetDTO
     >(updateResult)
 
-    return isString(idOrSelector) ? priceSets[0] : priceSets
+    try {
+      return isString(idOrSelector) ? priceSets[0] : priceSets
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectTransactionManager()
@@ -563,12 +631,18 @@ export default class PricingModuleService
     })
 
     const prices = normalizedData.flatMap((priceSet) => priceSet.prices || [])
-    const { entities: upsertedPrices } =
+    const { entities: upsertedPrices, performedActions } =
       await this.priceService_.upsertWithReplace(
         prices,
         { relations: ["price_rules"] },
         sharedContext
       )
+
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
+      sharedContext,
+    })
 
     const priceSetsToUpsert = normalizedData.map((priceSet) => {
       const { prices, ...rest } = priceSet
@@ -594,12 +668,18 @@ export default class PricingModuleService
       }
     })
 
-    const { entities: priceSets } =
+    const { entities: priceSets, performedActions: priceSetPerformedActions } =
       await this.priceSetService_.upsertWithReplace(
         priceSetsToUpsert,
         { relations: ["prices"] },
         sharedContext
       )
+
+    composeAllEvents({
+      eventBuilders,
+      performedActions: priceSetPerformedActions,
+      sharedContext,
+    })
 
     return priceSets.map((ps) => {
       if (ps.prices) {
@@ -729,7 +809,11 @@ export default class PricingModuleService
       return dbPrices.find((p) => p.id === inputItem.priceSetId)!
     })
 
-    return Array.isArray(data) ? orderedPriceSets : orderedPriceSets[0]
+    try {
+      return Array.isArray(data) ? orderedPriceSets : orderedPriceSets[0]
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
@@ -741,12 +825,17 @@ export default class PricingModuleService
   ): Promise<PricingTypes.PriceListDTO[]> {
     const priceLists = await this.createPriceLists_(data, sharedContext)
 
-    return await this.baseRepository_.serialize<PricingTypes.PriceListDTO[]>(
-      priceLists
-    )
+    try {
+      return await this.baseRepository_.serialize<PricingTypes.PriceListDTO[]>(
+        priceLists
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   // @ts-ignore
   async updatePriceLists(
     data: PricingTypes.UpdatePriceListDTO[],
@@ -754,27 +843,43 @@ export default class PricingModuleService
   ): Promise<PricingTypes.PriceListDTO[]> {
     const priceLists = await this.updatePriceLists_(data, sharedContext)
 
-    return await this.baseRepository_.serialize<PricingTypes.PriceListDTO[]>(
-      priceLists
-    )
+    try {
+      return await this.baseRepository_.serialize<PricingTypes.PriceListDTO[]>(
+        priceLists
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
+  @EmitEvents()
   async updatePriceListPrices(
     data: PricingTypes.UpdatePriceListPricesDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PricingTypes.PriceDTO[]> {
     const prices = await this.updatePriceListPrices_(data, sharedContext)
 
-    return await this.baseRepository_.serialize<PricingTypes.PriceDTO[]>(prices)
+    try {
+      return await this.baseRepository_.serialize<PricingTypes.PriceDTO[]>(
+        prices
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePrices(
     ids: string[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
-    await this.removePrices_(ids, sharedContext)
+    try {
+      await this.removePrices_(ids, sharedContext)
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
@@ -785,22 +890,34 @@ export default class PricingModuleService
   ): Promise<PricingTypes.PriceDTO[]> {
     const prices = await this.addPriceListPrices_(data, sharedContext)
 
-    return await this.baseRepository_.serialize<PricingTypes.PriceDTO[]>(prices)
+    try {
+      return await this.baseRepository_.serialize<PricingTypes.PriceDTO[]>(
+        prices
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
+  @EmitEvents()
   async setPriceListRules(
     data: PricingTypes.SetPriceListRulesDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PricingTypes.PriceListDTO> {
     const [priceList] = await this.setPriceListRules_([data], sharedContext)
 
-    return await this.baseRepository_.serialize<PricingTypes.PriceListDTO>(
-      priceList
-    )
+    try {
+      return await this.baseRepository_.serialize<PricingTypes.PriceListDTO>(
+        priceList
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePriceListRules(
     data: PricingTypes.RemovePriceListRulesDTO,
     @MedusaContext() sharedContext: Context = {}
@@ -852,6 +969,7 @@ export default class PricingModuleService
   ): Promise<PricePreferenceDTO>
 
   @InjectManager()
+  @EmitEvents()
   async upsertPricePreferences(
     data: UpsertPricePreferenceDTO | UpsertPricePreferenceDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -982,12 +1100,12 @@ export default class PricingModuleService
     })
 
     // Bulk create price sets
-    const createdPriceSets = await this.priceSetService_.create(
+    const priceSets = await this.priceSetService_.create(
       toCreate,
       sharedContext
     )
 
-    const eventsData = createdPriceSets.reduce(
+    const eventsData = priceSets.reduce(
       (eventsData, priceSet) => {
         eventsData.priceSets.push({
           id: priceSet.id,
@@ -1030,7 +1148,7 @@ export default class PricingModuleService
       sharedContext,
     })
 
-    return createdPriceSets
+    return priceSets
   }
 
   @InjectTransactionManager()
@@ -1081,29 +1199,10 @@ export default class PricingModuleService
         { relations: ["price_rules"] },
         sharedContext
       )
-    eventBuilders.createdPrice({
-      data: performedActions.created[Price.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.updatedPrice({
-      data: performedActions.updated[Price.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.deletedPrice({
-      data: performedActions.deleted[Price.name] ?? [],
-      sharedContext,
-    })
 
-    eventBuilders.createdPriceRule({
-      data: performedActions.created[PriceRule.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.updatedPriceRule({
-      data: performedActions.updated[PriceRule.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.deletedPriceRule({
-      data: performedActions.deleted[PriceRule.name] ?? [],
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
       sharedContext,
     })
 
@@ -1277,12 +1376,16 @@ export default class PricingModuleService
       }
     )
 
-    const { entities } = await this.priceListService_.upsertWithReplace(
-      normalizedData,
-      {
+    const { entities, performedActions } =
+      await this.priceListService_.upsertWithReplace(normalizedData, {
         relations: ["price_list_rules"],
-      }
-    )
+      })
+
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
+      sharedContext,
+    })
 
     return entities
   }
@@ -1326,11 +1429,18 @@ export default class PricingModuleService
       }
     }
 
-    const { entities } = await this.priceService_.upsertWithReplace(
-      pricesToUpsert,
-      { relations: ["price_rules"] },
-      sharedContext
-    )
+    const { entities, performedActions } =
+      await this.priceService_.upsertWithReplace(
+        pricesToUpsert,
+        { relations: ["price_rules"] },
+        sharedContext
+      )
+
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
+      sharedContext,
+    })
 
     return entities
   }
@@ -1388,29 +1498,9 @@ export default class PricingModuleService
         sharedContext
       )
 
-    eventBuilders.createdPrice({
-      data: performedActions.created[Price.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.updatedPrice({
-      data: performedActions.updated[Price.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.deletedPrice({
-      data: performedActions.deleted[Price.name] ?? [],
-      sharedContext,
-    })
-
-    eventBuilders.createdPriceRule({
-      data: performedActions.created[PriceRule.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.updatedPriceRule({
-      data: performedActions.updated[PriceRule.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.deletedPriceRule({
-      data: performedActions.deleted[PriceRule.name] ?? [],
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
       sharedContext,
     })
 
@@ -1472,11 +1562,18 @@ export default class PricingModuleService
       })
       .filter(Boolean)
 
-    const { entities } = await this.priceListService_.upsertWithReplace(
-      priceListsUpsert,
-      { relations: ["price_list_rules"] },
-      sharedContext
-    )
+    const { entities, performedActions } =
+      await this.priceListService_.upsertWithReplace(
+        priceListsUpsert,
+        { relations: ["price_list_rules"] },
+        sharedContext
+      )
+
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
+      sharedContext,
+    })
 
     return entities
   }
@@ -1539,11 +1636,18 @@ export default class PricingModuleService
       })
       .filter(Boolean)
 
-    const { entities } = await this.priceListService_.upsertWithReplace(
-      priceListsUpsert,
-      { relations: ["price_list_rules"] },
-      sharedContext
-    )
+    const { entities, performedActions } =
+      await this.priceListService_.upsertWithReplace(
+        priceListsUpsert,
+        { relations: ["price_list_rules"] },
+        sharedContext
+      )
+
+    composeAllEvents({
+      eventBuilders,
+      performedActions,
+      sharedContext,
+    })
 
     return entities
   }
@@ -1578,6 +1682,26 @@ export default class PricingModuleService
         populateWhere: { prices: { price_list_id: null } },
       },
       ...config,
+    }
+  }
+}
+
+const composeAllEvents = ({
+  eventBuilders,
+  performedActions,
+  sharedContext,
+}) => {
+  for (const action of Object.keys(performedActions)) {
+    for (const entity of Object.keys(performedActions[action])) {
+      const eventName = action + upperCaseFirst(entity)
+      if (!eventBuilders[eventName]) {
+        continue
+      }
+
+      eventBuilders[eventName]({
+        data: performedActions[action][entity] ?? [],
+        sharedContext,
+      })
     }
   }
 }

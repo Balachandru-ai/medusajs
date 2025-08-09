@@ -7,6 +7,7 @@ import {
   crossProjectLinksPlugin,
 } from "remark-rehype-plugins"
 import path from "path"
+import { catchBadRedirects } from "build-scripts"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,15 +19,18 @@ const nextConfig = {
 
     return config
   },
-  transpilePackages: ["docs-ui"],
+  transpilePackages: ["docs-ui", "docs-utils"],
+  experimental: {
+    optimizePackageImports: ["docs-utils"],
+  },
   async redirects() {
-    return [
+    return catchBadRedirects([
       {
         source: "/api/download/:path",
         destination: "/download/:path",
         permanent: true,
       },
-    ]
+    ])
   },
 }
 
@@ -48,6 +52,12 @@ const withMDX = createMDX({
               projectPath: path.resolve("..", "ui"),
               contentPath: "src/content/docs",
             },
+            "user-guide": {
+              projectPath: path.resolve("..", "user-guide"),
+            },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
+            },
           },
         },
       ],
@@ -68,6 +78,9 @@ const withMDX = createMDX({
             },
             ui: {
               url: process.env.NEXT_PUBLIC_UI_URL,
+            },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
             },
           },
           useBaseUrl:
@@ -91,4 +104,4 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE_BUNDLE === "true",
 })
 
-export default withMDX(nextConfig)
+export default withMDX(withBundleAnalyzer(nextConfig))

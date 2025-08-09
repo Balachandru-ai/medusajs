@@ -8,6 +8,7 @@ import {
   createPgConnection,
   promiseAll,
 } from "@medusajs/framework/utils"
+import { logger } from "@medusajs/framework/logger"
 
 export interface InitModulesOptions {
   injectedDependencies?: Record<string, unknown>
@@ -69,7 +70,7 @@ export async function initModules({
       ])
     } else {
       if (!preventConnectionDestroyWarning) {
-        console.info(
+        logger.info(
           `You are using a custom shared connection. The connection won't be destroyed automatically.`
         )
       }
