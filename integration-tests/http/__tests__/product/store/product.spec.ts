@@ -1845,7 +1845,17 @@ medusaIntegrationTestRunner({
           title: "test product 1",
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          options: [{ title: "size", values: [{value: "large", metadata: {arbitrary: 'data'}}] }],
+          options: [
+            {
+              title: "size",
+              metadata: {arbitrary: 'value'},
+              values: [
+                {
+                  value: "large",
+                  metadata: {arbitrary: 'data'}
+                }
+              ]
+            }],
           variants: [
             {
               title: "test variant 1",
@@ -1912,7 +1922,8 @@ medusaIntegrationTestRunner({
             ],
             options: [
               expect.objectContaining({
-                title: 'size',
+                title: "size",
+                metadata: {arbitrary: "value"},
                 values: [
                   expect.objectContaining({
                     value: "large",

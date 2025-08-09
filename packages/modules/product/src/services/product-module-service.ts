@@ -1876,6 +1876,7 @@ export default class ProductModuleService
           )
           return {
             title: option.title,
+            metadata: option.metadata,
             values: option.values?.map((valueContainer) => {
               const dbValue = dbOption?.values?.find(
                 (val) => val.value === valueContainer.value
