@@ -1,5 +1,5 @@
 ---
-"@medusajs/medusa": patch
+"@medusajs/utils": patch
 ---
 
-Add missing `id` param filter to the collection validator to align with product categories validator.
+chore(utils): avoid limit precision for promotion value
