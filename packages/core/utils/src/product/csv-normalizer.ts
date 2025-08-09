@@ -510,9 +510,11 @@ export class CSVNormalizer {
         (option: any) => option.title === key
       )
       if (!matchingKey) {
-        product.options.push({ title: key, values: [value] })
-      } else if (!matchingKey.values.includes(value)) {
-        matchingKey.values.push(value)
+        product.options.push({ title: key, values: [{
+          value,
+        }] })
+      } else if (!matchingKey.values.some((valueContainer: any) => valueContainer.value === value)) {
+        matchingKey.values.push({value})
       }
     })
 

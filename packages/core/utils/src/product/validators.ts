@@ -32,7 +32,11 @@ export const CreateVariantPrice = z.object({
 
 export const CreateProductOption = z.object({
   title: z.string(),
-  values: z.array(z.string()),
+  values: z.array(z.object({
+      value: z.string(),
+      metadata: z.record(z.unknown()).nullish(),
+  })),
+  metadata: z.record(z.unknown()).nullish(),
 })
 
 export const CreateProductVariant = z
