@@ -58,7 +58,7 @@ medusaIntegrationTestRunner({
                   {
                     title: "test3",
                     shipping_profile_id: shippingProfile.id,
-                    options: [{ title: "size", values: ["x"] }],
+                    options: [{ title: "size", values: [{value: 'x'}] }],
                   },
                 ],
                 update: [{ id: product1.id, title: "test1-updated" }],
@@ -108,7 +108,7 @@ medusaIntegrationTestRunner({
                 create: [
                   {
                     title: "test1",
-                    options: [{ title: "size", values: ["x", "l", "m"] }],
+                    options: [{ title: "size", values: [{value: 'x'}, {value: 'l'}, {value: 'm'}] }],
                     shipping_profile_id: shippingProfile.id,
                     variants: [
                       {

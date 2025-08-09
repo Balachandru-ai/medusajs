@@ -42,7 +42,9 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "S",
+                  {
+                    "value": "S",
+                  },
                 ],
               },
             ],
@@ -115,9 +117,15 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
             ],
@@ -232,16 +240,26 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
               {
                 "title": "Color",
                 "values": [
-                  "Black",
-                  "White",
+                  {
+                    "value": "Black",
+                  },
+                  {
+                    "value": "White",
+                  },
                 ],
               },
             ],
@@ -359,10 +377,18 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "S",
+                  },
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
             ],
@@ -480,10 +506,18 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "S",
+                  },
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
             ],
@@ -607,17 +641,29 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "S",
+                  },
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
               {
                 "title": "Color",
                 "values": [
-                  "Black",
-                  "White",
+                  {
+                    "value": "Black",
+                  },
+                  {
+                    "value": "White",
+                  },
                 ],
               },
             ],
@@ -830,10 +876,18 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "S",
+                  },
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
             ],
@@ -949,7 +1003,9 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "One Size",
+                  {
+                    "value": "One Size",
+                  },
                 ],
               },
             ],
@@ -1000,10 +1056,18 @@ describe("CSV processor", () => {
               {
                 "title": "Size",
                 "values": [
-                  "S",
-                  "M",
-                  "L",
-                  "XL",
+                  {
+                    "value": "S",
+                  },
+                  {
+                    "value": "M",
+                  },
+                  {
+                    "value": "L",
+                  },
+                  {
+                    "value": "XL",
+                  },
                 ],
               },
             ],

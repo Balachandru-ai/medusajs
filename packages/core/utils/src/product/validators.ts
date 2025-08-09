@@ -30,12 +30,14 @@ export const CreateVariantPrice = z.object({
   rules: z.record(z.string(), z.string()).optional(),
 })
 
+const CreateProductOptionValue = z.object({
+  value: z.string(),
+  metadata: z.record(z.unknown()).nullish()
+});
+
 export const CreateProductOption = z.object({
   title: z.string(),
-  values: z.array(z.object({
-      value: z.string(),
-      metadata: z.record(z.unknown()).nullish(),
-  })),
+  values: z.array(CreateProductOptionValue),
   metadata: z.record(z.unknown()).nullish(),
 })
 
@@ -103,10 +105,16 @@ export const CreateProduct = z
   })
   .strict()
 
+const UpdateProductOptionValue = z.object({
+  value: z.string(),
+  metadata: z.record(z.unknown()).nullish().optional(),
+});
+
 export const UpdateProductOption = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
-  values: z.array(z.string()).optional(),
+  values: z.array(UpdateProductOptionValue).optional(),
+  metadata: z.record(z.unknown()).nullish(),
 })
 
 export const UpdateVariantPrice = z.object({
