@@ -35,7 +35,11 @@ export const groupProductsForBatchStepId = "group-products-for-batch"
  *     options: [
  *       {
  *         title: "Size",
- *         values: ["S", "M", "L"]
+ *         values: [
+ *           {value: "S", metadata: {}},
+ *           {value: "M", metadata: {}},
+ *           {value: "L", metadata: {}},
+ *         ]
  *       }
  *     ]
  *   },
@@ -44,7 +48,10 @@ export const groupProductsForBatchStepId = "group-products-for-batch"
  *     options: [
  *       {
  *         title: "Color",
- *         values: ["Red", "Blue"]
+ *         values: [
+ *           {value: "Red", metadata: {}},
+ *           {value: "Blue", metadata: {}},
+ *         ]
  *       }
  *     ],
  *     variants: [

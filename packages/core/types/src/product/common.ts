@@ -1195,11 +1195,16 @@ export interface CreateProductOptionDTO {
   /**
    * The product option values.
    */
-  values: string[]
+  values: CreateProductOptionValueDTO[]
   /**
    * The ID of the associated product.
    */
   product_id?: string
+
+  /**
+   * The metadata of the product option entity.
+   */
+  metadata?: MetadataType
 }
 
 export interface CreateProductOptionValueDTO {
@@ -1235,11 +1240,16 @@ export interface UpdateProductOptionDTO {
   /**
    * The product option values.
    */
-  values?: string[]
+  values?: UpdateProductOptionValueDTO[]
   /**
    * The ID of the associated product.
    */
   product_id?: string
+
+  /**
+   * The metadata of the product option entity.
+   */
+  metadata?: MetadataType
 }
 
 export interface UpdateProductOptionValueDTO {

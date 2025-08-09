@@ -966,6 +966,7 @@ export default class ProductModuleService
                 return {
                   id: dbVal.id,
                   value: normVal.value,
+                  metadata: normVal.metadata ?? dbVal.metadata
                 }
               }),
             }

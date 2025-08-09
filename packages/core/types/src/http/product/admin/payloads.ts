@@ -514,7 +514,22 @@ export interface AdminCreateProductOption {
   /**
    * The option's values.
    */
-  values: string[]
+  values: AdminCreateProductOptionValue[]
+  /**
+   * Key-value pairs of custom data.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminCreateProductOptionValue {
+  /**
+   * The value of the product option value.
+   */
+  value: string
+  /**
+   * The metadata of the product option value.
+   */
+  metadata?: Record<string, unknown> | null
 }
 
 export interface AdminUpdateProductOption {
@@ -525,7 +540,22 @@ export interface AdminUpdateProductOption {
   /**
    * The option's values.
    */
-  values?: string[]
+  values?: AdminUpdateProductOptionValue[]
+  /**
+   * Key-value pairs of custom data.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminUpdateProductOptionValue {
+  /**
+   * The value of the product option value.
+   */
+  value?: string
+  /**
+   * The metadata of the product option value.
+   */
+  metadata?: Record<string, unknown> | null
 }
 
 interface AdminCreateProductVariantInventoryItem {

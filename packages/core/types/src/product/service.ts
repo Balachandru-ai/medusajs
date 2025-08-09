@@ -1175,12 +1175,19 @@ export interface IProductModuleService extends IModuleService {
    * const options = await productModuleService.createProductOptions([
    *   {
    *     title: "Color",
-   *     values: ["Blue", "Green"],
+   *     values: [
+   *        {"value": "Blue", metadata: {}},
+   *        {"value": "Green", metadata: {}}
+   *     ],
    *     product_id: "prod_123",
+   *     metadata: {}
    *   },
    *   {
    *     title: "Size",
-   *     values: ["Small", "Medium"],
+   *     values: [
+   *        {"value": "Small"},
+   *        {"value": "Medium", metadata: {}}
+   *     ],
    *     product_id: "prod_321",
    *   },
    * ])
@@ -1201,7 +1208,10 @@ export interface IProductModuleService extends IModuleService {
    * @example
    * const option = await productModuleService.createProductOptions({
    *   title: "Color",
-   *   values: ["Blue", "Green"],
+   *   values: [
+   *      {"value": "Blue", metadata: {}},
+   *      {"value": "Green", metadata: {}}
+   *   ],
    *   product_id: "prod_123",
    * })
    *
@@ -1226,7 +1236,10 @@ export interface IProductModuleService extends IModuleService {
    *   },
    *   {
    *     title: "Color",
-   *     values: ["Blue", "Green"],
+   *     values: [
+   *        {"value": "Blue", metadata: {}},
+   *        {"value": "Green", metadata: {}}
+   *     ],
    *     product_id: "prod_123",
    *   },
    * ])
@@ -1290,7 +1303,10 @@ export interface IProductModuleService extends IModuleService {
    *     title: "Color",
    *   },
    *   {
-   *     values: ["Blue", "Green"],
+   *     values: [
+   *        {"value": "Blue", metadata: {}},
+   *        {"value": "Green", metadata: {}}
+   *     ],
    *   }
    * )
    */

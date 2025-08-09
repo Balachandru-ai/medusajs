@@ -63,7 +63,9 @@ export const normalizeForImport = (
       ...p.product,
       options: Object.entries(options).map(([key, value]) => ({
         title: key,
-        values: Array.from(value),
+        values: Array.from(value).map(value => {
+            return {value};
+        }),
       })),
       variants: p.variants,
     }
