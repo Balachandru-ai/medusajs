@@ -7,6 +7,7 @@ import {
   CartWorkflowEvents,
   deduplicate,
   isDefined,
+  ProductStatus,
 } from "@medusajs/framework/utils"
 import {
   createHook,
@@ -186,7 +187,7 @@ export const addToCartWorkflow = createWorkflow(
     const lineItems = transform({ input, variants }, (data) => {
       const items = (data.input.items ?? []).map((item) => {
         const variant = (data.variants ?? []).find(
-          (v) => v.id === item.variant_id
+          (v) => v.product.status === ProductStatus.PUBLISHED && v.id === item.variant_id
         )!
 
         const input: PrepareLineItemDataInput = {

@@ -156,6 +156,7 @@ export const productVariantsFields = [
   "product.id",
   "product.title",
   "product.description",
+  "product.status",
   "product.subtitle",
   "product.thumbnail",
   "product.type.value",
