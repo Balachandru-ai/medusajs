@@ -954,6 +954,15 @@ export const defaultCurrencies: Record<string, Currency> = {
     code: "TOP",
     name_plural: "Tongan paʻanga",
   },
+  TJS: {
+    symbol: "TJS",
+    name: "Tajikistani Somoni",
+    symbol_native: "с.",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "TJS",
+    name_plural: "Tajikistani somonis",
+  },
   TRY: {
     symbol: "₺",
     name: "Turkish Lira",
