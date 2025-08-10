@@ -1237,6 +1237,29 @@ medusaIntegrationTestRunner({
           expect(hasPrices).toBe(true)
         })
 
+        it("should get a product option value metadata", async () => {
+          const res = await api.get(
+            `/admin/products/${baseProduct.id}`,
+            adminHeaders
+          )
+
+          expect(res.data.product.options).toContainEqual(
+            expect.objectContaining({
+              title: "size",
+              metadata: {arbitrary: 'value'},
+              values: expect.arrayContaining([
+                expect.objectContaining({
+                  value: "large",
+                  metadata: { arbitrary: "data" },
+                }),
+                expect.objectContaining({
+                  value: "small",
+                }),
+              ]),
+            }),
+          )
+        })
+
         it("should get a product with images ordered by rank", async () => {
           const res = await api.get(
             `/admin/products/${baseProduct.id}`,
@@ -1520,7 +1543,7 @@ medusaIntegrationTestRunner({
                   product_id: expect.stringMatching(/^prod_*/),
                   title: "size",
                   values: expect.arrayContaining([
-                    expect.objectContaining({ value: "large" }),
+                    expect.objectContaining({ value: "large", metadata: {arbitrary: 'data'} }),
                   ]),
                   created_at: expect.any(String),
                   updated_at: expect.any(String),
@@ -2602,10 +2625,10 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it.only("add option", async () => {
+        it("add option", async () => {
           const payload = {
             title: "should_add",
-            values: [{value: "100"}],
+            values: [{value: "100", metadata: {arbitrary: 'data'}}],
           }
 
           const response = await api
@@ -2627,7 +2650,7 @@ medusaIntegrationTestRunner({
                   title: "should_add",
                   product_id: baseProduct.id,
                   values: expect.arrayContaining([
-                    expect.objectContaining({ value: "100" }),
+                    expect.objectContaining({ value: "100", metadata: {arbitrary: 'data'} }),
                   ]),
                 }),
               ]),
