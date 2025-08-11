@@ -1894,6 +1894,42 @@ medusaIntegrationTestRunner({
           ])
         })
 
+        it("should throw if variant doesn't exist", async () => {
+          const salesChannel = await scModuleService.createSalesChannels({
+            name: "Webshop",
+          })
+
+          let cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+          })
+
+          const { errors } = await addToCartWorkflow(appContainer).run({
+            input: {
+              items: [
+                {
+                  variant_id: "var_1234",
+                  quantity: 1,
+                },
+              ],
+              cart_id: cart.id,
+            },
+            throwOnError: false,
+          })
+
+          expect(errors).toEqual([
+            {
+              action: "validate-line-item-prices",
+              handlerType: "invoke",
+              error: expect.objectContaining({
+                message: expect.stringContaining(
+                  `Variant var_1234 doesn't exist or belongs to a product that is not published`
+                ),
+              }),
+            },
+          ])
+        })
+
         it("should throw if no price sets for variant exist", async () => {
           const salesChannel = await scModuleService.createSalesChannels({
             name: "Webshop",
