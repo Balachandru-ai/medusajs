@@ -1887,7 +1887,7 @@ medusaIntegrationTestRunner({
               handlerType: "invoke",
               error: expect.objectContaining({
                 message: expect.stringContaining(
-                  `Items  do not have a price`
+                  `Variant ${product.variants[0].id} doesn't exist or belongs to a product that is not published`
                 ),
               }),
             },
