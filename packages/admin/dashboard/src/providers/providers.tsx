@@ -21,9 +21,11 @@ export const Providers = ({ api, children }: ProvidersProps) => {
           <QueryClientProvider client={queryClient}>
             <ThemeProvider>
               <FeatureFlagProvider>
-                <I18n />
-                <I18nProvider>{children}</I18nProvider>
-                <Toaster />
+                <ViewConfigurationProvider>
+                  <I18n />
+                  <I18nProvider>{children}</I18nProvider>
+                  <Toaster />
+                </ViewConfigurationProvider>
               </FeatureFlagProvider>
             </ThemeProvider>
           </QueryClientProvider>

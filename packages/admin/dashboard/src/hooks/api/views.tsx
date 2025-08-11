@@ -1,11 +1,11 @@
 import { FetchError } from "@medusajs/js-sdk"
 import { HttpTypes } from "@medusajs/types"
-import { 
+import {
   QueryKey,
-  useMutation, 
+  useMutation,
   UseMutationOptions,
   useQuery,
-  UseQueryOptions 
+  UseQueryOptions
 } from "@tanstack/react-query"
 
 import { sdk } from "../../lib/client"
@@ -129,8 +129,8 @@ export const useCreateViewConfiguration = (
       queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
       // If set_active was true, also invalidate the active configuration
       if ((variables as any).set_active) {
-        queryClient.invalidateQueries({ 
-          queryKey: [...viewsQueryKeys.detail(entity, "active")] 
+        queryClient.invalidateQueries({
+          queryKey: [...viewsQueryKeys.detail(entity, "active")]
         })
       }
       options?.onSuccess?.(data, variables, context)
@@ -177,8 +177,8 @@ export const useDeleteViewConfiguration = (
       queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
       queryClient.invalidateQueries({ queryKey: viewsQueryKeys.detail(id) })
       // Also invalidate active configuration as it might have changed
-      queryClient.invalidateQueries({ 
-        queryKey: [...viewsQueryKeys.detail(entity, "active")] 
+      queryClient.invalidateQueries({
+        queryKey: [...viewsQueryKeys.detail(entity, "active")]
       })
       options?.onSuccess?.(data, variables, context)
     },
@@ -197,13 +197,13 @@ export const useSetActiveViewConfiguration = (
 ) => {
   return useMutation({
     mutationFn: (viewConfigurationId: string | null) =>
-      sdk.admin.views.setActiveConfiguration(entity, { 
-        view_configuration_id: viewConfigurationId 
+      sdk.admin.views.setActiveConfiguration(entity, {
+        view_configuration_id: viewConfigurationId
       }),
     onSuccess: (data, variables, context) => {
       // Invalidate active configuration
-      queryClient.invalidateQueries({ 
-        queryKey: [...viewsQueryKeys.detail(entity, "active")] 
+      queryClient.invalidateQueries({
+        queryKey: [...viewsQueryKeys.detail(entity, "active")]
       })
       // Also invalidate the list as the active status might be shown there
       queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
