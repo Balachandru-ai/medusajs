@@ -13,6 +13,7 @@ export const productVariantsFields = [
   "product.thumbnail",
   "product.type.value",
   "product.collection.title",
+  "product.collection.metadata",
   "product.handle",
   "product.metadata",
   "calculated_price.*",

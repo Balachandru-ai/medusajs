@@ -162,6 +162,7 @@ export const productVariantsFields = [
   "product.type.value",
   "product.type.id",
   "product.collection.title",
+  "product.collection.metadata",
   "product.handle",
   "product.discountable",
   "product.is_giftcard",
