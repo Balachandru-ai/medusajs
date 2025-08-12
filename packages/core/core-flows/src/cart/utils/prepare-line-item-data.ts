@@ -138,11 +138,11 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
   let lineItem: any = {
     quantity: item?.quantity,
 
-    title: getTranslatedValue(variant?.metadata, 'title')
+    title: getTranslatedValue(variant?.product?.metadata, 'title')
       ?? variant?.product?.title
       ?? item?.title,
 
-    subtitle: getTranslatedValue(variant?.metadata, 'subtitle')
+    subtitle: getTranslatedValue(variant?.metadata, 'title')
       ?? variant?.title
       ?? item?.subtitle,
 
