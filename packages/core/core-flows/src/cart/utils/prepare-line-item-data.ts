@@ -146,7 +146,9 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
       ?? variant?.title
       ?? item?.subtitle,
 
-    thumbnail: variant?.product?.thumbnail ?? item?.thumbnail,
+    thumbnail: getTranslatedValue(variant?.product?.metadata, 'thumbnail')
+      ?? variant?.product?.thumbnail
+      ?? item?.thumbnail,
 
     product_id: variant?.product?.id ?? item?.product_id,
 
@@ -164,16 +166,22 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
 
     product_type: variant?.product?.type?.value ?? item?.product_type ?? null,
     product_type_id: variant?.product?.type?.id ?? item?.product_type_id ?? null,
-    product_collection: variant?.product?.collection?.title ?? item?.product_collection ?? null,
+    product_collection: getTranslatedValue(variant?.product?.collection?.metadata, 'title')
+      ?? variant?.product?.collection?.title
+      ?? item?.product_collection
+      ?? null,
 
     product_handle: getTranslatedValue(variant?.product?.metadata, 'handle')
       ?? variant?.product?.handle
       ?? item?.product_handle,
 
     variant_id: variant?.id,
-    variant_sku: variant?.sku ?? item?.variant_sku,
-    variant_barcode: variant?.barcode ?? item?.variant_barcode,
-
+    variant_sku: getTranslatedValue(variant?.metadata, 'sku')
+      ?? variant?.sku
+      ?? item?.variant_sku,
+    variant_barcode: getTranslatedValue(variant?.metadata, 'barcode')
+      ?? variant?.barcode
+      ?? item?.variant_barcode,
     variant_title: getTranslatedValue(variant?.metadata, 'title')
       ?? variant?.title
       ?? item?.variant_title,
