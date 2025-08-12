@@ -19,23 +19,23 @@ export interface BasePromotionRule {
   description?: string | null
   /**
    * The attribute to compare against when checking whether a promotion can be applied on a cart.
-   * 
+   *
    * @example
    * items.product_id
    */
   attribute?: string
   /**
-   * The operator used to check whether the buy rule applies on a cart. 
-   * For example, `eq` means that the cart's value for the specified attribute 
+   * The operator used to check whether the buy rule applies on a cart.
+   * For example, `eq` means that the cart's value for the specified attribute
    * must match the specified value.
-   * 
+   *
    * @example
    * eq
    */
   operator?: PromotionRuleOperatorValues
   /**
    * The values to compare against when checking whether a promotion can be applied on a cart.
-   * 
+   *
    * @example
    * prod_123
    */
@@ -62,6 +62,7 @@ export interface BasePromotion {
   code?: string
   type?: PromotionTypeValues
   is_automatic?: boolean
+  is_tax_inclusive?: boolean
   application_method?: BaseApplicationMethod
   rules?: BasePromotionRule[]
   status?: PromotionStatusValues

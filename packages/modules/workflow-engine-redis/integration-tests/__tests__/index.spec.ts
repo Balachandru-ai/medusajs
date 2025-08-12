@@ -151,7 +151,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
       describe("Testing basic workflow", function () {
         describe("Cancel transaction", function () {
-          it("should cancel an ongoing execution with async unfinished yet step", async () => {
+          it("should cancel an ongoing execution with async unfinished yet step", (done) => {
             const transactionId = "transaction-to-cancel-id"
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
@@ -179,25 +179,42 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               }
             )
 
-            await workflowOrcModule.run(workflowId, {
-              input: {},
-              transactionId,
-            })
+            workflowOrcModule
+              .run(workflowId, {
+                input: {},
+                transactionId,
+              })
+              .then(async () => {
+                await setTimeout(100)
 
-            await setTimeout(100)
+                await workflowOrcModule.cancel(workflowId, {
+                  transactionId,
+                })
 
-            await workflowOrcModule.cancel(workflowId, {
-              transactionId,
-            })
+                workflowOrcModule.subscribe({
+                  workflowId,
+                  transactionId,
+                  subscriber: async (event) => {
+                    if (event.eventType === "onFinish") {
+                      const execution =
+                        await workflowOrcModule.listWorkflowExecutions({
+                          transaction_id: transactionId,
+                        })
 
-            await setTimeout(1000)
+                      expect(execution.length).toEqual(1)
+                      expect(execution[0].state).toEqual(
+                        TransactionState.REVERTED
+                      )
+                      done()
+                    }
+                  },
+                })
+              })
 
-            const execution = await workflowOrcModule.listWorkflowExecutions({
-              transaction_id: transactionId,
-            })
-
-            expect(execution.length).toEqual(1)
-            expect(execution[0].state).toEqual(TransactionState.REVERTED)
+            failTrap(
+              done,
+              "should cancel an ongoing execution with async unfinished yet step"
+            )
           })
 
           it("should cancel a complete execution with a sync workflow running as async", async () => {
@@ -495,6 +512,9 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               transactionId: "transaction_1",
             },
             stepResponse: { uhuuuu: "yeaah!" },
+            options: {
+              throwOnError: false,
+            },
           })
           ;({ data: executionsList } = await query.graph({
             entity: "workflow_executions",
@@ -547,7 +567,14 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               return e
             })
 
-          expect(setStepError).toEqual({ uhuuuu: "yeaah!" })
+          expect(setStepError).toEqual(
+            expect.objectContaining({
+              message: JSON.stringify({
+                uhuuuu: "yeaah!",
+              }),
+              stack: expect.any(String),
+            })
+          )
           ;({ data: executionsList } = await query.graph({
             entity: "workflow_executions",
             fields: ["id", "state", "context"],
@@ -814,6 +841,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           void workflowOrcModule.subscribe({
             workflowId: "wf-when",
+            transactionId: "trx_123_when",
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 done()
@@ -1069,7 +1097,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           WorkflowManager["workflows"].delete("remove-scheduled")
 
           await setTimeout(1100)
-          0
           expect(spy).toHaveBeenCalledTimes(1)
           expect(logSpy).toHaveBeenCalledWith(
             "Tried to execute a scheduled workflow with ID remove-scheduled that does not exist, removing it from the scheduler."
@@ -1102,6 +1129,120 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             )
             WorkflowManager.unregister("shared-container-job")
           })
+        })
+      })
+
+      describe("Cleaner job", function () {
+        it("should remove expired executions of finished workflows and keep the others", async () => {
+          const doneWorkflowId = "done-workflow-" + ulid()
+          createWorkflow({ name: doneWorkflowId, retentionTime: 1 }, () => {
+            return new WorkflowResponse("done")
+          })
+
+          const failingWorkflowId = "failing-workflow-" + ulid()
+          const failingStep = createStep("failing-step", () => {
+            throw new Error("I am failing")
+          })
+          createWorkflow({ name: failingWorkflowId, retentionTime: 1 }, () => {
+            failingStep()
+          })
+
+          const revertingStep = createStep(
+            "reverting-step",
+            () => {
+              throw new Error("I am reverting")
+            },
+            () => {
+              return new StepResponse("reverted")
+            }
+          )
+
+          const revertingWorkflowId = "reverting-workflow-" + ulid()
+          createWorkflow(
+            { name: revertingWorkflowId, retentionTime: 1 },
+            () => {
+              revertingStep()
+              return new WorkflowResponse("reverted")
+            }
+          )
+
+          const runningWorkflowId = "running-workflow-" + ulid()
+          const longRunningStep = createStep("long-running-step", async () => {
+            await setTimeout(10000)
+            return new StepResponse("long running finished")
+          })
+          createWorkflow({ name: runningWorkflowId, retentionTime: 1 }, () => {
+            longRunningStep().config({ async: true, backgroundExecution: true })
+            return new WorkflowResponse("running workflow started")
+          })
+
+          const notExpiredWorkflowId = "not-expired-workflow-" + ulid()
+          createWorkflow(
+            { name: notExpiredWorkflowId, retentionTime: 10000 },
+            () => {
+              return new WorkflowResponse("not expired")
+            }
+          )
+
+          const trx_done = "trx-done-" + ulid()
+          const trx_failed = "trx-failed-" + ulid()
+          const trx_reverting = "trx-reverting-" + ulid()
+          const trx_running = "trx-running-" + ulid()
+          const trx_not_expired = "trx-not-expired-" + ulid()
+
+          // run workflows
+          await workflowOrcModule.run(doneWorkflowId, {
+            transactionId: trx_done,
+          })
+
+          await workflowOrcModule.run(failingWorkflowId, {
+            transactionId: trx_failed,
+            throwOnError: false,
+          })
+
+          await workflowOrcModule.run(revertingWorkflowId, {
+            transactionId: trx_reverting,
+            throwOnError: false,
+          })
+
+          await workflowOrcModule.run(runningWorkflowId, {
+            transactionId: trx_running,
+          })
+
+          await workflowOrcModule.run(notExpiredWorkflowId, {
+            transactionId: trx_not_expired,
+          })
+
+          let executions = await workflowOrcModule.listWorkflowExecutions()
+          expect(executions).toHaveLength(5)
+
+          await setTimeout(2000)
+
+          // Manually trigger cleaner
+          await (workflowOrcModule as any).workflowOrchestratorService_[
+            "redisDistributedTransactionStorage_"
+          ]["clearExpiredExecutions"]()
+
+          let remainingExecutions =
+            await workflowOrcModule.listWorkflowExecutions()
+
+          expect(remainingExecutions).toHaveLength(2)
+
+          const remainingTrxIds = remainingExecutions
+            .map((e) => e.transaction_id)
+            .sort()
+
+          expect(remainingTrxIds).toEqual([trx_not_expired, trx_running].sort())
+
+          const notExpiredExec = remainingExecutions.find(
+            (e) => e.transaction_id === trx_not_expired
+          )
+          expect(notExpiredExec?.state).toBe(TransactionState.DONE)
+
+          const runningExec = remainingExecutions.find(
+            (e) => e.transaction_id === trx_running
+          )
+          expect(runningExec?.state).toBe(TransactionState.INVOKING)
         })
       })
     })

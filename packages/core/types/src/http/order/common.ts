@@ -884,6 +884,10 @@ export interface BaseOrder {
    * The tax total applied on the order's shipping methods, excluding promotions.
    */
   original_shipping_tax_total: number
+  /**
+   * The total of the order's credit lines.
+   */
+  credit_line_total: number
 }
 
 export interface BaseOrderFilters

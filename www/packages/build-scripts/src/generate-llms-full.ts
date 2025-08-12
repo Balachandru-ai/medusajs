@@ -51,20 +51,22 @@ const getContentFromDir = async ({
   generator,
   ext = "md",
 }: Options["scanDirs"][0]): Promise<string> => {
-  const files = await new fdir()
-    .withFullPaths()
-    .filter((file) => {
-      const baseName = path.basename(file)
+  const files = (
+    await new fdir()
+      .withFullPaths()
+      .filter((file) => {
+        const baseName = path.basename(file)
 
-      return isExtAllowed(baseName, ext) && !baseName.startsWith("_")
-    })
-    .filter(
-      (file) =>
-        !allowedFilesPatterns?.length ||
-        allowedFilesPatterns.some((pattern) => file.match(pattern))
-    )
-    .crawl(dir)
-    .withPromise()
+        return isExtAllowed(baseName, ext) && !baseName.startsWith("_")
+      })
+      .filter(
+        (file) =>
+          !allowedFilesPatterns?.length ||
+          allowedFilesPatterns.some((pattern) => file.match(pattern))
+      )
+      .crawl(dir)
+      .withPromise()
+  ).sort()
 
   const content: string[] =
     generator?.name && generators[generator?.name]

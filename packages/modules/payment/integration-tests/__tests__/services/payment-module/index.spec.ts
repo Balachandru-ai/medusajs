@@ -23,11 +23,13 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
           service: PaymentModuleService,
         }).linkable
 
-        expect(Object.keys(linkable)).toHaveLength(6)
+        expect(Object.keys(linkable)).toHaveLength(8)
         expect(Object.keys(linkable)).toEqual([
           "paymentCollection",
           "paymentSession",
           "payment",
+          "capture",
+          "refund",
           "refundReason",
           "accountHolder",
           "paymentProvider",
@@ -38,58 +40,76 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
         })
 
         expect(linkable).toEqual({
-          payment: {
-            id: {
-              linkable: "payment_id",
-              entity: "Payment",
-              primaryKey: "id",
-              serviceName: "payment",
-              field: "payment",
-            },
-          },
           paymentCollection: {
             id: {
               linkable: "payment_collection_id",
-              entity: "PaymentCollection",
               primaryKey: "id",
               serviceName: "payment",
               field: "paymentCollection",
+              entity: "PaymentCollection",
             },
           },
           paymentSession: {
             id: {
-              field: "paymentSession",
-              entity: "PaymentSession",
               linkable: "payment_session_id",
               primaryKey: "id",
               serviceName: "payment",
+              field: "paymentSession",
+              entity: "PaymentSession",
+            },
+          },
+          payment: {
+            id: {
+              linkable: "payment_id",
+              primaryKey: "id",
+              serviceName: "payment",
+              field: "payment",
+              entity: "Payment",
+            },
+          },
+          capture: {
+            id: {
+              linkable: "capture_id",
+              primaryKey: "id",
+              serviceName: "payment",
+              field: "capture",
+              entity: "Capture",
+            },
+          },
+          refund: {
+            id: {
+              linkable: "refund_id",
+              primaryKey: "id",
+              serviceName: "payment",
+              field: "refund",
+              entity: "Refund",
             },
           },
           refundReason: {
             id: {
               linkable: "refund_reason_id",
-              entity: "RefundReason",
               primaryKey: "id",
               serviceName: "payment",
               field: "refundReason",
+              entity: "RefundReason",
             },
           },
           accountHolder: {
             id: {
               linkable: "account_holder_id",
-              entity: "AccountHolder",
               primaryKey: "id",
               serviceName: "payment",
               field: "accountHolder",
+              entity: "AccountHolder",
             },
           },
           paymentProvider: {
             id: {
               linkable: "payment_provider_id",
-              entity: "PaymentProvider",
               primaryKey: "id",
               serviceName: "payment",
               field: "paymentProvider",
+              entity: "PaymentProvider",
             },
           },
         })
@@ -161,6 +181,79 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
                   captures: [
                     expect.objectContaining({
                       amount: 200,
+                    }),
+                  ],
+                }),
+              ],
+            })
+          )
+        })
+
+        it("complete payment flow successfully when rounded numbers are equal", async () => {
+          let paymentCollection = await service.createPaymentCollections({
+            currency_code: "usd",
+            amount: 200.129,
+          })
+
+          const paymentSession = await service.createPaymentSession(
+            paymentCollection.id,
+            {
+              provider_id: "pp_system_default",
+              amount: 200.129,
+              currency_code: "usd",
+              data: {},
+              context: {
+                customer: { id: "cus-id-1", email: "new@test.tsst" },
+              },
+            }
+          )
+
+          const payment = await service.authorizePaymentSession(
+            paymentSession.id,
+            {}
+          )
+
+          await service.capturePayment({
+            amount: 200.13, // rounded from payment provider
+            payment_id: payment.id,
+          })
+
+          await service.completePaymentCollections(paymentCollection.id)
+
+          paymentCollection = await service.retrievePaymentCollection(
+            paymentCollection.id,
+            { relations: ["payment_sessions", "payments.captures"] }
+          )
+
+          expect(paymentCollection).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              currency_code: "usd",
+              amount: 200.129,
+              authorized_amount: 200.129,
+              captured_amount: 200.13,
+              status: "completed",
+              deleted_at: null,
+              completed_at: expect.any(Date),
+              payment_sessions: [
+                expect.objectContaining({
+                  id: expect.any(String),
+                  currency_code: "usd",
+                  amount: 200.129,
+                  provider_id: "pp_system_default",
+                  status: "authorized",
+                  authorized_at: expect.any(Date),
+                }),
+              ],
+              payments: [
+                expect.objectContaining({
+                  id: expect.any(String),
+                  amount: 200.129,
+                  currency_code: "usd",
+                  provider_id: "pp_system_default",
+                  captures: [
+                    expect.objectContaining({
+                      amount: 200.13,
                     }),
                   ],
                 }),
@@ -1032,7 +1125,7 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
 
             expect(finalCollection).toEqual(
               expect.objectContaining({
-                status: "authorized",
+                status: "completed",
                 amount: 500,
                 authorized_amount: 1000,
                 captured_amount: 1000,

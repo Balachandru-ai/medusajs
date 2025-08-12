@@ -1,5 +1,47 @@
 # Change Log
 
+## 2.8.8
+
+### Patch Changes
+
+- [#12903](https://github.com/medusajs/medusa/pull/12903) [`c5d609d09cb29c6cf01d1c6c65305cc566f391c5`](https://github.com/medusajs/medusa/commit/c5d609d09cb29c6cf01d1c6c65305cc566f391c5) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Prevent workf. cancellation to execute while rescheduling
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+  - @medusajs/medusa@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12886](https://github.com/medusajs/medusa/pull/12886) [`e9a33d0700c47c3d2357bb325791bc272a4d4569`](https://github.com/medusajs/medusa/commit/e9a33d0700c47c3d2357bb325791bc272a4d4569) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Handle expected lifecycle errors
+
+- [#12888](https://github.com/medusajs/medusa/pull/12888) [`fa76f85bba253528964bacf86c061fef6d3d0742`](https://github.com/medusajs/medusa/commit/fa76f85bba253528964bacf86c061fef6d3d0742) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): merge filterable fields with default fields
+
+- Updated dependencies [[`42be9a88d61a11db7aebde2d6f4d96d43f54ea79`](https://github.com/medusajs/medusa/commit/42be9a88d61a11db7aebde2d6f4d96d43f54ea79)]:
+  - @medusajs/medusa@2.8.7
+  - @medusajs/framework@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- [#12834](https://github.com/medusajs/medusa/pull/12834) [`95d282e8ef8f2185737d493dea8b6f1677684543`](https://github.com/medusajs/medusa/commit/95d282e8ef8f2185737d493dea8b6f1677684543) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/test utils events
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.6
+  - @medusajs/medusa@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12713](https://github.com/medusajs/medusa/pull/12713) [`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Add retry strategy to database connection
+
+- Updated dependencies [[`6ca755ede7bfe3211464447412ca0d97e1207742`](https://github.com/medusajs/medusa/commit/6ca755ede7bfe3211464447412ca0d97e1207742), [`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`2621f00bb035a6b909f9498a2bc98fdba8570ba9`](https://github.com/medusajs/medusa/commit/2621f00bb035a6b909f9498a2bc98fdba8570ba9), [`00505b4f8e49873123111752adfda47ccb35ab46`](https://github.com/medusajs/medusa/commit/00505b4f8e49873123111752adfda47ccb35ab46), [`94b62c67249d13ec6342411cf7efdedfd0ac47e1`](https://github.com/medusajs/medusa/commit/94b62c67249d13ec6342411cf7efdedfd0ac47e1)]:
+  - @medusajs/medusa@2.8.5
+  - @medusajs/framework@2.8.5
+
 ## 2.8.4
 
 ### Patch Changes

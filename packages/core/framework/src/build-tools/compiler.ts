@@ -37,10 +37,10 @@ export class Compiler {
     this.#adminOnlyDistFolder = path.join(this.#projectRoot, ".medusa/admin")
     this.#pluginsDistFolder = path.join(this.#projectRoot, ".medusa/server")
     this.#backendIgnoreFiles = [
-      "integration-tests",
-      "test",
-      "unit-tests",
-      "src/admin",
+      "/integration-tests/",
+      "/test/",
+      "/unit-tests/",
+      "/src/admin/",
     ]
   }
 
@@ -190,7 +190,7 @@ export class Compiler {
   }> {
     const ts = await this.#loadTSCompiler()
     const filesToCompile = tsConfig.fileNames.filter((fileName) => {
-      return !chunksToIgnore.some((chunk) => fileName.includes(`${chunk}/`))
+      return !chunksToIgnore.some((chunk) => fileName.includes(`${chunk}`))
     })
 
     /**

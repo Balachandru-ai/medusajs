@@ -136,11 +136,12 @@ export interface MedusaRequest<
   /**
    * An object containing fields and variables to be used with the remoteQuery
    *
-   * @version 2.2.0
+   * @since 2.2.0
    */
   queryConfig: {
     fields: string[]
     pagination: { order?: Record<string, string>; skip: number; take?: number }
+    withDeleted?: boolean
   }
 
   /**

@@ -1,12 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import React from "react"
+import React, { useMemo } from "react"
 import { MarkdownIcon } from "../../Icons/Markdown"
 import { useAiAssistant, useSiteConfig } from "../../../providers"
 import { usePathname } from "next/navigation"
 import { BroomSparkle } from "@medusajs/icons"
-import { useAiAssistantChat } from "../../../providers/AiAssistant/Chat"
+import { useChat } from "@kapaai/react-sdk"
 
 export const ContentMenuActions = () => {
   const {
@@ -14,14 +14,18 @@ export const ContentMenuActions = () => {
   } = useSiteConfig()
   const pathname = usePathname()
   const { setChatOpened } = useAiAssistant()
-  const { setQuestion, loading } = useAiAssistantChat()
+  const { isGeneratingAnswer, isPreparingAnswer, submitQuery } = useChat()
+  const loading = useMemo(
+    () => isGeneratingAnswer || isPreparingAnswer,
+    [isGeneratingAnswer, isPreparingAnswer]
+  )
   const pageUrl = `${baseUrl}${basePath}${pathname}`
 
   const handleAiAssistantClick = () => {
     if (loading) {
       return
     }
-    setQuestion(`Explain the page ${pageUrl}`)
+    submitQuery(`Explain the page ${pageUrl}`)
     setChatOpened(true)
   }
 

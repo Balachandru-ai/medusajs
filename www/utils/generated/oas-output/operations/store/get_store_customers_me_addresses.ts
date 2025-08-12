@@ -112,6 +112,14 @@
  *       type: string
  *       title: q
  *       description: Search term to filter the address's searchable properties.
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []

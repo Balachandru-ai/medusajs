@@ -2021,9 +2021,11 @@ export default class FulfillmentModuleService
       })
     }
 
-    const result = await this.baseRepository_.serialize(fulfillment)
+    const result = await this.baseRepository_.serialize<FulfillmentDTO>(
+      fulfillment
+    )
 
-    return Array.isArray(result) ? result[0] : result
+    return result
   }
 
   async retrieveFulfillmentOptions(

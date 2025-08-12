@@ -19,6 +19,24 @@ export class Migration20250505101505 extends Migration {
     this.addSql(
       `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_workflow_execution_workflow_id_transaction_id_run_id_unique" ON "workflow_execution" (workflow_id, transaction_id, run_id) WHERE deleted_at IS NULL;`
     )
+    /* 
+     * We mistakenly named this migration differently in the workflow engines; this has caused issues with the migrations. Switching between engines will fail because the primary key is attempted to be set twice.
+     * The issue happens in the following scenario:
+     * 1. In memory engine is used
+     * 2. Migration is run
+     * 3. Primary is key added
+     * 3. Redis engine is used
+     * 4. Migration is run
+     * 5. Same primary key is attempted to be set again
+     * 6. Migration fails
+     * 
+     * The same scenario can happen if you go from Redis to In memory.
+     * 
+     * With this fix, we ensure the primary key is only ever set once.
+     */
+    this.addSql(
+      `alter table if exists "workflow_execution" drop constraint if exists "workflow_execution_pkey";`
+    )
     this.addSql(
       `alter table if exists "workflow_execution" add constraint "workflow_execution_pkey" primary key ("workflow_id", "transaction_id", "run_id");`
     )

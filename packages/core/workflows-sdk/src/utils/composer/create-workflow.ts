@@ -117,6 +117,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
     flow: WorkflowManager.getEmptyTransactionDefinition(),
     isAsync: false,
     handlers,
+    overriddenHandler: new Map(),
     hooks_: {
       declared: [],
       registered: [],
@@ -198,6 +199,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
       },
       async (stepInput: TData, stepContext) => {
         const { container, ...sharedContext } = stepContext
+        const isAsync = stepContext[" stepDefinition"]?.async
 
         const workflowEngine = container.resolve(Modules.WORKFLOW_ENGINE, {
           allowUnregistered: true,
@@ -212,7 +214,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
         }
 
         let transaction
-        if (workflowEngine && runAsAsync) {
+        if (workflowEngine && isAsync) {
           transaction = await workflowEngine.run(name, {
             input: stepInput as any,
             context: executionContext,
@@ -227,7 +229,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
 
         return new StepResponse(
           transaction.result,
-          runAsAsync ? stepContext.transactionId : transaction
+          isAsync ? stepContext.transactionId : transaction
         )
       },
       async (transaction, stepContext) => {
@@ -237,6 +239,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
         }
 
         const { container, ...sharedContext } = stepContext
+        const isAsync = stepContext[" stepDefinition"]?.async
 
         const workflowEngine = container.resolve(Modules.WORKFLOW_ENGINE, {
           allowUnregistered: true,
@@ -252,7 +255,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
 
         const transactionId = step.__step__ + "-" + stepContext.transactionId
 
-        if (workflowEngine && runAsAsync) {
+        if (workflowEngine && isAsync) {
           await workflowEngine.cancel(name, {
             transactionId: transactionId,
             context: executionContext,

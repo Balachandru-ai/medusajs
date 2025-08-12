@@ -97,6 +97,18 @@ export const integrationsSidebar = [
   },
   {
     type: "category",
+    title: "Instrumentation",
+    initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/integrations/guides/sentry",
+        title: "Sentry",
+      },
+    ],
+  },
+  {
+    type: "category",
     title: "Migration",
     initialOpen: true,
     children: [
@@ -114,6 +126,11 @@ export const integrationsSidebar = [
     children: [
       {
         type: "link",
+        path: "/integrations/guides/mailchimp",
+        title: "Mailchimp",
+      },
+      {
+        type: "link",
         path: "/integrations/guides/resend",
         title: "Resend",
       },
@@ -121,6 +138,11 @@ export const integrationsSidebar = [
         type: "ref",
         path: "/infrastructure-modules/notification/sendgrid",
         title: "SendGrid",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/slack",
+        title: "Slack",
       },
       {
         type: "ref",

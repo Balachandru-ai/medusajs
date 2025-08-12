@@ -24,6 +24,11 @@ export const promotionSidebar = [
           },
           {
             type: "link",
+            path: "/commerce-modules/promotion/promotion-taxes",
+            title: "Tax-Inclusive Promotions",
+          },
+          {
+            type: "link",
             path: "/commerce-modules/promotion/application-method",
             title: "Application Method",
           },

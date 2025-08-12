@@ -414,8 +414,8 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
-              "title": "Handle Password Reset Event",
-              "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
+              "title": "Integrate Mailchimp",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp",
               "children": []
             },
             {
@@ -424,6 +424,30 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "type": "ref",
               "path": "/integrations/guides/resend",
               "title": "Integrate Resend",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Integrate Slack",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/slack",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Invite User Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Reset Password Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
               "children": []
             },
             {

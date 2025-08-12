@@ -2,6 +2,7 @@ import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
 } from "../modules-sdk"
+import type { SignOptions, Secret, VerifyOptions } from "jsonwebtoken"
 
 import type { RedisOptions } from "ioredis"
 import { ConnectionOptions } from "node:tls"
@@ -166,6 +167,22 @@ export type SessionOptions = {
      */
     initialized?: boolean
   }
+}
+
+/**
+ * @interface
+ *
+ * Options to pass to `express-session`.
+ */
+export type CookieOptions = Record<string, any> & {
+  secure?: boolean
+  sameSite?: "lax" | "strict" | "none"
+  maxAge?: number
+  httpOnly?: boolean
+  priority?: "low" | "medium" | "high"
+  domain?: string
+  path?: string
+  signed?: boolean
 }
 
 /**
@@ -412,6 +429,8 @@ export type ProjectConfigOptions = {
    */
   sessionOptions?: SessionOptions
 
+  cookieOptions?: CookieOptions
+
   /**
    * Configure the number of staged jobs that are polled from the database. Default is `1000`.
    *
@@ -505,7 +524,70 @@ export type ProjectConfigOptions = {
      * })
      * ```
      */
-    jwtSecret?: string
+    jwtSecret?: Secret
+
+    /**
+     * The public key used to verify the JWT token in combination with the JWT secret and the JWT options.
+     * Only used when the JWT secret is a secret key for asymetric validation.
+     *
+     * @example
+     * ```js title="medusa-config.ts"
+     * module.exports = defineConfig({
+     *   projectConfig: {
+     *     http: {
+     *       jwtPublicKey: "public-key"
+     *     }
+     *     // ...
+     *   },
+     *   // ...
+     * })
+     * ```
+     */
+    jwtPublicKey?: Secret
+
+    /**
+     * Options for the JWT token when using asymetric signing private/public key. Will be used for validation if `jwtVerifyOptions` is not provided.
+     *
+     * @example
+     * ```js title="medusa-config.ts"
+     * module.exports = defineConfig({
+     *   projectConfig: {
+     *     http: {
+     *       jwtOptions: {
+     *         algorithm: "RS256",
+     *         expiresIn: "1h",
+     *         issuer: "medusa",
+     *         keyid: "medusa",
+     *       }
+     *     }
+     *     // ...
+     *   },
+     *   // ...
+     * })
+     * ```
+     */
+    jwtOptions?: SignOptions
+
+    /**
+     * Options for the JWT token when using asymetric validation private/public key.
+     *
+     * @example
+     * ```js title="medusa-config.ts"
+     * module.exports = defineConfig({
+     *   projectConfig: {
+     *     http: {
+     *       jwtVerifyOptions: {
+     *         // ...
+     *       }
+     *     }
+     *     // ...
+     *   },
+     *   // ...
+     * })
+     * ```
+     */
+    jwtVerifyOptions?: VerifyOptions
+
     /**
      * The expiration time for the JWT token. Its format is based off the [ms package](https://github.com/vercel/ms).
      *

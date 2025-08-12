@@ -32,6 +32,7 @@ export type CardProps = {
   closeable?: boolean
   onClose?: () => void
   hrefProps?: Partial<LinkProps & React.AllHTMLAttributes<HTMLAnchorElement>>
+  cardRef?: React.Ref<HTMLDivElement>
 }
 
 export const Card = ({ type = "default", ...props }: CardProps) => {

@@ -14,13 +14,13 @@ export const TextArea = (props: TextAreaProps) => {
       {...props}
       className={clsx(
         "bg-medusa-bg-field shadow-border-base dark:shadow-border-base-dark",
-        "border-medusa-border-base rounded-docs_sm border border-solid",
-        "pt-docs_0.4 px-docs_0.75 text-medium font-base pb-[9px]",
+        "rounded-docs_sm",
+        "py-[6px] px-docs_0.5 text-medium font-base",
         "hover:bg-medusa-bg-field-hover",
-        "focus:border-medusa-border-interactive",
-        "active:border-medusa-border-interactive",
+        "focus:shadow-medusa-border-interactive-with-focus",
+        "active:shadow-medusa-border-interactive-with-focus",
         "disabled:bg-medusa-bg-disabled",
-        "disabled:border-medusa-border-base",
+        "disabled:border-medusa-border-base disabled:border disabled:shadow-none",
         "placeholder:text-medusa-fg-muted",
         "disabled:placeholder:text-medusa-fg-disabled",
         props.className

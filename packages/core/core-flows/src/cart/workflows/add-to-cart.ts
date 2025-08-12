@@ -3,7 +3,11 @@ import {
   AddToCartWorkflowInputDTO,
   ConfirmVariantInventoryWorkflowInputDTO,
 } from "@medusajs/framework/types"
-import { CartWorkflowEvents, isDefined } from "@medusajs/framework/utils"
+import {
+  CartWorkflowEvents,
+  deduplicate,
+  isDefined,
+} from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -28,13 +32,14 @@ import {
   cartFieldsForPricingContext,
   productVariantsFields,
 } from "../utils/fields"
+import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-confirm-inventory-input"
 import {
   prepareLineItemData,
   PrepareLineItemDataInput,
 } from "../utils/prepare-line-item-data"
+import { pricingContextResult } from "../utils/schemas"
 import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
-import { pricingContextResult } from "../utils/schemas"
 
 const cartFields = ["completed_at"].concat(cartFieldsForPricingContext)
 
@@ -71,9 +76,9 @@ export const addToCartWorkflowId = "add-to-cart"
  *
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  * @property hooks.setPricingContext - This hook is executed after the cart is retrieved and before the line items are created. You can consume this hook to return any custom context useful for the prices retrieval of the variants to be added to the cart.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -81,13 +86,13 @@ export const addToCartWorkflowId = "add-to-cart"
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { addToCartWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * addToCartWorkflow.hooks.setPricingContext((
  *   { cart, variantIds, items, additional_data }, { container }
  * ) => {
@@ -96,13 +101,13 @@ export const addToCartWorkflowId = "add-to-cart"
  *   });
  * });
  * ```
- * 
+ *
  * The variants' prices will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const addToCartWorkflow = createWorkflow(
@@ -163,7 +168,10 @@ export const addToCartWorkflow = createWorkflow(
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "variants",
-        fields: productVariantsFields,
+        fields: deduplicate([
+          ...productVariantsFields,
+          ...requiredVariantFieldsForInventoryConfirmation,
+        ]),
         variables: {
           id: variantIds,
           calculated_price: {

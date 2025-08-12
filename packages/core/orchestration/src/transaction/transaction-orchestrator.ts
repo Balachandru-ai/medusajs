@@ -113,6 +113,13 @@ export class TransactionOrchestrator extends EventEmitter {
     }
   }
 
+  private static isExpectedError(error: Error): boolean {
+    return (
+      SkipCancelledExecutionError.isSkipCancelledExecutionError(error) ||
+      SkipExecutionError.isSkipExecutionError(error)
+    )
+  }
+
   static clone(orchestrator: TransactionOrchestrator): TransactionOrchestrator {
     return new TransactionOrchestrator({
       id: orchestrator.id,
@@ -525,10 +532,7 @@ export class TransactionOrchestrator extends EventEmitter {
     try {
       await transaction.saveCheckpoint()
     } catch (error) {
-      if (
-        !SkipCancelledExecutionError.isSkipCancelledExecutionError(error) &&
-        !SkipExecutionError.isSkipExecutionError(error)
-      ) {
+      if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
       }
 
@@ -583,10 +587,7 @@ export class TransactionOrchestrator extends EventEmitter {
     try {
       await transaction.saveCheckpoint()
     } catch (error) {
-      if (
-        !SkipCancelledExecutionError.isSkipCancelledExecutionError(error) &&
-        !SkipExecutionError.isSkipExecutionError(error)
-      ) {
+      if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
       }
 
@@ -685,6 +686,20 @@ export class TransactionOrchestrator extends EventEmitter {
 
     if (isErrorLike(error)) {
       error = serializeError(error)
+    } else {
+      try {
+        if (error?.message) {
+          error = JSON.parse(JSON.stringify(error))
+        } else {
+          error = {
+            message: JSON.stringify(error),
+          }
+        }
+      } catch (e) {
+        error = {
+          message: "Unknown non-serializable error",
+        }
+      }
     }
 
     if (
@@ -711,15 +726,15 @@ export class TransactionOrchestrator extends EventEmitter {
           ? TransactionHandlerType.COMPENSATE
           : TransactionHandlerType.INVOKE
 
-        if (error?.stack) {
-          const workflowId = transaction.modelId
-          const stepAction = step.definition.action
-          const sourcePath = transaction.getFlow().metadata?.sourcePath
-          const sourceStack = sourcePath
-            ? `\n⮑ \sat ${sourcePath}: [${workflowId} -> ${stepAction} (${TransactionHandlerType.INVOKE})]`
-            : `\n⮑ \sat [${workflowId} -> ${stepAction} (${TransactionHandlerType.INVOKE})]`
-          error.stack += sourceStack
-        }
+        error.stack ??= ""
+
+        const workflowId = transaction.modelId
+        const stepAction = step.definition.action
+        const sourcePath = transaction.getFlow().metadata?.sourcePath
+        const sourceStack = sourcePath
+          ? `\n⮑ \sat ${sourcePath}: [${workflowId} -> ${stepAction} (${TransactionHandlerType.INVOKE})]`
+          : `\n⮑ \sat [${workflowId} -> ${stepAction} (${TransactionHandlerType.INVOKE})]`
+        error.stack += sourceStack
 
         transaction.addError(step.definition.action!, handlerType, error)
       }
@@ -764,10 +779,7 @@ export class TransactionOrchestrator extends EventEmitter {
     try {
       await transaction.saveCheckpoint()
     } catch (error) {
-      if (
-        !SkipCancelledExecutionError.isSkipCancelledExecutionError(error) &&
-        !SkipExecutionError.isSkipExecutionError(error)
-      ) {
+      if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
       }
 
@@ -830,7 +842,7 @@ export class TransactionOrchestrator extends EventEmitter {
       })
 
       await transaction.saveCheckpoint().catch((error) => {
-        if (SkipExecutionError.isSkipExecutionError(error)) {
+        if (TransactionOrchestrator.isExpectedError(error)) {
           continueExecution = false
           return
         }
@@ -841,6 +853,7 @@ export class TransactionOrchestrator extends EventEmitter {
       const execution: Promise<void | unknown>[] = []
 
       let i = 0
+      let hasAsyncSteps = false
       for (const step of nextSteps.next) {
         const stepIndex = i++
         if (!stepsShouldContinueExecution[stepIndex]) {
@@ -876,12 +889,13 @@ export class TransactionOrchestrator extends EventEmitter {
         } else {
           // Execute async step in background and continue the execution of the transaction
           this.executeAsyncStep(promise, transaction, step, nextSteps)
+          hasAsyncSteps = true
         }
       }
 
       await promiseAll(execution)
 
-      if (nextSteps.next.length === 0) {
+      if (nextSteps.next.length === 0 || (hasAsyncSteps && !execution.length)) {
         continueExecution = false
       }
     }
@@ -898,7 +912,7 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     await transaction.saveCheckpoint().catch((error) => {
-      if (!SkipExecutionError.isSkipExecutionError(error)) {
+      if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
       }
     })
@@ -1061,7 +1075,7 @@ export class TransactionOrchestrator extends EventEmitter {
         await this.handleStepSuccess(transaction, step, response)
       })
       .catch(async (error) => {
-        if (SkipExecutionError.isSkipExecutionError(error)) {
+        if (TransactionOrchestrator.isExpectedError(error)) {
           return
         }
 
@@ -1110,7 +1124,7 @@ export class TransactionOrchestrator extends EventEmitter {
         }
       })
       .catch(async (error) => {
-        if (SkipExecutionError.isSkipExecutionError(error)) {
+        if (TransactionOrchestrator.isExpectedError(error)) {
           return
         }
 
@@ -1171,7 +1185,9 @@ export class TransactionOrchestrator extends EventEmitter {
     )
 
     if (ret.transactionIsCancelling) {
-      return await this.cancelTransaction(transaction)
+      await this.cancelTransaction(transaction, {
+        preventExecuteNext: true,
+      })
     }
 
     if (isAsync && !ret.stopExecution) {
@@ -1190,6 +1206,10 @@ export class TransactionOrchestrator extends EventEmitter {
     isPermanent: boolean,
     response?: unknown
   ): Promise<void> {
+    const isAsync = step.isCompensating()
+      ? step.definition.compensateAsync
+      : step.definition.async
+
     if (isDefined(response) && step.saveResponse) {
       transaction.addResponse(
         step.definition.action!,
@@ -1208,7 +1228,14 @@ export class TransactionOrchestrator extends EventEmitter {
     )
 
     if (ret.transactionIsCancelling) {
-      return await this.cancelTransaction(transaction)
+      await this.cancelTransaction(transaction, {
+        preventExecuteNext: true,
+      })
+    }
+
+    if (isAsync && !ret.stopExecution) {
+      // Schedule to continue the execution of async steps because they are not awaited on purpose and can be handled by another machine
+      await transaction.scheduleRetry(step, 0)
     }
   }
 
@@ -1273,7 +1300,8 @@ export class TransactionOrchestrator extends EventEmitter {
    * @param transaction - The transaction to be reverted
    */
   public async cancelTransaction(
-    transaction: DistributedTransactionType
+    transaction: DistributedTransactionType,
+    options?: { preventExecuteNext?: boolean }
   ): Promise<void> {
     if (transaction.modelId !== this.id) {
       throw new MedusaError(
@@ -1290,10 +1318,24 @@ export class TransactionOrchestrator extends EventEmitter {
       )
     }
 
+    if (
+      flow.state === TransactionState.COMPENSATING ||
+      flow.state === TransactionState.WAITING_TO_COMPENSATE
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        `Cannot revert a transaction that is already compensating.`
+      )
+    }
+
     flow.state = TransactionState.WAITING_TO_COMPENSATE
     flow.cancelledAt = Date.now()
 
     await transaction.saveCheckpoint()
+
+    if (options?.preventExecuteNext) {
+      return
+    }
 
     await this.executeNext(transaction)
   }

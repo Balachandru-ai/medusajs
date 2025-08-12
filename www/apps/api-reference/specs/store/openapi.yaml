@@ -73,6 +73,25 @@ tags:
       url: https://docs.medusajs.com/resources/storefront-development/customers
     x-associatedSchema:
       $ref: ./components/schemas/StoreCustomer.yaml
+  - name: Gift Cards
+    description: >
+      A gift card is a prepaid card that customers can use to purchase products
+      in the store.
+
+      Customers can purchase gift cards for themselves or others, and then use
+      them to pay for their orders.
+
+      These API routes allow logged-in customers to create and manage their gift
+      cards.
+
+      <Note>
+
+      Gift Cards are only available for Cloud users using the [Loyalty
+      Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: ./components/schemas/StoreGiftCard.yaml
   - name: Orders
     description: |
       Guest and registered customers can view orders they placed.
@@ -159,15 +178,6 @@ tags:
       url: https://docs.medusajs.com/resources/storefront-development/regions
     x-associatedSchema:
       $ref: ./components/schemas/StoreRegion.yaml
-  - name: Returns
-    description: >
-      Customers can request to return items in their order. The admin user then
-      receives and handles the return.
-
-
-      These API routes allows customers to create a return.
-    x-associatedSchema:
-      $ref: ./components/schemas/StoreReturn.yaml
   - name: Return Reasons
     description: >
       A return reason is a possible reason a customer wants to return an item.
@@ -177,6 +187,15 @@ tags:
       storefront to allow customers to select their return reason.
     x-associatedSchema:
       $ref: ./components/schemas/StoreReturnReason.yaml
+  - name: Returns
+    description: >
+      Customers can request to return items in their order. The admin user then
+      receives and handles the return.
+
+
+      These API routes allows customers to create a return.
+    x-associatedSchema:
+      $ref: ./components/schemas/StoreReturn.yaml
   - name: Shipping Options
     description: >
       A shipping option is a way of shipping an item to or from the customer.
@@ -194,6 +213,22 @@ tags:
         https://docs.medusajs.com/resources/storefront-development/checkout/shipping
     x-associatedSchema:
       $ref: ./components/schemas/StoreShippingOption.yaml
+  - name: Store Credit Accounts
+    x-associatedSchema:
+      description: >
+        A store credit account is a way for customers to manage their store
+        credit balance. Customers can use their store credit to pay for orders,
+        and view their store credit balance.
+
+        These API routes allow customers to view their store credit accounts.
+
+        <Note>
+
+        Store Credit Accounts are only available for Cloud users using the
+        [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+        </Note>
+      $ref: ./components/schemas/StoreStoreCreditAccount.yaml
 paths:
   /auth/customer/{auth_provider}:
     $ref: paths/auth_customer_{auth_provider}.yaml
@@ -217,6 +252,8 @@ paths:
     $ref: paths/store_carts_{id}_complete.yaml
   /store/carts/{id}/customer:
     $ref: paths/store_carts_{id}_customer.yaml
+  /store/carts/{id}/gift-cards:
+    $ref: paths/store_carts_{id}_gift-cards.yaml
   /store/carts/{id}/line-items:
     $ref: paths/store_carts_{id}_line-items.yaml
   /store/carts/{id}/line-items/{line_id}:
@@ -225,6 +262,8 @@ paths:
     $ref: paths/store_carts_{id}_promotions.yaml
   /store/carts/{id}/shipping-methods:
     $ref: paths/store_carts_{id}_shipping-methods.yaml
+  /store/carts/{id}/store-credits:
+    $ref: paths/store_carts_{id}_store-credits.yaml
   /store/carts/{id}/taxes:
     $ref: paths/store_carts_{id}_taxes.yaml
   /store/collections:
@@ -243,6 +282,10 @@ paths:
     $ref: paths/store_customers_me_addresses.yaml
   /store/customers/me/addresses/{address_id}:
     $ref: paths/store_customers_me_addresses_{address_id}.yaml
+  /store/gift-cards/{idOrCode}:
+    $ref: paths/store_gift-cards_{idOrCode}.yaml
+  /store/gift-cards/{idOrCode}/redeem:
+    $ref: paths/store_gift-cards_{idOrCode}_redeem.yaml
   /store/orders:
     $ref: paths/store_orders.yaml
   /store/orders/{id}:
@@ -291,6 +334,10 @@ paths:
     $ref: paths/store_shipping-options.yaml
   /store/shipping-options/{id}/calculate:
     $ref: paths/store_shipping-options_{id}_calculate.yaml
+  /store/store-credit-accounts:
+    $ref: paths/store_store-credit-accounts.yaml
+  /store/store-credit-accounts/{id}:
+    $ref: paths/store_store-credit-accounts_{id}.yaml
 components:
   securitySchemes:
     jwt_token:

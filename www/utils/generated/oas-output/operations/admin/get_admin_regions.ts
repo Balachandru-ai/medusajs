@@ -470,6 +470,14 @@
  *             type: string
  *             title: currency_code
  *             description: The currency code's details.
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

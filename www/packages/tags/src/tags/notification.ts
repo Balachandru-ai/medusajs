@@ -1,7 +1,11 @@
 export const notification = [
   {
-    "title": "Handle Password Reset Event",
+    "title": "Reset Password Email",
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
+  },
+  {
+    "title": "Invite User Email",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber"
   },
   {
     "title": "Abandoned Cart Notification",
@@ -10,6 +14,14 @@ export const notification = [
   {
     "title": "Send Notification",
     "path": "https://docs.medusajs.com/resources/infrastructure-modules/notification/send-notification"
+  },
+  {
+    "title": "Integrate Mailchimp",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
+  },
+  {
+    "title": "Integrate Slack",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
   },
   {
     "title": "notifyOnFailureStep",

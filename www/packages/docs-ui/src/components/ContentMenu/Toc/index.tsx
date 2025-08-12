@@ -18,8 +18,11 @@ export const ContentMenuToc = () => {
     maxLevel: 4,
   })
 
-  const formatHeadingContent = (content: string | null): string => {
-    return content?.replaceAll(/#$/g, "") || ""
+  const formatHeadingContent = (heading: HTMLHeadingElement): string => {
+    return Array.from(heading.childNodes)
+      .filter((child) => child.nodeType === Node.TEXT_NODE && child.textContent)
+      .map((textNode) => textNode.textContent!.trim())
+      .join("")
   }
 
   const formatHeadingObject = ({
@@ -28,7 +31,7 @@ export const ContentMenuToc = () => {
   }: ActiveOnScrollItem): ToCItemUi => {
     const level = parseInt(heading.tagName.replace("H", ""))
     return {
-      title: formatHeadingContent(heading.textContent),
+      title: formatHeadingContent(heading),
       id: heading.id,
       level,
       children: children?.map(formatHeadingObject),
@@ -68,7 +71,7 @@ export const ContentMenuToc = () => {
 
   return (
     <div className="h-max max-h-full overflow-y-hidden flex relative flex-col">
-      <div className="absolute -left-px top-0 h-full w-[1.5px] bg-medusa-border-base" />
+      <div className="absolute left-0 top-docs_0.5 h-[calc(100%-8px)] w-[1.5px] bg-medusa-border-base" />
       {items !== null && (
         <TocList
           items={items}
@@ -109,9 +112,7 @@ const TocItem = ({ item, activeItemId }: TocItemProps) => {
       <Link
         href={`#${item.id}`}
         className={clsx(
-          "text-x-small-plus block w-full border-l-[1.5px]",
-          item.id === activeItemId &&
-            "border-medusa-fg-base text-medusa-fg-base",
+          "text-x-small-plus block w-full relative",
           item.id !== activeItemId &&
             "text-medusa-fg-muted hover:text-medusa-fg-base border-transparent"
         )}
@@ -125,6 +126,9 @@ const TocItem = ({ item, activeItemId }: TocItemProps) => {
           scrollToElement(elm)
         }}
       >
+        {item.id === activeItemId && (
+          <span className="absolute left-0 top-0 w-[1.5px] h-full bg-medusa-fg-base rounded-full" />
+        )}
         {item.title}
       </Link>
       {(item.children?.length ?? 0) > 0 && (

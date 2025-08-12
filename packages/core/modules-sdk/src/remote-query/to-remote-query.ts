@@ -1,5 +1,4 @@
 import {
-  RemoteQueryEntryPoints,
   RemoteQueryFilters,
   RemoteQueryGraph,
   RemoteQueryInput,
@@ -31,7 +30,7 @@ const ARGUMENTS = "__args"
 
 export function toRemoteQuery<const TEntity extends string>(
   config: {
-    entity: TEntity | keyof RemoteQueryEntryPoints
+    entity: TEntity
     fields: RemoteQueryInput<TEntity>["fields"]
     filters?: RemoteQueryFilters<TEntity>
     pagination?: Partial<RemoteQueryInput<TEntity>["pagination"]>

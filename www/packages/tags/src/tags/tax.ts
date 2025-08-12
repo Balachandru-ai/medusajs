@@ -8,6 +8,10 @@ export const tax = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price-with-taxes"
   },
   {
+    "title": "Tax-Inclusive Promotions",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/promotion/promotion-taxes"
+  },
+  {
     "title": "Example: Show Price with Taxes",
     "path": "https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price"
   },
@@ -50,10 +54,6 @@ export const tax = [
   {
     "title": "addDraftOrderShippingMethodsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderShippingMethodsWorkflow"
-  },
-  {
-    "title": "removeDraftOrderShippingMethodWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/removeDraftOrderShippingMethodWorkflow"
   },
   {
     "title": "updateDraftOrderShippingMethodWorkflow",

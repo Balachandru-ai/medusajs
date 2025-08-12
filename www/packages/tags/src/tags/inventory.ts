@@ -172,10 +172,6 @@ export const inventory = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderExchangeAddNewItemWorkflow"
   },
   {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
-  },
-  {
     "title": "batchProductVariantsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchProductVariantsWorkflow"
   },

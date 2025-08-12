@@ -143,6 +143,23 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "category",
+      "title": "Instrumentation",
+      "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/sentry",
+          "title": "Sentry",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
       "title": "Migration",
       "initialOpen": true,
       "children": [
@@ -167,6 +184,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/integrations/guides/mailchimp",
+          "title": "Mailchimp",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/integrations/guides/resend",
           "title": "Resend",
           "children": []
@@ -177,6 +202,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "type": "ref",
           "path": "/infrastructure-modules/notification/sendgrid",
           "title": "SendGrid",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/slack",
+          "title": "Slack",
           "children": []
         },
         {

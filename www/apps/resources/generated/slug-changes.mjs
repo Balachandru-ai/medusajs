@@ -1040,6 +1040,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/core_flows/Defaults/Workflows_Defaults/functions/core_flows.Defaults.Workflows_Defaults.createDefaultsWorkflow/page.mdx"
   },
   {
+    "origSlug": "/references/core_flows/Draft_Order/Steps_Draft_Order/functions/core_flows.Draft_Order.Steps_Draft_Order.deleteDraftOrdersStep",
+    "newSlug": "/references/medusa-workflows/steps/deleteDraftOrdersStep",
+    "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Steps_Draft_Order/functions/core_flows.Draft_Order.Steps_Draft_Order.deleteDraftOrdersStep/page.mdx"
+  },
+  {
     "origSlug": "/references/core_flows/Draft_Order/Steps_Draft_Order/functions/core_flows.Draft_Order.Steps_Draft_Order.validateDraftOrderStep",
     "newSlug": "/references/medusa-workflows/steps/validateDraftOrderStep",
     "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Steps_Draft_Order/functions/core_flows.Draft_Order.Steps_Draft_Order.validateDraftOrderStep/page.mdx"
@@ -1083,6 +1088,11 @@ export const slugChanges = [
     "origSlug": "/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.convertDraftOrderWorkflow",
     "newSlug": "/references/medusa-workflows/convertDraftOrderWorkflow",
     "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.convertDraftOrderWorkflow/page.mdx"
+  },
+  {
+    "origSlug": "/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.deleteDraftOrdersWorkflow",
+    "newSlug": "/references/medusa-workflows/deleteDraftOrdersWorkflow",
+    "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.deleteDraftOrdersWorkflow/page.mdx"
   },
   {
     "origSlug": "/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.removeDraftOrderActionItemWorkflow",

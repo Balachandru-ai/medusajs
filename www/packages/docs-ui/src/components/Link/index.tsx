@@ -32,8 +32,8 @@ export const Link = ({
         variant === "default" &&
           "text-medusa-fg-interactive hover:text-medusa-fg-interactive-hover",
         variant === "content" && [
-          "border-b border-medusa-border-strong hover:border-medusa-fg-interactive",
-          "transition-all duration-200",
+          "underline decoration-medusa-fg-muted hover:decoration-medusa-fg-interactive",
+          "decoration-[1.5px] font-medium transition-[text-decoration-color]",
         ],
         withIcon && "flex gap-0.25 items-center group",
         className

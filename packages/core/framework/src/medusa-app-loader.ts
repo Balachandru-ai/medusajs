@@ -24,7 +24,6 @@ import {
   isPresent,
   upperCaseFirst,
 } from "@medusajs/utils"
-import { pgConnectionLoader } from "./database"
 
 import type { Knex } from "@mikro-orm/knex"
 import { aliasTo, asValue } from "awilix"
@@ -125,11 +124,8 @@ export class MedusaAppLoader {
     const sharedResourcesConfig: ModuleServiceInitializeOptions = {
       database: {
         clientUrl:
-          (
-            injectedDependencies[
-              ContainerRegistrationKeys.PG_CONNECTION
-            ] as ReturnType<typeof pgConnectionLoader>
-          )?.client?.config?.connection?.connectionString ??
+          injectedDependencies[ContainerRegistrationKeys.PG_CONNECTION]?.client
+            ?.config?.connection?.connectionString ??
           configManager.config.projectConfig.databaseUrl,
         driverOptions: configManager.config.projectConfig.databaseDriverOptions,
         pool: pool,

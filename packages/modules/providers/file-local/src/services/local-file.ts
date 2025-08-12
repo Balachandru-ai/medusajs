@@ -138,16 +138,6 @@ export class LocalFileService extends AbstractFileProviderService {
    * Returns the pre-signed URL that the client (frontend) can use to trigger
    * a file upload. In this case, the Medusa backend will implement the
    * "/upload" endpoint to perform the file upload.
-   *
-   * Since, we do not want the client to perform link detection on the frontend
-   * and then prepare a different kind of request for cloud providers and different
-   * request for the local server, we will have to make these URLs self sufficient.
-   *
-   * What is a self sufficient URL
-   *
-   * - There should be no need to specify the MIME type or filename separately in request body (cloud providers don't allow it).
-   * - There should be no need to pass auth headers like cookies. Again cloud providers
-   *   won't allow it and will likely result in a CORS error.
    */
   async getPresignedUploadUrl(
     fileData: FileTypes.ProviderGetPresignedUploadUrlDTO
@@ -159,18 +149,8 @@ export class LocalFileService extends AbstractFileProviderService {
       )
     }
 
-    const uploadUrl = new URL(
-      "upload",
-      `${this.backendUrl_.replace(/\/$/, "")}/`
-    )
-
-    uploadUrl.searchParams.set("filename", fileData.filename)
-    if (fileData.mimeType) {
-      uploadUrl.searchParams.set("type", fileData.mimeType)
-    }
-
     return {
-      url: uploadUrl.toString(),
+      url: "/admin/uploads",
       key: fileData.filename,
     }
   }

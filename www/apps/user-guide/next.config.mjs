@@ -40,6 +40,9 @@ const withMDX = mdx({
               projectPath: path.resolve("..", "api-reference"),
               skipSlugValidation: true,
             },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
+            },
           },
         },
       ],
@@ -60,6 +63,9 @@ const withMDX = mdx({
             },
             api: {
               url: process.env.NEXT_PUBLIC_API_URL,
+            },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
             },
           },
           useBaseUrl:

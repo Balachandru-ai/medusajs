@@ -1,5 +1,63 @@
 # @medusajs/dashboard
 
+## 2.8.8
+
+### Patch Changes
+
+- [#12989](https://github.com/medusajs/medusa/pull/12989) [`3fa1db9dea27d99d7b5796281f118210f35a2880`](https://github.com/medusajs/medusa/commit/3fa1db9dea27d99d7b5796281f118210f35a2880) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): allocation UI for orders with more than 20 reservation items
+
+- [#13019](https://github.com/medusajs/medusa/pull/13019) [`439c7118450c5f9ee0b541de9014093a42b7d0ea`](https://github.com/medusajs/medusa/commit/439c7118450c5f9ee0b541de9014093a42b7d0ea) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard, product): update product attributes
+
+- [#12939](https://github.com/medusajs/medusa/pull/12939) [`491b08e0448e3e7d69c09b9516c39f50e2f691a0`](https://github.com/medusajs/medusa/commit/491b08e0448e3e7d69c09b9516c39f50e2f691a0) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): clearing multiitem combobox
+
+- Updated dependencies [[`0db5bf6f8cfb47c67435f92733879e990b500d83`](https://github.com/medusajs/medusa/commit/0db5bf6f8cfb47c67435f92733879e990b500d83)]:
+  - @medusajs/js-sdk@2.8.8
+  - @medusajs/admin-shared@2.8.8
+  - @medusajs/icons@2.8.8
+  - @medusajs/ui@4.0.18
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12897](https://github.com/medusajs/medusa/pull/12897) [`1438b394aea8b570fa6703543faaea506ef816b0`](https://github.com/medusajs/medusa/commit/1438b394aea8b570fa6703543faaea506ef816b0) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): show TIP flag only for fixed promotions
+
+- [#12885](https://github.com/medusajs/medusa/pull/12885) [`42be9a88d61a11db7aebde2d6f4d96d43f54ea79`](https://github.com/medusajs/medusa/commit/42be9a88d61a11db7aebde2d6f4d96d43f54ea79) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Update TIP on promotions
+
+- Updated dependencies []:
+  - @medusajs/js-sdk@2.8.7
+  - @medusajs/admin-shared@2.8.7
+  - @medusajs/icons@2.8.7
+  - @medusajs/ui@4.0.17
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies [[`4b224d5effda952d7d87b96dd30407178edf4115`](https://github.com/medusajs/medusa/commit/4b224d5effda952d7d87b96dd30407178edf4115)]:
+  - @medusajs/ui@4.0.16
+  - @medusajs/admin-shared@2.8.6
+  - @medusajs/js-sdk@2.8.6
+  - @medusajs/icons@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12643](https://github.com/medusajs/medusa/pull/12643) [`f2cb528a5650fe112ca8eeb4bdffc5f0b217338a`](https://github.com/medusajs/medusa/commit/f2cb528a5650fe112ca8eeb4bdffc5f0b217338a) Thanks [@thetutlage](https://github.com/thetutlage)! - feat: wire up direct uploads with local file provider
+
+- [#12697](https://github.com/medusajs/medusa/pull/12697) [`ce202968c6f5f1a54238defcd3dbcba6025c32db`](https://github.com/medusajs/medusa/commit/ce202968c6f5f1a54238defcd3dbcba6025c32db) Thanks [@thetutlage](https://github.com/thetutlage)! - fix: update product import template
+
+- [#11885](https://github.com/medusajs/medusa/pull/11885) [`44d1d186890cd44b20e41b60d1e217bc3d4b2a51`](https://github.com/medusajs/medusa/commit/44d1d186890cd44b20e41b60d1e217bc3d4b2a51) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,types): add credit lines + loyalty changes
+
+- [#12412](https://github.com/medusajs/medusa/pull/12412) [`2621f00bb035a6b909f9498a2bc98fdba8570ba9`](https://github.com/medusajs/medusa/commit/2621f00bb035a6b909f9498a2bc98fdba8570ba9) Thanks [@fPolic](https://github.com/fPolic)! - feat(promotion, dashboard, core-flows, cart, types, utils, medusa): tax inclusive promotions
+
+- Updated dependencies [[`f2cb528a5650fe112ca8eeb4bdffc5f0b217338a`](https://github.com/medusajs/medusa/commit/f2cb528a5650fe112ca8eeb4bdffc5f0b217338a)]:
+  - @medusajs/js-sdk@2.8.5
+  - @medusajs/admin-shared@2.8.5
+  - @medusajs/icons@2.8.5
+  - @medusajs/ui@4.0.15
+
 ## 2.8.4
 
 ### Patch Changes

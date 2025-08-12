@@ -467,6 +467,56 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
+ *   - name: ean
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: ean
+ *           description: The product's ean.
+ *         - type: array
+ *           description: The product's ean.
+ *           items:
+ *             type: string
+ *             title: ean
+ *             description: The ean's details.
+ *   - name: upc
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: upc
+ *           description: The product's upc.
+ *         - type: array
+ *           description: The product's upc.
+ *           items:
+ *             type: string
+ *             title: upc
+ *             description: The upc's details.
+ *   - name: barcode
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: barcode
+ *           description: The product's barcode.
+ *         - type: array
+ *           description: The product's barcode.
+ *           items:
+ *             type: string
+ *             title: barcode
+ *             description: The barcode's details.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

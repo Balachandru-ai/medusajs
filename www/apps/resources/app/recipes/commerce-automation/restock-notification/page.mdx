@@ -693,13 +693,13 @@ Next, replace the `TODO` with the following:
 
 export const subscriptionWorkflow2Highlights = [
   ["1", "validateVariantOutOfStockStep", "Validate that the variant is out of stock in the specified sales channel."],
-  ["7", "useQueryGraphStep", "Get the restock subscription to check if it already exists."],
-  ["17", "when", "Perform an action if the restock subscription doesn't exist."],
-  ["21", "createRestockSubscriptionStep", "Create the restock subscription if it doesn't exist."],
-  ["29", "when", "Perform an action if the restock subscription exists."],
-  ["33", "updateRestockSubscriptionStep", "Update the restock subscription if it exists."],
-  ["40", "useQueryGraphStep", "Retrieve the restock subscription again to return it."],
-  ["50", "WorkflowResponse", "Return the restock subscription."]
+  ["6", "useQueryGraphStep", "Get the restock subscription to check if it already exists."],
+  ["16", "when", "Perform an action if the restock subscription doesn't exist."],
+  ["20", "createRestockSubscriptionStep", "Create the restock subscription if it doesn't exist."],
+  ["28", "when", "Perform an action if the restock subscription exists."],
+  ["32", "updateRestockSubscriptionStep", "Update the restock subscription if it exists."],
+  ["38", "useQueryGraphStep", "Retrieve the restock subscription again to return it."],
+  ["48", "WorkflowResponse", "Return the restock subscription."]
 ]
 
 ```ts title="src/workflows/create-restock-subscription/index.ts" highlights={subscriptionWorkflow2Highlights}
@@ -708,7 +708,6 @@ validateVariantOutOfStockStep({
   sales_channel_id,
 })
 
-// @ts-ignore
 const { data: restockSubscriptions } = useQueryGraphStep({
   entity: "restock_subscription",
   fields: ["*"],
@@ -741,7 +740,6 @@ when({ restockSubscriptions }, ({ restockSubscriptions }) => {
   })
 })
 
-// @ts-ignore
 const { data: restockSubscription } = useQueryGraphStep({
   entity: "restock_subscription",
   fields: ["*"],
@@ -1365,7 +1363,6 @@ export const sendRestockNotificationsWorkflow = createWorkflow(
       return filters
     })
 
-    // @ts-ignore
     const { data: restockedSubscriptionsWithEmails } = useQueryGraphStep({
       entity: "restock_subscription",
       fields: ["*", "product_variant.*"],

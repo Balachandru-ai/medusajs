@@ -123,7 +123,7 @@ export interface IFileProvider {
   /**
    * This method is used to delete one or more files from the storage
    *
-   * @param {ProviderDeleteFileDTO | ProviderDeleteFileDTO[]} fileData - The details of the file to remove.
+   * @param {ProviderDeleteFileDTO | ProviderDeleteFileDTO[]} fileData - The details of the files to remove.
    * @returns {Promise<void>} Resolves when the file is deleted successfully.
    *
    */

@@ -81,6 +81,14 @@
  *       type: string
  *       title: q
  *       description: Search query to filter by a workflow execution's searchable fields.
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

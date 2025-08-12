@@ -1,12 +1,12 @@
 {
-	"id": 14530,
+	"id": 14562,
 	"name": "sales-channel",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 14725,
+			"id": 14757,
 			"name": "FindConfigOrder",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -29,7 +29,7 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 14726,
+					"id": 14758,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 65536,
@@ -43,7 +43,7 @@
 					],
 					"indexSignatures": [
 						{
-							"id": 14727,
+							"id": 14759,
 							"name": "__index",
 							"variant": "signature",
 							"kind": 8192,
@@ -57,7 +57,7 @@
 							],
 							"parameters": [
 								{
-									"id": 14728,
+									"id": 14760,
 									"name": "Key",
 									"variant": "param",
 									"kind": 32768,
@@ -81,7 +81,7 @@
 											{
 												"type": "reflection",
 												"declaration": {
-													"id": 14729,
+													"id": 14761,
 													"name": "__type",
 													"variant": "declaration",
 													"kind": 65536,
@@ -92,7 +92,7 @@
 									},
 									{
 										"type": "reference",
-										"target": 14725,
+										"target": 14757,
 										"name": "FindConfigOrder",
 										"package": "@medusajs/types"
 									},
@@ -112,7 +112,7 @@
 			}
 		},
 		{
-			"id": 14660,
+			"id": 14692,
 			"name": "FindConfig",
 			"variant": "declaration",
 			"kind": 256,
@@ -135,7 +135,7 @@
 			},
 			"children": [
 				{
-					"id": 14661,
+					"id": 14693,
 					"name": "select",
 					"variant": "declaration",
 					"kind": 1024,
@@ -172,7 +172,7 @@
 										{
 											"type": "reflection",
 											"declaration": {
-												"id": 14662,
+												"id": 14694,
 												"name": "__type",
 												"variant": "declaration",
 												"kind": 65536,
@@ -186,7 +186,7 @@
 									"operator": "keyof",
 									"target": {
 										"type": "reference",
-										"target": 14670,
+										"target": 14702,
 										"name": "Entity",
 										"package": "@medusajs/types",
 										"qualifiedName": "FindConfig.Entity",
@@ -198,7 +198,7 @@
 					}
 				},
 				{
-					"id": 14663,
+					"id": 14695,
 					"name": "skip",
 					"variant": "declaration",
 					"kind": 1024,
@@ -235,7 +235,7 @@
 					}
 				},
 				{
-					"id": 14664,
+					"id": 14696,
 					"name": "take",
 					"variant": "declaration",
 					"kind": 1024,
@@ -272,7 +272,7 @@
 					}
 				},
 				{
-					"id": 14665,
+					"id": 14697,
 					"name": "relations",
 					"variant": "declaration",
 					"kind": 1024,
@@ -303,7 +303,7 @@
 					}
 				},
 				{
-					"id": 14666,
+					"id": 14698,
 					"name": "order",
 					"variant": "declaration",
 					"kind": 1024,
@@ -343,13 +343,13 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14725,
+						"target": 14757,
 						"name": "FindConfigOrder",
 						"package": "@medusajs/types"
 					}
 				},
 				{
-					"id": 14667,
+					"id": 14699,
 					"name": "withDeleted",
 					"variant": "declaration",
 					"kind": 1024,
@@ -385,7 +385,7 @@
 					}
 				},
 				{
-					"id": 14668,
+					"id": 14700,
 					"name": "filters",
 					"variant": "declaration",
 					"kind": 1024,
@@ -428,7 +428,7 @@
 					}
 				},
 				{
-					"id": 14669,
+					"id": 14701,
 					"name": "options",
 					"variant": "declaration",
 					"kind": 1024,
@@ -475,14 +475,14 @@
 				{
 					"title": "Properties",
 					"children": [
-						14661,
-						14663,
-						14664,
-						14665,
-						14666,
-						14667,
-						14668,
-						14669
+						14693,
+						14695,
+						14696,
+						14697,
+						14698,
+						14699,
+						14700,
+						14701
 					]
 				}
 			],
@@ -495,7 +495,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14670,
+					"id": 14702,
 					"name": "Entity",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -504,7 +504,7 @@
 			]
 		},
 		{
-			"id": 14720,
+			"id": 14752,
 			"name": "MetadataType",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -512,7 +512,7 @@
 			"sources": [
 				{
 					"fileName": "/home/runner/work/medusa/medusa/packages/core/types/src/common/common.ts",
-					"line": 424,
+					"line": 429,
 					"character": 12
 				}
 			],
@@ -546,7 +546,7 @@
 			}
 		},
 		{
-			"id": 14721,
+			"id": 14753,
 			"name": "BaseFilterable",
 			"variant": "declaration",
 			"kind": 256,
@@ -561,7 +561,7 @@
 			},
 			"children": [
 				{
-					"id": 14722,
+					"id": 14754,
 					"name": "$and",
 					"variant": "declaration",
 					"kind": 1024,
@@ -590,11 +590,11 @@
 							"types": [
 								{
 									"type": "reference",
-									"target": 14721,
+									"target": 14753,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 14724,
+											"target": 14756,
 											"name": "T",
 											"package": "@medusajs/types",
 											"qualifiedName": "BaseFilterable.T",
@@ -606,7 +606,7 @@
 								},
 								{
 									"type": "reference",
-									"target": 14724,
+									"target": 14756,
 									"name": "T",
 									"package": "@medusajs/types",
 									"qualifiedName": "BaseFilterable.T",
@@ -617,7 +617,7 @@
 					}
 				},
 				{
-					"id": 14723,
+					"id": 14755,
 					"name": "$or",
 					"variant": "declaration",
 					"kind": 1024,
@@ -646,11 +646,11 @@
 							"types": [
 								{
 									"type": "reference",
-									"target": 14721,
+									"target": 14753,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 14724,
+											"target": 14756,
 											"name": "T",
 											"package": "@medusajs/types",
 											"qualifiedName": "BaseFilterable.T",
@@ -662,7 +662,7 @@
 								},
 								{
 									"type": "reference",
-									"target": 14724,
+									"target": 14756,
 									"name": "T",
 									"package": "@medusajs/types",
 									"qualifiedName": "BaseFilterable.T",
@@ -677,8 +677,8 @@
 				{
 					"title": "Properties",
 					"children": [
-						14722,
-						14723
+						14754,
+						14755
 					]
 				}
 			],
@@ -691,7 +691,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14724,
+					"id": 14756,
 					"name": "T",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -701,13 +701,13 @@
 			"extendedBy": [
 				{
 					"type": "reference",
-					"target": 14647,
+					"target": 14679,
 					"name": "FilterableSalesChannelProps"
 				}
 			]
 		},
 		{
-			"id": 14671,
+			"id": 14703,
 			"name": "SoftDeleteReturn",
 			"variant": "declaration",
 			"kind": 256,
@@ -722,7 +722,7 @@
 			},
 			"children": [
 				{
-					"id": 14672,
+					"id": 14704,
 					"name": "returnLinkableKeys",
 					"variant": "declaration",
 					"kind": 1024,
@@ -748,7 +748,7 @@
 						"type": "array",
 						"elementType": {
 							"type": "reference",
-							"target": 14673,
+							"target": 14705,
 							"name": "TReturnableLinkableKeys",
 							"package": "@medusajs/types",
 							"refersToTypeParameter": true
@@ -760,7 +760,7 @@
 				{
 					"title": "Properties",
 					"children": [
-						14672
+						14704
 					]
 				}
 			],
@@ -773,7 +773,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14673,
+					"id": 14705,
 					"name": "TReturnableLinkableKeys",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -786,7 +786,7 @@
 			]
 		},
 		{
-			"id": 14674,
+			"id": 14706,
 			"name": "RestoreReturn",
 			"variant": "declaration",
 			"kind": 256,
@@ -801,7 +801,7 @@
 			},
 			"children": [
 				{
-					"id": 14675,
+					"id": 14707,
 					"name": "returnLinkableKeys",
 					"variant": "declaration",
 					"kind": 1024,
@@ -827,7 +827,7 @@
 						"type": "array",
 						"elementType": {
 							"type": "reference",
-							"target": 14676,
+							"target": 14708,
 							"name": "TReturnableLinkableKeys",
 							"package": "@medusajs/types",
 							"refersToTypeParameter": true
@@ -839,7 +839,7 @@
 				{
 					"title": "Properties",
 					"children": [
-						14675
+						14707
 					]
 				}
 			],
@@ -852,7 +852,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14676,
+					"id": 14708,
 					"name": "TReturnableLinkableKeys",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -865,7 +865,7 @@
 			]
 		},
 		{
-			"id": 14798,
+			"id": 14830,
 			"name": "EventMetadata",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -902,14 +902,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 14799,
+							"id": 14831,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 14800,
+									"id": 14832,
 									"name": "eventGroupId",
 									"variant": "declaration",
 									"kind": 1024,
@@ -949,7 +949,7 @@
 								{
 									"title": "Properties",
 									"children": [
-										14800
+										14832
 									]
 								}
 							],
@@ -966,7 +966,7 @@
 			}
 		},
 		{
-			"id": 14792,
+			"id": 14824,
 			"name": "Event",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -980,7 +980,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14797,
+					"id": 14829,
 					"name": "TData",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -994,14 +994,14 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 14793,
+					"id": 14825,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 65536,
 					"flags": {},
 					"children": [
 						{
-							"id": 14794,
+							"id": 14826,
 							"name": "name",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1038,7 +1038,7 @@
 							}
 						},
 						{
-							"id": 14795,
+							"id": 14827,
 							"name": "metadata",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1062,13 +1062,13 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 14798,
+								"target": 14830,
 								"name": "EventMetadata",
 								"package": "@medusajs/types"
 							}
 						},
 						{
-							"id": 14796,
+							"id": 14828,
 							"name": "data",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1090,7 +1090,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 14797,
+								"target": 14829,
 								"name": "TData",
 								"package": "@medusajs/types",
 								"refersToTypeParameter": true
@@ -1101,9 +1101,9 @@
 						{
 							"title": "Properties",
 							"children": [
-								14794,
-								14795,
-								14796
+								14826,
+								14827,
+								14828
 							]
 						}
 					],
@@ -1118,7 +1118,7 @@
 			}
 		},
 		{
-			"id": 14756,
+			"id": 14788,
 			"name": "Message",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -1140,7 +1140,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14759,
+					"id": 14791,
 					"name": "TData",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -1156,11 +1156,11 @@
 				"types": [
 					{
 						"type": "reference",
-						"target": 14792,
+						"target": 14824,
 						"typeArguments": [
 							{
 								"type": "reference",
-								"target": 14759,
+								"target": 14791,
 								"name": "TData",
 								"package": "@medusajs/types",
 								"refersToTypeParameter": true
@@ -1172,14 +1172,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 14757,
+							"id": 14789,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 14758,
+									"id": 14790,
 									"name": "options",
 									"variant": "declaration",
 									"kind": 1024,
@@ -1218,7 +1218,7 @@
 								{
 									"title": "Properties",
 									"children": [
-										14758
+										14790
 									]
 								}
 							],
@@ -1235,7 +1235,7 @@
 			}
 		},
 		{
-			"id": 14767,
+			"id": 14799,
 			"name": "RawMessageFormat",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -1249,7 +1249,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14776,
+					"id": 14808,
 					"name": "TData",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -1263,14 +1263,14 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 14768,
+					"id": 14800,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 65536,
 					"flags": {},
 					"children": [
 						{
-							"id": 14769,
+							"id": 14801,
 							"name": "eventName",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1288,7 +1288,7 @@
 							}
 						},
 						{
-							"id": 14770,
+							"id": 14802,
 							"name": "data",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1302,14 +1302,14 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 14776,
+								"target": 14808,
 								"name": "TData",
 								"package": "@medusajs/types",
 								"refersToTypeParameter": true
 							}
 						},
 						{
-							"id": 14771,
+							"id": 14803,
 							"name": "source",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1327,7 +1327,7 @@
 							}
 						},
 						{
-							"id": 14772,
+							"id": 14804,
 							"name": "object",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1345,7 +1345,7 @@
 							}
 						},
 						{
-							"id": 14773,
+							"id": 14805,
 							"name": "action",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1365,7 +1365,7 @@
 							}
 						},
 						{
-							"id": 14774,
+							"id": 14806,
 							"name": "context",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1388,7 +1388,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									},
@@ -1402,7 +1402,7 @@
 							}
 						},
 						{
-							"id": 14775,
+							"id": 14807,
 							"name": "options",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1441,13 +1441,13 @@
 						{
 							"title": "Properties",
 							"children": [
-								14769,
-								14770,
-								14771,
-								14772,
-								14773,
-								14774,
-								14775
+								14801,
+								14802,
+								14803,
+								14804,
+								14805,
+								14806,
+								14807
 							]
 						}
 					],
@@ -1462,7 +1462,7 @@
 			}
 		},
 		{
-			"id": 14782,
+			"id": 14814,
 			"name": "JoinerRelationship",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -1477,14 +1477,14 @@
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 14783,
+					"id": 14815,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 65536,
 					"flags": {},
 					"children": [
 						{
-							"id": 14784,
+							"id": 14816,
 							"name": "alias",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1502,7 +1502,7 @@
 							}
 						},
 						{
-							"id": 14785,
+							"id": 14817,
 							"name": "foreignKey",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1520,7 +1520,7 @@
 							}
 						},
 						{
-							"id": 14786,
+							"id": 14818,
 							"name": "primaryKey",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1538,7 +1538,7 @@
 							}
 						},
 						{
-							"id": 14787,
+							"id": 14819,
 							"name": "serviceName",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1556,7 +1556,7 @@
 							}
 						},
 						{
-							"id": 14788,
+							"id": 14820,
 							"name": "entity",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1576,7 +1576,7 @@
 							}
 						},
 						{
-							"id": 14789,
+							"id": 14821,
 							"name": "inverse",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1604,7 +1604,7 @@
 							}
 						},
 						{
-							"id": 14790,
+							"id": 14822,
 							"name": "isList",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1632,7 +1632,7 @@
 							}
 						},
 						{
-							"id": 14791,
+							"id": 14823,
 							"name": "args",
 							"variant": "declaration",
 							"kind": 1024,
@@ -1679,14 +1679,14 @@
 						{
 							"title": "Properties",
 							"children": [
-								14784,
-								14785,
-								14786,
-								14787,
-								14788,
-								14789,
-								14790,
-								14791
+								14816,
+								14817,
+								14818,
+								14819,
+								14820,
+								14821,
+								14822,
+								14823
 							]
 						}
 					],
@@ -1701,14 +1701,14 @@
 			}
 		},
 		{
-			"id": 14777,
+			"id": 14809,
 			"name": "JoinerServiceConfigAlias",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 14778,
+					"id": 14810,
 					"name": "name",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1738,7 +1738,7 @@
 					}
 				},
 				{
-					"id": 14779,
+					"id": 14811,
 					"name": "entity",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1758,7 +1758,7 @@
 					}
 				},
 				{
-					"id": 14780,
+					"id": 14812,
 					"name": "filterable",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1781,7 +1781,7 @@
 					}
 				},
 				{
-					"id": 14781,
+					"id": 14813,
 					"name": "args",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1828,10 +1828,10 @@
 				{
 					"title": "Properties",
 					"children": [
-						14778,
-						14779,
-						14780,
-						14781
+						14810,
+						14811,
+						14812,
+						14813
 					]
 				}
 			],
@@ -1844,14 +1844,14 @@
 			]
 		},
 		{
-			"id": 14730,
+			"id": 14762,
 			"name": "JoinerServiceConfig",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 14731,
+					"id": 14763,
 					"name": "serviceName",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1869,7 +1869,7 @@
 					}
 				},
 				{
-					"id": 14732,
+					"id": 14764,
 					"name": "alias",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1896,7 +1896,7 @@
 						"types": [
 							{
 								"type": "reference",
-								"target": 14777,
+								"target": 14809,
 								"name": "JoinerServiceConfigAlias",
 								"package": "@medusajs/types"
 							},
@@ -1904,7 +1904,7 @@
 								"type": "array",
 								"elementType": {
 									"type": "reference",
-									"target": 14777,
+									"target": 14809,
 									"name": "JoinerServiceConfigAlias",
 									"package": "@medusajs/types"
 								}
@@ -1913,7 +1913,7 @@
 					}
 				},
 				{
-					"id": 14733,
+					"id": 14765,
 					"name": "fieldAlias",
 					"variant": "declaration",
 					"kind": 1024,
@@ -1956,14 +1956,14 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 14734,
+											"id": 14766,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 14735,
+													"id": 14767,
 													"name": "path",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1981,7 +1981,7 @@
 													}
 												},
 												{
-													"id": 14736,
+													"id": 14768,
 													"name": "forwardArgumentsOnPath",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2006,8 +2006,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														14735,
-														14736
+														14767,
+														14768
 													]
 												}
 											],
@@ -2028,7 +2028,7 @@
 					}
 				},
 				{
-					"id": 14737,
+					"id": 14769,
 					"name": "primaryKeys",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2049,7 +2049,7 @@
 					}
 				},
 				{
-					"id": 14738,
+					"id": 14770,
 					"name": "relationships",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2067,14 +2067,14 @@
 						"type": "array",
 						"elementType": {
 							"type": "reference",
-							"target": 14782,
+							"target": 14814,
 							"name": "JoinerRelationship",
 							"package": "@medusajs/types"
 						}
 					}
 				},
 				{
-					"id": 14739,
+					"id": 14771,
 					"name": "extends",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2093,14 +2093,14 @@
 						"elementType": {
 							"type": "reflection",
 							"declaration": {
-								"id": 14740,
+								"id": 14772,
 								"name": "__type",
 								"variant": "declaration",
 								"kind": 65536,
 								"flags": {},
 								"children": [
 									{
-										"id": 14741,
+										"id": 14773,
 										"name": "serviceName",
 										"variant": "declaration",
 										"kind": 1024,
@@ -2118,7 +2118,7 @@
 										}
 									},
 									{
-										"id": 14742,
+										"id": 14774,
 										"name": "entity",
 										"variant": "declaration",
 										"kind": 1024,
@@ -2138,7 +2138,7 @@
 										}
 									},
 									{
-										"id": 14743,
+										"id": 14775,
 										"name": "relationship",
 										"variant": "declaration",
 										"kind": 1024,
@@ -2152,7 +2152,7 @@
 										],
 										"type": {
 											"type": "reference",
-											"target": 14782,
+											"target": 14814,
 											"name": "JoinerRelationship",
 											"package": "@medusajs/types"
 										}
@@ -2162,9 +2162,9 @@
 									{
 										"title": "Properties",
 										"children": [
-											14741,
-											14742,
-											14743
+											14773,
+											14774,
+											14775
 										]
 									}
 								],
@@ -2180,7 +2180,7 @@
 					}
 				},
 				{
-					"id": 14744,
+					"id": 14776,
 					"name": "args",
 					"variant": "declaration",
 					"kind": 1024,
@@ -2227,13 +2227,13 @@
 				{
 					"title": "Properties",
 					"children": [
-						14731,
-						14732,
-						14733,
-						14737,
-						14738,
-						14739,
-						14744
+						14763,
+						14764,
+						14765,
+						14769,
+						14770,
+						14771,
+						14776
 					]
 				}
 			],
@@ -2246,7 +2246,7 @@
 			]
 		},
 		{
-			"id": 14750,
+			"id": 14782,
 			"name": "LinkModulesExtraFields",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -2272,14 +2272,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 14751,
+							"id": 14783,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 14752,
+									"id": 14784,
 									"name": "type",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2382,7 +2382,7 @@
 									}
 								},
 								{
-									"id": 14753,
+									"id": 14785,
 									"name": "defaultValue",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2402,7 +2402,7 @@
 									}
 								},
 								{
-									"id": 14754,
+									"id": 14786,
 									"name": "nullable",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2422,7 +2422,7 @@
 									}
 								},
 								{
-									"id": 14755,
+									"id": 14787,
 									"name": "options",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2469,10 +2469,10 @@
 								{
 									"title": "Properties",
 									"children": [
-										14752,
-										14753,
-										14754,
-										14755
+										14784,
+										14785,
+										14786,
+										14787
 									]
 								}
 							],
@@ -2491,7 +2491,7 @@
 			}
 		},
 		{
-			"id": 14677,
+			"id": 14709,
 			"name": "ModuleJoinerConfig",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -2515,7 +2515,7 @@
 						"typeArguments": [
 							{
 								"type": "reference",
-								"target": 14730,
+								"target": 14762,
 								"name": "JoinerServiceConfig",
 								"package": "@medusajs/types"
 							},
@@ -2547,14 +2547,14 @@
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 14678,
+							"id": 14710,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 14679,
+									"id": 14711,
 									"name": "schema",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2582,7 +2582,7 @@
 									}
 								},
 								{
-									"id": 14680,
+									"id": 14712,
 									"name": "relationships",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2600,14 +2600,14 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14745,
+											"target": 14777,
 											"name": "ModuleJoinerRelationship",
 											"package": "@medusajs/types"
 										}
 									}
 								},
 								{
-									"id": 14681,
+									"id": 14713,
 									"name": "extends",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2626,14 +2626,14 @@
 										"elementType": {
 											"type": "reflection",
 											"declaration": {
-												"id": 14682,
+												"id": 14714,
 												"name": "__type",
 												"variant": "declaration",
 												"kind": 65536,
 												"flags": {},
 												"children": [
 													{
-														"id": 14683,
+														"id": 14715,
 														"name": "serviceName",
 														"variant": "declaration",
 														"kind": 1024,
@@ -2651,7 +2651,7 @@
 														}
 													},
 													{
-														"id": 14684,
+														"id": 14716,
 														"name": "entity",
 														"variant": "declaration",
 														"kind": 1024,
@@ -2671,7 +2671,7 @@
 														}
 													},
 													{
-														"id": 14685,
+														"id": 14717,
 														"name": "fieldAlias",
 														"variant": "declaration",
 														"kind": 1024,
@@ -2706,14 +2706,14 @@
 																		{
 																			"type": "reflection",
 																			"declaration": {
-																				"id": 14686,
+																				"id": 14718,
 																				"name": "__type",
 																				"variant": "declaration",
 																				"kind": 65536,
 																				"flags": {},
 																				"children": [
 																					{
-																						"id": 14687,
+																						"id": 14719,
 																						"name": "path",
 																						"variant": "declaration",
 																						"kind": 1024,
@@ -2731,7 +2731,7 @@
 																						}
 																					},
 																					{
-																						"id": 14688,
+																						"id": 14720,
 																						"name": "forwardArgumentsOnPath",
 																						"variant": "declaration",
 																						"kind": 1024,
@@ -2754,7 +2754,7 @@
 																						}
 																					},
 																					{
-																						"id": 14689,
+																						"id": 14721,
 																						"name": "isList",
 																						"variant": "declaration",
 																						"kind": 1024,
@@ -2778,9 +2778,9 @@
 																					{
 																						"title": "Properties",
 																						"children": [
-																							14687,
-																							14688,
-																							14689
+																							14719,
+																							14720,
+																							14721
 																						]
 																					}
 																				],
@@ -2801,7 +2801,7 @@
 														}
 													},
 													{
-														"id": 14690,
+														"id": 14722,
 														"name": "relationship",
 														"variant": "declaration",
 														"kind": 1024,
@@ -2822,7 +2822,7 @@
 															"typeArguments": [
 																{
 																	"type": "reference",
-																	"target": 14745,
+																	"target": 14777,
 																	"name": "ModuleJoinerRelationship",
 																	"package": "@medusajs/types"
 																},
@@ -2840,10 +2840,10 @@
 													{
 														"title": "Properties",
 														"children": [
-															14683,
-															14684,
-															14685,
-															14690
+															14715,
+															14716,
+															14717,
+															14722
 														]
 													}
 												],
@@ -2859,7 +2859,7 @@
 									}
 								},
 								{
-									"id": 14691,
+									"id": 14723,
 									"name": "serviceName",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2879,7 +2879,7 @@
 									}
 								},
 								{
-									"id": 14692,
+									"id": 14724,
 									"name": "primaryKeys",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2902,7 +2902,7 @@
 									}
 								},
 								{
-									"id": 14693,
+									"id": 14725,
 									"name": "isLink",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2930,7 +2930,7 @@
 									}
 								},
 								{
-									"id": 14694,
+									"id": 14726,
 									"name": "linkableKeys",
 									"variant": "declaration",
 									"kind": 1024,
@@ -2973,7 +2973,7 @@
 									}
 								},
 								{
-									"id": 14695,
+									"id": 14727,
 									"name": "isReadOnlyLink",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3001,7 +3001,7 @@
 									}
 								},
 								{
-									"id": 14696,
+									"id": 14728,
 									"name": "extraDataFields",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3032,7 +3032,7 @@
 									}
 								},
 								{
-									"id": 14697,
+									"id": 14729,
 									"name": "databaseConfig",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3049,14 +3049,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 14698,
+											"id": 14730,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 14699,
+													"id": 14731,
 													"name": "tableName",
 													"variant": "declaration",
 													"kind": 1024,
@@ -3084,7 +3084,7 @@
 													}
 												},
 												{
-													"id": 14700,
+													"id": 14732,
 													"name": "idPrefix",
 													"variant": "declaration",
 													"kind": 1024,
@@ -3112,7 +3112,7 @@
 													}
 												},
 												{
-													"id": 14701,
+													"id": 14733,
 													"name": "extraFields",
 													"variant": "declaration",
 													"kind": 1024,
@@ -3128,7 +3128,7 @@
 													],
 													"type": {
 														"type": "reference",
-														"target": 14750,
+														"target": 14782,
 														"name": "LinkModulesExtraFields",
 														"package": "@medusajs/types"
 													}
@@ -3138,9 +3138,9 @@
 												{
 													"title": "Properties",
 													"children": [
-														14699,
-														14700,
-														14701
+														14731,
+														14732,
+														14733
 													]
 												}
 											],
@@ -3159,16 +3159,16 @@
 								{
 									"title": "Properties",
 									"children": [
-										14679,
-										14680,
-										14681,
-										14691,
-										14692,
-										14693,
-										14694,
-										14695,
-										14696,
-										14697
+										14711,
+										14712,
+										14713,
+										14723,
+										14724,
+										14725,
+										14726,
+										14727,
+										14728,
+										14729
 									]
 								}
 							],
@@ -3185,7 +3185,7 @@
 			}
 		},
 		{
-			"id": 14745,
+			"id": 14777,
 			"name": "ModuleJoinerRelationship",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -3202,21 +3202,21 @@
 				"types": [
 					{
 						"type": "reference",
-						"target": 14782,
+						"target": 14814,
 						"name": "JoinerRelationship",
 						"package": "@medusajs/types"
 					},
 					{
 						"type": "reflection",
 						"declaration": {
-							"id": 14746,
+							"id": 14778,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 14747,
+									"id": 14779,
 									"name": "deleteCascade",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3244,7 +3244,7 @@
 									}
 								},
 								{
-									"id": 14748,
+									"id": 14780,
 									"name": "filterable",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3275,7 +3275,7 @@
 									}
 								},
 								{
-									"id": 14749,
+									"id": 14781,
 									"name": "hasMany",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3307,9 +3307,9 @@
 								{
 									"title": "Properties",
 									"children": [
-										14747,
-										14748,
-										14749
+										14779,
+										14780,
+										14781
 									]
 								}
 							],
@@ -3326,14 +3326,14 @@
 			}
 		},
 		{
-			"id": 14602,
+			"id": 14634,
 			"name": "IModuleService",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 14603,
+					"id": 14635,
 					"name": "__joinerConfig",
 					"variant": "declaration",
 					"kind": 2048,
@@ -3349,7 +3349,7 @@
 					],
 					"signatures": [
 						{
-							"id": 14604,
+							"id": 14636,
 							"name": "__joinerConfig",
 							"variant": "signature",
 							"kind": 4096,
@@ -3369,7 +3369,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 14677,
+								"target": 14709,
 								"name": "ModuleJoinerConfig",
 								"package": "@medusajs/types"
 							}
@@ -3377,7 +3377,7 @@
 					]
 				},
 				{
-					"id": 14605,
+					"id": 14637,
 					"name": "__hooks",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3400,14 +3400,14 @@
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 14606,
+							"id": 14638,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
 							"flags": {},
 							"children": [
 								{
-									"id": 14607,
+									"id": 14639,
 									"name": "onApplicationStart",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3424,7 +3424,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 14608,
+											"id": 14640,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
@@ -3438,7 +3438,7 @@
 											],
 											"signatures": [
 												{
-													"id": 14609,
+													"id": 14641,
 													"name": "__type",
 													"variant": "signature",
 													"kind": 4096,
@@ -3471,7 +3471,7 @@
 									}
 								},
 								{
-									"id": 14610,
+									"id": 14642,
 									"name": "onApplicationShutdown",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3488,7 +3488,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 14611,
+											"id": 14643,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
@@ -3502,7 +3502,7 @@
 											],
 											"signatures": [
 												{
-													"id": 14612,
+													"id": 14644,
 													"name": "__type",
 													"variant": "signature",
 													"kind": 4096,
@@ -3535,7 +3535,7 @@
 									}
 								},
 								{
-									"id": 14613,
+									"id": 14645,
 									"name": "onApplicationPrepareShutdown",
 									"variant": "declaration",
 									"kind": 1024,
@@ -3552,7 +3552,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 14614,
+											"id": 14646,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
@@ -3566,7 +3566,7 @@
 											],
 											"signatures": [
 												{
-													"id": 14615,
+													"id": 14647,
 													"name": "__type",
 													"variant": "signature",
 													"kind": 4096,
@@ -3603,9 +3603,9 @@
 								{
 									"title": "Properties",
 									"children": [
-										14607,
-										14610,
-										14613
+										14639,
+										14642,
+										14645
 									]
 								}
 							],
@@ -3624,13 +3624,13 @@
 				{
 					"title": "Properties",
 					"children": [
-						14605
+						14637
 					]
 				},
 				{
 					"title": "Methods",
 					"children": [
-						14603
+						14635
 					]
 				}
 			],
@@ -3644,13 +3644,13 @@
 			"extendedBy": [
 				{
 					"type": "reference",
-					"target": 14531,
+					"target": 14563,
 					"name": "ISalesChannelModuleService"
 				}
 			]
 		},
 		{
-			"id": 14716,
+			"id": 14748,
 			"name": "SalesChannelLocationDTO",
 			"variant": "declaration",
 			"kind": 256,
@@ -3665,7 +3665,7 @@
 			},
 			"children": [
 				{
-					"id": 14717,
+					"id": 14749,
 					"name": "sales_channel_id",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3691,7 +3691,7 @@
 					}
 				},
 				{
-					"id": 14718,
+					"id": 14750,
 					"name": "location_id",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3717,7 +3717,7 @@
 					}
 				},
 				{
-					"id": 14719,
+					"id": 14751,
 					"name": "sales_channel",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3739,7 +3739,7 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14635,
+						"target": 14667,
 						"name": "SalesChannelDTO",
 						"package": "@medusajs/types"
 					}
@@ -3749,9 +3749,9 @@
 				{
 					"title": "Properties",
 					"children": [
-						14717,
-						14718,
-						14719
+						14749,
+						14750,
+						14751
 					]
 				}
 			],
@@ -3764,7 +3764,7 @@
 			]
 		},
 		{
-			"id": 14635,
+			"id": 14667,
 			"name": "SalesChannelDTO",
 			"variant": "declaration",
 			"kind": 256,
@@ -3779,7 +3779,7 @@
 			},
 			"children": [
 				{
-					"id": 14636,
+					"id": 14668,
 					"name": "id",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3805,7 +3805,7 @@
 					}
 				},
 				{
-					"id": 14637,
+					"id": 14669,
 					"name": "name",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3831,7 +3831,7 @@
 					}
 				},
 				{
-					"id": 14638,
+					"id": 14670,
 					"name": "description",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3866,7 +3866,7 @@
 					}
 				},
 				{
-					"id": 14639,
+					"id": 14671,
 					"name": "is_disabled",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3892,7 +3892,7 @@
 					}
 				},
 				{
-					"id": 14640,
+					"id": 14672,
 					"name": "metadata",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3942,7 +3942,7 @@
 					}
 				},
 				{
-					"id": 14641,
+					"id": 14673,
 					"name": "locations",
 					"variant": "declaration",
 					"kind": 1024,
@@ -3968,7 +3968,7 @@
 						"type": "array",
 						"elementType": {
 							"type": "reference",
-							"target": 14716,
+							"target": 14748,
 							"name": "SalesChannelLocationDTO",
 							"package": "@medusajs/types"
 						}
@@ -3979,12 +3979,12 @@
 				{
 					"title": "Properties",
 					"children": [
-						14636,
-						14637,
-						14638,
-						14639,
-						14640,
-						14641
+						14668,
+						14669,
+						14670,
+						14671,
+						14672,
+						14673
 					]
 				}
 			],
@@ -3997,7 +3997,7 @@
 			]
 		},
 		{
-			"id": 14647,
+			"id": 14679,
 			"name": "FilterableSalesChannelProps",
 			"variant": "declaration",
 			"kind": 256,
@@ -4012,7 +4012,7 @@
 			},
 			"children": [
 				{
-					"id": 14652,
+					"id": 14684,
 					"name": "$and",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4042,17 +4042,17 @@
 							"types": [
 								{
 									"type": "reference",
-									"target": 14647,
+									"target": 14679,
 									"name": "FilterableSalesChannelProps",
 									"package": "@medusajs/types"
 								},
 								{
 									"type": "reference",
-									"target": 14721,
+									"target": 14753,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 14647,
+											"target": 14679,
 											"name": "FilterableSalesChannelProps",
 											"package": "@medusajs/types"
 										}
@@ -4065,12 +4065,12 @@
 					},
 					"inheritedFrom": {
 						"type": "reference",
-						"target": 14722,
+						"target": 14754,
 						"name": "BaseFilterable.$and"
 					}
 				},
 				{
-					"id": 14653,
+					"id": 14685,
 					"name": "$or",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4100,17 +4100,17 @@
 							"types": [
 								{
 									"type": "reference",
-									"target": 14647,
+									"target": 14679,
 									"name": "FilterableSalesChannelProps",
 									"package": "@medusajs/types"
 								},
 								{
 									"type": "reference",
-									"target": 14721,
+									"target": 14753,
 									"typeArguments": [
 										{
 											"type": "reference",
-											"target": 14647,
+											"target": 14679,
 											"name": "FilterableSalesChannelProps",
 											"package": "@medusajs/types"
 										}
@@ -4123,12 +4123,12 @@
 					},
 					"inheritedFrom": {
 						"type": "reference",
-						"target": 14723,
+						"target": 14755,
 						"name": "BaseFilterable.$or"
 					}
 				},
 				{
-					"id": 14648,
+					"id": 14680,
 					"name": "q",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4156,7 +4156,7 @@
 					}
 				},
 				{
-					"id": 14649,
+					"id": 14681,
 					"name": "id",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4196,7 +4196,7 @@
 					}
 				},
 				{
-					"id": 14650,
+					"id": 14682,
 					"name": "name",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4236,7 +4236,7 @@
 					}
 				},
 				{
-					"id": 14651,
+					"id": 14683,
 					"name": "is_disabled",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4268,12 +4268,12 @@
 				{
 					"title": "Properties",
 					"children": [
-						14652,
-						14653,
-						14648,
-						14649,
-						14650,
-						14651
+						14684,
+						14685,
+						14680,
+						14681,
+						14682,
+						14683
 					]
 				}
 			],
@@ -4287,11 +4287,11 @@
 			"extendedTypes": [
 				{
 					"type": "reference",
-					"target": 14721,
+					"target": 14753,
 					"typeArguments": [
 						{
 							"type": "reference",
-							"target": 14647,
+							"target": 14679,
 							"name": "FilterableSalesChannelProps",
 							"package": "@medusajs/types"
 						}
@@ -4302,7 +4302,7 @@
 			]
 		},
 		{
-			"id": 14616,
+			"id": 14648,
 			"name": "CreateSalesChannelDTO",
 			"variant": "declaration",
 			"kind": 256,
@@ -4317,7 +4317,7 @@
 			},
 			"children": [
 				{
-					"id": 14617,
+					"id": 14649,
 					"name": "name",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4343,7 +4343,7 @@
 					}
 				},
 				{
-					"id": 14618,
+					"id": 14650,
 					"name": "description",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4380,7 +4380,7 @@
 					}
 				},
 				{
-					"id": 14619,
+					"id": 14651,
 					"name": "is_disabled",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4412,9 +4412,9 @@
 				{
 					"title": "Properties",
 					"children": [
-						14617,
-						14618,
-						14619
+						14649,
+						14650,
+						14651
 					]
 				}
 			],
@@ -4427,7 +4427,7 @@
 			]
 		},
 		{
-			"id": 14642,
+			"id": 14674,
 			"name": "UpdateSalesChannelDTO",
 			"variant": "declaration",
 			"kind": 256,
@@ -4442,7 +4442,7 @@
 			},
 			"children": [
 				{
-					"id": 14643,
+					"id": 14675,
 					"name": "name",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4470,7 +4470,7 @@
 					}
 				},
 				{
-					"id": 14644,
+					"id": 14676,
 					"name": "description",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4507,7 +4507,7 @@
 					}
 				},
 				{
-					"id": 14645,
+					"id": 14677,
 					"name": "is_disabled",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4535,7 +4535,7 @@
 					}
 				},
 				{
-					"id": 14646,
+					"id": 14678,
 					"name": "metadata",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4559,7 +4559,7 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14720,
+						"target": 14752,
 						"name": "MetadataType",
 						"package": "@medusajs/types"
 					}
@@ -4569,10 +4569,10 @@
 				{
 					"title": "Properties",
 					"children": [
-						14643,
-						14644,
-						14645,
-						14646
+						14675,
+						14676,
+						14677,
+						14678
 					]
 				}
 			],
@@ -4585,7 +4585,7 @@
 			]
 		},
 		{
-			"id": 14654,
+			"id": 14686,
 			"name": "UpsertSalesChannelDTO",
 			"variant": "declaration",
 			"kind": 256,
@@ -4600,7 +4600,7 @@
 			},
 			"children": [
 				{
-					"id": 14655,
+					"id": 14687,
 					"name": "id",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4628,7 +4628,7 @@
 					}
 				},
 				{
-					"id": 14656,
+					"id": 14688,
 					"name": "name",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4656,7 +4656,7 @@
 					}
 				},
 				{
-					"id": 14657,
+					"id": 14689,
 					"name": "description",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4693,7 +4693,7 @@
 					}
 				},
 				{
-					"id": 14658,
+					"id": 14690,
 					"name": "is_disabled",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4721,7 +4721,7 @@
 					}
 				},
 				{
-					"id": 14659,
+					"id": 14691,
 					"name": "metadata",
 					"variant": "declaration",
 					"kind": 1024,
@@ -4745,7 +4745,7 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14720,
+						"target": 14752,
 						"name": "MetadataType",
 						"package": "@medusajs/types"
 					}
@@ -4755,11 +4755,11 @@
 				{
 					"title": "Properties",
 					"children": [
-						14655,
-						14656,
-						14657,
-						14658,
-						14659
+						14687,
+						14688,
+						14689,
+						14690,
+						14691
 					]
 				}
 			],
@@ -4772,7 +4772,7 @@
 			]
 		},
 		{
-			"id": 14531,
+			"id": 14563,
 			"name": "ISalesChannelModuleService",
 			"variant": "declaration",
 			"kind": 256,
@@ -4787,7 +4787,7 @@
 			},
 			"children": [
 				{
-					"id": 14532,
+					"id": 14564,
 					"name": "createSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -4797,18 +4797,18 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 30,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L30"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L30"
 						},
 						{
 							"fileName": "sales-channel/service.ts",
 							"line": 47,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L47"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L47"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14533,
+							"id": 14565,
 							"name": "createSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -4846,12 +4846,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 30,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L30"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L30"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14534,
+									"id": 14566,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -4868,14 +4868,14 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14616,
+											"target": 14648,
 											"name": "CreateSalesChannelDTO",
 											"package": "@medusajs/types"
 										}
 									}
 								},
 								{
-									"id": 14535,
+									"id": 14567,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -4892,7 +4892,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -4909,7 +4909,7 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14635,
+											"target": 14667,
 											"name": "SalesChannelDTO",
 											"package": "@medusajs/types"
 										}
@@ -4920,7 +4920,7 @@
 							}
 						},
 						{
-							"id": 14536,
+							"id": 14568,
 							"name": "createSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -4958,12 +4958,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 47,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L47"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L47"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14537,
+									"id": 14569,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -4978,13 +4978,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14616,
+										"target": 14648,
 										"name": "CreateSalesChannelDTO",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14538,
+									"id": 14570,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5001,7 +5001,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5016,7 +5016,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 14635,
+										"target": 14667,
 										"name": "SalesChannelDTO",
 										"package": "@medusajs/types"
 									}
@@ -5028,7 +5028,7 @@
 					]
 				},
 				{
-					"id": 14539,
+					"id": 14571,
 					"name": "updateSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5038,18 +5038,18 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 68,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L68"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L68"
 						},
 						{
 							"fileName": "sales-channel/service.ts",
 							"line": 92,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L92"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L92"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14540,
+							"id": 14572,
 							"name": "updateSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -5087,12 +5087,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 68,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L68"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L68"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14541,
+									"id": 14573,
 									"name": "channelId",
 									"variant": "param",
 									"kind": 32768,
@@ -5111,7 +5111,7 @@
 									}
 								},
 								{
-									"id": 14542,
+									"id": 14574,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -5126,13 +5126,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14642,
+										"target": 14674,
 										"name": "UpdateSalesChannelDTO",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14543,
+									"id": 14575,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5149,7 +5149,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5164,7 +5164,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 14635,
+										"target": 14667,
 										"name": "SalesChannelDTO",
 										"package": "@medusajs/types"
 									}
@@ -5174,7 +5174,7 @@
 							}
 						},
 						{
-							"id": 14544,
+							"id": 14576,
 							"name": "updateSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -5212,12 +5212,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 92,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L92"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L92"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14545,
+									"id": 14577,
 									"name": "selector",
 									"variant": "param",
 									"kind": 32768,
@@ -5232,13 +5232,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14647,
+										"target": 14679,
 										"name": "FilterableSalesChannelProps",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14546,
+									"id": 14578,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -5253,13 +5253,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14642,
+										"target": 14674,
 										"name": "UpdateSalesChannelDTO",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14547,
+									"id": 14579,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5276,7 +5276,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5293,7 +5293,7 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14635,
+											"target": 14667,
 											"name": "SalesChannelDTO",
 											"package": "@medusajs/types"
 										}
@@ -5306,7 +5306,7 @@
 					]
 				},
 				{
-					"id": 14548,
+					"id": 14580,
 					"name": "upsertSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5316,18 +5316,18 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 110,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L110"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L110"
 						},
 						{
 							"fileName": "sales-channel/service.ts",
 							"line": 133,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L133"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L133"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14549,
+							"id": 14581,
 							"name": "upsertSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -5365,12 +5365,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 110,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L110"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L110"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14550,
+									"id": 14582,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -5385,13 +5385,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14654,
+										"target": 14686,
 										"name": "UpsertSalesChannelDTO",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14551,
+									"id": 14583,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5408,7 +5408,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5423,7 +5423,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 14635,
+										"target": 14667,
 										"name": "SalesChannelDTO",
 										"package": "@medusajs/types"
 									}
@@ -5433,7 +5433,7 @@
 							}
 						},
 						{
-							"id": 14552,
+							"id": 14584,
 							"name": "upsertSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -5471,12 +5471,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 133,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L133"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L133"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14553,
+									"id": 14585,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -5493,14 +5493,14 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14654,
+											"target": 14686,
 											"name": "UpsertSalesChannelDTO",
 											"package": "@medusajs/types"
 										}
 									}
 								},
 								{
-									"id": 14554,
+									"id": 14586,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5517,7 +5517,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5534,7 +5534,7 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14635,
+											"target": 14667,
 											"name": "SalesChannelDTO",
 											"package": "@medusajs/types"
 										}
@@ -5547,7 +5547,7 @@
 					]
 				},
 				{
-					"id": 14555,
+					"id": 14587,
 					"name": "deleteSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5557,18 +5557,18 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 148,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L148"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L148"
 						},
 						{
 							"fileName": "sales-channel/service.ts",
 							"line": 160,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L160"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L160"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14556,
+							"id": 14588,
 							"name": "deleteSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -5606,12 +5606,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 148,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L148"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L148"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14557,
+									"id": 14589,
 									"name": "ids",
 									"variant": "param",
 									"kind": 32768,
@@ -5633,7 +5633,7 @@
 									}
 								},
 								{
-									"id": 14558,
+									"id": 14590,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5650,7 +5650,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5673,7 +5673,7 @@
 							}
 						},
 						{
-							"id": 14559,
+							"id": 14591,
 							"name": "deleteSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -5711,12 +5711,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 160,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L160"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L160"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14560,
+									"id": 14592,
 									"name": "id",
 									"variant": "param",
 									"kind": 32768,
@@ -5735,7 +5735,7 @@
 									}
 								},
 								{
-									"id": 14561,
+									"id": 14593,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5752,7 +5752,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5777,7 +5777,7 @@
 					]
 				},
 				{
-					"id": 14562,
+					"id": 14594,
 					"name": "retrieveSalesChannel",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5787,12 +5787,12 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 175,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L175"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L175"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14563,
+							"id": 14595,
 							"name": "retrieveSalesChannel",
 							"variant": "signature",
 							"kind": 4096,
@@ -5830,12 +5830,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 175,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L175"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L175"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14564,
+									"id": 14596,
 									"name": "id",
 									"variant": "param",
 									"kind": 32768,
@@ -5854,7 +5854,7 @@
 									}
 								},
 								{
-									"id": 14565,
+									"id": 14597,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -5887,11 +5887,11 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14660,
+										"target": 14692,
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 14635,
+												"target": 14667,
 												"name": "SalesChannelDTO",
 												"package": "@medusajs/types"
 											}
@@ -5901,7 +5901,7 @@
 									}
 								},
 								{
-									"id": 14566,
+									"id": 14598,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -5918,7 +5918,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -5933,7 +5933,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 14635,
+										"target": 14667,
 										"name": "SalesChannelDTO",
 										"package": "@medusajs/types"
 									}
@@ -5945,7 +5945,7 @@
 					]
 				},
 				{
-					"id": 14567,
+					"id": 14599,
 					"name": "listSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -5955,12 +5955,12 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 213,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L213"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L213"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14568,
+							"id": 14600,
 							"name": "listSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -6042,12 +6042,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 213,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L213"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L213"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14569,
+									"id": 14601,
 									"name": "filters",
 									"variant": "param",
 									"kind": 32768,
@@ -6064,13 +6064,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14647,
+										"target": 14679,
 										"name": "FilterableSalesChannelProps",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14570,
+									"id": 14602,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -6103,11 +6103,11 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14660,
+										"target": 14692,
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 14635,
+												"target": 14667,
 												"name": "SalesChannelDTO",
 												"package": "@medusajs/types"
 											}
@@ -6117,7 +6117,7 @@
 									}
 								},
 								{
-									"id": 14571,
+									"id": 14603,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -6134,7 +6134,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -6151,7 +6151,7 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14635,
+											"target": 14667,
 											"name": "SalesChannelDTO",
 											"package": "@medusajs/types"
 										}
@@ -6164,7 +6164,7 @@
 					]
 				},
 				{
-					"id": 14572,
+					"id": 14604,
 					"name": "listAndCountSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -6174,12 +6174,12 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 253,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L253"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L253"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14573,
+							"id": 14605,
 							"name": "listAndCountSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -6261,12 +6261,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 253,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L253"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L253"
 								}
 							],
 							"parameters": [
 								{
-									"id": 14574,
+									"id": 14606,
 									"name": "filters",
 									"variant": "param",
 									"kind": 32768,
@@ -6283,13 +6283,13 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14647,
+										"target": 14679,
 										"name": "FilterableSalesChannelProps",
 										"package": "@medusajs/types"
 									}
 								},
 								{
-									"id": 14575,
+									"id": 14607,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -6322,11 +6322,11 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14660,
+										"target": 14692,
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 14635,
+												"target": 14667,
 												"name": "SalesChannelDTO",
 												"package": "@medusajs/types"
 											}
@@ -6336,7 +6336,7 @@
 									}
 								},
 								{
-									"id": 14576,
+									"id": 14608,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -6353,7 +6353,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -6373,7 +6373,7 @@
 												"type": "array",
 												"elementType": {
 													"type": "reference",
-													"target": 14635,
+													"target": 14667,
 													"name": "SalesChannelDTO",
 													"package": "@medusajs/types"
 												}
@@ -6392,7 +6392,7 @@
 					]
 				},
 				{
-					"id": 14577,
+					"id": 14609,
 					"name": "softDeleteSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -6402,12 +6402,12 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 271,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L271"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L271"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14578,
+							"id": 14610,
 							"name": "softDeleteSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -6453,12 +6453,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 271,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L271"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L271"
 								}
 							],
 							"typeParameters": [
 								{
-									"id": 14579,
+									"id": 14611,
 									"name": "TReturnableLinkableKeys",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -6475,7 +6475,7 @@
 							],
 							"parameters": [
 								{
-									"id": 14580,
+									"id": 14612,
 									"name": "salesChannelIds",
 									"variant": "param",
 									"kind": 32768,
@@ -6497,7 +6497,7 @@
 									}
 								},
 								{
-									"id": 14581,
+									"id": 14613,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -6514,11 +6514,11 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14671,
+										"target": 14703,
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 14579,
+												"target": 14611,
 												"name": "TReturnableLinkableKeys",
 												"package": "@medusajs/types",
 												"refersToTypeParameter": true
@@ -6529,7 +6529,7 @@
 									}
 								},
 								{
-									"id": 14582,
+									"id": 14614,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -6546,7 +6546,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -6598,7 +6598,7 @@
 					]
 				},
 				{
-					"id": 14583,
+					"id": 14615,
 					"name": "restoreSalesChannels",
 					"variant": "declaration",
 					"kind": 2048,
@@ -6608,12 +6608,12 @@
 							"fileName": "sales-channel/service.ts",
 							"line": 290,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L290"
+							"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L290"
 						}
 					],
 					"signatures": [
 						{
-							"id": 14584,
+							"id": 14616,
 							"name": "restoreSalesChannels",
 							"variant": "signature",
 							"kind": 4096,
@@ -6659,12 +6659,12 @@
 									"fileName": "sales-channel/service.ts",
 									"line": 290,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L290"
+									"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L290"
 								}
 							],
 							"typeParameters": [
 								{
-									"id": 14585,
+									"id": 14617,
 									"name": "TReturnableLinkableKeys",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -6681,7 +6681,7 @@
 							],
 							"parameters": [
 								{
-									"id": 14586,
+									"id": 14618,
 									"name": "salesChannelIds",
 									"variant": "param",
 									"kind": 32768,
@@ -6703,7 +6703,7 @@
 									}
 								},
 								{
-									"id": 14587,
+									"id": 14619,
 									"name": "config",
 									"variant": "param",
 									"kind": 32768,
@@ -6728,11 +6728,11 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14674,
+										"target": 14706,
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 14585,
+												"target": 14617,
 												"name": "TReturnableLinkableKeys",
 												"package": "@medusajs/types",
 												"refersToTypeParameter": true
@@ -6743,7 +6743,7 @@
 									}
 								},
 								{
-									"id": 14588,
+									"id": 14620,
 									"name": "sharedContext",
 									"variant": "param",
 									"kind": 32768,
@@ -6760,7 +6760,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14620,
+										"target": 14652,
 										"name": "Context",
 										"package": "@medusajs/types"
 									}
@@ -6816,15 +6816,15 @@
 				{
 					"title": "Methods",
 					"children": [
-						14532,
-						14539,
-						14548,
-						14555,
-						14562,
-						14567,
-						14572,
-						14577,
-						14583
+						14564,
+						14571,
+						14580,
+						14587,
+						14594,
+						14599,
+						14604,
+						14609,
+						14615
 					]
 				}
 			],
@@ -6833,27 +6833,27 @@
 					"fileName": "sales-channel/service.ts",
 					"line": 15,
 					"character": 17,
-					"url": "https://github.com/medusajs/medusa/blob/4936315b2dc777fbaaf2869b16bf48602fc7e69b/packages/core/types/src/sales-channel/service.ts#L15"
+					"url": "https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/types/src/sales-channel/service.ts#L15"
 				}
 			],
 			"extendedTypes": [
 				{
 					"type": "reference",
-					"target": 14602,
+					"target": 14634,
 					"name": "IModuleService",
 					"package": "@medusajs/types"
 				}
 			]
 		},
 		{
-			"id": 14760,
+			"id": 14792,
 			"name": "MessageAggregatorFormat",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 14761,
+					"id": 14793,
 					"name": "groupBy",
 					"variant": "declaration",
 					"kind": 1024,
@@ -6876,7 +6876,7 @@
 					}
 				},
 				{
-					"id": 14762,
+					"id": 14794,
 					"name": "sortBy",
 					"variant": "declaration",
 					"kind": 1024,
@@ -6893,7 +6893,7 @@
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 14763,
+							"id": 14795,
 							"name": "__type",
 							"variant": "declaration",
 							"kind": 65536,
@@ -6907,7 +6907,7 @@
 							],
 							"indexSignatures": [
 								{
-									"id": 14764,
+									"id": 14796,
 									"name": "__index",
 									"variant": "signature",
 									"kind": 8192,
@@ -6921,7 +6921,7 @@
 									],
 									"parameters": [
 										{
-											"id": 14765,
+											"id": 14797,
 											"name": "key",
 											"variant": "param",
 											"kind": 32768,
@@ -6958,7 +6958,7 @@
 					}
 				},
 				{
-					"id": 14766,
+					"id": 14798,
 					"name": "internal",
 					"variant": "declaration",
 					"kind": 1024,
@@ -6993,9 +6993,9 @@
 				{
 					"title": "Properties",
 					"children": [
-						14761,
-						14762,
-						14766
+						14793,
+						14794,
+						14798
 					]
 				}
 			],
@@ -7008,14 +7008,14 @@
 			]
 		},
 		{
-			"id": 14702,
+			"id": 14734,
 			"name": "IMessageAggregator",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 14703,
+					"id": 14735,
 					"name": "save",
 					"variant": "declaration",
 					"kind": 2048,
@@ -7029,7 +7029,7 @@
 					],
 					"signatures": [
 						{
-							"id": 14704,
+							"id": 14736,
 							"name": "save",
 							"variant": "signature",
 							"kind": 4096,
@@ -7043,7 +7043,7 @@
 							],
 							"parameters": [
 								{
-									"id": 14705,
+									"id": 14737,
 									"name": "msg",
 									"variant": "param",
 									"kind": 32768,
@@ -7053,7 +7053,7 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 14756,
+												"target": 14788,
 												"name": "Message",
 												"package": "@medusajs/types"
 											},
@@ -7061,7 +7061,7 @@
 												"type": "array",
 												"elementType": {
 													"type": "reference",
-													"target": 14756,
+													"target": 14788,
 													"name": "Message",
 													"package": "@medusajs/types"
 												}
@@ -7078,7 +7078,7 @@
 					]
 				},
 				{
-					"id": 14706,
+					"id": 14738,
 					"name": "getMessages",
 					"variant": "declaration",
 					"kind": 2048,
@@ -7092,7 +7092,7 @@
 					],
 					"signatures": [
 						{
-							"id": 14707,
+							"id": 14739,
 							"name": "getMessages",
 							"variant": "signature",
 							"kind": 4096,
@@ -7106,7 +7106,7 @@
 							],
 							"parameters": [
 								{
-									"id": 14708,
+									"id": 14740,
 									"name": "format",
 									"variant": "param",
 									"kind": 32768,
@@ -7115,7 +7115,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"target": 14760,
+										"target": 14792,
 										"name": "MessageAggregatorFormat",
 										"package": "@medusajs/types"
 									}
@@ -7136,7 +7136,7 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 14756,
+											"target": 14788,
 											"name": "Message",
 											"package": "@medusajs/types"
 										}
@@ -7149,7 +7149,7 @@
 					]
 				},
 				{
-					"id": 14709,
+					"id": 14741,
 					"name": "clearMessages",
 					"variant": "declaration",
 					"kind": 2048,
@@ -7163,7 +7163,7 @@
 					],
 					"signatures": [
 						{
-							"id": 14710,
+							"id": 14742,
 							"name": "clearMessages",
 							"variant": "signature",
 							"kind": 4096,
@@ -7183,7 +7183,7 @@
 					]
 				},
 				{
-					"id": 14711,
+					"id": 14743,
 					"name": "saveRawMessageData",
 					"variant": "declaration",
 					"kind": 2048,
@@ -7197,7 +7197,7 @@
 					],
 					"signatures": [
 						{
-							"id": 14712,
+							"id": 14744,
 							"name": "saveRawMessageData",
 							"variant": "signature",
 							"kind": 4096,
@@ -7211,7 +7211,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 14713,
+									"id": 14745,
 									"name": "T",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -7220,7 +7220,7 @@
 							],
 							"parameters": [
 								{
-									"id": 14714,
+									"id": 14746,
 									"name": "messageData",
 									"variant": "param",
 									"kind": 32768,
@@ -7230,11 +7230,11 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 14767,
+												"target": 14799,
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 14713,
+														"target": 14745,
 														"name": "T",
 														"package": "@medusajs/types",
 														"refersToTypeParameter": true
@@ -7247,11 +7247,11 @@
 												"type": "array",
 												"elementType": {
 													"type": "reference",
-													"target": 14767,
+													"target": 14799,
 													"typeArguments": [
 														{
 															"type": "reference",
-															"target": 14713,
+															"target": 14745,
 															"name": "T",
 															"package": "@medusajs/types",
 															"refersToTypeParameter": true
@@ -7265,7 +7265,7 @@
 									}
 								},
 								{
-									"id": 14715,
+									"id": 14747,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
@@ -7305,10 +7305,10 @@
 				{
 					"title": "Methods",
 					"children": [
-						14703,
-						14706,
-						14709,
-						14711
+						14735,
+						14738,
+						14741,
+						14743
 					]
 				}
 			],
@@ -7321,7 +7321,7 @@
 			]
 		},
 		{
-			"id": 14620,
+			"id": 14652,
 			"name": "Context",
 			"variant": "declaration",
 			"kind": 256,
@@ -7336,7 +7336,7 @@
 			},
 			"children": [
 				{
-					"id": 14621,
+					"id": 14653,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7356,7 +7356,7 @@
 					}
 				},
 				{
-					"id": 14622,
+					"id": 14654,
 					"name": "transactionManager",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7396,14 +7396,14 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14634,
+						"target": 14666,
 						"name": "TManager",
 						"package": "@medusajs/types",
 						"refersToTypeParameter": true
 					}
 				},
 				{
-					"id": 14623,
+					"id": 14655,
 					"name": "manager",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7443,14 +7443,14 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14634,
+						"target": 14666,
 						"name": "TManager",
 						"package": "@medusajs/types",
 						"refersToTypeParameter": true
 					}
 				},
 				{
-					"id": 14624,
+					"id": 14656,
 					"name": "isolationLevel",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7510,7 +7510,7 @@
 					}
 				},
 				{
-					"id": 14625,
+					"id": 14657,
 					"name": "enableNestedTransactions",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7538,7 +7538,7 @@
 					}
 				},
 				{
-					"id": 14626,
+					"id": 14658,
 					"name": "eventGroupId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7566,7 +7566,7 @@
 					}
 				},
 				{
-					"id": 14627,
+					"id": 14659,
 					"name": "transactionId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7594,7 +7594,7 @@
 					}
 				},
 				{
-					"id": 14628,
+					"id": 14660,
 					"name": "messageAggregator",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7618,13 +7618,13 @@
 					],
 					"type": {
 						"type": "reference",
-						"target": 14702,
+						"target": 14734,
 						"name": "IMessageAggregator",
 						"package": "@medusajs/types"
 					}
 				},
 				{
-					"id": 14629,
+					"id": 14661,
 					"name": "requestId",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7652,7 +7652,7 @@
 					}
 				},
 				{
-					"id": 14630,
+					"id": 14662,
 					"name": "idempotencyKey",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7680,7 +7680,7 @@
 					}
 				},
 				{
-					"id": 14631,
+					"id": 14663,
 					"name": "parentStepIdempotencyKey",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7708,7 +7708,7 @@
 					}
 				},
 				{
-					"id": 14632,
+					"id": 14664,
 					"name": "preventReleaseEvents",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7736,7 +7736,7 @@
 					}
 				},
 				{
-					"id": 14633,
+					"id": 14665,
 					"name": "isCancelling",
 					"variant": "declaration",
 					"kind": 1024,
@@ -7768,19 +7768,19 @@
 				{
 					"title": "Properties",
 					"children": [
-						14621,
-						14622,
-						14623,
-						14624,
-						14625,
-						14626,
-						14627,
-						14628,
-						14629,
-						14630,
-						14631,
-						14632,
-						14633
+						14653,
+						14654,
+						14655,
+						14656,
+						14657,
+						14658,
+						14659,
+						14660,
+						14661,
+						14662,
+						14663,
+						14664,
+						14665
 					]
 				}
 			],
@@ -7793,7 +7793,7 @@
 			],
 			"typeParameters": [
 				{
-					"id": 14634,
+					"id": 14666,
 					"name": "TManager",
 					"variant": "typeParam",
 					"kind": 131072,
@@ -7810,1064 +7810,1064 @@
 		{
 			"title": "Interfaces",
 			"children": [
-				14660,
-				14721,
-				14671,
+				14692,
+				14753,
+				14703,
+				14706,
+				14809,
+				14762,
+				14634,
+				14748,
+				14667,
+				14679,
+				14648,
 				14674,
-				14777,
-				14730,
-				14602,
-				14716,
-				14635,
-				14647,
-				14616,
-				14642,
-				14654,
-				14531,
-				14760,
-				14702,
-				14620
+				14686,
+				14563,
+				14792,
+				14734,
+				14652
 			]
 		},
 		{
 			"title": "Type Aliases",
 			"children": [
-				14725,
-				14720,
-				14798,
-				14792,
-				14756,
-				14767,
+				14757,
+				14752,
+				14830,
+				14824,
+				14788,
+				14799,
+				14814,
 				14782,
-				14750,
-				14677,
-				14745
+				14709,
+				14777
 			]
 		}
 	],
 	"packageName": "@medusajs/types",
 	"symbolIdMap": {
-		"14530": {
+		"14562": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
 			"qualifiedName": ""
 		},
-		"14531": {
+		"14563": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
 			"qualifiedName": "ISalesChannelModuleService"
 		},
-		"14532": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.createSalesChannels"
-		},
-		"14533": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.createSalesChannels"
-		},
-		"14534": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "data"
-		},
-		"14535": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14536": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.createSalesChannels"
-		},
-		"14537": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "data"
-		},
-		"14538": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14539": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.updateSalesChannels"
-		},
-		"14540": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.updateSalesChannels"
-		},
-		"14541": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "channelId"
-		},
-		"14542": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "data"
-		},
-		"14543": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14544": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.updateSalesChannels"
-		},
-		"14545": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "selector"
-		},
-		"14546": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "data"
-		},
-		"14547": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14548": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.upsertSalesChannels"
-		},
-		"14549": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.upsertSalesChannels"
-		},
-		"14550": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "data"
-		},
-		"14551": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14552": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.upsertSalesChannels"
-		},
-		"14553": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "data"
-		},
-		"14554": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14555": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.deleteSalesChannels"
-		},
-		"14556": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.deleteSalesChannels"
-		},
-		"14557": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ids"
-		},
-		"14558": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14559": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.deleteSalesChannels"
-		},
-		"14560": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "id"
-		},
-		"14561": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
-		},
-		"14562": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.retrieveSalesChannel"
-		},
-		"14563": {
-			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.retrieveSalesChannel"
-		},
 		"14564": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "id"
+			"qualifiedName": "ISalesChannelModuleService.createSalesChannels"
 		},
 		"14565": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "config"
+			"qualifiedName": "ISalesChannelModuleService.createSalesChannels"
 		},
 		"14566": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
+			"qualifiedName": "data"
 		},
 		"14567": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.listSalesChannels"
+			"qualifiedName": "sharedContext"
 		},
 		"14568": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.listSalesChannels"
+			"qualifiedName": "ISalesChannelModuleService.createSalesChannels"
 		},
 		"14569": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "filters"
+			"qualifiedName": "data"
 		},
 		"14570": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "config"
+			"qualifiedName": "sharedContext"
 		},
 		"14571": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
+			"qualifiedName": "ISalesChannelModuleService.updateSalesChannels"
 		},
 		"14572": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.listAndCountSalesChannels"
+			"qualifiedName": "ISalesChannelModuleService.updateSalesChannels"
 		},
 		"14573": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.listAndCountSalesChannels"
+			"qualifiedName": "channelId"
 		},
 		"14574": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "filters"
+			"qualifiedName": "data"
 		},
 		"14575": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "config"
+			"qualifiedName": "sharedContext"
 		},
 		"14576": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
+			"qualifiedName": "ISalesChannelModuleService.updateSalesChannels"
 		},
 		"14577": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.softDeleteSalesChannels"
+			"qualifiedName": "selector"
 		},
 		"14578": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.softDeleteSalesChannels"
+			"qualifiedName": "data"
 		},
 		"14579": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "TReturnableLinkableKeys"
+			"qualifiedName": "sharedContext"
 		},
 		"14580": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "salesChannelIds"
+			"qualifiedName": "ISalesChannelModuleService.upsertSalesChannels"
 		},
 		"14581": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "config"
+			"qualifiedName": "ISalesChannelModuleService.upsertSalesChannels"
 		},
 		"14582": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "sharedContext"
+			"qualifiedName": "data"
 		},
 		"14583": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.restoreSalesChannels"
+			"qualifiedName": "sharedContext"
 		},
 		"14584": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "ISalesChannelModuleService.restoreSalesChannels"
+			"qualifiedName": "ISalesChannelModuleService.upsertSalesChannels"
 		},
 		"14585": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "TReturnableLinkableKeys"
+			"qualifiedName": "data"
 		},
 		"14586": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "salesChannelIds"
+			"qualifiedName": "sharedContext"
 		},
 		"14587": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
-			"qualifiedName": "config"
+			"qualifiedName": "ISalesChannelModuleService.deleteSalesChannels"
 		},
 		"14588": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.deleteSalesChannels"
+		},
+		"14589": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ids"
+		},
+		"14590": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
 			"qualifiedName": "sharedContext"
 		},
+		"14591": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.deleteSalesChannels"
+		},
+		"14592": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "id"
+		},
+		"14593": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "sharedContext"
+		},
+		"14594": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.retrieveSalesChannel"
+		},
+		"14595": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.retrieveSalesChannel"
+		},
+		"14596": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "id"
+		},
+		"14597": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "config"
+		},
+		"14598": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "sharedContext"
+		},
+		"14599": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.listSalesChannels"
+		},
+		"14600": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.listSalesChannels"
+		},
+		"14601": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "filters"
+		},
 		"14602": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "config"
+		},
+		"14603": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "sharedContext"
+		},
+		"14604": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.listAndCountSalesChannels"
+		},
+		"14605": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.listAndCountSalesChannels"
+		},
+		"14606": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "filters"
+		},
+		"14607": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "config"
+		},
+		"14608": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "sharedContext"
+		},
+		"14609": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.softDeleteSalesChannels"
+		},
+		"14610": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.softDeleteSalesChannels"
+		},
+		"14611": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "TReturnableLinkableKeys"
+		},
+		"14612": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "salesChannelIds"
+		},
+		"14613": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "config"
+		},
+		"14614": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "sharedContext"
+		},
+		"14615": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.restoreSalesChannels"
+		},
+		"14616": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "ISalesChannelModuleService.restoreSalesChannels"
+		},
+		"14617": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "TReturnableLinkableKeys"
+		},
+		"14618": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "salesChannelIds"
+		},
+		"14619": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "config"
+		},
+		"14620": {
+			"sourceFileName": "../../../../packages/core/types/src/sales-channel/service.ts",
+			"qualifiedName": "sharedContext"
+		},
+		"14634": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "IModuleService"
 		},
-		"14603": {
+		"14635": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "IModuleService.__joinerConfig"
 		},
-		"14604": {
+		"14636": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "IModuleService.__joinerConfig"
 		},
-		"14605": {
+		"14637": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "IModuleService.__hooks"
 		},
-		"14606": {
+		"14638": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14607": {
+		"14639": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.onApplicationStart"
 		},
-		"14608": {
+		"14640": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14609": {
+		"14641": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14610": {
+		"14642": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.onApplicationShutdown"
 		},
-		"14611": {
+		"14643": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14612": {
+		"14644": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14613": {
+		"14645": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.onApplicationPrepareShutdown"
 		},
-		"14614": {
+		"14646": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14615": {
+		"14647": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14616": {
+		"14648": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "CreateSalesChannelDTO"
 		},
-		"14617": {
+		"14649": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "CreateSalesChannelDTO.name"
 		},
-		"14618": {
+		"14650": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "CreateSalesChannelDTO.description"
 		},
-		"14619": {
+		"14651": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "CreateSalesChannelDTO.is_disabled"
 		},
-		"14620": {
+		"14652": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "Context"
 		},
-		"14621": {
+		"14653": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.__type"
 		},
-		"14622": {
+		"14654": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.transactionManager"
 		},
-		"14623": {
+		"14655": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.manager"
 		},
-		"14624": {
+		"14656": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.isolationLevel"
 		},
-		"14625": {
+		"14657": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.enableNestedTransactions"
 		},
-		"14626": {
+		"14658": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.eventGroupId"
 		},
-		"14627": {
+		"14659": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.transactionId"
 		},
-		"14628": {
+		"14660": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.messageAggregator"
 		},
-		"14629": {
+		"14661": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.requestId"
 		},
-		"14630": {
+		"14662": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.idempotencyKey"
 		},
-		"14631": {
+		"14663": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.parentStepIdempotencyKey"
 		},
-		"14632": {
+		"14664": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.preventReleaseEvents"
 		},
-		"14633": {
+		"14665": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "__type.isCancelling"
 		},
-		"14634": {
+		"14666": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "TManager"
 		},
-		"14635": {
+		"14667": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO"
 		},
-		"14636": {
+		"14668": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO.id"
 		},
-		"14637": {
+		"14669": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO.name"
 		},
-		"14638": {
+		"14670": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO.description"
 		},
-		"14639": {
+		"14671": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO.is_disabled"
 		},
-		"14640": {
+		"14672": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO.metadata"
 		},
-		"14641": {
+		"14673": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelDTO.locations"
 		},
-		"14642": {
+		"14674": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpdateSalesChannelDTO"
 		},
-		"14643": {
+		"14675": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpdateSalesChannelDTO.name"
 		},
-		"14644": {
+		"14676": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpdateSalesChannelDTO.description"
 		},
-		"14645": {
+		"14677": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpdateSalesChannelDTO.is_disabled"
 		},
-		"14646": {
+		"14678": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpdateSalesChannelDTO.metadata"
 		},
-		"14647": {
+		"14679": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "FilterableSalesChannelProps"
 		},
-		"14648": {
+		"14680": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "FilterableSalesChannelProps.q"
 		},
-		"14649": {
+		"14681": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "FilterableSalesChannelProps.id"
 		},
-		"14650": {
+		"14682": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "FilterableSalesChannelProps.name"
 		},
-		"14651": {
+		"14683": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "FilterableSalesChannelProps.is_disabled"
 		},
-		"14652": {
+		"14684": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/index.ts",
 			"qualifiedName": "BaseFilterable.$and"
 		},
-		"14653": {
+		"14685": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/index.ts",
 			"qualifiedName": "BaseFilterable.$or"
 		},
-		"14654": {
+		"14686": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpsertSalesChannelDTO"
 		},
-		"14655": {
+		"14687": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpsertSalesChannelDTO.id"
 		},
-		"14656": {
+		"14688": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpsertSalesChannelDTO.name"
 		},
-		"14657": {
+		"14689": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpsertSalesChannelDTO.description"
 		},
-		"14658": {
+		"14690": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpsertSalesChannelDTO.is_disabled"
 		},
-		"14659": {
+		"14691": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/mutations.ts",
 			"qualifiedName": "UpsertSalesChannelDTO.metadata"
 		},
-		"14660": {
+		"14692": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig"
 		},
-		"14661": {
+		"14693": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.select"
 		},
-		"14662": {
+		"14694": {
 			"sourceFileName": "",
 			"qualifiedName": "__type"
 		},
-		"14663": {
+		"14695": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.skip"
 		},
-		"14664": {
+		"14696": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.take"
 		},
-		"14665": {
+		"14697": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.relations"
 		},
-		"14666": {
+		"14698": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.order"
 		},
-		"14667": {
+		"14699": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.withDeleted"
 		},
-		"14668": {
+		"14700": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.filters"
 		},
-		"14669": {
+		"14701": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.options"
 		},
-		"14670": {
+		"14702": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfig.Entity"
 		},
-		"14671": {
+		"14703": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/repository-service.ts",
 			"qualifiedName": "SoftDeleteReturn"
 		},
-		"14672": {
+		"14704": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/repository-service.ts",
 			"qualifiedName": "__type.returnLinkableKeys"
 		},
-		"14673": {
+		"14705": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/repository-service.ts",
 			"qualifiedName": "TReturnableLinkableKeys"
 		},
-		"14674": {
+		"14706": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/repository-service.ts",
 			"qualifiedName": "RestoreReturn"
 		},
-		"14675": {
+		"14707": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/repository-service.ts",
 			"qualifiedName": "__type.returnLinkableKeys"
 		},
-		"14676": {
+		"14708": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/repository-service.ts",
 			"qualifiedName": "TReturnableLinkableKeys"
 		},
-		"14677": {
+		"14709": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "ModuleJoinerConfig"
 		},
-		"14678": {
+		"14710": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14679": {
+		"14711": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.schema"
 		},
-		"14680": {
+		"14712": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.relationships"
 		},
-		"14681": {
+		"14713": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.extends"
 		},
-		"14682": {
+		"14714": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14683": {
+		"14715": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.serviceName"
 		},
-		"14684": {
+		"14716": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.entity"
 		},
-		"14685": {
+		"14717": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.fieldAlias"
 		},
-		"14686": {
+		"14718": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14687": {
+		"14719": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.path"
 		},
-		"14688": {
+		"14720": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.forwardArgumentsOnPath"
 		},
-		"14689": {
+		"14721": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.isList"
 		},
-		"14690": {
+		"14722": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.relationship"
 		},
-		"14691": {
+		"14723": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.serviceName"
 		},
-		"14692": {
+		"14724": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.primaryKeys"
 		},
-		"14693": {
+		"14725": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.isLink"
 		},
-		"14694": {
+		"14726": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.linkableKeys"
 		},
-		"14695": {
+		"14727": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.isReadOnlyLink"
 		},
-		"14696": {
+		"14728": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.extraDataFields"
 		},
-		"14697": {
+		"14729": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.databaseConfig"
 		},
-		"14698": {
+		"14730": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14699": {
+		"14731": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.tableName"
 		},
-		"14700": {
+		"14732": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.idPrefix"
 		},
-		"14701": {
+		"14733": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.extraFields"
 		},
-		"14702": {
+		"14734": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator"
 		},
-		"14703": {
+		"14735": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.save"
 		},
-		"14704": {
+		"14736": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.save"
 		},
-		"14705": {
+		"14737": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "msg"
 		},
-		"14706": {
+		"14738": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.getMessages"
 		},
-		"14707": {
+		"14739": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.getMessages"
 		},
-		"14708": {
+		"14740": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "format"
 		},
-		"14709": {
+		"14741": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.clearMessages"
 		},
-		"14710": {
+		"14742": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.clearMessages"
 		},
-		"14711": {
+		"14743": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.saveRawMessageData"
 		},
-		"14712": {
+		"14744": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "IMessageAggregator.saveRawMessageData"
 		},
-		"14713": {
+		"14745": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "T"
 		},
-		"14714": {
+		"14746": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "messageData"
 		},
-		"14715": {
+		"14747": {
 			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
 			"qualifiedName": "options"
 		},
-		"14716": {
+		"14748": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelLocationDTO"
 		},
-		"14717": {
+		"14749": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelLocationDTO.sales_channel_id"
 		},
-		"14718": {
+		"14750": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelLocationDTO.location_id"
 		},
-		"14719": {
+		"14751": {
 			"sourceFileName": "../../../../packages/core/types/src/sales-channel/common.ts",
 			"qualifiedName": "SalesChannelLocationDTO.sales_channel"
 		},
-		"14720": {
+		"14752": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "MetadataType"
 		},
-		"14721": {
+		"14753": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/index.ts",
 			"qualifiedName": "BaseFilterable"
 		},
-		"14722": {
+		"14754": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/index.ts",
 			"qualifiedName": "BaseFilterable.$and"
 		},
-		"14723": {
+		"14755": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/index.ts",
 			"qualifiedName": "BaseFilterable.$or"
 		},
-		"14724": {
+		"14756": {
 			"sourceFileName": "../../../../packages/core/types/src/dal/index.ts",
 			"qualifiedName": "BaseFilterable.T"
 		},
-		"14725": {
+		"14757": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "FindConfigOrder"
 		},
-		"14726": {
+		"14758": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "__type"
 		},
-		"14727": {
+		"14759": {
 			"sourceFileName": "../../../../packages/core/types/src/common/common.ts",
 			"qualifiedName": "__type.__index"
 		},
-		"14729": {
+		"14761": {
 			"sourceFileName": "",
 			"qualifiedName": "__type"
 		},
-		"14730": {
+		"14762": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig"
 		},
-		"14731": {
+		"14763": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.serviceName"
 		},
-		"14732": {
+		"14764": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.alias"
 		},
-		"14733": {
+		"14765": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.fieldAlias"
 		},
-		"14734": {
+		"14766": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14735": {
+		"14767": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type.path"
 		},
-		"14736": {
+		"14768": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type.forwardArgumentsOnPath"
 		},
-		"14737": {
+		"14769": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.primaryKeys"
 		},
-		"14738": {
+		"14770": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.relationships"
 		},
-		"14739": {
+		"14771": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.extends"
 		},
-		"14740": {
+		"14772": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14741": {
+		"14773": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type.serviceName"
 		},
-		"14742": {
+		"14774": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type.entity"
 		},
-		"14743": {
+		"14775": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "__type.relationship"
 		},
-		"14744": {
+		"14776": {
 			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
 			"qualifiedName": "JoinerServiceConfig.args"
 		},
-		"14745": {
+		"14777": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "ModuleJoinerRelationship"
 		},
-		"14746": {
+		"14778": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
-		"14747": {
+		"14779": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.deleteCascade"
 		},
-		"14748": {
+		"14780": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.filterable"
 		},
-		"14749": {
+		"14781": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type.hasMany"
 		},
-		"14750": {
+		"14782": {
 			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "LinkModulesExtraFields"
 		},
-		"14751": {
-			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
-			"qualifiedName": "__type"
-		},
-		"14752": {
-			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
-			"qualifiedName": "__type.type"
-		},
-		"14753": {
-			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
-			"qualifiedName": "__type.defaultValue"
-		},
-		"14754": {
-			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
-			"qualifiedName": "__type.nullable"
-		},
-		"14755": {
-			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
-			"qualifiedName": "__type.options"
-		},
-		"14756": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "Message"
-		},
-		"14757": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type"
-		},
-		"14758": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.options"
-		},
-		"14759": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "TData"
-		},
-		"14760": {
-			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
-			"qualifiedName": "MessageAggregatorFormat"
-		},
-		"14761": {
-			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
-			"qualifiedName": "MessageAggregatorFormat.groupBy"
-		},
-		"14762": {
-			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
-			"qualifiedName": "MessageAggregatorFormat.sortBy"
-		},
-		"14763": {
-			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
-			"qualifiedName": "__type"
-		},
-		"14764": {
-			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
-			"qualifiedName": "__type.__index"
-		},
-		"14766": {
-			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
-			"qualifiedName": "MessageAggregatorFormat.internal"
-		},
-		"14767": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "RawMessageFormat"
-		},
-		"14768": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type"
-		},
-		"14769": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.eventName"
-		},
-		"14770": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.data"
-		},
-		"14771": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.source"
-		},
-		"14772": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.object"
-		},
-		"14773": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.action"
-		},
-		"14774": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.context"
-		},
-		"14775": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.options"
-		},
-		"14776": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "TData"
-		},
-		"14777": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "JoinerServiceConfigAlias"
-		},
-		"14778": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "JoinerServiceConfigAlias.name"
-		},
-		"14779": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "JoinerServiceConfigAlias.entity"
-		},
-		"14780": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "JoinerServiceConfigAlias.filterable"
-		},
-		"14781": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "JoinerServiceConfigAlias.args"
-		},
-		"14782": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "JoinerRelationship"
-		},
 		"14783": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
 			"qualifiedName": "__type"
 		},
 		"14784": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.alias"
+			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
+			"qualifiedName": "__type.type"
 		},
 		"14785": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.foreignKey"
+			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
+			"qualifiedName": "__type.defaultValue"
 		},
 		"14786": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.primaryKey"
+			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
+			"qualifiedName": "__type.nullable"
 		},
 		"14787": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.serviceName"
+			"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
+			"qualifiedName": "__type.options"
 		},
 		"14788": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.entity"
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "Message"
 		},
 		"14789": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.inverse"
-		},
-		"14790": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.isList"
-		},
-		"14791": {
-			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
-			"qualifiedName": "__type.args"
-		},
-		"14792": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "Event"
-		},
-		"14793": {
 			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
 			"qualifiedName": "__type"
 		},
-		"14794": {
+		"14790": {
 			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.name"
+			"qualifiedName": "__type.options"
 		},
-		"14795": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.metadata"
-		},
-		"14796": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type.data"
-		},
-		"14797": {
+		"14791": {
 			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
 			"qualifiedName": "TData"
 		},
+		"14792": {
+			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
+			"qualifiedName": "MessageAggregatorFormat"
+		},
+		"14793": {
+			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
+			"qualifiedName": "MessageAggregatorFormat.groupBy"
+		},
+		"14794": {
+			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
+			"qualifiedName": "MessageAggregatorFormat.sortBy"
+		},
+		"14795": {
+			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
+			"qualifiedName": "__type"
+		},
+		"14796": {
+			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
+			"qualifiedName": "__type.__index"
+		},
 		"14798": {
-			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "EventMetadata"
+			"sourceFileName": "../../../../packages/core/types/src/shared-context.ts",
+			"qualifiedName": "MessageAggregatorFormat.internal"
 		},
 		"14799": {
 			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
-			"qualifiedName": "__type"
+			"qualifiedName": "RawMessageFormat"
 		},
 		"14800": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type"
+		},
+		"14801": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.eventName"
+		},
+		"14802": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.data"
+		},
+		"14803": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.source"
+		},
+		"14804": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.object"
+		},
+		"14805": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.action"
+		},
+		"14806": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.context"
+		},
+		"14807": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.options"
+		},
+		"14808": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "TData"
+		},
+		"14809": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "JoinerServiceConfigAlias"
+		},
+		"14810": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "JoinerServiceConfigAlias.name"
+		},
+		"14811": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "JoinerServiceConfigAlias.entity"
+		},
+		"14812": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "JoinerServiceConfigAlias.filterable"
+		},
+		"14813": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "JoinerServiceConfigAlias.args"
+		},
+		"14814": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "JoinerRelationship"
+		},
+		"14815": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type"
+		},
+		"14816": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.alias"
+		},
+		"14817": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.foreignKey"
+		},
+		"14818": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.primaryKey"
+		},
+		"14819": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.serviceName"
+		},
+		"14820": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.entity"
+		},
+		"14821": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.inverse"
+		},
+		"14822": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.isList"
+		},
+		"14823": {
+			"sourceFileName": "../../../../packages/core/types/src/joiner/index.ts",
+			"qualifiedName": "__type.args"
+		},
+		"14824": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "Event"
+		},
+		"14825": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type"
+		},
+		"14826": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.name"
+		},
+		"14827": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.metadata"
+		},
+		"14828": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type.data"
+		},
+		"14829": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "TData"
+		},
+		"14830": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "EventMetadata"
+		},
+		"14831": {
+			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
+			"qualifiedName": "__type"
+		},
+		"14832": {
 			"sourceFileName": "../../../../packages/core/types/src/event-bus/common.ts",
 			"qualifiedName": "__type.eventGroupId"
 		}
@@ -8877,7 +8877,7 @@
 			"1": "../../../../packages/core/types/src/sales-channel/service.ts"
 		},
 		"reflections": {
-			"1": 14530
+			"1": 14562
 		}
 	}
 }

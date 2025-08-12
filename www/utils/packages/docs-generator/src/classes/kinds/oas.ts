@@ -121,10 +121,23 @@ class OasKindGenerator extends FunctionKindGenerator {
       requiresAuthentication: true,
       allowedAuthTypes: ["cookie_auth", "jwt_token"],
     },
+    {
+      exact: "store/gift-cards/[idOrCode]/redeem",
+      requiresAuthentication: true,
+    },
+    {
+      startsWith: "store/store-credit-accounts",
+      requiresAuthentication: true,
+    },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
   readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
-  readonly PAGINATION_QUERY_PARAMS = ["limit", "offset", "order"]
+  readonly PAGINATION_QUERY_PARAMS = [
+    "limit",
+    "offset",
+    "order",
+    "with_deleted",
+  ]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,
@@ -435,7 +448,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check deprecation and version in tags
-    const { deprecatedTag, versionTag, featureFlagTag } =
+    const { deprecatedTag, sinceTag, featureFlagTag } =
       this.getInformationFromTags(node)
 
     if (deprecatedTag) {
@@ -445,9 +458,9 @@ class OasKindGenerator extends FunctionKindGenerator {
         : undefined
     }
 
-    if (versionTag) {
-      oas["x-version"] = versionTag.comment
-        ? (versionTag.comment as string)
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
         : undefined
     }
 
@@ -791,7 +804,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check deprecation and version in tags
-    const { deprecatedTag, versionTag, featureFlagTag } =
+    const { deprecatedTag, sinceTag, featureFlagTag } =
       this.getInformationFromTags(node)
 
     if (deprecatedTag) {
@@ -804,12 +817,12 @@ class OasKindGenerator extends FunctionKindGenerator {
       delete oas["x-deprecated_message"]
     }
 
-    if (versionTag) {
-      oas["x-version"] = versionTag.comment
-        ? (versionTag.comment as string)
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
         : undefined
     } else {
-      delete oas["x-version"]
+      delete oas["x-since"]
     }
 
     if (featureFlagTag) {
@@ -2794,7 +2807,7 @@ class OasKindGenerator extends FunctionKindGenerator {
           description: event.description,
           deprecated: event.deprecated,
           deprecated_message: event.deprecated_message,
-          version: event.version,
+          since: event.since,
         }))
       )
     }

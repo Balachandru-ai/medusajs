@@ -66,9 +66,9 @@ export const CodeBlockActions = ({
       )}
       <div
         className={clsx(
-          "md:flex md:justify-end md:gap-docs_0.25 z-[11] relative",
+          "md:flex md:justify-end md:gap-docs_0.25 relative",
           !inHeader && [
-            "md:pr-docs_0.5",
+            "md:pr-docs_0.5 z-[11]",
             isCollapsed && "md:pt-docs_2.5",
             !isCollapsed && [
               isSingleLine && "md:pt-docs_0.25",

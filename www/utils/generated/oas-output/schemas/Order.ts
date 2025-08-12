@@ -26,6 +26,7 @@
  *   - discount_subtotal
  *   - discount_total
  *   - discount_tax_total
+ *   - credit_line_total
  *   - gift_card_total
  *   - gift_card_tax_total
  *   - shipping_total
@@ -176,6 +177,9 @@
  *   metadata:
  *     type: object
  *     description: The order's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   canceled_at:
  *     type: string
  *     format: date-time
@@ -296,6 +300,15 @@
  *     type: boolean
  *     title: is_draft_order
  *     description: Whether the order is a draft order.
+ *   deleted_at:
+ *     type: string
+ *     format: date-time
+ *     title: deleted_at
+ *     description: The date the order was deleted.
+ *   credit_line_total:
+ *     type: number
+ *     title: credit_line_total
+ *     description: The order's credit line total.
  * 
 */
 

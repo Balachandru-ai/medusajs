@@ -22,6 +22,12 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "link",
+      "title": "Manage Metadata",
+      "path": "manage-metadata",
+      "loaded": true
+    },
+    {
+      "type": "link",
       "title": "Select Fields and Relations",
       "path": "select-fields-and-relations",
       "loaded": true
@@ -260,6 +266,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "fulfillments_fulfillment_schema",
           "title": "Fulfillment Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Gift Cards",
+      "children": [
+        {
+          "type": "link",
+          "path": "gift-cards_giftcard_schema",
+          "title": "GiftCard Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -711,6 +735,24 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Store Credit Accounts",
+      "children": [
+        {
+          "type": "link",
+          "path": "store-credit-accounts_storecreditaccount_schema",
+          "title": "StoreCreditAccount Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Stores",
       "children": [
         {
@@ -771,6 +813,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "tax-regions_taxregion_schema",
           "title": "TaxRegion Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Transaction Groups",
+      "children": [
+        {
+          "type": "link",
+          "path": "transaction-groups_transactiongroup_schema",
+          "title": "TransactionGroup Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",

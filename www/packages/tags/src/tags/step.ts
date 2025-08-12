@@ -256,6 +256,10 @@ export const step = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/createDefaultStoreStep"
   },
   {
+    "title": "deleteDraftOrdersStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/deleteDraftOrdersStep"
+  },
+  {
     "title": "validateDraftOrderStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/validateDraftOrderStep"
   },

@@ -1,5 +1,9 @@
 export const cart = [
   {
+    "title": "Retrieve Cart Totals using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals"
+  },
+  {
     "title": "Extend Cart",
     "path": "https://docs.medusajs.com/resources/commerce-modules/cart/extend"
   },
@@ -14,6 +18,14 @@ export const cart = [
   {
     "title": "Send Abandoned Cart Notification",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
+  },
+  {
+    "title": "Implement First-Purchase Discount",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
+  },
+  {
+    "title": "Add Gift Message",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
   {
     "title": "Implement Loyalty Points",
@@ -182,10 +194,6 @@ export const cart = [
   {
     "title": "deleteLineItemsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteLineItemsWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "cart",

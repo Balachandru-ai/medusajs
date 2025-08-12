@@ -1,6 +1,6 @@
+import { createOrderChangeWorkflow } from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IOrderModuleService, OrderDTO } from "@medusajs/types"
-import { createOrderChangeWorkflow } from "@medusajs/core-flows"
 import { Modules } from "@medusajs/utils"
 import {
   adminHeaders,
@@ -192,6 +192,7 @@ medusaIntegrationTestRunner({
                   description: "VIP discount",
                   promotion_id: expect.any(String),
                   code: "VIP_25 ETH",
+                  is_tax_inclusive: false,
                   raw_amount: {
                     value: "5e-18",
                     precision: 20,

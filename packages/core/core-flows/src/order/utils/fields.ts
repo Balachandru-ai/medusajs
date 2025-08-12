@@ -19,6 +19,7 @@ export const productVariantsFields = [
   "inventory_items.inventory.requires_shipping",
   "inventory_items.inventory.location_levels.stocked_quantity",
   "inventory_items.inventory.location_levels.reserved_quantity",
+  "inventory_items.inventory.location_levels.location_id",
   "inventory_items.inventory.location_levels.raw_stocked_quantity",
   "inventory_items.inventory.location_levels.raw_reserved_quantity",
   "inventory_items.inventory.location_levels.stock_locations.id",

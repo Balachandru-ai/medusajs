@@ -8,7 +8,15 @@ import dynamic from "next/dynamic"
 import TagsOperationDescriptionSectionParameters from "./Parameters"
 import MDXContentClient from "@/components/MDXContent/Client"
 import { useArea } from "../../../../providers/area"
-import { Feedback, Badge, Link, FeatureFlagNotice, H2, Tooltip } from "docs-ui"
+import {
+  Feedback,
+  Badge,
+  Link,
+  FeatureFlagNotice,
+  H2,
+  Tooltip,
+  MarkdownContent,
+} from "docs-ui"
 import { usePathname } from "next/navigation"
 import { TagsOperationDescriptionSectionWorkflowBadgeProps } from "./WorkflowBadge"
 import { TagsOperationDescriptionSectionEventsProps } from "./Events"
@@ -70,15 +78,33 @@ const TagsOperationDescriptionSection = ({
             badgeClassName="ml-0.5"
           />
         )}
-        {operation["x-version"] && (
+        {operation["x-since"] && (
           <Tooltip
-            text={`This API route is available since v${operation["x-version"]}`}
+            text={`This API route is available since v${operation["x-since"]}`}
           >
             <Badge variant="blue" className="ml-0.5">
-              v{operation["x-version"]}
+              v{operation["x-since"]}
             </Badge>
           </Tooltip>
         )}
+        {operation["x-badges"]?.map((badge, index) => (
+          <Tooltip
+            key={index}
+            tooltipChildren={
+              <MarkdownContent
+                allowedElements={["a", "strong", "em", "br"]}
+                unwrapDisallowed={true}
+              >
+                {badge.description}
+              </MarkdownContent>
+            }
+            clickable={true}
+          >
+            <Badge variant={badge.variant || "neutral"} className="ml-0.5">
+              {badge.text}
+            </Badge>
+          </Tooltip>
+        ))}
       </H2>
       <div className="my-1">
         <MDXContentClient content={operation.description} />

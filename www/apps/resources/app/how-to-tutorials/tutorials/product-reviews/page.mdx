@@ -505,7 +505,6 @@ export const createReviewWorkflow = createWorkflow(
   "create-review",
   (input: CreateReviewInput) => {
     // Check product exists
-    // @ts-ignore
     useQueryGraphStep({
       entity: "product",
       fields: ["id"],
@@ -520,7 +519,6 @@ export const createReviewWorkflow = createWorkflow(
     // Create the review
     const review = createReviewStep(input)
 
-    // @ts-ignore
     return new WorkflowResponse({
       review,
     })
@@ -1522,8 +1520,8 @@ export const GetStoreReviewsHighlights = [
   ["10", "GetStoreReviewsSchema", "Define the query parameters schema."],
   ["12", "GET", "Expose a GET API route."],
   ["26", "query.graph", "Retrieve reviews with pagination."],
-  ["31", "status", "Only retrieve approved reviews."],
-  ["41", "average_rating", "Retrieve the average rating of the product."],
+  ["30", "status", "Only retrieve approved reviews."],
+  ["40", "average_rating", "Retrieve the average rating of the product."],
 ]
 
 ```ts title="src/api/store/products/[id]/reviews/route.ts" highlights={GetStoreReviewsHighlights} collapsibleLines="1-9" expandButtonLabel="Show Imports"
@@ -1556,7 +1554,6 @@ export const GET = async (
     entity: "review",
     filters: {
       product_id: id,
-      // @ts-ignore
       status: "approved",
     },
     ...req.queryConfig,

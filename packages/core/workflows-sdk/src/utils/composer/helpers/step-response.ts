@@ -38,7 +38,9 @@ export class StepResponse<TOutput, TCompensateInput = TOutput> {
     if (isDefined(output)) {
       this.#output = output
     }
-    this.#compensateInput = (compensateInput ?? output) as TCompensateInput
+    this.#compensateInput = (
+      isDefined(compensateInput) ? compensateInput : output
+    ) as TCompensateInput
   }
 
   /**

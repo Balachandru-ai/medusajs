@@ -42,6 +42,9 @@ const withMDX = mdx({
               projectPath: path.resolve("..", "api-reference"),
               skipSlugValidation: true,
             },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
+            },
           },
         },
       ],
@@ -240,6 +243,31 @@ const nextConfig = {
       {
         source: "/commerce-modules/user/events",
         destination: "/references/user/events",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/cart",
+        destination: "/storefront-development/cart/create",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/customer",
+        destination: "/storefront-development/customer/register",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/products/categories",
+        destination: "/storefront-development/products/categories/list",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/products/collections",
+        destination: "/storefront-development/products/collections/list",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/products",
+        destination: "/storefront-development/products/list",
         permanent: true,
       },
     ])

@@ -20,10 +20,6 @@ export const file = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/generateProductCsvStep"
   },
   {
-    "title": "normalizeCsvToChunksStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/normalizeCsvToChunksStep"
-  },
-  {
     "title": "processImportChunksStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/processImportChunksStep"
   },

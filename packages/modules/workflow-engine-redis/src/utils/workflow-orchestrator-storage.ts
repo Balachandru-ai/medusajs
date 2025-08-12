@@ -1,5 +1,4 @@
 import {
-  DistributedTransaction,
   DistributedTransactionType,
   IDistributedSchedulerStorage,
   IDistributedTransactionStorage,
@@ -15,13 +14,13 @@ import {
 } from "@medusajs/framework/orchestration"
 import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
-  isDefined,
   isPresent,
   MedusaError,
   promiseAll,
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
+import { raw } from "@mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
@@ -32,6 +31,9 @@ enum JobType {
   STEP_TIMEOUT = "step_timeout",
   TRANSACTION_TIMEOUT = "transaction_timeout",
 }
+
+const ONE_HOUR_IN_MS = 1000 * 60 * 60
+const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
@@ -48,6 +50,9 @@ export class RedisDistributedTransactionStorage
   private jobQueue?: Queue
   private worker: Worker
   private jobWorker?: Worker
+  private cleanerQueueName: string
+  private cleanerWorker_: Worker
+  private cleanerQueue_?: Queue
 
   #isWorkerMode: boolean = false
 
@@ -72,11 +77,17 @@ export class RedisDistributedTransactionStorage
     this.logger_ = logger
     this.redisClient = redisConnection
     this.redisWorkerConnection = redisWorkerConnection
+    this.cleanerQueueName = "workflows-cleaner"
     this.queueName = redisQueueName
     this.jobQueueName = redisJobQueueName
     this.queue = new Queue(redisQueueName, { connection: this.redisClient })
     this.jobQueue = isWorkerMode
       ? new Queue(redisJobQueueName, {
+          connection: this.redisClient,
+        })
+      : undefined
+    this.cleanerQueue_ = isWorkerMode
+      ? new Queue(this.cleanerQueueName, {
           connection: this.redisClient,
         })
       : undefined
@@ -87,11 +98,21 @@ export class RedisDistributedTransactionStorage
     // Close worker gracefully, i.e. wait for the current jobs to finish
     await this.worker?.close()
     await this.jobWorker?.close()
+
+    const repeatableJobs = (await this.cleanerQueue_?.getRepeatableJobs()) ?? []
+    for (const job of repeatableJobs) {
+      if (job.id === REPEATABLE_CLEARER_JOB_ID) {
+        await this.cleanerQueue_?.removeRepeatableByKey(job.key)
+      }
+    }
+
+    await this.cleanerWorker_?.close()
   }
 
   async onApplicationShutdown() {
     await this.queue?.close()
     await this.jobQueue?.close()
+    await this.cleanerQueue_?.close()
   }
 
   async onApplicationStart() {
@@ -150,6 +171,27 @@ export class RedisDistributedTransactionStorage
           )
         },
         workerOptions
+      )
+
+      this.cleanerWorker_ = new Worker(
+        this.cleanerQueueName,
+        async () => {
+          await this.clearExpiredExecutions()
+        },
+        { connection: this.redisClient }
+      )
+
+      await this.cleanerQueue_?.add(
+        "cleaner",
+        {},
+        {
+          repeat: {
+            every: ONE_HOUR_IN_MS,
+          },
+          jobId: REPEATABLE_CLEARER_JOB_ID,
+          removeOnComplete: true,
+          removeOnFail: true,
+        }
       )
     }
   }
@@ -230,19 +272,6 @@ export class RedisDistributedTransactionStorage
     key: string,
     options?: TransactionOptions & { isCancelling?: boolean }
   ): Promise<TransactionCheckpoint | undefined> {
-    const data = await this.redisClient.get(key)
-
-    if (data) {
-      const parsedData = JSON.parse(data) as TransactionCheckpoint
-      return parsedData
-    }
-
-    // Not in Redis either - check database if needed
-    const { idempotent, store, retentionTime } = options ?? {}
-    if (!idempotent && !(store && isDefined(retentionTime))) {
-      return
-    }
-
     const [_, workflowId, transactionId] = key.split(":")
     const trx = await this.workflowExecutionService_
       .list(
@@ -262,6 +291,16 @@ export class RedisDistributedTransactionStorage
       .catch(() => undefined)
 
     if (trx) {
+      const rawData = await this.redisClient.get(key)
+
+      let flow!: TransactionFlow, errors!: TransactionStepError[]
+      if (rawData) {
+        const data = JSON.parse(rawData)
+        flow = data.flow
+        errors = data.errors
+      }
+
+      const { idempotent } = options ?? {}
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
@@ -287,45 +326,13 @@ export class RedisDistributedTransactionStorage
       }
 
       return {
-        flow: trx.execution as TransactionFlow,
+        flow: flow ?? (trx.execution as TransactionFlow),
         context: trx.context?.data as TransactionContext,
-        errors: trx.context?.errors as TransactionStepError[],
+        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
       }
     }
 
     return
-  }
-
-  async list(): Promise<TransactionCheckpoint[]> {
-    // Replace Redis KEYS with SCAN to avoid blocking the server
-    const transactions: TransactionCheckpoint[] = []
-    let cursor = "0"
-
-    do {
-      // Use SCAN instead of KEYS to avoid blocking Redis
-      const [nextCursor, keys] = await this.redisClient.scan(
-        cursor,
-        "MATCH",
-        DistributedTransaction.keyPrefix + ":*",
-        "COUNT",
-        100 // Fetch in reasonable batches
-      )
-
-      cursor = nextCursor
-
-      if (keys.length) {
-        // Use mget to batch retrieve multiple keys at once
-        const values = await this.redisClient.mget(keys)
-
-        for (const value of values) {
-          if (value) {
-            transactions.push(JSON.parse(value))
-          }
-        }
-      }
-    } while (cursor !== "0")
-
-    return transactions
   }
 
   async save(
@@ -364,7 +371,11 @@ export class RedisDistributedTransactionStorage
     const shouldSetNX = isNotStarted && isManualTransactionId
 
     // Prepare operations to be executed in batch or pipeline
-    const stringifiedData = JSON.stringify(data)
+    const data_ = {
+      errors: data.errors,
+      flow: data.flow,
+    }
+    const stringifiedData = JSON.stringify(data_)
     const pipeline = this.redisClient.pipeline()
 
     // Execute Redis operations
@@ -614,14 +625,22 @@ export class RedisDistributedTransactionStorage
      */
     const currentFlow = data.flow
 
-    const getOptions = {
-      ...options,
-      isCancelling: !!data.flow.cancelledAt,
-    } as Parameters<typeof this.get>[1]
+    const rawData = await this.redisClient.get(key)
+    let data_ = {} as TransactionCheckpoint
+    if (rawData) {
+      data_ = JSON.parse(rawData)
+    } else {
+      const getOptions = {
+        ...options,
+        isCancelling: !!data.flow.cancelledAt,
+      } as Parameters<typeof this.get>[1]
 
-    const { flow: latestUpdatedFlow } =
-      (await this.get(key, getOptions)) ??
-      ({ flow: {} } as { flow: TransactionFlow })
+      data_ =
+        (await this.get(key, getOptions)) ??
+        ({ flow: {} } as TransactionCheckpoint)
+    }
+
+    const { flow: latestUpdatedFlow } = data_
 
     if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
       /**
@@ -727,5 +746,26 @@ export class RedisDistributedTransactionStorage
     ) {
       throw new SkipExecutionError("Already finished by another execution")
     }
+  }
+
+  async clearExpiredExecutions() {
+    await this.workflowExecutionService_.delete({
+      retention_time: {
+        $ne: null,
+      },
+      updated_at: {
+        $lte: raw(
+          (alias) =>
+            `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
+        ),
+      },
+      state: {
+        $in: [
+          TransactionState.DONE,
+          TransactionState.FAILED,
+          TransactionState.REVERTED,
+        ],
+      },
+    })
   }
 }

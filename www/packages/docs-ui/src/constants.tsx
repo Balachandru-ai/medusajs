@@ -36,6 +36,11 @@ export const navDropdownItems: NavigationItem[] = [
           },
           {
             type: "link",
+            title: "Index Module",
+            link: "/learn/fundamentals/module-links/index-module",
+          },
+          {
+            type: "link",
             title: "Medusa Container",
             link: "/learn/fundamentals/medusa-container",
           },
@@ -353,6 +358,11 @@ export const navDropdownItems: NavigationItem[] = [
     type: "link",
     title: "User Guide",
     link: "/user-guide",
+  },
+  {
+    type: "link",
+    title: "Cloud",
+    link: "/cloud",
   },
 ]
 

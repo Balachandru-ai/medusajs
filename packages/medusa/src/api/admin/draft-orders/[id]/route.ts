@@ -56,6 +56,9 @@ export const POST = async (
     .json({ draft_order: result.data[0] as HttpTypes.AdminDraftOrder })
 }
 
+/**
+ * @since 2.8.4
+ */
 export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse

@@ -8,7 +8,15 @@ export const metadata = {
 
 In this chapter, you'll learn about observability in Medusa and how to configure instrumentation with OpenTelemetry.
 
-## Observability with OpenTelemtry
+## What is Instrumentation?
+
+Instrumentation is the collection of data about your application's performance and errors. It helps you debug issues, monitor performance, and gain insights into how your application behaves in production.
+
+Instrumentation and observability are crucial as you build customizations in your application. They allow you to optimize performance, identify bottlenecks, and ensure your application runs smoothly.
+
+---
+
+## Instrumentation and Observability with OpenTelemetry
 
 Medusa uses [OpenTelemetry](https://opentelemetry.io/) for instrumentation and reporting. When configured, it reports traces for:
 
@@ -73,7 +81,7 @@ export function register() {
 
 In the `instrumentation.ts` file, you export a `register` function that uses Medusa's `registerOtel` utility function. You also initialize an instance of the exporter, such as Zipkin, and pass it to the `registerOtel` function.
 
-`registerOtel` accepts an object where you can pass any [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk_node.NodeSDKConfiguration.html) property along with the following properties:
+`registerOtel` accepts an object where you can pass any [NodeSDKConfiguration](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.NodeSDKConfiguration.html) property along with the following properties:
 
 <Note>
 
@@ -91,7 +99,7 @@ The `NodeSDKConfiguration` properties are accepted since Medusa v2.5.1.
     },
     {
       name: "exporter",
-      type: "[SpanExporter](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk_trace_base.SpanExporter.html)",
+      type: "[SpanExporter](https://open-telemetry.github.io/opentelemetry-js/interfaces/_opentelemetry_sdk-node.node.SpanExporter.html)",
       description: "An instance of an exporter, such as Zipkin."
     },
     {
@@ -158,3 +166,9 @@ Trace span names start with the following keywords based on what it's reporting:
 - `step:` when reporting a step in a workflow execution.
 - `query.graph:` when reporting Query usages.
 - `pg.query:` when reporting database queries and operations.
+
+---
+
+## Useful Links
+
+- [Integrate Sentry with Medusa](!resources!/integrations/guides/sentry)

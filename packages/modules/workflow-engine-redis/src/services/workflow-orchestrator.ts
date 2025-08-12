@@ -63,6 +63,7 @@ type NotifyOptions = {
   response?: unknown
   result?: unknown
   errors?: unknown[]
+  state?: TransactionState
 }
 
 type WorkflowId = string
@@ -268,8 +269,12 @@ export class WorkflowOrchestratorService {
       await this.triggerParentStep(ret.transaction, result)
     }
 
-    if (throwOnError && ret.thrownError) {
-      throw ret.thrownError
+    if (throwOnError && (ret.thrownError || ret.errors?.length)) {
+      if (ret.thrownError) {
+        throw ret.thrownError
+      }
+
+      throw ret.errors[0].error
     }
 
     return { acknowledgement, ...ret }
@@ -314,9 +319,6 @@ export class WorkflowOrchestratorService {
       throw new Error(`Workflow with id "${workflowId}" not found.`)
     }
 
-    const originalOnFinishHandler = events.onFinish!
-    delete events.onFinish
-
     const transaction = await this.getRunningTransaction(
       workflowId,
       transactionId,
@@ -348,12 +350,11 @@ export class WorkflowOrchestratorService {
     const metadata = ret.transaction.getFlow().metadata
     const { parentStepIdempotencyKey } = metadata ?? {}
 
-    const hasFailed = [TransactionState.FAILED].includes(
-      ret.transaction.getFlow().state
-    )
+    const transactionState = ret.transaction.getFlow().state
+    const hasFailed = [TransactionState.FAILED].includes(transactionState)
 
     const acknowledgement = {
-      transactionId: context.transactionId,
+      transactionId: transaction.transactionId,
       workflowId: workflowId,
       parentStepIdempotencyKey,
       hasFinished,
@@ -364,8 +365,11 @@ export class WorkflowOrchestratorService {
     if (hasFinished) {
       const { result, errors } = ret
 
-      await originalOnFinishHandler({
-        transaction: ret.transaction,
+      this.notify({
+        eventType: "onFinish",
+        workflowId,
+        transactionId: transaction.transactionId,
+        state: transactionState as TransactionState,
         result,
         errors,
       })
@@ -373,8 +377,12 @@ export class WorkflowOrchestratorService {
       await this.triggerParentStep(ret.transaction, result)
     }
 
-    if (throwOnError && ret.thrownError) {
-      throw ret.thrownError
+    if (throwOnError && (ret.thrownError || ret.errors?.length)) {
+      if (ret.thrownError) {
+        throw ret.thrownError
+      }
+
+      throw ret.errors[0].error
     }
 
     return { acknowledgement, ...ret }
@@ -441,9 +449,6 @@ export class WorkflowOrchestratorService {
       workflowId,
     })
 
-    const originalOnFinishHandler = events.onFinish!
-    delete events.onFinish
-
     const ret = await exportedWorkflow.registerStepSuccess({
       idempotencyKey: idempotencyKey_,
       context,
@@ -458,8 +463,11 @@ export class WorkflowOrchestratorService {
     if (ret.transaction.hasFinished()) {
       const { result, errors } = ret
 
-      await originalOnFinishHandler({
-        transaction: ret.transaction,
+      this.notify({
+        eventType: "onFinish",
+        workflowId,
+        transactionId,
+        state: ret.transaction.getFlow().state as TransactionState,
         result,
         errors,
       })
@@ -467,8 +475,12 @@ export class WorkflowOrchestratorService {
       await this.triggerParentStep(ret.transaction, result)
     }
 
-    if (throwOnError && ret.thrownError) {
-      throw ret.thrownError
+    if (throwOnError && (ret.thrownError || ret.errors?.length)) {
+      if (ret.thrownError) {
+        throw ret.thrownError
+      }
+
+      throw ret.errors[0].error
     }
 
     return ret
@@ -508,9 +520,6 @@ export class WorkflowOrchestratorService {
       workflowId,
     })
 
-    const originalOnFinishHandler = events.onFinish!
-    delete events.onFinish
-
     const ret = await exportedWorkflow.registerStepFailure({
       idempotencyKey: idempotencyKey_,
       context,
@@ -525,8 +534,11 @@ export class WorkflowOrchestratorService {
     if (ret.transaction.hasFinished()) {
       const { result, errors } = ret
 
-      await originalOnFinishHandler({
-        transaction: ret.transaction,
+      this.notify({
+        eventType: "onFinish",
+        workflowId,
+        transactionId,
+        state: ret.transaction.getFlow().state as TransactionState,
         result,
         errors,
       })
@@ -534,8 +546,12 @@ export class WorkflowOrchestratorService {
       await this.triggerParentStep(ret.transaction, result)
     }
 
-    if (throwOnError && ret.thrownError) {
-      throw ret.thrownError
+    if (throwOnError && (ret.thrownError || ret.errors?.length)) {
+      if (ret.thrownError) {
+        throw ret.thrownError
+      }
+
+      throw ret.errors[0].error
     }
 
     return ret
@@ -556,14 +572,16 @@ export class WorkflowOrchestratorService {
     }
 
     const handlerIndex = (handlers) => {
-      return handlers.indexOf((s) => s === subscriber || s._id === subscriberId)
+      return handlers.findIndex(
+        (s) => s === subscriber || s._id === subscriberId
+      )
     }
 
     if (transactionId) {
       const transactionSubscribers = subscribers.get(transactionId) ?? []
       const subscriberIndex = handlerIndex(transactionSubscribers)
       if (subscriberIndex !== -1) {
-        transactionSubscribers.slice(subscriberIndex, 1)
+        transactionSubscribers.splice(subscriberIndex, 1)
       }
 
       transactionSubscribers.push(subscriber)
@@ -575,7 +593,7 @@ export class WorkflowOrchestratorService {
     const workflowSubscribers = subscribers.get(AnySubscriber) ?? []
     const subscriberIndex = handlerIndex(workflowSubscribers)
     if (subscriberIndex !== -1) {
-      workflowSubscribers.slice(subscriberIndex, 1)
+      workflowSubscribers.splice(subscriberIndex, 1)
     }
 
     workflowSubscribers.push(subscriber)
@@ -588,7 +606,10 @@ export class WorkflowOrchestratorService {
     transactionId,
     subscriberOrId,
   }: UnsubscribeOptions) {
-    const subscribers = this.subscribers.get(workflowId) ?? new Map()
+    const subscribers = this.subscribers.get(workflowId)
+    if (!subscribers) {
+      return
+    }
 
     const filterSubscribers = (handlers: SubscriberHandler[]) => {
       return handlers.filter((handler) => {
@@ -598,25 +619,36 @@ export class WorkflowOrchestratorService {
       })
     }
 
-    // Unsubscribe instance
-    if (!this.subscribers.has(workflowId)) {
+    if (transactionId) {
+      const transactionSubscribers = subscribers.get(transactionId)
+      if (transactionSubscribers) {
+        const newTransactionSubscribers = filterSubscribers(
+          transactionSubscribers
+        )
+
+        if (newTransactionSubscribers.length) {
+          subscribers.set(transactionId, newTransactionSubscribers)
+        } else {
+          subscribers.delete(transactionId)
+        }
+      }
+    } else {
+      const workflowSubscribers = subscribers.get(AnySubscriber)
+      if (workflowSubscribers) {
+        const newWorkflowSubscribers = filterSubscribers(workflowSubscribers)
+
+        if (newWorkflowSubscribers.length) {
+          subscribers.set(AnySubscriber, newWorkflowSubscribers)
+        } else {
+          subscribers.delete(AnySubscriber)
+        }
+      }
+    }
+
+    if (subscribers.size === 0) {
+      this.subscribers.delete(workflowId)
       void this.redisSubscriber.unsubscribe(this.getChannelName(workflowId))
     }
-
-    if (transactionId) {
-      const transactionSubscribers = subscribers.get(transactionId) ?? []
-      const newTransactionSubscribers = filterSubscribers(
-        transactionSubscribers
-      )
-      subscribers.set(transactionId, newTransactionSubscribers)
-      this.subscribers.set(workflowId, subscribers)
-      return
-    }
-
-    const workflowSubscribers = subscribers.get(AnySubscriber) ?? []
-    const newWorkflowSubscribers = filterSubscribers(workflowSubscribers)
-    subscribers.set(AnySubscriber, newWorkflowSubscribers)
-    this.subscribers.set(workflowId, subscribers)
   }
 
   private async notify(
@@ -645,6 +677,7 @@ export class WorkflowOrchestratorService {
       result,
       step,
       response,
+      state,
     } = options
 
     const subscribers: TransactionSubscribers =
@@ -660,6 +693,7 @@ export class WorkflowOrchestratorService {
           response,
           result,
           errors,
+          state,
         }
         const isPromise = "then" in handler
         if (isPromise) {
@@ -705,12 +739,14 @@ export class WorkflowOrchestratorService {
       result,
       response,
       errors,
+      state,
     }: {
       eventType: keyof DistributedTransactionEvents
       step?: TransactionStep
       response?: unknown
       result?: unknown
       errors?: unknown[]
+      state?: TransactionState
     }) => {
       await this.notify({
         workflowId,
@@ -720,6 +756,7 @@ export class WorkflowOrchestratorService {
         step,
         result,
         errors,
+        state,
       })
     }
 

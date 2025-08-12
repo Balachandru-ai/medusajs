@@ -128,18 +128,23 @@ export class AbstractFileProviderService implements IFileProvider {
    * This method deletes one or more files from the storage. It's used when an admin user
    * deletes a product image, or other custom file deletions.
    *
-   * @param {FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]} files - The details of the file(s) to delete.
-   * @returns {Promise<void>} Resolves when the file is deleted.
+   * @param {FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]} files - The details of the files to delete.
+   * @returns {Promise<void>} Resolves when the files are deleted.
    *
    * @example
    * class MyFileProviderService extends AbstractFileProviderService {
    *   // ...
-   *   async delete(file: ProviderDeleteFileDTO): Promise<void> {
+   *   async delete(
+   *     files: FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]
+   *   ): Promise<void> {
    *     // TODO logic to remove the file from storage
    *     // Use the `file.fileKey` to delete the file, which is the identifier of the file
    *    // in the provider's storage.
    *     // for example:
-   *     this.client.delete(file.fileKey)
+   *     const fileArray = Array.isArray(files) ? files : [files]
+   *     for (const file of fileArray) {
+   *       this.client.delete(file.fileKey)
+   *     }
    *   }
    * }
    */
@@ -187,7 +192,7 @@ export class AbstractFileProviderService implements IFileProvider {
    * @param {FileTypes.ProviderGetFileDTO} fileData - The details of the file to get its stream.
    * @returns {Promise<Readable>} The file's stream.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @example
    * class MyFileProviderService extends AbstractFileProviderService {
@@ -212,7 +217,7 @@ export class AbstractFileProviderService implements IFileProvider {
    * @param {FileTypes.ProviderGetFileDTO} fileData - The details of the file to get its buffer.
    * @returns {Promise<Buffer>} The file's buffer.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @example
    * class MyFileProviderService extends AbstractFileProviderService {

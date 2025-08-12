@@ -1,5 +1,37 @@
 # @medusajs/link-modules
 
+## 2.8.8
+
+### Patch Changes
+
+- [#12928](https://github.com/medusajs/medusa/pull/12928) [`97a8e5cb2e8819672803bfcd9cde19cb1ce1acc0`](https://github.com/medusajs/medusa/commit/97a8e5cb2e8819672803bfcd9cde19cb1ce1acc0) Thanks [@riqwan](https://github.com/riqwan)! - chore(link-modules): keep promotion alias
+
+- [#12920](https://github.com/medusajs/medusa/pull/12920) [`8c4228fc42e717f9ab72230040e708f606a585b7`](https://github.com/medusajs/medusa/commit/8c4228fc42e717f9ab72230040e708f606a585b7) Thanks [@riqwan](https://github.com/riqwan)! - fix(link-modules,core-flows): Carry over cart promotions to order promotions
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- Updated dependencies [[`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`00505b4f8e49873123111752adfda47ccb35ab46`](https://github.com/medusajs/medusa/commit/00505b4f8e49873123111752adfda47ccb35ab46), [`94b62c67249d13ec6342411cf7efdedfd0ac47e1`](https://github.com/medusajs/medusa/commit/94b62c67249d13ec6342411cf7efdedfd0ac47e1)]:
+  - @medusajs/framework@2.8.5
+
 ## 2.8.4
 
 ### Patch Changes

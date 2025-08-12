@@ -116,6 +116,21 @@ Loaders are also executed when you run [migrations](../../data-models/write-migr
 
 ---
 
+## Avoid Heavy Operations in Loaders
+
+Since loaders are executed when the Medusa application starts, heavy operations will increase the startup time of the application.
+
+So, avoid operations that take a long time to complete, such as fetching a large amount of data from an external API or database, in loaders.
+
+### Alternative Solutions
+
+Instead of performing heavy operations in loaders, consider one of the following solutions:
+
+- Use a [scheduled job](../../scheduled-jobs/page.mdx) to perform the operation at specified intervals. This way, the operation is performed asynchronously and doesn't block the application startup.
+- [Emit custom events](../../events-and-subscribers/emit-event/page.mdx) in an [API route](../../api-routes/page.mdx), then handle the event in a [subscriber](../../events-and-subscribers/page.mdx) to perform the operation asynchronously. You can then send a request to the API route to trigger the operation when needed.
+
+---
+
 ## Example: Register Custom MongoDB Connection
 
 As mentioned in this chapter's introduction, loaders are most useful when you need to register a custom resource in the module's container to re-use it in other customizations in the module.

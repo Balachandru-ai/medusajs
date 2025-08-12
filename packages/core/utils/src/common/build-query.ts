@@ -2,7 +2,7 @@
 
 import { objectFromStringPath } from "./object-from-string-path"
 
-type Order = {
+export type Order = {
   [key: string]: "ASC" | "DESC" | Order
 }
 

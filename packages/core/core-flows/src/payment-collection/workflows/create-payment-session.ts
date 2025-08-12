@@ -82,7 +82,7 @@ export const createPaymentSessionsWorkflow = createWorkflow(
       list: false,
     }).config({ name: "get-payment-collection" })
 
-    const { paymentCustomer, accountHolder } = when(
+    const { paymentCustomer, accountHolder, existingAccountHolder } = when(
       "customer-id-exists",
       { input },
       (data) => {
@@ -138,20 +138,14 @@ export const createPaymentSessionsWorkflow = createWorkflow(
 
       const accountHolder = createPaymentAccountHolderStep(accountHolderInput)
 
-      return { paymentCustomer, accountHolder }
+      return { paymentCustomer, accountHolder, existingAccountHolder }
     })
 
     when(
       "account-holder-created",
-      { paymentCustomer, accountHolder, input },
-      (data) => {
-        return (
-          !isPresent(
-            data.paymentCustomer?.account_holders.find(
-              (ac) => ac.provider_id === data.input.provider_id
-            )
-          ) && isPresent(data.accountHolder)
-        )
+      { paymentCustomer, accountHolder, input, existingAccountHolder },
+      ({ existingAccountHolder, accountHolder }) => {
+        return !isPresent(existingAccountHolder) && isPresent(accountHolder)
       }
     ).then(() => {
       createRemoteLinkStep([

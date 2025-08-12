@@ -78,7 +78,7 @@ describe("buildQuery", () => {
 
   test("should handle withDeleted flag", () => {
     const filters = { deleted_at: "some-value" }
-    const result = buildQuery(filters)
+    const result = buildQuery(filters, { withDeleted: true })
     expect(result.options.filters).toHaveProperty(SoftDeletableFilterKey)
     expect(result.options.filters?.[SoftDeletableFilterKey]).toEqual({
       withDeleted: true,

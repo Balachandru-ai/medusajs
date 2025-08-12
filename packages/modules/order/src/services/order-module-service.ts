@@ -897,13 +897,10 @@ export default class OrderModuleService
       (orderShipping) => orderShipping.shipping_method_id
     )
 
-    await promiseAll([
-      this.orderAddressService_.delete(orderAddressIds, sharedContext),
-      // Delete order changes & actions
-      this.orderChangeService_.delete(orderChangeIds, sharedContext),
-    ])
+    await this.orderAddressService_.delete(orderAddressIds, sharedContext)
+    await this.orderChangeService_.delete(orderChangeIds, sharedContext)
 
-    // Delete order, order items, summary, shipping methods and transactions
+    // Delete order, order items, summary, shipping methods, transactions and credit lines
     await super.deleteOrders(ids, sharedContext)
 
     await promiseAll([
@@ -3653,7 +3650,7 @@ export default class OrderModuleService
   ): Promise<OrderTypes.ReturnDTO> {
     const ret = await this.receiveReturn_(data, sharedContext)
 
-    return await this.retrieveReturn(ret.id, {
+    return await this.retrieveReturn(ret[0].id, {
       relations: [
         "items",
         "items.item",
@@ -3668,7 +3665,7 @@ export default class OrderModuleService
   private async receiveReturn_(
     data: OrderTypes.ReceiveOrderReturnDTO,
     @MedusaContext() sharedContext?: Context
-  ): Promise<any> {
+  ): Promise<any[]> {
     return await BundledActions.receiveReturn.bind(this)(data, sharedContext)
   }
 

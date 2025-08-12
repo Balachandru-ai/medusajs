@@ -117,7 +117,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -132,6 +135,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -277,7 +281,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -292,6 +299,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -445,7 +453,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -460,6 +471,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -614,7 +626,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -629,6 +644,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -771,7 +787,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -786,6 +805,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:3000",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -931,7 +951,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -946,6 +969,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:3000",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -1119,7 +1143,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -1139,6 +1166,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -1314,7 +1342,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -1334,6 +1365,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -1525,7 +1557,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -1545,6 +1580,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
@@ -1708,7 +1744,10 @@ describe("defineConfig", function () {
           },
           "user": {
             "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
               "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
             },
             "resolve": "@medusajs/medusa/user",
           },
@@ -1723,6 +1762,7 @@ describe("defineConfig", function () {
             "adminCors": "http://localhost:3000",
             "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
             "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [

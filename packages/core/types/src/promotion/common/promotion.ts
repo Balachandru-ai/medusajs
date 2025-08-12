@@ -61,6 +61,11 @@ export interface PromotionDTO {
   is_automatic?: boolean
 
   /**
+   * Whether the promotion is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The associated application method.
    */
   application_method?: ApplicationMethodDTO
@@ -114,6 +119,11 @@ export interface CreatePromotionDTO {
   is_automatic?: boolean
 
   /**
+   * Whether the promotion is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The associated application method.
    */
   application_method: CreateApplicationMethodDTO
@@ -157,6 +167,11 @@ export interface UpdatePromotionDTO {
    * The type of the promotion.
    */
   type?: PromotionTypeValues
+
+  /**
+   * Whether the promotion is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
 
   /**
    * The status of the promotion:

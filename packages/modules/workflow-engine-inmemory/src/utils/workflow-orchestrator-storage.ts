@@ -21,12 +21,26 @@ import {
   MedusaError,
   TransactionState,
   TransactionStepState,
-  isDefined,
   isPresent,
 } from "@medusajs/framework/utils"
+import { raw } from "@mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
+
+function calculateDelayFromExpression(expression: CronExpression): number {
+  const nextTime = expression.next().getTime()
+  const now = Date.now()
+  const delay = nextTime - now
+
+  // If the calculated delay is negative or zero, get the next occurrence
+  if (delay <= 0) {
+    const nextNextTime = expression.next().getTime()
+    return Math.max(1, nextNextTime - now)
+  }
+
+  return delay
+}
 
 function parseNextExecution(
   optionsOrExpression: SchedulerOptions | CronExpression | string | number
@@ -34,21 +48,21 @@ function parseNextExecution(
   if (typeof optionsOrExpression === "object") {
     if ("cron" in optionsOrExpression) {
       const expression = parseExpression(optionsOrExpression.cron)
-      return expression.next().getTime() - Date.now()
+      return calculateDelayFromExpression(expression)
     }
 
     if ("interval" in optionsOrExpression) {
       return optionsOrExpression.interval
     }
 
-    return optionsOrExpression.next().getTime() - Date.now()
+    return calculateDelayFromExpression(optionsOrExpression)
   }
 
   const result = parseInt(`${optionsOrExpression}`)
 
   if (isNaN(result)) {
     const expression = parseExpression(`${optionsOrExpression}`)
-    return expression.next().getTime() - Date.now()
+    return calculateDelayFromExpression(expression)
   }
 
   return result
@@ -61,7 +75,8 @@ export class InMemoryDistributedTransactionStorage
   private logger_: Logger
   private workflowOrchestratorService_: WorkflowOrchestratorService
 
-  private storage: Map<string, TransactionCheckpoint> = new Map()
+  private storage: Map<string, Omit<TransactionCheckpoint, "context">> =
+    new Map()
   private scheduled: Map<
     string,
     {
@@ -74,6 +89,8 @@ export class InMemoryDistributedTransactionStorage
   private retries: Map<string, unknown> = new Map()
   private timeouts: Map<string, unknown> = new Map()
 
+  private clearTimeout_: NodeJS.Timeout
+
   constructor({
     workflowExecutionService,
     logger,
@@ -83,6 +100,18 @@ export class InMemoryDistributedTransactionStorage
   }) {
     this.workflowExecutionService_ = workflowExecutionService
     this.logger_ = logger
+  }
+
+  async onApplicationStart() {
+    this.clearTimeout_ = setInterval(async () => {
+      try {
+        await this.clearExpiredExecutions()
+      } catch {}
+    }, 1000 * 60 * 60)
+  }
+
+  async onApplicationShutdown() {
+    clearInterval(this.clearTimeout_)
   }
 
   setWorkflowOrchestratorService(workflowOrchestratorService) {
@@ -122,17 +151,6 @@ export class InMemoryDistributedTransactionStorage
       isCancelling?: boolean
     }
   ): Promise<TransactionCheckpoint | undefined> {
-    const data = this.storage.get(key)
-
-    if (data) {
-      return data
-    }
-
-    const { idempotent, store, retentionTime } = options ?? {}
-    if (!idempotent && !(store && isDefined(retentionTime))) {
-      return
-    }
-
     const [_, workflowId, transactionId] = key.split(":")
     const trx: InferEntityType<typeof WorkflowExecution> | undefined =
       await this.workflowExecutionService_
@@ -153,6 +171,8 @@ export class InMemoryDistributedTransactionStorage
         .catch(() => undefined)
 
     if (trx) {
+      const { flow, errors } = this.storage.get(key) ?? {}
+      const { idempotent } = options ?? {}
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
@@ -178,17 +198,13 @@ export class InMemoryDistributedTransactionStorage
       }
 
       return {
-        flow: trx.execution as TransactionFlow,
+        flow: flow ?? (trx.execution as TransactionFlow),
         context: trx.context?.data as TransactionContext,
-        errors: trx.context?.errors as TransactionStepError[],
+        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
       }
     }
 
     return
-  }
-
-  async list(): Promise<TransactionCheckpoint[]> {
-    return Array.from(this.storage.values())
   }
 
   async save(
@@ -237,7 +253,11 @@ export class InMemoryDistributedTransactionStorage
       }
     }
 
-    this.storage.set(key, data)
+    const { flow, errors } = data
+    this.storage.set(key, {
+      flow,
+      errors,
+    })
 
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
@@ -272,14 +292,22 @@ export class InMemoryDistributedTransactionStorage
      */
     const currentFlow = data.flow
 
-    const getOptions = {
-      ...options,
-      isCancelling: !!data.flow.cancelledAt,
-    } as Parameters<typeof this.get>[1]
+    const rawData = this.storage.get(key)
+    let data_ = {} as TransactionCheckpoint
+    if (rawData) {
+      data_ = rawData as TransactionCheckpoint
+    } else {
+      const getOptions = {
+        ...options,
+        isCancelling: !!data.flow.cancelledAt,
+      } as Parameters<typeof this.get>[1]
 
-    const { flow: latestUpdatedFlow } =
-      (await this.get(key, getOptions)) ??
-      ({ flow: {} } as { flow: TransactionFlow })
+      data_ =
+        (await this.get(key, getOptions)) ??
+        ({ flow: {} } as TransactionCheckpoint)
+    }
+
+    const { flow: latestUpdatedFlow } = data_
 
     if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
       /**
@@ -612,5 +640,26 @@ export class InMemoryDistributedTransactionStorage
 
       throw e
     }
+  }
+
+  async clearExpiredExecutions(): Promise<void> {
+    await this.workflowExecutionService_.delete({
+      retention_time: {
+        $ne: null,
+      },
+      updated_at: {
+        $lte: raw(
+          (alias) =>
+            `CURRENT_TIMESTAMP - (INTERVAL '1 second' * retention_time)`
+        ),
+      },
+      state: {
+        $in: [
+          TransactionState.DONE,
+          TransactionState.FAILED,
+          TransactionState.REVERTED,
+        ],
+      },
+    })
   }
 }

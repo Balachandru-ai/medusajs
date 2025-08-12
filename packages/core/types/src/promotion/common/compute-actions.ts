@@ -61,6 +61,11 @@ export interface AddItemAdjustmentAction {
   amount: BigNumberInput
 
   /**
+   * Whether the promotion amount includes tax.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The promotion's code.
    */
   code: string
@@ -181,6 +186,16 @@ export interface ComputeActionItemLine extends Record<string, unknown> {
   subtotal: BigNumberInput
 
   /**
+   * The total of the line item.
+   */
+  original_total: BigNumberInput
+
+  /**
+   * Whether the line item is discountable.
+   */
+  is_discountable: boolean
+
+  /**
    * The adjustments applied before on the line item.
    */
   adjustments?: ComputeActionAdjustmentLine[]
@@ -199,6 +214,11 @@ export interface ComputeActionShippingLine extends Record<string, unknown> {
    * The subtotal of the shipping method.
    */
   subtotal: BigNumberInput
+
+  /**
+   * The total of the shipping method.
+   */
+  original_total: BigNumberInput
 
   /**
    * The adjustments applied before on the shipping method.

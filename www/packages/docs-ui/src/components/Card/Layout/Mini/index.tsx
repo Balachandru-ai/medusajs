@@ -25,6 +25,8 @@ export const CardLayoutMini = ({
   onClose,
   className,
   imageDimensions = { width: 45, height: 36 },
+  iconClassName,
+  cardRef,
 }: CardProps) => {
   const isExternal = useIsExternalLink({ href })
 
@@ -39,6 +41,7 @@ export const CardLayoutMini = ({
         "w-fit transition-[shadow,background]",
         className
       )}
+      ref={cardRef}
     >
       <div
         className={clsx(
@@ -57,7 +60,8 @@ export const CardLayoutMini = ({
             src={image}
             className={clsx(
               "shadow-elevation-card-rest dark:shadow-elevation-card-rest-dark",
-              "rounded-docs_xs"
+              "rounded-docs_xs",
+              iconClassName
             )}
             width={imageDimensions.width}
             height={imageDimensions.height}
@@ -73,7 +77,8 @@ export const CardLayoutMini = ({
             {...themeImage}
             className={clsx(
               "shadow-elevation-card-rest dark:shadow-elevation-card-rest-dark",
-              "rounded-docs_xs"
+              "rounded-docs_xs",
+              iconClassName
             )}
             width={imageDimensions.width}
             height={imageDimensions.height}
@@ -113,7 +118,7 @@ export const CardLayoutMini = ({
           <Button
             variant="transparent-clear"
             onClick={onClose}
-            className="!p-[2.5px] z-[2] hover:!bg-transparent focus:!shadow-none focus:!bg-transparent"
+            className="!p-[2.5px] z-[2] hover:!bg-medusa-button-transparent-hover focus:!shadow-none focus:!bg-transparent"
           >
             <XMark />
           </Button>

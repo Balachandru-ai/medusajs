@@ -132,6 +132,7 @@ export const prepareAdjustmentsFromPromotionActionsStep = createStep(
       .map((action) => ({
         code: action.code,
         amount: (action as AddItemAdjustmentAction).amount,
+        is_tax_inclusive: (action as AddItemAdjustmentAction).is_tax_inclusive,
         item_id: (action as AddItemAdjustmentAction).item_id,
         promotion_id: promotionsMap.get(action.code)?.id,
       }))

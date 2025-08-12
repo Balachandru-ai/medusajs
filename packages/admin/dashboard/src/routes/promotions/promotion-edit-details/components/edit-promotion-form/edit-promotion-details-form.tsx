@@ -1,8 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminPromotion } from "@medusajs/types"
-import { Button, CurrencyInput, Input, RadioGroup, Text } from "@medusajs/ui"
+import {
+  Button,
+  CurrencyInput,
+  Input,
+  RadioGroup,
+  Switch,
+  Text,
+} from "@medusajs/ui"
 import { useForm, useWatch } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
+import { useEffect } from "react"
 import * as zod from "zod"
 
 import { Form } from "../../../../../components/common/form"
@@ -11,6 +19,7 @@ import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdatePromotion } from "../../../../../hooks/api/promotions"
 import { getCurrencySymbol } from "../../../../../lib/data/currencies"
+import { SwitchBox } from "../../../../../components/common/switch-box"
 
 type EditPromotionFormProps = {
   promotion: AdminPromotion
@@ -19,6 +28,7 @@ type EditPromotionFormProps = {
 const EditPromotionSchema = zod.object({
   is_automatic: zod.string().toLowerCase(),
   code: zod.string().min(1),
+  is_tax_inclusive: zod.boolean().optional(),
   status: zod.enum(["active", "inactive", "draft"]),
   value_type: zod.enum(["fixed", "percentage"]),
   value: zod.number(),
@@ -34,6 +44,7 @@ export const EditPromotionDetailsForm = ({
   const form = useForm<zod.infer<typeof EditPromotionSchema>>({
     defaultValues: {
       is_automatic: promotion.is_automatic!.toString(),
+      is_tax_inclusive: promotion.is_tax_inclusive,
       code: promotion.code,
       status: promotion.status,
       value: promotion.application_method!.value,
@@ -58,6 +69,7 @@ export const EditPromotionDetailsForm = ({
         is_automatic: data.is_automatic === "true",
         code: data.code,
         status: data.status,
+        is_tax_inclusive: data.is_tax_inclusive,
         application_method: {
           value: data.value,
           type: data.value_type as any,
@@ -71,6 +83,17 @@ export const EditPromotionDetailsForm = ({
       }
     )
   })
+
+  const allocationWatchValue = useWatch({
+    control: form.control,
+    name: "value_type",
+  })
+
+  useEffect(() => {
+    if (!(allocationWatchValue === "fixed" && promotion.type === "standard")) {
+      form.setValue("is_tax_inclusive", false)
+    }
+  }, [allocationWatchValue, form, promotion])
 
   return (
     <RouteDrawer.Form form={form}>
@@ -161,6 +184,16 @@ export const EditPromotionDetailsForm = ({
               }}
             />
 
+            {allocationWatchValue === "fixed" &&
+              promotion.type === "standard" && (
+                <SwitchBox
+                  control={form.control}
+                  name="is_tax_inclusive"
+                  label={t("promotions.form.taxInclusive.title")}
+                  description={t("promotions.form.taxInclusive.description")}
+                />
+              )}
+
             <div className="flex flex-col gap-y-4">
               <Form.Field
                 control={form.control}
@@ -169,7 +202,6 @@ export const EditPromotionDetailsForm = ({
                   return (
                     <Form.Item>
                       <Form.Label>{t("promotions.form.code.title")}</Form.Label>
-
                       <Form.Control>
                         <Input {...field} />
                       </Form.Control>

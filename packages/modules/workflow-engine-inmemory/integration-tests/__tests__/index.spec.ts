@@ -1,3 +1,4 @@
+import { MedusaContainer } from "@medusajs/framework"
 import {
   DistributedTransactionType,
   TransactionState,
@@ -6,9 +7,11 @@ import {
 import {
   Context,
   IWorkflowEngineService,
+  Logger,
   RemoteQueryFunction,
 } from "@medusajs/framework/types"
 import {
+  ContainerRegistrationKeys,
   Module,
   Modules,
   promiseAll,
@@ -54,15 +57,44 @@ const failTrap = (done) => {
   }, 5000)
 }
 
+function times(num) {
+  let resolver
+  let counter = 0
+  const promise = new Promise((resolve) => {
+    resolver = resolve
+  })
+
+  return {
+    next: () => {
+      counter += 1
+      if (counter === num) {
+        resolver()
+      }
+    },
+    // Force resolution after 10 seconds to prevent infinite awaiting
+    promise: Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        setTimeoutSync(
+          () => reject("times has not been resolved after 10 seconds."),
+          10000
+        )
+      }),
+    ]),
+  }
+}
+
 moduleIntegrationTestRunner<IWorkflowEngineService>({
   moduleName: Modules.WORKFLOW_ENGINE,
   resolve: __dirname + "/../..",
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
     describe("Workflow Orchestrator module", function () {
       let query: RemoteQueryFunction
+      let sharedContainer_: MedusaContainer
 
       beforeEach(() => {
         query = medusaApp.query
+        sharedContainer_ = medusaApp.sharedContainer
       })
 
       it(`should export the appropriate linkable configuration`, () => {
@@ -111,7 +143,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       })
 
       describe("Cancel transaction", function () {
-        it("should cancel an ongoing execution with async unfinished yet step", async () => {
+        it("should cancel an ongoing execution with async unfinished yet step", (done) => {
           const transactionId = "transaction-to-cancel-id"
           const step1 = createStep("step1", async () => {
             return new StepResponse("step1")
@@ -136,25 +168,39 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             return new WorkflowResponse("finished")
           })
 
-          await workflowOrcModule.run(workflowId, {
-            input: {},
-            transactionId,
-          })
+          workflowOrcModule
+            .run(workflowId, {
+              input: {},
+              transactionId,
+            })
+            .then(async () => {
+              await setTimeoutPromise(100)
 
-          await setTimeoutPromise(100)
+              await workflowOrcModule.cancel(workflowId, {
+                transactionId,
+              })
 
-          await workflowOrcModule.cancel(workflowId, {
-            transactionId,
-          })
+              workflowOrcModule.subscribe({
+                workflowId,
+                transactionId,
+                subscriber: async (event) => {
+                  if (event.eventType === "onFinish") {
+                    const execution =
+                      await workflowOrcModule.listWorkflowExecutions({
+                        transaction_id: transactionId,
+                      })
 
-          await setTimeoutPromise(1000)
+                    expect(execution.length).toEqual(1)
+                    expect(execution[0].state).toEqual(
+                      TransactionState.REVERTED
+                    )
+                    done()
+                  }
+                },
+              })
+            })
 
-          const execution = await workflowOrcModule.listWorkflowExecutions({
-            transaction_id: transactionId,
-          })
-
-          expect(execution.length).toEqual(1)
-          expect(execution[0].state).toEqual(TransactionState.REVERTED)
+          failTrap(done)
         })
 
         it("should cancel a complete execution with a sync workflow running as async", async () => {
@@ -797,7 +843,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       describe("Scheduled workflows", () => {
         beforeEach(() => {
           jest.clearAllMocks()
-          jest.useFakeTimers()
 
           // Register test-value in the container for all tests
           const sharedContainer =
@@ -809,62 +854,48 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           )
         })
 
-        afterEach(() => {
-          jest.useRealTimers()
-        })
-
         it("should execute a scheduled workflow", async () => {
-          const spy = createScheduled("standard", {
-            cron: "0 0 * * * *", // Runs at the start of every hour
-          })
+          const wait = times(2)
+          const spy = createScheduled("standard", wait.next)
 
-          expect(spy).toHaveBeenCalledTimes(0)
-
-          await jest.runOnlyPendingTimersAsync()
-
-          expect(spy).toHaveBeenCalledTimes(1)
-
-          await jest.runOnlyPendingTimersAsync()
-
+          await wait.promise
           expect(spy).toHaveBeenCalledTimes(2)
+          WorkflowManager.unregister("standard")
         })
 
         it("should stop executions after the set number of executions", async () => {
-          const spy = await createScheduled("num-executions", {
+          const wait = times(2)
+          const spy = createScheduled("num-executions", wait.next, {
             interval: 1000,
             numberOfExecutions: 2,
           })
 
-          expect(spy).toHaveBeenCalledTimes(0)
-
-          await jest.advanceTimersByTimeAsync(1100)
-
-          expect(spy).toHaveBeenCalledTimes(1)
-
-          await jest.advanceTimersByTimeAsync(1100)
-
+          await wait.promise
           expect(spy).toHaveBeenCalledTimes(2)
 
-          await jest.advanceTimersByTimeAsync(1100)
-
+          // Make sure that on the next tick it doesn't execute again
+          await setTimeoutPromise(1100)
           expect(spy).toHaveBeenCalledTimes(2)
+
+          WorkflowManager.unregister("num-execution")
         })
 
         it("should remove scheduled workflow if workflow no longer exists", async () => {
-          const spy = await createScheduled("remove-scheduled", {
+          const wait = times(1)
+          const logger = sharedContainer_.resolve<Logger>(
+            ContainerRegistrationKeys.LOGGER
+          )
+
+          const spy = createScheduled("remove-scheduled", wait.next, {
             interval: 1000,
           })
-          const logSpy = jest.spyOn(console, "warn")
+          const logSpy = jest.spyOn(logger, "warn")
 
-          expect(spy).toHaveBeenCalledTimes(0)
-
-          await jest.advanceTimersByTimeAsync(1100)
-
+          await wait.promise
           expect(spy).toHaveBeenCalledTimes(1)
-
           WorkflowManager["workflows"].delete("remove-scheduled")
 
-          await jest.advanceTimersByTimeAsync(1100)
+          await setTimeoutPromise(1100)
           expect(spy).toHaveBeenCalledTimes(1)
           expect(logSpy).toHaveBeenCalledWith(
             "Tried to execute a scheduled workflow with ID remove-scheduled that does not exist, removing it from the scheduler."
@@ -872,23 +903,19 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("the scheduled workflow should have access to the shared container", async () => {
-          const spy = await createScheduled("shared-container-job", {
+          const wait = times(1)
+
+          const spy = await createScheduled("shared-container-job", wait.next, {
             interval: 1000,
-            numberOfExecutions: 1,
           })
+          await wait.promise
 
-          const initialCallCount = spy.mock.calls.length
+          expect(spy).toHaveBeenCalledTimes(1)
 
-          await jest.advanceTimersByTimeAsync(1100)
-
-          expect(spy).toHaveBeenCalledTimes(initialCallCount + 1)
           expect(spy).toHaveReturnedWith(
             expect.objectContaining({ output: { testValue: "test" } })
           )
-
-          await jest.advanceTimersByTimeAsync(1100)
-
-          expect(spy).toHaveBeenCalledTimes(initialCallCount + 1)
+          WorkflowManager.unregister("shared-container-job")
         })
 
         it("should fetch an idempotent workflow after its completion", async () => {
@@ -929,6 +956,149 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           )
           expect(executionsList).toHaveLength(1)
           expect(executionsListAfter).toHaveLength(1)
+        })
+
+        it("should display error when multple async steps are running in parallel", (done) => {
+          void workflowOrcModule.run("workflow_parallel_async", {
+            input: {},
+            throwOnError: false,
+          })
+
+          void workflowOrcModule.subscribe({
+            workflowId: "workflow_parallel_async",
+            subscriber: (event) => {
+              if (event.eventType === "onFinish") {
+                done()
+                expect(event.errors).toEqual(
+                  expect.arrayContaining([
+                    expect.objectContaining({
+                      action: "step_2",
+                      handlerType: "invoke",
+                      error: expect.objectContaining({
+                        message: "Error in parallel step",
+                      }),
+                    }),
+                  ])
+                )
+              }
+            },
+          })
+
+          failTrap(done)
+        })
+      })
+
+      describe("Cleaner job", function () {
+        it("should remove expired executions of finished workflows and keep the others", async () => {
+          const doneWorkflowId = "done-workflow-" + ulid()
+          createWorkflow({ name: doneWorkflowId, retentionTime: 1 }, () => {
+            return new WorkflowResponse("done")
+          })
+
+          const failingWorkflowId = "failing-workflow-" + ulid()
+          const failingStep = createStep("failing-step", () => {
+            throw new Error("I am failing")
+          })
+          createWorkflow({ name: failingWorkflowId, retentionTime: 1 }, () => {
+            failingStep()
+          })
+
+          const revertingStep = createStep(
+            "reverting-step",
+            () => {
+              throw new Error("I am reverting")
+            },
+            () => {
+              return new StepResponse("reverted")
+            }
+          )
+
+          const revertingWorkflowId = "reverting-workflow-" + ulid()
+          createWorkflow(
+            { name: revertingWorkflowId, retentionTime: 1 },
+            () => {
+              revertingStep()
+              return new WorkflowResponse("reverted")
+            }
+          )
+
+          const runningWorkflowId = "running-workflow-" + ulid()
+          const longRunningStep = createStep("long-running-step", async () => {
+            await setTimeoutPromise(10000)
+            return new StepResponse("long running finished")
+          })
+          createWorkflow({ name: runningWorkflowId, retentionTime: 1 }, () => {
+            longRunningStep().config({ async: true, backgroundExecution: true })
+            return new WorkflowResponse("running workflow started")
+          })
+
+          const notExpiredWorkflowId = "not-expired-workflow-" + ulid()
+          createWorkflow(
+            { name: notExpiredWorkflowId, retentionTime: 1000 },
+            () => {
+              return new WorkflowResponse("not expired")
+            }
+          )
+
+          const trx_done = "trx-done-" + ulid()
+          const trx_failed = "trx-failed-" + ulid()
+          const trx_reverting = "trx-reverting-" + ulid()
+          const trx_running = "trx-running-" + ulid()
+          const trx_not_expired = "trx-not-expired-" + ulid()
+
+          // run workflows
+          await workflowOrcModule.run(doneWorkflowId, {
+            transactionId: trx_done,
+          })
+
+          await workflowOrcModule.run(failingWorkflowId, {
+            transactionId: trx_failed,
+            throwOnError: false,
+          })
+
+          await workflowOrcModule.run(revertingWorkflowId, {
+            transactionId: trx_reverting,
+            throwOnError: false,
+          })
+
+          await workflowOrcModule.run(runningWorkflowId, {
+            transactionId: trx_running,
+          })
+
+          await workflowOrcModule.run(notExpiredWorkflowId, {
+            transactionId: trx_not_expired,
+          })
+
+          const executions = await workflowOrcModule.listWorkflowExecutions()
+          expect(executions).toHaveLength(5)
+
+          await setTimeoutPromise(2000)
+
+          // Manually trigger cleaner
+          await (workflowOrcModule as any).workflowOrchestratorService_[
+            "inMemoryDistributedTransactionStorage_"
+          ]["clearExpiredExecutions"]()
+
+          let remainingExecutions =
+            await workflowOrcModule.listWorkflowExecutions()
+
+          expect(remainingExecutions).toHaveLength(2)
+
+          const remainingTrxIds = remainingExecutions
+            .map((e) => e.transaction_id)
+            .sort()
+
+          expect(remainingTrxIds).toEqual([trx_not_expired, trx_running].sort())
+
+          const notExpiredExec = remainingExecutions.find(
+            (e) => e.transaction_id === trx_not_expired
+          )
+          expect(notExpiredExec?.state).toBe(TransactionState.DONE)
+
+          const runningExec = remainingExecutions.find(
+            (e) => e.transaction_id === trx_running
+          )
+          expect(runningExec?.state).toBe(TransactionState.INVOKING)
         })
       })
     })

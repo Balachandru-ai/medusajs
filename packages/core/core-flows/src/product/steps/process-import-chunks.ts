@@ -12,7 +12,10 @@ export const processImportChunksStepId = "process-import-chunks"
  * const data = parseProductCsvStep("products.csv")
  */
 export const processImportChunksStep = createStep(
-  processImportChunksStepId,
+  {
+    name: processImportChunksStepId,
+    async: true,
+  },
   async (input: { chunks: { id: string }[] }, { container }) => {
     const file = container.resolve(Modules.FILE)
 

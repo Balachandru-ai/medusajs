@@ -1,7 +1,15 @@
 import S3BucketAcl from "../../../troubleshooting/_sections/s3/aws-bucket-acl.mdx"
 import CloudflareChecksum from "../../../troubleshooting/_sections/s3/cloudflare-checksum.mdx"
 
-import { Table, Tabs, TabsList, TabsContent, TabsContentWrapper, TabsTrigger, DetailsList } from "docs-ui"
+import {
+  Table,
+  Tabs,
+  TabsList,
+  TabsContent,
+  TabsContentWrapper,
+  TabsTrigger,
+  DetailsList,
+} from "docs-ui"
 
 export const metadata = {
   title: `S3 File Module Provider`,
@@ -13,7 +21,7 @@ The S3 File Module Provider integrates Amazon S3 and services following a compat
 
 <Note title="Looking for managed storage?">
 
-Medusa Cloud offers a managed file storage solution with AWS S3 for your Medusa application. Contact the [sales team](https://medusajs.com/pricing/) to learn more.
+Cloud offers a managed file storage solution with AWS S3 for your Medusa application. Refer to the [S3](!cloud!/s3) Cloud documentation for more details.
 
 </Note>
 
@@ -117,20 +125,25 @@ Medusa Cloud offers a managed file storage solution with AWS S3 for your Medusa 
        - Choose "Standard" for storage class
        - Confirm by clicking "Create bucket"
     3. Configure public access:
+       - Make sure you have a [domain configured in your Cloudflare account](https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/).
        - On your bucket's dashboard, click on the Settings tab.
-       - Scroll down to the Public Access section, and click on "Allow Access" in the "R2.dev subdomain" card.
-       - Type 'allow' to confirm
-       - Copy the Public R2.dev Bucket URL for your `S3_FILE_URL`
+       - In the General Section look for Custom Domains (recommended for production use)
+       - Click on the Add button to add your domain name.
+       - Enter the domain name you want to connect to and select Continue.
+       - Review the new record that will be added to the DNS table and select Connect Domain.
     4. Retrieve credentials:
        - [Go to API tokens page](https://dash.cloudflare.com/?to=/:account/r2/api-tokens):
-         - Select "Create API token"
+         - Click "Create User API token"
          - Edit the "R2 Token" name
          - Under Permissions, select Object Read & Write permission types
          - You can optionally specify the buckets that this API token has access to under the "Specify bucket(s)" section.
-         - Once done, click the "Create API Token" button.
-         - You'll receive an access key ID and a secret access key. Save them to use them later for the `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` environment variables.
+         - Once done, click the "Create User API Token" button.
+         - Copy the jurisdiction-specific endpoint for S3 clients to S3_ENDPOINT into your environment variables.
+         - Copy the Access Key ID and Secret Access Key to the corresponding fields into your environment variables.
+         - Copy your custom domain to `S3_FILE_URL` with leading https:// into your environment variables.
 
     </TabsContent>
+
   </TabsContentWrapper>
 </Tabs>
 
@@ -235,197 +248,198 @@ module.exports = defineConfig({
       - For MinIO, it's the URL to the MinIO server with the bucket's name. For example, `https://{server-domain}/{bucket}`. Locally, it may be something like `http://192.168.0.123:9001/{bucket}`.
       - For DigitalOcean Spaces, it's either the Origin Endpoint or the CDN endpoint of your Spaces Object Storage bucket.
       - for Supabase, it's `https://{uniqueID}.supabase.co/storage/v1/object/public/{bucket}`. You can retrieve the `uniqueID` from [Storage Settings](https://supabase.com/docs/guides/storage/s3/authentication?queryGroups=language&language=javascript#s3-access-keys) page in the Endpoint URL.
-      - For Cloudflare R2, it's `Public R2.dev Bucket URL`.
-      
+      - For Cloudflare R2, it's your `Custom Domain` (recommended for production use) or `Public R2.dev Bucket URL` (for development).
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `access_key_id`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       The AWS or (S3 compatible) user's access key ID.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `secret_access_key`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       The AWS or (S3 compatible) user's secret access key.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `region`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       The bucket's region code.
 
       For MinIO, use `us-east-1`.
 
       For Cloudflare, use `auto`.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `bucket`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       The bucket's name.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `endpoint`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       The URL to the AWS S3 (or compatible S3 API) server.
 
       - For AWS S3, the endpoint is of the format `https://s3.{region}.amazonaws.com`
       - For MinIO, it's the URL to the MinIO server. For example, locally, it may be something like `http://192.168.0.123:9001`.
       - For DigitalOcean Spaces, it's the Spaces Origin Endpoint of the format `https://{region}.digitaloceanspaces.com`.
       - For Supabase, it's the Endpoint URL in the [Storage Settings](https://supabase.com/docs/guides/storage/s3/authentication?queryGroups=language&language=javascript#s3-access-keys).
-      - For Cloudflare, it's `https://{your-account-id}.r2.cloudflarestorage.com`.
-      
+      - For Cloudflare, it's the endpoint for S3 clients `https://{your-account-id}.r2.cloudflarestorage.com`.
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `prefix`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       A string to prefix each uploaded file's name.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `cache_control`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       A string indicating how long objects remain in the AWS S3 (or compatible S3 API) cache.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       `public, max-age=31536000`
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `download_file_duration`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       A number indicating the expiry time of presigned URLs in seconds.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       `3600` (An hour)
-      
+
       </Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-      
+
       `additional_client_config`
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       Any additional configurations to pass to the S3 client.
-      
+
       Refer to [this AWS API reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html) for a full list of accepted configuration.
-      
+
       </Table.Cell>
       <Table.Cell>
-      
+
       \-
-      
+
       </Table.Cell>
     </Table.Row>
+
   </Table.Body>
 </Table>
 
 ---
-
 
 ## Troubleshooting
 
 <DetailsList
   sections={[
     {
-      title: "AWS: The bucket does not allow ACLs (Enabling public access to bucket)",
-      content: <S3BucketAcl />
+      title:
+        "AWS: The bucket does not allow ACLs (Enabling public access to bucket)",
+      content: <S3BucketAcl />,
     },
     {
       title: "Cloudflare: Checksum error",
-      content: <CloudflareChecksum />
-    }
+      content: <CloudflareChecksum />,
+    },
   ]}
 />

@@ -1,5 +1,47 @@
 # @medusajs/orchestration
 
+## 2.8.8
+
+### Patch Changes
+
+- [#12951](https://github.com/medusajs/medusa/pull/12951) [`e74044af4de213ba6326a8fb2b5d02e5875b8a4a`](https://github.com/medusajs/medusa/commit/e74044af4de213ba6326a8fb2b5d02e5875b8a4a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(orchestration): improve transaction error handling
+
+- [#12903](https://github.com/medusajs/medusa/pull/12903) [`c5d609d09cb29c6cf01d1c6c65305cc566f391c5`](https://github.com/medusajs/medusa/commit/c5d609d09cb29c6cf01d1c6c65305cc566f391c5) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Prevent workf. cancellation to execute while rescheduling
+
+- Updated dependencies [[`468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8`](https://github.com/medusajs/medusa/commit/468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8), [`919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5`](https://github.com/medusajs/medusa/commit/919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5), [`7669dbb03e2f65fa76cff1c5b90a0777e475cb47`](https://github.com/medusajs/medusa/commit/7669dbb03e2f65fa76cff1c5b90a0777e475cb47)]:
+  - @medusajs/types@2.8.8
+  - @medusajs/utils@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12886](https://github.com/medusajs/medusa/pull/12886) [`e9a33d0700c47c3d2357bb325791bc272a4d4569`](https://github.com/medusajs/medusa/commit/e9a33d0700c47c3d2357bb325791bc272a4d4569) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Handle expected lifecycle errors
+
+- Updated dependencies [[`42be9a88d61a11db7aebde2d6f4d96d43f54ea79`](https://github.com/medusajs/medusa/commit/42be9a88d61a11db7aebde2d6f4d96d43f54ea79)]:
+  - @medusajs/types@2.8.7
+  - @medusajs/utils@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- [#12834](https://github.com/medusajs/medusa/pull/12834) [`95d282e8ef8f2185737d493dea8b6f1677684543`](https://github.com/medusajs/medusa/commit/95d282e8ef8f2185737d493dea8b6f1677684543) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/test utils events
+
+- Updated dependencies [[`95d282e8ef8f2185737d493dea8b6f1677684543`](https://github.com/medusajs/medusa/commit/95d282e8ef8f2185737d493dea8b6f1677684543)]:
+  - @medusajs/utils@2.8.6
+  - @medusajs/types@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12795](https://github.com/medusajs/medusa/pull/12795) [`316a325b63e92003df25452faf88e577e9133064`](https://github.com/medusajs/medusa/commit/316a325b63e92003df25452faf88e577e9133064) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(workflow-engine-\*): Cleanup expired executions
+
+- Updated dependencies [[`ab634a14ba709f1b1d12eb4cd5c7f3db6bfe6470`](https://github.com/medusajs/medusa/commit/ab634a14ba709f1b1d12eb4cd5c7f3db6bfe6470), [`6ca755ede7bfe3211464447412ca0d97e1207742`](https://github.com/medusajs/medusa/commit/6ca755ede7bfe3211464447412ca0d97e1207742), [`ba1e6595b74ae69f4ee066d545f8def8aff77dd3`](https://github.com/medusajs/medusa/commit/ba1e6595b74ae69f4ee066d545f8def8aff77dd3), [`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`b316924572fc2cf529e0d91b84955da20b34248a`](https://github.com/medusajs/medusa/commit/b316924572fc2cf529e0d91b84955da20b34248a), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`44d1d186890cd44b20e41b60d1e217bc3d4b2a51`](https://github.com/medusajs/medusa/commit/44d1d186890cd44b20e41b60d1e217bc3d4b2a51), [`2621f00bb035a6b909f9498a2bc98fdba8570ba9`](https://github.com/medusajs/medusa/commit/2621f00bb035a6b909f9498a2bc98fdba8570ba9), [`bd6d9777c50d69115a20334a103a8ab9997b259d`](https://github.com/medusajs/medusa/commit/bd6d9777c50d69115a20334a103a8ab9997b259d), [`316a325b63e92003df25452faf88e577e9133064`](https://github.com/medusajs/medusa/commit/316a325b63e92003df25452faf88e577e9133064)]:
+  - @medusajs/utils@2.8.5
+  - @medusajs/types@2.8.5
+
 ## 2.8.4
 
 ### Patch Changes

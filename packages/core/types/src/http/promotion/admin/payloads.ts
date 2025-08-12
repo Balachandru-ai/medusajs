@@ -10,8 +10,8 @@ import { AdminCreateCampaign } from "../../campaign"
 
 export interface AdminCreatePromotionRule {
   /**
-   * The operator used to check whether the buy rule applies on a cart. 
-   * For example, `eq` means that the cart's value for the specified attribute 
+   * The operator used to check whether the buy rule applies on a cart.
+   * For example, `eq` means that the cart's value for the specified attribute
    * must match the specified value.
    */
   operator: PromotionRuleOperatorValues
@@ -21,14 +21,14 @@ export interface AdminCreatePromotionRule {
   description?: string | null
   /**
    * The attribute to compare against when checking whether a promotion can be applied on a cart.
-   * 
+   *
    * @example
    * items.product_id
    */
   attribute: string
   /**
    * The value to compare against when checking whether a promotion can be applied on a cart.
-   * 
+   *
    * @example
    * prod_123
    */
@@ -54,7 +54,7 @@ export interface AdminCreateApplicationMethod {
   value: number
   /**
    * The currency code of the application method.
-   * 
+   *
    * @example
    * usd
    */
@@ -68,12 +68,12 @@ export interface AdminCreateApplicationMethod {
    */
   type: ApplicationMethodTypeValues
   /**
-   * The target type of the application method indicating whether the associated promotion is applied 
+   * The target type of the application method indicating whether the associated promotion is applied
    * to the cart's items, shipping methods, or the whole order.
    */
   target_type: ApplicationMethodTargetTypeValues
   /**
-   * The allocation value that indicates whether the associated promotion is applied on each 
+   * The allocation value that indicates whether the associated promotion is applied on each
    * item in a cart or split between the items in the cart.
    */
   allocation?: ApplicationMethodAllocationValues
@@ -90,7 +90,7 @@ export interface AdminCreateApplicationMethod {
    */
   apply_to_quantity?: number | null
   /**
-   * The minimum quantity required for a `buyget` promotion to be applied. For example, 
+   * The minimum quantity required for a `buyget` promotion to be applied. For example,
    * if the promotion is a "Buy 2 shirts get 1 free", the value of this attribute is 2.
    */
   buy_rules_min_quantity?: number | null
@@ -111,7 +111,7 @@ export interface AdminUpdateApplicationMethod {
   max_quantity?: number | null
   /**
    * The currency code of the application method.
-   * 
+   *
    * @example
    * usd
    */
@@ -121,12 +121,12 @@ export interface AdminUpdateApplicationMethod {
    */
   type?: ApplicationMethodTypeValues
   /**
-   * The target type of the application method indicating whether the associated promotion is applied 
+   * The target type of the application method indicating whether the associated promotion is applied
    * to the cart's items, shipping methods, or the whole order.
    */
   target_type?: ApplicationMethodTargetTypeValues
   /**
-   * The allocation value that indicates whether the associated promotion is applied on each 
+   * The allocation value that indicates whether the associated promotion is applied on each
    * item in a cart or split between the items in the cart.
    */
   allocation?: ApplicationMethodAllocationValues
@@ -143,7 +143,7 @@ export interface AdminUpdateApplicationMethod {
    */
   apply_to_quantity?: number | null
   /**
-   * The minimum quantity required for a `buyget` promotion to be applied. For example, 
+   * The minimum quantity required for a `buyget` promotion to be applied. For example,
    * if the promotion is a "Buy 2 shirts get 1 free", the value of this attribute is 2.
    */
   buy_rules_min_quantity?: number | null
@@ -155,11 +155,15 @@ export interface AdminCreatePromotion {
    */
   code: string
   /**
-   * Whether the promotion is applied automatically 
+   * Whether the promotion is applied automatically
    * or requires the customer to manually apply it
    * by entering the code at checkout.
    */
   is_automatic?: boolean
+  /**
+   * Whether the promotion is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
   /**
    * The type of promotion.
    */
@@ -188,11 +192,15 @@ export interface AdminUpdatePromotion {
    */
   code?: string
   /**
-   * Whether the promotion is applied automatically 
+   * Whether the promotion is applied automatically
    * or requires the customer to manually apply it
    * by entering the code at checkout.
    */
   is_automatic?: boolean
+  /**
+   * Whether the promotion is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
   /**
    * The type of promotion.
    */

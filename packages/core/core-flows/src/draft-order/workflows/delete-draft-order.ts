@@ -40,9 +40,9 @@ const validateDraftOrdersStep = createStep(
 
 export const deleteDraftOrderWorkflowId = "delete-draft-order"
 /**
- * This workflow deletes draft orders.
+ * This workflow deletes draft orders. It's used by the [Delete Draft Order API route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersid).
  *
- * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around canceling an order.
+ * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around deleting a draft order.
  *
  * @example
  * const { result } = await deleteDraftOrderWorkflow(container)
@@ -55,8 +55,6 @@ export const deleteDraftOrderWorkflowId = "delete-draft-order"
  * @summary
  *
  * Delete draft orders.
- *
- * @property hooks.orderCanceled - This hook is executed after the order is canceled. You can consume this hook to perform custom actions on the canceled order.
  */
 export const deleteDraftOrdersWorkflow = createWorkflow(
   deleteDraftOrderWorkflowId,

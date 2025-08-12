@@ -103,24 +103,32 @@ function applyPromotionToItems(
     ? 1
     : applicationMethod?.max_quantity!
 
-  let lineItemsTotal = MathBN.convert(0)
+  let lineItemsAmount = MathBN.convert(0)
   if (allocation === ApplicationMethodAllocation.ACROSS) {
-    lineItemsTotal = applicableItems.reduce(
+    lineItemsAmount = applicableItems.reduce(
       (acc, item) =>
         MathBN.sub(
-          MathBN.add(acc, item.subtotal),
+          MathBN.add(
+            acc,
+            promotion.is_tax_inclusive ? item.original_total : item.subtotal
+          ),
           appliedPromotionsMap.get(item.id) ?? 0
         ),
       MathBN.convert(0)
     )
 
-    if (MathBN.lte(lineItemsTotal, 0)) {
+    if (MathBN.lte(lineItemsAmount, 0)) {
       return computedActions
     }
   }
 
   for (const item of applicableItems) {
-    if (MathBN.lte(item.subtotal, 0)) {
+    if (
+      MathBN.lte(
+        promotion.is_tax_inclusive ? item.original_total : item.subtotal,
+        0
+      )
+    ) {
       continue
     }
 
@@ -135,11 +143,12 @@ function applyPromotionToItems(
       {
         value: promotionValue,
         applied_value: appliedPromoValue,
+        is_tax_inclusive: promotion.is_tax_inclusive,
         max_quantity: maxQuantity,
         type: applicationMethod?.type!,
         allocation,
       },
-      lineItemsTotal
+      lineItemsAmount
     )
 
     if (MathBN.lte(amount, 0)) {
@@ -164,6 +173,7 @@ function applyPromotionToItems(
         item_id: item.id,
         amount,
         code: promotion.code!,
+        is_tax_inclusive: promotion.is_tax_inclusive,
       })
     } else if (isTargetShippingMethod) {
       computedActions.push({
@@ -201,7 +211,15 @@ function getValidItemsForPromotion(
   }
 
   return items.filter((item) => {
-    if (!item || !("subtotal" in item) || MathBN.lte(item.subtotal, 0)) {
+    if (!item) {
+      return false
+    }
+
+    if ("is_discountable" in item && !item.is_discountable) {
+      return false
+    }
+
+    if (!("subtotal" in item) || MathBN.lte(item.subtotal, 0)) {
       return false
     }
 

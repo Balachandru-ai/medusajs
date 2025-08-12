@@ -12,8 +12,9 @@ export declare type OpenApiOperation = Partial<OpenAPIV3.OperationObject> & {
   "x-workflow"?: string
   "x-events"?: OasEvent[]
   "x-deprecated_message"?: string
-  "x-version"?: string
+  "x-since"?: string
   "x-featureFlag"?: string
+  "x-ignoreCleanup"?: boolean
 }
 
 export declare type CommonCliOptions = {
@@ -50,5 +51,5 @@ export declare type OasEvent = {
   description?: string
   deprecated?: boolean
   deprecated_message?: string
-  version?: string
+  since?: string
 }

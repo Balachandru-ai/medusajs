@@ -8,6 +8,7 @@ import execute from "./execute.js"
 import { displayFactBox, FactBoxOptions } from "./facts.js"
 import logMessage from "./log-message.js"
 import ProcessManager from "./process-manager.js"
+import { updatePackageVersions } from "./update-package-versions.js"
 
 const NEXTJS_REPO = "https://github.com/medusajs/nextjs-starter-medusa"
 const NEXTJS_BRANCH = "main"
@@ -31,6 +32,7 @@ type InstallOptions = {
   factBoxOptions: FactBoxOptions
   verbose?: boolean
   processManager: ProcessManager
+  version?: string
 }
 
 export async function installNextjsStarter({
@@ -39,6 +41,7 @@ export async function installNextjsStarter({
   factBoxOptions,
   verbose = false,
   processManager,
+  version,
 }: InstallOptions): Promise<string> {
   factBoxOptions.interval = displayFactBox({
     ...factBoxOptions,
@@ -70,6 +73,12 @@ export async function installNextjsStarter({
       ],
       { verbose }
     )
+
+    if (version) {
+      const packageJsonPath = path.join(nextjsDirectory, "package.json")
+      updatePackageVersions(packageJsonPath, version, { applyChanges: true })
+    }
+
     const execOptions = {
       signal: abortController?.signal,
       cwd: nextjsDirectory,

@@ -10,7 +10,10 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { BigNumberInput, OrderChangeDTO, OrderDTO } from "@medusajs/types"
 import { reserveInventoryStep } from "../../cart"
-import { prepareConfirmInventoryInput } from "../../cart/utils/prepare-confirm-inventory-input"
+import {
+  prepareConfirmInventoryInput,
+  requiredOrderFieldsForInventoryConfirmation,
+} from "../../cart/utils/prepare-confirm-inventory-input"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrUpdateOrderPaymentCollectionWorkflow,
@@ -114,21 +117,7 @@ export const confirmDraftOrderEditWorkflow = createWorkflow(
 
     const orderItems = useRemoteQueryStep({
       entry_point: "order",
-      fields: [
-        "id",
-        "version",
-        "canceled_at",
-        "sales_channel_id",
-        "items.*",
-        "items.variant.manage_inventory",
-        "items.variant.allow_backorder",
-        "items.variant.inventory_items.inventory_item_id",
-        "items.variant.inventory_items.required_quantity",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.id",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.name",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
-      ],
+      fields: requiredOrderFieldsForInventoryConfirmation,
       variables: { id: input.order_id },
       list: false,
       throw_if_key_not_found: true,

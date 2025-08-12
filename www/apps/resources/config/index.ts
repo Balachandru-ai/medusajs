@@ -26,8 +26,8 @@ export const config: DocsConfig = {
   version: {
     ...globalConfig.version,
     bannerImage: {
-      light: basePathUrl("/images/get-started-card.png"),
-      dark: basePathUrl("/images/get-started-card-dark.png"),
+      light: basePathUrl("/images/release.png"),
+      dark: basePathUrl("/images/release-dark.png"),
     },
   },
 }

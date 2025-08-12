@@ -12,7 +12,7 @@ import { TypeList } from "docs-ui"
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[InitiatePaymentOutput](../types.InitiatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the payment session in the payment provider.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="initiatePayment"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[InitiatePaymentOutput](../types.InitiatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the payment session in the payment provider.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"status","type":"[PaymentSessionStatus](../../../payment/types/payment.PaymentSessionStatus/page.mdx)","description":"The status of the payment session, which will be stored in the payment session's `status` field.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="initiatePayment"/>
 
 ### updatePayment
 
@@ -22,7 +22,7 @@ import { TypeList } from "docs-ui"
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[UpdatePaymentOutput](../types.UpdatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="updatePayment"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[UpdatePaymentOutput](../types.UpdatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"status","type":"[PaymentSessionStatus](../../../payment/types/payment.PaymentSessionStatus/page.mdx)","description":"The status of the payment, which will be stored in the payment session's `status` field.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="updatePayment"/>
 
 ### deletePayment
 

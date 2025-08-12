@@ -4,8 +4,12 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/create-actor-type"
   },
   {
-    "title": "Handle Password Reset Event",
+    "title": "Reset Password Email",
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
+  },
+  {
+    "title": "Retrieve Cart Totals using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals"
   },
   {
     "title": "Extend Cart",
@@ -14,6 +18,10 @@ export const server = [
   {
     "title": "Extend Customer",
     "path": "https://docs.medusajs.com/resources/commerce-modules/customer/extend"
+  },
+  {
+    "title": "Retrieve Order Totals Using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals"
   },
   {
     "title": "Extend Product",
@@ -36,6 +44,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/promotion/extend"
   },
   {
+    "title": "Invite User Email",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber"
+  },
+  {
     "title": "Implement Custom Line Item Pricing in Medusa",
     "path": "https://docs.medusajs.com/resources/examples/guides/custom-item-price"
   },
@@ -48,12 +60,28 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
+    "title": "First-Purchase Discount",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
+  },
+  {
+    "title": "Add Gift Message",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
+  },
+  {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
+  },
+  {
     "title": "Loyalty Points",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
   },
   {
     "title": "Phone Authentication",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/phone-auth"
+  },
+  {
+    "title": "Pre-Orders",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
   },
   {
     "title": "Product Reviews",
@@ -88,8 +116,16 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/contentful"
   },
   {
+    "title": "Integrate Mailchimp",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
+  },
+  {
     "title": "Integrate Segment",
     "path": "https://docs.medusajs.com/resources/integrations/guides/segment"
+  },
+  {
+    "title": "Integrate Slack",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
   },
   {
     "title": "Build Wishlist Plugin",
@@ -98,6 +134,10 @@ export const server = [
   {
     "title": "Bundled Products",
     "path": "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard"
+  },
+  {
+    "title": "Personalized Products",
+    "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
   },
   {
     "title": "Use Analytics Module",

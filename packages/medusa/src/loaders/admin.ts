@@ -15,7 +15,7 @@ type Options = {
   plugins: PluginDetails[]
 }
 
-type IntializedOptions = Required<Pick<AdminOptions, "path" | "disable">> &
+type InitializedOptions = Required<Pick<AdminOptions, "path" | "disable">> &
   AdminOptions & {
     outDir: string
     sources?: string[]
@@ -46,7 +46,7 @@ export default async function adminLoader({
     }
   }
 
-  const adminOptions: IntializedOptions = {
+  const adminOptions: InitializedOptions = {
     disable: false,
     sources,
     plugins: pluginAdminPaths,
@@ -73,7 +73,10 @@ export default async function adminLoader({
   return serveProductionBuild(app, adminOptions)
 }
 
-async function initDevelopmentServer(app: Express, options: IntializedOptions) {
+async function initDevelopmentServer(
+  app: Express,
+  options: InitializedOptions
+) {
   const { develop } = await import("@medusajs/admin-bundler")
 
   const adminMiddleware = await develop(options)
@@ -81,7 +84,7 @@ async function initDevelopmentServer(app: Express, options: IntializedOptions) {
   return app
 }
 
-async function serveProductionBuild(app: Express, options: IntializedOptions) {
+async function serveProductionBuild(app: Express, options: InitializedOptions) {
   const { serve } = await import("@medusajs/admin-bundler")
 
   const adminRoute = await serve(options)

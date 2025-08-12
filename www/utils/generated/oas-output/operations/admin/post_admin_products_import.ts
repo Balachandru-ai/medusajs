@@ -97,6 +97,8 @@
  *       ```
  *     description: Emitted when products are deleted.
  *     deprecated: false
+ * deprecated: true
+ * x-deprecated_message: use `POST /admin/products/imports` instead.
  * 
 */
 
