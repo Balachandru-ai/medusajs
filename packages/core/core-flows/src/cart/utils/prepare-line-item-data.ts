@@ -14,6 +14,7 @@ import {
   MathBN,
   PriceListType,
 } from "@medusajs/framework/utils"
+import { MetadataType } from "@medusajs/types/src"
 
 interface PrepareItemLineItemInput {
   title?: string
@@ -125,28 +126,58 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
     ? item.requires_shipping
     : hasShippingProfile || someInventoryRequiresShipping
 
+  const locale = item?.metadata?.locale as string
+
+  const getTranslatedValue = (metadata: MetadataType | undefined, key: string) => {
+    if (!metadata) {
+      return undefined
+    }
+    return metadata?.translations?.[locale]?.[key]
+  }
+
   let lineItem: any = {
     quantity: item?.quantity,
-    title: variant?.product?.title ?? item?.title,
-    subtitle: variant?.title ?? item?.subtitle,
+
+    title: getTranslatedValue(variant?.metadata, 'title')
+      ?? variant?.product?.title
+      ?? item?.title,
+
+    subtitle: getTranslatedValue(variant?.metadata, 'subtitle')
+      ?? variant?.title
+      ?? item?.subtitle,
+
     thumbnail: variant?.product?.thumbnail ?? item?.thumbnail,
 
     product_id: variant?.product?.id ?? item?.product_id,
-    product_title: variant?.product?.title ?? item?.product_title,
-    product_description:
-      variant?.product?.description ?? item?.product_description,
-    product_subtitle: variant?.product?.subtitle ?? item?.product_subtitle,
+
+    product_title: getTranslatedValue(variant?.product?.metadata, 'title')
+      ?? variant?.product?.title
+      ?? item?.product_title,
+
+    product_description: getTranslatedValue(variant?.product?.metadata, 'description')
+      ?? variant?.product?.description
+      ?? item?.product_description,
+
+    product_subtitle: getTranslatedValue(variant?.product?.metadata, 'subtitle')
+      ?? variant?.product?.subtitle
+      ?? item?.product_subtitle,
+
     product_type: variant?.product?.type?.value ?? item?.product_type ?? null,
-    product_type_id:
-      variant?.product?.type?.id ?? item?.product_type_id ?? null,
-    product_collection:
-      variant?.product?.collection?.title ?? item?.product_collection ?? null,
-    product_handle: variant?.product?.handle ?? item?.product_handle,
+    product_type_id: variant?.product?.type?.id ?? item?.product_type_id ?? null,
+    product_collection: variant?.product?.collection?.title ?? item?.product_collection ?? null,
+
+    product_handle: getTranslatedValue(variant?.product?.metadata, 'handle')
+      ?? variant?.product?.handle
+      ?? item?.product_handle,
 
     variant_id: variant?.id,
     variant_sku: variant?.sku ?? item?.variant_sku,
     variant_barcode: variant?.barcode ?? item?.variant_barcode,
-    variant_title: variant?.title ?? item?.variant_title,
+
+    variant_title: getTranslatedValue(variant?.metadata, 'title')
+      ?? variant?.title
+      ?? item?.variant_title,
+
     variant_option_values: item?.variant_option_values,
 
     is_discountable: variant?.product?.discountable ?? item?.is_discountable,
