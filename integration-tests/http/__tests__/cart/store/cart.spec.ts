@@ -4,6 +4,7 @@ import {
   Modules,
   PriceListStatus,
   PriceListType,
+  ProductStatus,
   PromotionRuleOperator,
   PromotionStatus,
   PromotionType,
@@ -1316,6 +1317,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product without inventory management",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -2173,6 +2175,7 @@ medusaIntegrationTestRunner({
               {
                 title: "Gift Card",
                 description: "test",
+                status: ProductStatus.PUBLISHED,
                 is_giftcard: true,
                 options: [
                   {
@@ -2908,6 +2911,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3024,6 +3028,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3142,6 +3147,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3260,6 +3266,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3397,6 +3404,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3513,6 +3521,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3650,6 +3659,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
