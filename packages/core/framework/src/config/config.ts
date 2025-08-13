@@ -124,17 +124,17 @@ export class ConfigManager {
 
   /**
    * Normalizes the project config object and assign the defaults if needed
-   * @param projectConfig
+   * @param config
    * @protected
    */
   protected normalizeProjectConfig(
-    projectConfig: Partial<ConfigModule>
+    config: Partial<ConfigModule>
   ): ConfigModule["projectConfig"] {
-    const projConfig = projectConfig?.projectConfig ?? {}
+    const projConfig = config?.projectConfig ?? {}
     const outputConfig = deepCopy(projConfig) as ConfigModule["projectConfig"]
 
     if (!outputConfig?.redisUrl) {
-      const customLogger = projectConfig?.logger ?? logger
+      const customLogger = config?.logger ?? logger
       customLogger.log(
         `redisUrl not found. A fake redis instance will be used.`
       )

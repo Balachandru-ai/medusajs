@@ -10,7 +10,7 @@ const handleConfigError = (error: Error): void => {
   if (error.stack) {
     defaultLogger.error(error.stack)
   }
-  // process.exit(1)
+  process.exit(1)
 }
 
 export const configManager = new ConfigManager()
