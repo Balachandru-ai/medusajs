@@ -18,8 +18,8 @@ import {
   CheckCircleSolid,
   ArrowUturnLeft,
 } from "@medusajs/icons"
-import { useViewConfiguration } from "../../../providers/view-configuration-provider"
-import { ViewConfiguration } from "../../../providers/view-configuration-provider"
+import { useViewConfigurations, useViewConfiguration } from "../../../hooks/use-view-configurations"
+import type { ViewConfiguration } from "../../../hooks/use-view-configurations"
 import { SaveViewDialog } from "../save-view-dialog"
 
 interface ViewSelectorProps {
@@ -37,44 +37,37 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
   currentColumns,
 }) => {
   const {
-    getViewConfigurations,
-    getActiveView,
+    listViews,
+    activeView,
     setActiveView,
-    deleteViewConfiguration,
-    isLoading,
-  } = useViewConfiguration()
+    isDefaultViewActive,
+  } = useViewConfigurations(entity)
 
-  const [views, setViews] = useState<ViewConfiguration[]>([])
-  const [activeView, setActiveViewState] = useState<ViewConfiguration | null>(null)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [editingView, setEditingView] = useState<ViewConfiguration | null>(null)
+  const [deletingViewId, setDeletingViewId] = useState<string | null>(null)
   const prompt = usePrompt()
+
+  const views = listViews.data?.view_configurations || []
+  const currentActiveView = activeView.data?.view_configuration || null
+
+  // Get delete mutation for the current deleting view
+  const { deleteView } = useViewConfiguration(entity, deletingViewId || '')
 
   // Load views and active view
   useEffect(() => {
-    const loadData = async () => {
-      const [viewsList, active] = await Promise.all([
-        getViewConfigurations(entity),
-        getActiveView(entity),
-      ])
-      setViews(viewsList)
-      setActiveViewState(active)
-      if (active && onViewChange) {
-        onViewChange(active)
-      }
+    if (activeView.isSuccess && onViewChange) {
+      onViewChange(currentActiveView)
     }
-    loadData()
-  }, [entity])
+  }, [activeView.isSuccess, currentActiveView, onViewChange])
 
   const handleViewSelect = async (viewId: string) => {
     const view = views.find(v => v.id === viewId)
     if (view) {
-      await setActiveView(entity, viewId)
-      setActiveViewState(view)
+      await setActiveView.mutateAsync(viewId)
       if (onViewChange) {
         onViewChange(view)
       }
-      toast.success(`Switched to view: ${view.name}`)
     }
   }
 
@@ -87,21 +80,25 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
     })
 
     if (result) {
-      try {
-        await deleteViewConfiguration(view.id)
-        setViews(views.filter(v => v.id !== view.id))
-        if (activeView?.id === view.id) {
-          setActiveViewState(null)
+      setDeletingViewId(view.id)
+    }
+  }
+
+  // Handle deletion when deletingViewId is set
+  useEffect(() => {
+    if (deletingViewId && deleteView.mutateAsync) {
+      deleteView.mutateAsync().then(() => {
+        if (currentActiveView?.id === deletingViewId) {
           if (onViewChange) {
             onViewChange(null)
           }
         }
-        toast.success("View deleted successfully")
-      } catch (error) {
-        toast.error("Failed to delete view")
-      }
+        setDeletingViewId(null)
+      }).catch(() => {
+        setDeletingViewId(null)
+      })
     }
-  }
+  }, [deletingViewId, deleteView.mutateAsync, currentActiveView?.id, onViewChange])
 
   const handleSaveView = () => {
     setSaveDialogOpen(true)
@@ -122,19 +119,7 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
     })
 
     if (result) {
-      try {
-        await deleteViewConfiguration(systemDefaultView.id)
-        setViews(views.filter(v => v.id !== systemDefaultView.id))
-        if (activeView?.id === systemDefaultView.id) {
-          setActiveViewState(null)
-          if (onViewChange) {
-            onViewChange(null)
-          }
-        }
-        toast.success("System default reset to code-level defaults")
-      } catch (error) {
-        toast.error("Failed to reset system default")
-      }
+      setDeletingViewId(systemDefaultView.id)
     }
   }
 
@@ -148,7 +133,7 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
           <DropdownMenu.Trigger asChild>
             <Button variant="secondary" size="small">
               <Eye className="h-4 w-4" />
-              {activeView ? activeView.name : "Default View"}
+              {currentActiveView ? currentActiveView.name : "Default View"}
             </Button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content className="w-[260px]">
@@ -164,7 +149,7 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
                     {systemDefaultView.name || "System Default"}
                   </span>
                   <div className="flex items-center gap-1">
-                    {activeView?.id === systemDefaultView.id && (
+                    {currentActiveView?.id === systemDefaultView.id && (
                       <CheckCircleSolid className="h-4 w-4 text-ui-fg-positive" />
                     )}
                     <div className="opacity-0 group-hover:opacity-100">
@@ -198,7 +183,7 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
                   >
                     <span className="flex-1">{view.name}</span>
                     <div className="flex items-center gap-1">
-                      {activeView?.id === view.id && (
+                      {currentActiveView?.id === view.id && (
                         <CheckCircleSolid className="h-4 w-4 text-ui-fg-positive" />
                       )}
                       <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
@@ -255,10 +240,11 @@ export const ViewSelector: React.FC<ViewSelectorProps> = ({
             setEditingView(null)
           }}
           onSaved={(newView) => {
-            setViews([...views.filter(v => v.id !== newView.id), newView])
             setSaveDialogOpen(false)
             setEditingView(null)
-            toast.success(`View "${newView.name}" saved successfully`)
+            if (onViewChange) {
+              onViewChange(newView)
+            }
           }}
         />
       )}
