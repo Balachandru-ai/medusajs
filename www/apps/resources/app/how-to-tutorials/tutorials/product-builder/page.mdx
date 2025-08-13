@@ -1,0 +1,59 @@
+---
+sidebar_label: "Product Builder"
+tags:
+  - name: product
+    label: "Implement Product Builder"
+  - server
+  - tutorial
+  - name: nextjs
+    label: "Implement Product Builder"
+products:
+  - product
+  - cart
+---
+
+import { Github, PlaySolid, EllipsisHorizontal } from "@medusajs/icons"
+import { Prerequisites, WorkflowDiagram, CardList, InlineIcon } from "docs-ui"
+
+export const metadata = {
+  title: `Implement Product Builder in Medusa`,
+}
+
+# {metadata.title}
+
+In this tutorial, you'll learn how to implement a product builder in Medusa.
+
+When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. The Medusa application's commerce features are built around [Commerce Modules](../../../commerce-modules/page.mdx) that are available out-of-the-box.
+
+A product builder allows customers to customize the product before adding it to the cart. This may include entering custom options like engraving text, adding complementary product to the cart, or purchase addons with the product, such as insurance.
+
+## Summary
+
+By following this tutorial, you will learn how to:
+
+- Install and set up Medusa with the Next.js Starter Storefront.
+- Define and manage data models useful for the product builder.
+- Allow admin users to manage the builder configurations of a product from Medusa Admin.
+- Customize the storefront to allow customers to choose a product's builder configurations.
+
+You can follow this tutorial whether you're new to Medusa or an advanced Medusa developer.
+
+{/* TODO add diagram */}
+
+<CardList items={[
+  {
+    href: "https://github.com/medusajs/examples/tree/main/product-builder",
+    title: "Full Code",
+    text: "Find the full code for this tutorial in this repository.",
+    icon: Github,
+  },
+  {
+    href: "https://res.cloudinary.com/dza7lstvk/raw/upload/v1747745832/OpenApi/Phone_Auth_g4xsqv.yaml",
+    title: "OpenApi Specs for Postman",
+    text: "Import this OpenApi Specs file into tools like Postman.",
+    icon: PlaySolid,
+  },
+]} />
+
+---
+
