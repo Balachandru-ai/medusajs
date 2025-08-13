@@ -4174,7 +4174,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it.only("should add shipping method with tax rate override to cart", async () => {
+        it("should add shipping method with tax rate override to cart", async () => {
           let taxRegion = (
             await api.get(`/admin/tax-regions?country_code=us`, adminHeaders)
           ).data.tax_regions[0]
