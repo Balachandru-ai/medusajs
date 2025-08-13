@@ -7858,6 +7858,7 @@ __metadata:
     react-tooltip: ^5.28.0
     react-transition-group: ^4.4.5
     react-uuid: ^2.0.0
+    reodotdev: ^1.0.0
     rimraf: ^5.0.1
     slugify: ^1.6.6
     tailwind: "*"
@@ -14719,6 +14720,13 @@ __metadata:
     remark-stringify: ^10.0.0
     unified: ^10.0.0
   checksum: d4dbef29abdb62b01ae632d787bf0038af819df3e4308e037754ece8cb9c4d8ea52e8629174a47b5c46a7448cd22feba5dfea09b3ffdaa8c745b4c9bdd01b41d
+  languageName: node
+  linkType: hard
+
+"reodotdev@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "reodotdev@npm:1.0.1"
+  checksum: 7a509431f0d27ab76e5cdee460d4ced86246057722c578c2cf16765e77e7c4cff1bd46a2cb3de2a568a4fba223e61ab99031b5b03069e3c7a40f5660c2c6fc70
   languageName: node
   linkType: hard
 
