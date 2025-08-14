@@ -11988,6 +11988,10 @@ export const filesMap = [
     "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getPublishableKeyHeader_"
   },
   {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx",
+    "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken"
+  },
+  {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getTokenStorageInfo_/page.mdx",
     "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getTokenStorageInfo_"
   },
