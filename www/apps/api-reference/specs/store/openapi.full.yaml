@@ -1360,7 +1360,7 @@ paths:
             ```
           description: Emitted when the customer in the cart is transferred.
           deprecated: false
-          version: 2.8.0
+          since: 2.8.0
   /store/carts/{id}/gift-cards:
     post:
       operationId: PostCartsIdGiftCards
@@ -8845,7 +8845,7 @@ paths:
             ```
           description: Emitted when a return is marked as received.
           deprecated: false
-      x-version: 2.8.0
+      x-since: 2.8.0
   /store/shipping-options:
     get:
       operationId: GetShippingOptions
@@ -9576,6 +9576,9 @@ components:
               metadata:
                 type: object
                 description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
     AdminAddDraftOrderPromotions:
       type: object
       description: The details of the promotions to add to a draft order.
@@ -9616,6 +9619,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminApiKey:
       type: object
       description: The API key's details.
@@ -10206,6 +10212,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         external_id:
           type: string
           title: external_id
@@ -10292,6 +10301,9 @@ components:
         metadata:
           type: object
           description: The product variant's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         prices:
           type: array
           description: The product variant's prices.
@@ -10479,6 +10491,9 @@ components:
         metadata:
           type: object
           description: The claim's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -10677,6 +10692,9 @@ components:
         metadata:
           type: object
           description: The collection's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCollectionDeleteResponse:
       type: object
       description: The details of the deleted collection.
@@ -10772,6 +10790,9 @@ components:
         metadata:
           type: object
           description: The customer group's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateFulfillment:
       type: object
       description: The filfillment's details.
@@ -10845,6 +10866,9 @@ components:
             metadata:
               type: object
               description: The delivery address's metadata, used to store custom key-value pairs.
+              externalDocs:
+                url: https://docs.medusajs.com/api/admin#manage-metadata
+                description: Learn how to manage metadata
         items:
           type: array
           description: The items to fulfill.
@@ -10941,6 +10965,9 @@ components:
         metadata:
           type: object
           description: The fulfillment's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateFulfillmentSetServiceZones:
       type: object
       description: The service zone's details.
@@ -10966,6 +10993,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   country_code:
                     type: string
                     title: country_code
@@ -10986,6 +11016,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   country_code:
                     type: string
                     title: country_code
@@ -11015,6 +11048,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   country_code:
                     type: string
                     title: country_code
@@ -11049,6 +11085,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   country_code:
                     type: string
                     title: country_code
@@ -11126,6 +11165,9 @@ components:
         metadata:
           type: object
           description: The gift card's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateInventoryItem:
       type: object
       description: The inventory item's details.
@@ -11186,6 +11228,9 @@ components:
         metadata:
           type: object
           description: The inventory item's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateInventoryLocationLevel:
       type: object
       description: The inventory level's details.
@@ -11232,6 +11277,9 @@ components:
         metadata:
           type: object
           description: The credit line's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreatePaymentCapture:
       type: object
       description: The payment's details.
@@ -11521,6 +11569,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         external_id:
           type: string
           title: external_id
@@ -11567,6 +11618,9 @@ components:
         metadata:
           type: object
           description: The product category's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateProductOption:
       type: object
       description: The product option's details.
@@ -11600,6 +11654,9 @@ components:
         metadata:
           type: object
           description: The product tag's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateProductType:
       type: object
       description: The details of the product type to create.
@@ -11610,6 +11667,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         value:
           type: string
           title: value
@@ -11689,6 +11749,9 @@ components:
         metadata:
           type: object
           description: The variant's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         prices:
           type: array
           description: The variant's prices.
@@ -11856,6 +11919,9 @@ components:
         metadata:
           type: object
           description: The region's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateReservation:
       type: object
       description: The reservation's details.
@@ -11888,6 +11954,9 @@ components:
         metadata:
           type: object
           description: The reservation's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateReturnReason:
       type: object
       description: The details of the return reason to create.
@@ -11915,6 +11984,9 @@ components:
         metadata:
           type: object
           description: The return reason's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateSalesChannel:
       type: object
       description: The sales channel's details.
@@ -11937,6 +12009,9 @@ components:
         metadata:
           type: object
           description: The sales channel's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateShipment:
       type: object
       description: The shipment's details.
@@ -12129,6 +12204,9 @@ components:
         metadata:
           type: object
           description: The shipping profile's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateStockLocation:
       type: object
       description: The stock location's details.
@@ -12149,6 +12227,9 @@ components:
         metadata:
           type: object
           description: The stock location's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateStockLocationFulfillmentSet:
       type: object
       description: The fulfillment set to create.
@@ -12185,6 +12266,9 @@ components:
         metadata:
           type: object
           description: The store credit account's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateTaxRate:
       type: object
       description: The tax rate's details.
@@ -12230,6 +12314,9 @@ components:
         metadata:
           type: object
           description: The tax rate's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateTaxRateRule:
       type: object
       description: The tax rate rule's details.
@@ -12301,9 +12388,15 @@ components:
             metadata:
               type: object
               description: The default tax rate's metadata, used to store custom key-value pairs.
+              externalDocs:
+                url: https://docs.medusajs.com/api/admin#manage-metadata
+                description: Learn how to manage metadata
         metadata:
           type: object
           description: The tax region's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         provider_id:
           type: string
           title: provider_id
@@ -12524,6 +12617,9 @@ components:
         metadata:
           type: object
           description: The customer's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_by:
           type: string
           title: created_by
@@ -12635,6 +12731,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -12682,6 +12781,9 @@ components:
         metadata:
           type: object
           description: The customer group's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -13433,6 +13535,9 @@ components:
         metadata:
           type: object
           description: The draft order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -13789,6 +13894,9 @@ components:
                   metadata:
                     type: object
                     description: The item's metadata, can hold custom key-value pairs.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   original_total:
                     type: number
                     title: original_total
@@ -13915,6 +14023,9 @@ components:
                   metadata:
                     type: object
                     description: The shipping method's metadata, can hold custom key-value pairs.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   tax_lines:
                     type: array
                     description: The shipping method's tax lines.
@@ -14092,6 +14203,9 @@ components:
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -14292,6 +14406,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -14533,6 +14650,9 @@ components:
         metadata:
           type: object
           description: The fulfillment's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -14625,6 +14745,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -15330,6 +15453,9 @@ components:
         metadata:
           type: object
           description: The location level's metadata.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         inventory_item:
           type: object
         available_quantity:
@@ -15374,6 +15500,9 @@ components:
         metadata:
           type: object
           description: The invite's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -15684,6 +15813,9 @@ components:
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -15865,6 +15997,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -15988,6 +16123,9 @@ components:
         metadata:
           type: object
           description: The order change's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         declined_at:
           type: string
           title: declined_at
@@ -16206,6 +16344,9 @@ components:
         metadata:
           type: object
           description: The fulfillment's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -16429,6 +16570,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         original_total:
           type: number
           title: original_total
@@ -16700,6 +16844,9 @@ components:
                   metadata:
                     type: object
                     description: The item's metadata, can hold custom key-value pairs.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   original_total:
                     type: number
                     title: original_total
@@ -16826,6 +16973,9 @@ components:
                   metadata:
                     type: object
                     description: The shipping method's metadata, can hold custom key-value pairs.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   tax_lines:
                     type: array
                     description: The shipping method's tax lines.
@@ -17003,6 +17153,9 @@ components:
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -17210,6 +17363,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         tax_lines:
           type: array
           description: The shipping method's tax lines.
@@ -17394,6 +17550,9 @@ components:
         metadata:
           type: object
           description: The payment collection's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         status:
           type: string
           description: The payment collection's status.
@@ -17634,6 +17793,9 @@ components:
               metadata:
                 type: object
                 description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
     AdminPostClaimsItemsActionReqSchema:
       type: object
       description: The details to update in the item.
@@ -17667,6 +17829,9 @@ components:
         metadata:
           type: object
           description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostClaimsShippingReqSchema:
       type: object
       description: The details of the shipping method used to ship outbound items.
@@ -17693,6 +17858,9 @@ components:
         metadata:
           type: object
           description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostExchangesAddItemsReqSchema:
       type: object
       description: The details of outbound items.
@@ -17731,6 +17899,9 @@ components:
               metadata:
                 type: object
                 description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
     AdminPostExchangesItemsActionReqSchema:
       type: object
       description: The details to update in an outbound item.
@@ -17764,6 +17935,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostExchangesReturnRequestItemsReqSchema:
       type: object
       description: The details of the inbound (return) items.
@@ -17802,6 +17976,9 @@ components:
               metadata:
                 type: object
                 description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
     AdminPostExchangesShippingActionReqSchema:
       type: object
       description: The details of the shipping method to update.
@@ -17818,6 +17995,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostExchangesShippingReqSchema:
       type: object
       description: The outbound shipping method's details.
@@ -17844,6 +18024,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostOrderClaimsReqSchema:
       type: object
       description: The claim's details.
@@ -17877,6 +18060,9 @@ components:
         metadata:
           type: object
           description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostOrderEditsAddItemsReqSchema:
       type: object
       description: The details of items to be edited.
@@ -17915,6 +18101,9 @@ components:
               metadata:
                 type: object
                 description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
               compare_at_unit_price:
                 type: number
                 title: compare_at_unit_price
@@ -17962,6 +18151,9 @@ components:
         metadata:
           type: object
           description: The order edit's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostOrderEditsShippingActionReqSchema:
       type: object
       description: The shipping method's details.
@@ -17978,6 +18170,9 @@ components:
         metadata:
           type: object
           description: The order edit's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostOrderEditsShippingReqSchema:
       type: object
       description: The shipping method's details.
@@ -18004,6 +18199,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostOrderEditsUpdateItemQuantityReqSchema:
       type: object
       description: The order item's details to update.
@@ -18049,6 +18247,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostReceiveReturnsReqSchema:
       type: object
       description: The return receival details.
@@ -18065,6 +18266,9 @@ components:
         metadata:
           type: object
           description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostReturnsConfirmRequestReqSchema:
       type: object
       description: The confirmation's details.
@@ -18161,6 +18365,9 @@ components:
         metadata:
           type: object
           description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostReturnsRequestItemsActionReqSchema:
       type: object
       description: The details to update in the item.
@@ -18181,6 +18388,9 @@ components:
         metadata:
           type: object
           description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostReturnsRequestItemsReqSchema:
       type: object
       description: The items' details.
@@ -18219,6 +18429,9 @@ components:
               metadata:
                 type: object
                 description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
     AdminPostReturnsReturnReqSchema:
       type: object
       description: The return's details.
@@ -18235,6 +18448,9 @@ components:
         metadata:
           type: object
           description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostReturnsShippingActionReqSchema:
       type: object
       description: The shipping method's details.
@@ -18251,6 +18467,9 @@ components:
         metadata:
           type: object
           description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPostReturnsShippingReqSchema:
       type: object
       description: The shipping method's details.
@@ -18277,6 +18496,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminPrice:
       type: object
       description: The price's details.
@@ -18791,6 +19013,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -18919,6 +19144,9 @@ components:
         metadata:
           type: object
           description: The category's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -19070,6 +19298,9 @@ components:
         metadata:
           type: object
           description: The image's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         rank:
           type: number
           title: rank
@@ -19108,6 +19339,9 @@ components:
         metadata:
           type: object
           description: The product option's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -19181,6 +19415,9 @@ components:
         metadata:
           type: object
           description: The value's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -19241,6 +19478,9 @@ components:
         metadata:
           type: object
           description: The tag's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminProductTagDeleteResponse:
       type: object
       description: The details of the product tag deletion.
@@ -19340,6 +19580,9 @@ components:
         metadata:
           type: object
           description: The type's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminProductTypeDeleteResponse:
       type: object
       description: The details of the product type deletion.
@@ -19538,6 +19781,9 @@ components:
         metadata:
           type: object
           description: The variant's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         inventory_items:
           type: array
           description: The variant's inventory items.
@@ -19952,6 +20198,9 @@ components:
         metadata:
           type: object
           description: The refund reason's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -20001,6 +20250,9 @@ components:
         metadata:
           type: object
           description: The region's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -20114,6 +20366,9 @@ components:
         metadata:
           type: object
           description: The reservation's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_by:
           type: string
           title: created_by
@@ -20266,6 +20521,9 @@ components:
         metadata:
           type: object
           description: The return item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminReturnPreviewResponse:
       type: object
       description: The details of a return and a preview of the order once the return is applied.
@@ -20308,6 +20566,9 @@ components:
         metadata:
           type: object
           description: The return reason's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -20480,6 +20741,9 @@ components:
         metadata:
           type: object
           description: The sales channel's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -20693,6 +20957,9 @@ components:
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -21017,6 +21284,9 @@ components:
         metadata:
           type: object
           description: The shipping profile's metadata, holds custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -21271,6 +21541,9 @@ components:
         metadata:
           type: object
           description: The store's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -21333,6 +21606,9 @@ components:
         metadata:
           type: object
           description: The store credit account's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -21530,6 +21806,9 @@ components:
         metadata:
           type: object
           description: The tax rate's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         tax_region_id:
           type: string
           title: tax_region_id
@@ -21657,6 +21936,9 @@ components:
         metadata:
           type: object
           description: The tax region's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         parent_id:
           type: string
           title: parent_id
@@ -21777,6 +22059,9 @@ components:
         metadata:
           type: object
           description: The transaction's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -21825,6 +22110,9 @@ components:
         metadata:
           type: object
           description: The transaction group's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminTransactionGroupsResponse:
       type: object
       description: The paginated list of transaction groups.
@@ -21931,6 +22219,9 @@ components:
         metadata:
           type: object
           description: The customer group's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateDraftOrder:
       type: object
       description: The data to update in the draft order.
@@ -21993,6 +22284,9 @@ components:
             metadata:
               type: object
               description: The shipping address's metadata, can hold custom key-value pairs.
+              externalDocs:
+                url: https://docs.medusajs.com/api/admin#manage-metadata
+                description: Learn how to manage metadata
         billing_address:
           type: object
           description: The draft order's billing address.
@@ -22045,9 +22339,15 @@ components:
             metadata:
               type: object
               description: The billing address's metadata, can hold custom key-value pairs.
+              externalDocs:
+                url: https://docs.medusajs.com/api/admin#manage-metadata
+                description: Learn how to manage metadata
         metadata:
           type: object
           description: The draft order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         customer_id:
           type: string
           title: customer_id
@@ -22082,6 +22382,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateDraftOrderItem:
       type: object
       description: The updates to make on a draft order's item.
@@ -22150,6 +22453,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   country_code:
                     type: string
                     title: country_code
@@ -22174,6 +22480,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   country_code:
                     type: string
                     title: country_code
@@ -22207,6 +22516,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   city:
                     type: string
                     title: city
@@ -22245,6 +22557,9 @@ components:
                   metadata:
                     type: object
                     description: The geo zone's metadata.
+                    externalDocs:
+                      url: https://docs.medusajs.com/api/admin#manage-metadata
+                      description: Learn how to manage metadata
                   city:
                     type: string
                     title: city
@@ -22304,6 +22619,9 @@ components:
         metadata:
           type: object
           description: The gift card's metadata.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateInventoryItem:
       type: object
       description: The properties to update in the inventory item.
@@ -22363,6 +22681,9 @@ components:
         metadata:
           type: object
           description: The inventory item's metadata. Can be custom data in key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
       x-schemaName: AdminUpdateInventoryItem
     AdminUpdateInventoryLocationLevel:
       type: object
@@ -22439,6 +22760,9 @@ components:
             metadata:
               type: object
               description: The address's metadata, can hold custom key-value pairs.
+              externalDocs:
+                url: https://docs.medusajs.com/api/admin#manage-metadata
+                description: Learn how to manage metadata
         billing_address:
           type: object
           description: The order's billing address.
@@ -22491,9 +22815,15 @@ components:
             metadata:
               type: object
               description: The address's metadata, can hold custom key-value pairs.
+              externalDocs:
+                url: https://docs.medusajs.com/api/admin#manage-metadata
+                description: Learn how to manage metadata
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdatePaymentRefundReason:
       type: object
       description: The properties to update in the refund reason.
@@ -22713,6 +23043,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         external_id:
           type: string
           title: external_id
@@ -22748,6 +23081,9 @@ components:
         metadata:
           type: object
           description: The product category's metadata. Can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         rank:
           type: number
           title: rank
@@ -22780,6 +23116,9 @@ components:
         metadata:
           type: object
           description: The product tag's metadata. Can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
       x-schemaName: AdminUpdateProductTag
     AdminUpdateProductType:
       type: object
@@ -22792,6 +23131,9 @@ components:
         metadata:
           type: object
           description: The product type's metadata. Can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
       x-schemaName: AdminUpdateProductType
     AdminUpdateProductVariant:
       type: object
@@ -22865,6 +23207,9 @@ components:
         metadata:
           type: object
           description: The product variant's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         prices:
           type: array
           description: The product variant's prices.
@@ -22951,6 +23296,9 @@ components:
         metadata:
           type: object
           description: The region's metadata. Can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         is_tax_inclusive:
           type: boolean
           title: is_tax_inclusive
@@ -22975,6 +23323,9 @@ components:
         metadata:
           type: object
           description: The reservation's metadata. Can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
       x-schemaName: AdminUpdateReservation
     AdminUpdateReturnReason:
       type: object
@@ -22996,6 +23347,9 @@ components:
         metadata:
           type: object
           description: The return reason's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
       required:
         - value
         - label
@@ -23019,6 +23373,9 @@ components:
         metadata:
           type: object
           description: The sales channel's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateShippingOption:
       type: object
       description: The properties to update in the shipping option.
@@ -23246,6 +23603,9 @@ components:
         metadata:
           type: object
           description: The shipping profile's metadata.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
       x-schemaName: AdminUpdateShippingProfile
     AdminUpdateStockLocation:
       type: object
@@ -23307,6 +23667,9 @@ components:
         metadata:
           type: object
           description: The stock location's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateStore:
       type: object
       description: The properties to update in a store.
@@ -23353,6 +23716,9 @@ components:
         metadata:
           type: object
           description: The store's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateTaxRate:
       type: object
       description: The properties to update in the tax rate.
@@ -23403,6 +23769,9 @@ components:
         metadata:
           type: object
           description: The tax rate's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateTaxRegion:
       type: object
       description: The details to update in a tax region.
@@ -23419,6 +23788,9 @@ components:
         metadata:
           type: object
           description: The tax region's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         provider_id:
           type: string
           title: provider_id
@@ -23443,6 +23815,9 @@ components:
         metadata:
           type: object
           description: The user's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateVariantInventoryItem:
       type: object
       description: The properties to update of the variant's inventory item association.
@@ -23604,6 +23979,9 @@ components:
         metadata:
           type: object
           description: The user's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -24172,6 +24550,9 @@ components:
         metadata:
           type: object
           description: The cart's metadata.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -24410,6 +24791,9 @@ components:
         metadata:
           type: object
           description: The item's metadata.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -24526,6 +24910,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         tax_lines:
           type: array
           description: The shipping method's tax lines.
@@ -24636,6 +25023,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -24694,6 +25084,9 @@ components:
         metadata:
           type: object
           description: The collection's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     BaseExchangeItem:
       type: object
       description: The item's details.
@@ -24730,6 +25123,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -25013,6 +25409,9 @@ components:
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -25185,6 +25584,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -25258,6 +25660,9 @@ components:
         metadata:
           type: object
           description: The fulfillment's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -25511,6 +25916,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         original_total:
           type: number
           title: original_total
@@ -25790,6 +26198,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         tax_lines:
           type: array
           description: The shipping method's tax lines.
@@ -26051,6 +26462,9 @@ components:
         metadata:
           type: object
           description: The transaction's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -26191,6 +26605,9 @@ components:
         metadata:
           type: object
           description: The payment collection's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         status:
           type: string
           description: The payment collection's status.
@@ -26370,6 +26787,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -26496,6 +26916,9 @@ components:
         metadata:
           type: object
           description: The category's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -26562,6 +26985,9 @@ components:
         metadata:
           type: object
           description: The image's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         rank:
           type: number
           title: rank
@@ -26600,6 +27026,9 @@ components:
         metadata:
           type: object
           description: The product option's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -26640,6 +27069,9 @@ components:
         metadata:
           type: object
           description: The value's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -26691,6 +27123,9 @@ components:
         metadata:
           type: object
           description: The tag's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     BaseProductType:
       type: object
       description: The product type's details.
@@ -26727,6 +27162,9 @@ components:
         metadata:
           type: object
           description: The type's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     BaseProductVariant:
       type: object
       description: The product variant's details.
@@ -26856,6 +27294,9 @@ components:
         metadata:
           type: object
           description: The variant's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     BasePromotionRuleValue:
       type: object
       description: The rule value's details.
@@ -26948,6 +27389,9 @@ components:
         metadata:
           type: object
           description: The region's metadata.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -27266,6 +27710,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     CustomerGroupInCustomerFilters:
       type: object
       description: Filter by customer groups to get their associated customers.
@@ -27722,6 +28169,9 @@ components:
         metadata:
           type: object
           description: The inventory level's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     Order:
       type: object
       description: The order change's order.
@@ -27900,6 +28350,9 @@ components:
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         canceled_at:
           type: string
           format: date-time
@@ -28094,6 +28547,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -28217,6 +28673,9 @@ components:
         metadata:
           type: object
           description: The order change's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         declined_at:
           type: string
           title: declined_at
@@ -28408,6 +28867,9 @@ components:
         metadata:
           type: object
           description: The claim's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -28494,6 +28956,9 @@ components:
         metadata:
           type: object
           description: The credit line's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -28566,6 +29031,9 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -28679,6 +29147,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -28833,6 +29304,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         original_total:
           type: number
           title: original_total
@@ -29051,6 +29525,9 @@ components:
         metadata:
           type: object
           description: The return item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         order_id:
           type: string
           title: order_id
@@ -29126,6 +29603,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         tax_lines:
           type: array
           description: The shipping method's tax lines.
@@ -29346,6 +29826,9 @@ components:
         metadata:
           type: object
           description: The transaction's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -29388,6 +29871,9 @@ components:
         metadata:
           type: object
           description: The refund reason's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -29457,6 +29943,9 @@ components:
         metadata:
           type: object
           description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -29561,6 +30050,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreAddCartShippingMethods:
       type: object
       description: The shipping method's details.
@@ -29802,6 +30294,9 @@ components:
         metadata:
           type: object
           description: The cart's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -29984,6 +30479,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           title: created_at
@@ -30274,6 +30772,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           title: created_at
@@ -30454,6 +30955,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         tax_lines:
           type: array
           description: The shipping method's tax lines.
@@ -30797,6 +31301,9 @@ components:
         metadata:
           type: object
           description: The collection's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreCollectionResponse:
       type: object
       description: The collection's details.
@@ -30841,6 +31348,9 @@ components:
         metadata:
           type: object
           description: The cart's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreCreateCustomer:
       type: object
       description: The details of the customer to create.
@@ -30872,6 +31382,9 @@ components:
         metadata:
           type: object
           description: The customer's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreCreateCustomerAddress:
       type: object
       description: The address's details.
@@ -31169,6 +31682,9 @@ components:
         metadata:
           type: object
           description: The customer's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -31276,6 +31792,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -31580,6 +32099,9 @@ components:
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -31761,6 +32283,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -31834,6 +32359,9 @@ components:
         metadata:
           type: object
           description: The fulfillment's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -32200,6 +32728,9 @@ components:
                           metadata:
                             type: object
                             description: The variant's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                       variant_id:
                         type: string
                         title: variant_id
@@ -32381,6 +32912,9 @@ components:
                           metadata:
                             type: object
                             description: The product's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                       product_id:
                         type: string
                         title: product_id
@@ -32645,6 +33179,9 @@ components:
                           metadata:
                             type: object
                             description: The detail's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                           created_at:
                             type: string
                             format: date-time
@@ -32668,6 +33205,9 @@ components:
                       metadata:
                         type: object
                         description: The item's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       original_total:
                         type: number
                         title: original_total
@@ -32867,6 +33407,9 @@ components:
                           metadata:
                             type: object
                             description: The variant's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                           created_at:
                             type: string
                             format: date-time
@@ -33052,6 +33595,9 @@ components:
                           metadata:
                             type: object
                             description: The product's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                           created_at:
                             type: string
                             format: date-time
@@ -33345,6 +33891,9 @@ components:
                               metadata:
                                 type: object
                                 description: The detail's metadata.
+                                externalDocs:
+                                  url: https://docs.medusajs.com/api/store#manage-metadata
+                                  description: Learn how to manage metadata
                               created_at:
                                 type: string
                                 format: date-time
@@ -33375,6 +33924,9 @@ components:
                       metadata:
                         type: object
                         description: The item's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       created_at:
                         type: string
                         format: date-time
@@ -33729,6 +34281,9 @@ components:
                           metadata:
                             type: object
                             description: The variant's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                       variant_id:
                         type: string
                         title: variant_id
@@ -33910,6 +34465,9 @@ components:
                           metadata:
                             type: object
                             description: The product's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                       product_id:
                         type: string
                         title: product_id
@@ -34174,6 +34732,9 @@ components:
                           metadata:
                             type: object
                             description: The detail's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                           created_at:
                             type: string
                             format: date-time
@@ -34197,6 +34758,9 @@ components:
                       metadata:
                         type: object
                         description: The item's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       original_total:
                         type: number
                         title: original_total
@@ -34392,6 +34956,9 @@ components:
                           metadata:
                             type: object
                             description: The variant's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                           created_at:
                             type: string
                             format: date-time
@@ -34577,6 +35144,9 @@ components:
                           metadata:
                             type: object
                             description: The product's metadata.
+                            externalDocs:
+                              url: https://docs.medusajs.com/api/store#manage-metadata
+                              description: Learn how to manage metadata
                           created_at:
                             type: string
                             format: date-time
@@ -34870,6 +35440,9 @@ components:
                               metadata:
                                 type: object
                                 description: The detail's metadata.
+                                externalDocs:
+                                  url: https://docs.medusajs.com/api/store#manage-metadata
+                                  description: Learn how to manage metadata
                               created_at:
                                 type: string
                                 format: date-time
@@ -34900,6 +35473,9 @@ components:
                       metadata:
                         type: object
                         description: The item's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       created_at:
                         type: string
                         format: date-time
@@ -35146,6 +35722,9 @@ components:
                         metadata:
                           type: object
                           description: The variant's metadata.
+                          externalDocs:
+                            url: https://docs.medusajs.com/api/store#manage-metadata
+                            description: Learn how to manage metadata
                         created_at:
                           type: string
                           format: date-time
@@ -35331,6 +35910,9 @@ components:
                         metadata:
                           type: object
                           description: The product's metadata.
+                          externalDocs:
+                            url: https://docs.medusajs.com/api/store#manage-metadata
+                            description: Learn how to manage metadata
                         created_at:
                           type: string
                           format: date-time
@@ -35624,6 +36206,9 @@ components:
                             metadata:
                               type: object
                               description: The detail's metadata.
+                              externalDocs:
+                                url: https://docs.medusajs.com/api/store#manage-metadata
+                                description: Learn how to manage metadata
                             created_at:
                               type: string
                               format: date-time
@@ -35654,6 +36239,9 @@ components:
                     metadata:
                       type: object
                       description: The item's metadata.
+                      externalDocs:
+                        url: https://docs.medusajs.com/api/store#manage-metadata
+                        description: Learn how to manage metadata
                     created_at:
                       type: string
                       format: date-time
@@ -35809,6 +36397,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         original_total:
           type: number
           title: original_total
@@ -35934,6 +36525,9 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         tax_lines:
           type: array
           description: The shipping method's tax lines.
@@ -36011,6 +36605,9 @@ components:
                       metadata:
                         type: object
                         description: The shipping method's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       tax_lines:
                         type: array
                         description: The shipping method's tax lines.
@@ -36542,6 +37139,9 @@ components:
                       metadata:
                         type: object
                         description: The shipping method's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       original_total:
                         type: number
                         title: original_total
@@ -36660,6 +37260,9 @@ components:
                       metadata:
                         type: object
                         description: The shipping method's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       tax_lines:
                         type: array
                         description: The shipping method's tax lines.
@@ -37187,6 +37790,9 @@ components:
                       metadata:
                         type: object
                         description: The shipping method's metadata.
+                        externalDocs:
+                          url: https://docs.medusajs.com/api/store#manage-metadata
+                          description: Learn how to manage metadata
                       original_total:
                         type: number
                         title: original_total
@@ -37543,6 +38149,9 @@ components:
                     metadata:
                       type: object
                       description: The shipping method's metadata.
+                      externalDocs:
+                        url: https://docs.medusajs.com/api/store#manage-metadata
+                        description: Learn how to manage metadata
                     original_total:
                       type: number
                       title: original_total
@@ -37639,6 +38248,9 @@ components:
         metadata:
           type: object
           description: The payment collection's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         status:
           type: string
           description: The payment collection's status.
@@ -37881,6 +38493,9 @@ components:
         metadata:
           type: object
           description: The product's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38024,6 +38639,9 @@ components:
         metadata:
           type: object
           description: The category's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38120,6 +38738,9 @@ components:
         metadata:
           type: object
           description: The image's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         rank:
           type: number
           title: rank
@@ -38151,6 +38772,9 @@ components:
         metadata:
           type: object
           description: The option's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38194,6 +38818,9 @@ components:
         metadata:
           type: object
           description: The value's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38249,6 +38876,9 @@ components:
         metadata:
           type: object
           description: The tag's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
       required:
         - id
         - value
@@ -38312,6 +38942,9 @@ components:
         metadata:
           type: object
           description: The product type's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38395,6 +39028,9 @@ components:
         metadata:
           type: object
           description: The variant's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         id:
           type: string
           title: id
@@ -38546,6 +39182,9 @@ components:
         metadata:
           type: object
           description: The region's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38725,6 +39364,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreReturnReason:
       type: object
       description: The return reason's details.
@@ -38755,6 +39397,9 @@ components:
         metadata:
           type: object
           description: The return reason's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -38852,6 +39497,9 @@ components:
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreShippingOptionListResponse:
       type: object
       description: The shipping option's details.
@@ -38974,6 +39622,9 @@ components:
         metadata:
           type: object
           description: The store credit account's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
         created_at:
           type: string
           format: date-time
@@ -39062,6 +39713,9 @@ components:
         metadata:
           type: object
           description: The transaction group's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
       x-schemaName: StoreTransactionGroup
     StoreUpdateCartLineItem:
       type: object
@@ -39077,6 +39731,9 @@ components:
         metadata:
           type: object
           description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreUpdateCustomer:
       type: object
       description: The details to update in the customer.
@@ -39101,6 +39758,9 @@ components:
         metadata:
           type: object
           description: The customer's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     StoreUpdateCustomerAddress:
       type: object
       description: The properties to update in the address.
@@ -39228,6 +39888,9 @@ components:
         metadata:
           type: object
           description: The address's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     UpdateCartData:
       type: object
       description: The details to update in a cart.
@@ -39274,6 +39937,9 @@ components:
         metadata:
           type: object
           description: The cart's metadata, ca hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/store#manage-metadata
+            description: Learn how to manage metadata
     WorkflowExecutionContext:
       type: object
       description: The workflow execution's context.

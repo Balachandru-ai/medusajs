@@ -4,7 +4,7 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/create-actor-type"
   },
   {
-    "title": "Handle Password Reset Event",
+    "title": "Reset Password Email",
     "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
   },
   {
@@ -44,6 +44,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/promotion/extend"
   },
   {
+    "title": "Invite User Email",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber"
+  },
+  {
     "title": "Implement Custom Line Item Pricing in Medusa",
     "path": "https://docs.medusajs.com/resources/examples/guides/custom-item-price"
   },
@@ -62,6 +66,10 @@ export const server = [
   {
     "title": "Add Gift Message",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
+  },
+  {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
   },
   {
     "title": "Loyalty Points",

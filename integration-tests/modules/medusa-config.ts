@@ -1,3 +1,5 @@
+import { defineConfig } from "@medusajs/utils"
+
 const { Modules } = require("@medusajs/utils")
 
 const DB_HOST = process.env.DB_HOST
@@ -35,7 +37,7 @@ const customFulfillmentProviderCalculated = {
   id: "test-provider-calculated",
 }
 
-module.exports = {
+module.exports = defineConfig({
   admin: {
     disable: true,
   },
@@ -51,11 +53,13 @@ module.exports = {
   featureFlags: {
     medusa_v2: enableMedusaV2,
   },
-  modules: {
-    testingModule: {
+  modules: [
+    {
+      key: "testingModule",
       resolve: "__tests__/__fixtures__/testing-module",
     },
-    [Modules.AUTH]: {
+    {
+      key: "auth",
       resolve: "@medusajs/auth",
       options: {
         providers: [
@@ -66,53 +70,98 @@ module.exports = {
         ],
       },
     },
-    [Modules.USER]: {
+    {
+      key: Modules.USER,
       scope: "internal",
       resolve: "@medusajs/user",
       options: {
         jwt_secret: "test",
       },
     },
-    [Modules.CACHE]: {
+    {
+      key: Modules.CACHE,
       resolve: "@medusajs/cache-inmemory",
       options: { ttl: 0 }, // Cache disabled
     },
-    [Modules.LOCKING]: true,
-    [Modules.STOCK_LOCATION]: {
+    {
+      key: Modules.LOCKING,
+      resolve: "@medusajs/locking",
+    },
+    {
+      key: Modules.STOCK_LOCATION,
       resolve: "@medusajs/stock-location",
       options: {},
     },
-    [Modules.INVENTORY]: {
+    {
+      key: Modules.INVENTORY,
       resolve: "@medusajs/inventory",
       options: {},
     },
-    [Modules.PRODUCT]: true,
-    [Modules.PRICING]: true,
-    [Modules.PROMOTION]: true,
-    [Modules.REGION]: true,
-    [Modules.CUSTOMER]: true,
-    [Modules.SALES_CHANNEL]: true,
-    [Modules.CART]: true,
-    [Modules.WORKFLOW_ENGINE]: true,
-    [Modules.API_KEY]: true,
-    [Modules.STORE]: true,
-    [Modules.TAX]: {
+    {
+      key: Modules.PRODUCT,
+      resolve: "@medusajs/product",
+    },
+    {
+      key: Modules.PRICING,
+      resolve: "@medusajs/pricing",
+    },
+    {
+      key: Modules.PROMOTION,
+      resolve: "@medusajs/promotion",
+    },
+    {
+      key: Modules.REGION,
+      resolve: "@medusajs/region",
+    },
+    {
+      key: Modules.CUSTOMER,
+      resolve: "@medusajs/customer",
+    },
+    {
+      key: Modules.SALES_CHANNEL,
+      resolve: "@medusajs/sales-channel",
+    },
+    {
+      key: Modules.CART,
+      resolve: "@medusajs/cart",
+    },
+    {
+      key: Modules.WORKFLOW_ENGINE,
+      resolve: "@medusajs/workflow-engine-inmemory",
+    },
+    {
+      key: Modules.API_KEY,
+      resolve: "@medusajs/api-key",
+    },
+    {
+      key: Modules.STORE,
+      resolve: "@medusajs/store",
+    },
+    {
+      key: Modules.TAX,
       resolve: "@medusajs/tax",
       options: {
         providers: [customTaxProviderRegistration],
       },
     },
-    [Modules.CURRENCY]: true,
-    [Modules.ORDER]: true,
-    [Modules.PAYMENT]: {
+    {
+      key: Modules.CURRENCY,
+      resolve: "@medusajs/currency",
+    },
+    {
+      key: Modules.ORDER,
+      resolve: "@medusajs/order",
+    },
+    {
+      key: Modules.PAYMENT,
       resolve: "@medusajs/payment",
-      /** @type {import('@medusajs/payment').PaymentModuleOptions}*/
       options: {
         providers: [customPaymentProvider],
       },
     },
-    [Modules.FULFILLMENT]: {
-      /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
+    {
+      key: Modules.FULFILLMENT,
+      resolve: "@medusajs/fulfillment",
       options: {
         providers: [
           customFulfillmentProvider,
@@ -120,8 +169,8 @@ module.exports = {
         ],
       },
     },
-    [Modules.NOTIFICATION]: {
-      /** @type {import('@medusajs/types').LocalNotificationServiceOptions} */
+    {
+      key: Modules.NOTIFICATION,
       options: {
         providers: [
           {
@@ -135,10 +184,15 @@ module.exports = {
         ],
       },
     },
-    [Modules.INDEX]: process.env.ENABLE_INDEX_MODULE
-      ? {
-          resolve: "@medusajs/index",
-        }
-      : false,
-  },
-}
+    {
+      key: Modules.INDEX,
+      resolve: "@medusajs/index",
+      disable: process.env.ENABLE_INDEX_MODULE !== "true",
+    },
+    {
+      key: "brand",
+      resolve: "src/modules/brand",
+      disable: process.env.ENABLE_INDEX_MODULE !== "true",
+    },
+  ],
+})
