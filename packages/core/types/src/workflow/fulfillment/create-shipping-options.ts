@@ -47,7 +47,7 @@ type CreateFlatShippingOptionInputBase = {
     /**
      * The description of the shipping option type.
      */
-    description: string
+    description?: string
     /**
      * The code of the shipping option type.
      */
