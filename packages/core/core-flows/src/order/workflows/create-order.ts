@@ -33,7 +33,7 @@ import { updateOrderTaxLinesWorkflow } from "./update-tax-lines"
 
 function prepareLineItems(data) {
   const items = (data.input.items ?? []).map((item) => {
-    const variant = data.variants?.find((v) => v.id === item.variant_id);
+    const variant = data.variants?.find((v) => v.id === item.variant_id)
 
     const input: PrepareLineItemDataInput = {
       item,
