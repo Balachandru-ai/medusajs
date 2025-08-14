@@ -3321,18 +3321,18 @@ medusaIntegrationTestRunner({
             expect(updated.status).toEqual(200)
             expect(updated.data.cart).toEqual(
               expect.objectContaining({
-                discount_total: 105,
-                discount_subtotal: 100,
-                discount_tax_total: 5,
+                discount_total: 210,
+                discount_subtotal: 200,
+                discount_tax_total: 10,
                 original_total: 210,
-                total: 105, // 210 - 100 tax excl promotion + 5 promotion tax
+                total: 0, // 210 - 200 tax excl promotion + 10 promotion tax
                 items: expect.arrayContaining([
                   expect.objectContaining({
                     is_tax_inclusive: true,
                     adjustments: expect.arrayContaining([
                       expect.objectContaining({
                         code: taxInclPromotion.code,
-                        amount: 105,
+                        amount: 210,
                         is_tax_inclusive: true,
                       }),
                     ]),
@@ -3733,6 +3733,107 @@ medusaIntegrationTestRunner({
                     application_method: expect.objectContaining({
                       value: 1500,
                     }),
+                  }),
+                ]),
+              })
+            )
+          })
+
+          it("should apply promotions to multiple quantity of the same product", async () => {
+            const product = (
+              await api.post(
+                `/admin/products`,
+                {
+                  title: "Product for free",
+                  description: "test",
+                  options: [
+                    {
+                      title: "Size",
+                      values: ["S"],
+                    },
+                  ],
+                  variants: [
+                    {
+                      title: "S / Black",
+                      sku: "special-shirt",
+                      options: {
+                        Size: "S",
+                      },
+                      manage_inventory: false,
+                      prices: [
+                        {
+                          amount: 100,
+                          currency_code: "eur",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const sameProductPromotion = (
+              await api.post(
+                `/admin/promotions`,
+                {
+                  code: "SAME_PRODUCT_PROMOTION",
+                  type: PromotionType.STANDARD,
+                  status: PromotionStatus.ACTIVE,
+                  is_tax_inclusive: false,
+                  is_automatic: true,
+                  application_method: {
+                    type: "fixed",
+                    target_type: "items",
+                    allocation: "each",
+                    value: 100,
+                    max_quantity: 5,
+                    currency_code: "eur",
+                    target_rules: [
+                      {
+                        attribute: "product_id",
+                        operator: "in",
+                        values: [product.id],
+                      },
+                    ],
+                  },
+                },
+                adminHeaders
+              )
+            ).data.promotion
+
+            cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "eur",
+                  sales_channel_id: salesChannel.id,
+                  region_id: noAutomaticRegion.id,
+                  shipping_address: shippingAddressData,
+                  items: [{ variant_id: product.variants[0].id, quantity: 2 }],
+                },
+                storeHeadersWithCustomer
+              )
+            ).data.cart
+
+            expect(cart).toEqual(
+              expect.objectContaining({
+                discount_total: 200,
+                original_total: 200,
+                total: 0,
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    adjustments: expect.arrayContaining([
+                      expect.objectContaining({
+                        code: sameProductPromotion.code,
+                        amount: 200,
+                      }),
+                    ]),
+                  }),
+                ]),
+                promotions: expect.arrayContaining([
+                  expect.objectContaining({
+                    code: sameProductPromotion.code,
                   }),
                 ]),
               })

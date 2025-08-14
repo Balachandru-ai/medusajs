@@ -27,7 +27,17 @@ function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
 
     return MathBN.mult(promotionValueForItem, MathBN.div(percentage, 100))
   }
-  return promotion.value
+
+  // For each allocation, promotion is applied in the scope of the line item.
+  // lineItemAmount will be the total applicable amount for the line item
+  // maximumPromotionAmount is the maximum amount that can be applied to the line item
+  // We need to return the minimum of the two
+  const maximumPromotionAmount = MathBN.mult(
+    promotion.value,
+    promotion.max_quantity ?? MathBN.convert(1)
+  )
+
+  return MathBN.min(maximumPromotionAmount, lineItemAmount)
 }
 
 export function getPromotionValue(promotion, lineItemAmount, lineItemsAmount) {
@@ -134,14 +144,17 @@ export function calculateAdjustmentAmountFromPromotion(
     promotion.is_tax_inclusive ? lineItem.original_total : lineItem.subtotal,
     promotion.applied_value
   )
+
   const itemAmount = MathBN.div(
     promotion.is_tax_inclusive ? lineItem.original_total : lineItem.subtotal,
     lineItem.quantity
   )
+
   const maximumPromotionAmount = MathBN.mult(
     itemAmount,
     promotion.max_quantity ?? MathBN.convert(1)
   )
+
   const applicableAmount = MathBN.min(
     remainingItemAmount,
     maximumPromotionAmount
