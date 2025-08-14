@@ -9,7 +9,12 @@ function getPromotionValueForPercentage(promotion, lineItemAmount) {
   return MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount)
 }
 
-function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
+function getPromotionValueForFixed(
+  promotion,
+  lineItemAmount,
+  lineItemsAmount,
+  lineItem
+) {
   if (promotion.allocation === ApplicationMethodAllocation.ACROSS) {
     const promotionValueForItem = MathBN.mult(
       MathBN.div(lineItemAmount, lineItemsAmount),
@@ -32,20 +37,32 @@ function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
   // lineItemAmount will be the total applicable amount for the line item
   // maximumPromotionAmount is the maximum amount that can be applied to the line item
   // We need to return the minimum of the two
-  const maximumPromotionAmount = MathBN.mult(
-    promotion.value,
+  const maximumQuantity = MathBN.min(
+    lineItem.quantity,
     promotion.max_quantity ?? MathBN.convert(1)
   )
+
+  const maximumPromotionAmount = MathBN.mult(promotion.value, maximumQuantity)
 
   return MathBN.min(maximumPromotionAmount, lineItemAmount)
 }
 
-export function getPromotionValue(promotion, lineItemAmount, lineItemsAmount) {
+export function getPromotionValue(
+  promotion,
+  lineItemAmount,
+  lineItemsAmount,
+  lineItem
+) {
   if (promotion.type === ApplicationMethodType.PERCENTAGE) {
     return getPromotionValueForPercentage(promotion, lineItemAmount)
   }
 
-  return getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount)
+  return getPromotionValueForFixed(
+    promotion,
+    lineItemAmount,
+    lineItemsAmount,
+    lineItem
+  )
 }
 
 export function getApplicableQuantity(lineItem, maxQuantity) {
@@ -115,7 +132,8 @@ export function calculateAdjustmentAmountFromPromotion(
     const promotionValue = getPromotionValue(
       promotion,
       applicableAmount,
-      lineItemsAmount
+      lineItemsAmount,
+      lineItem
     )
 
     return MathBN.min(promotionValue, applicableAmount)
@@ -167,7 +185,8 @@ export function calculateAdjustmentAmountFromPromotion(
   const promotionValue = getPromotionValue(
     promotion,
     applicableAmount,
-    lineItemsAmount
+    lineItemsAmount,
+    lineItem
   )
 
   return MathBN.min(promotionValue, applicableAmount)
