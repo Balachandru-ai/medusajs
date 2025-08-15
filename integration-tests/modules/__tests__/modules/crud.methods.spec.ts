@@ -1,8 +1,4 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../helpers/create-admin-user"
 
 jest.setTimeout(100000)
 
@@ -21,10 +17,6 @@ medusaIntegrationTestRunner({
     })
 
     describe("auto-generated CRUD methods", () => {
-      beforeEach(async () => {
-        await createAdminUser(dbConnection, adminHeaders, appContainer)
-      })
-
       it("should create brands", async () => {
         const brandModule = appContainer.resolve("brand")
 
@@ -87,11 +79,11 @@ medusaIntegrationTestRunner({
         const multipleBrandsUpdated = await brandModule.updateBrands([
           {
             id: multipleBrands[0].id,
-            name: "Medusa Brand 2",
+            name: "Medusa Brand 22",
           },
           {
             id: multipleBrands[1].id,
-            name: "Medusa Brand 3",
+            name: "Medusa Brand 33",
           },
         ])
 
@@ -99,11 +91,11 @@ medusaIntegrationTestRunner({
           expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
-              name: "Medusa Brand 2",
+              name: "Medusa Brand 22",
             }),
             expect.objectContaining({
               id: expect.any(String),
-              name: "Medusa Brand 3",
+              name: "Medusa Brand 33",
             }),
           ])
         )
@@ -111,7 +103,7 @@ medusaIntegrationTestRunner({
         const multipleBrandsUpdatedWithSelector =
           await brandModule.updateBrands({
             selector: {
-              name: { $like: "Medusa Brand 2" },
+              name: { $like: "Medusa Brand 22" },
             },
             data: {
               name: "Medusa Brand **",
