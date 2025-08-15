@@ -228,7 +228,7 @@
         "theme": {
           "label": "Thema",
           "dark": "Dunkel",
-          "light": "Licht",
+          "light": "Hell",
           "system": "System"
         }
       },
@@ -262,7 +262,7 @@
   },
   "dataGrid": {
     "columns": {
-      "view": "Sicht",
+      "view": "Ansicht",
       "resetToDefault": "Auf Standard zurücksetzen",
       "disabled": "Das Ändern der sichtbaren Spalten ist deaktiviert."
     },
@@ -271,23 +271,23 @@
       "commands": {
         "undo": "Rückgängig machen",
         "redo": "Wiederholen",
-        "copy": "Kopie",
-        "paste": "Paste",
+        "copy": "Kopieren",
+        "paste": "Einfügen",
         "edit": "Bearbeiten",
         "delete": "Löschen",
-        "clear": "Klar",
-        "moveUp": "Bewegen Sie sich nach oben",
-        "moveDown": "Bewegen Sie sich nach unten",
-        "moveLeft": "Bewegen Sie sich nach links",
-        "moveRight": "Bewegen Sie sich nach rechts",
+        "clear": "Leeren",
+        "moveUp": "Nach oben bewegen",
+        "moveDown": "Nach unten bewegen",
+        "moveLeft": "Nach links bewegen",
+        "moveRight": "Nach rechts bewegen",
         "moveTop": "Nach oben verschieben",
-        "moveBottom": "Nach unten bewegen",
-        "selectDown": "Wählen Sie nach unten",
-        "selectUp": "Wählen Sie nach oben",
+        "moveBottom": "Nach unten verschieben",
+        "selectDown": "Nach unten auswählen",
+        "selectUp": "Nach oben auswählen",
         "selectColumnDown": "Spalte nach unten auswählen",
         "selectColumnUp": "Spalte nach oben auswählen",
-        "focusToolbar": "Fokus-Symbolleiste",
-        "focusCancel": "Fokus abbrechen"
+        "focusToolbar": "Symbolleiste fokussieren",
+        "focusCancel": "Fokus aufheben"
       }
     },
     "errors": {
