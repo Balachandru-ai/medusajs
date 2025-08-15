@@ -166,8 +166,16 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "Billing & Usage",
-            "path": "/billing-usage",
+            "title": "Overview",
+            "path": "/billing",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Manage Billing Details",
+            "path": "/billing/manage",
             "children": []
           }
         ]
@@ -176,7 +184,7 @@ export const generatedSidebars = [
         "loaded": true,
         "isPathHref": true,
         "type": "category",
-        "title": "Monitoring & Support",
+        "title": "Monitoring",
         "initialOpen": true,
         "children": [
           {
@@ -193,6 +201,14 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Notifications",
             "path": "/notifications",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Usage",
+            "path": "/usage",
             "children": []
           }
         ]
