@@ -18,5 +18,5 @@ export const generatedEditDates = {
   "app/environments/environment-variables/page.mdx": "2025-06-25T07:42:53.521Z",
   "app/environments/long-lived/page.mdx": "2025-07-14T11:01:54.536Z",
   "app/environments/preview/page.mdx": "2025-06-25T08:00:00.839Z",
-  "app/faq/page.mdx": "2025-07-14T11:44:58.587Z"
+  "app/faq/page.mdx": "2025-08-15T12:31:41.840Z"
 }
