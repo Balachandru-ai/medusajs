@@ -98,7 +98,7 @@ In this step, you'll set up Payload in the Next.js Starter Storefront. This requ
 In the directory of the Next.js Starter Storefront, run the following command to install the necessary dependencies:
 
 ```bash npm2yarn badgeLabel="Storefront" badgeColor="blue"
-npm install payload @payloadcms/next @payloadcms/richtext-lexical sharp graphql @payloadcms/db-postgres
+npm install payload @payloadcms/next @payloadcms/richtext-lexical sharp @payloadcms/db-postgres
 ```
 
 ### b. Add Resolution for `undici`
@@ -718,59 +718,6 @@ If any of these validations fail, an error message is returned, preventing the u
 
 ### h. Add Hooks to Sync Product Data
 
-Next, you'll add hooks that are necessary to sync product data between Medusa and Payload.
-
-#### Initialize Medusa JS SDK
-
-Before adding the hooks, you'll need to create a [JS SDK](../../../js-sdk/page.mdx) instance that allows you to authenticate as an admin user in Medusa to perform product operations.
-
-Create the file `src/lib/payload-sdk.ts` with the following content:
-
-```ts title="src/lib/payload-sdk.ts" badgeLabel="Storefront" badgeColor="blue"
-import Medusa from "@medusajs/js-sdk"
-
-// Defaults to standard port for Medusa server
-let MEDUSA_BACKEND_URL = "http://localhost:9000"
-
-if (process.env.MEDUSA_BACKEND_URL) {
-  MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL
-}
-
-export const payloadMedusaSdk = new Medusa({
-  baseUrl: MEDUSA_BACKEND_URL,
-  debug: process.env.NODE_ENV === "development",
-  apiKey: process.env.MEDUSA_PAYLOAD_API_KEY,
-})
-```
-
-You configure the JS SDK to connect to Medusa and use an API key for authentication.
-
-To retrieve the API key from the Medusa Admin:
-
-1. Start the Medusa server with the following command:
-
-```bash npm2yarn badgeLabel="Medusa application" badgeColor="green"
-npm run dev
-```
-
-2. Open the Medusa Admin dashboard in your browser at `http://localhost:9000/app` and log in with the user you created earlier.
-3. Go to Settings -> API Keys.
-4. Create an API key and copy it.
-
-Then, add the following environment variables to your Next.js Starter Storefront's `.env.local` file:
-
-```shell title=".env.local" badgeLabel="Storefront" badgeColor="blue"
-MEDUSA_PAYLOAD_API_KEY=your_api_key_here
-```
-
-<Note>
-
-A Medusa Admin user can have one API key only. Learn more in the [API Keys](!user-guide!/settings/developer/secret-api-keys) user guide.
-
-</Note>
-
-#### Add Before Change Hook
-
 Next, you'll add a `beforeChange` hook to the `Products` collection that will normalize incoming `description` data to [rich-text format](https://payloadcms.com/docs/rich-text/overview).
 
 In `src/collections/Products.ts`, add the following import statement at the top of the file:
@@ -804,83 +751,6 @@ export const Products: CollectionConfig = {
 ```
 
 This hook checks if the `description` field is a string and converts it to rich-text format. This ensures that a description coming from Medusa is properly formatted when stored in Payload.
-
-#### Add After Change Hook
-
-Next, you'll add an `afterChange` hook to the `Products` collection that will sync product data to Medusa when a product is updated in Payload.
-
-In `src/collections/Products.ts`, add an `afterChange` property to the `hooks` configuration:
-
-```ts title="src/collections/Products.ts" badgeLabel="Storefront" badgeColor="blue"
-export const Products: CollectionConfig = {
-  // other configurations...
-  hooks: {
-    // other hooks...
-    afterChange: [
-      async ({ doc, operation, req }) => {
-        if (operation !== "update" || req.query.is_from_medusa) {
-          return
-        }
-
-        const optionValuesMap: Record<string, string[]> = {}
-        doc.options.forEach((option: any) => {
-          if (!optionValuesMap[option.title]) {
-            optionValuesMap[option.title] = []
-          }
-
-          doc.variants.forEach((variant: any) => {
-            const optionValue = variant.option_values.find((ov: any) => ov.medusa_option_id === option.medusa_id)
-            if (optionValue) {
-              optionValuesMap[option.title].push(optionValue.value)
-            }
-          })
-        })
-
-        const variantOptions: Record<string, Record<string, string>> = {}
-
-        doc.variants.forEach((variant: any) => {
-          variantOptions[variant.medusa_id] = {}
-          variant.option_values.forEach((ov: any) => {
-            const optionTitle = doc.options.find((o: any) => o.medusa_id === ov.medusa_option_id)?.title
-            if (optionTitle) {
-              variantOptions[variant.medusa_id][optionTitle] = ov.value
-            }
-          })
-        })
-
-        await payloadMedusaSdk.admin.product.update(doc.medusa_id, {
-          title: doc.title,
-          handle: doc.handle,
-          subtitle: doc.subtitle,
-          description: convertLexicalToMarkdown({
-            data: doc.description,
-            editorConfig: await editorConfigFactory.default({
-              config: req.payload.config,
-            }),
-          }),
-          options: doc.options.map((options: any) => ({
-            title: options.title,
-            values: optionValuesMap[options.title] || [],
-          })),
-          variants: doc.variants.map((variant: any) => ({
-            id: variant.medusa_id,
-            title: variant.title,
-            options: variantOptions[variant.medusa_id] || {},
-          })),
-        })
-
-        return doc
-      },
-    ],
-  },
-}
-```
-
-This hook is triggered after a product is updated in Payload. In the hook, you:
-
-1. Validate that the operation is an update and it's not coming from Medusa. This avoids an infinite loop of updates between Payload and Medusa.
-2. Prepare the options and variants data to match Medusa's expected format.
-3. Use the Medusa JS SDK to update the product in Medusa with the new data.
 
 ## i. Generate Payload Imports Map
 
@@ -2019,7 +1889,7 @@ To check that the products were created in Payload, open the Payload admin at `l
 
 ![The Products collection in Payload with Medusa products](https://res.cloudinary.com/dza7lstvk/image/upload/v1754486747/Medusa%20Resources/CleanShot_2025-08-06_at_16.25.31_2x_h874oa.png)
 
-If you click on a product, you can edit its details, such as its title or description. Once you save the changes, these changes will be reflected in Medusa as well since you added an `afterChange` hook to the `Products` collection in Payload.
+If you click on a product, you can edit its details, such as its title or description.
 
 ---
 
@@ -2524,263 +2394,14 @@ If you click on a product, you'll see the product details page with the product 
 
 In this step, you'll create subscribers and workflows to handle the following Medusa product events:
 
-- [product.updated](#a-handle-product-updates): Update the product in Payload when a product is updated in Medusa.
-- [product.deleted](#b-handle-product-deletions): Delete the product in Payload when a product is deleted in Medusa.
-- [product-variant.created](#c-handle-product-variant-creation): Add a product variant to a product in Payload when a product variant is created in Medusa.
-- [product-variant.updated](#d-handle-product-variant-updates): Update a product's variant in Payload when a product variant is updated in Medusa.
-- [product-variant.deleted](#e-handle-product-variant-deletions): Remove a product's variant in Payload when a product variant is deleted in Medusa.
-- [product-option.created](#f-handle-product-option-creation): Add a product option to a product in Payload when a product option is created in Medusa.
-- [product-option.updated](#g-handle-product-option-updates): Update a product's option in Payload when a product option is updated in Medusa.
-- [product-option.deleted](#h-handle-product-option-deletions): Remove a product's option in Payload when a product option is deleted in Medusa.
+- [product.deleted](#a-handle-product-deletions): Delete the product in Payload when a product is deleted in Medusa.
+- [product-variant.created](#b-handle-product-variant-creation): Add a product variant to a product in Payload when a product variant is created in Medusa.
+- [product-variant.updated](#c-handle-product-variant-updates): Update a product variant's option values in Payload when a product variant is updated in Medusa.
+- [product-variant.deleted](#d-handle-product-variant-deletions): Remove a product's variant in Payload when a product variant is deleted in Medusa.
+- [product-option.created](#e-handle-product-option-creation): Add a product option to a product in Payload when a product option is created in Medusa.
+- [product-option.deleted](#f-handle-product-option-deletions): Remove a product's option in Payload when a product option is deleted in Medusa.
 
-### a. Handle Product Updates
-
-To handle the `product.updated` event, you'll first create a workflow that updates the product in Payload, then create a subscriber that executes the workflow when the event is emitted.
-
-The workflow will have the following steps:
-
-<WorkflowDiagram
-  workflow={{
-    name: "updatePayloadProductsWorkflow",
-    steps: [
-      {
-        type: "step",
-        name: "useQueryGraphStep",
-        description: "Retrieve the product from Medusa",
-        link: "/references/helper-steps/useQueryGraphStep",
-        depth: 1
-      },
-      {
-        type: "when",
-        steps: [
-          {
-            type: "step",
-            name: "updatePayloadItemsStep",
-            description: "Update the product in Payload",
-            depth: 1
-          }
-        ],
-        depth: 2
-      }
-    ]
-  }}
-/>
-
-#### updatePayloadItemsStep
-
-You only need to create the `updatePayloadItemsStep`. So, create the file `src/workflows/steps/update-payload-items.ts` with the following content:
-
-```ts title="src/workflows/steps/update-payload-items.ts" badgeLabel="Medusa application" badgeColor="green"
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { PayloadItemResult, PayloadUpsertData } from "../../modules/payload/types"
-import { PAYLOAD_MODULE } from "../../modules/payload"
-
-type StepInput = {
-  collection: string;
-  items: PayloadUpsertData[];
-}
-
-export const updatePayloadItemsStep = createStep(
-  "update-payload-items",
-  async ({ items, collection }: StepInput, { container }) => {
-    const payloadModuleService = container.resolve(PAYLOAD_MODULE)
-    const ids: string[] = items.map((item) => item.id)
-
-    const prevData = await payloadModuleService.find(collection, {
-      where: {
-        id: {
-          in: ids.join(","),
-        },
-      },
-    })
-
-    const updatedItems: PayloadItemResult[] = []
-
-    for (const item of items) {
-      const { id, ...data } = item
-      updatedItems.push(
-        await payloadModuleService.update(
-          collection,
-          data,
-          {
-            where: {
-              id: {
-                equals: id,
-              },
-            },
-          }
-        )
-      )
-    }
-
-    return new StepResponse({
-      items: updatedItems.map((item) => item.doc),
-    }, {
-      prevData,
-      collection,
-    })
-  },
-  async (data, { container }) => {
-    if (!data) {
-      return
-    }
-    const { prevData, collection } = data
-
-    const payloadModuleService = container.resolve(PAYLOAD_MODULE)
-
-    await Promise.all(
-      prevData.docs.map(async ({
-        id,
-        ...item
-      }) => {
-        await payloadModuleService.update(
-          collection,
-          item,
-          {
-            where: {
-              id: {
-                equals: id,
-              },
-            },
-          }
-        )
-      })
-    )
-  }
-)
-```
-
-This step accepts an array of items to update in Payload and the collection slug.
-
-In the step, you retrieve the existing items in Payload using the `find` method of the Payload Module's service. You pass these items to the compensation function so that you can undo the updates if an error occurs in the workflow.
-
-Then, you update the items in Payload using the `update` method of the Payload Module's service and return the updated items.
-
-#### Update Payload Products Workflow 
-
-Next, to create the workflow, create the file `src/workflows/update-payload-products.ts` with the following content:
-
-```ts title="src/workflows/update-payload-products.ts" badgeLabel="Medusa application" badgeColor="green"
-import { createWorkflow, transform, when, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
-import { PayloadUpsertData } from "../modules/payload/types"
-import { updatePayloadItemsStep } from "./steps/update-payload-items"
-
-type WorkflowInput = {
-  product_ids: string[]
-}
-
-export const updatePayloadProductsWorkflow = createWorkflow(
-  "update-payload-products",
-  (input: WorkflowInput) => {
-    const { data: products } = useQueryGraphStep({
-      entity: "product",
-      fields: [
-        "id",
-        "title",
-        "handle",
-        "subtitle", 
-        "description",
-        "updated_at",
-        "payload_product.*",
-      ],
-      filters: {
-        id: input.product_ids,
-      },
-      options: {
-        throwIfKeyNotFound: true,
-      },
-    })
-
-    const updateData = transform({
-      products,
-    }, (data) => {
-      const items: PayloadUpsertData[] = []
-
-      data.products.forEach((product) => {
-        // @ts-expect-error
-        const payloadProduct = product.payload_product
-        if (!payloadProduct) {return}
-
-        items.push({
-          id: payloadProduct.id,
-          updatedAt: product.updated_at as string,
-          title: product.title,
-          handle: product.handle,
-          subtitle: product.subtitle,
-          description: product.description || "",
-        })
-      })
-
-      return {
-        collection: "products",
-        items,
-      }
-    })
-
-    const result = when({ updateData }, (data) => data.updateData.items.length > 0)
-      .then(() => {
-        return updatePayloadItemsStep(updateData)
-      })
-
-    const items = transform({ result }, (data) => data.result?.items || [])
-
-    return new WorkflowResponse({
-      items,
-    })
-  }
-)
-```
-
-This workflow receives the IDs of the products to update in Payload.
-
-In the workflow, you:
-
-1. Retrieve the product details in Medusa using the `useQueryGraphStep`. You include the `payload_product.*` field to retrieve the linked product data from Payload.
-2. Prepare the data to update in Payload using the `transform` function.
-    - You don't update variants or options since you will handle those when their respective events are emitted.
-3. Update the products in Payload using the `updatePayloadItemsStep` step if there are any items to update.
-    - To perform condition checks in a workflow, you must use the `when` function. Learn more in the [Conditions in Workflows](!docs!/learn/fundamentals/workflows/conditions) documentation.
-4. Return the updated items from the workflow.
-
-#### Product Updated Subscriber
-
-Finally, to create the subscriber that executes the workflow, create the file `src/subscribers/product-updated.ts` with the following content:
-
-```ts title="src/subscribers/product-updated.ts" badgeLabel="Medusa application" badgeColor="green"
-import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { updatePayloadProductsWorkflow } from "../workflows/update-payload-products"
-
-export default async function productUpdatedHandler({
-  event: { data },
-  container,
-}: SubscriberArgs<{
-  id: string
-}>) {
-  await updatePayloadProductsWorkflow(container)
-    .run({
-      input: {
-        product_ids: [data.id],
-      },
-    })
-}
-
-export const config: SubscriberConfig = {
-  event: "product.updated",
-}
-```
-
-This subscriber listens to the `product.updated` event and executes the `updatePayloadProductsWorkflow` with the updated product's ID.
-
-#### Test Product Update Handling
-
-To test the product update handling, make sure that both the Medusa application and the Next.js Starter Storefront are running.
-
-Then, open the Medusa Admin at `localhost:9000/app` and open a product's details page. Update the product title or description and save the changes.
-
-If you check the product in Payload, you should see that the product's title and description have been updated there as well.
-
-### b. Handle Product Deletions
+### a. Handle Product Deletions
 
 To handle the `product.deleted` event, you'll create a workflow that deletes the product from Payload, then create a subscriber that executes the workflow when the event is emitted.
 
@@ -2936,7 +2557,7 @@ Then, open the Medusa Admin at `localhost:9000/app` and go to the products list.
 
 If you check the Products collection in Payload, you should see that the product has been removed from there as well.
 
-### c. Handle Product Variant Creation
+### b. Handle Product Variant Creation
 
 To handle the `product-variant.created` event, you'll create a workflow that adds the new variant to the corresponding product in Payload.
 
@@ -3100,7 +2721,7 @@ Then, open the Medusa Admin at `localhost:9000/app` and open a product's details
 
 If you check the product in Payload, you should see that the new variant has been added to the product's variants array.
 
-### d. Handle Product Variant Updates
+### c. Handle Product Variant Updates
 
 To handle the `product-variant.updated` event, you'll create a workflow that updates the variant in the corresponding product in Payload.
 
@@ -3200,7 +2821,6 @@ export const updatePayloadProductVariantsWorkflow = createWorkflow(
 
           items[payloadProduct.id].variants[existingVariantIndex] = {
             ...existingVariant,
-            title: variant.title,
             option_values: updatedOptionValues,
           }
         } else {
@@ -3245,7 +2865,7 @@ This workflow receives the IDs of the product variants to update in Payload.
 In the workflow, you:
 
 1. Retrieve the product variant details from Medusa using the `useQueryGraphStep`, including the linked product data from Payload.
-2. Prepare the data to update the product in Payload by finding and updating the existing variant in the variants array.
+2. Prepare the data to update the product in Payload by finding and updating the existing variant in the variants array. You only update the variant's option values, in case a new one is added.
 3. Update the product in Payload using the `updatePayloadItemsStep` if there are any items to update.
 4. Return the updated items from the workflow.
 
@@ -3286,9 +2906,9 @@ To test the product variant update handling, make sure that both the Medusa appl
 
 Then, open the Medusa Admin at `localhost:9000/app` and open a product's details page. Edit an existing variant's title and save the changes.
 
-If you check the product in Payload, you should see that the variant's details have been updated in the product's variants array.
+If you check the product in Payload, you should see that the variant's option values have been updated in the product's variants array.
 
-### e. Handle Product Variant Deletions
+### d. Handle Product Variant Deletions
 
 To handle the `product-variant.deleted` event, you'll create a workflow that removes the variant from the corresponding product in Payload.
 
@@ -3464,7 +3084,7 @@ Then, open the Medusa Admin at `localhost:9000/app` and open a product's details
 
 If you check the product in Payload, you should see that the variant has been removed from the product's variants array.
 
-### f. Handle Product Option Creation
+### e. Handle Product Option Creation
 
 To handle the `product-option.created` event, you'll create a workflow that adds the new option to the corresponding product in Payload.
 
@@ -3634,177 +3254,7 @@ Then, open the Medusa Admin at `localhost:9000/app` and open a product's details
 
 If you check the product in Payload, you should see that the new option has been added to the product's options array.
 
-### g. Handle Product Option Updates
-
-To handle the `product-option.updated` event, you'll create a workflow that updates the option in the corresponding product in Payload.
-
-The workflow will have the following steps:
-
-<WorkflowDiagram
-  workflow={{
-    name: "updatePayloadProductOptionsWorkflow",
-    steps: [
-      {
-        type: "step",
-        name: "useQueryGraphStep",
-        description: "Retrieve the product option from Medusa",
-        link: "/references/helper-steps/useQueryGraphStep",
-        depth: 1
-      },
-      {
-        type: "when",
-        steps: [{
-          type: "step",
-          name: "updatePayloadItemsStep",
-          description: "Update the option in the product in Payload",
-          depth: 1
-        }],
-        depth: 2,
-      }
-    ]
-  }}
-/>
-
-#### Update Payload Product Options Workflow
-
-You already have the necessary steps, so you only need to create the workflow that uses these steps.
-
-Create the file `src/workflows/update-payload-product-options.ts` with the following content:
-
-```ts title="src/workflows/update-payload-product-options.ts" badgeLabel="Medusa application" badgeColor="green"
-import { createWorkflow, transform, when, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
-import { PayloadCollectionItem, PayloadUpsertData } from "../modules/payload/types"
-import { updatePayloadItemsStep } from "./steps/update-payload-items"
-
-type WorkflowInput = {
-  option_ids: string[]; 
-}
-
-export const updatePayloadProductOptionsWorkflow = createWorkflow(
-  "update-payload-product-options",
-  ({ option_ids }: WorkflowInput) => {
-    const { data: productOptions } = useQueryGraphStep({
-      entity: "product_option",
-      fields: [
-        "id",
-        "title",
-        "product.payload_product.*",
-      ],
-      filters: {
-        id: option_ids,
-      },
-      options: {
-        throwIfKeyNotFound: true,
-      },
-    })
-
-    const updateData = transform({
-      productOptions,
-    }, (data) => {
-      const items: Record<string, PayloadUpsertData> = {}
-
-      data.productOptions.forEach((option) => {
-        // @ts-expect-error
-        const payloadProduct = option.product?.payload_product as PayloadCollectionItem
-        if (!payloadProduct) {return}
-        
-        if (!items[payloadProduct.id]) {
-          items[payloadProduct.id] = {
-            options: payloadProduct.options || [],
-          }
-        }
-
-        // Find and update the existing option in the payload product
-        const existingOptionIndex = items[payloadProduct.id].options.findIndex(
-          (o: any) => o.medusa_id === option.id
-        )
-        
-        const updatedOption = {
-          title: option.title,
-          medusa_id: option.id,
-        }
-
-        if (existingOptionIndex >= 0) {
-          items[payloadProduct.id].options[existingOptionIndex] = updatedOption
-        } else {
-          // Add the option if it doesn't exist
-          items[payloadProduct.id].options.push(updatedOption)
-        }
-      })
-      
-      return {
-        collection: "products",
-        items: Object.keys(items).map((id) => ({
-          id,
-          ...items[id],
-        })),
-      }
-    })
-
-    const result = when({ updateData }, (data) => data.updateData.items.length > 0)
-      .then(() => {
-        return updatePayloadItemsStep(updateData)
-      })
-
-    const items = transform({ result }, (data) => data.result?.items || [])
-
-    return new WorkflowResponse({
-      items,
-    })
-  }
-)
-```
-
-This workflow receives the IDs of the product options to update in Payload.
-
-In the workflow, you:
-
-1. Retrieve the product option details from Medusa using the `useQueryGraphStep`, including the linked product data from Payload.
-2. Prepare the data to update the product in Payload by finding and updating the existing option in the options array.
-3. Update the product in Payload using the `updatePayloadItemsStep` if there are any items to update.
-4. Return the updated items from the workflow.
-
-#### Product Option Updated Subscriber
-
-Finally, you'll create the subscriber that executes the workflow when the `product-option.updated` event is emitted.
-
-Create the file `src/subscribers/option-updated.ts` with the following content:
-
-```ts title="src/subscribers/option-updated.ts" badgeLabel="Medusa application" badgeColor="green"
-import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { updatePayloadProductOptionsWorkflow } from "../workflows/update-payload-product-options"
-
-export default async function productOptionUpdatedHandler({
-  event: { data },
-  container,
-}: SubscriberArgs<{
-  id: string
-}>) {
-  await updatePayloadProductOptionsWorkflow(container)
-    .run({
-      input: {
-        option_ids: [data.id],
-      },
-    })
-}
-
-export const config: SubscriberConfig = {
-  event: "product-option.updated",
-}
-```
-
-This subscriber listens to the `product-option.updated` event and executes the `updatePayloadProductOptionsWorkflow` with the updated option's ID.
-
-#### Test Product Option Update Handling
-
-To test the product option update handling, make sure that both the Medusa application and the Next.js Starter Storefront are running.
-
-Then, open the Medusa Admin at `localhost:9000/app` and open a product's details page. Edit an existing option's title and save the changes.
-
-If you check the product in Payload, you should see that the option's details have been updated in the product's options array.
-
-### h. Handle Product Option Deletions
+### f. Handle Product Option Deletions
 
 To handle the `product-option.deleted` event, you'll create a workflow that removes the option from the corresponding product in Payload.
 

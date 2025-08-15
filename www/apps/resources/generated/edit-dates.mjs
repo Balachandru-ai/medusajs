@@ -6566,5 +6566,5 @@ export const generatedEditDates = {
   "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z",
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
-  "app/integrations/guides/payload/page.mdx": "2025-08-06T15:40:44.647Z"
+  "app/integrations/guides/payload/page.mdx": "2025-08-15T07:23:50.499Z"
 }
