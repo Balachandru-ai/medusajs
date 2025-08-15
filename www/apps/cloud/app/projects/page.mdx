@@ -22,18 +22,44 @@ Each project can have multiple environments, such as production and staging. The
 
 In this section, you'll learn how to create a project in Cloud to deploy your Medusa application.
 
-### Prerequisites
+<Note title="Prerequisites">
 
-Before creating a project, ensure you have:
+Make sure your organization's plan supports creating more projects. If you've exceeded the number of projects limit for your plan, contact support to upgrade your plan.
 
-- A Medusa application whose codebase is hosted in a GitHub repository.
-    - If you don't have a Medusa application yet, refer to the [Installation](!docs!/learn/installation) guide to set up a new Medusa application.
-- A Cloud account with a valid plan that allows creating more projects.
-    - If you've exceeded the number of projects limit for your plan, you can contact support to upgrade your plan.
+</Note>
 
-#### Medusa Application Configurations
+To create a project:
 
-Your Medusa application doesn't need specific configurations to be deployed to Cloud. Medusa will automatically:
+1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
+2. Click on the **Create Project** button in your organization's dashboard.
+
+In the project-creation page, you can either [create from a starter](#create-from-a-starter) or [create from an existing application](#create-from-an-existing-application).
+
+### Create from a Starter
+
+Medusa provides you with the following starters that you can use to quickly set up your ecommerce application:
+
+- **DTC Starter**: Standard Medusa application with fully-fledged commerce features.
+- **B2B Starter**: Medusa application with powerful B2B and commerce features.
+
+To create a project from either of these starters:
+
+1. Click the **Clone** button of the starter.
+2. In the Repository step, authenticate with your GitHub account if you haven't already.
+3. Choose a GitHub organization to clone the starter into in the "Organization" field.
+    - If you don't see your organization, you can click the **Configure accessible organizations** link to manage accessible organizations in GitHub.
+4. In the "Repository name" field, enter a name for your new repository.
+5. Once you're done, click the **Continue** button.
+
+The repository will be cloned and you'll move forward to the [Configure step](#configure-project).
+
+### Create from an Existing Application
+
+If you already have a Medusa application, you can create a project from it.
+
+#### Prerequisite: Medusa Application Configurations
+
+Your existing Medusa application doesn't need specific configurations to be deployed to Cloud. Medusa will automatically:
 
 - Create the necessary [server and worker instances](!docs!/learn/production/worker-mode).
 - Scale your Medusa application's resources based on the traffic it receives.
@@ -46,44 +72,35 @@ Your Medusa application doesn't need specific configurations to be deployed to C
 
 So, make sure to remove any of these modules from your `medusa-config.ts` file, unless you want to use custom options for them. In that case, you're expected to manually set up and manage those resources externally and configure them in your Medusa application.
 
-### Steps to Create a Project
+#### Creation Steps
 
-To create a project:
+To create a project from an existing Medusa application:
 
-1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
-2. Click on the **Create Project** button in your organization's dashboard.
+1. Click on the **Import Repository** button at the top right.
+2. In the Repository step, authenticate with your GitHub account if you haven't already.
+3. Under the Repository section, choose the repository to create the project from.
+    - If you don't see your repository, you can click the **Configure repositories** link to manage the GitHub repositories that Medusa can access.
+4. Once you're done, click the **Continue** button.
 
-![The create project button in the organization dashboard](https://res.cloudinary.com/dza7lstvk/image/upload/v1749800310/Cloud/CleanShot_2025-06-13_at_10.38.03_2x_fkpu1m.png)
+You'll move forward to the [Configure step](#configure-project).
 
-3. If you haven't authenticated with GitHub yet, you'll be asked to authenticate first.
-4. Once you're authenticated, you'll need to select a GitHub account and the repository that contains your Medusa application's code. The repository can be public or private.
-    - If you don't see your repository, you can click the "Configure repositories" link to manage the GitHub repositories that Medusa can access.
-5. Once you find the repository, select it and click the "Next" button.
+### Configure Project
 
-![The select repository step in the project creation flow with a repository selected](https://res.cloudinary.com/dza7lstvk/image/upload/v1749741442/Cloud/CleanShot_2025-06-12_at_18.17.08_2x_ev7bum.png)
+After selecting the repository, you'll move on to the project configuration step. You can set the following information:
 
-6. In the next step, configure the project's settings:
-    - Enter the name of the project.
-    - Enter a custom subdomain for the project. All projects are subdomains of `medusajs.app`. For example, if you enter `my-project`, the project will be accessible at `my-project.medusajs.app`. Refer to the [subdomain restrictions](#subdomain-restrictions) section for more details.
-
-![The project settings step in the project creation flow with the settings filled in](https://res.cloudinary.com/dza7lstvk/image/upload/v1749741990/Cloud/CleanShot_2025-06-12_at_18.26.15_2x_kyxggl.png)
-
-7. You can optionally change the "Build and project" settings by expanding its section:
-    - Select a [region](#available-regions) to deploy the project. For better performance, choose a region that's closer to your target users. The region can't be changed later.
-    - If your project is in a monorepo, you can specify the path to the Medusa project in the repository. Otherwise, leave it empty.
-    - You can change the email and password for the admin user created for the project. These are the credentials you'll use to access the Medusa Admin.
-
-![The build and project settings step in the project creation flow with the settings filled in](https://res.cloudinary.com/dza7lstvk/image/upload/v1749803530/Cloud/CleanShot_2025-06-13_at_11.30.13_2x_d0nn3e.png)
-
-8. You can optionally add Environment Variables by expanding its section:
+1. **Project name**: Enter the name of the project.
+2. **Project subdomain**: Enter a custom subdomain for the project. All projects are subdomains of `medusajs.app`.
+    - For example, if you enter `my-project`, the project will be accessible at `my-project.medusajs.app`. Refer to the [subdomain restrictions](#subdomain-restrictions) section for more details.
+3. You can expand the "Build details" section to optionally change its configurations:
+    - **Region**: Select a [region](#available-regions-in-cloud) to deploy the project. For better performance, choose a region that's closer to your target users. The region can't be changed later.
+    - **Project root directory**: If your project is in a monorepo, specify the path to the Medusa project in the repository. Otherwise, leave it empty.
+    - **Admin email and password**: You can change the email and password for the admin user created for the project. These are the credentials you'll use to access the Medusa Admin.
+4. You can expand the "Environment variables" section to optionally add environment variables:
     - Enter the key and value for each environment variable you want to add.
     - Mark the variable as "Sensitive" to hide its value in the UI.
     - To add more variables, click the "Add another" button.
     - You can also add and change environment variables later in the project's environment settings.
-
-![The environment variables step in the project creation flow with the variables filled in](https://res.cloudinary.com/dza7lstvk/image/upload/v1749803530/Cloud/CleanShot_2025-06-13_at_11.30.47_2x_apo0ns.png)
-
-9. Once you're done configuring the project, click the **Create Project** button.
+5. Once you're done configuring the project, click the "Create" button.
 
 After creating the project, it will take a few minutes to create the necessary resources for it and deploy it. You'll be redirected to the organization dashboard, where you can see the project in the list of projects.
 
@@ -120,7 +137,7 @@ When you choose a subdomain for your project, it must be at least five character
 - `development`
 - `proxy`
 
-### Available Regions
+### Available Regions in Cloud
 
 Medusa supports hosting your Medusa projects on Cloud in the following regions:
 
@@ -134,7 +151,7 @@ For better performance, choose a region that's closer to your target users. If y
 
 ## Access Deployed Project
 
-To access the deployed project, you can access the URL of its Production environment.
+To access the deployed project, you can navigate to the URL of its Production environment.
 
 Learn more in the [Deployments](../deployments/page.mdx#access-live-deployment) guide.
 
@@ -190,7 +207,7 @@ Learn more in the [Deployments](../deployments/page.mdx) guide.
 
 ## Edit Project Details
 
-After creating a project, you can edit its general details, such as its name and root directory in the repository, and manage its preview settings.
+After creating a project, you can edit its general details, such as the project name and root directory in the repository, and manage its preview settings.
 
 To edit a project's general details:
 
