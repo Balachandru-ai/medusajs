@@ -389,7 +389,7 @@ export const TaxRegionCreateTaxOverrideForm = ({
                             <Form.Control>
                               <PercentageInput
                                 {...field}
-                                placeholder="0.0000"
+                                placeholder="0.00"
                                 decimalScale={4}
                                 value={value?.value}
                                 onValueChange={(value, _name, values) =>
