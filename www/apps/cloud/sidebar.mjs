@@ -22,9 +22,6 @@ export const sidebar = [
         ],
       },
       {
-        type: "separator",
-      },
-      {
         type: "category",
         title: "Basics",
         initialOpen: true,

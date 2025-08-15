@@ -29,9 +29,6 @@ export const generatedSidebars = [
         ]
       },
       {
-        "type": "separator"
-      },
-      {
         "loaded": true,
         "isPathHref": true,
         "type": "category",

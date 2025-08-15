@@ -32,13 +32,33 @@ If you need to restore a database backup, you can contact support to request a p
 
 ---
 
-## Accessing the Database
+## Connect to the Database
 
-In some cases, you may need to access the database directly, such as to export or import data. However, since Cloud is a managed service, you can't directly access your database. Medusa also doesn't expose the database connection details.
+In some cases, you may need to access the database directly, such as to export or import data.
 
-This section provides alternative ways to interact with your database based on your needs.
+Medusa gives you read access to your database, which is useful when you need to export data, perform analytics, or troubleshoot issues.
 
-### Option 1: Database Dump
+To get the read-only connection string for an environment's database:
+
+1. From the [organization's dashboard](../organizations/page.mdx), click on the environment's project.
+2. In the project's dashboard, click on the name of the environment. For example, "Production".
+3. In the environment's dashboard, click on the "Settings" tab.
+4. Choose the "Database" tab from the sidebar.
+5. Copy the read-only connection string in the code block.
+
+![Read-only connection string in Database settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1755271713/Cloud/CleanShot_2025-08-15_at_18.27.58_2x_fqlync.png)
+
+Then, you can connect to your database using a PostgreSQL client. For example, using the `psql` command-line tool:
+
+```bash
+psql "postgresql://..."
+```
+
+After connecting to the database, you can run SQL queries to interact with your data.
+
+---
+
+## Import/Export Database Dumps
 
 Medusa allows you to export and import database dumps for any environment. This is useful for seeding the database with initial data, migrating from other hosting platforms, or debugging issues locally.
 
@@ -47,7 +67,7 @@ To import or export a database dump for an environment:
 1. From the [organization's dashboard](../organizations/page.mdx), click on the environment's project.
 2. In the project's dashboard, click on the name of the environment. For example, "Production".
 3. In the environment's dashboard, click on the "Settings" tab.
-4. Scroll down to the "Database dump" section.
+4. Choose the "Database" tab from the sidebar and find the "Database dump" section.
 
 ![Database dump section highlighted in the environment settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1750169625/Cloud/CleanShot_2025-06-17_at_17.13.21_2x_l7vw3w.png)
 
@@ -70,36 +90,6 @@ Make sure you're generating the database dump from PostgreSQL v16 and that [pg_d
 ```bash
 pg_restore --no-acl --no-owner --no-privileges --clean --if-exists -d 'postgres://postgres:secret@localhost:5432/mydatabase' mydata.dump
 ```
-
-### Option 2: Custom API Routes
-
-In some cases, you may need more flexibility interacting with the database. For example, you might need to retrieve specific data for analysis, or update data coming from an external source.
-
-To interact with an environment's database with more flexibility, you can:
-
-- [Create a custom API route](!docs!/learn/fundamentals/api-routes) that retrieves or updates data in the database.
-    - Make sure to create the API route under the `/admin` prefix, or [protect the API route with an API key](!docs!/learn/fundamentals/api-routes/protected-routes).
-- Create a secret API key for a user using the [Medusa Admin](!user-guide!/settings/developer/secret-api-keys#create-secret-api-key).
-- Call the API route to perform database operations, [passing the API key in the header](!api!/admin#2-api-token). For example, to send the request in a Node.js application:
-
-```ts
-const api_key_token = "YOUR_API_KEY"
-fetch(`https://my-project.medusajs.app/admin/my-route`, {
-  headers: {
-    Authorization: `Basic ${
-      Buffer.from(`${api_key_token}:`).toString("base64")
-    }`,
-  },
-})
-```
-
-Where:
-
-- `YOUR_API_KEY` is the secret API key you created.
-- `my-project.medusajs.app` is the [environment's URL](../deployments/page.mdx#find-environments-url).
-- `my-route` is the path to the custom API route you created.
-
-This approach allows you to perform any database operations you need, such as retrieving or updating data, without directly accessing the database.
 
 ---
 
