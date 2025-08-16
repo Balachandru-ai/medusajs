@@ -108,7 +108,12 @@ export function calculateAdjustmentAmountFromPromotion(
       lineItemsAmount
     )
 
-    return MathBN.min(promotionValue, applicableAmount)
+    const returnValue = MathBN.min(promotionValue, applicableAmount)
+    if (MathBN.lte(returnValue, MEDUSA_EPSILON)) {
+      return MathBN.convert(0)
+    }
+
+    return returnValue
   }
 
   /*
@@ -157,5 +162,10 @@ export function calculateAdjustmentAmountFromPromotion(
     lineItemsAmount
   )
 
-  return MathBN.min(promotionValue, applicableAmount)
+  const returnValue = MathBN.min(promotionValue, applicableAmount)
+  if (MathBN.lte(returnValue, MEDUSA_EPSILON)) {
+    return MathBN.convert(0)
+  }
+
+  return returnValue
 }
