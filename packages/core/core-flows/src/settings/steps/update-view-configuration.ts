@@ -1,6 +1,5 @@
 import {
   UpdateViewConfigurationDTO,
-  ISettingsModuleService,
   ViewConfigurationDTO,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
@@ -16,7 +15,7 @@ export const updateViewConfigurationStepId = "update-view-configuration"
 export const updateViewConfigurationStep = createStep(
   updateViewConfigurationStepId,
   async (input: UpdateViewConfigurationStepInput, { container }) => {
-    const service = container.resolve<ISettingsModuleService>(Modules.SETTINGS)
+    const service = container.resolve(Modules.SETTINGS)
 
     const currentState = await service.retrieveViewConfiguration(input.id)
 
@@ -32,7 +31,7 @@ export const updateViewConfigurationStep = createStep(
       return
     }
 
-    const service = container.resolve<ISettingsModuleService>(Modules.SETTINGS)
+    const service = container.resolve(Modules.SETTINGS)
 
     const { id, created_at, updated_at, ...restoreData } =
       compensateInput.previousState as ViewConfigurationDTO

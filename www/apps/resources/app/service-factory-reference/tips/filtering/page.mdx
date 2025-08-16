@@ -137,6 +137,56 @@ const posts = await postModuleService.listPosts({
 
 In the example above, only posts that have a publish date are retrieved.
 
+--
+
+## Filter by Relation's Property
+
+Consider that your module also has an `Author` data model, and the `Post` data model has a relation to the `Author` data model.
+
+To filter posts by a property of the `Author` data model, you can use nested objects.
+
+For example:
+
+```ts
+const posts = await postModuleService.listPosts({
+  author: {
+    name: "John",
+  },
+})
+```
+
+In the example above, you retrieve posts whose `author` relation has a `name` property equal to `John`.
+
+### Filter by Relation's Property Not Equal
+
+```ts
+const posts = await postModuleService.listPosts({
+  author: {
+    name: {
+      $or: [
+        {
+          name: {
+            $eq: null,
+          },
+        },
+        {
+          name: {
+            $ne: "John",
+          },
+        },
+      ],
+    },
+  },
+})
+```
+
+When you need to filter by a relationship property whose value doesn't match a specific condition, you must use an `$or` operator that applies the following conditions:
+
+1. The relationship's property is not set. This is necessary to exclude posts that don't have an author.
+2. The relationship's property is not equal to the specific value.
+
+So, in the example above, you retrieve posts either not having an author or having an author whose name is not "John".
+
 ---
 
 ## Apply Range Filters
@@ -440,14 +490,6 @@ The following operators are supported by the service factory filtering mechanism
       </Table.Cell>
       <Table.Cell>
         Joins two or more conditions with a logical OR.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        `$not`
-      </Table.Cell>
-      <Table.Cell>
-        Inverts the logic of a condition. For example, `$not: { $eq: value }` matches any value that is not equal to the specified value.
       </Table.Cell>
     </Table.Row>
   </Table.Body>

@@ -1,4 +1,3 @@
-import { ISettingsModuleService } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
@@ -13,21 +12,21 @@ export const setActiveViewConfigurationStepId = "set-active-view-configuration"
 export const setActiveViewConfigurationStep = createStep(
   setActiveViewConfigurationStepId,
   async (input: SetActiveViewConfigurationStepInput, { container }) => {
-    const service = container.resolve<ISettingsModuleService>(Modules.SETTINGS)
-    
+    const service = container.resolve(Modules.SETTINGS)
+
     // Get the currently active view configuration for rollback
     const currentActiveView = await service.getActiveViewConfiguration(
       input.entity,
       input.user_id
     )
-    
+
     // Set the new view as active
     await service.setActiveViewConfiguration(
       input.entity,
       input.user_id,
       input.id
     )
-    
+
     return new StepResponse(input.id, {
       entity: input.entity,
       user_id: input.user_id,
@@ -39,8 +38,8 @@ export const setActiveViewConfigurationStep = createStep(
       return
     }
 
-    const service = container.resolve<ISettingsModuleService>(Modules.SETTINGS)
-    
+    const service = container.resolve(Modules.SETTINGS)
+
     if (compensateInput.previousActiveViewId) {
       // Restore the previous active view
       await service.setActiveViewConfiguration(
