@@ -45,7 +45,8 @@ medusaIntegrationTestRunner({
         cart,
         customer,
         promotion,
-        shippingProfile
+        shippingProfile,
+        taxSeedData
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -78,7 +79,7 @@ medusaIntegrationTestRunner({
           )
         ).data.shipping_profile
 
-        await setupTaxStructure(appContainer.resolve(Modules.TAX))
+        taxSeedData = await setupTaxStructure(appContainer.resolve(Modules.TAX))
 
         region = (
           await api.post(
@@ -4167,6 +4168,61 @@ medusaIntegrationTestRunner({
                   shipping_option_id: shippingOption.id,
                   amount: 500,
                   is_tax_inclusive: true,
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should add shipping method with tax rate override to cart", async () => {
+          let taxRegion = (
+            await api.get(`/admin/tax-regions?country_code=us`, adminHeaders)
+          ).data.tax_regions[0]
+
+          // Create tax rate override for shipping option
+          await api.post(
+            `/admin/tax-rates`,
+            {
+              name: "Shipping Option Override",
+              tax_region_id: taxRegion.id,
+              rate: 25,
+              code: "T25",
+              is_combinable: false,
+              rules: [
+                {
+                  reference: "shipping_option",
+                  reference_id: shippingOption.id,
+                },
+              ],
+              is_default: false,
+            },
+            adminHeaders
+          )
+
+          let response = await api.post(
+            `/store/carts/${cart.id}/shipping-methods`,
+            { option_id: shippingOption.id },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              shipping_methods: expect.arrayContaining([
+                expect.objectContaining({
+                  shipping_option_id: shippingOption.id,
+                  amount: 1000,
+                  is_tax_inclusive: true,
+                  tax_lines: expect.arrayContaining([
+                    expect.objectContaining({
+                      id: expect.any(String),
+                      description: "Shipping Option Override",
+                      code: "T25",
+                      rate: 25,
+                      provider_id: "system",
+                    }),
+                  ]),
                 }),
               ]),
             })
