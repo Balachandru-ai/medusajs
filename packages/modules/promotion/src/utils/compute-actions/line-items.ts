@@ -110,7 +110,7 @@ function applyPromotionToItems(
         MathBN.sub(
           MathBN.add(
             acc,
-            promotion.is_tax_inclusive ? item.total : item.subtotal
+            promotion.is_tax_inclusive ? item.original_total : item.subtotal
           ),
           appliedPromotionsMap.get(item.id) ?? 0
         ),
@@ -124,7 +124,10 @@ function applyPromotionToItems(
 
   for (const item of applicableItems) {
     if (
-      MathBN.lte(promotion.is_tax_inclusive ? item.total : item.subtotal, 0)
+      MathBN.lte(
+        promotion.is_tax_inclusive ? item.original_total : item.subtotal,
+        0
+      )
     ) {
       continue
     }

@@ -180,10 +180,10 @@ export class PricingRepository
             WHERE pr.price_id = price.id 
             AND pr.deleted_at IS NULL
             AND (
-              ${flattenedContext
-                .map(([key, value]) => {
-                  if (typeof value === "number") {
-                    return `
+            ${flattenedContext
+              .map(([key, value]) => {
+                if (typeof value === "number") {
+                  return `
                     (pr.attribute = ? AND (
                       (pr.operator = 'eq' AND pr.value = ?) OR
                       (pr.operator = 'gt' AND ? > pr.value::numeric) OR
@@ -192,16 +192,13 @@ export class PricingRepository
                       (pr.operator = 'lte' AND ? <= pr.value::numeric)
                     ))
                     `
-                  } else {
-                    const normalizeValue = Array.isArray(value)
-                      ? value
-                      : [value]
-                    const placeholders = normalizeValue.map(() => "?").join(",")
-                    return `(pr.attribute = ? AND pr.value IN (${placeholders}))`
-                  }
-                })
-                .join(" OR ")}
-            )
+                } else {
+                  const normalizeValue = Array.isArray(value) ? value : [value]
+                  const placeholders = normalizeValue.map(() => "?").join(",")
+                  return `(pr.attribute = ? AND pr.value IN (${placeholders}))`
+                }
+              })
+              .join(" OR ")})
           ) = (
             /* Get total rule count */
             SELECT COUNT(*) 
@@ -232,11 +229,16 @@ export class PricingRepository
             WHERE plr.price_list_id = pl.id
               AND plr.deleted_at IS NULL
               AND (
-                ${flattenedContext
-                  .map(([key, value]) => {
-                    return `(plr.attribute = ? AND plr.value @> ?)`
-                  })
-                  .join(" OR ")}
+              ${flattenedContext
+                .map(([key, value]) => {
+                  if (Array.isArray(value)) {
+                    return value
+                      .map((v) => `(plr.attribute = ? AND plr.value @> ?)`)
+                      .join(" OR ")
+                  }
+                  return `(plr.attribute = ? AND plr.value @> ?)`
+                })
+                .join(" OR ")}
               )
           ) = (
             /* Get total rule count */
@@ -248,7 +250,8 @@ export class PricingRepository
         )
         `,
         flattenedContext.flatMap(([key, value]) => {
-          return [key, JSON.stringify(Array.isArray(value) ? value : [value])]
+          const valueAsArray = Array.isArray(value) ? value : [value]
+          return valueAsArray.flatMap((v) => [key, JSON.stringify(v)])
         })
       )
 
@@ -275,7 +278,6 @@ export class PricingRepository
     query
       .orderByRaw("price.price_list_id IS NOT NULL DESC")
       .orderByRaw("price.rules_count + COALESCE(pl.rules_count, 0) DESC")
-      .orderBy("pl.id", "asc")
       .orderBy("price.amount", "asc")
 
     return await query

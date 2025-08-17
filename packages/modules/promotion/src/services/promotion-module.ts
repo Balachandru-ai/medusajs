@@ -521,7 +521,7 @@ export default class PromotionModuleService
       }
 
       const isCurrencyCodeValid =
-        !isDefined(applicationMethod.currency_code) ||
+        !isPresent(applicationMethod.currency_code) ||
         applicationContext.currency_code === applicationMethod.currency_code
 
       const isPromotionApplicable = areRulesValidForContext(

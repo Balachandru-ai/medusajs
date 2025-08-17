@@ -80,7 +80,9 @@ export const AiAssistantChatWindowInput = ({
 
   useEffect(() => {
     adjustTextareaHeight()
-    inputRef.current?.focus()
+    if (chatOpened) {
+      inputRef.current?.focus()
+    }
   }, [question])
 
   const handleTouch = (e: React.TouchEvent<HTMLTextAreaElement>) => {

@@ -188,7 +188,7 @@ export interface ComputeActionItemLine extends Record<string, unknown> {
   /**
    * The total of the line item.
    */
-  total: BigNumberInput
+  original_total: BigNumberInput
 
   /**
    * Whether the line item is discountable.
@@ -218,7 +218,7 @@ export interface ComputeActionShippingLine extends Record<string, unknown> {
   /**
    * The total of the shipping method.
    */
-  total: BigNumberInput
+  original_total: BigNumberInput
 
   /**
    * The adjustments applied before on the shipping method.

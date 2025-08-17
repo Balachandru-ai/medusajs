@@ -10,7 +10,7 @@ export const generatedEditDates = {
   "app/settings/return-reasons/page.mdx": "2025-05-30T13:31:05.596Z",
   "app/settings/regions/page.mdx": "2025-05-30T13:30:59.228Z",
   "app/orders/page.mdx": "2025-05-30T13:28:32.793Z",
-  "app/settings/users/invites/page.mdx": "2025-07-31T14:32:55.850Z",
+  "app/settings/users/invites/page.mdx": "2025-08-01T11:25:25.130Z",
   "app/settings/developer/page.mdx": "2025-02-25T15:11:55.392Z",
   "app/settings/profile/page.mdx": "2025-05-30T13:30:55.079Z",
   "app/settings/store/page.mdx": "2025-05-30T13:31:17.095Z",

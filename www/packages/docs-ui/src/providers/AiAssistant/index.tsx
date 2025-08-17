@@ -131,9 +131,11 @@ const AiAssistantInnerProvider = ({
   useEffect(() => {
     setOnCompleteAction(() => {
       scrollToBottom()
-      inputRef.current?.focus({
-        preventScroll: true,
-      })
+      if (chatOpened) {
+        inputRef.current?.focus({
+          preventScroll: true,
+        })
+      }
     })
   }, [scrollToBottom])
 

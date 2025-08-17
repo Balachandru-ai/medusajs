@@ -72,7 +72,9 @@ The response of this API route has the status code `201`.
 
 To return response data other than a JSON object, use the `writeHead` method of the `MedusaResponse` object. It allows you to set the response headers, including the content type.
 
-For example, to create an API route that returns an event stream:
+### Example: Server-Sent Events (SSE)
+
+For example, to create an API route that returns server-sent events (SSE), you can set the `Content-Type` header to `text/event-stream`:
 
 export const streamHighlights = [
   ["7", "writeHead", "Set the response's headers."],
@@ -97,9 +99,14 @@ export const GET = async (
   })
 
   const interval = setInterval(() => {
-    res.write("Streaming data...\n")
+    res.write("data: Streaming data...\n\n")
   }, 3000)
 
+  req.on("close", () => {
+    clearInterval(interval)
+    res.end()
+  })
+  
   req.on("end", () => {
     clearInterval(interval)
     res.end()
@@ -113,6 +120,12 @@ The `writeHead` method accepts two parameters:
 2. The second parameter is an object of key-value pairs to set the response headers.
 
 This API route opens a stream by setting the `Content-Type` to `text/event-stream`. It then simulates a stream by creating an interval that writes the stream data every three seconds.
+
+### Tip: Fetching Stream with JS SDK
+
+The JS SDK has a `fetchStream` method that you can use to fetch data from an API route that returns a stream.
+
+Learn more in the [JS SDK](!resources!/js-sdk) documentation.
 
 ---
 
