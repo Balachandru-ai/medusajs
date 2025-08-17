@@ -108,6 +108,7 @@
     "@medusajs/promotion": "2.9.0",
     "@medusajs/region": "2.9.0",
     "@medusajs/sales-channel": "2.9.0",
+    "@medusajs/settings": "2.9.0",
     "@medusajs/stock-location": "2.9.0",
     "@medusajs/store": "2.9.0",
     "@medusajs/tax": "2.9.0",

@@ -66,6 +66,23 @@ medusaIntegrationTestRunner({
       })
 
       it("returns a list of shipping option types matching free text search param", async () => {
+        const res = await api.get("/admin/shipping-option-types?q=st1", adminHeaders)
+
+        expect(res.status).toEqual(200)
+
+        expect(res.data.shipping_option_types).toEqual([
+          {
+            id: expect.stringMatching(/sotype_.{24}/),
+            label: "Test1",
+            code: "test1",
+            description: "Test1 description",
+            created_at: expect.any(String),
+            updated_at: expect.any(String),
+          },
+        ])
+      })
+
+      it("returns a list of shipping option types matching code search param", async () => {
         const res = await api.get("/admin/shipping-option-types?code=test1", adminHeaders)
 
         expect(res.status).toEqual(200)

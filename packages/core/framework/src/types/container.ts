@@ -21,6 +21,7 @@ import {
   IPromotionModuleService,
   IRegionModuleService,
   ISalesChannelModuleService,
+  ISettingsModuleService,
   IStockLocationService,
   IStoreModuleService,
   ITaxModuleService,
@@ -74,6 +75,7 @@ declare module "@medusajs/types" {
     [Modules.FILE]: IFileModuleService
     [Modules.NOTIFICATION]: INotificationModuleService
     [Modules.LOCKING]: ILockingModule
+    [Modules.SETTINGS]: ISettingsModuleService
   }
 }
 
