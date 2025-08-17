@@ -176,7 +176,7 @@ moduleIntegrationTestRunner<BlogModuleService>({
   moduleModels: [Post],
   resolve: "./src/modules/blog",
   injectedDependencies: {
-    [Modules.EVENT_BUS]: new MockEventBusService()
+    [Modules.EVENT_BUS]: new MockEventBusService(),
   },
   testSuite: ({ service }) => {
     describe("BlogModuleService", () => {

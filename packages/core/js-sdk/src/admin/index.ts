@@ -43,6 +43,7 @@ import { TaxRegion } from "./tax-region"
 import { Upload } from "./upload"
 import { User } from "./user"
 import { WorkflowExecution } from "./workflow-execution"
+import { ShippingOptionType } from "./shipping-option-type"
 
 export class Admin {
   /**
@@ -113,6 +114,10 @@ export class Admin {
    * @tags fulfillment
    */
   public shippingOption: ShippingOption
+  /**
+   * @tags fulfillment
+   */
+  public shippingOptionType: ShippingOptionType
   /**
    * @tags fulfillment
    */
@@ -240,6 +245,7 @@ export class Admin {
     this.fulfillment = new Fulfillment(client)
     this.fulfillmentProvider = new FulfillmentProvider(client)
     this.shippingOption = new ShippingOption(client)
+    this.shippingOptionType = new ShippingOptionType(client)
     this.shippingProfile = new ShippingProfile(client)
     this.inventoryItem = new InventoryItem(client)
     this.notification = new Notification(client)

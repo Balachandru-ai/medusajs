@@ -96,7 +96,7 @@ The `baseUrl` option sets the base directory to `src/admin`, and the `paths` opt
 Next, update the `vite` configuration in `medusa-config.ts` to include the `resolve.alias` configuration:
 
 ```ts title="medusa-config.ts"
-import path from 'path'
+import path from "path"
 
 module.exports = defineConfig({
   // ...
@@ -148,7 +148,7 @@ For example, if you set the `@/*` alias to point to `./components/*`:
 Then, the `vite` alias configuration would be:
 
 ```ts title="medusa-config.ts"
-import path from 'path'
+import path from "path"
 
 module.exports = defineConfig({
   // ...
