@@ -14,7 +14,7 @@ import { Thumbnail } from "../../../../../components/common/thumbnail"
 import { getFulfillableQuantity } from "../../../../../lib/order-item"
 import { Form } from "../../../../../components/common/form"
 import { AllocateItemsSchema } from "./constants"
-import { checkInventoryKit } from "./utls"
+import { checkInventoryKit } from "./utils"
 
 type OrderEditItemProps = {
   item: OrderLineItemDTO
