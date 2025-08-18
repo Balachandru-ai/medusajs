@@ -646,7 +646,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.skip("should add promotion and remove it from cart using delete", async () => {
+          it("should add promotion and remove it from cart using delete", async () => {
             const publishableKey = await generatePublishableKey(appContainer)
             const storeHeaders = generateStoreHeaders({ publishableKey })
 
@@ -770,10 +770,12 @@ medusaIntegrationTestRunner({
               })
             )
 
-            await api.delete(
-              `/store/carts/${cart.id}/promotions?promo_codes=${response.data.promotion.code}`,
-              storeHeaders
-            )
+            await api.delete(`/store/carts/${cart.id}/promotions`, {
+              data: {
+                promo_codes: [response.data.promotion.code],
+              },
+              ...storeHeaders,
+            })
 
             const cartWithoutPromotion = (
               await api.get(`/store/carts/${cart.id}`, storeHeaders)
@@ -938,7 +940,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.skip("should add two promotions and remove one from cart using delete", async () => {
+          it("should add two promotions and remove one from cart using delete", async () => {
             const publishableKey = await generatePublishableKey(appContainer)
             const storeHeaders = generateStoreHeaders({ publishableKey })
 
@@ -1065,10 +1067,12 @@ medusaIntegrationTestRunner({
               })
             )
 
-            await api.delete(
-              `/store/carts/${cart.id}/promotions?promo_codes=${promo1.data.promotion.code}`,
-              storeHeaders
-            )
+            await api.delete(`/store/carts/${cart.id}/promotions`, {
+              data: {
+                promo_codes: [promo1.data.promotion.code],
+              },
+              ...storeHeaders,
+            })
 
             const cartWithoutPromotion1 = (
               await api.get(`/store/carts/${cart.id}`, storeHeaders)
@@ -1094,7 +1098,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.skip("should add two promotions and remove one from cart using update", async () => {
+          it("should add two promotions and remove one from cart using update", async () => {
             const publishableKey = await generatePublishableKey(appContainer)
             const storeHeaders = generateStoreHeaders({ publishableKey })
 
