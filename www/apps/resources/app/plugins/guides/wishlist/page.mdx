@@ -826,7 +826,7 @@ Next, use that token to register the customer:
 curl -X POST 'http://localhost:9000/store/customers' \
 --header 'Content-Type: application/json' \
 -H 'x-publishable-api-key: {api_key}' \
---header 'Authorization Bearer {token}' \
+--header 'Authorization: Bearer {token}' \
 --data-raw '{
     "email": "customer@gmail.com"
 }'

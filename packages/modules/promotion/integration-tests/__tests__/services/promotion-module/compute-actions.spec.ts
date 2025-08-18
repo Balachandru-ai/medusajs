@@ -464,7 +464,7 @@ moduleIntegrationTestRunner({
                 type: "fixed",
                 target_type: "items",
                 allocation: "each",
-                value: 500,
+                value: 100,
                 max_quantity: 5,
                 target_rules: [
                   {

@@ -1,7 +1,7 @@
 import { ITaxModuleService } from "@medusajs/framework/types"
 import { Module, Modules, toMikroORMEntity } from "@medusajs/framework/utils"
-import { TaxModuleService } from "@services"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
+import { TaxModuleService } from "@services"
 import { setupTaxStructure } from "../utils/setup-tax-structure"
 
 jest.setTimeout(30000)
@@ -713,6 +713,68 @@ moduleIntegrationTestRunner<ITaxModuleService>({
             rate: 3, // Expecting the reduced rate for specific products in CA
             code: "CAREDUCE_PROD",
             name: "CA Reduced Rate for Products",
+          }),
+        ])
+      })
+
+      it("prioritizes specific shipping rate over default rate", async () => {
+        const region = await service.createTaxRegions({
+          country_code: "US",
+          provider_id: "tp_system",
+          default_tax_rate: {
+            code: "TEST",
+            name: "Test Rate",
+            rate: 5,
+          },
+        })
+
+        const rate = await service.createTaxRates({
+          tax_region_id: region.id,
+          name: "Shipping Rate",
+          code: "SHIPPING_TEST",
+          rate: 2,
+        })
+
+        const item = {
+          id: "shipping_test",
+          shipping_option_id: "so_1234",
+          quantity: 1,
+        }
+
+        const calculationContext = {
+          address: {
+            country_code: "US",
+          },
+        }
+
+        let taxLines = await service.getTaxLines([item], calculationContext)
+
+        expect(taxLines).toEqual([
+          expect.objectContaining({
+            rate_id: expect.any(String),
+            rate: 5,
+            code: "TEST",
+            name: "Test Rate",
+          }),
+        ])
+
+        await service.updateTaxRates(rate.id, {
+          rules: [
+            {
+              reference: "shipping_option",
+              reference_id: "so_1234",
+            },
+          ],
+        })
+
+        taxLines = await service.getTaxLines([item], calculationContext)
+
+        expect(taxLines).toEqual([
+          expect.objectContaining({
+            rate_id: expect.any(String),
+            rate: 2,
+            code: "SHIPPING_TEST",
+            name: "Shipping Rate",
           }),
         ])
       })
