@@ -15,7 +15,10 @@ export const POST = async (
     input: {
       promo_codes: payload.promo_codes,
       cart_id: req.params.id,
-      action: PromotionActions.ADD,
+      action:
+        payload.promo_codes.length > 0
+          ? PromotionActions.ADD
+          : PromotionActions.REPLACE,
     },
     transactionId: "cart-update-promotions-" + req.params.id,
   })
@@ -36,14 +39,11 @@ export const DELETE = async (
   }>
 ) => {
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
-  let promoCodes = req.validatedQuery.promo_codes
-  if (!Array.isArray(promoCodes)) {
-    promoCodes = [promoCodes]
-  }
+  const payload = req.validatedBody
 
   await we.run(updateCartPromotionsWorkflowId, {
     input: {
-      promo_codes: promoCodes,
+      promo_codes: payload.promo_codes,
       cart_id: req.params.id,
       action: PromotionActions.REMOVE,
     },
