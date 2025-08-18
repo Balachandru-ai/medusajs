@@ -116,6 +116,13 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
+        title: "Generate Invoices",
+        path: "/how-to-tutorials/tutorials/invoice-generator",
+        description:
+          "Learn how to generate invoices for orders in your Medusa store.",
+      },
+      {
+        type: "link",
         title: "Loyalty Points System",
         path: "/how-to-tutorials/tutorials/loyalty-points",
         description:
