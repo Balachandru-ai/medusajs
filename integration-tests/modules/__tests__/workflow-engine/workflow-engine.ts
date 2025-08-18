@@ -1,3 +1,4 @@
+import { emitEventStep } from "@medusajs/core-flows"
 import { Modules, TransactionState } from "@medusajs/framework/utils"
 import {
   createStep,
@@ -7,12 +8,11 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { IEventBusModuleService } from "@medusajs/types"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../helpers/create-admin-user"
-import { emitEventStep } from "@medusajs/core-flows"
-import { IEventBusModuleService } from "@medusajs/types"
 
 jest.setTimeout(300000)
 
@@ -106,7 +106,7 @@ medusaIntegrationTestRunner({
 
           createWorkflow(
             {
-              name: "my-workflow-name",
+              name: "my-workflow-name-2",
               retentionTime: 50,
             },
             function (input: WorkflowData<{ initial: string }>) {
@@ -137,7 +137,7 @@ medusaIntegrationTestRunner({
           const engine = container.resolve(Modules.WORKFLOW_ENGINE)
 
           const transactionId = "trx-id-failing-event"
-          const res = await engine.run("my-workflow-name", {
+          const res = await engine.run("my-workflow-name-2", {
             transactionId,
             input: {
               initial: "abc",
