@@ -128,7 +128,7 @@ export const RulesFormField = ({
         {t(`promotions.fields.conditions.${ruleType}.description`)}
       </Text>
 
-      {fields.map((fieldRule: any, index) => {
+      {fields.map((fieldRule, index) => {
         const identifier = fieldRule.id
 
         return (
@@ -157,11 +157,23 @@ export const RulesFormField = ({
                         (ao) => ao.id === e
                       )
 
-                      update(index, {
+                      const fieldRuleOverrides: typeof fieldRule = {
                         ...fieldRule,
-                        values: [],
                         disguised: currentAttributeOption?.disguised || false,
-                      })
+                      }
+
+                      if (currentAttributeOption?.operators?.length === 1) {
+                        fieldRuleOverrides.operator =
+                          currentAttributeOption.operators[0].value
+                      }
+
+                      if (fieldRuleOverrides.operator === "eq") {
+                        fieldRuleOverrides.values = ""
+                      } else {
+                        fieldRuleOverrides.values = []
+                      }
+
+                      update(index, fieldRuleOverrides)
                       onChange(e)
                     }
 

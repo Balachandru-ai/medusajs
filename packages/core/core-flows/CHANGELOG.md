@@ -1,5 +1,41 @@
 # @medusajs/core-flows
 
+## 2.9.0
+
+### Minor Changes
+
+- [#13140](https://github.com/medusajs/medusa/pull/13140) [`acf6bbc2ec1d90e3b0100c86f56e96b38fa7c67a`](https://github.com/medusajs/medusa/commit/acf6bbc2ec1d90e3b0100c86f56e96b38fa7c67a) Thanks [@willbouch](https://github.com/willbouch)! - chore(code-flows): throw error on invalid promo code
+
+### Patch Changes
+
+- [#13037](https://github.com/medusajs/medusa/pull/13037) [`9fb5baa912674b6d35492b147e0f22d8f8330a24`](https://github.com/medusajs/medusa/commit/9fb5baa912674b6d35492b147e0f22d8f8330a24) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows): guest email change to another guest email
+
+- [#13103](https://github.com/medusajs/medusa/pull/13103) [`f6736d96616aaff51399b2733905f9e340efc8be`](https://github.com/medusajs/medusa/commit/f6736d96616aaff51399b2733905f9e340efc8be) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(core-flows): refresh payment collection using raw total
+
+- [#12960](https://github.com/medusajs/medusa/pull/12960) [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a) Thanks [@scherddel](https://github.com/scherddel)! - This fixes the discount\_ calculation logic and promotion tax inclusiveness calculation
+
+- [#13056](https://github.com/medusajs/medusa/pull/13056) [`6e66e36d0814a524440c05a99c849c3d62e48ed3`](https://github.com/medusajs/medusa/commit/6e66e36d0814a524440c05a99c849c3d62e48ed3) Thanks [@jbrigbyjs](https://github.com/jbrigbyjs)! - fix(core-flows): createCustomerGroupsStep rollback delete created customer groups.
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12919](https://github.com/medusajs/medusa/pull/12919) [`a28226af80a8880afbdb926a5001f0cb0d89fdc9`](https://github.com/medusajs/medusa/commit/a28226af80a8880afbdb926a5001f0cb0d89fdc9) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows): updating tax lines when draft order shipping is removed
+
+- [#12958](https://github.com/medusajs/medusa/pull/12958) [`40625c82d6deb28ecb4e4c0f911c28fdd7356bf7`](https://github.com/medusajs/medusa/commit/40625c82d6deb28ecb4e4c0f911c28fdd7356bf7) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows): correctly delete related inventory item when deleting variant
+
+- [#12920](https://github.com/medusajs/medusa/pull/12920) [`8c4228fc42e717f9ab72230040e708f606a585b7`](https://github.com/medusajs/medusa/commit/8c4228fc42e717f9ab72230040e708f606a585b7) Thanks [@riqwan](https://github.com/riqwan)! - fix(link-modules,core-flows): Carry over cart promotions to order promotions
+
+- [#12969](https://github.com/medusajs/medusa/pull/12969) [`7669dbb03e2f65fa76cff1c5b90a0777e475cb47`](https://github.com/medusajs/medusa/commit/7669dbb03e2f65fa76cff1c5b90a0777e475cb47) Thanks [@juanzgc](https://github.com/juanzgc)! - fix: accepted values in import with template
+
+- [#12962](https://github.com/medusajs/medusa/pull/12962) [`2c2528a08751945d6f0363473605f1a8ef1a8a2a`](https://github.com/medusajs/medusa/commit/2c2528a08751945d6f0363473605f1a8ef1a8a2a) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(core-flows): useQueryGraph util return type
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
 ## 2.8.7
 
 ### Patch Changes

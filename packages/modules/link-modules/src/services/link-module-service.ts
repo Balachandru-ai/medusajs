@@ -224,6 +224,7 @@ export default class LinkModuleService implements ILinkModule {
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   async dismiss(
     primaryKeyOrBulkData: string | string[] | [string | string[], string][],
     foreignKeyData?: string,
@@ -244,6 +245,16 @@ export default class LinkModuleService implements ILinkModule {
     }
 
     const links = await this.linkService_.dismiss(data, sharedContext)
+
+    moduleEventBuilderFactory({
+      action: CommonEvents.DETACHED,
+      object: this.entityName_,
+      source: this.serviceName_,
+      eventName: this.entityName_ + "." + CommonEvents.DETACHED,
+    })({
+      data: links.map((link) => link.id),
+      sharedContext,
+    })
 
     return (await this.baseRepository_.serialize(links)) as unknown[]
   }

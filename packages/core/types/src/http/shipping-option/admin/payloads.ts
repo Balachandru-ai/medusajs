@@ -8,14 +8,14 @@ export interface AdminCreateShippingOptionRule {
   operator: RuleOperatorType
   /**
    * The attribute of the shipping option rule.
-   * 
+   *
    * @example
    * `enabled_in_store`
    */
   attribute: string
   /**
    * The value of the shipping option rule.
-   * 
+   *
    * @example
    * `true`
    */
@@ -30,11 +30,26 @@ export interface AdminCreateShippingOptionType {
   /**
    * The description of the shipping option type.
    */
-  description: string
+  description?: string
   /**
    * The code of the shipping option type.
    */
   code: string
+}
+
+export interface AdminUpdateShippingOptionType {
+  /**
+   * The label of the shipping option type.
+   */
+  label?: string
+  /**
+   * The description of the shipping option type.
+   */
+  description?: string
+  /**
+   * The code of the shipping option type.
+   */
+  code?: string
 }
 
 interface AdminShippingOptionPriceRulePayload {

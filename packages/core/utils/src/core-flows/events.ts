@@ -52,7 +52,7 @@ export const CartWorkflowEvents = {
   /**
    * Emitted when the customer in the cart is transferred.
    * 
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -269,7 +269,7 @@ export const OrderEditWorkflowEvents = {
   /**
    * Emitted when an order edit is requested.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -283,7 +283,7 @@ export const OrderEditWorkflowEvents = {
   /**
    * Emitted when an order edit request is confirmed.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -297,7 +297,7 @@ export const OrderEditWorkflowEvents = {
   /**
    * Emitted when an order edit request is canceled.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -813,6 +813,46 @@ export const FulfillmentWorkflowEvents = {
    * ```
    */
   DELIVERY_CREATED: "delivery.created",
+}
+
+/**
+ * @category Shipping Option Type
+ * @customNamespace Fulfillment
+ */
+export const ShippingOptionTypeWorkflowEvents = {
+  /**
+   * Emitted when shipping option types are updated.
+   *
+   * @eventPayload
+   * ```ts
+   * [{
+   *   id, // The ID of the shipping option type
+   * }]
+   * ```
+   */
+  UPDATED: "shipping-option-type.updated",
+  /**
+   * Emitted when shipping option types are created.
+   *
+   * @eventPayload
+   * ```ts
+   * [{
+   *   id, // The ID of the shipping option type
+   * }]
+   * ```
+   */
+  CREATED: "shipping-option-type.created",
+  /**
+   * Emitted when shipping option types are deleted.
+   *
+   * @eventPayload
+   * ```ts
+   * [{
+   *   id, // The ID of the shipping option type
+   * }]
+   * ```
+   */
+  DELETED: "shipping-option-type.deleted",
 }
 
 /**

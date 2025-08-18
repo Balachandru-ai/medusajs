@@ -22,6 +22,7 @@ import {
   useReservationItems,
   useShippingOptions,
 } from "../../../../../hooks/api"
+import { getReservationsLimitCount } from "../../../../../lib/orders"
 import { sdk } from "../../../../../lib/client"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { Combobox } from "../../../../../components/inputs/combobox"
@@ -43,6 +44,7 @@ export function OrderCreateFulfillmentForm({
 
   const { reservations } = useReservationItems({
     line_item_id: order.items.map((i) => i.id),
+    limit: getReservationsLimitCount(order),
   })
 
   const stockLocations = useComboboxData({
