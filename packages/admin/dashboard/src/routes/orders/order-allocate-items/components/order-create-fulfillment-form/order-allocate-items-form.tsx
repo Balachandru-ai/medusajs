@@ -19,7 +19,7 @@ import { useStockLocations } from "../../../../../hooks/api/stock-locations"
 import { queryClient } from "../../../../../lib/query-client"
 import { AllocateItemsSchema } from "./constants"
 import { OrderAllocateItemsItem } from "./order-allocate-items-item"
-import { checkInventoryKit } from "./utls"
+import { checkInventoryKit } from "./utils"
 
 type OrderAllocateItemsFormProps = {
   order: AdminOrder
