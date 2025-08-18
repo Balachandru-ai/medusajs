@@ -103,13 +103,13 @@ export const updateCartPromotionsWorkflow = createWorkflow(
     })
 
     const action = transform({ input }, (data) => {
-      return data.input.action || (PromotionActions.ADD as PromotionActions)
+      return data.input.action || PromotionActions.ADD
     })
 
     const promotionCodesToApply = getPromotionCodesToApply({
       cart: cart,
       promo_codes,
-      action,
+      action: action as PromotionActions,
     })
 
     const actions = getActionsToComputeFromPromotionsStep({
@@ -123,12 +123,7 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       shippingMethodAdjustmentsToCreate,
       shippingMethodAdjustmentIdsToRemove,
       computedPromotionCodes,
-    } = prepareAdjustmentsFromPromotionActionsStep({
-      actions,
-      cart,
-      action,
-      promo_codes,
-    })
+    } = prepareAdjustmentsFromPromotionActionsStep({ actions })
 
     parallelize(
       removeLineItemAdjustmentsStep({ lineItemAdjustmentIdsToRemove }),

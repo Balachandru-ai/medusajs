@@ -46,7 +46,7 @@ export const DELETE = async (
 
   await we.run(updateCartPromotionsWorkflowId, {
     input: {
-      promo_codes: payload.promo_codes,
+      promo_codes: promoCodes,
       cart_id: req.params.id,
       action: PromotionActions.REMOVE,
     },
