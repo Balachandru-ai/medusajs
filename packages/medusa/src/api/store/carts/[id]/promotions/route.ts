@@ -15,10 +15,7 @@ export const POST = async (
     input: {
       promo_codes: payload.promo_codes,
       cart_id: req.params.id,
-      action:
-        payload.promo_codes.length > 0
-          ? PromotionActions.ADD
-          : PromotionActions.REPLACE,
+      action: PromotionActions.ADD,
     },
     transactionId: "cart-update-promotions-" + req.params.id,
   })
