@@ -351,7 +351,7 @@ export class RedisDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
-    const { retentionTime, idempotent } = options ?? {}
+    const { retentionTime } = options ?? {}
 
     await this.#preventRaceConditionExecutionIfNecessary({
       data,
@@ -416,7 +416,7 @@ export class RedisDistributedTransactionStorage
     })
 
     // Database operations
-    if (hasFinished && !retentionTime && !idempotent) {
+    if (hasFinished && !retentionTime) {
       await promiseAll([pipelinePromise, this.deleteFromDb(data)])
     } else {
       await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])

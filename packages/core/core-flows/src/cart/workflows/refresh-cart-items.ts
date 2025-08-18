@@ -11,6 +11,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { AdditionalData } from "@medusajs/types"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import { updateLineItemsStep } from "../steps"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
@@ -23,13 +24,12 @@ import {
   prepareLineItemData,
   PrepareLineItemDataInput,
 } from "../utils/prepare-line-item-data"
+import { pricingContextResult } from "../utils/schemas"
 import { refreshCartShippingMethodsWorkflow } from "./refresh-cart-shipping-methods"
 import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
 import { updateTaxLinesWorkflow } from "./update-tax-lines"
 import { upsertTaxLinesWorkflow } from "./upsert-tax-lines"
-import { AdditionalData } from "@medusajs/types"
-import { pricingContextResult } from "../utils/schemas"
 
 /**
  * The details of the cart to refresh.
@@ -127,7 +127,10 @@ export const refreshCartItemsWorkflowId = "refresh-cart-items"
  *
  */
 export const refreshCartItemsWorkflow = createWorkflow(
-  refreshCartItemsWorkflowId,
+  {
+    name: refreshCartItemsWorkflowId,
+    idempotent: true,
+  },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
     const setPricingContext = createHook(
       "setPricingContext",

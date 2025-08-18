@@ -73,7 +73,10 @@ export const updateCartPromotionsWorkflowId = "update-cart-promotions"
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const updateCartPromotionsWorkflow = createWorkflow(
-  updateCartPromotionsWorkflowId,
+  {
+    name: updateCartPromotionsWorkflowId,
+    idempotent: true,
+  },
   (input: WorkflowData<UpdateCartPromotionsWorkflowInput>) => {
     const fetchCart = when({ input }, ({ input }) => {
       return !input.cart
@@ -100,13 +103,13 @@ export const updateCartPromotionsWorkflow = createWorkflow(
     })
 
     const action = transform({ input }, (data) => {
-      return data.input.action || PromotionActions.ADD
+      return data.input.action || (PromotionActions.ADD as PromotionActions)
     })
 
     const promotionCodesToApply = getPromotionCodesToApply({
       cart: cart,
       promo_codes,
-      action: action as PromotionActions,
+      action,
     })
 
     const actions = getActionsToComputeFromPromotionsStep({
@@ -120,7 +123,12 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       shippingMethodAdjustmentsToCreate,
       shippingMethodAdjustmentIdsToRemove,
       computedPromotionCodes,
-    } = prepareAdjustmentsFromPromotionActionsStep({ actions })
+    } = prepareAdjustmentsFromPromotionActionsStep({
+      actions,
+      cart,
+      action,
+      promo_codes,
+    })
 
     parallelize(
       removeLineItemAdjustmentsStep({ lineItemAdjustmentIdsToRemove }),

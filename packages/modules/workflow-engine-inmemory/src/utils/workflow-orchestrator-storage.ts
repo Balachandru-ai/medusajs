@@ -223,7 +223,7 @@ export class InMemoryDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
-    const { retentionTime, idempotent } = options ?? {}
+    const { retentionTime } = options ?? {}
 
     await this.#preventRaceConditionExecutionIfNecessary({
       data,
@@ -261,7 +261,7 @@ export class InMemoryDistributedTransactionStorage
 
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
-      if (!retentionTime && !idempotent) {
+      if (!retentionTime) {
         await this.deleteFromDb(data)
       } else {
         await this.saveToDb(data, retentionTime)

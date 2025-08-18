@@ -93,7 +93,10 @@ export const updateLineItemInCartWorkflowId = "update-line-item-in-cart"
  * :::
  */
 export const updateLineItemInCartWorkflow = createWorkflow(
-  updateLineItemInCartWorkflowId,
+  {
+    name: updateLineItemInCartWorkflowId,
+    idempotent: true,
+  },
   (
     input: WorkflowData<UpdateLineItemInCartWorkflowInputDTO & AdditionalData>
   ) => {

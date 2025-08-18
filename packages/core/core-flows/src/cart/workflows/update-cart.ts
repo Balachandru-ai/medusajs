@@ -81,7 +81,10 @@ export const updateCartWorkflowId = "update-cart"
  * @property hooks.cartUpdated - This hook is executed after a cart is update. You can consume this hook to perform custom actions on the updated cart.
  */
 export const updateCartWorkflow = createWorkflow(
-  updateCartWorkflowId,
+  {
+    name: updateCartWorkflowId,
+    idempotent: true,
+  },
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
     const cartToUpdate = useRemoteQueryStep({
       entry_point: "cart",
