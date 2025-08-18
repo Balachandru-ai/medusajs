@@ -652,6 +652,10 @@ export const filesMap = [
     "pathname": "/commerce-modules/user/admin-widget-zones"
   },
   {
+    "filePath": "/www/apps/resources/app/commerce-modules/user/invite-user-subscriber/page.mdx",
+    "pathname": "/commerce-modules/user/invite-user-subscriber"
+  },
+  {
     "filePath": "/www/apps/resources/app/commerce-modules/user/js-sdk/page.mdx",
     "pathname": "/commerce-modules/user/js-sdk"
   },
@@ -758,6 +762,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/gift-message/page.mdx",
     "pathname": "/how-to-tutorials/tutorials/gift-message"
+  },
+  {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/invoice-generator/page.mdx",
+    "pathname": "/how-to-tutorials/tutorials/invoice-generator"
   },
   {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/loyalty-points/page.mdx",
@@ -11978,6 +11986,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getPublishableKeyHeader_/page.mdx",
     "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getPublishableKeyHeader_"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx",
+    "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken"
   },
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getTokenStorageInfo_/page.mdx",

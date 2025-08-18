@@ -28,27 +28,41 @@ import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
 
+function calculateDelayFromExpression(expression: CronExpression): number {
+  const nextTime = expression.next().getTime()
+  const now = Date.now()
+  const delay = nextTime - now
+
+  // If the calculated delay is negative or zero, get the next occurrence
+  if (delay <= 0) {
+    const nextNextTime = expression.next().getTime()
+    return Math.max(1, nextNextTime - now)
+  }
+
+  return delay
+}
+
 function parseNextExecution(
   optionsOrExpression: SchedulerOptions | CronExpression | string | number
 ) {
   if (typeof optionsOrExpression === "object") {
     if ("cron" in optionsOrExpression) {
       const expression = parseExpression(optionsOrExpression.cron)
-      return expression.next().getTime() - Date.now()
+      return calculateDelayFromExpression(expression)
     }
 
     if ("interval" in optionsOrExpression) {
       return optionsOrExpression.interval
     }
 
-    return optionsOrExpression.next().getTime() - Date.now()
+    return calculateDelayFromExpression(optionsOrExpression)
   }
 
   const result = parseInt(`${optionsOrExpression}`)
 
   if (isNaN(result)) {
     const expression = parseExpression(`${optionsOrExpression}`)
-    return expression.next().getTime() - Date.now()
+    return calculateDelayFromExpression(expression)
   }
 
   return result

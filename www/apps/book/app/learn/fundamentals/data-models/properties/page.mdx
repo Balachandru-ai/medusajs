@@ -115,7 +115,7 @@ The `float` method defines a number property that allows for values with decimal
 
 <Note title="Tip">
 
-Use this property type when it's less important to have high precision for numbers with large decimal places. Alternatively, for higher percision, use the [bigNumber property](#bignumber).
+Use this property type when it's less important to have high precision for numbers with large decimal places. Alternatively, for higher precision, use the [bigNumber property](#bignumber).
 
 </Note>
 
@@ -220,7 +220,7 @@ export default Post
 
 ### json
 
-The `json` method defines a property whose value is a stringified JSON object.
+The `json` method defines a property whose value is stored as a stringified JSON object in the database.
 
 For example:
 
@@ -236,6 +236,8 @@ const Post = model.define("post", {
 
 export default Post
 ```
+
+Learn more in the [JSON Properties](../json-properties/page.mdx) chapter.
 
 ### array
 
