@@ -35,7 +35,7 @@ export interface CreateShippingOptionDTO {
   /**
    * The shipping option type associated with the shipping option.
    */
-  type: Omit<CreateShippingOptionTypeDTO, "shipping_option_id">
+  type: CreateShippingOptionTypeDTO
 
   /**
    * The data necessary for the associated fulfillment provider to process the shipping option
