@@ -1,5 +1,37 @@
 # @medusajs/dashboard
 
+## 2.9.0
+
+### Patch Changes
+
+- [#13150](https://github.com/medusajs/medusa/pull/13150) [`b7083b9f0f21d0b6d9f3f3afd65b7ae0f8d378dc`](https://github.com/medusajs/medusa/commit/b7083b9f0f21d0b6d9f3f3afd65b7ae0f8d378dc) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): variants disappearing when removing an option on product creation
+
+- [#11982](https://github.com/medusajs/medusa/pull/11982) [`4da237f615b8cf1dac7935f2faeb97f2c145c62f`](https://github.com/medusajs/medusa/commit/4da237f615b8cf1dac7935f2faeb97f2c145c62f) Thanks [@SteelRazor47](https://github.com/SteelRazor47)! - fix(dashboard): correct overflow in a few settings edit forms
+
+- [#13094](https://github.com/medusajs/medusa/pull/13094) [`0452eba20b44be5a25eb371541172f39f29194b4`](https://github.com/medusajs/medusa/commit/0452eba20b44be5a25eb371541172f39f29194b4) Thanks [@fPolic](https://github.com/fPolic)! - chore(dashboard): add missing US state
+
+- Updated dependencies []:
+  - @medusajs/js-sdk@2.9.0
+  - @medusajs/admin-shared@2.9.0
+  - @medusajs/icons@2.9.0
+  - @medusajs/ui@4.0.19
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12989](https://github.com/medusajs/medusa/pull/12989) [`3fa1db9dea27d99d7b5796281f118210f35a2880`](https://github.com/medusajs/medusa/commit/3fa1db9dea27d99d7b5796281f118210f35a2880) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): allocation UI for orders with more than 20 reservation items
+
+- [#13019](https://github.com/medusajs/medusa/pull/13019) [`439c7118450c5f9ee0b541de9014093a42b7d0ea`](https://github.com/medusajs/medusa/commit/439c7118450c5f9ee0b541de9014093a42b7d0ea) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard, product): update product attributes
+
+- [#12939](https://github.com/medusajs/medusa/pull/12939) [`491b08e0448e3e7d69c09b9516c39f50e2f691a0`](https://github.com/medusajs/medusa/commit/491b08e0448e3e7d69c09b9516c39f50e2f691a0) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): clearing multiitem combobox
+
+- Updated dependencies [[`0db5bf6f8cfb47c67435f92733879e990b500d83`](https://github.com/medusajs/medusa/commit/0db5bf6f8cfb47c67435f92733879e990b500d83)]:
+  - @medusajs/js-sdk@2.8.8
+  - @medusajs/admin-shared@2.8.8
+  - @medusajs/icons@2.8.8
+  - @medusajs/ui@4.0.18
+
 ## 2.8.7
 
 ### Patch Changes

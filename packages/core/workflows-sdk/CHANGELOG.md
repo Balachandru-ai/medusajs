@@ -1,5 +1,27 @@
 # @medusajs/workflows-sdk
 
+## 2.9.0
+
+### Patch Changes
+
+- Updated dependencies [[`a52708769da675e2ade6cb6fe28e1cd9741c562d`](https://github.com/medusajs/medusa/commit/a52708769da675e2ade6cb6fe28e1cd9741c562d), [`f1da73cb588a45afdeb80572d7d59987b5559252`](https://github.com/medusajs/medusa/commit/f1da73cb588a45afdeb80572d7d59987b5559252), [`51d4751d9502c0996ee5640f29d0253da980082a`](https://github.com/medusajs/medusa/commit/51d4751d9502c0996ee5640f29d0253da980082a), [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a), [`9766570827ebf50d49d8daf956deecce6666a8cc`](https://github.com/medusajs/medusa/commit/9766570827ebf50d49d8daf956deecce6666a8cc)]:
+  - @medusajs/utils@2.9.0
+  - @medusajs/types@2.9.0
+  - @medusajs/modules-sdk@2.9.0
+  - @medusajs/orchestration@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12926](https://github.com/medusajs/medusa/pull/12926) [`1bd455bc7bd32b0fda8c808b203ad341253f095d`](https://github.com/medusajs/medusa/commit/1bd455bc7bd32b0fda8c808b203ad341253f095d) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(workflows-sdk): step config name before default step
+
+- Updated dependencies [[`e74044af4de213ba6326a8fb2b5d02e5875b8a4a`](https://github.com/medusajs/medusa/commit/e74044af4de213ba6326a8fb2b5d02e5875b8a4a), [`468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8`](https://github.com/medusajs/medusa/commit/468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8), [`919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5`](https://github.com/medusajs/medusa/commit/919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5), [`7669dbb03e2f65fa76cff1c5b90a0777e475cb47`](https://github.com/medusajs/medusa/commit/7669dbb03e2f65fa76cff1c5b90a0777e475cb47), [`c5d609d09cb29c6cf01d1c6c65305cc566f391c5`](https://github.com/medusajs/medusa/commit/c5d609d09cb29c6cf01d1c6c65305cc566f391c5)]:
+  - @medusajs/orchestration@2.8.8
+  - @medusajs/types@2.8.8
+  - @medusajs/utils@2.8.8
+  - @medusajs/modules-sdk@2.8.8
+
 ## 2.8.7
 
 ### Patch Changes

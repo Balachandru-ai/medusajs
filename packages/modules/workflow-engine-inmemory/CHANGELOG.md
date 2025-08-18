@@ -1,5 +1,27 @@
 # @medusajs/workflow-engine-inmemory
 
+## 2.9.0
+
+### Patch Changes
+
+- [#13151](https://github.com/medusajs/medusa/pull/13151) [`b1cba9fdeba901c9d4c7bddd414ed2fd085fa7b0`](https://github.com/medusajs/medusa/commit/b1cba9fdeba901c9d4c7bddd414ed2fd085fa7b0) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(workflow-engine-inmemory): fix cron job schedule
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12987](https://github.com/medusajs/medusa/pull/12987) [`7b1debfe12fc096f7b4e20f13bdeb925c96085c1`](https://github.com/medusajs/medusa/commit/7b1debfe12fc096f7b4e20f13bdeb925c96085c1) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(wfe): add missing state in inmemory notify on run finished
+
+- [#12976](https://github.com/medusajs/medusa/pull/12976) [`eb83954f23077c0714125b6f2f19fd0ef0f288f9`](https://github.com/medusajs/medusa/commit/eb83954f23077c0714125b6f2f19fd0ef0f288f9) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(workflow-engine-\*): Align event subscribers management
+
+- [#12982](https://github.com/medusajs/medusa/pull/12982) [`238e7d53c13a1c033886d7c33254919f8b5b22dc`](https://github.com/medusajs/medusa/commit/238e7d53c13a1c033886d7c33254919f8b5b22dc) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(wfe): should notify when finished + add state info
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
 ## 2.8.7
 
 ### Patch Changes
