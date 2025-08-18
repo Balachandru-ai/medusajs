@@ -54,6 +54,7 @@ createWorkflow(
   {
     name: "workflow_idempotent",
     idempotent: true,
+    retentionTime: 20,
   },
   function (input) {
     step_1(input)
