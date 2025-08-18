@@ -82,19 +82,21 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
         return
       }
 
-      const promises = payload.map(([itemId, inventoryId, quantity]) => {
+      const promises = payload.map(([itemId, inventoryId, quantity]) =>
         allocateItems({
           location_id: data.location_id,
           inventory_item_id: inventoryId as string,
           line_item_id: itemId as string,
           quantity: Number(quantity),
         })
-      })
+          .then(() => ({ success: true, inventory_item_id: inventoryId }))
+          .catch(() => ({ success: false, inventory_item_id: inventoryId }))
+      )
 
       /**
        * TODO: we should have bulk endpoint for this so this is executed in a workflow and can be reverted
        */
-      await Promise.all(promises)
+      const results = await Promise.all(promises)
 
       // invalidate order details so we get new item.variant.inventory items
       await queryClient.invalidateQueries({
@@ -103,10 +105,19 @@ export function OrderAllocateItemsForm({ order }: OrderAllocateItemsFormProps) {
 
       handleSuccess(`/orders/${order.id}`)
 
-      toast.success(t("general.success"), {
-        description: t("orders.allocateItems.toast.created"),
-        dismissLabel: t("actions.close"),
-      })
+      if (results.some((r) => !r.success)) {
+        const failedItems = results
+          .filter((r) => !r.success)
+          .map((r) => r.inventory_item_id)
+          .join(", ")
+
+        toast.error(t("general.error"), {
+          description: t("orders.allocateItems.toast.error", {
+            items: failedItems,
+          }),
+          dismissLabel: t("actions.close"),
+        })
+      }
     } catch (e) {
       toast.error(t("general.error"), {
         description: e.message,
