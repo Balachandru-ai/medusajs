@@ -6,4 +6,4 @@
 "@medusajs/medusa": patch
 ---
 
-dashboard, core-flows,js-sdk,types,medusa): listing order's shipping option
+feat(dashboard,core-flows,js-sdk,types,medusa): listing order's shipping option
