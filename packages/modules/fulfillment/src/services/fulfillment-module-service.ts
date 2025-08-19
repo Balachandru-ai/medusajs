@@ -1642,6 +1642,90 @@ export default class FulfillmentModuleService
     return [...created, ...updated]
   }
 
+  async upsertShippingOptionTypes(
+    data: FulfillmentTypes.UpsertShippingOptionTypeDTO[],
+    sharedContext?: Context
+  ): Promise<FulfillmentTypes.ShippingOptionTypeDTO[]>
+  async upsertShippingOptionTypes(
+    data: FulfillmentTypes.UpsertShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<FulfillmentTypes.ShippingOptionTypeDTO>
+
+  @InjectTransactionManager()
+  async upsertShippingOptionTypes(
+    data:
+      | FulfillmentTypes.UpsertShippingOptionTypeDTO[]
+      | FulfillmentTypes.UpsertShippingOptionTypeDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | FulfillmentTypes.ShippingOptionTypeDTO[]
+    | FulfillmentTypes.ShippingOptionTypeDTO
+  > {
+    const input = Array.isArray(data) ? data : [data]
+
+    const results = await this.shippingOptionTypeService_.upsert(
+      input,
+      sharedContext
+    )
+
+    const allTypes = await this.baseRepository_.serialize<
+      | FulfillmentTypes.ShippingOptionTypeDTO[]
+      | FulfillmentTypes.ShippingOptionTypeDTO
+    >(results)
+
+    return Array.isArray(data) ? allTypes : allTypes[0]
+  }
+
+  // @ts-expect-error
+  updateShippingOptionTypes(
+    id: string,
+    data: FulfillmentTypes.UpdateShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<FulfillmentTypes.ShippingOptionTypeDTO>
+  // @ts-expect-error
+  updateShippingOptionTypes(
+    selector: FulfillmentTypes.FilterableShippingOptionTypeProps,
+    data: FulfillmentTypes.UpdateShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<FulfillmentTypes.ShippingOptionTypeDTO[]>
+
+  @InjectManager()
+  // @ts-expect-error
+  async updateShippingOptionTypes(
+    idOrSelector: string | FulfillmentTypes.FilterableShippingOptionTypeProps,
+    data: FulfillmentTypes.UpdateShippingOptionTypeDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<FulfillmentTypes.ShippingOptionTypeDTO[] | FulfillmentTypes.ShippingOptionTypeDTO> {
+    let normalizedInput: FulfillmentTypes.UpdateShippingOptionTypeDTO[] = []
+    if (isString(idOrSelector)) {
+      // Check if the type exists in the first place
+      await this.shippingOptionTypeService_.retrieve(idOrSelector, {}, sharedContext)
+      normalizedInput = [{ id: idOrSelector, ...data }]
+    } else {
+      const types = await this.shippingOptionTypeService_.list(
+        idOrSelector,
+        {},
+        sharedContext
+      )
+
+      normalizedInput = types.map((type) => ({
+        id: type.id,
+        ...data,
+      }))
+    }
+
+    const types = await this.shippingOptionTypeService_.update(
+      normalizedInput,
+      sharedContext
+    )
+
+    const updatedTypes = await this.baseRepository_.serialize<
+      FulfillmentTypes.ShippingOptionTypeDTO[]
+    >(types)
+
+    return isString(idOrSelector) ? updatedTypes[0] : updatedTypes
+  }
+
   // @ts-expect-error
   updateShippingProfiles(
     selector: FulfillmentTypes.FilterableShippingProfileProps,

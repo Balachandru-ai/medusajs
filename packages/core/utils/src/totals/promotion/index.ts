@@ -3,16 +3,18 @@ import {
   ApplicationMethodAllocation,
   ApplicationMethodType,
 } from "../../promotion"
-import { MathBN } from "../math"
+import { MathBN, MEDUSA_EPSILON } from "../math"
 
 function getPromotionValueForPercentage(promotion, lineItemAmount) {
-  return MathBN.convert(
-    MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount),
-    2
-  )
+  return MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount)
 }
 
-function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
+function getPromotionValueForFixed(
+  promotion,
+  lineItemAmount,
+  lineItemsAmount,
+  lineItem
+) {
   if (promotion.allocation === ApplicationMethodAllocation.ACROSS) {
     const promotionValueForItem = MathBN.mult(
       MathBN.div(lineItemAmount, lineItemsAmount),
@@ -28,20 +30,39 @@ function getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount) {
       promotionValueForItem
     )
 
-    return MathBN.convert(
-      MathBN.mult(promotionValueForItem, MathBN.div(percentage, 100)),
-      2
-    )
+    return MathBN.mult(promotionValueForItem, MathBN.div(percentage, 100))
   }
-  return promotion.value
+
+  // For each allocation, promotion is applied in the scope of the line item.
+  // lineItemAmount will be the total applicable amount for the line item
+  // maximumPromotionAmount is the maximum amount that can be applied to the line item
+  // We need to return the minimum of the two
+  const maximumQuantity = MathBN.min(
+    lineItem.quantity,
+    promotion.max_quantity ?? MathBN.convert(1)
+  )
+
+  const maximumPromotionAmount = MathBN.mult(promotion.value, maximumQuantity)
+
+  return MathBN.min(maximumPromotionAmount, lineItemAmount)
 }
 
-export function getPromotionValue(promotion, lineItemAmount, lineItemsAmount) {
+export function getPromotionValue(
+  promotion,
+  lineItemAmount,
+  lineItemsAmount,
+  lineItem
+) {
   if (promotion.type === ApplicationMethodType.PERCENTAGE) {
     return getPromotionValueForPercentage(promotion, lineItemAmount)
   }
 
-  return getPromotionValueForFixed(promotion, lineItemAmount, lineItemsAmount)
+  return getPromotionValueForFixed(
+    promotion,
+    lineItemAmount,
+    lineItemsAmount,
+    lineItem
+  )
 }
 
 export function getApplicableQuantity(lineItem, maxQuantity) {
@@ -104,17 +125,23 @@ export function calculateAdjustmentAmountFromPromotion(
     )
     const applicableAmount = MathBN.sub(lineItemAmount, promotion.applied_value)
 
-    if (MathBN.lte(applicableAmount, 0)) {
-      return applicableAmount
+    if (MathBN.lte(applicableAmount, MEDUSA_EPSILON)) {
+      return MathBN.convert(0)
     }
 
     const promotionValue = getPromotionValue(
       promotion,
       applicableAmount,
-      lineItemsAmount
+      lineItemsAmount,
+      lineItem
     )
 
-    return MathBN.min(promotionValue, applicableAmount)
+    const returnValue = MathBN.min(promotionValue, applicableAmount)
+    if (MathBN.lte(returnValue, MEDUSA_EPSILON)) {
+      return MathBN.convert(0)
+    }
+
+    return returnValue
   }
 
   /*
@@ -140,28 +167,37 @@ export function calculateAdjustmentAmountFromPromotion(
     promotion.is_tax_inclusive ? lineItem.original_total : lineItem.subtotal,
     promotion.applied_value
   )
+
   const itemAmount = MathBN.div(
     promotion.is_tax_inclusive ? lineItem.original_total : lineItem.subtotal,
     lineItem.quantity
   )
+
   const maximumPromotionAmount = MathBN.mult(
     itemAmount,
     promotion.max_quantity ?? MathBN.convert(1)
   )
+
   const applicableAmount = MathBN.min(
     remainingItemAmount,
     maximumPromotionAmount
   )
 
-  if (MathBN.lte(applicableAmount, 0)) {
+  if (MathBN.lte(applicableAmount, MEDUSA_EPSILON)) {
     return MathBN.convert(0)
   }
 
   const promotionValue = getPromotionValue(
     promotion,
     applicableAmount,
-    lineItemsAmount
+    lineItemsAmount,
+    lineItem
   )
 
-  return MathBN.min(promotionValue, applicableAmount)
+  const returnValue = MathBN.min(promotionValue, applicableAmount)
+  if (MathBN.lte(returnValue, MEDUSA_EPSILON)) {
+    return MathBN.convert(0)
+  }
+
+  return returnValue
 }
