@@ -104,7 +104,7 @@ export const generatedEditDates = {
   "app/deployment/medusa-application/railway/page.mdx": "2025-04-17T08:28:58.981Z",
   "app/deployment/storefront/vercel/page.mdx": "2025-05-20T07:51:40.712Z",
   "app/deployment/page.mdx": "2025-06-24T08:50:10.114Z",
-  "app/integrations/page.mdx": "2025-06-25T10:48:35.928Z",
+  "app/integrations/page.mdx": "2025-08-07T06:06:50.604Z",
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
@@ -6566,5 +6566,6 @@ export const generatedEditDates = {
   "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z",
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
+  "app/integrations/guides/payload/page.mdx": "2025-08-15T07:23:50.499Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z"
 }
