@@ -14,46 +14,6 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/alert-dismissable")),
     file: "specs/examples/alert-dismissable.tsx",
   },
-  "alert-error": {
-    name: "alert-error",
-    component: dynamic(() => import("@/specs/examples/alert-error")),
-    file: "specs/examples/alert-error.tsx",
-  },
-  "alert-success": {
-    name: "alert-success",
-    component: dynamic(() => import("@/specs/examples/alert-success")),
-    file: "specs/examples/alert-success.tsx",
-  },
-  "alert-warning": {
-    name: "alert-warning",
-    component: dynamic(() => import("@/specs/examples/alert-warning")),
-    file: "specs/examples/alert-warning.tsx",
-  },
-  "avatar-demo": {
-    name: "avatar-demo",
-    component: dynamic(() => import("@/specs/examples/avatar-demo")),
-    file: "specs/examples/avatar-demo.tsx",
-  },
-  "avatar-variants": {
-    name: "avatar-variants",
-    component: dynamic(() => import("@/specs/examples/avatar-variants")),
-    file: "specs/examples/avatar-variants.tsx",
-  },
-  "avatar-sizes": {
-    name: "avatar-sizes",
-    component: dynamic(() => import("@/specs/examples/avatar-sizes")),
-    file: "specs/examples/avatar-sizes.tsx",
-  },
-  "avatar-fallback": {
-    name: "avatar-fallback",
-    component: dynamic(() => import("@/specs/examples/avatar-fallback")),
-    file: "specs/examples/avatar-fallback.tsx",
-  },
-  "avatar-custom-style": {
-    name: "avatar-custom-style",
-    component: dynamic(() => import("@/specs/examples/avatar-custom-style")),
-    file: "specs/examples/avatar-custom-style.tsx",
-  },
   "avatar-accessible": {
     name: "avatar-accessible",
     component: dynamic(() => import("@/specs/examples/avatar-accessible")),
@@ -145,45 +105,15 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/icon-badge-demo")),
     file: "specs/examples/icon-badge-demo.tsx",
   },
-  "icon-badge-blue": {
-    name: "icon-badge-blue",
-    component: dynamic(() => import("@/specs/examples/icon-badge-blue")),
-    file: "specs/examples/icon-badge-blue.tsx",
+  "icon-badge-all-colors": {
+    name: "icon-badge-all-colors",
+    component: dynamic(() => import("@/specs/examples/icon-badge-all-colors")),
+    file: "specs/examples/icon-badge-all-colors.tsx",
   },
-  "icon-badge-green": {
-    name: "icon-badge-green",
-    component: dynamic(() => import("@/specs/examples/icon-badge-green")),
-    file: "specs/examples/icon-badge-green.tsx",
-  },
-  "icon-badge-red": {
-    name: "icon-badge-red",
-    component: dynamic(() => import("@/specs/examples/icon-badge-red")),
-    file: "specs/examples/icon-badge-red.tsx",
-  },
-  "icon-badge-orange": {
-    name: "icon-badge-orange",
-    component: dynamic(() => import("@/specs/examples/icon-badge-orange")),
-    file: "specs/examples/icon-badge-orange.tsx",
-  },
-  "icon-badge-purple": {
-    name: "icon-badge-purple",
-    component: dynamic(() => import("@/specs/examples/icon-badge-purple")),
-    file: "specs/examples/icon-badge-purple.tsx",
-  },
-  "icon-badge-grey": {
-    name: "icon-badge-grey",
-    component: dynamic(() => import("@/specs/examples/icon-badge-grey")),
-    file: "specs/examples/icon-badge-grey.tsx",
-  },
-  "icon-badge-base": {
-    name: "icon-badge-base",
-    component: dynamic(() => import("@/specs/examples/icon-badge-base")),
-    file: "specs/examples/icon-badge-base.tsx",
-  },
-  "icon-badge-large": {
-    name: "icon-badge-large",
-    component: dynamic(() => import("@/specs/examples/icon-badge-large")),
-    file: "specs/examples/icon-badge-large.tsx",
+  "icon-badge-all-sizes": {
+    name: "icon-badge-all-sizes",
+    component: dynamic(() => import("@/specs/examples/icon-badge-all-sizes")),
+    file: "specs/examples/icon-badge-all-sizes.tsx",
   },
   "inline-tip-demo": {
     name: "inline-tip-demo",
@@ -304,10 +234,34 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/drawer-demo")),
     file: "specs/examples/drawer-demo.tsx",
   },
+  "drawer-form": {
+    name: "drawer-form",
+    component: dynamic(() => import("@/specs/examples/drawer-form")),
+    file: "specs/examples/drawer-form.tsx",
+  },
   "dropdown-menu-demo": {
     name: "dropdown-menu-demo",
     component: dynamic(() => import("@/specs/examples/dropdown-menu-demo")),
     file: "specs/examples/dropdown-menu-demo.tsx",
+  },
+  "dropdown-menu-submenu": {
+    name: "dropdown-menu-submenu",
+    component: dynamic(() => import("@/specs/examples/dropdown-menu-submenu")),
+    file: "specs/examples/dropdown-menu-submenu.tsx",
+  },
+  "dropdown-menu-disabled-icons": {
+    name: "dropdown-menu-disabled-icons",
+    component: dynamic(
+      () => import("@/specs/examples/dropdown-menu-disabled-icons")
+    ),
+    file: "specs/examples/dropdown-menu-disabled-icons.tsx",
+  },
+  "dropdown-menu-shortcuts": {
+    name: "dropdown-menu-shortcuts",
+    component: dynamic(
+      () => import("@/specs/examples/dropdown-menu-shortcuts")
+    ),
+    file: "specs/examples/dropdown-menu-shortcuts.tsx",
   },
   "focus-modal-demo": {
     name: "focus-modal-demo",
@@ -318,6 +272,16 @@ export const ExampleRegistry = {
     name: "focus-modal-controlled",
     component: dynamic(() => import("@/specs/examples/focus-modal-controlled")),
     file: "specs/examples/focus-modal-controlled.tsx",
+  },
+  "focus-modal-form": {
+    name: "focus-modal-form",
+    component: dynamic(() => import("@/specs/examples/focus-modal-form")),
+    file: "specs/examples/focus-modal-form.tsx",
+  },
+  "focus-modal-nested": {
+    name: "focus-modal-nested",
+    component: dynamic(() => import("@/specs/examples/focus-modal-nested")),
+    file: "specs/examples/focus-modal-nested.tsx",
   },
   "heading-demo": {
     name: "heading-demo",
@@ -338,6 +302,11 @@ export const ExampleRegistry = {
     name: "input-search",
     component: dynamic(() => import("@/specs/examples/input-search")),
     file: "specs/examples/input-search.tsx",
+  },
+  "input-controlled": {
+    name: "input-controlled",
+    component: dynamic(() => import("@/specs/examples/input-controlled")),
+    file: "specs/examples/input-controlled.tsx",
   },
   "input-disabled": {
     name: "input-disabled",
@@ -364,10 +333,25 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/label-demo")),
     file: "specs/examples/label-demo.tsx",
   },
+  "label-all-sizes": {
+    name: "label-all-sizes",
+    component: dynamic(() => import("@/specs/examples/label-all-sizes")),
+    file: "specs/examples/label-all-sizes.tsx",
+  },
+  "label-with-inputs": {
+    name: "label-with-inputs",
+    component: dynamic(() => import("@/specs/examples/label-with-inputs")),
+    file: "specs/examples/label-with-inputs.tsx",
+  },
   "prompt-demo": {
     name: "prompt-demo",
     component: dynamic(() => import("@/specs/examples/prompt-demo")),
     file: "specs/examples/prompt-demo.tsx",
+  },
+  "prompt-confirmation": {
+    name: "prompt-confirmation",
+    component: dynamic(() => import("@/specs/examples/prompt-confirmation")),
+    file: "specs/examples/prompt-confirmation.tsx",
   },
   "radio-group-demo": {
     name: "radio-group-demo",
@@ -386,6 +370,16 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/radio-group-disabled")),
     file: "specs/examples/radio-group-disabled.tsx",
   },
+  "radio-group-choicebox": {
+    name: "radio-group-choicebox",
+    component: dynamic(() => import("@/specs/examples/radio-group-choicebox")),
+    file: "specs/examples/radio-group-choicebox.tsx",
+  },
+  "radio-group-controlled": {
+    name: "radio-group-controlled",
+    component: dynamic(() => import("@/specs/examples/radio-group-controlled")),
+    file: "specs/examples/radio-group-controlled.tsx",
+  },
   "select-demo": {
     name: "select-demo",
     component: dynamic(() => import("@/specs/examples/select-demo")),
@@ -396,27 +390,20 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/switch-demo")),
     file: "specs/examples/switch-demo.tsx",
   },
-  "switch-small": {
-    name: "switch-small",
-    component: dynamic(() => import("@/specs/examples/switch-small")),
-    file: "specs/examples/switch-small.tsx",
+  "switch-all-sizes": {
+    name: "switch-all-sizes",
+    component: dynamic(() => import("@/specs/examples/switch-all-sizes")),
+    file: "specs/examples/switch-all-sizes.tsx",
   },
   "switch-disabled": {
     name: "switch-disabled",
     component: dynamic(() => import("@/specs/examples/switch-disabled")),
     file: "specs/examples/switch-disabled.tsx",
   },
-  "switch-checked": {
-    name: "switch-checked",
-    component: dynamic(() => import("@/specs/examples/switch-checked")),
-    file: "specs/examples/switch-checked.tsx",
-  },
-  "switch-checked-disabled": {
-    name: "switch-checked-disabled",
-    component: dynamic(
-      () => import("@/specs/examples/switch-checked-disabled")
-    ),
-    file: "specs/examples/switch-checked-disabled.tsx",
+  "switch-controlled": {
+    name: "switch-controlled",
+    component: dynamic(() => import("@/specs/examples/switch-controlled")),
+    file: "specs/examples/switch-controlled.tsx",
   },
   "table-pagination": {
     name: "table-pagination",
@@ -433,45 +420,55 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/text-demo")),
     file: "specs/examples/text-demo.tsx",
   },
-  "text-examples": {
-    name: "text-examples",
-    component: dynamic(() => import("@/specs/examples/text-examples")),
-    file: "specs/examples/text-examples.tsx",
+  "text-sizes": {
+    name: "text-sizes",
+    component: dynamic(() => import("@/specs/examples/text-sizes")),
+    file: "specs/examples/text-sizes.tsx",
+  },
+  "text-weights": {
+    name: "text-weights",
+    component: dynamic(() => import("@/specs/examples/text-weights")),
+    file: "specs/examples/text-weights.tsx",
+  },
+  "text-fonts": {
+    name: "text-fonts",
+    component: dynamic(() => import("@/specs/examples/text-fonts")),
+    file: "specs/examples/text-fonts.tsx",
+  },
+  "text-leading": {
+    name: "text-leading",
+    component: dynamic(() => import("@/specs/examples/text-leading")),
+    file: "specs/examples/text-leading.tsx",
   },
   "textarea-demo": {
     name: "textarea-demo",
     component: dynamic(() => import("@/specs/examples/textarea-demo")),
     file: "specs/examples/textarea-demo.tsx",
   },
+  "textarea-controlled": {
+    name: "textarea-controlled",
+    component: dynamic(() => import("@/specs/examples/textarea-controlled")),
+    file: "specs/examples/textarea-controlled.tsx",
+  },
+  "textarea-disabled": {
+    name: "textarea-disabled",
+    component: dynamic(() => import("@/specs/examples/textarea-disabled")),
+    file: "specs/examples/textarea-disabled.tsx",
+  },
   "toaster-demo": {
     name: "toaster-demo",
     component: dynamic(() => import("@/specs/examples/toaster-demo")),
     file: "specs/examples/toaster-demo.tsx",
   },
+  "toaster-all-variants": {
+    name: "toaster-all-variants",
+    component: dynamic(() => import("@/specs/examples/toaster-all-variants")),
+    file: "specs/examples/toaster-all-variants.tsx",
+  },
   "toaster-dismiss": {
     name: "toaster-dismiss",
     component: dynamic(() => import("@/specs/examples/toaster-dismiss")),
     file: "specs/examples/toaster-dismiss.tsx",
-  },
-  "toaster-warning": {
-    name: "toaster-warning",
-    component: dynamic(() => import("@/specs/examples/toaster-warning")),
-    file: "specs/examples/toaster-warning.tsx",
-  },
-  "toaster-error": {
-    name: "toaster-error",
-    component: dynamic(() => import("@/specs/examples/toaster-error")),
-    file: "specs/examples/toaster-error.tsx",
-  },
-  "toaster-success": {
-    name: "toaster-success",
-    component: dynamic(() => import("@/specs/examples/toaster-success")),
-    file: "specs/examples/toaster-success.tsx",
-  },
-  "toaster-loading": {
-    name: "toaster-loading",
-    component: dynamic(() => import("@/specs/examples/toaster-loading")),
-    file: "specs/examples/toaster-loading.tsx",
   },
   "toaster-with-action": {
     name: "toaster-with-action",
@@ -482,6 +479,16 @@ export const ExampleRegistry = {
     name: "tooltip-demo",
     component: dynamic(() => import("@/specs/examples/tooltip-demo")),
     file: "specs/examples/tooltip-demo.tsx",
+  },
+  "tooltip-sides": {
+    name: "tooltip-sides",
+    component: dynamic(() => import("@/specs/examples/tooltip-sides")),
+    file: "specs/examples/tooltip-sides.tsx",
+  },
+  "tooltip-maxwidth": {
+    name: "tooltip-maxwidth",
+    component: dynamic(() => import("@/specs/examples/tooltip-maxwidth")),
+    file: "specs/examples/tooltip-maxwidth.tsx",
   },
   "button-demo": {
     name: "button-demo",
@@ -518,47 +525,27 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/icon-button-demo")),
     file: "specs/examples/icon-button-demo.tsx",
   },
-  "icon-button-primary": {
-    name: "icon-button-primary",
-    component: dynamic(() => import("@/specs/examples/icon-button-primary")),
-    file: "specs/examples/icon-button-primary.tsx",
-  },
-  "icon-button-transparent": {
-    name: "icon-button-transparent",
+  "icon-button-all-variants": {
+    name: "icon-button-all-variants",
     component: dynamic(
-      () => import("@/specs/examples/icon-button-transparent")
+      () => import("@/specs/examples/icon-button-all-variants")
     ),
-    file: "specs/examples/icon-button-transparent.tsx",
+    file: "specs/examples/icon-button-all-variants.tsx",
+  },
+  "icon-button-all-sizes": {
+    name: "icon-button-all-sizes",
+    component: dynamic(() => import("@/specs/examples/icon-button-all-sizes")),
+    file: "specs/examples/icon-button-all-sizes.tsx",
+  },
+  "icon-button-loading": {
+    name: "icon-button-loading",
+    component: dynamic(() => import("@/specs/examples/icon-button-loading")),
+    file: "specs/examples/icon-button-loading.tsx",
   },
   "icon-button-disabled": {
     name: "icon-button-disabled",
     component: dynamic(() => import("@/specs/examples/icon-button-disabled")),
     file: "specs/examples/icon-button-disabled.tsx",
-  },
-  "icon-button-loading": {
-    name: "icon-button-with-text",
-    component: dynamic(() => import("@/specs/examples/icon-button-loading")),
-    file: "specs/examples/icon-button-loading.tsx",
-  },
-  "icon-button-base": {
-    name: "icon-button-base",
-    component: dynamic(() => import("@/specs/examples/icon-button-base")),
-    file: "specs/examples/icon-button-base.tsx",
-  },
-  "icon-button-large": {
-    name: "icon-button-large",
-    component: dynamic(() => import("@/specs/examples/icon-button-large")),
-    file: "specs/examples/icon-button-large.tsx",
-  },
-  "icon-button-xlarge": {
-    name: "icon-button-xlarge",
-    component: dynamic(() => import("@/specs/examples/icon-button-xlarge")),
-    file: "specs/examples/icon-button-xlarge.tsx",
-  },
-  "icon-color-classes": {
-    name: "icon-color-classes",
-    component: dynamic(() => import("@/specs/examples/icon-color-classes")),
-    file: "specs/examples/icon-color-classes.tsx",
   },
   "icon-color": {
     name: "icon-color",
@@ -570,6 +557,25 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/currency-input-demo")),
     file: "specs/examples/currency-input-demo.tsx",
   },
+  "currency-input-controlled": {
+    name: "currency-input-controlled",
+    component: dynamic(
+      () => import("@/specs/examples/currency-input-controlled")
+    ),
+    file: "specs/examples/currency-input-controlled.tsx",
+  },
+  "currency-input-disabled": {
+    name: "currency-input-disabled",
+    component: dynamic(
+      () => import("@/specs/examples/currency-input-disabled")
+    ),
+    file: "specs/examples/currency-input-disabled.tsx",
+  },
+  "currency-input-error": {
+    name: "currency-input-error",
+    component: dynamic(() => import("@/specs/examples/currency-input-error")),
+    file: "specs/examples/currency-input-error.tsx",
+  },
   "currency-input-small": {
     name: "currency-input-small",
     component: dynamic(() => import("@/specs/examples/currency-input-small")),
@@ -580,35 +586,12 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/status-badge-demo")),
     file: "specs/examples/status-badge-demo.tsx",
   },
-  "status-badge-blue": {
-    name: "status-badge-blue",
-    component: dynamic(() => import("@/specs/examples/status-badge-blue")),
-    file: "specs/examples/status-badge-blue.tsx",
-  },
-  "status-badge-green": {
-    name: "status-badge-green",
-    component: dynamic(() => import("@/specs/examples/status-badge-green")),
-    file: "specs/examples/status-badge-green.tsx",
-  },
-  "status-badge-red": {
-    name: "status-badge-red",
-    component: dynamic(() => import("@/specs/examples/status-badge-red")),
-    file: "specs/examples/status-badge-red.tsx",
-  },
-  "status-badge-orange": {
-    name: "status-badge-orange",
-    component: dynamic(() => import("@/specs/examples/status-badge-orange")),
-    file: "specs/examples/status-badge-orange.tsx",
-  },
-  "status-badge-purple": {
-    name: "status-badge-purple",
-    component: dynamic(() => import("@/specs/examples/status-badge-purple")),
-    file: "specs/examples/status-badge-purple.tsx",
-  },
-  "status-badge-grey": {
-    name: "status-badge-grey",
-    component: dynamic(() => import("@/specs/examples/status-badge-grey")),
-    file: "specs/examples/status-badge-grey.tsx",
+  "status-badge-all-colors": {
+    name: "status-badge-all-colors",
+    component: dynamic(
+      () => import("@/specs/examples/status-badge-all-colors")
+    ),
+    file: "specs/examples/status-badge-all-colors.tsx",
   },
   "command-bar-demo": {
     name: "command-bar-demo",
@@ -636,15 +619,73 @@ export const ExampleRegistry = {
     ),
     file: "specs/examples/progress-accordion-multiple.tsx",
   },
+  "progress-accordion-status": {
+    name: "progress-accordion-status",
+    component: dynamic(
+      () => import("@/specs/examples/progress-accordion-status")
+    ),
+    file: "specs/examples/progress-accordion-status.tsx",
+  },
+  "progress-accordion-controlled": {
+    name: "progress-accordion-controlled",
+    component: dynamic(
+      () => import("@/specs/examples/progress-accordion-controlled")
+    ),
+    file: "specs/examples/progress-accordion-controlled.tsx",
+  },
+  "progress-accordion-disabled": {
+    name: "progress-accordion-disabled",
+    component: dynamic(
+      () => import("@/specs/examples/progress-accordion-disabled")
+    ),
+    file: "specs/examples/progress-accordion-disabled.tsx",
+  },
   "progress-tabs-demo": {
     name: "progress-tabs-demo",
     component: dynamic(() => import("@/specs/examples/progress-tabs-demo")),
     file: "specs/examples/progress-tabs-demo.tsx",
   },
+  "progress-tabs-status": {
+    name: "progress-tabs-status",
+    component: dynamic(() => import("@/specs/examples/progress-tabs-status")),
+    file: "specs/examples/progress-tabs-status.tsx",
+  },
+  "progress-tabs-controlled": {
+    name: "progress-tabs-controlled",
+    component: dynamic(
+      () => import("@/specs/examples/progress-tabs-controlled")
+    ),
+    file: "specs/examples/progress-tabs-controlled.tsx",
+  },
+  "progress-tabs-disabled": {
+    name: "progress-tabs-disabled",
+    component: dynamic(() => import("@/specs/examples/progress-tabs-disabled")),
+    file: "specs/examples/progress-tabs-disabled.tsx",
+  },
   "tabs-demo": {
     name: "tabs-demo",
     component: dynamic(() => import("@/specs/examples/tabs-demo")),
     file: "specs/examples/tabs-demo.tsx",
+  },
+  "tabs-controlled": {
+    name: "tabs-controlled",
+    component: dynamic(() => import("@/specs/examples/tabs-controlled")),
+    file: "specs/examples/tabs-controlled.tsx",
+  },
+  "tabs-disabled": {
+    name: "tabs-disabled",
+    component: dynamic(() => import("@/specs/examples/tabs-disabled")),
+    file: "specs/examples/tabs-disabled.tsx",
+  },
+  "tabs-icons": {
+    name: "tabs-icons",
+    component: dynamic(() => import("@/specs/examples/tabs-icons")),
+    file: "specs/examples/tabs-icons.tsx",
+  },
+  "tabs-vertical": {
+    name: "tabs-vertical",
+    component: dynamic(() => import("@/specs/examples/tabs-vertical")),
+    file: "specs/examples/tabs-vertical.tsx",
   },
   "currency-input-base": {
     name: "currency-input-base",
@@ -675,46 +716,6 @@ export const ExampleRegistry = {
     name: "select-controlled",
     component: dynamic(() => import("@/specs/examples/select-controlled")),
     file: "specs/examples/select-controlled.tsx",
-  },
-  "label-base-regular": {
-    name: "label-base-regular",
-    component: dynamic(() => import("@/specs/examples/label-base-regular")),
-    file: "specs/examples/label-base-regular.tsx",
-  },
-  "label-base-plus": {
-    name: "label-base-plus",
-    component: dynamic(() => import("@/specs/examples/label-base-plus")),
-    file: "specs/examples/label-base-plus.tsx",
-  },
-  "label-large-regular": {
-    name: "label-large-regular",
-    component: dynamic(() => import("@/specs/examples/label-large-regular")),
-    file: "specs/examples/label-large-regular.tsx",
-  },
-  "label-large-plus": {
-    name: "label-large-plus",
-    component: dynamic(() => import("@/specs/examples/label-large-plus")),
-    file: "specs/examples/label-large-plus.tsx",
-  },
-  "label-small-regular": {
-    name: "label-small-regular",
-    component: dynamic(() => import("@/specs/examples/label-small-regular")),
-    file: "specs/examples/label-small-regular.tsx",
-  },
-  "label-small-plus": {
-    name: "label-small-plus",
-    component: dynamic(() => import("@/specs/examples/label-small-plus")),
-    file: "specs/examples/label-small-plus.tsx",
-  },
-  "label-xsmall-regular": {
-    name: "label-xsmall-regular",
-    component: dynamic(() => import("@/specs/examples/label-xsmall-regular")),
-    file: "specs/examples/label-xsmall-regular.tsx",
-  },
-  "label-xsmall-plus": {
-    name: "label-xsmall-regular",
-    component: dynamic(() => import("@/specs/examples/label-xsmall-plus")),
-    file: "specs/examples/label-xsmall-plus.tsx",
   },
   "checkbox-all-states": {
     name: "checkbox-all-states",

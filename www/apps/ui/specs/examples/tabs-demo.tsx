@@ -2,7 +2,7 @@ import { Tabs, Text } from "@medusajs/ui"
 
 export default function TabsDemo() {
   return (
-    <div className="w-full px-4">
+    <div className="w-full px-4 flex flex-col gap-4">
       <Tabs defaultValue="general">
         <Tabs.List>
           <Tabs.Trigger value="general">General</Tabs.Trigger>
@@ -44,6 +44,10 @@ export default function TabsDemo() {
           </Tabs.Content>
         </div>
       </Tabs>
+      <Text size="xsmall" className="text-ui-fg-muted">
+        Use the left and right arrow keys to navigate between the tabs. You must
+        focus on a tab first.
+      </Text>
     </div>
   )
 }

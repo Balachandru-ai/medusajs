@@ -32,7 +32,7 @@ import {
 } from "@medusajs/ui"
 ```
 
-### Columns Preparation
+### Data Table Columns Preparation
 
 Before using the `DataTable` component, you need to prepare its columns using the `createDataTableColumnHelper` utility:
 
@@ -71,7 +71,7 @@ For each column in the table, use the `accessor` method of the column helper to 
 - `header`: The table header text for the column.
 - `enableSorting`: (optional) A boolean that indicates whether data in the table can be sorted by this column. More on sorting in [this section](#configure-sorting-in-datatable).
 
-### Create Table Instance
+### Create Data Table Instance
 
 The `DataTable` component expects a table instance created using the `useDataTable` hook. Import that hook from `@medusajs/ui`:
 
@@ -556,7 +556,7 @@ return (
 
 This will show a filter menu at the top of the table, in the data table's toolbar.
 
-### Filtering Date Values
+### Filtering Date Values in DataTable
 
 <ComponentExample name="data-table-filters-date" disableCenterAlignPreview />
 
@@ -648,7 +648,7 @@ const shownProducts = useMemo(() => {
 }, [filtering])
 ```
 
-### Initial Filter Values
+### Initial Filter Values in DataTable
 
 <ComponentExample name="data-table-filters-initial" disableCenterAlignPreview />
 
@@ -788,7 +788,7 @@ return (
 
 This will show a sorting menu at the top of the table, in the data table's toolbar.
 
-### Initial Sort Values
+### Initial Sort Values in DataTable
 
 <ComponentExample name="data-table-sorting-initial" disableCenterAlignPreview />
 
