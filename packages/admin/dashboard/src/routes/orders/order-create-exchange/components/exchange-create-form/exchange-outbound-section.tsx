@@ -23,13 +23,14 @@ import {
   useRemoveExchangeOutboundItem,
   useUpdateExchangeOutboundItems,
 } from "../../../../../hooks/api/exchanges"
-import { useShippingOptions } from "../../../../../hooks/api/shipping-options"
 import { sdk } from "../../../../../lib/client"
 import { OutboundShippingPlaceholder } from "../../../common/placeholders"
 import { ItemPlaceholder } from "../../../order-create-claim/components/claim-create-form/item-placeholder"
 import { AddExchangeOutboundItemsTable } from "../add-exchange-outbound-items-table"
 import { ExchangeOutboundItem } from "./exchange-outbound-item"
+import { useOrderShippingOptions } from "../../../../../hooks/api/orders"
 import { CreateExchangeSchemaType } from "./schema"
+import { getFormattedShippingOptionLocationName } from "../../../../../lib/shipping-options"
 
 type ExchangeOutboundSectionProps = {
   order: AdminOrder
@@ -57,17 +58,11 @@ export const ExchangeOutboundSection = ({
   /**
    * HOOKS
    */
-  const { shipping_options = [] } = useShippingOptions({
-    limit: 999,
-    fields: "*prices,+service_zone.fulfillment_set.location.id",
+  const { shipping_options = [] } = useOrderShippingOptions(order.id, {
+    // is_return: false, TODO: check boolean query params
   })
 
-  const outboundShippingOptions = shipping_options.filter(
-    (shippingOption) =>
-      !!shippingOption.rules.find(
-        (r) => r.attribute === "is_return" && r.value === "false"
-      )
-  )
+  const outboundShippingOptions = shipping_options
 
   const { mutateAsync: addOutboundShipping } = useAddExchangeOutboundShipping(
     exchange.id,
@@ -424,8 +419,12 @@ export const ExchangeOutboundSection = ({
                         }}
                         {...field}
                         options={outboundShippingOptions.map((so) => ({
-                          label: so.name,
+                          label: `${so.name} (${getFormattedShippingOptionLocationName(so)})`,
                           value: so.id,
+                          disabled: !!so.rules?.find(
+                            (r) =>
+                              r.attribute === "is_return" && r.value === "true"
+                          ), // TODO: filter return
                         }))}
                         disabled={!outboundShippingOptions.length}
                       />
