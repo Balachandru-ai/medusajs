@@ -27,6 +27,9 @@
  *             metadata:
  *               type: object
  *               description: The geo zone's metadata.
+ *               externalDocs:
+ *                 url: https://docs.medusajs.com/api/admin#manage-metadata
+ *                 description: Learn how to manage metadata
  *             country_code:
  *               type: string
  *               title: country_code
@@ -51,6 +54,9 @@
  *             metadata:
  *               type: object
  *               description: The geo zone's metadata.
+ *               externalDocs:
+ *                 url: https://docs.medusajs.com/api/admin#manage-metadata
+ *                 description: Learn how to manage metadata
  *             country_code:
  *               type: string
  *               title: country_code
@@ -84,6 +90,9 @@
  *             metadata:
  *               type: object
  *               description: The geo zone's metadata.
+ *               externalDocs:
+ *                 url: https://docs.medusajs.com/api/admin#manage-metadata
+ *                 description: Learn how to manage metadata
  *             city:
  *               type: string
  *               title: city
@@ -122,6 +131,9 @@
  *             metadata:
  *               type: object
  *               description: The geo zone's metadata.
+ *               externalDocs:
+ *                 url: https://docs.medusajs.com/api/admin#manage-metadata
+ *                 description: Learn how to manage metadata
  *             city:
  *               type: string
  *               title: city

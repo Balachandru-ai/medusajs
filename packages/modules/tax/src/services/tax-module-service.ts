@@ -654,7 +654,7 @@ export default class TaxModuleService
     const matchingRules = rate.rules.filter((rule) => {
       if (isShipping) {
         return (
-          rule.reference === "shipping" &&
+          rule.reference === "shipping_option" &&
           rule.reference_id === item.shipping_option_id
         )
       }
