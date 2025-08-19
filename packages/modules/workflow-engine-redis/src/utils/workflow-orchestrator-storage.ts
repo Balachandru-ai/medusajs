@@ -220,8 +220,8 @@ export class RedisDistributedTransactionStorage
   private async deleteFromDb(data: TransactionCheckpoint) {
     await this.workflowExecutionService_.delete([
       {
-        workflow_id: data.flow.modelId,
-        transaction_id: data.flow.transactionId,
+        // workflow_id: data.flow.modelId,
+        // transaction_id: data.flow.transactionId,
         run_id: data.flow.runId,
       },
     ])
@@ -417,7 +417,12 @@ export class RedisDistributedTransactionStorage
 
     // Database operations
     if (hasFinished && !retentionTime) {
-      await promiseAll([pipelinePromise, this.deleteFromDb(data)])
+      // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
+      if (!data.flow.metadata?.parentStepIdempotencyKey) {
+        await promiseAll([pipelinePromise, this.deleteFromDb(data)])
+      } else {
+        await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
+      }
     } else {
       await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
     }

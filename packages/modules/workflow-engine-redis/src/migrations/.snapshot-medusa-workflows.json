@@ -178,6 +178,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_workflow_execution_state\" ON \"workflow_execution\" (state) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_workflow_execution_run_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_workflow_execution_run_id\" ON \"workflow_execution\" (run_id) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "workflow_execution_pkey",
           "columnNames": [
             "workflow_id",

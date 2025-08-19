@@ -138,8 +138,8 @@ export class InMemoryDistributedTransactionStorage
   private async deleteFromDb(data: TransactionCheckpoint) {
     await this.workflowExecutionService_.delete([
       {
-        workflow_id: data.flow.modelId,
-        transaction_id: data.flow.transactionId,
+        // workflow_id: data.flow.modelId,
+        // transaction_id: data.flow.transactionId,
         run_id: data.flow.runId,
       },
     ])
@@ -262,7 +262,12 @@ export class InMemoryDistributedTransactionStorage
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
       if (!retentionTime) {
-        await this.deleteFromDb(data)
+        // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
+        if (!flow.metadata?.parentStepIdempotencyKey) {
+          await this.deleteFromDb(data)
+        } else {
+          await this.saveToDb(data, retentionTime)
+        }
       } else {
         await this.saveToDb(data, retentionTime)
       }

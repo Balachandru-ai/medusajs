@@ -45,6 +45,7 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { seedStorefrontDefaults } from "../../../../helpers/seed-storefront-defaults"
 import { createAuthenticatedCustomer } from "../../../helpers/create-authenticated-customer"
+import { setTimeout } from "timers/promises"
 
 jest.setTimeout(200000)
 

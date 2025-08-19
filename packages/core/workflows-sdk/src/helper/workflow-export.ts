@@ -114,6 +114,7 @@ function createContextualWorkflowRunner<
       events,
       flowMetadata,
     ]
+
     const transaction = (await method.apply(
       method,
       args

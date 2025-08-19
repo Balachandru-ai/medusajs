@@ -38,6 +38,7 @@ function buildStepContext({
     parentStepIdempotencyKey: flowMetadata?.parentStepIdempotencyKey as string,
     preventReleaseEvents: flowMetadata?.preventReleaseEvents ?? false,
     transactionId: stepArguments.context!.transactionId,
+    runId: flow.runId,
     context: stepArguments.context!,
     " stepDefinition": stepDefinition,
     " getStepResult"(
