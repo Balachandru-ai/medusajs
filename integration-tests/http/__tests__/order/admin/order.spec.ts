@@ -13,7 +13,12 @@ jest.setTimeout(300000)
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
-    let order, seeder, inventoryItemOverride3, productOverride3, shippingProfile
+    let order,
+      seeder,
+      inventoryItemOverride3,
+      productOverride3,
+      shippingProfile,
+      productOverride4
 
     beforeEach(async () => {
       const container = getContainer()
@@ -836,6 +841,56 @@ medusaIntegrationTestRunner({
           )
         ).data.product
 
+        const inventoryItemOverride4 = (
+          await api.post(
+            `/admin/inventory-items`,
+            { sku: "test-variant-4-no-shipping", requires_shipping: false },
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        await api.post(
+          `/admin/inventory-items/${inventoryItemOverride4.id}/location-levels`,
+          {
+            location_id: stockChannelOverride.id,
+            stocked_quantity: 10,
+          },
+          adminHeaders
+        )
+
+        productOverride4 = (
+          await api.post(
+            "/admin/products",
+            {
+              title: `Test override 4`,
+              shipping_profile_id: shippingProfile.id,
+              options: [{ title: "size", values: ["large"] }],
+              variants: [
+                {
+                  title: "Test variant 4",
+                  sku: "test-variant-4-override",
+                  inventory_items: [
+                    {
+                      inventory_item_id: inventoryItemOverride4.id,
+                      required_quantity: 3,
+                    },
+                  ],
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 100,
+                    },
+                  ],
+                  options: {
+                    size: "large",
+                  },
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+
         shippingProfileOverride = (
           await api.post(
             `/admin/shipping-profiles`,
@@ -889,6 +944,7 @@ medusaIntegrationTestRunner({
           additionalProducts: [
             { variant_id: productOverride2.variants[0].id, quantity: 1 },
             { variant_id: productOverride3.variants[0].id, quantity: 3 },
+            { variant_id: productOverride4.variants[0].id, quantity: 1 },
             {
               variant_id:
                 productOverride4WithOverrideShippingProfile.variants[0].id,
@@ -1013,6 +1069,50 @@ medusaIntegrationTestRunner({
               shipping_option_id: seeder.shippingOption.id,
               location_id: seeder.stockLocation.id,
               items: [{ id: orderItemId, quantity: 5 }],
+            },
+            adminHeaders
+          )
+          .catch((e) => e)
+
+        expect(res.response.status).toBe(400)
+        expect(res.response.data.message).toBe(
+          `Quantity to fulfill exceeds the reserved quantity for the item: ${orderItemId}`
+        )
+      })
+
+      it("should throw if trying to fulfillment more items than it is reserved when item has required quantity", async () => {
+        const orderItemId = order.items.find(
+          (i) => i.variant_id === productOverride4.variants[0].id
+        ).id
+
+        let reservation = (
+          await api.get(
+            `/admin/reservations?line_item_id=${orderItemId}`,
+            adminHeaders
+          )
+        ).data.reservations[0]
+
+        expect(reservation.quantity).toBe(3) // one item with required quantity 3
+
+        reservation = (
+          await api.post(
+            `/admin/reservations/${reservation.id}`,
+            {
+              quantity: 2,
+            },
+            adminHeaders
+          )
+        ).data.reservation
+
+        expect(reservation.quantity).toBe(2)
+
+        const res = await api
+          .post(
+            `/admin/orders/${order.id}/fulfillments`,
+            {
+              shipping_option_id: seeder.shippingOption.id,
+              location_id: seeder.stockLocation.id,
+              items: [{ id: orderItemId, quantity: 1 }], // fulfill 1 orer item which requires 3 inventor items
             },
             adminHeaders
           )
