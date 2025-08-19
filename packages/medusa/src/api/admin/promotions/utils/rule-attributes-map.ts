@@ -46,7 +46,7 @@ const ruleAttributes = [
   },
 ]
 
-const commonAttributes = [
+const productAttributes = [
   {
     id: "product",
     value: "items.product.id",
@@ -83,6 +83,17 @@ const commonAttributes = [
     id: "product_tag",
     value: "items.product.tags.id",
     label: "Product Tag",
+    required: false,
+    field_type: "multiselect",
+    operators: Object.values(operatorsMap),
+  },
+]
+
+const shippingAttributes = [
+  {
+    id: "shipping_option_type",
+    value: "shipping_method.shipping_option.type.id",
+    label: "Shipping Option Type",
     required: false,
     field_type: "multiselect",
     operators: Object.values(operatorsMap),
@@ -127,14 +138,22 @@ const buyGetTargetRules = [
 export const getRuleAttributesMap = ({
   promotionType,
   applicationMethodType,
+  applicationMethodTargetType,
 }: {
   promotionType?: string
   applicationMethodType?: string
+  applicationMethodTargetType?: string
 }) => {
   const map = {
     rules: [...ruleAttributes],
-    "target-rules": [...commonAttributes],
-    "buy-rules": [...commonAttributes],
+    "target-rules":
+      applicationMethodTargetType === "shipping_methods"
+        ? [...shippingAttributes]
+        : [...productAttributes],
+    "buy-rules":
+      applicationMethodTargetType === "shipping_methods"
+        ? [...shippingAttributes]
+        : [...productAttributes],
   }
 
   if (applicationMethodType === ApplicationMethodType.FIXED) {

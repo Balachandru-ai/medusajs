@@ -6,14 +6,21 @@ export function validateRuleAttribute(attributes: {
   ruleType: string
   ruleAttributeId: string
   applicationMethodType?: string
+  applicationMethodTargetType?: string
 }) {
-  const { promotionType, ruleType, ruleAttributeId, applicationMethodType } =
-    attributes
+  const {
+    promotionType,
+    ruleType,
+    ruleAttributeId,
+    applicationMethodType,
+    applicationMethodTargetType,
+  } = attributes
 
   const ruleAttributes =
     getRuleAttributesMap({
       promotionType,
       applicationMethodType,
+      applicationMethodTargetType,
     })[ruleType] || []
 
   const ruleAttribute = ruleAttributes.find((obj) => obj.id === ruleAttributeId)

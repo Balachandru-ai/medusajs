@@ -25,12 +25,7 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<AdminGetPromotionRuleParamsType>,
   res: MedusaResponse<HttpTypes.AdminRuleValueOptionsListResponse>
 ) => {
-  const {
-    rule_type: ruleType,
-    rule_attribute_id: ruleAttributeId,
-    promotion_type: promotionType,
-    application_method_type: applicationMethodType,
-  } = req.params
+  const { rule_type: ruleType, rule_attribute_id: ruleAttributeId } = req.params
   const queryConfig = ruleQueryConfigurations[ruleAttributeId]
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
   const filterableFields = req.filterableFields
@@ -43,11 +38,17 @@ export const GET = async (
 
   validateRuleType(ruleType)
   validateRuleAttribute({
-    promotionType,
     ruleType,
     ruleAttributeId,
-    applicationMethodType,
+    promotionType: undefined,
+    applicationMethodType: undefined,
+    applicationMethodTargetType:
+      filterableFields.application_method_target_type as string | undefined,
   })
+
+  if (filterableFields.application_method_target_type) {
+    delete filterableFields.application_method_target_type
+  }
 
   const { rows, metadata } = await remoteQuery(
     remoteQueryObjectFromString({
