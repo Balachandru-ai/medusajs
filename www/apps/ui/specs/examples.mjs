@@ -34,60 +34,50 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/avatar-demo")),
     file: "specs/examples/avatar-demo.tsx",
   },
+  "avatar-variants": {
+    name: "avatar-variants",
+    component: dynamic(() => import("@/specs/examples/avatar-variants")),
+    file: "specs/examples/avatar-variants.tsx",
+  },
+  "avatar-sizes": {
+    name: "avatar-sizes",
+    component: dynamic(() => import("@/specs/examples/avatar-sizes")),
+    file: "specs/examples/avatar-sizes.tsx",
+  },
+  "avatar-fallback": {
+    name: "avatar-fallback",
+    component: dynamic(() => import("@/specs/examples/avatar-fallback")),
+    file: "specs/examples/avatar-fallback.tsx",
+  },
+  "avatar-custom-style": {
+    name: "avatar-custom-style",
+    component: dynamic(() => import("@/specs/examples/avatar-custom-style")),
+    file: "specs/examples/avatar-custom-style.tsx",
+  },
+  "avatar-accessible": {
+    name: "avatar-accessible",
+    component: dynamic(() => import("@/specs/examples/avatar-accessible")),
+    file: "specs/examples/avatar-accessible.tsx",
+  },
   "badge-demo": {
     name: "badge-demo",
     component: dynamic(() => import("@/specs/examples/badge-demo")),
     file: "specs/examples/badge-demo.tsx",
   },
-  "badge-blue": {
-    name: "badge-blue",
-    component: dynamic(() => import("@/specs/examples/badge-blue")),
-    file: "specs/examples/badge-blue.tsx",
+  "badge-all-colors": {
+    name: "badge-all-colors",
+    component: dynamic(() => import("@/specs/examples/badge-all-colors")),
+    file: "specs/examples/badge-all-colors.tsx",
   },
-  "badge-green": {
-    name: "badge-green",
-    component: dynamic(() => import("@/specs/examples/badge-green")),
-    file: "specs/examples/badge-green.tsx",
+  "badge-all-sizes": {
+    name: "badge-all-sizes",
+    component: dynamic(() => import("@/specs/examples/badge-all-sizes")),
+    file: "specs/examples/badge-all-sizes.tsx",
   },
-  "badge-red": {
-    name: "badge-red",
-    component: dynamic(() => import("@/specs/examples/badge-red")),
-    file: "specs/examples/badge-red.tsx",
-  },
-  "badge-orange": {
-    name: "badge-orange",
-    component: dynamic(() => import("@/specs/examples/badge-orange")),
-    file: "specs/examples/badge-orange.tsx",
-  },
-  "badge-purple": {
-    name: "badge-purple",
-    component: dynamic(() => import("@/specs/examples/badge-purple")),
-    file: "specs/examples/badge-purple.tsx",
-  },
-  "badge-grey": {
-    name: "badge-grey",
-    component: dynamic(() => import("@/specs/examples/badge-grey")),
-    file: "specs/examples/badge-grey.tsx",
-  },
-  "badge-small": {
-    name: "badge-small",
-    component: dynamic(() => import("@/specs/examples/badge-small")),
-    file: "specs/examples/badge-small.tsx",
-  },
-  "badge-large": {
-    name: "badge-large",
-    component: dynamic(() => import("@/specs/examples/badge-large")),
-    file: "specs/examples/badge-large.tsx",
-  },
-  "badge-rounded-full": {
-    name: "badge-rounded-full",
-    component: dynamic(() => import("@/specs/examples/badge-rounded-full")),
-    file: "specs/examples/badge-rounded-full.tsx",
-  },
-  "badge-rounded-base": {
-    name: "badge-rounded-base",
-    component: dynamic(() => import("@/specs/examples/badge-rounded-base")),
-    file: "specs/examples/badge-rounded-base.tsx",
+  "badge-all-rounded": {
+    name: "badge-all-rounded",
+    component: dynamic(() => import("@/specs/examples/badge-all-rounded")),
+    file: "specs/examples/badge-all-rounded.tsx",
   },
   "data-table-demo": {
     name: "data-table-demo",
@@ -215,15 +205,25 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/inline-tip-success")),
     file: "specs/examples/inline-tip-success.tsx",
   },
-  "button-demo": {
-    name: "button-demo",
-    component: dynamic(() => import("@/specs/examples/button-demo")),
-    file: "specs/examples/button-demo.tsx",
-  },
   "calendar-demo": {
     name: "calendar-demo",
     component: dynamic(() => import("@/specs/examples/calendar-demo")),
     file: "specs/examples/calendar-demo.tsx",
+  },
+  "calendar-controlled": {
+    name: "calendar-controlled",
+    component: dynamic(() => import("@/specs/examples/calendar-controlled")),
+    file: "specs/examples/calendar-controlled.tsx",
+  },
+  "calendar-min-max": {
+    name: "calendar-min-max",
+    component: dynamic(() => import("@/specs/examples/calendar-min-max")),
+    file: "specs/examples/calendar-min-max.tsx",
+  },
+  "calendar-unavailable": {
+    name: "calendar-unavailable",
+    component: dynamic(() => import("@/specs/examples/calendar-unavailable")),
+    file: "specs/examples/calendar-unavailable.tsx",
   },
   "checkbox-demo": {
     name: "checkbox-demo",
@@ -483,30 +483,30 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/tooltip-demo")),
     file: "specs/examples/tooltip-demo.tsx",
   },
-  "button-primary": {
-    name: "button-primary",
-    component: dynamic(() => import("@/specs/examples/button-primary")),
-    file: "specs/examples/button-primary.tsx",
+  "button-demo": {
+    name: "button-demo",
+    component: dynamic(() => import("@/specs/examples/button-demo")),
+    file: "specs/examples/button-demo.tsx",
   },
-  "button-secondary": {
-    name: "button-secondary",
-    component: dynamic(() => import("@/specs/examples/button-secondary")),
-    file: "specs/examples/button-secondary.tsx",
+  "button-all-variants": {
+    name: "button-all-variants",
+    component: dynamic(() => import("@/specs/examples/button-all-variants")),
+    file: "specs/examples/button-all-variants.tsx",
   },
-  "button-transparent": {
-    name: "button-transparent",
-    component: dynamic(() => import("@/specs/examples/button-transparent")),
-    file: "specs/examples/button-transparent.tsx",
+  "button-all-sizes": {
+    name: "button-all-sizes",
+    component: dynamic(() => import("@/specs/examples/button-all-sizes")),
+    file: "specs/examples/button-all-sizes.tsx",
   },
-  "button-danger": {
-    name: "button-danger",
-    component: dynamic(() => import("@/specs/examples/button-danger")),
-    file: "specs/examples/button-danger.tsx",
+  "button-as-link": {
+    name: "button-as-link",
+    component: dynamic(() => import("@/specs/examples/button-as-link")),
+    file: "specs/examples/button-as-link.tsx",
   },
-  "button-disabled": {
-    name: "button-disabled",
-    component: dynamic(() => import("@/specs/examples/button-disabled")),
-    file: "specs/examples/button-disabled.tsx",
+  "button-loading": {
+    name: "button-loading",
+    component: dynamic(() => import("@/specs/examples/button-loading")),
+    file: "specs/examples/button-loading.tsx",
   },
   "button-with-icon": {
     name: "button-with-icon",
@@ -651,11 +651,6 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/currency-input-base")),
     file: "specs/examples/currency-input-base.tsx",
   },
-  "button-loading": {
-    name: "button-loading",
-    component: dynamic(() => import("@/specs/examples/button-loading")),
-    file: "specs/examples/button-loading.tsx",
-  },
   "select-item-aligned": {
     name: "select-item-aligned",
     component: dynamic(() => import("@/specs/examples/select-item-aligned")),
@@ -721,25 +716,15 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/label-xsmall-plus")),
     file: "specs/examples/label-xsmall-plus.tsx",
   },
-  "checkbox-default": {
-    name: "checkbox-default",
-    component: dynamic(() => import("@/specs/examples/checkbox-default")),
-    file: "specs/examples/checkbox-default.tsx",
+  "checkbox-all-states": {
+    name: "checkbox-all-states",
+    component: dynamic(() => import("@/specs/examples/checkbox-all-states")),
+    file: "specs/examples/checkbox-all-states.tsx",
   },
-  "checkbox-checked": {
-    name: "checkbox-checked",
-    component: dynamic(() => import("@/specs/examples/checkbox-checked")),
-    file: "specs/examples/checkbox-checked.tsx",
-  },
-  "checkbox-disabled": {
-    name: "checkbox-disabled",
-    component: dynamic(() => import("@/specs/examples/checkbox-disabled")),
-    file: "specs/examples/checkbox-disabled.tsx",
-  },
-  "checkbox-indeterminate": {
-    name: "checkbox-indeterminate",
-    component: dynamic(() => import("@/specs/examples/checkbox-indeterminate")),
-    file: "specs/examples/checkbox-indeterminate.tsx",
+  "checkbox-controlled": {
+    name: "checkbox-controlled",
+    component: dynamic(() => import("@/specs/examples/checkbox-controlled")),
+    file: "specs/examples/checkbox-controlled.tsx",
   },
   "code-block-single": {
     name: "code-block-single",
