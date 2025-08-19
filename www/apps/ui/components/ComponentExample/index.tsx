@@ -11,12 +11,14 @@ import { ExampleRegistry } from "@/specs/examples.mjs"
 interface ComponentExampleProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string
   disableCenterAlignPreview?: boolean
+  hideFeedback?: boolean
 }
 
 export function ComponentExample({
   children,
   name,
   disableCenterAlignPreview = false,
+  hideFeedback = false,
   ...props
 }: ComponentExampleProps) {
   const Preview = React.useMemo(() => {
@@ -30,7 +32,9 @@ export function ComponentExample({
   }, [name])
 
   const CodeElement = children as React.ReactElement
-  const Code = (CodeElement.props as Record<string, string>).code
+  const Code = JSON.parse(
+    (CodeElement.props as Record<string, string>).codeLinesJSON
+  ).join("\n")
 
   return (
     <div className="relative my-4 flex flex-col space-y-2" {...props}>
@@ -70,10 +74,13 @@ export function ComponentExample({
           </Tabs.Content>
         </div>
       </Tabs>
-      <Feedback
-        title={`example ${name}`}
-        question="Was this example helpful?"
-      />
+      {!hideFeedback && (
+        <Feedback
+          title={`example ${name}`}
+          question="Was this example helpful?"
+          showDottedSeparator={false}
+        />
+      )}
     </div>
   )
 }

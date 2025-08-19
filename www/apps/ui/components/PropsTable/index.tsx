@@ -46,7 +46,7 @@ const Row = ({
 }: RowProps) => {
   const normalizeRaw = (str: string): string => {
     return str
-      .replace("\\|", "|")
+      .replaceAll("\\|", "|")
       .replaceAll("&#60;", "<")
       .replaceAll("&#62;", ">")
   }

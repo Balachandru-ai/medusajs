@@ -5,7 +5,7 @@ import "./globals.css"
 import { BareboneLayout, TightLayout } from "docs-ui"
 import { config } from "@/config"
 import clsx from "clsx"
-import Footer from "../components/Footer"
+import Footer from "@/components/Footer"
 
 const ogImage =
   "https://res.cloudinary.com/dza7lstvk/image/upload/v1732200992/Medusa%20Resources/opengraph-image_daq6nx.jpg"

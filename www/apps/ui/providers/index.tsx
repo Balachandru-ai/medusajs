@@ -17,6 +17,7 @@ import SidebarProvider from "./sidebar"
 import SearchProvider from "./search"
 import { config } from "../config"
 import { MainNavProvider } from "./main-nav"
+import { TooltipProvider } from "@medusajs/ui"
 
 type ProvidersProps = {
   children?: React.ReactNode
@@ -50,7 +51,7 @@ const Providers = ({ children }: ProvidersProps) => {
                                   currentLearningPath: false,
                                 }}
                               >
-                                {children}
+                                <TooltipProvider>{children}</TooltipProvider>
                               </HooksLoader>
                             </AiAssistantProvider>
                           </SearchProvider>

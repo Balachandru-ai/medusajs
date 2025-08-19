@@ -11,7 +11,6 @@ export default function usePromptVerification() {
       description: "Are you sure you want to delete this entity?",
       verificationText: entityName,
     })
-    console.log({ userHasConfirmed })
     if (userHasConfirmed) {
       // Perform Delete
     }

@@ -55,13 +55,16 @@ export default function useToggleStateDemo() {
       >
         <FocusModal.Content>
           <FocusModal.Header>
-            <Button onClick={() => onSave()}>Save</Button>
+            <FocusModal.Title>Edit Entity</FocusModal.Title>
           </FocusModal.Header>
           <FocusModal.Body>
             <div className="p-10">
               <Heading>Edit {entityToEdit}</Heading>
             </div>
           </FocusModal.Body>
+          <FocusModal.Footer>
+            <Button onClick={() => onSave()}>Save</Button>
+          </FocusModal.Footer>
         </FocusModal.Content>
       </FocusModal>
     </>
