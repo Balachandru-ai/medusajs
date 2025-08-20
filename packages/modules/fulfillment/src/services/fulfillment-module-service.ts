@@ -59,6 +59,7 @@ import { joinerConfig } from "../joiner-config"
 import { UpdateShippingOptionsInput } from "../types/service"
 import { buildCreatedShippingOptionEvents } from "../utils/events"
 import FulfillmentProviderService from "./fulfillment-provider"
+import { isObject } from "@medusajs/utils"
 
 const generateMethodForModels = {
   FulfillmentSet,
@@ -1408,9 +1409,9 @@ export default class FulfillmentModuleService
     dataArray.forEach((shippingOption) => {
       const existingShippingOption = existingShippingOptions.get(
         shippingOption.id
-      )! // Garuantueed to exist since the validation above have been performed
+      )! // Guaranteed to exist since the validation above have been performed
 
-      if (shippingOption.type && !("id" in shippingOption.type)) {
+      if (isObject(shippingOption.type) &&  !("id" in shippingOption.type)) {
         optionTypeDeletedIds.push(existingShippingOption.type.id)
       }
 
@@ -1534,7 +1535,7 @@ export default class FulfillmentModuleService
     const createdOptionTypeIds = updatedShippingOptions
       .filter((so) => {
         const updateData = shippingOptionsData.find((sod) => sod.id === so.id)
-        return updateData?.type && !("id" in updateData.type)
+        return isObject(updateData?.type) && !("id" in updateData.type)
       })
       .map((so) => so.type.id)
 

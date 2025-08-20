@@ -3816,16 +3816,31 @@
             "credit": {
               "type": "string"
             },
+            "creditDescription": {
+              "type": "string"
+            },
             "debit": {
               "type": "string"
             },
             "debitDescription": {
               "type": "string"
-            },
-            "creditDescription": {
-              "type": "string"
             }
-          }
+          },
+          "required": [
+            "title",
+            "total",
+            "creditOrDebit",
+            "createCreditLine",
+            "createCreditLineSuccess",
+            "createCreditLineError",
+            "createCreditLineDescription",
+            "operation",
+            "credit",
+            "creditDescription",
+            "debit",
+            "debitDescription"
+          ],
+          "additionalProperties": false
         },
         "balanceSettlement": {
           "type": "object",
@@ -3851,9 +3866,18 @@
                 "creditLineDescription": {
                   "type": "string"
                 }
-              }
+              },
+              "required": [
+                "paymentMethod",
+                "paymentMethodDescription",
+                "creditLine",
+                "creditLineDescription"
+              ],
+              "additionalProperties": false
             }
-          }
+          },
+          "required": ["title", "settlementType", "settlementTypes"],
+          "additionalProperties": false
         },
         "domain": {
           "type": "string"
@@ -4876,9 +4900,12 @@
               "properties": {
                 "created": {
                   "type": "string"
+                },
+                "error": {
+                  "type": "string"
                 }
               },
-              "required": ["created"],
+              "required": ["created", "error"],
               "additionalProperties": false
             },
             "error": {
@@ -5539,6 +5566,9 @@
         }
       },
       "required": [
+        "giftCardsStoreCreditLines",
+        "creditLines",
+        "balanceSettlement",
         "domain",
         "claim",
         "exchange",
@@ -6308,6 +6338,9 @@
                 "profile": {
                   "type": "string"
                 },
+                "type": {
+                  "type": "string"
+                },
                 "fulfillmentOption": {
                   "type": "string"
                 }
@@ -6318,6 +6351,7 @@
                 "enableInStore",
                 "provider",
                 "profile",
+                "type",
                 "fulfillmentOption"
               ],
               "additionalProperties": false
@@ -11225,6 +11259,8 @@
       },
       "required": [
         "amount",
+        "reference",
+        "reference_id",
         "refundAmount",
         "name",
         "default",
@@ -11311,6 +11347,7 @@
         "account",
         "total",
         "paidTotal",
+        "creditTotal",
         "totalExclTax",
         "subtotal",
         "shipping",
@@ -11493,6 +11530,7 @@
     "invite",
     "resetPassword",
     "workflowExecutions",
+    "shippingOptionTypes",
     "productTypes",
     "productTags",
     "notifications",

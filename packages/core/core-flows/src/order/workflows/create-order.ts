@@ -33,21 +33,21 @@ import { updateOrderTaxLinesWorkflow } from "./update-tax-lines"
 
 function prepareLineItems(data) {
   const items = (data.input.items ?? []).map((item) => {
-    const variant = data.variants.find((v) => v.id === item.variant_id)!
+    const variant = data.variants?.find((v) => v.id === item.variant_id)
 
     const input: PrepareLineItemDataInput = {
       item,
       variant: variant,
-      unitPrice: item.unit_price ?? undefined,
+      unitPrice: item.unit_price,
       isTaxInclusive:
         item.is_tax_inclusive ??
         variant?.calculated_price?.is_calculated_price_tax_inclusive,
       isCustomPrice: isDefined(item?.unit_price),
-      taxLines: item.tax_lines || [],
-      adjustments: item.adjustments || [],
+      taxLines: item.tax_lines ?? [],
+      adjustments: item.adjustments ?? [],
     }
 
-    if (variant && !input.unitPrice) {
+    if (variant && !isDefined(input.unitPrice)) {
       input.unitPrice = variant.calculated_price?.calculated_amount
     }
 
