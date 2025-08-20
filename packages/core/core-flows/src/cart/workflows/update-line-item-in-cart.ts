@@ -149,9 +149,13 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       }
     )
 
-    const variants = when({ variantIds }, ({ variantIds }) => {
-      return !!variantIds.length
-    }).then(() => {
+    const variants = when(
+      "should-fetch-variants",
+      { variantIds },
+      ({ variantIds }) => {
+        return !!variantIds.length
+      }
+    ).then(() => {
       return useRemoteQueryStep({
         entry_point: "variants",
         fields: deduplicate([

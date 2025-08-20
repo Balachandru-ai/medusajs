@@ -167,7 +167,7 @@ export const createCartWorkflow = createWorkflow(
       }
     )
 
-    const variants = when({ variantIds }, ({ variantIds }) => {
+    const variants = when("has-variants", { variantIds }, ({ variantIds }) => {
       return !!variantIds.length
     }).then(() => {
       return useRemoteQueryStep({

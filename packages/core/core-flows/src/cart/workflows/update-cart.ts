@@ -124,7 +124,7 @@ export const updateCartWorkflow = createWorkflow(
 
     validateSalesChannelStep({ salesChannel })
 
-    const newRegion = when({ input }, (data) => {
+    const newRegion = when("should-fetch-region", { input }, (data) => {
       return !!data.input.region_id
     }).then(() => {
       const { data: newRegions } = useQueryGraphStep({
@@ -253,9 +253,13 @@ export const updateCartWorkflow = createWorkflow(
       }
     )
 
-    when({ regionUpdated }, ({ regionUpdated }) => {
-      return !!regionUpdated
-    }).then(() => {
+    when(
+      "should-emit-region-updated",
+      { regionUpdated },
+      ({ regionUpdated }) => {
+        return !!regionUpdated
+      }
+    ).then(() => {
       emitEventStep({
         eventName: CartWorkflowEvents.REGION_UPDATED,
         data: { id: input.id },
@@ -272,7 +276,7 @@ export const updateCartWorkflow = createWorkflow(
 
     // In case the region is updated, we might have a new currency OR tax inclusivity setting
     // Therefore, we need to delete line items with a custom price for good measure
-    when({ regionUpdated }, ({ regionUpdated }) => {
+    when("should-delete-line-items", { regionUpdated }, ({ regionUpdated }) => {
       return !!regionUpdated
     }).then(() => {
       const lineItems = useQueryGraphStep({

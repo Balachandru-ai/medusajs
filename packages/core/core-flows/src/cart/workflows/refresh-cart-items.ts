@@ -143,7 +143,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-calculate-prices", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       const { data: cartData } = useQueryGraphStep({
@@ -274,7 +274,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
       input: refreshCartInput,
     })
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-update-tax-lines", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       updateTaxLinesWorkflow.runAsStep({
@@ -282,7 +282,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
       })
     })
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-upsert-tax-lines", { input }, ({ input }) => {
       return (
         !input.force_refresh &&
         (!!input.items?.length || !!input.shipping_methods?.length)
