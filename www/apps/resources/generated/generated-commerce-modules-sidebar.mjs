@@ -11521,6 +11521,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Integrate Payload",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/payload",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Localization with Contentful",
               "path": "https://docs.medusajs.com/resources/integrations/guides/contentful",
               "children": []

@@ -122,6 +122,13 @@ While tutorials show you a specific use case, they also help you understand how 
           "Learn how to generate invoices for orders in your Medusa store.",
       },
       {
+        type: "ref",
+        title: "Integrate Payload CMS",
+        path: "/integrations/guides/payload",
+        description:
+          "Learn how to integrate Payload CMS with Medusa to manage your product content.",
+      },
+      {
         type: "link",
         title: "Loyalty Points System",
         path: "/how-to-tutorials/tutorials/loyalty-points",
