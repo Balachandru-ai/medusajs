@@ -62,6 +62,8 @@ const Row = ({
       }
     } else if (type.name === "Array" && "elements" in type) {
       raw = type.elements.map((element) => getTypeRaw(element)).join(" | ")
+    } else if (raw.startsWith("React.")) {
+      return ""
     }
 
     return normalizeRaw(raw)
@@ -71,6 +73,8 @@ const Row = ({
       return type.type
     } else if (type?.name === "Array" && type.raw) {
       return normalizeRaw(type.raw) || "array"
+    } else if ("raw" in type && type.raw?.startsWith("React.")) {
+      return type.name.replace(/^React/, "")
     }
 
     return type.name || ""

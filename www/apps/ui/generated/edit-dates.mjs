@@ -28,7 +28,7 @@ export const generatedEditDates = {
   "app/components/progress-accordion/page.mdx": "2025-08-18T11:37:35.931Z",
   "app/components/progress-tabs/page.mdx": "2025-08-18T11:37:37.808Z",
   "app/components/prompt/page.mdx": "2025-08-18T11:37:38.113Z",
-  "app/components/radio-group/page.mdx": "2025-08-18T11:37:36.321Z",
+  "app/components/radio-group/page.mdx": "2025-08-20T09:15:08.822Z",
   "app/components/select/page.mdx": "2025-08-18T11:37:36.964Z",
   "app/components/status-badge/page.mdx": "2025-08-18T11:37:37.579Z",
   "app/components/switch/page.mdx": "2025-08-18T11:37:37.277Z",
