@@ -6324,7 +6324,7 @@ __metadata:
     "@types/jsonwebtoken": ^8.5.9
     awilix: ^8.0.1
     chokidar: ^3.4.2
-    compression: 1.7.4
+    compression: 1.8.0
     connect-dynamodb: ^3.0.5
     connect-redis: 5.2.0
     cookie-parser: ^1.4.6
@@ -18610,7 +18610,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compression@npm:^1.7.5":
+"compression@npm:1.8.0, compression@npm:^1.7.5":
   version: 1.8.0
   resolution: "compression@npm:1.8.0"
   dependencies:
