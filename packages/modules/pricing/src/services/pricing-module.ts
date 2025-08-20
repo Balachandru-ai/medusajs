@@ -627,11 +627,18 @@ export default class PricingModuleService
       price_set_id: normalizedData.map(({ id }) => id),
       price_list_id: null,
     })
+    const existingPricesMap = new Map<string, InferEntityType<typeof Price>>(
+      existingPrices.map((p) => [p.id, p])
+    )
 
     const prices = normalizedData.flatMap((priceSet) => priceSet.prices || [])
 
-    const pricesToCreate = prices.filter((price) => !price.id)
-    const pricesToUpdate = prices.filter((price) => price.id)
+    const pricesToCreate = prices.filter(
+      (price) => !price.id || !existingPricesMap.has(price.id)
+    )
+    const pricesToUpdate = prices.filter(
+      (price) => price.id && existingPricesMap.has(price.id)
+    )
 
     const incomingPriceIds = new Set(prices.map((p) => p.id).filter(Boolean))
     const pricesToDelete = existingPrices
