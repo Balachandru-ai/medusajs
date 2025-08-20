@@ -164,6 +164,9 @@ export const addToCartWorkflow = createWorkflow(
         (data): { variantId: string; context: Record<string, unknown> }[] => {
           const baseContext = {
             ...filterObjectByKeys(data.cart, cartFieldsForPricingContext),
+            ...(data.setPricingContextResult
+              ? data.setPricingContextResult
+              : {}),
             currency_code: data.cart.currency_code,
             region_id: data.cart.region_id,
             region: data.cart.region,
@@ -207,10 +210,8 @@ export const addToCartWorkflow = createWorkflow(
         { variantsData, calculatedPriceSets },
         ({ variantsData, calculatedPriceSets }) => {
           return variantsData.map((variant) => {
-            return {
-              ...variant,
-              calculated_price: calculatedPriceSets[variant.id],
-            }
+            variant.calculated_price = calculatedPriceSets[variant.id]
+            return variant
           })
         }
       )
