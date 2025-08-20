@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "fs"
+import { existsSync, readdirSync, readFileSync } from "fs"
 import path from "path"
 import type { Transformer } from "unified"
 import type {
@@ -129,7 +129,10 @@ function mdxPageExists(pagePath: string): boolean {
     return false
   }
 
-  return existsSync(path.join(pagePath, "page.mdx"))
+  return (
+    existsSync(path.join(pagePath, "page.mdx")) ||
+    existsSync(path.join(pagePath, "page.tsx"))
+  )
 }
 
 function componentChecker({
