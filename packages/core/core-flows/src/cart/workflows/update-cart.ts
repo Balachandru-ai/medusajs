@@ -16,11 +16,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  emitEventStep,
-  useQueryGraphStep,
-  useRemoteQueryStep,
-} from "../../common"
+import { emitEventStep, useQueryGraphStep } from "../../common"
 import { deleteLineItemsStep } from "../../line-item"
 import {
   findOrCreateCustomerStep,
@@ -83,9 +79,9 @@ export const updateCartWorkflowId = "update-cart"
 export const updateCartWorkflow = createWorkflow(
   updateCartWorkflowId,
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
-    const cartToUpdate = useRemoteQueryStep({
-      entry_point: "cart",
-      variables: { id: input.id },
+    const { data: cartData } = useQueryGraphStep({
+      entity: "cart",
+      filters: { id: input.id },
       fields: [
         "id",
         "email",
@@ -95,9 +91,17 @@ export const updateCartWorkflow = createWorkflow(
         "region.*",
         "region.countries.*",
       ],
-      list: false,
-      throw_if_key_not_found: true,
+      pagination: {
+        take: 1,
+      },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "get-cart" })
+
+    const cartToUpdate = transform({ cartData }, (data) => {
+      return data.cartData[0]
+    })
 
     const cartDataInput = transform({ input, cartToUpdate }, (data) => {
       return {
@@ -123,13 +127,23 @@ export const updateCartWorkflow = createWorkflow(
     const newRegion = when({ input }, (data) => {
       return !!data.input.region_id
     }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "region",
-        variables: { id: input.region_id },
+      const { data: newRegions } = useQueryGraphStep({
+        entity: "region",
+        filters: { id: input.region_id },
         fields: ["id", "countries.*", "currency_code", "name"],
-        list: false,
-        throw_if_key_not_found: true,
+        pagination: {
+          take: 1,
+        },
+        options: {
+          throwIfKeyNotFound: true,
+        },
       }).config({ name: "get-region" })
+
+      const newRegion = transform({ newRegions }, (data) => {
+        return data.newRegions[0]
+      })
+
+      return newRegion
     })
 
     const region = transform({ cartToUpdate, newRegion }, (data) => {

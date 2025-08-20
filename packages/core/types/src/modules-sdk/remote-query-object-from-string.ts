@@ -98,7 +98,7 @@ export type RemoteQueryInput<TEntry extends string> =
           /**
            * The maximum number of items to return.
            */
-          take?: number
+          take?: number | null
           /**
            * Sort by field names in ascending or descending order.
            */
