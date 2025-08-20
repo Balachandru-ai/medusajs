@@ -23,19 +23,60 @@ interface TooltipProps
  * @excludeExternal
  */
 const Tooltip = ({
+  /**
+   * The element to trigger the tooltip.
+   * 
+   * @keep
+   */
   children,
+  /**
+   * The content to display in the tooltip.
+   */
   content,
+  /**
+   * Whether the tooltip is currently open.
+   * 
+   * @keep
+   */
   open,
+  /**
+   * Whether the tooltip is open by default.
+   * 
+   * @keep
+   */
   defaultOpen,
+  /**
+   * A function that is called when the tooltip's open state changes.
+   * 
+   * @keep
+   */
   onOpenChange,
+  /**
+   * The time in milliseconds to delay the tooltip's appearance.
+   * 
+   * @keep
+   */
   delayDuration,
   /**
    * The maximum width of the tooltip.
    */
   maxWidth = 220,
   className,
+  /**
+   * The side to position the tooltip.
+   * 
+   * @defaultValue top
+   */
   side,
+  /**
+   * The distance in pixels between the tooltip and its trigger.
+   * 
+   * @keep
+   */
   sideOffset = 8,
+  /**
+   * A function that is triggered when the tooltip is clicked.
+   */
   onClick,
   ...props
 }: TooltipProps) => {

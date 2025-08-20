@@ -6484,9 +6484,9 @@ export const generatedEditDates = {
   "app/commerce-modules/tax/tax-provider/page.mdx": "2025-05-20T07:51:40.711Z",
   "app/recipes/bundled-products/examples/standard/page.mdx": "2025-06-26T11:52:18.819Z",
   "app/recipes/bundled-products/page.mdx": "2025-05-20T07:51:40.718Z",
-  "app/infrastructure-modules/analytics/local/page.mdx": "2025-06-10T15:56:43.648Z",
-  "app/infrastructure-modules/analytics/page.mdx": "2025-05-26T14:48:25.803Z",
-  "app/infrastructure-modules/analytics/posthog/page.mdx": "2025-06-10T15:56:43.648Z",
+  "app/infrastructure-modules/analytics/local/page.mdx": "2025-08-20T14:28:29.274Z",
+  "app/infrastructure-modules/analytics/page.mdx": "2025-08-20T14:25:57.537Z",
+  "app/infrastructure-modules/analytics/posthog/page.mdx": "2025-08-20T14:25:41.471Z",
   "references/analytics/interfaces/analytics.IAnalyticsModuleService/page.mdx": "2025-06-05T19:05:43.239Z",
   "references/analytics_provider/classes/analytics_provider.AbstractAnalyticsProviderService/page.mdx": "2025-05-21T14:22:04.267Z",
   "references/modules/analytics/page.mdx": "2025-05-21T14:21:59.323Z",
@@ -6566,6 +6566,6 @@ export const generatedEditDates = {
   "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z",
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
-  "app/integrations/guides/payload/page.mdx": "2025-08-15T07:23:50.499Z",
+  "app/integrations/guides/payload/page.mdx": "2025-08-20T14:48:19.359Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z"
 }

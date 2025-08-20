@@ -246,6 +246,8 @@ Now that Payload is set up in your storefront, you'll create the following [coll
 - `Media`: A collection for media files, allowing you to manage product images and other media.
 - `Product`: A collection for products, which will be synced with Medusa's product data.
 
+Once you're done, you'll add the collections to `src/payload.config.ts`.
+
 #### User Collection
 
 To create the `User` collection, create the file `src/collections/Users.ts` with the following content:
@@ -716,7 +718,7 @@ Otherwise, the function validates that:
 
 If any of these validations fail, an error message is returned, preventing the update.
 
-### h. Add Hooks to Sync Product Data
+#### Add Hooks to Normalize Product Data
 
 Next, you'll add a `beforeChange` hook to the `Products` collection that will normalize incoming `description` data to [rich-text format](https://payloadcms.com/docs/rich-text/overview).
 
@@ -751,6 +753,32 @@ export const Products: CollectionConfig = {
 ```
 
 This hook checks if the `description` field is a string and converts it to rich-text format. This ensures that a description coming from Medusa is properly formatted when stored in Payload.
+
+#### Add Collections to Payload's Configurations
+
+Now that you've created the collections, you need to add them to Payload's configurations.
+
+In `src/payload.config.ts`, add the following imports at the top of the file:
+
+```ts title="src/payload.config.ts" badgeLabel="Storefront" badgeColor="blue"
+import { Users } from './collections/Users'
+import { Products } from './collections/Products'
+import { Media } from './collections/Media'
+```
+
+Then, add the collections to the `collections` array of the `buildConfig` function:
+
+```ts title="src/payload.config.ts" badgeLabel="Storefront" badgeColor="blue"
+export default buildConfig({
+  // ...
+  collections: [
+    Users,
+    Products,
+    Media,
+  ],
+  // ...
+})
+```
 
 ## i. Generate Payload Imports Map
 
@@ -2589,6 +2617,98 @@ The workflow will have the following steps:
     ]
   }}
 />
+
+You only need to create the `updatePayloadItemsStep` step.
+
+#### updatePayloadItemsStep
+
+The `updatePayloadItemsStep` will update an item in a Payload collection, such as `Products`.
+
+To create the step, create the file `src/workflows/steps/update-payload-items.ts` with the following content:
+
+```ts title="src/workflows/steps/update-payload-items.ts" badgeLabel="Medusa application" badgeColor="green"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
+import { PayloadItemResult, PayloadUpsertData } from "../../modules/payload/types";
+import { PAYLOAD_MODULE } from "../../modules/payload";
+
+type StepInput = {
+  collection: string;
+  items: PayloadUpsertData[];
+}
+
+export const updatePayloadItemsStep = createStep(
+  "update-payload-items",
+  async ({ items, collection }: StepInput, { container }) => {
+    const payloadModuleService = container.resolve(PAYLOAD_MODULE)
+    const ids: string[] = items.map(item => item.id);
+
+    const prevData = await payloadModuleService.find(collection, {
+      where: {
+        id: {
+          in: ids.join(",")
+        }
+      }
+    })
+
+    const updatedItems: PayloadItemResult[] = []
+
+    for (const item of items) {
+      const { id, ...data } = item;
+      updatedItems.push(
+        await payloadModuleService.update(
+          collection,
+          data,
+          {
+            where: {
+              id: {
+                equals: id
+              }
+            }
+          }
+        )
+      )
+    }
+
+    return new StepResponse({
+      items: updatedItems.map(item => item.doc)
+    }, {
+      prevData,
+      collection,
+    })
+  },
+  async (data, { container }) => {
+    if (!data) {
+      return;
+    }
+    const { prevData, collection } = data;
+
+    const payloadModuleService = container.resolve(PAYLOAD_MODULE);
+
+    await Promise.all(
+      prevData.docs.map(async ({
+        id,
+        ...item
+      }) => {
+        await payloadModuleService.update(
+          collection,
+          item,
+          {
+            where: {
+              id: {
+                equals: id
+              }
+            }
+          }
+        )
+      })
+    )
+  }
+)
+```
+
+In the step function, you retrieve the existing data from Payload to pass it to the compensation function. Then, you update the items in Payload.
+
+In the compensation function, you revert the changes made in the step function if an error occurs.
 
 #### Create Payload Product Variant Workflow
 
