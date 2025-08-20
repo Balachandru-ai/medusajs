@@ -57,6 +57,7 @@ export const OPERATOR_MAP = {
   $gte: ">=",
   $ne: "!=",
   $in: "IN",
+  $nin: "NOT IN",
   $is: "IS",
   $like: "LIKE",
   $ilike: "ILIKE",
@@ -335,7 +336,7 @@ export class QueryBuilder {
                 value[subKey]
               )
 
-              let val = operator === "IN" ? subValue : [subValue]
+              let val = operator === "IN" || operator === "NOT IN" ? subValue : [subValue]
               if (operator === "=" && subValue === null) {
                 operator = "IS"
               } else if (operator === "!=" && subValue === null) {
@@ -382,6 +383,40 @@ export class QueryBuilder {
                   builder.whereRaw(
                     `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
                     jsonbValues
+                  )
+                }
+              } else if (operator === "NOT IN") {
+                if (val && !Array.isArray(val)) {
+                  val = [val]
+                }
+                if (!val || val.length === 0) {
+                  return
+                }
+
+                const inPlaceholders = val.map(() => "?").join(",")
+                const hasId = field[field.length - 1] === "id"
+                if (hasId) {
+                  builder.whereRaw(
+                    `${aliasMapping[attr]}.id NOT IN (${inPlaceholders})`,
+                    val
+                  )
+                } else {
+                  const targetField = field[field.length - 1] as string
+
+                  // For JSON fields, we need to use a JSON path query with NOT IN
+                  const jsonValues = val.map((item) => {
+                    if (item === null) {
+                      return "null"
+                    } else if (typeof item === "string") {
+                      return `"${item.replace(/"/g, '\\"')}"`
+                    } else {
+                      return String(item)
+                    }
+                  }).join(",")
+
+                  builder.whereRaw(
+                    `${aliasMapping[attr]}.data${nested} @@ ?`,
+                    `$.${targetField} NOT IN (${jsonValues})`
                   )
                 }
               } else {
