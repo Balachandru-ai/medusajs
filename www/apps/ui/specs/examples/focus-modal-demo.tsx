@@ -8,7 +8,7 @@ export default function FocusModalDemo() {
       </FocusModal.Trigger>
       <FocusModal.Content>
         <FocusModal.Header>
-          <Button>Save</Button>
+          <FocusModal.Title>Edit Variant</FocusModal.Title>
         </FocusModal.Header>
         <FocusModal.Body className="flex flex-col items-center py-16">
           <div className="flex w-full max-w-lg flex-col gap-y-8">
@@ -27,6 +27,9 @@ export default function FocusModalDemo() {
             </div>
           </div>
         </FocusModal.Body>
+        <FocusModal.Footer>
+          <Button>Save</Button>
+        </FocusModal.Footer>
       </FocusModal.Content>
     </FocusModal>
   )

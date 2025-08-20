@@ -9,27 +9,44 @@ import {
 } from "@/types/ui"
 import { InlineCode, Table, Tooltip } from "docs-ui"
 
-const HookTable = ({ props }: { props: HookDataMap }) => {
+interface HookTableProps {
+  props: HookDataMap
+  isReturn?: boolean
+}
+
+const HookTable = ({ props, isReturn = false }: HookTableProps) => {
   return (
     <Table className="!mb-0">
       <Table.Header className="border-t-0">
         <Table.Row>
-          <Table.HeaderCell>Value</Table.HeaderCell>
+          <Table.HeaderCell>Name</Table.HeaderCell>
           <Table.HeaderCell>Type</Table.HeaderCell>
-          <Table.HeaderCell>Description</Table.HeaderCell>
+          <Table.HeaderCell className="!text-right">
+            {isReturn ? "Description" : "Default"}
+          </Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body className="border-b-0 [&_tr:last-child]:border-b-0">
         {/* eslint-disable-next-line react/prop-types */}
         {props.map((propData, index) => (
-          <Row key={index} {...propData} />
+          <Row key={index} {...propData} isReturn={isReturn} />
         ))}
       </Table.Body>
     </Table>
   )
 }
 
-const Row = ({ value, type, description }: HookData) => {
+interface RowProps extends HookData {
+  isReturn?: boolean
+}
+
+const Row = ({
+  value,
+  type,
+  description,
+  default: defaultValue,
+  isReturn = false,
+}: RowProps) => {
   const isEnum = (t: unknown): t is EnumType => {
     return (t as EnumType).type !== undefined && (t as EnumType).type === "enum"
   }
@@ -53,7 +70,14 @@ const Row = ({ value, type, description }: HookData) => {
   return (
     <Table.Row className="code-body">
       <Table.Cell>
-        <InlineCode>{value}</InlineCode>
+        <div className="flex items-center gap-x-1">
+          <InlineCode>{value}</InlineCode>
+          {!isReturn && description && (
+            <Tooltip content={description} className="max-w-[350px] text-left">
+              <InformationCircleSolid className="text-medusa-fg-subtle" />
+            </Tooltip>
+          )}
+        </div>
       </Table.Cell>
       <Table.Cell>
         {!isComplexType && type.toString()}
@@ -92,7 +116,19 @@ const Row = ({ value, type, description }: HookData) => {
           </Tooltip>
         )}
       </Table.Cell>
-      <Table.Cell>{description}</Table.Cell>
+      <Table.Cell className="!text-right">
+        {isReturn ? (
+          description ? (
+            <span>{description}</span>
+          ) : (
+            <span className="text-medusa-fg-muted"> - </span>
+          )
+        ) : defaultValue !== undefined && defaultValue !== null ? (
+          <InlineCode>{defaultValue.toString()}</InlineCode>
+        ) : (
+          <span className="text-medusa-fg-muted"> - </span>
+        )}
+      </Table.Cell>
     </Table.Row>
   )
 }

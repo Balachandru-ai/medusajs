@@ -1,8 +1,35 @@
 import { HookTable } from "@/components/HookTable"
-import { useToggleState } from "../hook-values"
 
-const Props = () => {
-  return <HookTable props={useToggleState} />
+export const Props = () => {
+  return (
+    <HookTable
+      props={[
+        {
+          value: "initial",
+          type: "boolean",
+          description: "The initial state of the toggle.",
+          default: "false",
+        },
+      ]}
+    />
+  )
 }
 
-export default Props
+export const Return = () => {
+  return (
+    <HookTable
+      props={[
+        {
+          value: "state",
+          type: {
+            type: "object",
+            name: "StateData",
+            shape:
+              "[\n  state: boolean,\n  open: () => void,\n  close: () => void,\n  toggle: () => void\n]",
+          },
+        },
+      ]}
+      isReturn
+    />
+  )
+}

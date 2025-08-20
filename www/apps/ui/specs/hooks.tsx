@@ -1,14 +1,24 @@
+import dynamic from "next/dynamic"
 import * as React from "react"
 
 export type HookRegistryItem = {
-  table: React.LazyExoticComponent<React.ComponentType>
+  table: React.ComponentType
 }
 
 export const HookRegistry: Record<string, HookRegistryItem> = {
-  usePrompt: {
-    table: React.lazy(async () => import("./hooks/usePrompt")),
+  usePromptReturn: {
+    table: dynamic(async () =>
+      import("./hooks/usePrompt").then((m) => m.Return)
+    ),
   },
-  useToggleState: {
-    table: React.lazy(async () => import("./hooks/useToggleState")),
+  useToggleStateProps: {
+    table: dynamic(async () =>
+      import("./hooks/useToggleState").then((m) => m.Props)
+    ),
+  },
+  useToggleStateReturn: {
+    table: dynamic(async () =>
+      import("./hooks/useToggleState").then((m) => m.Return)
+    ),
   },
 }

@@ -7,9 +7,10 @@ import Feedback from "../Feedback"
 
 type HookValuesProps = {
   hook: string
+  hideFeedback?: boolean
 }
 
-const HookValues = ({ hook }: HookValuesProps) => {
+const HookValues = ({ hook, hideFeedback = false }: HookValuesProps) => {
   const Props = React.useMemo(() => {
     const Table = HookRegistry[hook]?.table
 
@@ -40,7 +41,9 @@ const HookValues = ({ hook }: HookValuesProps) => {
           {Props}
         </React.Suspense>
       </Container>
-      <Feedback title={`props of ${hook}`} />
+      {!hideFeedback && (
+        <Feedback title={`props of ${hook}`} showDottedSeparator={false} />
+      )}
     </>
   )
 }

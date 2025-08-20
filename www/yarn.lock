@@ -14776,6 +14776,7 @@ turbo@latest:
     remark-directive: ^3.0.0
     remark-frontmatter: ^5.0.0
     remark-rehype-plugins: "*"
+    slugify: ^1.6.6
     tailwind: "*"
     tailwindcss: ^3.3.0
     tsconfig: "*"

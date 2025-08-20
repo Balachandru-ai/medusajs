@@ -43,9 +43,7 @@ export default function DropdownMenuSorting() {
           </DropdownMenu.RadioGroup>
         </DropdownMenu.Content>
       </DropdownMenu>
-      <div>
-        <pre className=" text-sm">Sorting: {sort}</pre>
-      </div>
+      <span className="txt-small text-ui-fg-muted">Sorting: {sort}</span>
     </div>
   )
 }

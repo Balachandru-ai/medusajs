@@ -51,6 +51,7 @@ export type HookData = {
   value: string
   type: PropType
   description?: string
+  default?: string
 }
 
 export type HookDataMap = HookData[]

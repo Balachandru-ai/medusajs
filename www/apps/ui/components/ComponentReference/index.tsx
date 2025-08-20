@@ -12,12 +12,14 @@ type ComponentReferenceProps = {
   mainComponent: string
   componentsToShow?: string[]
   specsSrc?: string
+  hideFeedback?: boolean
 }
 
 const ComponentReference = ({
   mainComponent,
   componentsToShow = [mainComponent],
   specsSrc,
+  hideFeedback = false,
 }: ComponentReferenceProps) => {
   if (!specsSrc) {
     return <></>
@@ -70,10 +72,13 @@ const ComponentReference = ({
                         <PropTable props={componentSpec.props!} />
                       </Suspense>
                     </Container>
-                    <Feedback
-                      title={`props of ${component}`}
-                      question="Was this helpful?"
-                    />
+                    {!hideFeedback && (
+                      <Feedback
+                        title={`props of ${component}`}
+                        question="Was this helpful?"
+                        showDottedSeparator={false}
+                      />
+                    )}
                   </>
                 )}
               </>
