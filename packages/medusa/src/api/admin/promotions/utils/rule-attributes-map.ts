@@ -98,7 +98,7 @@ const itemsAttributes = [
 const shippingMethodsAttributes = [
   {
     id: "shipping_option_type",
-    value: "shipping_method.shipping_option.type.id",
+    value: "shipping_methods.shipping_option.shipping_option_type_id",
     label: "Shipping Option Type",
     required: false,
     field_type: "multiselect",
