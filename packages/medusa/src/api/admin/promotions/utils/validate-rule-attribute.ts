@@ -1,12 +1,18 @@
 import { MedusaError } from "@medusajs/framework/utils"
 import { getRuleAttributesMap } from "./rule-attributes-map"
+import {
+  ApplicationMethodTargetTypeValues,
+  ApplicationMethodTypeValues,
+  PromotionTypeValues,
+  RuleTypeValues,
+} from "@medusajs/types"
 
 export function validateRuleAttribute(attributes: {
-  promotionType: string | undefined
-  ruleType: string
+  promotionType: PromotionTypeValues | undefined
+  ruleType: RuleTypeValues
   ruleAttributeId: string
-  applicationMethodType?: string
-  applicationMethodTargetType?: string
+  applicationMethodType?: ApplicationMethodTypeValues
+  applicationMethodTargetType?: ApplicationMethodTargetTypeValues
 }) {
   const {
     promotionType,

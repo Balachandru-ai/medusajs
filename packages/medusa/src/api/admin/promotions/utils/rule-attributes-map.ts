@@ -1,6 +1,15 @@
-import { ApplicationMethodType, PromotionType, RuleOperator, } from "@medusajs/framework/utils"
+import {
+  ApplicationMethodTargetType,
+  ApplicationMethodType,
+  PromotionType,
+  RuleOperator,
+} from "@medusajs/framework/utils"
 import { operatorsMap } from "./operators-map"
-import { ApplicationMethodTargetTypeValues, ApplicationMethodTypeValues, PromotionTypeValues, } from "@medusajs/types"
+import {
+  ApplicationMethodTargetTypeValues,
+  ApplicationMethodTypeValues,
+  PromotionTypeValues,
+} from "@medusajs/types"
 
 export enum DisguisedRule {
   APPLY_TO_QUANTITY = "apply_to_quantity",
@@ -144,11 +153,13 @@ export const getRuleAttributesMap = ({
   const map = {
     rules: [...ruleAttributes],
     "target-rules":
-      applicationMethodTargetType === "shipping_methods"
+      applicationMethodTargetType ===
+      ApplicationMethodTargetType.SHIPPING_METHODS
         ? [...shippingMethodsAttributes]
         : [...itemsAttributes],
     "buy-rules":
-      applicationMethodTargetType === "shipping_methods"
+      applicationMethodTargetType ===
+      ApplicationMethodTargetType.SHIPPING_METHODS
         ? [...shippingMethodsAttributes]
         : [...itemsAttributes],
   }

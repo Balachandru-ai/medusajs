@@ -13,6 +13,10 @@ import {
   validateRuleType,
 } from "../../../utils"
 import { AdminGetPromotionRuleParamsType } from "../../../validators"
+import {
+  ApplicationMethodTargetTypeValues,
+  RuleTypeValues,
+} from "@medusajs/types"
 
 /*
   This endpoint returns all the potential values for rules (promotion rules, target rules and buy rules)
@@ -38,12 +42,14 @@ export const GET = async (
 
   validateRuleType(ruleType)
   validateRuleAttribute({
-    ruleType,
+    ruleType: ruleType as RuleTypeValues,
     ruleAttributeId,
     promotionType: undefined,
     applicationMethodType: undefined,
     applicationMethodTargetType:
-      filterableFields.application_method_target_type as string | undefined,
+      filterableFields.application_method_target_type as
+        | ApplicationMethodTargetTypeValues
+        | undefined,
   })
 
   if (filterableFields.application_method_target_type) {
