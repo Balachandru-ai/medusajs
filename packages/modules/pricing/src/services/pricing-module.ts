@@ -29,6 +29,7 @@ import {
   groupBy,
   InjectManager,
   InjectTransactionManager,
+  isDefined,
   isPresent,
   isString,
   MathBN,
@@ -623,10 +624,18 @@ export default class PricingModuleService
   ): Promise<InferEntityType<typeof PriceSet>[]> {
     const normalizedData = await this.normalizeUpdateData(data)
 
-    const existingPrices = await this.priceService_.list({
-      price_set_id: normalizedData.map(({ id }) => id),
-      price_list_id: null,
-    })
+    const priceSetIds = normalizedData.map(({ id }) => id)
+    const existingPrices = await this.priceService_.list(
+      {
+        price_set_id: priceSetIds,
+        price_list_id: null,
+      },
+      {
+        relations: ["price_rules"],
+        take: priceSetIds.length,
+      },
+      sharedContext
+    )
     const existingPricesMap = new Map<string, InferEntityType<typeof Price>>(
       existingPrices.map((p) => [p.id, p])
     )
@@ -650,12 +659,116 @@ export default class PricingModuleService
 
     if (pricesToCreate.length > 0) {
       createdPrices = await this.priceService_.create(
-        pricesToCreate,
+        pricesToCreate.map((price) => {
+          price.price_rules ??= []
+          return price
+        }),
         sharedContext
       )
     }
 
     if (pricesToUpdate.length > 0) {
+      // Handle price rules for updated prices
+      for (const priceToUpdate of pricesToUpdate) {
+        const existingPrice = existingPricesMap.get(priceToUpdate.id!)
+
+        if (priceToUpdate.price_rules?.length) {
+          const existingPriceRules = existingPrice?.price_rules || []
+
+          // Separate price rules for create, update, delete
+          const priceRulesToCreate = priceToUpdate.price_rules.filter(
+            (rule) => !("id" in rule)
+          )
+          const priceRulesToUpdate = priceToUpdate.price_rules.filter(
+            (rule) => "id" in rule
+          )
+
+          const incomingPriceRuleIds = new Set(
+            priceToUpdate.price_rules
+              .map((r) => "id" in r && r.id)
+              .filter(Boolean)
+          )
+          const priceRulesToDelete = existingPriceRules
+            .filter(
+              (existingRule) => !incomingPriceRuleIds.has(existingRule.id)
+            )
+            .map((r) => r.id)
+
+          let createdPriceRules: InferEntityType<typeof PriceRule>[] = []
+          let updatedPriceRules: InferEntityType<typeof PriceRule>[] = []
+
+          // Bulk operations for price rules
+          if (priceRulesToCreate.length > 0) {
+            createdPriceRules = await this.priceRuleService_.create(
+              priceRulesToCreate.map((rule) => ({
+                ...rule,
+                price_id: priceToUpdate.id,
+              })),
+              sharedContext
+            )
+            eventBuilders.createdPriceRule({
+              data: createdPriceRules.map((r) => ({ id: r.id })),
+              sharedContext,
+            })
+          }
+
+          if (priceRulesToUpdate.length > 0) {
+            updatedPriceRules = await this.priceRuleService_.update(
+              priceRulesToUpdate,
+              sharedContext
+            )
+            eventBuilders.updatedPriceRule({
+              data: updatedPriceRules.map((r) => ({ id: r.id })),
+              sharedContext,
+            })
+          }
+
+          if (priceRulesToDelete.length > 0) {
+            await this.priceRuleService_.delete(
+              priceRulesToDelete,
+              sharedContext
+            )
+            eventBuilders.deletedPriceRule({
+              data: priceRulesToDelete.map((id) => ({ id })),
+              sharedContext,
+            })
+          }
+
+          const upsertedPriceRules = [
+            ...createdPriceRules,
+            ...updatedPriceRules,
+          ]
+
+          priceToUpdate.price_rules = upsertedPriceRules
+          ;(priceToUpdate as InferEntityType<typeof Price>).rules_count =
+            upsertedPriceRules.length
+        } else if (
+          // In the case price_rules is provided but without any rules, we delete the existing rules
+          isDefined(priceToUpdate.price_rules) &&
+          priceToUpdate.price_rules.length === 0
+        ) {
+          const priceRuleToDelete = existingPrice?.price_rules?.map((r) => r.id)
+
+          if (priceRuleToDelete?.length) {
+            await this.priceRuleService_.delete(
+              priceRuleToDelete,
+              sharedContext
+            )
+            eventBuilders.deletedPriceRule({
+              data: priceRuleToDelete.map((id) => ({ id })),
+              sharedContext,
+            })
+          }
+
+          ;(priceToUpdate as InferEntityType<typeof Price>).rules_count = 0
+        } else {
+          // @ts-expect-error - we want to delete the rules_count property in any case even if provided by mistake
+          delete (priceToUpdate as InferEntityType<typeof Price>).rules_count
+        }
+        // We don't want to persist the price_rules in the database through the price service as it would not work
+        delete priceToUpdate.price_rules
+      }
+
       updatedPrices = await this.priceService_.update(
         pricesToUpdate,
         sharedContext
