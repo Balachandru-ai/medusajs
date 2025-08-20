@@ -14,10 +14,50 @@ export const ExampleRegistry = {
     component: dynamic(() => import("@/specs/examples/alert-dismissable")),
     file: "specs/examples/alert-dismissable.tsx",
   },
+  "alert-warning": {
+    name: "alert-warning",
+    component: dynamic(() => import("@/specs/examples/alert-warning")),
+    file: "specs/examples/alert-warning.tsx",
+  },
+  "alert-success": {
+    name: "alert-success",
+    component: dynamic(() => import("@/specs/examples/alert-success")),
+    file: "specs/examples/alert-success.tsx",
+  },
+  "alert-error": {
+    name: "alert-error",
+    component: dynamic(() => import("@/specs/examples/alert-error")),
+    file: "specs/examples/alert-error.tsx",
+  },
+  "avatar-demo": {
+    name: "avatar-demo",
+    component: dynamic(() => import("@/specs/examples/avatar-demo")),
+    file: "specs/examples/avatar-demo.tsx",
+  },
   "avatar-accessible": {
     name: "avatar-accessible",
     component: dynamic(() => import("@/specs/examples/avatar-accessible")),
     file: "specs/examples/avatar-accessible.tsx",
+  },
+  "avatar-custom-style": {
+    name: "avatar-custom-style",
+    component: dynamic(() => import("@/specs/examples/avatar-custom-style")),
+    file: "specs/examples/avatar-custom-style.tsx",
+  },
+  "avatar-fallback": {
+    name: "avatar-fallback",
+    component: dynamic(() => import("@/specs/examples/avatar-fallback")),
+    file: "specs/examples/avatar-fallback.tsx",
+  },
+  "avatar-sizes": {
+    name: "avatar-sizes",
+    component: dynamic(() => import("@/specs/examples/avatar-sizes")),
+    file: "specs/examples/avatar-sizes.tsx",
+  },
+  "avatar-variants": {
+    name: "avatar-variants",
+    component: dynamic(() => import("@/specs/examples/avatar-variants")),
+    file: "specs/examples/avatar-variants.tsx",
   },
   "badge-demo": {
     name: "badge-demo",
@@ -551,6 +591,11 @@ export const ExampleRegistry = {
     name: "icon-color",
     component: dynamic(() => import("@/specs/examples/icon-color")),
     file: "specs/examples/icon-color.tsx",
+  },
+  "icon-color-classes": {
+    name: "icon-color-classes",
+    component: dynamic(() => import("@/specs/examples/icon-color-classes")),
+    file: "specs/examples/icon-color-classes.tsx",
   },
   "currency-input-demo": {
     name: "currency-input-demo",
