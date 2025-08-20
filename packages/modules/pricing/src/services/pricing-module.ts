@@ -632,10 +632,11 @@ export default class PricingModuleService
       },
       {
         relations: ["price_rules"],
-        take: priceSetIds.length,
+        take: null,
       },
       sharedContext
     )
+
     const existingPricesMap = new Map<string, InferEntityType<typeof Price>>(
       existingPrices.map((p) => [p.id, p])
     )
