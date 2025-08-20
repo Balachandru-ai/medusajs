@@ -109,7 +109,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/api-routes/parse-body/page.mdx": "2025-04-17T08:29:10.145Z",
   "app/learn/fundamentals/admin/routing/page.mdx": "2025-07-25T07:35:18.038Z",
   "app/learn/resources/contribution-guidelines/admin-translations/page.mdx": "2025-02-11T16:57:46.726Z",
-  "app/learn/resources/contribution-guidelines/docs/page.mdx": "2025-05-26T15:55:02.974Z",
+  "app/learn/resources/contribution-guidelines/docs/page.mdx": "2025-08-20T06:41:30.822Z",
   "app/learn/resources/usage/page.mdx": "2025-02-26T13:35:34.824Z",
   "app/learn/configurations/medusa-config/page.mdx": "2025-07-14T09:28:54.302Z",
   "app/learn/configurations/ts-aliases/page.mdx": "2025-07-23T15:32:18.008Z",
