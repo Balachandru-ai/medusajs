@@ -57,13 +57,4 @@ export interface AdminOrderItemsFilters extends FindParams {
   version?: number[] | number
 }
 
-export interface AdminGetOrderShippingOptionList {
-  /**
-   * Whether to retrieve shipping options used for returns.
-   */
-  is_return?: boolean
-  /**
-   * Whether to retrieve the shipping option's enabled in the store.
-   */
-  enabled_in_store?: boolean
-}
+export interface AdminGetOrderShippingOptionList {}

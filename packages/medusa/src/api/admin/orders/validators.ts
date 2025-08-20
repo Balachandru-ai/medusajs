@@ -34,12 +34,7 @@ export type AdminGetOrdersOrderItemsParamsType = z.infer<
   typeof AdminGetOrdersOrderParams
 >
 
-export const AdminGetOrderShippingOptionList = createSelectParams().merge(
-  z.object({
-    is_return: z.boolean().optional(),
-    enabled_in_store: z.boolean().optional(),
-  })
-)
+export const AdminGetOrderShippingOptionList = z.object({})
 
 export type AdminGetOrderShippingOptionListType = z.infer<
   typeof AdminGetOrderShippingOptionList

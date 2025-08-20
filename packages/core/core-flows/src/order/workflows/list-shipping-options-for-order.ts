@@ -11,7 +11,6 @@ import {
 
 import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
-// import { isDefined } from "@medusajs/framework/utils"
 
 export const listShippingOptionsForOrderWorkflowId =
   "list-shipping-options-for-order"
