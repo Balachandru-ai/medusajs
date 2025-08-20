@@ -58,11 +58,13 @@ export const ExchangeOutboundSection = ({
   /**
    * HOOKS
    */
-  const { shipping_options = [] } = useOrderShippingOptions(order.id, {
-    // is_return: false, TODO: check boolean query params
-  })
+  const { shipping_options = [] } = useOrderShippingOptions(order.id)
 
-  const outboundShippingOptions = shipping_options
+  // TODO: filter in the API when boolean filter is supported and fulfillment module support partial rule SO filtering
+  const outboundShippingOptions = shipping_options.filter(
+    (so) =>
+      !so.rules?.find((r) => r.attribute === "is_return" && r.value === "true")
+  )
 
   const { mutateAsync: addOutboundShipping } = useAddExchangeOutboundShipping(
     exchange.id,
@@ -421,10 +423,6 @@ export const ExchangeOutboundSection = ({
                         options={outboundShippingOptions.map((so) => ({
                           label: `${so.name} (${getFormattedShippingOptionLocationName(so)})`,
                           value: so.id,
-                          disabled: !!so.rules?.find(
-                            (r) =>
-                              r.attribute === "is_return" && r.value === "true"
-                          ), // TODO: filter return
                         }))}
                         disabled={!outboundShippingOptions.length}
                       />

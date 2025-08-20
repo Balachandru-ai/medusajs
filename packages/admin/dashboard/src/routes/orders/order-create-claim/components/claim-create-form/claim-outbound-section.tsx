@@ -24,7 +24,6 @@ import {
   useRemoveClaimOutboundItem,
   useUpdateClaimOutboundItems,
 } from "../../../../../hooks/api/claims"
-import { useShippingOptions } from "../../../../../hooks/api/shipping-options"
 import { sdk } from "../../../../../lib/client"
 import { OutboundShippingPlaceholder } from "../../../common/placeholders"
 import { AddClaimOutboundItemsTable } from "../add-claim-outbound-items-table"
@@ -60,11 +59,13 @@ export const ClaimOutboundSection = ({
   /**
    * HOOKS
    */
-  const { shipping_options = [] } = useOrderShippingOptions(order.id, {
-    // is_return: false,
-  })
+  const { shipping_options = [] } = useOrderShippingOptions(order.id)
 
-  const outboundShippingOptions = shipping_options
+  // TODO: filter in the API when boolean filter is supported and fulfillment module support partial rule SO filtering
+  const outboundShippingOptions = shipping_options.filter(
+    (so) =>
+      !so.rules?.find((r) => r.attribute === "is_return" && r.value === "true")
+  )
 
   const { mutateAsync: addOutboundShipping } = useAddClaimOutboundShipping(
     claim.id,
@@ -413,10 +414,6 @@ export const ClaimOutboundSection = ({
                         options={outboundShippingOptions.map((so) => ({
                           label: `${so.name} (${getFormattedShippingOptionLocationName(so)})`,
                           value: so.id,
-                          disabled: !!so.rules?.find(
-                            (r) =>
-                              r.attribute === "is_return" && r.value === "true"
-                          ), // TODO: filter return
                         }))}
                         disabled={!outboundShippingOptions.length}
                         noResultsPlaceholder={<OutboundShippingPlaceholder />}

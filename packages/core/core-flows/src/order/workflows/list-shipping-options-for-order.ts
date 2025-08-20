@@ -116,18 +116,9 @@ export const listShippingOptionsForOrderWorkflow = createWorkflow(
     )
 
     const queryVariables = transform(
-      { input, fulfillmentSetIds, order },
-      ({ input, fulfillmentSetIds, order }) => {
+      { fulfillmentSetIds, order },
+      ({ fulfillmentSetIds, order }) => {
         return {
-          // context: {
-          //   is_return: input.is_return ? "true" : "false",
-          //   enabled_in_store: isDefined(input.enabled_in_store)
-          //     ? input.enabled_in_store
-          //       ? "true"
-          //       : "false"
-          //     : "true",
-          // },
-
           filters: {
             fulfillment_set_id: fulfillmentSetIds,
 
