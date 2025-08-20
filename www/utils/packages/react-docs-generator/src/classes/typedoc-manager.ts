@@ -598,7 +598,7 @@ export default class TypedocManager {
       propDescription?.includes("@keep")
     const childHasExternalSource =
       childReflection.sources?.some((source) =>
-        source.fileName.startsWith("node_modules")
+        source.fileName.includes("node_modules")
       ) || false
     return (
       parentHasExcludeExternalsModifier &&

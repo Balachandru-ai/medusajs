@@ -260,7 +260,7 @@ jobs:
       - name: Get Directories to Scan
         if: ${{ steps.pr-files.outputs.files_lt_threshold == 'true' }}
         working-directory: www/vale
-        run: ./get-files.sh ui/src/content/docs
+        run: ./get-files.sh ui/app
         id: directories
 
       - name: Vale Linter
