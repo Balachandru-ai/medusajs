@@ -48,6 +48,10 @@ type UpdateFlatShippingOptionInputBase = {
     code: string
   }
   /**
+   * The ID of the type of shipping option.
+   */
+  type_id?: string
+  /**
    * The rules that determine when the shipping option is available.
    */
   rules?: {

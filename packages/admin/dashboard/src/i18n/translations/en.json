@@ -1305,7 +1305,8 @@
       "consistsOf": "Consists of {{num}}x inventory items",
       "requires": "Requires {{num}} per variant",
       "toast": {
-        "created": "Items successfully allocated"
+        "created": "Items successfully allocated",
+        "error": "Failed to allocate following items: {{items}}"
       },
       "error": {
         "quantityNotAllocated": "There are unallocated items."
@@ -1683,6 +1684,7 @@
         },
         "provider": "Fulfillment provider",
         "profile": "Shipping profile",
+        "type": "Shipping option type",
         "fulfillmentOption": "Fulfillment option"
       }
     },
