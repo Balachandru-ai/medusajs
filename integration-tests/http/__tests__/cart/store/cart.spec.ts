@@ -2255,16 +2255,11 @@ medusaIntegrationTestRunner({
             })
           )
 
-          updated = await api
-            .post(
-              `/store/carts/${cart.id}`,
-              { region_id: otherRegion.id },
-              storeHeaders
-            )
-            .catch((e) => {
-              console.log(e.response.data)
-              throw e
-            })
+          updated = await api.post(
+            `/store/carts/${cart.id}`,
+            { region_id: otherRegion.id },
+            storeHeaders
+          )
 
           expect(updated.status).toEqual(200)
           expect(updated.data.cart).toEqual(
