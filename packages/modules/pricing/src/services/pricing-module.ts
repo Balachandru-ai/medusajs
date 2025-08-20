@@ -370,7 +370,6 @@ export default class PricingModuleService
           }
         }
 
-
         pricesSetPricesMap.set(key, { calculatedPrice, originalPrice })
         priceIds.push(
           ...(deduplicate(
@@ -535,6 +534,7 @@ export default class PricingModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PriceSetDTO | PriceSetDTO[]> {
     const input = Array.isArray(data) ? data : [data]
+
     const forUpdate = input.filter(
       (priceSet): priceSet is ServiceTypes.UpdatePriceSetInput => !!priceSet.id
     )
@@ -621,73 +621,95 @@ export default class PricingModuleService
     data: ServiceTypes.UpdatePriceSetInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceSet>[]> {
-    // TODO: Since money IDs are rarely passed, this will delete all previous data and insert new entries.
-    // We can make the `insert` inside upsertWithReplace do an `upsert` instead to avoid this
     const normalizedData = await this.normalizeUpdateData(data)
 
-    const priceListPrices = await this.priceService_.list({
+    const existingPrices = await this.priceService_.list({
       price_set_id: normalizedData.map(({ id }) => id),
-      price_list_id: { $ne: null },
+      price_list_id: null,
     })
 
     const prices = normalizedData.flatMap((priceSet) => priceSet.prices || [])
-    const { entities: upsertedPrices, performedActions } =
-      await this.priceService_.upsertWithReplace(
-        prices,
-        { relations: ["price_rules"] },
+
+    const pricesToCreate = prices.filter((price) => !price.id)
+    const pricesToUpdate = prices.filter((price) => price.id)
+
+    const incomingPriceIds = new Set(prices.map((p) => p.id).filter(Boolean))
+    const pricesToDelete = existingPrices
+      .filter((existingPrice) => !incomingPriceIds.has(existingPrice.id))
+      .map((p) => p.id)
+
+    let createdPrices: InferEntityType<typeof Price>[] = []
+    let updatedPrices: InferEntityType<typeof Price>[] = []
+
+    if (pricesToCreate.length > 0) {
+      createdPrices = await this.priceService_.create(
+        pricesToCreate,
         sharedContext
       )
+    }
 
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
+    if (pricesToUpdate.length > 0) {
+      updatedPrices = await this.priceService_.update(
+        pricesToUpdate,
+        sharedContext
+      )
+    }
+
+    if (pricesToDelete.length > 0) {
+      await this.priceService_.delete(pricesToDelete, sharedContext)
+    }
+
+    if (createdPrices.length > 0) {
+      eventBuilders.createdPrice({
+        data: createdPrices.map((p) => ({ id: p.id })),
+        sharedContext,
+      })
+    }
+
+    if (updatedPrices.length > 0) {
+      eventBuilders.updatedPrice({
+        data: updatedPrices.map((p) => ({ id: p.id })),
+        sharedContext,
+      })
+    }
+
+    if (pricesToDelete.length > 0) {
+      eventBuilders.deletedPrice({
+        data: pricesToDelete.map((id) => ({ id })),
+        sharedContext,
+      })
+    }
+
+    const priceSets = await this.priceSetService_.list(
+      { id: normalizedData.map(({ id }) => id) },
+      {
+        relations: ["prices", "prices.price_rules"],
+      },
+      sharedContext
+    )
+
+    const upsertedPricesMap = new Map<string, InferEntityType<typeof Price>[]>()
+
+    const upsertedPrices = [...createdPrices, ...updatedPrices]
+    upsertedPrices.forEach((price) => {
+      upsertedPricesMap.set(price.price_set_id, [
+        ...(upsertedPricesMap.get(price.price_set_id) || []),
+        price,
+      ])
+    })
+
+    // re assign the prices to the price sets to not have to refetch after the transaction and keep the bahaviour the same as expected. If the user needs more data, he can still re list the price set with the expected fields and relations that he needs
+
+    priceSets.forEach((ps) => {
+      ps.prices = upsertedPricesMap.get(ps.id) || []
+    })
+
+    eventBuilders.updatedPriceSet({
+      data: priceSets.map((ps) => ({ id: ps.id })),
       sharedContext,
     })
 
-    const priceSetsToUpsert = normalizedData.map((priceSet) => {
-      const { prices, ...rest } = priceSet
-      return {
-        ...rest,
-        prices: [
-          ...upsertedPrices
-            .filter((p) => p.price_set_id === priceSet.id)
-            .map((price) => {
-              // @ts-ignore
-              delete price.price_rules
-              return price
-            }),
-          ...priceListPrices
-            .filter((p) => p.price_set_id === priceSet.id)
-            .map((price) => ({
-              id: price.id,
-              amount: price.amount,
-              price_set_id: price.price_set_id,
-              price_list_id: price.price_list_id,
-            })),
-        ],
-      }
-    })
-
-    const { entities: priceSets, performedActions: priceSetPerformedActions } =
-      await this.priceSetService_.upsertWithReplace(
-        priceSetsToUpsert,
-        { relations: ["prices"] },
-        sharedContext
-      )
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions: priceSetPerformedActions,
-      sharedContext,
-    })
-
-    return priceSets.map((ps) => {
-      if (ps.prices) {
-        ps.prices = (ps.prices as any).filter((p) => !p.price_list_id)
-      }
-
-      return ps
-    })
+    return priceSets
   }
 
   private async normalizeUpdateData(data: ServiceTypes.UpdatePriceSetInput[]) {
