@@ -145,6 +145,7 @@ export const listShippingOptionsForOrderWorkflow = createWorkflow(
         "service_zone.fulfillment_set_id",
         "service_zone.fulfillment_set.type",
         "service_zone.fulfillment_set.location.id",
+        "service_zone.fulfillment_set.location.name",
         "service_zone.fulfillment_set.location.address.*",
 
         "type.id",
