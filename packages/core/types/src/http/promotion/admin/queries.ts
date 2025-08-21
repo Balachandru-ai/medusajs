@@ -1,5 +1,8 @@
 import { BaseFilterable, OperatorMap } from "../../../dal"
-import { ApplicationMethodTypeValues } from "../../../promotion"
+import {
+  ApplicationMethodTypeValues,
+  PromotionTypeValues,
+} from "../../../promotion"
 import { FindParams, SelectParams } from "../../common"
 
 export interface AdminGetPromotionParams extends SelectParams {}
@@ -59,13 +62,13 @@ export interface AdminGetPromotionsParams
 }
 
 export interface AdminGetPromotionRuleParams {
-  promotion_type?: string
-  application_method_type?: string
+  promotion_type?: PromotionTypeValues
+  application_method_type?: ApplicationMethodTypeValues
 }
 
 export interface AdminGetPromotionRuleTypeParams extends SelectParams {
-  promotion_type?: string
-  application_method_type?: string
+  promotion_type?: PromotionTypeValues
+  application_method_type?: ApplicationMethodTypeValues
 }
 
 export interface AdminGetPromotionsRuleValueParams extends FindParams {
