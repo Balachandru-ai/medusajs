@@ -1,10 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { Modules, PromotionStatus, PromotionType } from "@medusajs/utils"
-import {
-  createAdminUser,
-  generatePublishableKey,
-  generateStoreHeaders,
-} from "../../../../helpers/create-admin-user"
+import { createAdminUser, generatePublishableKey, generateStoreHeaders, } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
@@ -2408,6 +2404,80 @@ medusaIntegrationTestRunner({
             ])
           )
         })
+
+        it("return all product target rule attributes by default", async () => {
+          const response = await api.get(
+            `/admin/promotions/rule-attribute-options/target-rules`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.attributes).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "product",
+                value: "items.product.id",
+                label: "Product",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+              expect.objectContaining({
+                id: "product_category",
+                value: "items.product.categories.id",
+                label: "Product Category",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+              expect.objectContaining({
+                id: "product_collection",
+                value: "items.product.collection_id",
+                label: "Product Collection",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+              expect.objectContaining({
+                id: "product_type",
+                value: "items.product.type_id",
+                label: "Product Type",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+              expect.objectContaining({
+                id: "product_tag",
+                value: "items.product.tags.id",
+                label: "Product Tag",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+            ])
+          )
+        })
+
+        it("return all target rule attributes when application method target type is shipping_methods", async () => {
+          const response = await api.get(
+            `/admin/promotions/rule-attribute-options/target-rules?application_method_target_type=shipping_methods`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.attributes).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "shipping_option_type",
+                value: "shipping_methods.shipping_option.shipping_option_type_id",
+                label: "Shipping Option Type",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+            ])
+          )
+        })
       })
 
       describe("GET /admin/promotions/rule-value-options/:ruleType/:ruleAttributeId", () => {
@@ -2675,6 +2745,36 @@ medusaIntegrationTestRunner({
             expect.arrayContaining([
               { label: "test tag 1", value: tag1.id },
               { label: "test tag 2", value: tag2.id },
+            ])
+          )
+
+          const soType1 = (
+            await api.post(
+              "/admin/shipping-option-types",
+              { label: "Test 1", code: "test_1" },
+              adminHeaders
+            )
+          ).data.shipping_option_type
+
+          const soType2 = (
+            await api.post(
+              "/admin/shipping-option-types",
+              { label: "Test 2", code: "test_2" },
+              adminHeaders
+            )
+          ).data.shipping_option_type
+
+          response = await api.get(
+            `/admin/promotions/rule-value-options/target-rules/shipping_option_type?application_method_target_type=shipping_methods`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.values.length).toEqual(2)
+          expect(response.data.values).toEqual(
+            expect.arrayContaining([
+              { label: "Test 1", value: soType1.id },
+              { label: "Test 2", value: soType2.id },
             ])
           )
         })
