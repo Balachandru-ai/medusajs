@@ -746,6 +746,170 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should update a cart line item quantity and calculate prices based the new item quantity", async () => {
+          const productData = {
+            title: "Medusa T-Shirt based quantity",
+            handle: "t-shirt-with-quantity-prices",
+            status: ProductStatus.PUBLISHED,
+            options: [
+              {
+                title: "Size",
+                values: ["S"],
+              },
+            ],
+            variants: [
+              {
+                title: "S",
+                sku: "SHIRT-S-BLACK-w-quantity-prices",
+                options: {
+                  Size: "S",
+                },
+                manage_inventory: false,
+                prices: [
+                  {
+                    amount: 1500,
+                    currency_code: "usd",
+                    min_quantity: 1,
+                    max_quantity: 4,
+                  },
+                  {
+                    amount: 1000,
+                    currency_code: "usd",
+                    min_quantity: 5,
+                    max_quantity: 10,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const newProduct = await api.post(
+            `/admin/products`,
+            productData,
+            adminHeaders
+          )
+
+          const variantId = newProduct.data.product.variants[0].id
+
+          const newCart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Add item to cart with quantity 1
+           * in order to have the price calculated based on the price rule
+           * with min_quantity 1 and max_quantity 4
+           */
+
+          let response = await api.post(
+            `/store/carts/${newCart.id}/line-items`,
+            {
+              variant_id: variantId,
+              quantity: 1,
+            },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 1428.5714285714287,
+              item_tax_total: 71.42857142857143,
+              item_total: 1500,
+              items: [
+                expect.objectContaining({
+                  quantity: 1,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1500,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              original_item_subtotal: 1428.5714285714287,
+              original_item_tax_total: 71.42857142857143,
+              original_item_total: 1500,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 71.42857142857143,
+              original_total: 1500,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 1428.5714285714287,
+              tax_total: 71.42857142857143,
+              total: 1500,
+            })
+          )
+
+          /**
+           * update item quantity to 5
+           * in order to have the price calculated based on the price rule
+           * with min_quantity 5 and max_quantity 10
+           */
+
+          const itemId = response.data.cart.items[0].id
+          response = await api
+            .post(
+              `/store/carts/${newCart.id}/line-items/${itemId}`,
+              {
+                quantity: 6,
+              },
+              storeHeaders
+            )
+            .catch((e) => {
+              console.log(e.response.data)
+              throw e
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 5714.285714285715,
+              item_tax_total: 285.7142857142857,
+              item_total: 6000,
+              items: [
+                expect.objectContaining({
+                  quantity: 6,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1000,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              original_item_subtotal: 5714.285714285715,
+              original_item_tax_total: 285.7142857142857,
+              original_item_total: 6000,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 285.7142857142857,
+              original_total: 6000,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 5714.285714285715,
+              tax_total: 285.7142857142857,
+              total: 6000,
+            })
+          )
+        })
+
         it("should remove promotions when promotion is no longer in active state", async () => {
           let responseBeforePromotionUpdate = await api.post(
             `/store/carts/${cart.id}/line-items`,

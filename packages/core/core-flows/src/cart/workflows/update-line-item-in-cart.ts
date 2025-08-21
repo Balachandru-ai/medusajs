@@ -1,12 +1,17 @@
 import {
   AdditionalData,
+  CartDTO,
+  CustomerDTO,
+  RegionDTO,
   UpdateLineItemInCartWorkflowInputDTO,
 } from "@medusajs/framework/types"
 import {
   CartWorkflowEvents,
   deduplicate,
+  filterObjectByKeys,
   isDefined,
   MedusaError,
+  QueryContext,
 } from "@medusajs/framework/utils"
 import {
   createHook,
@@ -18,7 +23,6 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import { updateLineItemsStepWithSelector } from "../../line-item/steps"
 import { validateCartStep } from "../steps/validate-cart"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
@@ -32,6 +36,12 @@ import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
 const cartFields = cartFieldsForPricingContext.concat(["items.*"])
+
+interface CartQueryDTO extends Omit<CartDTO, "items"> {
+  items: NonNullable<CartDTO["items"]>
+  customer: CustomerDTO
+  region: RegionDTO
+}
 
 export const updateLineItemInCartWorkflowId = "update-line-item-in-cart"
 /**
@@ -97,27 +107,28 @@ export const updateLineItemInCartWorkflow = createWorkflow(
   (
     input: WorkflowData<UpdateLineItemInCartWorkflowInputDTO & AdditionalData>
   ) => {
-    const cartQuery = useQueryGraphStep({
+    const { data: cartQuery } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.cart_id },
       fields: cartFields,
       options: { throwIfKeyNotFound: true },
     }).config({ name: "get-cart" })
 
-    const cart = transform({ cartQuery }, ({ cartQuery }) => cartQuery.data[0])
-    const item = transform({ cart, input }, ({ cart, input }) => {
-      return cart.items.find((i) => i.id === input.item_id)
-    })
+    const { cart, item, variantIds } = transform(
+      { cartQuery, input },
+      ({ cartQuery, input }) => {
+        const cart = cartQuery[0] as CartQueryDTO
+        const item = cart.items.find((i) => i.id === input.item_id)!
+        const variantIds = [item?.variant_id].filter(Boolean)
+        return { cart, item, variantIds }
+      }
+    )
 
     validateCartStep({ cart })
 
     const validate = createHook("validate", {
       input,
       cart,
-    })
-
-    const variantIds = transform({ item }, ({ item }) => {
-      return [item.variant_id].filter(Boolean)
     })
 
     const setPricingContext = createHook(
@@ -134,17 +145,19 @@ export const updateLineItemInCartWorkflow = createWorkflow(
     )
 
     const setPricingContextResult = setPricingContext.getResult()
+
     const pricingContext = transform(
-      { cart, setPricingContextResult },
-      (data) => {
+      { cart, item, update: input.update, setPricingContextResult },
+      (data): Record<string, any> => {
         return {
-          ...data.cart,
+          ...filterObjectByKeys(data.cart, cartFieldsForPricingContext),
           ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
+          quantity: data.update.quantity ?? data.item.quantity,
           currency_code: data.cart.currency_code,
-          region_id: data.cart.region_id,
-          region: data.cart.region,
-          customer_id: data.cart.customer_id,
-          customer: data.cart.customer,
+          region_id: data.cart.region_id!,
+          region: data.cart.region!,
+          customer_id: data.cart.customer_id!,
+          customer: data.cart.customer!,
         }
       }
     )
@@ -156,22 +169,31 @@ export const updateLineItemInCartWorkflow = createWorkflow(
         return !!variantIds.length
       }
     ).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "variants",
+      const calculatedPriceQueryContext = transform(
+        { pricingContext },
+        ({ pricingContext }) => {
+          return QueryContext(pricingContext)
+        }
+      )
+
+      const { data: variants } = useQueryGraphStep({
+        entity: "variants",
         fields: deduplicate([
           ...productVariantsFields,
           ...requiredVariantFieldsForInventoryConfirmation,
         ]),
-        variables: {
+        filters: {
           id: variantIds,
-          calculated_price: {
-            context: pricingContext,
-          },
+        },
+        context: {
+          calculated_price: calculatedPriceQueryContext,
         },
       }).config({ name: "fetch-variants" })
-    })
 
-    validateVariantPricesStep({ variants })
+      validateVariantPricesStep({ variants })
+
+      return variants
+    })
 
     const items = transform({ input, item }, (data) => {
       return [
