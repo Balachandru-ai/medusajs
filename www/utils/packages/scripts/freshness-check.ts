@@ -155,9 +155,7 @@ async function main() {
   await scanDirectory(
     path.join(monorepoRoot, "www", "apps", "user-guide", "app")
   )
-  await scanDirectory(
-    path.join(monorepoRoot, "www", "apps", "ui", "src", "content", "docs")
-  )
+  await scanDirectory(path.join(monorepoRoot, "www", "apps", "ui", "app"))
   await scanDirectory(path.join(monorepoRoot, "www", "apps", "cloud", "app"))
 }
 

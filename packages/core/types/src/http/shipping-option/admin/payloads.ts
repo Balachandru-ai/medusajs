@@ -156,7 +156,14 @@ export interface AdminCreateShippingOption {
    * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
    * documentation.
    */
-  type: AdminCreateShippingOptionType
+  type?: AdminCreateShippingOptionType
+  /**
+   * The ID of the type of shipping option.
+   *
+   * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
+   * documentation.
+   */
+  type_id?: string
   /**
    * The prices of the shipping option.
    */
@@ -254,6 +261,13 @@ export interface AdminUpdateShippingOption {
    * documentation.
    */
   type?: AdminCreateShippingOptionType
+  /**
+   * The ID of the type of shipping option.
+   *
+   * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
+   * documentation.
+   */
+  type_id?: string
   /**
    * The prices of the shipping option.
    */

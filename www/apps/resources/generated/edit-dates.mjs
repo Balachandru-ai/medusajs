@@ -104,7 +104,7 @@ export const generatedEditDates = {
   "app/deployment/medusa-application/railway/page.mdx": "2025-04-17T08:28:58.981Z",
   "app/deployment/storefront/vercel/page.mdx": "2025-05-20T07:51:40.712Z",
   "app/deployment/page.mdx": "2025-06-24T08:50:10.114Z",
-  "app/integrations/page.mdx": "2025-06-25T10:48:35.928Z",
+  "app/integrations/page.mdx": "2025-08-07T06:06:50.604Z",
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
@@ -6484,9 +6484,9 @@ export const generatedEditDates = {
   "app/commerce-modules/tax/tax-provider/page.mdx": "2025-05-20T07:51:40.711Z",
   "app/recipes/bundled-products/examples/standard/page.mdx": "2025-06-26T11:52:18.819Z",
   "app/recipes/bundled-products/page.mdx": "2025-05-20T07:51:40.718Z",
-  "app/infrastructure-modules/analytics/local/page.mdx": "2025-06-10T15:56:43.648Z",
-  "app/infrastructure-modules/analytics/page.mdx": "2025-05-26T14:48:25.803Z",
-  "app/infrastructure-modules/analytics/posthog/page.mdx": "2025-06-10T15:56:43.648Z",
+  "app/infrastructure-modules/analytics/local/page.mdx": "2025-08-21T05:30:26.867Z",
+  "app/infrastructure-modules/analytics/page.mdx": "2025-08-21T05:31:17.953Z",
+  "app/infrastructure-modules/analytics/posthog/page.mdx": "2025-08-21T05:30:12.983Z",
   "references/analytics/interfaces/analytics.IAnalyticsModuleService/page.mdx": "2025-06-05T19:05:43.239Z",
   "references/analytics_provider/classes/analytics_provider.AbstractAnalyticsProviderService/page.mdx": "2025-05-21T14:22:04.267Z",
   "references/modules/analytics/page.mdx": "2025-05-21T14:21:59.323Z",
@@ -6566,5 +6566,6 @@ export const generatedEditDates = {
   "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z",
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
+  "app/integrations/guides/payload/page.mdx": "2025-08-21T05:24:11.537Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z"
 }

@@ -82,6 +82,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/integrations/guides/payload",
+          "title": "Payload CMS",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/integrations/guides/sanity",
           "title": "Sanity",
           "children": []

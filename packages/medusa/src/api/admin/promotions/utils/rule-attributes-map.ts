@@ -1,9 +1,15 @@
 import {
+  ApplicationMethodTargetType,
   ApplicationMethodType,
   PromotionType,
   RuleOperator,
 } from "@medusajs/framework/utils"
 import { operatorsMap } from "./operators-map"
+import {
+  ApplicationMethodTargetTypeValues,
+  ApplicationMethodTypeValues,
+  PromotionTypeValues,
+} from "@medusajs/types"
 
 export enum DisguisedRule {
   APPLY_TO_QUANTITY = "apply_to_quantity",
@@ -46,7 +52,7 @@ const ruleAttributes = [
   },
 ]
 
-const commonAttributes = [
+const itemsAttributes = [
   {
     id: "product",
     value: "items.product.id",
@@ -83,6 +89,17 @@ const commonAttributes = [
     id: "product_tag",
     value: "items.product.tags.id",
     label: "Product Tag",
+    required: false,
+    field_type: "multiselect",
+    operators: Object.values(operatorsMap),
+  },
+]
+
+const shippingMethodsAttributes = [
+  {
+    id: "shipping_option_type",
+    value: "shipping_methods.shipping_option.shipping_option_type_id",
+    label: "Shipping Option Type",
     required: false,
     field_type: "multiselect",
     operators: Object.values(operatorsMap),
@@ -127,14 +144,24 @@ const buyGetTargetRules = [
 export const getRuleAttributesMap = ({
   promotionType,
   applicationMethodType,
+  applicationMethodTargetType,
 }: {
-  promotionType?: string
-  applicationMethodType?: string
+  promotionType?: PromotionTypeValues
+  applicationMethodType?: ApplicationMethodTypeValues
+  applicationMethodTargetType?: ApplicationMethodTargetTypeValues
 }) => {
   const map = {
     rules: [...ruleAttributes],
-    "target-rules": [...commonAttributes],
-    "buy-rules": [...commonAttributes],
+    "target-rules":
+      applicationMethodTargetType ===
+      ApplicationMethodTargetType.SHIPPING_METHODS
+        ? [...shippingMethodsAttributes]
+        : [...itemsAttributes],
+    "buy-rules":
+      applicationMethodTargetType ===
+      ApplicationMethodTargetType.SHIPPING_METHODS
+        ? [...shippingMethodsAttributes]
+        : [...itemsAttributes],
   }
 
   if (applicationMethodType === ApplicationMethodType.FIXED) {
