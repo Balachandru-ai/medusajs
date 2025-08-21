@@ -116,6 +116,12 @@
         "items_one": {
           "type": "string"
         },
+        "items_few": {
+          "type": "string"
+        },
+        "items_many": {
+          "type": "string"
+        },
         "items_other": {
           "type": "string"
         },
@@ -246,6 +252,12 @@
         "numberOfKeys_one": {
           "type": "string"
         },
+        "numberOfKeys_few": {
+          "type": "string"
+        },
+        "numberOfKeys_many": {
+          "type": "string"
+        },
         "numberOfKeys_other": {
           "type": "string"
         },
@@ -253,6 +265,12 @@
           "type": "object",
           "properties": {
             "header_one": {
+              "type": "string"
+            },
+            "header_few": {
+              "type": "string"
+            },
+            "header_many": {
               "type": "string"
             },
             "header_other": {
@@ -281,6 +299,12 @@
           "type": "string"
         },
         "numberOfKeys_one": {
+          "type": "string"
+        },
+        "numberOfKeys_few": {
+          "type": "string"
+        },
+        "numberOfKeys_many": {
           "type": "string"
         },
         "numberOfKeys_other": {
@@ -1133,6 +1157,12 @@
             "count_one": {
               "type": "string"
             },
+            "count_few": {
+              "type": "string"
+            },
+            "count_many": {
+              "type": "string"
+            },
             "count_other": {
               "type": "string"
             }
@@ -1926,10 +1956,22 @@
             "deleteWarning_one": {
               "type": "string"
             },
+            "deleteWarning_few": {
+              "type": "string"
+            },
+            "deleteWarning_many": {
+              "type": "string"
+            },
             "deleteWarning_other": {
               "type": "string"
             },
             "deleteWarningWithThumbnail_one": {
+              "type": "string"
+            },
+            "deleteWarningWithThumbnail_few": {
+              "type": "string"
+            },
+            "deleteWarningWithThumbnail_many": {
               "type": "string"
             },
             "deleteWarningWithThumbnail_other": {
@@ -1995,6 +2037,12 @@
           "type": "string"
         },
         "variantCount_one": {
+          "type": "string"
+        },
+        "variantCount_few": {
+          "type": "string"
+        },
+        "variantCount_many": {
           "type": "string"
         },
         "variantCount_other": {
@@ -2356,6 +2404,12 @@
               "type": "string"
             },
             "tableItem_one": {
+              "type": "string"
+            },
+            "tableItem_few": {
+              "type": "string"
+            },
+            "tableItem_many": {
               "type": "string"
             },
             "tableItem_other": {
@@ -2733,6 +2787,12 @@
         "removeProductsWarning_one": {
           "type": "string"
         },
+        "removeProductsWarning_few": {
+          "type": "string"
+        },
+        "removeProductsWarning_many": {
+          "type": "string"
+        },
         "removeProductsWarning_other": {
           "type": "string"
         },
@@ -2755,6 +2815,12 @@
                 "successToast_one": {
                   "type": "string"
                 },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
+                  "type": "string"
+                },
                 "successToast_other": {
                   "type": "string"
                 }
@@ -2766,6 +2832,12 @@
               "type": "object",
               "properties": {
                 "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
                   "type": "string"
                 },
                 "successToast_other": {
@@ -2875,6 +2947,12 @@
                 "successToast_one": {
                   "type": "string"
                 },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
+                  "type": "string"
+                },
                 "successToast_other": {
                   "type": "string"
                 }
@@ -2892,10 +2970,22 @@
                 "confirmation_one": {
                   "type": "string"
                 },
+                "confirmation_few": {
+                  "type": "string"
+                },
+                "confirmation_many": {
+                  "type": "string"
+                },
                 "confirmation_other": {
                   "type": "string"
                 },
                 "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
                   "type": "string"
                 },
                 "successToast_other": {
@@ -3237,6 +3327,12 @@
               "type": "string"
             },
             "disablePrompt_one": {
+              "type": "string"
+            },
+            "disablePrompt_few": {
+              "type": "string"
+            },
+            "disablePrompt_many": {
               "type": "string"
             },
             "disablePrompt_other": {
@@ -3713,6 +3809,12 @@
                 "successToast_one": {
                   "type": "string"
                 },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
+                  "type": "string"
+                },
                 "successToast_other": {
                   "type": "string"
                 },
@@ -3736,10 +3838,22 @@
                 "title_one": {
                   "type": "string"
                 },
+                "title_few": {
+                  "type": "string"
+                },
+                "title_many": {
+                  "type": "string"
+                },
                 "title_other": {
                   "type": "string"
                 },
                 "description_one": {
+                  "type": "string"
+                },
+                "description_few": {
+                  "type": "string"
+                },
+                "description_many": {
                   "type": "string"
                 },
                 "description_other": {
@@ -5262,6 +5376,12 @@
             "showMoreActivities_one": {
               "type": "string"
             },
+            "showMoreActivities_few": {
+              "type": "string"
+            },
+            "showMoreActivities_many": {
+              "type": "string"
+            },
             "showMoreActivities_other": {
               "type": "string"
             },
@@ -5371,6 +5491,12 @@
                     "items_one": {
                       "type": "string"
                     },
+                    "items_few": {
+                      "type": "string"
+                    },
+                    "items_many": {
+                      "type": "string"
+                    },
                     "items_other": {
                       "type": "string"
                     }
@@ -5398,6 +5524,12 @@
                       "type": "string"
                     },
                     "items_one": {
+                      "type": "string"
+                    },
+                    "items_few": {
+                      "type": "string"
+                    },
+                    "items_many": {
                       "type": "string"
                     },
                     "items_other": {
@@ -6250,16 +6382,34 @@
                     "shipping_one": {
                       "type": "string"
                     },
+                    "shipping_few": {
+                      "type": "string"
+                    },
+                    "shipping_many": {
+                      "type": "string"
+                    },
                     "shipping_other": {
                       "type": "string"
                     },
                     "pickup_one": {
                       "type": "string"
                     },
+                    "pickup_few": {
+                      "type": "string"
+                    },
+                    "pickup_many": {
+                      "type": "string"
+                    },
                     "pickup_other": {
                       "type": "string"
                     },
                     "returns_one": {
+                      "type": "string"
+                    },
+                    "returns_few": {
+                      "type": "string"
+                    },
+                    "returns_many": {
                       "type": "string"
                     },
                     "returns_other": {
@@ -7171,16 +7321,34 @@
                 "values_one": {
                   "type": "string"
                 },
+                "values_few": {
+                  "type": "string"
+                },
+                "values_many": {
+                  "type": "string"
+                },
                 "values_other": {
                   "type": "string"
                 },
                 "numberOfTargets_one": {
                   "type": "string"
                 },
+                "numberOfTargets_few": {
+                  "type": "string"
+                },
+                "numberOfTargets_many": {
+                  "type": "string"
+                },
                 "numberOfTargets_other": {
                   "type": "string"
                 },
                 "additionalValues_one": {
+                  "type": "string"
+                },
+                "additionalValues_few": {
+                  "type": "string"
+                },
+                "additionalValues_many": {
                   "type": "string"
                 },
                 "additionalValues_other": {
@@ -8522,10 +8690,22 @@
                 "confirmation_one": {
                   "type": "string"
                 },
+                "confirmation_few": {
+                  "type": "string"
+                },
+                "confirmation_many": {
+                  "type": "string"
+                },
                 "confirmation_other": {
                   "type": "string"
                 },
                 "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
                   "type": "string"
                 },
                 "successToast_other": {
@@ -8983,6 +9163,12 @@
         "removeCurrencyWarning_one": {
           "type": "string"
         },
+        "removeCurrencyWarning_few": {
+          "type": "string"
+        },
+        "removeCurrencyWarning_many": {
+          "type": "string"
+        },
         "removeCurrencyWarning_other": {
           "type": "string"
         },
@@ -9075,6 +9261,12 @@
           "type": "string"
         },
         "removeCountriesWarning_one": {
+          "type": "string"
+        },
+        "removeCountriesWarning_few": {
+          "type": "string"
+        },
+        "removeCountriesWarning_many": {
           "type": "string"
         },
         "removeCountriesWarning_other": {
@@ -9464,6 +9656,12 @@
         "removeSalesChannelsWarning_one": {
           "type": "string"
         },
+        "removeSalesChannelsWarning_few": {
+          "type": "string"
+        },
+        "removeSalesChannelsWarning_many": {
+          "type": "string"
+        },
         "removeSalesChannelsWarning_other": {
           "type": "string"
         },
@@ -9565,6 +9763,12 @@
           "type": "string"
         },
         "removeProductsWarning_one": {
+          "type": "string"
+        },
+        "removeProductsWarning_few": {
+          "type": "string"
+        },
+        "removeProductsWarning_many": {
           "type": "string"
         },
         "removeProductsWarning_other": {
@@ -9789,6 +9993,12 @@
             "successToast_one": {
               "type": "string"
             },
+            "successToast_few": {
+              "type": "string"
+            },
+            "successToast_many": {
+              "type": "string"
+            },
             "successToast_other": {
               "type": "string"
             },
@@ -9868,6 +10078,12 @@
             "warningBatch_one": {
               "type": "string"
             },
+            "warningBatch_few": {
+              "type": "string"
+            },
+            "warningBatch_many": {
+              "type": "string"
+            },
             "warningBatch_other": {
               "type": "string"
             },
@@ -9875,6 +10091,12 @@
               "type": "string"
             },
             "successToastBatch_one": {
+              "type": "string"
+            },
+            "successToastBatch_few": {
+              "type": "string"
+            },
+            "successToastBatch_many": {
               "type": "string"
             },
             "successToastBatch_other": {
@@ -10286,6 +10508,12 @@
           "type": "string"
         },
         "stepsCompletedLabel_one": {
+          "type": "string"
+        },
+        "stepsCompletedLabel_few": {
+          "type": "string"
+        },
+        "stepsCompletedLabel_many": {
           "type": "string"
         },
         "stepsCompletedLabel_other": {
@@ -11426,10 +11654,22 @@
         "years_one": {
           "type": "string"
         },
+        "years_few": {
+          "type": "string"
+        },
+        "years_many": {
+          "type": "string"
+        },
         "years_other": {
           "type": "string"
         },
         "months_one": {
+          "type": "string"
+        },
+        "months_few": {
+          "type": "string"
+        },
+        "months_many": {
           "type": "string"
         },
         "months_other": {
@@ -11438,10 +11678,22 @@
         "weeks_one": {
           "type": "string"
         },
+        "weeks_few": {
+          "type": "string"
+        },
+        "weeks_many": {
+          "type": "string"
+        },
         "weeks_other": {
           "type": "string"
         },
         "days_one": {
+          "type": "string"
+        },
+        "days_few": {
+          "type": "string"
+        },
+        "days_many": {
           "type": "string"
         },
         "days_other": {
@@ -11450,16 +11702,34 @@
         "hours_one": {
           "type": "string"
         },
+        "hours_few": {
+          "type": "string"
+        },
+        "hours_many": {
+          "type": "string"
+        },
         "hours_other": {
           "type": "string"
         },
         "minutes_one": {
           "type": "string"
         },
+        "minutes_few": {
+          "type": "string"
+        },
+        "minutes_many": {
+          "type": "string"
+        },
         "minutes_other": {
           "type": "string"
         },
         "seconds_one": {
+          "type": "string"
+        },
+        "seconds_few": {
+          "type": "string"
+        },
+        "seconds_many": {
           "type": "string"
         },
         "seconds_other": {
