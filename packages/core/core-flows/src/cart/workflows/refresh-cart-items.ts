@@ -179,26 +179,25 @@ export const refreshCartItemsWorkflow = createWorkflow(
             customer: cart.customer,
           }
 
-          return cart.items.map((item) => {
-            return {
-              variantId: item.variant_id,
-              context: {
-                ...baseContext,
-                quantity: item.quantity,
-              },
-            }
-          })
+          return cart.items
+            .filter((i) => i.variant_id)
+            .map((item) => {
+              return {
+                variantId: item.variant_id,
+                context: {
+                  ...baseContext,
+                  quantity: item.quantity,
+                },
+              }
+            })
         }
       )
 
       const { data: variantsData } = useQueryGraphStep({
         entity: "variants",
-        fields: productVariantsFields.filter((f) => f !== "calculated_price.*"),
+        fields: productVariantsFields,
         filters: {
           id: variantIds,
-        },
-        pagination: {
-          take: null,
         },
       }).config({ name: "fetch-variants" })
 

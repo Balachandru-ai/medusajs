@@ -191,14 +191,11 @@ export const addToCartWorkflow = createWorkflow(
       const { data: variantsData } = useQueryGraphStep({
         entity: "variants",
         fields: deduplicate([
-          ...productVariantsFields.filter((f) => f !== "calculated_price.*"),
+          ...productVariantsFields,
           ...requiredVariantFieldsForInventoryConfirmation,
         ]),
         filters: {
           id: variantIds,
-        },
-        pagination: {
-          take: null,
         },
       })
 

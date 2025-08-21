@@ -36,6 +36,7 @@ import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
 const cartFields = cartFieldsForPricingContext.concat(["items.*"])
+const variantFields = productVariantsFields.concat(["calculated_price.*"])
 
 interface CartQueryDTO extends Omit<CartDTO, "items"> {
   items: NonNullable<CartDTO["items"]>
@@ -179,7 +180,7 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       const { data: variants } = useQueryGraphStep({
         entity: "variants",
         fields: deduplicate([
-          ...productVariantsFields,
+          ...variantFields,
           ...requiredVariantFieldsForInventoryConfirmation,
         ]),
         filters: {
