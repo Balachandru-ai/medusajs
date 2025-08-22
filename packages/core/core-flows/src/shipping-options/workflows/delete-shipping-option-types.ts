@@ -1,4 +1,8 @@
-import { Modules, ShippingOptionTypeWorkflowEvents } from "@medusajs/framework/utils"
+import {
+  MedusaError,
+  Modules,
+  ShippingOptionTypeWorkflowEvents,
+} from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -7,9 +11,27 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { createStep } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
 import { deleteShippingOptionTypesStep } from "../steps"
+import { useQueryGraphStep } from "../../common"
+
+const validateDeleteShippingOptionTypesStep = createStep(
+  "validate-delete-shipping-option-types",
+  (input: { shippingOptions: { id: string }[] }) => {
+    const shippingOptions = input.shippingOptions
+
+    if (shippingOptions.length > 0) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Cannot delete shipping option type because following shipping options are still using it: ${shippingOptions
+          .map((so) => so.id)
+          .join(", ")}`
+      )
+    }
+  }
+)
 
 /**
  * The data to delete one or more shipping option types.
@@ -21,7 +43,8 @@ export type DeleteShippingOptionTypesWorkflowInput = {
   ids: string[]
 }
 
-export const deleteShippingOptionTypesWorkflowId = "delete-shipping-option-types"
+export const deleteShippingOptionTypesWorkflowId =
+  "delete-shipping-option-types"
 /**
  * This workflow deletes one or more shipping-option types. It's used by the
  * [Delete Shipping Option Types Admin API Route](TODO HERE).
@@ -48,10 +71,29 @@ export const deleteShippingOptionTypesWorkflowId = "delete-shipping-option-types
 export const deleteShippingOptionTypesWorkflow = createWorkflow(
   deleteShippingOptionTypesWorkflowId,
   (input: WorkflowData<DeleteShippingOptionTypesWorkflowInput>) => {
-    const deletedShippingOptionTypes = deleteShippingOptionTypesStep(input.ids)
-    const shippingOptionTypesDeleted = createHook("shippingOptionTypesDeleted", {
-      ids: input.ids,
+    const shippingOptionsQuery = useQueryGraphStep({
+      entity: "shipping_option",
+      filters: { shipping_option_type_id: input.ids },
+      fields: ["id"],
+    }).config({ name: "get-shipping-options" })
+
+    const shippingOptions = transform(
+      { shippingOptionsQuery },
+      ({ shippingOptionsQuery }) =>
+        shippingOptionsQuery.data as { id: string }[]
+    )
+
+    validateDeleteShippingOptionTypesStep({
+      shippingOptions,
     })
+
+    const deletedShippingOptionTypes = deleteShippingOptionTypesStep(input.ids)
+    const shippingOptionTypesDeleted = createHook(
+      "shippingOptionTypesDeleted",
+      {
+        ids: input.ids,
+      }
+    )
 
     const typeIdEvents = transform({ input }, ({ input }) => {
       return input.ids?.map((id) => {
