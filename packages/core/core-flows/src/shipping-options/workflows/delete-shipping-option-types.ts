@@ -73,7 +73,7 @@ export const deleteShippingOptionTypesWorkflow = createWorkflow(
   (input: WorkflowData<DeleteShippingOptionTypesWorkflowInput>) => {
     const shippingOptionsQuery = useQueryGraphStep({
       entity: "shipping_option",
-      filters: { shipping_option_type_id: input.ids },
+      filters: { type_id: input.ids },
       fields: ["id"],
     }).config({ name: "get-shipping-options" })
 
