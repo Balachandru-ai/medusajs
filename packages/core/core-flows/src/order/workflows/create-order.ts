@@ -389,7 +389,7 @@ export const createOrderWorkflow = createWorkflow(
      * the totals are calculated, the order is being queried and without the totals. There is some
      * point of discussion for improvements here down the line.
      */
-    const { data: freshOrdersData } = useQueryGraphStep({
+    const { data: freshOrder } = useQueryGraphStep({
       entity: "orders",
       fields: [
         "shipping_address.*",
@@ -414,11 +414,10 @@ export const createOrderWorkflow = createWorkflow(
       filters: {
         id: order.id,
       },
+      options: {
+        isList: false,
+      },
     }).config({ name: "query-fresh-order" })
-
-    const freshOrder = transform({ freshOrdersData }, (data) => {
-      return data.freshOrdersData[0]
-    })
 
     parallelize(
       updateOrderTaxLinesWorkflow.runAsStep({

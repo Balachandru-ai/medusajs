@@ -7,10 +7,14 @@ import {
 import { createStep, StepFunction, StepResponse } from "@medusajs/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/utils"
 
-export type UseQueryGraphStepInput<TEntry extends string> =
-  RemoteQueryInput<TEntry> & {
-    options?: RemoteJoinerOptions
+export type UseQueryGraphStepInput<
+  TEntry extends string,
+  TIsList extends boolean = boolean
+> = RemoteQueryInput<TEntry> & {
+  options?: RemoteJoinerOptions & {
+    isList?: TIsList
   }
+}
 
 const useQueryGraphStepId = "use-query-graph-step"
 
@@ -20,9 +24,20 @@ const step = createStep(
     const query = container.resolve<RemoteQueryFunction>(
       ContainerRegistrationKeys.QUERY
     )
+
+    const isList = input.options?.isList ?? true
+    delete input.options?.isList
+
     const { options, ...queryConfig } = input
 
     const result = await query.graph(queryConfig as any, options)
+
+    if (!isList) {
+      const data = result.data?.[0]
+      result.data = data
+      return new StepResponse(result)
+    }
+
     return new StepResponse(result)
   }
 )
@@ -100,9 +115,28 @@ const step = createStep(
  * })
  * ```
  */
-export const useQueryGraphStep = <const TEntry extends string>(
-  input: UseQueryGraphStepInput<TEntry>
-): ReturnType<StepFunction<any, GraphResultSet<TEntry>>> =>
+export const useQueryGraphStep = <
+  const TEntry extends string,
+  TIsList extends boolean = boolean
+>(
+  input: UseQueryGraphStepInput<TEntry, TIsList>
+): ReturnType<
+  StepFunction<
+    any,
+    true extends TIsList
+      ? GraphResultSet<TEntry>
+      : Omit<GraphResultSet<TEntry>, "data"> & {
+          data: GraphResultSet<TEntry>["data"][number]
+        }
+  >
+> =>
   step(input as any) as unknown as ReturnType<
-    StepFunction<any, GraphResultSet<TEntry>>
+    StepFunction<
+      any,
+      true extends TIsList
+        ? GraphResultSet<TEntry>
+        : Omit<GraphResultSet<TEntry>, "data"> & {
+            data: GraphResultSet<TEntry>["data"][number]
+          }
+    >
   >

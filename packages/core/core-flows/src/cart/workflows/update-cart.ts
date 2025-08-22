@@ -1,5 +1,6 @@
 import {
   AdditionalData,
+  CartDTO,
   UpdateCartWorkflowInputDTO,
 } from "@medusajs/framework/types"
 import {
@@ -79,7 +80,7 @@ export const updateCartWorkflowId = "update-cart"
 export const updateCartWorkflow = createWorkflow(
   updateCartWorkflowId,
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
-    const { data: cartData } = useQueryGraphStep({
+    const { data: cartToUpdate } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.id },
       fields: [
@@ -96,21 +97,21 @@ export const updateCartWorkflow = createWorkflow(
       },
       options: {
         throwIfKeyNotFound: true,
+        isList: false,
       },
     }).config({ name: "get-cart" })
 
-    const cartToUpdate = transform({ cartData }, (data) => {
-      return data.cartData[0]
-    })
-
-    const cartDataInput = transform({ input, cartToUpdate }, (data) => {
-      return {
-        sales_channel_id:
-          data.input.sales_channel_id ?? data.cartToUpdate.sales_channel_id,
-        customer_id: data.cartToUpdate.customer_id,
-        email: data.input.email ?? data.cartToUpdate.email,
+    const cartDataInput = transform(
+      { input, cartToUpdate },
+      (data: { input: UpdateCartWorkflowInput; cartToUpdate: CartDTO }) => {
+        return {
+          sales_channel_id:
+            data.input.sales_channel_id ?? data.cartToUpdate.sales_channel_id,
+          customer_id: data.cartToUpdate.customer_id,
+          email: data.input.email ?? data.cartToUpdate.email,
+        }
       }
-    })
+    )
 
     const [salesChannel, customer] = parallelize(
       findSalesChannelStep({
@@ -127,7 +128,7 @@ export const updateCartWorkflow = createWorkflow(
     const newRegion = when("should-fetch-region", { input }, (data) => {
       return !!data.input.region_id
     }).then(() => {
-      const { data: newRegions } = useQueryGraphStep({
+      const { data: newRegion } = useQueryGraphStep({
         entity: "region",
         filters: { id: input.region_id },
         fields: ["id", "countries.*", "currency_code", "name"],
@@ -136,12 +137,9 @@ export const updateCartWorkflow = createWorkflow(
         },
         options: {
           throwIfKeyNotFound: true,
+          isList: false,
         },
       }).config({ name: "get-region" })
-
-      const newRegion = transform({ newRegions }, (data) => {
-        return data.newRegions[0]
-      })
 
       return newRegion
     })

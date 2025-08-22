@@ -11,7 +11,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { AdditionalData } from "@medusajs/types"
+import { AdditionalData, CartDTO } from "@medusajs/types"
 import { useQueryGraphStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import { getVariantPriceSetsStep, updateLineItemsStep } from "../steps"
@@ -146,20 +146,19 @@ export const refreshCartItemsWorkflow = createWorkflow(
     when("force-refresh-calculate-prices", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
-      const { data: cartData } = useQueryGraphStep({
+      const { data: cart } = useQueryGraphStep({
         entity: "cart",
         fields: cartFieldsForRefreshSteps,
         filters: { id: input.cart_id },
         pagination: {
           take: 1,
         },
+        options: {
+          isList: false,
+        },
       })
 
-      const cart = transform({ cartData }, (data) => {
-        return data.cartData[0]
-      })
-
-      const variantIds = transform({ cart }, (data) => {
+      const variantIds = transform({ cart }, (data: { cart: CartDTO }) => {
         return (data.cart.items ?? []).map((i) => i.variant_id).filter(Boolean)
       })
 

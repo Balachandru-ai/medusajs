@@ -108,20 +108,22 @@ export const updateLineItemInCartWorkflow = createWorkflow(
   (
     input: WorkflowData<UpdateLineItemInCartWorkflowInputDTO & AdditionalData>
   ) => {
-    const { data: cartQuery } = useQueryGraphStep({
+    const { data: cart } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.cart_id },
       fields: cartFields,
-      options: { throwIfKeyNotFound: true },
+      options: { throwIfKeyNotFound: true, isList: false },
     }).config({ name: "get-cart" })
 
-    const { cart, item, variantIds } = transform(
-      { cartQuery, input },
-      ({ cartQuery, input }) => {
-        const cart = cartQuery[0] as CartQueryDTO
-        const item = cart.items.find((i) => i.id === input.item_id)!
+    const { item, variantIds } = transform(
+      { cart, input },
+      (data: {
+        cart: CartQueryDTO
+        input: UpdateLineItemInCartWorkflowInputDTO & AdditionalData
+      }) => {
+        const item = data.cart.items.find((i) => i.id === data.input.item_id)!
         const variantIds = [item?.variant_id].filter(Boolean)
-        return { cart, item, variantIds }
+        return { item, variantIds }
       }
     )
 
