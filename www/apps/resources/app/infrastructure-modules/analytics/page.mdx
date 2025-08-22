@@ -103,7 +103,7 @@ export const workflowHighlights = [
   ["16", "track", "Track the event in the installed Analytics Module Provider"]
 ]
 
-```ts title="src/workflows/track-order-created.ts" highlights={workflowHighlights}
+```ts title="src/workflows/track-order-placed.ts" highlights={workflowHighlights}
 import { createWorkflow } from "@medusajs/framework/workflows-sdk"
 import { createStep } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
@@ -114,13 +114,13 @@ type StepInput = {
   order: OrderDTO
 }
 
-const trackOrderCreatedStep = createStep(
-  "track-order-created-step",
+const trackOrderPlacedStep = createStep(
+  "track-order-placed-step",
   async ({ order }: StepInput, { container }) => {
     const analyticsModuleService = container.resolve(Modules.ANALYTICS)
 
     await analyticsModuleService.track({
-      event: "order_created",
+      event: "order_placed",
       actor_id: order.customer_id,
       properties: {
         order_id: order.id,
@@ -140,8 +140,8 @@ type WorkflowInput = {
   order_id: string
 }
 
-export const trackOrderCreatedWorkflow = createWorkflow(
-  "track-order-created-workflow",
+export const trackOrderPlacedWorkflow = createWorkflow(
+  "track-order-placed-workflow",
   ({ order_id }: WorkflowInput) => {
     const { data: orders } = useQueryGraphStep({
       entity: "order",
@@ -161,7 +161,7 @@ export const trackOrderCreatedWorkflow = createWorkflow(
 )
 ```
 
-This workflow retrieves the order details using the `useQueryGraphStep` and then tracks the order creation event using the `trackOrderCreatedStep`.
+This workflow retrieves the order details using the `useQueryGraphStep` and then tracks the order placement event using the `trackOrderPlacedStep`.
 
 In the step, you resolve the service of the Analytics Module from the [Medusa container](!docs!/learn/fundamentals/medusa-container) and use its `track` method to track the event. This method will use the underlying provider configured in `medusa-config.ts` to track the event.
 
@@ -176,13 +176,13 @@ import type {
   SubscriberArgs,
   SubscriberConfig,
 } from "@medusajs/framework"
-import { trackOrderCreatedWorkflow } from "../workflows/track-order-created"
+import { trackOrderPlacedWorkflow } from "../workflows/track-order-placed"
 
 export default async function orderPlacedHandler({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string }>) {
-  await trackOrderCreatedWorkflow(container).run({
+  await trackOrderPlacedWorkflow(container).run({
     input: {
       order_id: data.id,
     },
@@ -194,6 +194,6 @@ export const config: SubscriberConfig = {
 }
 ```
 
-This subscriber listens to the `order.placed` event and executes the `trackOrderCreatedWorkflow` workflow, passing the order ID as input.
+This subscriber listens to the `order.placed` event and executes the `trackOrderPlacedWorkflow` workflow, passing the order ID as input.
 
-You'll now track the order creation event whenever an order is placed in your Medusa application. You can test this out by placing an order and checking the provider you integrated with (for example, PostHog) for the tracked event.
+You'll now track the order placement event whenever an order is placed in your Medusa application. You can test this out by placing an order and checking the provider you integrated with (for example, PostHog) for the tracked event.
