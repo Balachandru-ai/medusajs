@@ -9,6 +9,7 @@ import { EventEmitter } from "events"
 import { access, mkdir, rename, writeFile } from "fs/promises"
 import { dirname, join } from "path"
 import { readDir } from "../common"
+import { CustomMigrator } from "../dal/mikro-orm/custom-migrator"
 
 /**
  * Events emitted by the migrations class
@@ -50,6 +51,7 @@ export class Migrations extends EventEmitter<MigrationsEvents> {
           ...this.#configOrConnection.migrations,
           silent: true,
         },
+        extensions: [CustomMigrator],
       })
     )
   }
