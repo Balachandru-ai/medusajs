@@ -1,7 +1,7 @@
 import { AdditionalData, CreateOrderDTO } from "@medusajs/framework/types"
 import {
   MedusaError,
-  QueryContext,
+  PromotionActions,
   deduplicate,
   isDefined,
   isPresent,
@@ -29,13 +29,10 @@ import {
 import { pricingContextResult } from "../../cart/utils/schemas"
 import { confirmVariantInventoryWorkflow } from "../../cart/workflows/confirm-variant-inventory"
 import { useQueryGraphStep } from "../../common"
+import { refreshDraftOrderAdjustmentsWorkflow } from "../../draft-order/workflows/refresh-draft-order-adjustments"
 import { createOrdersStep } from "../steps"
 import { productVariantsFields } from "../utils/fields"
 import { updateOrderTaxLinesWorkflow } from "./update-tax-lines"
-
-const productVariantsFieldsWithCalculatedPrice = productVariantsFields.concat([
-  "calculated_price.*",
-])
 
 function prepareLineItems(data) {
   const items = (data.input.items ?? []).map((item) => {
@@ -211,7 +208,6 @@ export const createOrderWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
-    // TODO: This is on par with the context used in v1.*, but we can be more flexible.
     const pricingContext = transform(
       { input, region, customerData, setPricingContextResult },
       (data) => {
@@ -228,117 +224,131 @@ export const createOrderWorkflow = createWorkflow(
       }
     )
 
-    const shouldCalculatePricesSeparately = transform({ input }, (data) => {
-      return data.input.items?.some((item) => !isDefined(item.unit_price))
-    })
+    /**
+     * Only fetch variants with calculated prices if needed, otherwise only fetch variants without
+     * calculated prices.
+     *
+     * We need a variant calculated price when the item is either missing a unit price or is not
+     * tax inclusive.
+     */
+    const { variantIdsForPriceCalculation, variantIdsWithoutCalculatedPrice } =
+      transform({ input }, (data) => {
+        const variantIdsForPriceCalculation: string[] = []
+        const variantIdsWithoutCalculatedPrice: string[] = []
 
-    const variantsWithCalculatedPrice = when(
-      "fetch-variants-with-calculated-price",
-      { variantIds, shouldCalculatePricesSeparately },
-      ({ variantIds, shouldCalculatePricesSeparately }) => {
-        return !!variantIds.length && !shouldCalculatePricesSeparately
-      }
-    ).then(() => {
-      const calculatePricesContext = transform({ pricingContext }, (data) => {
-        return QueryContext(data.pricingContext)
+        data.input.items?.forEach((item) => {
+          if (
+            item.variant_id &&
+            (!isDefined(item.unit_price) || !isDefined(item.is_tax_inclusive))
+          ) {
+            variantIdsForPriceCalculation.push(item.variant_id!)
+          } else {
+            variantIdsWithoutCalculatedPrice.push(item.variant_id!)
+          }
+        })
+
+        return {
+          variantIdsForPriceCalculation,
+          variantIdsWithoutCalculatedPrice,
+        }
       })
-
-      const { data: variants } = useQueryGraphStep({
-        entity: "variants",
-        fields: deduplicate([
-          ...productVariantsFieldsWithCalculatedPrice,
-          ...requiredVariantFieldsForInventoryConfirmation,
-        ]),
-        filters: {
-          id: variantIds,
-        },
-        context: {
-          calculated_price: {
-            context: calculatePricesContext,
-          },
-        },
-      }).config({ name: "query-variants-with-calculated-price" })
-
-      validateVariantPricesStep({ variants }).config({
-        name: "validate-variants-with-calculated-price",
-      })
-
-      return variants
-    })
 
     /**
-     * We only calculate prices separately if one of the items does not have a unit price. Items
-     * supposidly comes from the cart, so they should already have their prices calculated when
-     * completed a cart.
+     * Fetch all variant for which we don't need to calculate the price.
      */
-    const variantsWithSeparateCalculatedPrice = when(
-      "fetch-variants-with-separate-calculated-price",
-      { variantIds, shouldCalculatePricesSeparately },
-      ({ variantIds, shouldCalculatePricesSeparately }) => {
-        return !!variantIds.length && !!shouldCalculatePricesSeparately
+    const { data: variantsWithoutCalculatedPrice } = useQueryGraphStep({
+      entity: "variants",
+      fields: deduplicate([
+        ...productVariantsFields,
+        ...requiredVariantFieldsForInventoryConfirmation,
+      ]),
+      filters: {
+        id: variantIdsWithoutCalculatedPrice,
+      },
+    }).config({ name: "query-variants-without-calculated-price" })
+
+    /**
+     * Fetch all variants for which we need to calculate the price.
+     */
+    const variantsWithCalculatedPrice = when(
+      "fetch-variants-with-calculated-price",
+      { variantIdsForPriceCalculation },
+      ({ variantIdsForPriceCalculation }) => {
+        return !!variantIdsForPriceCalculation.length
       }
     ).then(() => {
-      const { data: variantsData } = useQueryGraphStep({
-        entity: "variants",
-        fields: deduplicate([
-          ...productVariantsFields,
-          ...requiredVariantFieldsForInventoryConfirmation,
-        ]),
-        filters: {
-          id: variantIds,
-        },
-      }).config({ name: "query-variants-without-calculated-price" })
-
-      const calculatedPriceContext = transform(
-        { pricingContext, items: input.items },
-        (data): { variantId: string; context: Record<string, unknown> }[] => {
+      const calculatePricesContext = transform(
+        { items: input.items, variantIdsForPriceCalculation, pricingContext },
+        (data) => {
           const baseContext = data.pricingContext
 
-          return (data.items ?? [])
-            .filter((i) => i.variant_id)
-            .map((item) => {
+          return data.variantIdsForPriceCalculation
+            ?.map((variant) => {
+              // Since we retrieve the variant ids from the item, it is not possible to not find the item back from the variant id.
+              const item = data.items?.find(
+                (item) => item.variant_id === variant
+              )!
+
               return {
-                variantId: item.variant_id!,
+                variantId: variant,
                 context: {
                   ...baseContext,
                   quantity: item.quantity,
                 },
               }
             })
+            .filter(Boolean)
         }
       )
 
+      const { data: variants } = useQueryGraphStep({
+        entity: "variants",
+        fields: deduplicate([
+          ...productVariantsFields,
+          ...requiredVariantFieldsForInventoryConfirmation,
+        ]),
+        filters: {
+          id: variantIdsForPriceCalculation,
+        },
+      }).config({ name: "query-variants-to-calculate-prices" })
+
       const calculatedPriceSets = getVariantPriceSetsStep({
-        data: calculatedPriceContext,
+        data: calculatePricesContext,
       })
 
-      const variants = transform(
-        { variantsData, calculatedPriceSets },
-        ({ variantsData, calculatedPriceSets }) => {
-          return variantsData.map((variant) => {
-            variant.calculated_price = calculatedPriceSets[variant.id]
+      const reconstructedVariants = transform(
+        {
+          variants,
+          calculatedPriceSets,
+        },
+        (data) => {
+          return data.variants.map((variant) => {
+            variant.calculated_price = data.calculatedPriceSets[variant.id]
             return variant
           })
         }
       )
 
-      validateVariantPricesStep({ variants }).config({
-        name: "validate-variants-without-separate-calculated-price",
+      validateVariantPricesStep({ variants: reconstructedVariants }).config({
+        name: "validate-variants-with-calculated-price",
       })
 
-      return variants
+      return reconstructedVariants
     })
 
+    /**
+     * Aggregate all variants without calculated price and all variants with calculated price.
+     */
     const variants = transform(
       {
+        variantsWithoutCalculatedPrice,
         variantsWithCalculatedPrice,
-        variantsWithSeparateCalculatedPrice,
-        shouldCalculatePricesSeparately,
       },
       (data) => {
-        return data.shouldCalculatePricesSeparately
-          ? data.variantsWithSeparateCalculatedPrice ?? []
-          : data.variantsWithCalculatedPrice ?? []
+        return [
+          ...data.variantsWithoutCalculatedPrice,
+          ...(data.variantsWithCalculatedPrice ?? []),
+        ]
       }
     )
 
@@ -369,11 +379,25 @@ export const createOrderWorkflow = createWorkflow(
     const orders = createOrdersStep([orderToCreate])
     const order = transform({ orders }, (data) => data.orders?.[0])
 
-    updateOrderTaxLinesWorkflow.runAsStep({
-      input: {
-        order_id: order.id,
-      },
-    })
+    const appliedPromoCodes: string[] = transform(
+      input,
+      (order) => order.promo_codes ?? []
+    )
+
+    parallelize(
+      updateOrderTaxLinesWorkflow.runAsStep({
+        input: {
+          order_id: order.id,
+        },
+      }),
+      refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+        input: {
+          order: order,
+          promo_codes: appliedPromoCodes,
+          action: PromotionActions.REPLACE,
+        },
+      })
+    )
 
     const orderCreated = createHook("orderCreated", {
       order,
