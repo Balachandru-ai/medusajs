@@ -384,6 +384,42 @@ export const createOrderWorkflow = createWorkflow(
       (order) => order.promo_codes ?? []
     )
 
+    /**
+     * TODO: Currently need the refresh because when the order module creates the order, even though
+     * the totals are calculated, the order is being queried and without the totals. There is some
+     * point of discussion for improvements here down the line.
+     */
+    const { data: freshOrdersData } = useQueryGraphStep({
+      entity: "orders",
+      fields: [
+        "shipping_address.*",
+        "billing_address.*",
+        "summary.*",
+        "items.*",
+        "credit_lines.*",
+        "items.tax_lines.*",
+        "items.adjustments.*",
+        "shipping_methods.*",
+        "shipping_methods.tax_lines.*",
+        "shipping_methods.adjustments.*",
+        "transactions.*",
+        "currency_code",
+        "items.tax_lines.*",
+        "items.adjustments.*",
+        "shipping_methods.tax_lines.*",
+        "shipping_methods.adjustments.*",
+        "total",
+        "id",
+      ],
+      filters: {
+        id: order.id,
+      },
+    }).config({ name: "query-fresh-order" })
+
+    const freshOrder = transform({ freshOrdersData }, (data) => {
+      return data.freshOrdersData[0]
+    })
+
     parallelize(
       updateOrderTaxLinesWorkflow.runAsStep({
         input: {
@@ -392,7 +428,7 @@ export const createOrderWorkflow = createWorkflow(
       }),
       refreshDraftOrderAdjustmentsWorkflow.runAsStep({
         input: {
-          order: order,
+          order: freshOrder,
           promo_codes: appliedPromoCodes,
           action: PromotionActions.REPLACE,
         },
@@ -400,7 +436,7 @@ export const createOrderWorkflow = createWorkflow(
     )
 
     const orderCreated = createHook("orderCreated", {
-      order,
+      order: freshOrder,
       additional_data: input.additional_data,
     })
 
