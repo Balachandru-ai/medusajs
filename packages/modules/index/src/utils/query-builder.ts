@@ -11,6 +11,7 @@ import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 
 const AND_OPERATOR = "$and"
 const OR_OPERATOR = "$or"
+const NOT_OPERATOR = "$not"
 
 function escapeJsonPathString(val: string): string {
   // Escape for JSONPath string
@@ -57,6 +58,7 @@ export const OPERATOR_MAP = {
   $gte: ">=",
   $ne: "!=",
   $in: "IN",
+  $nin: "NOT IN",
   $is: "IS",
   $like: "LIKE",
   $ilike: "ILIKE",
@@ -274,7 +276,8 @@ export class QueryBuilder {
 
       if (
         (fieldOrLogicalOperator === AND_OPERATOR ||
-          fieldOrLogicalOperator === OR_OPERATOR) &&
+          fieldOrLogicalOperator === OR_OPERATOR ||
+          fieldOrLogicalOperator === NOT_OPERATOR) &&
         !Array.isArray(value)
       ) {
         value = [value]
@@ -310,6 +313,31 @@ export class QueryBuilder {
           })
         })
       } else if (
+        fieldOrLogicalOperator === NOT_OPERATOR &&
+        (Array.isArray(value) || isObject(value))
+      ) {
+        builder.whereNot((qb) => {
+          if (Array.isArray(value)) {
+            value.forEach((cond) => {
+              qb.andWhere((subBuilder) =>
+                this.parseWhere(
+                  aliasMapping,
+                  cond,
+                  subBuilder,
+                  pathAsArray.join(".")
+                )
+              )
+            })
+          } else {
+            this.parseWhere(
+              aliasMapping,
+              value as any,
+              qb,
+              pathAsArray.join(".")
+            )
+          }
+        })
+      } else if (
         isObject(value) &&
         !Array.isArray(value) &&
         fieldOrLogicalOperator !== AND_OPERATOR &&
@@ -335,7 +363,10 @@ export class QueryBuilder {
                 value[subKey]
               )
 
-              let val = operator === "IN" ? subValue : [subValue]
+              let val =
+                operator === "IN" || operator === "NOT IN"
+                  ? subValue
+                  : [subValue]
               if (operator === "=" && subValue === null) {
                 operator = "IS"
               } else if (operator === "!=" && subValue === null) {
@@ -355,7 +386,7 @@ export class QueryBuilder {
                     )}'::jsonb`
                   )
                 }
-              } else if (operator === "IN") {
+              } else if (operator === "IN" || operator === "NOT IN") {
                 if (val && !Array.isArray(val)) {
                   val = [val]
                 }
@@ -365,9 +396,12 @@ export class QueryBuilder {
 
                 const inPlaceholders = val.map(() => "?").join(",")
                 const hasId = field[field.length - 1] === "id"
+                const isNegated = operator === "NOT IN"
                 if (hasId) {
                   builder.whereRaw(
-                    `${aliasMapping[attr]}.id IN (${inPlaceholders})`,
+                    `${aliasMapping[attr]}.id ${
+                      isNegated ? "NOT IN" : "IN"
+                    } (${inPlaceholders})`,
                     val
                   )
                 } else {
@@ -379,10 +413,17 @@ export class QueryBuilder {
                     })
                   )
 
-                  builder.whereRaw(
-                    `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
-                    jsonbValues
-                  )
+                  if (isNegated) {
+                    builder.whereRaw(
+                      `NOT EXISTS (SELECT 1 FROM unnest(ARRAY[${inPlaceholders}]::JSONB[]) AS v(val) WHERE ${aliasMapping[attr]}.data${nested} @> v.val)`,
+                      jsonbValues
+                    )
+                  } else {
+                    builder.whereRaw(
+                      `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
+                      jsonbValues
+                    )
+                  }
                 }
               } else {
                 const potentialIdFields = field[field.length - 1]
@@ -1001,6 +1042,7 @@ export class QueryBuilder {
 
     const finalSql = outerQueryBuilder.toQuery()
 
+    console.log(finalSql)
     return {
       sql: finalSql,
       sqlCount: countQuery?.toQuery?.(),

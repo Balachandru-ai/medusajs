@@ -296,7 +296,24 @@ describe("IndexModuleService query", function () {
       },
     })
 
+    const { data: dataNot } = await module.query({
+      fields: ["product.*", "product.variants.*", "product.variants.prices.*"],
+      filters: {
+        product: {
+          variants: {
+            $not: [
+              {
+                sku: { $eq: null },
+              },
+            ],
+          },
+        },
+      },
+    })
+
     expect(data.length).toEqual(1)
+    expect(dataNot.length).toEqual(1)
+    expect(dataNot).toEqual(data)
 
     const { data: data2 } = await module.query({
       fields: ["product.*", "product.variants.*", "product.variants.prices.*"],
@@ -936,5 +953,85 @@ describe("IndexModuleService query", function () {
         ],
       },
     ])
+  })
+
+  it("should query products filtering product not in [X]", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+        deep: {
+          a: 1,
+          obj: {
+            b: 15,
+          },
+        },
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.*"],
+      filters: {
+        $not: [
+          {
+            product: {
+              id: {
+                $in: ["prod_1"],
+              },
+            },
+          },
+        ],
+      },
+    })
+
+    const { data: dataNot } = await module.query({
+      fields: ["product.*"],
+      filters: {
+        product: {
+          id: {
+            $nin: ["prod_1"],
+          },
+        },
+      },
+    })
+    expect(dataNot).toEqual(expected)
+  })
+
+  it.only("should query products filtering product not in [X]", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+        deep: {
+          a: 1,
+          obj: {
+            b: 15,
+          },
+        },
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.*", "variants.*"],
+      filters: {
+        product: {
+          $and: [
+            {
+              variants: {
+                sku: {
+                  $nin: ["sku 123"],
+                },
+              },
+            },
+            {
+              title: {
+                $eq: "Product 2 title",
+              },
+            },
+          ],
+        },
+      },
+    })
+    console.log(JSON.stringify(data, null, 2), "************************")
   })
 })
