@@ -1,4 +1,9 @@
-import { dynamicImport, promiseAll, readDirRecursive } from "@medusajs/utils"
+import {
+  dynamicImport,
+  MEDUSA_SKIP_FILE,
+  promiseAll,
+  readDirRecursive,
+} from "@medusajs/utils"
 import { Dirent } from "fs"
 import { access } from "fs/promises"
 import { join, parse } from "path"
@@ -78,6 +83,10 @@ export abstract class ResourceLoader {
 
             const module_ = await dynamicImport(fullPath)
 
+            if (module_ === MEDUSA_SKIP_FILE) {
+              return
+            }
+
             await this.onFileLoaded(fullPath, module_)
             return module_
           })
@@ -86,7 +95,7 @@ export abstract class ResourceLoader {
     })
 
     const resources = await promiseAll(promises)
-    return resources.flat()
+    return resources.flat().filter(Boolean)
   }
 
   /**

@@ -1,6 +1,7 @@
 import { InputFileConfig } from "@medusajs/types"
 
-const MEDUSA_FILE_CONFIG = "__MEDUSA_FILE_CONFIG__"
+export const MEDUSA_FILE_CONFIG = "__MEDUSA_FILE_CONFIG__"
+export const MEDUSA_SKIP_FILE = Symbol.for("__MEDUSA_SKIP_FILE__")
 /**
  * The "defineFileConfig" helper can be used to define the configuration
  * of any file auto-loaded by Medusa.
@@ -9,11 +10,8 @@ const MEDUSA_FILE_CONFIG = "__MEDUSA_FILE_CONFIG__"
  * that is disabled.
  */
 export function defineFileConfig(config?: InputFileConfig) {
-  const isEnabled = () => true
-
   return {
     [MEDUSA_FILE_CONFIG]: {
-      isEnabled,
       ...config,
     },
   }

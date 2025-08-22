@@ -20,6 +20,7 @@ import {
   dynamicImport,
   getProviderRegistrationKey,
   isString,
+  MEDUSA_SKIP_FILE,
   MedusaModuleProviderType,
   MedusaModuleType,
   Modules,
@@ -536,9 +537,11 @@ async function importAllFromDir(path: string) {
 
   return (
     await Promise.all(filesToLoad.map((filePath) => dynamicImport(filePath)))
-  ).flatMap((value) => {
-    return Object.values(value)
-  })
+  )
+    .filter((value) => value !== MEDUSA_SKIP_FILE)
+    .flatMap((value) => {
+      return Object.values(value)
+    })
 }
 
 export async function loadResources({
@@ -568,6 +571,10 @@ export async function loadResources({
 
     const [moduleService, services, models, repositories] = await Promise.all([
       dynamicImport(modulePath).then((moduleExports) => {
+        if (moduleExports === MEDUSA_SKIP_FILE) {
+          return
+        }
+
         const mod = moduleExports.default ?? moduleExports
         return mod.service
       }),

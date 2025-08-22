@@ -3,6 +3,7 @@ import {
   dynamicImport,
   isString,
   lowerCaseFirst,
+  MEDUSA_SKIP_FILE,
   normalizeImportPathWithSource,
   promiseAll,
 } from "@medusajs/utils"
@@ -51,6 +52,10 @@ export async function loadModuleProvider(
     throw new Error(
       `Unable to find module ${moduleName} -- perhaps you need to install its package?`
     )
+  }
+
+  if (loadedProvider === MEDUSA_SKIP_FILE) {
+    return
   }
 
   loadedProvider = (loadedProvider as any).default ?? loadedProvider

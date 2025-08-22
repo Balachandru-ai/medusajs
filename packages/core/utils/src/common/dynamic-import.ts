@@ -1,3 +1,4 @@
+import { MEDUSA_FILE_CONFIG, MEDUSA_SKIP_FILE } from "./define-file-config"
 import { resolveExports } from "./resolve-exports"
 
 /**
@@ -13,5 +14,15 @@ import { resolveExports } from "./resolve-exports"
  */
 export async function dynamicImport(path: string): Promise<any> {
   const module = require(path)
-  return resolveExports(module)
+
+  const exported = resolveExports(module)
+
+  if (exported?.[MEDUSA_FILE_CONFIG]) {
+    const fileConfigs = exported[MEDUSA_FILE_CONFIG]
+    if (fileConfigs?.isDisabled()) {
+      return MEDUSA_SKIP_FILE
+    }
+  }
+
+  return exported
 }

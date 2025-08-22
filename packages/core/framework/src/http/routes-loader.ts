@@ -1,4 +1,8 @@
-import { dynamicImport, readDirRecursive } from "@medusajs/utils"
+import {
+  dynamicImport,
+  MEDUSA_SKIP_FILE,
+  readDirRecursive,
+} from "@medusajs/utils"
 import { join, parse, sep } from "path"
 import { logger } from "../logger"
 import { HTTP_METHODS, type RouteDescriptor, type RouteVerb } from "./types"
@@ -91,6 +95,10 @@ export class RoutesLoader {
     absolutePath: string
   ): Promise<RouteDescriptor[]> {
     const routeExports = await dynamicImport(absolutePath)
+
+    if (routeExports === MEDUSA_SKIP_FILE) {
+      return []
+    }
 
     /**
      * Find the route type based upon its prefix.
