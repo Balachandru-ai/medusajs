@@ -362,7 +362,6 @@ export const productCollectionHighlights = [
 
 ```ts title="src/collections/Products.ts" badgeLabel="Storefront" badgeColor="blue" highlights={productCollectionHighlights}
 import { CollectionConfig } from "payload"
-import { payloadMedusaSdk } from "../lib/payload-sdk"
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -1972,11 +1971,11 @@ In this step, you'll customize the Next.js Starter Storefront to view the produc
 
 When you fetch product data in the Next.js Starter Storefront from the Medusa server, you can also retrieve the linked product data from Payload.
 
-To do this, go to `src/lib/products.ts` in your Next.js Starter Storefront. You'll find a `listProducts` function that uses the JS SDK to fetch products from the Medusa server.
+To do this, go to `src/lib/data/products.ts` in your Next.js Starter Storefront. You'll find a `listProducts` function that uses the JS SDK to fetch products from the Medusa server.
 
 Find the `sdk.client.fetch` call and add `*payload_product` to the `fields` query parameter:
 
-```ts title="src/lib/products.ts" badgeLabel="Storefront" badgeColor="blue" highlights={[["19"]]}
+```ts title="src/lib/data/products.ts" badgeLabel="Storefront" badgeColor="blue" highlights={[["19"]]}
 export const listProducts = async ({
   // ...
 }: {

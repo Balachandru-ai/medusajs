@@ -8,6 +8,8 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
+import { createShippingOptionSeeder } from "../../fixtures/shipping"
+import { AdminShippingOption } from "@medusajs/types"
 
 jest.setTimeout(300000)
 
@@ -73,7 +75,10 @@ medusaIntegrationTestRunner({
       })
 
       it("should search orders by shipping address", async () => {
-        let response = await api.get(`/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2`, adminHeaders)
+        let response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -82,7 +87,10 @@ medusaIntegrationTestRunner({
           }),
         ])
 
-        response = await api.get(`/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2&q=${order.shipping_address.address_1}`, adminHeaders)
+        response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2&q=${order.shipping_address.address_1}`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -91,7 +99,10 @@ medusaIntegrationTestRunner({
           }),
         ])
 
-        response = await api.get(`/admin/orders?q=${order.shipping_address.address_2}`, adminHeaders)
+        response = await api.get(
+          `/admin/orders?q=${order.shipping_address.address_2}`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -107,16 +118,10 @@ medusaIntegrationTestRunner({
       })
 
       it("should search orders by billing address", async () => {
-        let response = await api.get(`/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`, adminHeaders)
-
-        expect(response.data.orders).toHaveLength(1)
-        expect(response.data.orders).toEqual([
-          expect.objectContaining({
-            id: order.id, 
-          }),
-        ])
-
-        response = await api.get(`/admin/orders?fields=+billing_address.address_1,+billing_address.address_2&q=${order.billing_address.address_1}`, adminHeaders)
+        let response = await api.get(
+          `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -125,12 +130,27 @@ medusaIntegrationTestRunner({
           }),
         ])
 
-        response = await api.get(`/admin/orders?q=${order.billing_address.address_2}`, adminHeaders)
+        response = await api.get(
+          `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2&q=${order.billing_address.address_1}`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
           expect.objectContaining({
-            id: order.id, 
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?q=${order.billing_address.address_2}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
           }),
         ])
       })
@@ -2468,6 +2488,76 @@ medusaIntegrationTestRunner({
           type: "invalid_data",
           message: `Quantity to fulfill exceeds the reserved quantity for the item: ${order.items[0].id}`,
         })
+      })
+    })
+
+    describe("GET /orders/:id/shipping-options", () => {
+      let so1: AdminShippingOption
+      let so2: AdminShippingOption
+      let so3: AdminShippingOption
+
+      beforeEach(async () => {
+        seeder = await createOrderSeeder({ api, container: getContainer() })
+        order = seeder.order
+        order = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
+          .order
+
+        so1 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["us"],
+          })
+        ).shippingOption
+
+        so2 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["us", "ca"],
+          })
+        ).shippingOption
+
+        so3 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["de"],
+          })
+        ).shippingOption
+      })
+
+      it("should return the shipping options applicable for the order", async () => {
+        const { data } = await api.get(
+          `/admin/orders/${order.id}/shipping-options`,
+          adminHeaders
+        )
+
+        const originalShippingOptionId =
+          order.shipping_methods[0].shipping_option_id
+
+        expect(order.shipping_address.country_code).toEqual("us")
+
+        expect(data.shipping_options.length).toEqual(3)
+        expect(data.shipping_options).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: so1.id,
+              insufficient_inventory: true,
+            }),
+            expect.objectContaining({
+              id: so2.id,
+              insufficient_inventory: true, // new SO without location levels for the order item, should have insufficient inventory
+            }),
+            expect.objectContaining({
+              id: originalShippingOptionId,
+              insufficient_inventory: false, // order is created with this SO, location has to have enough inventory
+            }),
+          ])
+        )
       })
     })
 
