@@ -7225,6 +7225,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -7232,7 +7235,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -7269,6 +7273,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -7276,7 +7283,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -7297,6 +7305,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -7304,7 +7315,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -11082,6 +11094,12 @@
         "configurations": {
           "type": "string"
         },
+        "enabledInStore": {
+          "type": "string"
+        },
+        "isReturn": {
+          "type": "string"
+        },
         "conditions": {
           "type": "string"
         },
@@ -11185,6 +11203,9 @@
           "type": "string"
         },
         "countries": {
+          "type": "string"
+        },
+        "serviceZone": {
           "type": "string"
         },
         "paymentProviders": {
@@ -11511,6 +11532,8 @@
         "categories",
         "shippingMethod",
         "configurations",
+        "enabledInStore",
+        "isReturn",
         "conditions",
         "category",
         "collection",
@@ -11546,6 +11569,7 @@
         "minutes",
         "totalRedemptions",
         "countries",
+        "serviceZone",
         "paymentProviders",
         "refundReason",
         "fulfillmentProviders",
