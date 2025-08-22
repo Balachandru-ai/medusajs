@@ -160,6 +160,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
           id: input.option_ids,
 
           context: {
+            ...cart,
             is_return: input.is_return ? "true" : "false",
             enabled_in_store: !isDefined(input.enabled_in_store)
               ? "true"
