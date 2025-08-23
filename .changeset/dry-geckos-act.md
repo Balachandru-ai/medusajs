@@ -1,10 +1,10 @@
 ---
-"@medusajs/modules-sdk": minor
-"@medusajs/framework": minor
-"@medusajs/types": minor
-"@medusajs/utils": minor
-"@medusajs/medusa": minor
-"@medusajs/test-utils": minor
+"@medusajs/modules-sdk": patch
+"@medusajs/framework": patch
+"@medusajs/types": patch
+"@medusajs/utils": patch
+"@medusajs/medusa": patch
+"@medusajs/test-utils": patch
 ---
 
 feat(utils): define file config
