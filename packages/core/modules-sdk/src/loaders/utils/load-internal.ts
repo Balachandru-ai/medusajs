@@ -1,4 +1,5 @@
 import {
+  ConfigModule,
   Constructor,
   IModuleService,
   InternalModuleDeclaration,
@@ -16,8 +17,10 @@ import {
   ContainerRegistrationKeys,
   createMedusaContainer,
   defineJoinerConfig,
+  discoverFeatureFlagsFromDir,
   DmlEntity,
   dynamicImport,
+  FeatureFlag,
   getProviderRegistrationKey,
   isString,
   MEDUSA_SKIP_FILE,
@@ -29,9 +32,10 @@ import {
   toMikroOrmEntities,
 } from "@medusajs/utils"
 import { asFunction, asValue } from "awilix"
-import { existsSync, statSync } from "fs"
+import { statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"
+import { registerFeatureFlag } from "../../feature-flags/register-flag"
 
 type ModuleResource = {
   services: Function[]
@@ -194,6 +198,7 @@ export async function loadInternalModule(args: {
 
   if (loadedModule.discoveryPath) {
     moduleResources = await loadResources({
+      container,
       moduleResolution: resolution,
       discoveryPath: loadedModule.discoveryPath,
       logger,
@@ -380,6 +385,7 @@ export async function loadInternalModule(args: {
 }
 
 export async function loadModuleMigrations(
+  container: MedusaContainer,
   resolution: ModuleResolution,
   moduleExports?: ModuleExports
 ): Promise<{
@@ -450,6 +456,7 @@ export async function loadModuleMigrations(
 
       if (!runMigrationsCustom || !revertMigrationCustom) {
         const moduleResources = await loadResources({
+          container,
           moduleResolution: resolution,
           discoveryPath: loadedModule.discoveryPath,
           loadedModuleLoaders: loadedModule?.loaders,
@@ -545,11 +552,13 @@ async function importAllFromDir(path: string) {
 }
 
 export async function loadResources({
+  container,
   moduleResolution,
   discoveryPath,
   logger,
   loadedModuleLoaders,
 }: {
+  container: MedusaContainer
   moduleResolution: ModuleResolution
   discoveryPath: string
   logger?: Logger
@@ -567,6 +576,24 @@ export async function loadResources({
   try {
     const defaultOnFail = () => {
       return []
+    }
+
+    const flagDir = resolve(normalizedPath, "feature-flags")
+
+    // Discover definitions; if the directory doesn't exist, this will noop via catch
+    let discovered = await discoverFeatureFlagsFromDir(flagDir)
+
+    const configModule = container.resolve(
+      ContainerRegistrationKeys.CONFIG_MODULE
+    ) as ConfigModule
+
+    for (const def of discovered) {
+      registerFeatureFlag({
+        flag: def as any,
+        projectConfigFlags: configModule.featureFlags,
+        router: FeatureFlag,
+        logger,
+      })
     }
 
     const [moduleService, services, models, repositories] = await Promise.all([
@@ -616,31 +643,6 @@ export async function loadResources({
       moduleResolution,
       migrationPath: normalizedPath + "/migrations",
     })
-
-    // If the module/provider exposes a feature-flags directory, load its flags using the
-    // same registration logic as the framework's feature flag loader.
-    // We defer the import of the framework loader to runtime to avoid coupling at build time.
-    const featureFlagsPath = resolve(normalizedPath, "feature-flags")
-    if (existsSync(featureFlagsPath)) {
-      const featureFlagsLoaderName = "featureFlagsLoader"
-      const hasFeatureFlagsLoader = loadedModuleLoaders.some(
-        (l) => l.name === featureFlagsLoaderName
-      )
-
-      if (!hasFeatureFlagsLoader) {
-        const featureFlagsLoader = async () => {
-          const { featureFlagsLoader } = await import(
-            "@medusajs/framework/feature-flags"
-          )
-          await featureFlagsLoader(featureFlagsPath)
-        }
-        Object.defineProperty(featureFlagsLoader, "name", {
-          value: featureFlagsLoaderName,
-        })
-
-        finalLoaders.push(featureFlagsLoader as any)
-      }
-    }
 
     // if a module service is provided, we generate a joiner config
     if (moduleService) {

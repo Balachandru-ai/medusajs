@@ -1,58 +1,49 @@
+import { FlagSettings } from "@medusajs/types"
+import { readdir } from "fs/promises"
 import { join, normalize } from "path"
-import { dynamicImport, isString, readDirRecursive } from "../common"
-
-export type FeatureFlagDefinition = {
-  key: string
-  env_key: string
-  default_val?: boolean
-  description?: string
-}
+import { dynamicImport, isString } from "../common"
 
 const excludedFiles = ["index.js", "index.ts"]
 const excludedExtensions = [".d.ts", ".d.ts.map", ".js.map"]
 
-function isFeatureFlag(flag: unknown): flag is FeatureFlagDefinition {
+function isFeatureFlag(flag: unknown): flag is FlagSettings {
   const f = flag as any
   return !!f && isString(f.key) && isString(f.env_key)
 }
 
 /**
- * Recursively discover feature flag definitions from a directory.
- * Returns a flat array of all exported values that match FeatureFlagDefinition.
+ * Discover feature flag definitions from a directory (shallow only).
+ * Returns all exported values from top-level files that match FlagSettings.
  */
 export async function discoverFeatureFlagsFromDir(
   sourcePath?: string
-): Promise<FeatureFlagDefinition[]> {
+): Promise<FlagSettings[]> {
   if (!sourcePath) {
     return []
   }
 
   const flagDir = normalize(sourcePath)
-  const discovered: FeatureFlagDefinition[] = []
+  const discovered: FlagSettings[] = []
 
-  const files = await readDirRecursive(flagDir)
-  if (!files?.length) {
+  const entries = await readdir(flagDir, { withFileTypes: true })
+  if (!entries?.length) {
     return discovered
   }
 
   await Promise.all(
-    files.map(async (file) => {
-      if (file.isDirectory()) {
-        const nested = await discoverFeatureFlagsFromDir(
-          join(flagDir, file.name)
-        )
-        discovered.push(...nested)
+    entries.map(async (entry) => {
+      if (entry.isDirectory()) {
         return
       }
 
       if (
-        excludedExtensions.some((ext) => file.name.endsWith(ext)) ||
-        excludedFiles.includes(file.name)
+        excludedExtensions.some((ext) => entry.name.endsWith(ext)) ||
+        excludedFiles.includes(entry.name)
       ) {
         return
       }
 
-      const fileExports = await dynamicImport(join(flagDir, file.name))
+      const fileExports = await dynamicImport(join(flagDir, entry.name))
       const values = Object.values(fileExports)
       for (const value of values) {
         if (isFeatureFlag(value)) {

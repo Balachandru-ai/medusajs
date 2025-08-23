@@ -765,6 +765,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { generateMigration } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
@@ -801,6 +802,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { runMigrations } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
@@ -837,6 +839,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { revertMigration } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
