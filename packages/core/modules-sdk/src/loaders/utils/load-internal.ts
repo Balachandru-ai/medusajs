@@ -29,7 +29,7 @@ import {
   toMikroOrmEntities,
 } from "@medusajs/utils"
 import { asFunction, asValue } from "awilix"
-import { statSync } from "fs"
+import { existsSync, statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"
 
@@ -616,6 +616,31 @@ export async function loadResources({
       moduleResolution,
       migrationPath: normalizedPath + "/migrations",
     })
+
+    // If the module/provider exposes a feature-flags directory, load its flags using the
+    // same registration logic as the framework's feature flag loader.
+    // We defer the import of the framework loader to runtime to avoid coupling at build time.
+    const featureFlagsPath = resolve(normalizedPath, "feature-flags")
+    if (existsSync(featureFlagsPath)) {
+      const featureFlagsLoaderName = "featureFlagsLoader"
+      const hasFeatureFlagsLoader = loadedModuleLoaders.some(
+        (l) => l.name === featureFlagsLoaderName
+      )
+
+      if (!hasFeatureFlagsLoader) {
+        const featureFlagsLoader = async () => {
+          const { featureFlagsLoader } = await import(
+            "@medusajs/framework/feature-flags"
+          )
+          await featureFlagsLoader(featureFlagsPath)
+        }
+        Object.defineProperty(featureFlagsLoader, "name", {
+          value: featureFlagsLoaderName,
+        })
+
+        finalLoaders.push(featureFlagsLoader as any)
+      }
+    }
 
     // if a module service is provided, we generate a joiner config
     if (moduleService) {
