@@ -5,6 +5,7 @@
 "@medusajs/utils": patch
 "@medusajs/medusa": patch
 "@medusajs/test-utils": patch
+"@medusajs/workflows-sdk": patch
 ---
 
-feat(utils): define file config
+feat: define file config and improved feature flag support

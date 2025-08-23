@@ -1,4 +1,5 @@
 import { FlagSettings } from "@medusajs/types"
+import { existsSync } from "fs"
 import { readdir } from "fs/promises"
 import { join, normalize } from "path"
 import { dynamicImport, isString } from "../common"
@@ -24,6 +25,10 @@ export async function discoverFeatureFlagsFromDir(
 
   const flagDir = normalize(sourcePath)
   const discovered: FlagSettings[] = []
+
+  if (!existsSync(flagDir)) {
+    return discovered
+  }
 
   const entries = await readdir(flagDir, { withFileTypes: true })
   if (!entries?.length) {

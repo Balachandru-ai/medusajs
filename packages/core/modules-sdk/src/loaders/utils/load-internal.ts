@@ -579,18 +579,19 @@ export async function loadResources({
     }
 
     const flagDir = resolve(normalizedPath, "feature-flags")
-
-    // Discover definitions; if the directory doesn't exist, this will noop via catch
     let discovered = await discoverFeatureFlagsFromDir(flagDir)
 
     const configModule = container.resolve(
-      ContainerRegistrationKeys.CONFIG_MODULE
+      ContainerRegistrationKeys.CONFIG_MODULE,
+      {
+        allowUnregistered: true,
+      }
     ) as ConfigModule
 
     for (const def of discovered) {
       registerFeatureFlag({
-        flag: def as any,
-        projectConfigFlags: configModule.featureFlags,
+        flag: def,
+        projectConfigFlags: configModule?.featureFlags ?? {},
         router: FeatureFlag,
         logger,
       })
