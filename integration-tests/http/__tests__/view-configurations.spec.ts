@@ -37,7 +37,7 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /admin/views/{entity}/configurations", () => {
-        it.only("should create a personal view configuration", async () => {
+        it("should create a personal view configuration", async () => {
           const payload = {
             name: "My Order View",
             configuration: {
