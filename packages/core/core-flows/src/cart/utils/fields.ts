@@ -34,6 +34,7 @@ export const cartFieldsForRefreshSteps = [
   "shipping_methods.*",
   "shipping_methods.adjustments.*",
   "shipping_methods.tax_lines.*",
+  "shipping_methods.shipping_option.shipping_option_type_id",
   "customer.*",
   "customer.groups.*",
   "promotions.id",

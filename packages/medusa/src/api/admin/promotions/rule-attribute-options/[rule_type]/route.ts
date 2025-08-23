@@ -4,6 +4,11 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { getRuleAttributesMap, validateRuleType } from "../../utils"
+import {
+  ApplicationMethodTargetTypeValues,
+  ApplicationMethodTypeValues,
+  PromotionTypeValues,
+} from "@medusajs/types"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminGetPromotionRuleParams>,
@@ -15,8 +20,11 @@ export const GET = async (
 
   const attributes =
     getRuleAttributesMap({
-      promotionType: req.query.promotion_type as string,
-      applicationMethodType: req.query.application_method_type as string,
+      promotionType: req.query.promotion_type as PromotionTypeValues,
+      applicationMethodType: req.query
+        .application_method_type as ApplicationMethodTypeValues,
+      applicationMethodTargetType: req.query
+        .application_method_target_type as ApplicationMethodTargetTypeValues,
     })[ruleType] || []
 
   res.json({
