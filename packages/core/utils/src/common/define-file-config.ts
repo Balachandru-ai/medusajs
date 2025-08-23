@@ -18,3 +18,7 @@ export function defineFileConfig(config?: InputFileConfig) {
 export function getDefinedFileConfig(path?: string) {
   return FILE_CONFIGS.get(path)
 }
+
+export function isFileDisabled(path?: string) {
+  return !!getDefinedFileConfig(path)?.isDisabled?.()
+}

@@ -1,4 +1,4 @@
-import { getDefinedFileConfig, MEDUSA_SKIP_FILE } from "./define-file-config"
+import { isFileDisabled, MEDUSA_SKIP_FILE } from "./define-file-config"
 import { resolveExports } from "./resolve-exports"
 
 /**
@@ -17,10 +17,8 @@ export async function dynamicImport(path: string): Promise<any> {
 
   const exported = resolveExports(module)
 
-  if (getDefinedFileConfig(path)) {
-    if (getDefinedFileConfig(path).isDisabled()) {
-      return MEDUSA_SKIP_FILE
-    }
+  if (isFileDisabled(path)) {
+    return MEDUSA_SKIP_FILE
   }
 
   return exported
