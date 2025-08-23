@@ -1,6 +1,6 @@
 export * from "./mikro-orm/base-entity"
 export * from "./mikro-orm/big-number-field"
-export * from "./mikro-orm/custom-migrator"
+export * from "./mikro-orm/custom-db-migrator"
 export * from "./mikro-orm/decorators/searchable"
 export * from "./mikro-orm/mikro-orm-create-connection"
 export * from "./mikro-orm/mikro-orm-free-text-search-filter"
