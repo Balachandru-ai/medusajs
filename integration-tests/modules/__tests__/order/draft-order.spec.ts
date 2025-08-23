@@ -19,7 +19,7 @@ import { setupTaxStructure } from "../fixtures"
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
@@ -396,11 +396,17 @@ medusaIntegrationTestRunner({
           currency_code: "usd",
         })
 
-        const [taxRegion] = await taxModule.createTaxRegions([{
-          country_code: "US",
-          provider_id: "tp_system",
-          default_tax_rate: { name: "US Default Rate", rate: 5, code: "US_DEF" },
-        }])
+        const [taxRegion] = await taxModule.createTaxRegions([
+          {
+            country_code: "US",
+            provider_id: "tp_system",
+            default_tax_rate: {
+              name: "US Default Rate",
+              rate: 5,
+              code: "US_DEF",
+            },
+          },
+        ])
 
         const [taxRate] = await taxModule.createTaxRates([
           {
@@ -408,14 +414,15 @@ medusaIntegrationTestRunner({
             name: "US Reduced",
             rate: 3,
             code: "USREDUCE_PROD_TYPE",
-          }])
+          },
+        ])
 
         await taxModule.createTaxRateRules([
           {
             reference: "product_type",
             reference_id: productType.id,
             tax_rate_id: taxRate.id,
-          }
+          },
         ])
 
         const salesChannel = await scModuleService.createSalesChannels({
@@ -425,7 +432,6 @@ medusaIntegrationTestRunner({
         const location = await stockLocationModule.createStockLocations({
           name: "Warehouse",
         })
-
 
         const [product] = await productModule.createProducts([
           {
@@ -472,7 +478,6 @@ medusaIntegrationTestRunner({
           },
           adminHeaders
         )
-
 
         await remoteLink.create([
           {
@@ -546,7 +551,9 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
-        expect(response.data.draft_order.items[0].tax_lines[0].code).toEqual("USREDUCE_PROD_TYPE")
+        expect(response.data.draft_order.items[0].tax_lines[0].code).toEqual(
+          "USREDUCE_PROD_TYPE"
+        )
         expect(response.data.draft_order.items[0].tax_lines[0].rate).toEqual(3)
       })
     })

@@ -25,6 +25,7 @@ export async function discoverFeatureFlagsFromDir(
   const discovered: FlagSettings[] = []
 
   const allEntries = await readDirRecursive(root, { ignoreMissing: true })
+
   const featureFlagDirs = allEntries
     .filter((e) => e.isDirectory() && e.name === "feature-flags")
     .map((e) => join((e as any).path as string, e.name))

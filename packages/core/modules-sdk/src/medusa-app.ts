@@ -323,17 +323,20 @@ async function MedusaApp_({
   const sharedContainer_ = createMedusaContainer({}, sharedContainer)
 
   const config = sharedContainer_.resolve(
-    ContainerRegistrationKeys.CONFIG_MODULE
+    ContainerRegistrationKeys.CONFIG_MODULE,
+    {
+      allowUnregistered: true,
+    }
   ) as ConfigModule
-  const logger = sharedContainer_.resolve(
-    ContainerRegistrationKeys.LOGGER
-  ) as Logger
+  const logger = sharedContainer_.resolve(ContainerRegistrationKeys.LOGGER, {
+    allowUnregistered: true,
+  }) as Logger
 
   const discovered = await discoverFeatureFlagsFromDir(process.cwd())
   for (const def of discovered) {
     registerFeatureFlag({
       flag: def as FlagSettings,
-      projectConfigFlags: config.featureFlags ?? {},
+      projectConfigFlags: config?.featureFlags ?? {},
       router: FeatureFlag,
       logger,
     })
