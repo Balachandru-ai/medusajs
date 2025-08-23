@@ -1,10 +1,13 @@
 import { RemoteFetchDataCallback } from "@medusajs/orchestration"
 import {
+  ConfigModule,
   ExternalModuleDeclaration,
+  FlagSettings,
   IIndexService,
   ILinkMigrationsPlanner,
   InternalModuleDeclaration,
   LoadedModule,
+  Logger,
   MedusaContainer,
   ModuleBootstrapDeclaration,
   ModuleDefinition,
@@ -16,7 +19,9 @@ import {
 import {
   ContainerRegistrationKeys,
   createMedusaContainer,
+  discoverFeatureFlagsFromDir,
   dynamicImport,
+  FeatureFlag,
   GraphQLUtils,
   isObject,
   isSharedConnectionSymbol,
@@ -28,6 +33,7 @@ import {
   promiseAll,
 } from "@medusajs/utils"
 import { asValue } from "awilix"
+import { registerFeatureFlag } from "./feature-flags/register-flag"
 import { Link } from "./link"
 import {
   MedusaModule,
@@ -315,6 +321,23 @@ async function MedusaApp_({
   migrationOnly?: boolean
 } = {}): Promise<MedusaAppOutput> {
   const sharedContainer_ = createMedusaContainer({}, sharedContainer)
+
+  const config = sharedContainer_.resolve(
+    ContainerRegistrationKeys.CONFIG_MODULE
+  ) as ConfigModule
+  const logger = sharedContainer_.resolve(
+    ContainerRegistrationKeys.LOGGER
+  ) as Logger
+
+  const discovered = await discoverFeatureFlagsFromDir(process.cwd())
+  for (const def of discovered) {
+    registerFeatureFlag({
+      flag: def as FlagSettings,
+      projectConfigFlags: config.featureFlags ?? {},
+      router: FeatureFlag,
+      logger,
+    })
+  }
 
   const onApplicationShutdown = async () => {
     await promiseAll([
