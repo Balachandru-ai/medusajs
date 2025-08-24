@@ -1,6 +1,6 @@
 export const schema = `
   type Product @Listeners(values: ["product.created", "product.updated", "product.deleted"]) {
-    id: String
+    id: ID
     title: String
     created_at: DateTime
 
@@ -18,7 +18,7 @@ export const schema = `
   }
   
   type ProductVariant @Listeners(values: ["variant.created", "variant.updated", "variant.deleted"]) {
-    id: String
+    id: ID
     product_id: String
     sku: String
     prices: [Price]
