@@ -1056,7 +1056,7 @@ describe("IndexModuleService query", function () {
             {
               $not: {
                 title: {
-                  $like: "Product 1",
+                  $eq: "Product 1",
                 },
               },
             },
