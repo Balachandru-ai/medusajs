@@ -1,4 +1,5 @@
 import {
+  ConfigModule,
   Constructor,
   IModuleService,
   InternalModuleDeclaration,
@@ -16,8 +17,10 @@ import {
   ContainerRegistrationKeys,
   createMedusaContainer,
   defineJoinerConfig,
+  discoverFeatureFlagsFromDir,
   DmlEntity,
   dynamicImport,
+  FeatureFlag,
   getProviderRegistrationKey,
   isString,
   MEDUSA_SKIP_FILE,
@@ -32,6 +35,7 @@ import { asFunction, asValue } from "awilix"
 import { statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"
+import { registerFeatureFlag } from "../../feature-flags/register-flag"
 
 type ModuleResource = {
   services: Function[]
@@ -572,6 +576,25 @@ export async function loadResources({
   try {
     const defaultOnFail = () => {
       return []
+    }
+
+    const flagDir = resolve(normalizedPath)
+    const discovered = await discoverFeatureFlagsFromDir(flagDir, 1)
+
+    const configModule = container.resolve(
+      ContainerRegistrationKeys.CONFIG_MODULE,
+      {
+        allowUnregistered: true,
+      }
+    ) as ConfigModule
+
+    for (const def of discovered) {
+      registerFeatureFlag({
+        flag: def,
+        projectConfigFlags: configModule?.featureFlags ?? {},
+        router: FeatureFlag,
+        logger,
+      })
     }
 
     const [moduleService, services, models, repositories] = await Promise.all([

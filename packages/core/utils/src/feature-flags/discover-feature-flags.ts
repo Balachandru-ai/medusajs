@@ -15,7 +15,8 @@ function isFeatureFlag(flag: unknown): flag is FlagSettings {
  * Discover feature flag definitions from a directory and subdirectories
  */
 export async function discoverFeatureFlagsFromDir(
-  sourcePath?: string
+  sourcePath?: string,
+  maxDepth: number = 2
 ): Promise<FlagSettings[]> {
   if (!sourcePath) {
     return []
@@ -26,7 +27,7 @@ export async function discoverFeatureFlagsFromDir(
 
   const allEntries = await readDirRecursive(root, {
     ignoreMissing: true,
-    maxDepth: 2,
+    maxDepth,
   })
 
   const featureFlagDirs = allEntries
