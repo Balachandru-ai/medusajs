@@ -10,4 +10,7 @@ export type IndexOperatorMap<T> = {
   $is?: T
   $like?: T
   $ilike?: T
+  $and?: T
+  $or?: T
+  $not?: T
 }
