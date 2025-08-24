@@ -106,6 +106,10 @@ export class QueryBuilder {
     this.idsOnly = args.idsOnly ?? false
   }
 
+  private isLogicalOperator(key: string) {
+    return key === AND_OPERATOR || key === OR_OPERATOR || key === NOT_OPERATOR
+  }
+
   private getStructureKeys(structure) {
     const collectKeys = (obj: any, keys = new Set<string>()) => {
       if (!isObject(obj)) {
@@ -113,7 +117,7 @@ export class QueryBuilder {
       }
 
       Object.keys(obj).forEach((key) => {
-        if (key === AND_OPERATOR || key === OR_OPERATOR) {
+        if (this.isLogicalOperator(key)) {
           if (Array.isArray(obj[key])) {
             obj[key].forEach((item) => collectKeys(item, keys))
           }
@@ -146,7 +150,7 @@ export class QueryBuilder {
   }
 
   private getGraphQLType(path, field) {
-    if (field === AND_OPERATOR || field === OR_OPERATOR) {
+    if (this.isLogicalOperator(field)) {
       return "JSON"
     }
 
@@ -271,13 +275,11 @@ export class QueryBuilder {
 
     keys.forEach((key) => {
       const pathAsArray = (parentPath ? `${parentPath}.${key}` : key).split(".")
-      const fieldOrLogicalOperator = pathAsArray.pop()
+      const fieldOrLogicalOperator = pathAsArray.pop()!
       let value = obj[key]
 
       if (
-        (fieldOrLogicalOperator === AND_OPERATOR ||
-          fieldOrLogicalOperator === OR_OPERATOR ||
-          fieldOrLogicalOperator === NOT_OPERATOR) &&
+        this.isLogicalOperator(fieldOrLogicalOperator) &&
         !Array.isArray(value)
       ) {
         value = [value]
@@ -340,8 +342,7 @@ export class QueryBuilder {
       } else if (
         isObject(value) &&
         !Array.isArray(value) &&
-        fieldOrLogicalOperator !== AND_OPERATOR &&
-        fieldOrLogicalOperator !== OR_OPERATOR
+        !this.isLogicalOperator(fieldOrLogicalOperator)
       ) {
         const currentPath = parentPath ? `${parentPath}.${key}` : key
 
@@ -1042,7 +1043,6 @@ export class QueryBuilder {
 
     const finalSql = outerQueryBuilder.toQuery()
 
-    console.log(finalSql)
     return {
       sql: finalSql,
       sqlCount: countQuery?.toQuery?.(),
