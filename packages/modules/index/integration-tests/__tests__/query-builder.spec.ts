@@ -1004,6 +1004,7 @@ describe("IndexModuleService query", function () {
       },
     })
     expect(dataNot).toEqual(expected)
+    expect(data).toEqual(dataNot)
   })
 
   it("should query products filtering product not in [X]", async () => {
