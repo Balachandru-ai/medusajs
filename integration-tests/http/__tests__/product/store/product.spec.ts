@@ -17,7 +17,7 @@ import {
 import { getProductFixture } from "../../../../helpers/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 
-jest.setTimeout(300000)
+jest.setTimeout(30000)
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, api, getContainer }) => {
