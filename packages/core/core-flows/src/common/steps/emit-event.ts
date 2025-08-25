@@ -5,6 +5,7 @@ import {
 import { Modules } from "@medusajs/framework/utils"
 import {
   StepExecutionContext,
+  StepResponse,
   createStep,
 } from "@medusajs/framework/workflows-sdk"
 
@@ -85,6 +86,25 @@ export const emitEventStep = createStep(
     }
 
     await eventBus.emit(message)
+
+    return new StepResponse({
+      eventGroupId: context.eventGroupId,
+      eventName: input.eventName,
+    })
   },
-  async (data: void) => {}
+  async (data, context) => {
+    if (!data || !data?.eventGroupId) {
+      return
+    }
+
+    const { container } = context
+
+    const eventBus: IEventBusModuleService = container.resolve(
+      Modules.EVENT_BUS
+    )
+
+    await eventBus.clearGroupedEvents(data!.eventGroupId, {
+      eventNames: [data!.eventName],
+    })
+  }
 )

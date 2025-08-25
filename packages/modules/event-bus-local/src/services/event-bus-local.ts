@@ -130,8 +130,19 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
     await this.clearGroupedEvents(eventGroupId)
   }
 
-  async clearGroupedEvents(eventGroupId: string) {
-    this.groupedEventsMap_.delete(eventGroupId)
+  async clearGroupedEvents(
+    eventGroupId: string,
+    { eventNames }: { eventNames?: string[] } = {}
+  ) {
+    if (eventNames?.length) {
+      const groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
+      const eventsToKeep = groupedEvents.filter(
+        (event) => !eventNames!.includes(event.name)
+      )
+      this.groupedEventsMap_.set(eventGroupId, eventsToKeep)
+    } else {
+      this.groupedEventsMap_.delete(eventGroupId)
+    }
   }
 
   subscribe(
