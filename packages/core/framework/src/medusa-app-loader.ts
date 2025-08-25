@@ -49,7 +49,8 @@ export class MedusaAppLoader {
     | RegisterModuleJoinerConfig
     | RegisterModuleJoinerConfig[]
 
-  readonly #modulesConfigPath?: string
+  readonly #medusaConfigPath?: string
+  readonly #cwd?: string
 
   // TODO: Adjust all loaders to accept an optional container such that in test env it is possible if needed to provide a specific container otherwise use the main container
   // Maybe also adjust the different places to resolve the config from the container instead of the configManager for the same reason
@@ -57,17 +58,20 @@ export class MedusaAppLoader {
   constructor({
     container,
     customLinksModules,
-    modulesConfigPath,
+    medusaConfigPath,
+    cwd,
   }: {
     container?: MedusaContainer
     customLinksModules?:
       | RegisterModuleJoinerConfig
       | RegisterModuleJoinerConfig[]
-    modulesConfigPath?: string
+    medusaConfigPath?: string
+    cwd?: string
   } = {}) {
     this.#container = container ?? mainContainer
     this.#customLinksModules = customLinksModules ?? []
-    this.#modulesConfigPath = modulesConfigPath
+    this.#medusaConfigPath = medusaConfigPath
+    this.#cwd = cwd
   }
 
   protected mergeDefaultModules(
@@ -177,6 +181,8 @@ export class MedusaAppLoader {
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     }
 
     if (action === "revert") {
@@ -202,6 +208,8 @@ export class MedusaAppLoader {
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     }
 
     return await MedusaAppGetLinksExecutionPlanner(migrationOptions)
@@ -217,12 +225,13 @@ export class MedusaAppLoader {
 
     await MedusaApp({
       modulesConfig: configModules,
-      modulesConfigPath: this.#modulesConfigPath,
       sharedContainer: this.#container,
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
       loaderOnly: true,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     })
   }
 
@@ -257,11 +266,12 @@ export class MedusaAppLoader {
     const medusaApp = await MedusaApp({
       workerMode: configModule.projectConfig.workerMode,
       modulesConfig: configModules,
-      modulesConfigPath: this.#modulesConfigPath,
       sharedContainer: this.#container,
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     })
 
     if (!config.registerInContainer) {

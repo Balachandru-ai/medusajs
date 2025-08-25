@@ -9,6 +9,7 @@ export default async function greetingJob(container: MedusaContainer) {
 
 export const config = {
   name: "greeting-every-second",
+  numberOfExecutions: 1,
   schedule: "* * * * * *",
 }
 

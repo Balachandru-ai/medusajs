@@ -6,6 +6,7 @@
 "@medusajs/medusa": patch
 "@medusajs/test-utils": patch
 "@medusajs/workflows-sdk": patch
+"@medusajs/cli": patch
 ---
 
 feat: define file config and improved feature flag support

@@ -85,6 +85,7 @@ export async function loadModules(args: {
   migrationOnly?: boolean
   loaderOnly?: boolean
   workerMode?: "shared" | "worker" | "server"
+  cwd?: string
 }) {
   const {
     modulesConfig,
@@ -93,6 +94,7 @@ export async function loadModules(args: {
     migrationOnly = false,
     loaderOnly = false,
     workerMode = "shared" as ModuleBootstrapOptions["workerMode"],
+    cwd,
   } = args
 
   const allModules = {} as any
@@ -161,6 +163,7 @@ export async function loadModules(args: {
     migrationOnly,
     loaderOnly,
     workerMode,
+    cwd,
   })) as LoadedModule[]
 
   if (loaderOnly) {
@@ -291,7 +294,7 @@ export type MedusaAppOptions = {
   sharedResourcesConfig?: SharedResources
   loadedModules?: LoadedModule[]
   servicesConfig?: ModuleJoinerConfig[]
-  modulesConfigPath?: string
+  medusaConfigPath?: string
   modulesConfigFileName?: string
   modulesConfig?: MedusaModuleConfig
   linkModules?: RegisterModuleJoinerConfig | RegisterModuleJoinerConfig[]
@@ -302,13 +305,14 @@ export type MedusaAppOptions = {
    * Forces the modules bootstrapper to only run the modules loaders and return prematurely
    */
   loaderOnly?: boolean
+  cwd?: string
 }
 
 async function MedusaApp_({
   sharedContainer,
   sharedResourcesConfig,
   servicesConfig,
-  modulesConfigPath,
+  medusaConfigPath,
   modulesConfigFileName,
   modulesConfig,
   linkModules,
@@ -317,6 +321,7 @@ async function MedusaApp_({
   migrationOnly = false,
   loaderOnly = false,
   workerMode = "shared",
+  cwd = process.cwd(),
 }: MedusaAppOptions & {
   migrationOnly?: boolean
 } = {}): Promise<MedusaAppOutput> {
@@ -332,9 +337,7 @@ async function MedusaApp_({
     allowUnregistered: true,
   }) as Logger
 
-  const discovered = await discoverFeatureFlagsFromDir(
-    modulesConfigPath ?? process.cwd()
-  )
+  const discovered = await discoverFeatureFlagsFromDir(cwd)
   for (const def of discovered) {
     registerFeatureFlag({
       flag: def as FlagSettings,
@@ -363,8 +366,7 @@ async function MedusaApp_({
     modulesConfig ??
     (
       await dynamicImport(
-        modulesConfigPath ??
-          process.cwd() + (modulesConfigFileName ?? "/modules-config")
+        medusaConfigPath ?? cwd + (modulesConfigFileName ?? "/modules-config")
       )
     ).default
 
@@ -419,6 +421,7 @@ async function MedusaApp_({
     migrationOnly,
     loaderOnly,
     workerMode,
+    cwd,
   })
 
   if (loaderOnly) {
@@ -540,6 +543,7 @@ async function MedusaApp_({
         container: sharedContainer,
         options: moduleResolution.options,
         moduleExports: moduleResolution.moduleExports as ModuleExports,
+        cwd,
       }
 
       if (action === "revert") {

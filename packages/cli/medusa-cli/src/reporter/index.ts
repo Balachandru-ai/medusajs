@@ -1,9 +1,10 @@
-import ora from "ora"
-import { ulid } from "ulid"
-import winston from "winston"
-import { inspect } from "util"
-import stackTrace from "stack-trace"
 import { track } from "@medusajs/telemetry"
+import { isObject } from "@medusajs/utils"
+import ora from "ora"
+import stackTrace from "stack-trace"
+import { ulid } from "ulid"
+import { inspect } from "util"
+import winston from "winston"
 import { panicHandler } from "./panic-handler"
 
 const LOG_LEVEL = process.env.LOG_LEVEL || "http"
@@ -201,7 +202,7 @@ export class Reporter {
        * string values. Hence we will have to self convert
        * the error cause to a string
        */
-      if ("cause" in errorAsObject) {
+      if (isObject(errorAsObject) && "cause" in errorAsObject) {
         toLog["cause"] = inspect(errorAsObject.cause)
       }
     }

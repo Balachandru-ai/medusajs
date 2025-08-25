@@ -1,4 +1,4 @@
-const { defineConfig } = require("@medusajs/utils")
+const { defineConfig } = require("@medusajs/framework/utils")
 
 const DB_HOST = process.env.DB_HOST
 const DB_USERNAME = process.env.DB_USERNAME
@@ -17,4 +17,10 @@ module.exports = defineConfig({
       jwtSecret: "secret",
     },
   },
+  modules: [
+    {
+      key: "custom",
+      resolve: "src/modules/custom",
+    },
+  ],
 })

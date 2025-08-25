@@ -5,7 +5,7 @@ const testProductCreatedHandlerMock = jest.fn()
 export default testProductCreatedHandlerMock
 
 export const config = {
-  event: "product.created",
+  event: "event.test",
 }
 
 defineFileConfig({
