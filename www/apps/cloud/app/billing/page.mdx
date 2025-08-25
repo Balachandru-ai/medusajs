@@ -1,5 +1,5 @@
 import { InlineIcon } from "docs-ui"
-import { ArrowDownTray } from "@medusajs/icons"
+import { ArrowDownTray, ChevronUpDown } from "@medusajs/icons"
 
 export const metadata = {
   title: `Billing`,
@@ -11,7 +11,16 @@ In this guide, you'll learn how billing works in Cloud, and how to view and down
 
 ## How Billing Works
 
-Medusa bills your organization monthly in advance. If your organization goes over its plan's usage limits within the current billing period, charges for your [flex usage](../usage/page.mdx#what-is-flex-usage) will be added to your next invoice.
+Medusa bills your organization monthly. 
+
+Your monthly invoice contains:  
+
+- An upfront charge for the plan you are currently on.
+- An upfront charge for the add-ons you have.
+- Pro-rated charges for the add-ons you added in the previous billing cycle.
+- Charges for your [Flex Usage](../usage/page.mdx#what-is-flex-usage) in the previous billing cycle.
+
+If your organization goes over its plan's usage limits within the current billing period, charges for your [Flex Usage](../usage/page.mdx#what-is-flex-usage) will be added to your next invoice.
 
 Learn how to monitor your organization's usage in the [Usage](../usage/page.mdx) guide.
 
@@ -24,7 +33,7 @@ You can view your payment history in the organization's settings, and download i
 To view your organization's billing history and invoices:
 
 1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
-2. Click on the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
+2. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon in the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
 3. Choose "Organization Settings" from the dropdown.
 4. Change to the "Invoices" settings from the sidebar.
 
@@ -48,11 +57,21 @@ This will open the invoice in a new tab, where you can view and download it as a
 
 Your organization can purchase additional resources beyond its plan's limits as add-ons. For example, you can purchase additional user seats or environments.
 
-To purchase add-ons, contact support for assistance.
+You can purchase an add-on resource as you're creating that resource. For example, if you're creating a new project and you've already reached your plan's limit for projects, you'll see a note indicating that this project will be billed as an add-on.
 
 Add-ons are billed monthly in advance, and they are pro-rated based on the number of days remaining in the month when you purchase them.
 
 For example, if you purchase a $10 Preview Environment halfway through the month, you'll be charged $5 for that environment in the next invoice.
+
+### How can I know if I'm being charged for an add-on?
+
+When you're creating a resource that exceeds your plan's limits, such as a project or user seat, look for a note indicating that you'll be charged an additional amount for that resource.
+
+For example, you may see a note saying "Creating an additional project adds $X to your bill."
+
+### Where can I view my add-ons?
+
+You can view your add-on charges in the [Invoices](#view-billing-history-and-invoices) section of your organization's settings. The add-on charges will be included in the "Upcoming Payments" table.
 
 ---
 
@@ -76,6 +95,6 @@ If there are no issues with your payment method and the payment still fails, con
 
 ## Cancelling your Organization's Plan
 
-You can cancel your organization's plan at any time. The plan will be cancelled at the end of the current billing period, and you will be charged for the month's plan and flex usage.
+You can cancel your organization's plan at any time. The plan will be cancelled at the end of the current billing period, and you will be charged for the month's plan and Flex Usage.
 
 To cancel your organization's plan, contact support for assistance.

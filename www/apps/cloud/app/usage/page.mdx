@@ -1,5 +1,5 @@
 import { InlineIcon } from "docs-ui"
-import { ArrowDownTray } from "@medusajs/icons"
+import { ArrowDownTray, ChevronUpDown } from "@medusajs/icons"
 
 export const metadata = {
   title: `Usage`,
@@ -7,16 +7,22 @@ export const metadata = {
 
 # {metadata.title}
 
-In this guide, you'll learn how to monitor your organization's standard and flex usage in Cloud.
+In this guide, you'll learn how to monitor your organization's standard and Flex Usage in Cloud.
 
 ## View Usage
 
 In your organization's settings, you can view your current plan and usage limits.
 
+<Note>
+
+Organizations on the Enterprise plan don't have usage limits, and therefore don't have a Usage tab in their settings.
+
+</Note>
+
 To view your organization's usage:
 
 1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
-2. Click on the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
+2. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon in the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
 3. Choose "Organization Settings" from the dropdown.
 4. Change to the "Usage" settings from the sidebar.
 
@@ -28,18 +34,18 @@ In the Usage settings, you'll find a table with the list of resources your organ
 
 ## What is Flex Usage?
 
-Usage over your plan limits is considered flex usage. For example, if your plan allows for 100GB data transfer, any usage beyond that limit would be classified as flex usage.
+Usage that exceeds the limits of your plan is considered Flex Usage. For example, if your plan allows for 100GB data transfer, any usage beyond that limit would be classified as Flex Usage.  
 
-To learn how your flex usage is billed, refer to the [Billing](../billing/page.mdx) guide.
+To learn how your Flex Usage is billed, refer to the [Billing](../billing/page.mdx) guide.
 
 ### Monitor Flex Usage
 
-You can view additional flex usage for each resource and its charge in the [usage table](#view-usage). The table has the following columns useful for monitoring flex usage:
+You can view additional Flex Usage for each resource and its charge in the [usage table](#view-usage). The table has the following columns useful for monitoring Flex Usage:
 
 - **Flex**: The amount of usage beyond your plan limits. For example, the additional data transfer amount.
-- **Charge**: The cost associated with the flex usage.
+- **Charge**: The cost associated with the Flex Usage.
 
-If you have flex usage, you can also see the flex charges visualized in the chart above the table.
+If you have Flex Usage, you can also see the flex charges visualized in the chart above the table.
 
 ---
 
@@ -48,7 +54,7 @@ If you have flex usage, you can also see the flex charges visualized in the char
 To download your organization's usage as a JSON file:
 
 1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
-2. Click on the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
+2. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon in the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
 3. Choose "Organization Settings" from the dropdown.
 4. Change to the "Usage" settings from the sidebar.
 5. Click the <InlineIcon Icon={ArrowDownTray} alt="download" /> button at the top right.
@@ -59,7 +65,7 @@ The JSON file will be downloaded automatically.
 
 ## View Usage for Different Date Ranges
 
-By default, the usage table and flex usage chart show data for the current billing cycle.
+By default, the usage table and Flex Usage chart show data for the current billing cycle.
 
 To view usage for a different billing cycle, click on the "Current billing cycle" dropdown at the top of the Usage settings. You can then select the previous billing cycle, or a custom date range.
 
