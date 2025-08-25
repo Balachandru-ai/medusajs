@@ -26,6 +26,7 @@ import { useComboboxData } from "../../../hooks/common/use-combobox-data"
 import { sdk } from "../../../lib/queries/sdk"
 import { addressSchema } from "../../../lib/schemas/address"
 import { getFormattedAddress } from "../../../lib/utils/address-utils"
+import { useCustomer } from "../../../hooks/api/customers"
 
 const Create = () => {
   return (
@@ -391,6 +392,14 @@ const AddressField = ({ type, control, setValue }: AddressFieldProps) => {
   const addressId = useWatch({ control, name: `${type}_id` })
   const sameAsShipping = useWatch({ control, name: "same_as_shipping" })
 
+  const { customer } = useCustomer(
+    customerId!,
+    {},
+    {
+      enabled: !!customerId,
+    }
+  )
+
   const addresses = useComboboxData({
     queryFn: async (params) => {
       const response = await sdk.client.fetch(
@@ -436,7 +445,11 @@ const AddressField = ({ type, control, setValue }: AddressFieldProps) => {
 
     const address = response.address
 
-    setValue(type, { ...address } as z.infer<typeof addressSchema>)
+    setValue(type, {
+      ...address,
+      first_name: address.first_name || customer?.first_name,
+      last_name: address.last_name || customer?.last_name,
+    } as z.infer<typeof addressSchema>)
   }
 
   const showFields = type === "billing_address" ? !sameAsShipping : true

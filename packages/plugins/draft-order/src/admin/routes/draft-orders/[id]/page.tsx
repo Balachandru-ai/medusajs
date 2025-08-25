@@ -19,6 +19,10 @@ import { SummarySection } from "../../../components/draft-orders/summary-section
 import { useOrder, useOrderChanges } from "../../../hooks/api/orders"
 import { sdk } from "../../../lib/queries/sdk"
 
+type AdminDraftOrderSummary = HttpTypes.AdminOrder & {
+  promotions: HttpTypes.AdminPromotion[]
+}
+
 export async function loader({ params }: LoaderFunctionArgs) {
   const { id } = params
 
@@ -80,7 +84,7 @@ const ID = () => {
           <div className="flex w-full min-w-0 flex-col gap-y-3">
             <ActiveOrderChange orderId={order.id} />
             <GeneralSection order={order} />
-            <SummarySection order={order} />
+            <SummarySection order={order as AdminDraftOrderSummary} />
             <ShippingSection order={order} />
             <div className="hidden flex-col gap-y-3 xl:flex">
               <MetadataSection order={order} />

@@ -17,10 +17,14 @@ import { ActionMenu } from "../common/action-menu"
 import { Thumbnail } from "../common/thumbnail"
 
 interface SummarySectionProps {
-  order: HttpTypes.AdminOrder
+  order: HttpTypes.AdminOrder & {
+    promotions: HttpTypes.AdminPromotion[]
+  }
 }
 
 export const SummarySection = ({ order }: SummarySectionProps) => {
+  const promotions: HttpTypes.AdminPromotion[] | null = order.promotions || []
+
   return (
     <Container className="p-0 overflow-hidden">
       <div className="px-6 py-4 flex items-center justify-between gap-x-4">
@@ -72,7 +76,7 @@ export const SummarySection = ({ order }: SummarySectionProps) => {
         total={order.total}
         shippingSubtotal={order.shipping_subtotal}
         discountTotal={order.discount_total}
-        promotions={order.promotions}
+        promotions={promotions}
         taxTotal={order.tax_total}
         itemSubTotal={order.item_subtotal}
         itemCount={
@@ -137,7 +141,7 @@ interface TotalProps {
   total: number
   shippingSubtotal: number | null
   discountTotal: number | null
-  promotions: HttpTypes.AdminPromotion[] | null
+  promotions: HttpTypes.AdminPromotion[]
   taxTotal: number | null
   currencyCode: string
   itemSubTotal: number
@@ -195,15 +199,15 @@ const Total = ({
           <Text size="small" leading="compact">
             Discount
           </Text>
-          {promotions?.length && (
-            <div className="flex items-center justify-end">
-              <Link to={`/promotions/${promotions?.[0]?.id}`}>
+          <div className="flex items-center justify-end gap-x-2">
+            {promotions.map((promotion) => (
+              <Link to={`/promotions/${promotion.id}`} key={promotion.id}>
                 <Text size="small" leading="compact">
-                  {promotions.map((p) => p.code).join(", ")}
+                  {promotion.code}
                 </Text>
               </Link>
-            </div>
-          )}
+            ))}
+          </div>
           <div className="flex items-center justify-end">
             <Text size="small" leading="compact">
               {getLocaleAmount(discountTotal, currencyCode)}
