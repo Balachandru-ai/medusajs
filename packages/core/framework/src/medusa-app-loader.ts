@@ -49,20 +49,25 @@ export class MedusaAppLoader {
     | RegisterModuleJoinerConfig
     | RegisterModuleJoinerConfig[]
 
+  readonly #modulesConfigPath?: string
+
   // TODO: Adjust all loaders to accept an optional container such that in test env it is possible if needed to provide a specific container otherwise use the main container
   // Maybe also adjust the different places to resolve the config from the container instead of the configManager for the same reason
   // To be discussed
   constructor({
     container,
     customLinksModules,
+    modulesConfigPath,
   }: {
     container?: MedusaContainer
     customLinksModules?:
       | RegisterModuleJoinerConfig
       | RegisterModuleJoinerConfig[]
+    modulesConfigPath?: string
   } = {}) {
     this.#container = container ?? mainContainer
     this.#customLinksModules = customLinksModules ?? []
+    this.#modulesConfigPath = modulesConfigPath
   }
 
   protected mergeDefaultModules(
@@ -212,6 +217,7 @@ export class MedusaAppLoader {
 
     await MedusaApp({
       modulesConfig: configModules,
+      modulesConfigPath: this.#modulesConfigPath,
       sharedContainer: this.#container,
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
@@ -251,6 +257,7 @@ export class MedusaAppLoader {
     const medusaApp = await MedusaApp({
       workerMode: configModule.projectConfig.workerMode,
       modulesConfig: configModules,
+      modulesConfigPath: this.#modulesConfigPath,
       sharedContainer: this.#container,
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,

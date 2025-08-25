@@ -332,7 +332,9 @@ async function MedusaApp_({
     allowUnregistered: true,
   }) as Logger
 
-  const discovered = await discoverFeatureFlagsFromDir(process.cwd())
+  const discovered = await discoverFeatureFlagsFromDir(
+    modulesConfigPath ?? process.cwd()
+  )
   for (const def of discovered) {
     registerFeatureFlag({
       flag: def as FlagSettings,

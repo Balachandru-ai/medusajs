@@ -150,7 +150,9 @@ class MedusaTestRunner {
 
   private async setupApplication(): Promise<void> {
     const { container, MedusaAppLoader } = await import("@medusajs/framework")
-    const appLoader = new MedusaAppLoader()
+    const appLoader = new MedusaAppLoader({
+      modulesConfigPath: this.cwd,
+    })
 
     // Load plugins modules
     const configModule = container.resolve(
@@ -270,6 +272,7 @@ class MedusaTestRunner {
       const { MedusaAppLoader } = await import("@medusajs/framework")
       const medusaAppLoader = new MedusaAppLoader({
         container: copiedContainer,
+        modulesConfigPath: this.cwd,
       })
       await medusaAppLoader.runModulesLoader()
     } catch (error) {
