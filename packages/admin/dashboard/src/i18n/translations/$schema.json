@@ -7516,14 +7516,47 @@
                 "target-rules": {
                   "type": "object",
                   "properties": {
-                    "title": {
-                      "type": "string"
+                    "order": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
                     },
-                    "description": {
-                      "type": "string"
+                    "shipping_methods": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
+                    },
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
                     }
                   },
-                  "required": ["title", "description"],
+                  "required": ["order", "shipping_methods", "items"],
                   "additionalProperties": false
                 },
                 "buy-rules": {
