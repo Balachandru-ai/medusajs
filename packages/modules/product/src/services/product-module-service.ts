@@ -37,6 +37,7 @@ import {
   MedusaContext,
   MedusaError,
   MedusaService,
+  MessageAggregator,
   Modules,
   ProductStatus,
   removeUndefined,
@@ -529,32 +530,38 @@ export default class ProductModuleService
     })
 
     // Emit events for option values that may have been created/updated/deleted
-    Object.entries(performedActions.created).forEach(([entityName, entities]) => {
-      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
-        eventBuilders.createdProductOptionValue({
-          data: entities,
-          sharedContext,
-        })
+    Object.entries(performedActions.created).forEach(
+      ([entityName, entities]) => {
+        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
+          eventBuilders.createdProductOptionValue({
+            data: entities,
+            sharedContext,
+          })
+        }
       }
-    })
+    )
 
-    Object.entries(performedActions.updated).forEach(([entityName, entities]) => {
-      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
-        eventBuilders.updatedProductOptionValue({
-          data: entities,
-          sharedContext,
-        })
+    Object.entries(performedActions.updated).forEach(
+      ([entityName, entities]) => {
+        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
+          eventBuilders.updatedProductOptionValue({
+            data: entities,
+            sharedContext,
+          })
+        }
       }
-    })
+    )
 
-    Object.entries(performedActions.deleted).forEach(([entityName, entities]) => {
-      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
-        eventBuilders.deletedProductOptionValue({
-          data: entities,
-          sharedContext,
-        })
+    Object.entries(performedActions.deleted).forEach(
+      ([entityName, entities]) => {
+        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
+          eventBuilders.deletedProductOptionValue({
+            data: entities,
+            sharedContext,
+          })
+        }
       }
-    })
+    )
 
     return productVariants
   }
@@ -1084,32 +1091,38 @@ export default class ProductModuleService
       )
 
     // Emit events for option values that may have been created/updated/deleted
-    Object.entries(performedActions.created).forEach(([entityName, entities]) => {
-      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
-        eventBuilders.createdProductOptionValue({
-          data: entities,
-          sharedContext,
-        })
+    Object.entries(performedActions.created).forEach(
+      ([entityName, entities]) => {
+        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
+          eventBuilders.createdProductOptionValue({
+            data: entities,
+            sharedContext,
+          })
+        }
       }
-    })
+    )
 
-    Object.entries(performedActions.updated).forEach(([entityName, entities]) => {
-      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
-        eventBuilders.updatedProductOptionValue({
-          data: entities,
-          sharedContext,
-        })
+    Object.entries(performedActions.updated).forEach(
+      ([entityName, entities]) => {
+        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
+          eventBuilders.updatedProductOptionValue({
+            data: entities,
+            sharedContext,
+          })
+        }
       }
-    })
+    )
 
-    Object.entries(performedActions.deleted).forEach(([entityName, entities]) => {
-      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
-        eventBuilders.deletedProductOptionValue({
-          data: entities,
-          sharedContext,
-        })
+    Object.entries(performedActions.deleted).forEach(
+      ([entityName, entities]) => {
+        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
+          eventBuilders.deletedProductOptionValue({
+            data: entities,
+            sharedContext,
+          })
+        }
       }
-    })
+    )
 
     return productOptions
   }
@@ -1866,7 +1879,12 @@ export default class ProductModuleService
           // Emit events for option values
           if (optionData.values) {
             for (const valueData of optionData.values) {
-              if (typeof valueData === 'object' && valueData && 'id' in valueData && (valueData as any).id) {
+              if (
+                typeof valueData === "object" &&
+                valueData &&
+                "id" in valueData &&
+                (valueData as any).id
+              ) {
                 // This is an update to an existing option value
                 eventBuilders.updatedProductOptionValue({
                   data: { id: (valueData as any).id },
@@ -1877,7 +1895,10 @@ export default class ProductModuleService
                 const relatedOption = updatedProduct.options?.find(
                   (o: any) => o.title === optionData.title
                 )
-                const valueString = typeof valueData === 'string' ? valueData : (valueData as any)?.value
+                const valueString =
+                  typeof valueData === "string"
+                    ? valueData
+                    : (valueData as any)?.value
                 const createdValue = relatedOption?.values?.find(
                   (v: any) => v.value === valueString
                 )
@@ -1957,6 +1978,7 @@ export default class ProductModuleService
     data: ProductTypes.UpdateProductOptionValueDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionValueDTO[]>
+
   // @ts-expect-error
   async updateProductOptionValues(
     idOrSelector: string | FilterableProductOptionValueProps,
@@ -1965,6 +1987,8 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {
+    sharedContext.messageAggregator ??= new MessageAggregator()
+
     let normalizedInput: ({
       id: string
     } & ProductTypes.UpdateProductOptionValueDTO)[] = []
@@ -1990,7 +2014,7 @@ export default class ProductModuleService
       }))
     }
 
-    const productOptionValues = await super.updateProductOptionValues(
+    const productOptionValues = await this.updateProductOptionValues_(
       normalizedInput,
       sharedContext
     )
@@ -2007,6 +2031,17 @@ export default class ProductModuleService
     return isString(idOrSelector)
       ? updatedProductOptionValues[0]
       : updatedProductOptionValues
+  }
+
+  @InjectTransactionManager()
+  @EmitEvents()
+  protected async updateProductOptionValues_(
+    normalizedInput: ({
+      id: string
+    } & ProductTypes.UpdateProductOptionValueDTO)[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<ProductTypes.ProductOptionValueDTO[]> {
+    return await super.updateProductOptionValues(normalizedInput, sharedContext)
   }
 
   /**
