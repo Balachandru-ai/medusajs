@@ -1,5 +1,4 @@
 import { track } from "@medusajs/telemetry"
-import { isObject } from "@medusajs/utils"
 import ora from "ora"
 import stackTrace from "stack-trace"
 import { ulid } from "ulid"
@@ -202,8 +201,9 @@ export class Reporter {
        * string values. Hence we will have to self convert
        * the error cause to a string
        */
-      if (isObject(errorAsObject) && "cause" in errorAsObject) {
-        toLog["cause"] = inspect(errorAsObject.cause)
+      const cause = (errorAsObject as any)?.cause
+      if (cause) {
+        toLog["cause"] = inspect(cause)
       }
     }
 
