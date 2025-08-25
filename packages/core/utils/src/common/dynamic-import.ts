@@ -22,8 +22,12 @@ export async function dynamicImport(
 
   const exported = resolveExports(module)
 
-  if (isFileDisabled(path) && options?.skipIfDisabled === true) {
-    return MEDUSA_SKIP_FILE
+  if (isFileDisabled(path)) {
+    if (options?.skipIfDisabled === true) {
+      return MEDUSA_SKIP_FILE
+    }
+
+    exported[MEDUSA_SKIP_FILE] = true
   }
 
   return exported
