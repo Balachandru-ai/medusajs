@@ -25,9 +25,7 @@ const validateDeleteShippingOptionTypesStep = createStep(
     if (shippingOptions.length > 0) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Cannot delete shipping option type because following shipping options are still using it: ${shippingOptions
-          .map((so) => so.id)
-          .join(", ")}`
+        "Cannot delete shipping option type because some shipping options are using it."
       )
     }
   }
@@ -74,6 +72,7 @@ export const deleteShippingOptionTypesWorkflow = createWorkflow(
     const shippingOptionsQuery = useQueryGraphStep({
       entity: "shipping_option",
       filters: { shipping_option_type_id: input.ids },
+      pagination: { take: 1 },
       fields: ["id"],
     }).config({ name: "get-shipping-options" })
 
