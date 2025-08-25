@@ -1448,7 +1448,7 @@ export default class ProductModuleService
     const forUpdate = input.filter(
       (category): category is UpdateCategoryInput => !!category.id
     )
-    const forCreate = input.filter(
+    let forCreate = input.filter(
       (category): category is ProductTypes.CreateProductCategoryDTO =>
         !category.id
     )
@@ -1457,6 +1457,11 @@ export default class ProductModuleService
     let updated: InferEntityType<typeof ProductCategory>[] = []
 
     if (forCreate.length) {
+      forCreate = forCreate.map((productCategory) => {
+        productCategory.handle ??= kebabCase(productCategory.name)
+        return productCategory
+      })
+
       created = await this.productCategoryService_.create(
         forCreate,
         sharedContext

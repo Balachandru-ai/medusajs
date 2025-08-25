@@ -880,7 +880,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-        it.only("should emit appropriate events on upsertProductCategories", async () => {
+        it("should emit appropriate events on upsertProductCategories", async () => {
           const existingCategory = await service.createProductCategories([
             { name: "Existing Category" },
           ])
