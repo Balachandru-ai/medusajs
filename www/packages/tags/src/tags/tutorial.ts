@@ -36,6 +36,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
   {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
+  },
+  {
     "title": "Loyalty Points",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
   },
@@ -66,6 +70,10 @@ export const tutorial = [
   {
     "title": "Integrate Mailchimp",
     "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
+  },
+  {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
   },
   {
     "title": "Integrate Segment",

@@ -106,6 +106,9 @@ describe("defineConfig", function () {
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
           },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
+          },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
           },
@@ -269,6 +272,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
@@ -441,6 +447,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
@@ -615,6 +624,9 @@ describe("defineConfig", function () {
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
           },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
+          },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
           },
@@ -775,6 +787,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
@@ -939,6 +954,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
@@ -1131,6 +1149,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
@@ -1330,6 +1351,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
@@ -1546,6 +1570,9 @@ describe("defineConfig", function () {
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
           },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
+          },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",
           },
@@ -1732,6 +1759,9 @@ describe("defineConfig", function () {
           },
           "sales_channel": {
             "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
           },
           "stock_location": {
             "resolve": "@medusajs/medusa/stock-location",

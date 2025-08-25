@@ -1324,6 +1324,835 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
           })
         })
 
+        describe("buildGeoZoneConstraintsFromAddress", () => {
+          it("should build correct constraints for full address with postal expression", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.ZIP,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                      postal_expression: "90210",
+                    },
+                    {
+                      type: GeoZoneType.CITY,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "San Francisco",
+                    },
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "US",
+                      province_code: "NY",
+                    },
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "CA",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test with full address including postal expression
+            const shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+
+            expect(shippingOptions).toHaveLength(1)
+          })
+
+          it("should build correct constraints for address with city but no postal expression", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.CITY,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "San Francisco",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test with city but no postal expression
+            const shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "San Francisco",
+              },
+            })
+
+            expect(shippingOptions).toHaveLength(1)
+          })
+
+          it("should build correct constraints for address with province but no city", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "US",
+                      province_code: "NY",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test with province but no city
+            const shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "NY",
+              },
+            })
+
+            expect(shippingOptions).toHaveLength(1)
+          })
+
+          it("should build correct constraints for address with only country", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "CA",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test with only country
+            const shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "CA",
+              },
+            })
+
+            expect(shippingOptions).toHaveLength(1)
+          })
+
+          it("should handle hierarchical geo zone matching correctly", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.ZIP,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                      postal_expression: "90210",
+                    },
+                    {
+                      type: GeoZoneType.CITY,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                    },
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "US",
+                      province_code: "CA",
+                    },
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "US",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test with full address - should match all levels
+            let shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+
+            // Test with partial address - should still match broader zones
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+
+            // Test with only country - should match country zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+          })
+
+          it("should not match zones when address doesn't satisfy requirements", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.ZIP,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                      postal_expression: "90210",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Wrong postal code - should not match
+            let shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90211",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+
+            // Wrong city - should not match
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "San Francisco",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+
+            // Wrong province - should not match
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "NY",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+
+            // Wrong country - should not match
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "CA",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+          })
+
+          it("should handle partial address matching correctly", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "US",
+                      province_code: "CA",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Full address with matching province should match
+            let shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Any City",
+                postal_expression: "12345",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+
+            // Minimal matching address should match
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+
+            // Address with only country should not match province-level zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+          })
+
+          it("should handle empty or null address fields correctly", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "test",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "US",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Address with undefined fields should still match if country matches
+            const shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: undefined,
+                city: undefined,
+                postal_expression: undefined,
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+          })
+
+          it("should correctly match addresses across multiple service zones", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "US Zones",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.ZIP,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                      postal_expression: "90210",
+                    },
+                    {
+                      type: GeoZoneType.CITY,
+                      country_code: "US",
+                      province_code: "NY",
+                      city: "New York",
+                    },
+                  ],
+                },
+                {
+                  name: "Europe Zones",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "FR",
+                    },
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "DE",
+                      province_code: "BY",
+                    },
+                  ],
+                },
+                {
+                  name: "Canada Zones",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "CA",
+                      province_code: "ON",
+                    },
+                    {
+                      type: GeoZoneType.CITY,
+                      country_code: "CA",
+                      province_code: "BC",
+                      city: "Vancouver",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            // Create shipping options for each zone
+            const [usOption, europeOption, canadaOption] = await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                name: "US Shipping",
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+              generateCreateShippingOptionsData({
+                name: "Europe Shipping",
+                service_zone_id: fulfillmentSet.service_zones[1].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+              generateCreateShippingOptionsData({
+                name: "Canada Shipping",
+                service_zone_id: fulfillmentSet.service_zones[2].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test US ZIP code - should only match US zone
+            let shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(usOption.id)
+
+            // Test New York city - should only match US zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "NY",
+                city: "New York",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(usOption.id)
+
+            // Test France - should only match Europe zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "FR",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(europeOption.id)
+
+            // Test German province - should only match Europe zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "DE",
+                province_code: "BY",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(europeOption.id)
+
+            // Test Canadian province - should only match Canada zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "CA",
+                province_code: "ON",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(canadaOption.id)
+
+            // Test Vancouver - should only match Canada zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "CA",
+                province_code: "BC",
+                city: "Vancouver",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(canadaOption.id)
+
+            // Test non-matching address - should return no options
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "JP",
+                city: "Tokyo",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+          })
+
+          it("should handle overlapping zones across multiple service zones", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "Broad US Zone",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "US",
+                    },
+                  ],
+                },
+                {
+                  name: "Specific California Zone",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "US",
+                      province_code: "CA",
+                    },
+                  ],
+                },
+                {
+                  name: "Specific LA Zone",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.ZIP,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                      postal_expression: "90210",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            // Create shipping options with different prices for each zone
+            const [broadOption, californiaOption, laOption] = await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                name: "Standard US Shipping",
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+              generateCreateShippingOptionsData({
+                name: "California Express",
+                service_zone_id: fulfillmentSet.service_zones[1].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+              generateCreateShippingOptionsData({
+                name: "LA Premium",
+                service_zone_id: fulfillmentSet.service_zones[2].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test LA ZIP code - should match all three zones
+            let shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(3)
+            const laIds = shippingOptions.map(opt => opt.id)
+            expect(laIds).toContain(broadOption.id)
+            expect(laIds).toContain(californiaOption.id)
+            expect(laIds).toContain(laOption.id)
+
+            // Test California (not LA) - should match broad US and California zones
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "San Francisco",
+              },
+            })
+            expect(shippingOptions).toHaveLength(2)
+            const caIds = shippingOptions.map(opt => opt.id)
+            expect(caIds).toContain(broadOption.id)
+            expect(caIds).toContain(californiaOption.id)
+            expect(caIds).not.toContain(laOption.id)
+
+            // Test US (not California) - should only match broad US zone
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "NY",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(broadOption.id)
+
+            // Test non-US address - should match nothing
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "CA",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+          })
+
+          it("should handle mixed granularity zones across service zones", async () => {
+            const fulfillmentSet = await service.createFulfillmentSets({
+              name: "test",
+              type: "test-type",
+              service_zones: [
+                {
+                  name: "Mixed Zone 1",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.ZIP,
+                      country_code: "US",
+                      province_code: "CA",
+                      city: "Los Angeles",
+                      postal_expression: "90210",
+                    },
+                    {
+                      type: GeoZoneType.COUNTRY,
+                      country_code: "FR",
+                    },
+                  ],
+                },
+                {
+                  name: "Mixed Zone 2",
+                  geo_zones: [
+                    {
+                      type: GeoZoneType.CITY,
+                      country_code: "US",
+                      province_code: "NY",
+                      city: "New York",
+                    },
+                    {
+                      type: GeoZoneType.PROVINCE,
+                      country_code: "CA",
+                      province_code: "ON",
+                    },
+                  ],
+                },
+              ],
+            })
+
+            const shippingProfile = await service.createShippingProfiles({
+              name: "test",
+              type: "default",
+            })
+
+            const [option1, option2] = await service.createShippingOptions([
+              generateCreateShippingOptionsData({
+                name: "Mixed Option 1",
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+              generateCreateShippingOptionsData({
+                name: "Mixed Option 2",
+                service_zone_id: fulfillmentSet.service_zones[1].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: providerId,
+              }),
+            ])
+
+            // Test LA ZIP - should match zone 1
+            let shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "CA",
+                city: "Los Angeles",
+                postal_expression: "90210",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(option1.id)
+
+            // Test France - should match zone 1
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "FR",
+                city: "Paris",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(option1.id)
+
+            // Test New York - should match zone 2
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "US",
+                province_code: "NY",
+                city: "New York",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(option2.id)
+
+            // Test Ontario, Canada - should match zone 2
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "CA",
+                province_code: "ON",
+                city: "Toronto",
+              },
+            })
+            expect(shippingOptions).toHaveLength(1)
+            expect(shippingOptions[0].id).toBe(option2.id)
+
+            // Test unmatched location
+            shippingOptions = await service.listShippingOptionsForContext({
+              address: {
+                country_code: "UK",
+              },
+            })
+            expect(shippingOptions).toHaveLength(0)
+          })
+        })
+
         describe("on update shipping option rules", () => {
           it("should update a shipping option rule", async () => {
             const shippingProfile = await service.createShippingProfiles({

@@ -72,6 +72,7 @@ Medusa hosts a Streamable HTTP MCP server available at `https://docs.medusajs.co
   <TabsList>
     <TabsTrigger value="cursor">Cursor</TabsTrigger>
     <TabsTrigger value="vscode">VSCode</TabsTrigger>
+    <TabsTrigger value="claude-code">Claude Code</TabsTrigger>
   </TabsList>
   <TabsContentWrapper className="mt-1">
     <TabsContent value="cursor">
@@ -112,6 +113,14 @@ Medusa hosts a Streamable HTTP MCP server available at `https://docs.medusajs.co
       Learn more in the [VSCode documentation](https://code.visualstudio.com/docs/copilot/chat/mcp-servers).
 
     </TabsContent>
+    <TabsContent value="claude-code">
+      To manually connect to the Medusa MCP server in Claude Code, run the following command in your terminal:
+
+```sh
+claude mcp add --transport http medusa https://docs.medusajs.com/mcp
+```
+
+</TabsContent>
   </TabsContentWrapper>
 </Tabs>
 

@@ -138,8 +138,32 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
-              "title": "Handle Password Reset Event",
+              "title": "Invite User Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Reset Password Email",
               "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Cart Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Order Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals",
               "children": []
             },
             {
@@ -452,6 +476,24 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "title": "First-Purchase Discounts",
           "path": "/how-to-tutorials/tutorials/first-purchase-discounts",
           "description": "Learn how to implement first-purchase discounts in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Generate Invoices",
+          "path": "/how-to-tutorials/tutorials/invoice-generator",
+          "description": "Learn how to generate invoices for orders in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Integrate Payload CMS",
+          "path": "/integrations/guides/payload",
+          "description": "Learn how to integrate Payload CMS with Medusa to manage your product content.",
           "children": []
         },
         {
