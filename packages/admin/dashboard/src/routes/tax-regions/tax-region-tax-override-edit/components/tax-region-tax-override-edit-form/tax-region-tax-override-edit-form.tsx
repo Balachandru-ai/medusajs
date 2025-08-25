@@ -82,8 +82,6 @@ export const TaxRegionTaxOverrideEditForm = ({
   const { handleSuccess } = useRouteModal()
   const { setIsOpen } = useStackedModal()
 
-  console.log(initialValues)
-
   const form = useForm<z.infer<typeof TaxRegionTaxRateEditSchema>>({
     defaultValues: {
       name: taxRate.name,
