@@ -336,6 +336,8 @@ export default class ProductModuleService
       sharedContext,
     })
 
+    // TODO: missing relation events
+
     return createdVariants
   }
 
@@ -380,19 +382,6 @@ export default class ProductModuleService
     const allVariants = await this.baseRepository_.serialize<
       ProductTypes.ProductVariantDTO[] | ProductTypes.ProductVariantDTO
     >(result)
-
-    if (created.length) {
-      eventBuilders.createdProductVariant({
-        data: created,
-        sharedContext,
-      })
-    }
-    if (updated.length) {
-      eventBuilders.updatedProductVariant({
-        data: updated,
-        sharedContext,
-      })
-    }
 
     return Array.isArray(data) ? allVariants : allVariants[0]
   }
