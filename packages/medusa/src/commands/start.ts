@@ -13,8 +13,8 @@ import {
   generateContainerTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
+  isFileSkipped,
   isPresent,
-  MEDUSA_SKIP_FILE,
 } from "@medusajs/framework/utils"
 
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
@@ -47,7 +47,7 @@ export async function registerInstrumentation(directory: string) {
 
   if (
     typeof instrumentation.register === "function" &&
-    instrumentation !== MEDUSA_SKIP_FILE
+    !isFileSkipped(instrumentation)
   ) {
     logger.info("OTEL registered")
     instrumentation.register()

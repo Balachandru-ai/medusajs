@@ -24,7 +24,6 @@ import {
   getProviderRegistrationKey,
   isFileSkipped,
   isString,
-  MEDUSA_SKIP_FILE,
   MedusaModuleProviderType,
   MedusaModuleType,
   Modules,
@@ -546,7 +545,7 @@ async function importAllFromDir(path: string) {
   return (
     await Promise.all(filesToLoad.map((filePath) => dynamicImport(filePath)))
   )
-    .filter((value) => value !== MEDUSA_SKIP_FILE)
+    .filter((value) => !isFileSkipped(value))
     .flatMap((value) => {
       return Object.values(value)
     })
