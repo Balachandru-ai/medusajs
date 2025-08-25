@@ -1,4 +1,4 @@
-import { isFileDisabled } from "@medusajs/utils"
+import { isFileSkipped } from "@medusajs/utils"
 import { MedusaWorkflow } from "@medusajs/workflows-sdk"
 import { logger } from "../logger"
 import { ResourceLoader } from "../utils/resource-loader"
@@ -14,7 +14,7 @@ export class WorkflowLoader extends ResourceLoader {
     path: string,
     fileExports: Record<string, unknown>
   ) {
-    if (isFileDisabled(path)) {
+    if (isFileSkipped(fileExports)) {
       const exportedFns = Object.keys(fileExports)
       for (const exportedFn of exportedFns) {
         const fn = fileExports[exportedFn] as any

@@ -26,9 +26,7 @@ export class MigrationScriptsMigrator extends Migrator {
     try {
       const scriptPaths = await this.getPendingMigrations(paths)
       for (const script of scriptPaths) {
-        const scriptFn = await dynamicImport(script, {
-          skipIfDisabled: true,
-        })
+        const scriptFn = await dynamicImport(script)
 
         if (isFileSkipped(scriptFn)) {
           continue

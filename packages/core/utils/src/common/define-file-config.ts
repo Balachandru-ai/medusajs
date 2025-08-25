@@ -24,5 +24,5 @@ export function isFileDisabled(path?: string) {
 }
 
 export function isFileSkipped(exported: unknown) {
-  return exported === MEDUSA_SKIP_FILE || !!exported?.[MEDUSA_SKIP_FILE]
+  return !!exported?.[MEDUSA_SKIP_FILE]
 }

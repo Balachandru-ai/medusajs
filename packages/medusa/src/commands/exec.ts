@@ -23,11 +23,7 @@ export default async function exec({ file, args }: Options) {
       throw new Error(`File ${filePath} doesn't exist.`)
     }
 
-    const scriptToExec = (
-      await dynamicImport(path.resolve(filePath), {
-        skipIfDisabled: true,
-      })
-    ).default
+    const scriptToExec = (await dynamicImport(path.resolve(filePath))).default
 
     if (isFileSkipped(scriptToExec)) {
       throw new Error(`File is disabled.`)

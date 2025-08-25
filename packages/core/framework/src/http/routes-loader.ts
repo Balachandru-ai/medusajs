@@ -90,9 +90,7 @@ export class RoutesLoader {
     routePath: string,
     absolutePath: string
   ): Promise<RouteDescriptor[]> {
-    const routeExports = await dynamicImport(absolutePath, {
-      skipIfDisabled: true,
-    })
+    const routeExports = await dynamicImport(absolutePath)
 
     if (isFileSkipped(routeExports)) {
       return []

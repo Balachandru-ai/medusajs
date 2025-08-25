@@ -68,9 +68,7 @@ async function getEntitiesForModule(path: string) {
   })
 
   for (const entityPath of entityPaths) {
-    const entityExports = await dynamicImport(entityPath, {
-      skipIfDisabled: true,
-    })
+    const entityExports = await dynamicImport(entityPath)
     if (isFileSkipped(entityExports)) {
       continue
     }

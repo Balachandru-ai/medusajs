@@ -43,14 +43,14 @@ export function buildSeedScript({
     const logger_ = (logger ?? console) as unknown as Logger
 
     logger_.info(`Loading seed data from ${path}...`)
-    const dataSeed = await dynamicImport(resolve(process.cwd(), path), {
-      skipIfDisabled: true,
-    }).catch((e) => {
-      logger_.error(
-        `Failed to load seed data from ${path}. Please, provide a relative path and check that you export the following productCategoriesData, productsData, variantsData.${EOL}${e}`
-      )
-      throw e
-    })
+    const dataSeed = await dynamicImport(resolve(process.cwd(), path)).catch(
+      (e) => {
+        logger_.error(
+          `Failed to load seed data from ${path}. Please, provide a relative path and check that you export the following productCategoriesData, productsData, variantsData.${EOL}${e}`
+        )
+        throw e
+      }
+    )
 
     if (isFileSkipped(dataSeed)) {
       return

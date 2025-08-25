@@ -1,9 +1,4 @@
-import {
-  dynamicImport,
-  isFileSkipped,
-  promiseAll,
-  readDirRecursive,
-} from "@medusajs/utils"
+import { dynamicImport, promiseAll, readDirRecursive } from "@medusajs/utils"
 import { Dirent } from "fs"
 import { access } from "fs/promises"
 import { join, parse } from "path"
@@ -81,13 +76,7 @@ export abstract class ResourceLoader {
           fileEntries.map(async (entry: Dirent) => {
             const fullPath = join(entry.path, entry.name)
 
-            const module_ = await dynamicImport(fullPath, {
-              skipIfDisabled: true,
-            })
-
-            if (isFileSkipped(module_)) {
-              return
-            }
+            const module_ = await dynamicImport(fullPath)
 
             await this.onFileLoaded(fullPath, module_)
             return module_

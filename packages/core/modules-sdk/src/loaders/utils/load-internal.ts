@@ -599,9 +599,7 @@ export async function loadResources({
     }
 
     const [moduleService, services, models, repositories] = await Promise.all([
-      dynamicImport(modulePath, {
-        skipIfDisabled: true,
-      }).then((moduleExports) => {
+      dynamicImport(modulePath).then((moduleExports) => {
         if (isFileSkipped(moduleExports)) {
           return
         }

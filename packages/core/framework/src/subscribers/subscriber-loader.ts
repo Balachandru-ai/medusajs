@@ -1,5 +1,5 @@
 import { Event, IEventBusModuleService, Subscriber } from "@medusajs/types"
-import { isFileDisabled, kebabCase, Modules } from "@medusajs/utils"
+import { isFileSkipped, kebabCase, Modules } from "@medusajs/utils"
 import { parse } from "path"
 
 import { configManager } from "../config"
@@ -42,7 +42,7 @@ export class SubscriberLoader extends ResourceLoader {
     path: string,
     fileExports: Record<string, unknown>
   ) {
-    if (isFileDisabled(path)) {
+    if (isFileSkipped(fileExports)) {
       return
     }
 

@@ -48,9 +48,7 @@ export class CustomDBMigrator extends BaseMigrator {
 
     // Filter out migrations that are disabled by file config
     return pending.filter(async (pendingFile: UmzugMigration) => {
-      const migration = await dynamicImport(pendingFile.path!, {
-        skipIfDisabled: true,
-      })
+      const migration = await dynamicImport(pendingFile.path!)
       if (isFileSkipped(migration)) {
         return false
       }

@@ -46,9 +46,7 @@ export async function loadModuleProvider(
 
     if (isString(provider.resolve)) {
       const normalizedPath = normalizeImportPathWithSource(provider.resolve)
-      loadedProvider = await dynamicImport(normalizedPath, {
-        skipIfDisabled: true,
-      })
+      loadedProvider = await dynamicImport(normalizedPath)
     }
   } catch (error) {
     throw new Error(

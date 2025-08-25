@@ -49,9 +49,7 @@ export class MiddlewareFileLoader {
    * routes config exported by it.
    */
   async #processMiddlewareFile(absolutePath: string): Promise<void> {
-    const middlewareExports = await dynamicImport(absolutePath, {
-      skipIfDisabled: true,
-    })
+    const middlewareExports = await dynamicImport(absolutePath)
 
     if (isFileSkipped(middlewareExports)) {
       return
