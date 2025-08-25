@@ -16,6 +16,20 @@ export type UseQueryGraphStepInput<
   }
 }
 
+export type UseQueryGraphStepOutput<
+  TEntry extends string,
+  TIsList extends boolean = boolean
+> = ReturnType<
+  StepFunction<
+    any,
+    true extends TIsList
+      ? GraphResultSet<TEntry>
+      : Omit<GraphResultSet<TEntry>, "data"> & {
+          data: GraphResultSet<TEntry>["data"][number]
+        }
+  >
+>
+
 const useQueryGraphStepId = "use-query-graph-step"
 
 const step = createStep(
@@ -117,26 +131,8 @@ const step = createStep(
  */
 export const useQueryGraphStep = <
   const TEntry extends string,
-  TIsList extends boolean = boolean
+  const TIsList extends boolean = boolean
 >(
   input: UseQueryGraphStepInput<TEntry, TIsList>
-): ReturnType<
-  StepFunction<
-    any,
-    true extends TIsList
-      ? GraphResultSet<TEntry>
-      : Omit<GraphResultSet<TEntry>, "data"> & {
-          data: GraphResultSet<TEntry>["data"][number]
-        }
-  >
-> =>
-  step(input as any) as unknown as ReturnType<
-    StepFunction<
-      any,
-      true extends TIsList
-        ? GraphResultSet<TEntry>
-        : Omit<GraphResultSet<TEntry>, "data"> & {
-            data: GraphResultSet<TEntry>["data"][number]
-          }
-    >
-  >
+): UseQueryGraphStepOutput<TEntry, TIsList> =>
+  step(input as any) as unknown as UseQueryGraphStepOutput<TEntry, TIsList>
