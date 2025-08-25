@@ -12,7 +12,7 @@ import {
   AdditionalData,
   ListShippingOptionsForCartWorkflowInput,
 } from "@medusajs/types"
-import { isDefined } from "@medusajs/framework/utils"
+import { filterObjectByKeys, isDefined } from "@medusajs/framework/utils"
 import { pricingContextResult } from "../utils/schemas"
 
 export const listShippingOptionsForCartWorkflowId =
@@ -181,7 +181,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
 
           calculated_price: {
             context: {
-              ...cart,
+              ...filterObjectByKeys(cart, cartFieldsForPricingContext),
               ...(setPricingContextResult ? setPricingContextResult : {}),
               currency_code: cart.currency_code,
               region_id: cart.region_id,
