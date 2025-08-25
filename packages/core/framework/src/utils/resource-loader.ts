@@ -1,6 +1,6 @@
 import {
   dynamicImport,
-  MEDUSA_SKIP_FILE,
+  isFileSkipped,
   promiseAll,
   readDirRecursive,
 } from "@medusajs/utils"
@@ -81,9 +81,11 @@ export abstract class ResourceLoader {
           fileEntries.map(async (entry: Dirent) => {
             const fullPath = join(entry.path, entry.name)
 
-            const module_ = await dynamicImport(fullPath)
+            const module_ = await dynamicImport(fullPath, {
+              skipIfDisabled: true,
+            })
 
-            if (module_ === MEDUSA_SKIP_FILE) {
+            if (isFileSkipped(module_)) {
               return
             }
 

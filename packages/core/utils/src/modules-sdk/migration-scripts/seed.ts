@@ -2,7 +2,7 @@ import { LoaderOptions, Logger, ModulesSdkTypes } from "@medusajs/types"
 import { EntitySchema } from "@mikro-orm/core"
 import { EOL } from "os"
 import { resolve } from "path"
-import { dynamicImport, MEDUSA_SKIP_FILE } from "../../common"
+import { dynamicImport, isFileSkipped } from "../../common"
 import { mikroOrmCreateConnection } from "../../dal"
 import { loadDatabaseConfig } from "../load-module-database-config"
 
@@ -43,16 +43,16 @@ export function buildSeedScript({
     const logger_ = (logger ?? console) as unknown as Logger
 
     logger_.info(`Loading seed data from ${path}...`)
-    const dataSeed = await dynamicImport(resolve(process.cwd(), path)).catch(
-      (e) => {
-        logger_.error(
-          `Failed to load seed data from ${path}. Please, provide a relative path and check that you export the following productCategoriesData, productsData, variantsData.${EOL}${e}`
-        )
-        throw e
-      }
-    )
+    const dataSeed = await dynamicImport(resolve(process.cwd(), path), {
+      skipIfDisabled: true,
+    }).catch((e) => {
+      logger_.error(
+        `Failed to load seed data from ${path}. Please, provide a relative path and check that you export the following productCategoriesData, productsData, variantsData.${EOL}${e}`
+      )
+      throw e
+    })
 
-    if (dataSeed === MEDUSA_SKIP_FILE) {
+    if (isFileSkipped(dataSeed)) {
       return
     }
 

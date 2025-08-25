@@ -22,3 +22,7 @@ export function getDefinedFileConfig(path?: string) {
 export function isFileDisabled(path?: string) {
   return !!getDefinedFileConfig(path)?.isDisabled?.()
 }
+
+export function isFileSkipped(exported: unknown) {
+  return exported === MEDUSA_SKIP_FILE
+}

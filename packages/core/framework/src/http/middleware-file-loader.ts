@@ -1,4 +1,4 @@
-import { dynamicImport, FileSystem, MEDUSA_SKIP_FILE } from "@medusajs/utils"
+import { dynamicImport, FileSystem, isFileSkipped } from "@medusajs/utils"
 import { join } from "path"
 import zod from "zod"
 
@@ -49,9 +49,11 @@ export class MiddlewareFileLoader {
    * routes config exported by it.
    */
   async #processMiddlewareFile(absolutePath: string): Promise<void> {
-    const middlewareExports = await dynamicImport(absolutePath)
+    const middlewareExports = await dynamicImport(absolutePath, {
+      skipIfDisabled: true,
+    })
 
-    if (middlewareExports === MEDUSA_SKIP_FILE) {
+    if (isFileSkipped(middlewareExports)) {
       return
     }
 

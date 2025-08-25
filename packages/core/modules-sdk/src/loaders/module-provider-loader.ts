@@ -1,9 +1,9 @@
 import { MedusaContainer, ModuleProvider } from "@medusajs/types"
 import {
   dynamicImport,
+  isFileSkipped,
   isString,
   lowerCaseFirst,
-  MEDUSA_SKIP_FILE,
   normalizeImportPathWithSource,
   promiseAll,
 } from "@medusajs/utils"
@@ -46,7 +46,9 @@ export async function loadModuleProvider(
 
     if (isString(provider.resolve)) {
       const normalizedPath = normalizeImportPathWithSource(provider.resolve)
-      loadedProvider = await dynamicImport(normalizedPath)
+      loadedProvider = await dynamicImport(normalizedPath, {
+        skipIfDisabled: true,
+      })
     }
   } catch (error) {
     throw new Error(
@@ -54,7 +56,7 @@ export async function loadModuleProvider(
     )
   }
 
-  if (loadedProvider === MEDUSA_SKIP_FILE) {
+  if (isFileSkipped(loadedProvider)) {
     return
   }
 

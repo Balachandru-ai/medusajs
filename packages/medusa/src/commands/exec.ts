@@ -1,6 +1,6 @@
 import { logger } from "@medusajs/framework/logger"
 import { ExecArgs } from "@medusajs/framework/types"
-import { dynamicImport, MEDUSA_SKIP_FILE } from "@medusajs/framework/utils"
+import { dynamicImport, isFileSkipped } from "@medusajs/framework/utils"
 import express from "express"
 import { existsSync } from "fs"
 import path from "path"
@@ -23,9 +23,13 @@ export default async function exec({ file, args }: Options) {
       throw new Error(`File ${filePath} doesn't exist.`)
     }
 
-    const scriptToExec = (await dynamicImport(path.resolve(filePath))).default
+    const scriptToExec = (
+      await dynamicImport(path.resolve(filePath), {
+        skipIfDisabled: true,
+      })
+    ).default
 
-    if (scriptToExec === MEDUSA_SKIP_FILE) {
+    if (isFileSkipped(scriptToExec)) {
       throw new Error(`File is disabled.`)
     }
 

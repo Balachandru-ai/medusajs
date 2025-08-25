@@ -12,12 +12,17 @@ import { resolveExports } from "./resolve-exports"
  *
  * @param path
  */
-export async function dynamicImport(path: string): Promise<any> {
+export async function dynamicImport(
+  path: string,
+  options?: {
+    skipIfDisabled?: boolean
+  }
+): Promise<any> {
   const module = require(path)
 
   const exported = resolveExports(module)
 
-  if (isFileDisabled(path)) {
+  if (isFileDisabled(path) && options?.skipIfDisabled === true) {
     return MEDUSA_SKIP_FILE
   }
 

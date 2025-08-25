@@ -3,7 +3,7 @@ import {
   defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
-  MEDUSA_SKIP_FILE,
+  isFileSkipped,
   toUnixSlash,
 } from "@medusajs/framework/utils"
 import { glob } from "glob"
@@ -68,8 +68,10 @@ async function getEntitiesForModule(path: string) {
   })
 
   for (const entityPath of entityPaths) {
-    const entityExports = await dynamicImport(entityPath)
-    if (entityExports === MEDUSA_SKIP_FILE) {
+    const entityExports = await dynamicImport(entityPath, {
+      skipIfDisabled: true,
+    })
+    if (isFileSkipped(entityExports)) {
       continue
     }
 

@@ -22,12 +22,14 @@ import {
   dynamicImport,
   FeatureFlag,
   getProviderRegistrationKey,
+  isFileSkipped,
   isString,
   MEDUSA_SKIP_FILE,
   MedusaModuleProviderType,
   MedusaModuleType,
   Modules,
   ModulesSdkUtils,
+  registerFeatureFlag,
   stringifyCircular,
   toMikroOrmEntities,
 } from "@medusajs/utils"
@@ -35,7 +37,6 @@ import { asFunction, asValue } from "awilix"
 import { statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"
-import { registerFeatureFlag } from "../../feature-flags/register-flag"
 
 type ModuleResource = {
   services: Function[]
@@ -598,8 +599,10 @@ export async function loadResources({
     }
 
     const [moduleService, services, models, repositories] = await Promise.all([
-      dynamicImport(modulePath).then((moduleExports) => {
-        if (moduleExports === MEDUSA_SKIP_FILE) {
+      dynamicImport(modulePath, {
+        skipIfDisabled: true,
+      }).then((moduleExports) => {
+        if (isFileSkipped(moduleExports)) {
           return
         }
 

@@ -31,9 +31,9 @@ import {
   Modules,
   ModulesSdkUtils,
   promiseAll,
+  registerFeatureFlag,
 } from "@medusajs/utils"
 import { asValue } from "awilix"
-import { registerFeatureFlag } from "./feature-flags/register-flag"
 import { Link } from "./link"
 import {
   MedusaModule,

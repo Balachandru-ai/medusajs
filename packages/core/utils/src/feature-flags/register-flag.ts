@@ -1,12 +1,12 @@
 import { FlagSettings, Logger } from "@medusajs/types"
 import {
-  FlagRouter,
   isDefined,
   isObject,
   isString,
   isTruthy,
   objectFromStringPath,
-} from "@medusajs/utils"
+} from "../common"
+import { FlagRouter } from "./flag-router"
 
 export type RegisterFeatureFlagOptions = {
   flag: FlagSettings

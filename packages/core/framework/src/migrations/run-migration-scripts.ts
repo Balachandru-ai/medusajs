@@ -1,5 +1,5 @@
 import { MedusaContainer } from "@medusajs/types"
-import { dynamicImport, MEDUSA_SKIP_FILE, Modules } from "@medusajs/utils"
+import { dynamicImport, isFileSkipped, Modules } from "@medusajs/utils"
 import { basename } from "path"
 import { logger } from "../logger"
 import { Migrator } from "./migrator"
@@ -26,9 +26,11 @@ export class MigrationScriptsMigrator extends Migrator {
     try {
       const scriptPaths = await this.getPendingMigrations(paths)
       for (const script of scriptPaths) {
-        const scriptFn = await dynamicImport(script)
+        const scriptFn = await dynamicImport(script, {
+          skipIfDisabled: true,
+        })
 
-        if (scriptFn === MEDUSA_SKIP_FILE) {
+        if (isFileSkipped(scriptFn)) {
           continue
         }
 

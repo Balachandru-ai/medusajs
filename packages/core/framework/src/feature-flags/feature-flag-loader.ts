@@ -1,10 +1,10 @@
-import { registerFeatureFlag } from "@medusajs/modules-sdk"
 import { trackFeatureFlag } from "@medusajs/telemetry"
 import {
   ContainerRegistrationKeys,
   discoverFeatureFlagsFromDir,
   FeatureFlag,
   FlagRouter,
+  registerFeatureFlag,
 } from "@medusajs/utils"
 import { asFunction } from "awilix"
 import { normalize } from "path"

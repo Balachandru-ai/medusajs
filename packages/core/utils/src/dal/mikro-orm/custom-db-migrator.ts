@@ -5,10 +5,7 @@ import {
   Migration,
   UmzugMigration,
 } from "@mikro-orm/migrations"
-import {
-  isFileDisabled,
-  MEDUSA_SKIP_FILE,
-} from "../../common/define-file-config"
+import { isFileDisabled, isFileSkipped } from "../../common/define-file-config"
 import { dynamicImport } from "../../common/dynamic-import"
 
 export class CustomDBMigrator extends BaseMigrator {
@@ -51,8 +48,10 @@ export class CustomDBMigrator extends BaseMigrator {
 
     // Filter out migrations that are disabled by file config
     return pending.filter(async (pendingFile: UmzugMigration) => {
-      const migration = await dynamicImport(pendingFile.path!)
-      if (migration === MEDUSA_SKIP_FILE) {
+      const migration = await dynamicImport(pendingFile.path!, {
+        skipIfDisabled: true,
+      })
+      if (isFileSkipped(migration)) {
         return false
       }
 
