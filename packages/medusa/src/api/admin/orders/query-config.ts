@@ -109,3 +109,8 @@ export const listOrderItemsQueryConfig = {
   defaultLimit: 100,
   isList: true,
 }
+
+export const listShippingOptionsQueryConfig = {
+  defaultLimit: 100,
+  isList: true,
+}

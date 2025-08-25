@@ -39,7 +39,7 @@ type CreateFlatShippingOptionInputBase = {
   /**
    * The type of the shipping option.
    */
-  type: {
+  type?: {
     /**
      * The label of the shipping option type.
      */
@@ -47,12 +47,16 @@ type CreateFlatShippingOptionInputBase = {
     /**
      * The description of the shipping option type.
      */
-    description: string
+    description?: string
     /**
      * The code of the shipping option type.
      */
     code: string
   }
+  /**
+   * The ID of the type of shipping option.
+   */
+  type_id?: string
   /**
    * The rules that determine when the shipping option is available.
    */

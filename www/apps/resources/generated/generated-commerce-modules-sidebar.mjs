@@ -3355,7 +3355,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "isPathHref": true,
               "type": "link",
               "path": "/commerce-modules/fulfillment/concepts",
-              "title": "Fulfillment Concepts",
+              "title": "General Concepts",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/commerce-modules/fulfillment/item-fulfillment",
+              "title": "Item Fulfillment",
               "children": []
             },
             {
@@ -3372,14 +3380,6 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "link",
               "path": "/commerce-modules/fulfillment/shipping-option",
               "title": "Shipping Option",
-              "children": []
-            },
-            {
-              "loaded": true,
-              "isPathHref": true,
-              "type": "link",
-              "path": "/commerce-modules/fulfillment/item-fulfillment",
-              "title": "Item Fulfillment",
               "children": []
             },
             {
@@ -11515,6 +11515,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Implement Product Reviews",
               "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Integrate Payload",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/payload",
               "children": []
             },
             {

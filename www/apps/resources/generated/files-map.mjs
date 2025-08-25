@@ -912,6 +912,10 @@ export const filesMap = [
     "pathname": "/integrations/guides/mailchimp"
   },
   {
+    "filePath": "/www/apps/resources/app/integrations/guides/payload/page.mdx",
+    "pathname": "/integrations/guides/payload"
+  },
+  {
     "filePath": "/www/apps/resources/app/integrations/guides/resend/page.mdx",
     "pathname": "/integrations/guides/resend"
   },
@@ -11986,6 +11990,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getPublishableKeyHeader_/page.mdx",
     "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getPublishableKeyHeader_"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx",
+    "pathname": "/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken"
   },
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getTokenStorageInfo_/page.mdx",

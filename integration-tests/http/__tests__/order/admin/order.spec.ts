@@ -8,12 +8,19 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
+import { createShippingOptionSeeder } from "../../fixtures/shipping"
+import { AdminShippingOption } from "@medusajs/types"
 
 jest.setTimeout(300000)
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
-    let order, seeder, inventoryItemOverride3, productOverride3, shippingProfile
+    let order,
+      seeder,
+      inventoryItemOverride3,
+      productOverride3,
+      shippingProfile,
+      productOverride4
 
     beforeEach(async () => {
       const container = getContainer()
@@ -68,7 +75,10 @@ medusaIntegrationTestRunner({
       })
 
       it("should search orders by shipping address", async () => {
-        let response = await api.get(`/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2`, adminHeaders)
+        let response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -77,7 +87,10 @@ medusaIntegrationTestRunner({
           }),
         ])
 
-        response = await api.get(`/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2&q=${order.shipping_address.address_1}`, adminHeaders)
+        response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2&q=${order.shipping_address.address_1}`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -86,7 +99,10 @@ medusaIntegrationTestRunner({
           }),
         ])
 
-        response = await api.get(`/admin/orders?q=${order.shipping_address.address_2}`, adminHeaders)
+        response = await api.get(
+          `/admin/orders?q=${order.shipping_address.address_2}`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -102,16 +118,10 @@ medusaIntegrationTestRunner({
       })
 
       it("should search orders by billing address", async () => {
-        let response = await api.get(`/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`, adminHeaders)
-
-        expect(response.data.orders).toHaveLength(1)
-        expect(response.data.orders).toEqual([
-          expect.objectContaining({
-            id: order.id, 
-          }),
-        ])
-
-        response = await api.get(`/admin/orders?fields=+billing_address.address_1,+billing_address.address_2&q=${order.billing_address.address_1}`, adminHeaders)
+        let response = await api.get(
+          `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
@@ -120,12 +130,27 @@ medusaIntegrationTestRunner({
           }),
         ])
 
-        response = await api.get(`/admin/orders?q=${order.billing_address.address_2}`, adminHeaders)
+        response = await api.get(
+          `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2&q=${order.billing_address.address_1}`,
+          adminHeaders
+        )
 
         expect(response.data.orders).toHaveLength(1)
         expect(response.data.orders).toEqual([
           expect.objectContaining({
-            id: order.id, 
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?q=${order.billing_address.address_2}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
           }),
         ])
       })
@@ -836,6 +861,56 @@ medusaIntegrationTestRunner({
           )
         ).data.product
 
+        const inventoryItemOverride4 = (
+          await api.post(
+            `/admin/inventory-items`,
+            { sku: "test-variant-4-no-shipping", requires_shipping: false },
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        await api.post(
+          `/admin/inventory-items/${inventoryItemOverride4.id}/location-levels`,
+          {
+            location_id: stockChannelOverride.id,
+            stocked_quantity: 10,
+          },
+          adminHeaders
+        )
+
+        productOverride4 = (
+          await api.post(
+            "/admin/products",
+            {
+              title: `Test override 4`,
+              shipping_profile_id: shippingProfile.id,
+              options: [{ title: "size", values: ["large"] }],
+              variants: [
+                {
+                  title: "Test variant 4",
+                  sku: "test-variant-4-override",
+                  inventory_items: [
+                    {
+                      inventory_item_id: inventoryItemOverride4.id,
+                      required_quantity: 3,
+                    },
+                  ],
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 100,
+                    },
+                  ],
+                  options: {
+                    size: "large",
+                  },
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+
         shippingProfileOverride = (
           await api.post(
             `/admin/shipping-profiles`,
@@ -889,6 +964,7 @@ medusaIntegrationTestRunner({
           additionalProducts: [
             { variant_id: productOverride2.variants[0].id, quantity: 1 },
             { variant_id: productOverride3.variants[0].id, quantity: 3 },
+            { variant_id: productOverride4.variants[0].id, quantity: 1 },
             {
               variant_id:
                 productOverride4WithOverrideShippingProfile.variants[0].id,
@@ -1013,6 +1089,50 @@ medusaIntegrationTestRunner({
               shipping_option_id: seeder.shippingOption.id,
               location_id: seeder.stockLocation.id,
               items: [{ id: orderItemId, quantity: 5 }],
+            },
+            adminHeaders
+          )
+          .catch((e) => e)
+
+        expect(res.response.status).toBe(400)
+        expect(res.response.data.message).toBe(
+          `Quantity to fulfill exceeds the reserved quantity for the item: ${orderItemId}`
+        )
+      })
+
+      it("should throw if trying to fulfillment more items than it is reserved when item has required quantity", async () => {
+        const orderItemId = order.items.find(
+          (i) => i.variant_id === productOverride4.variants[0].id
+        ).id
+
+        let reservation = (
+          await api.get(
+            `/admin/reservations?line_item_id=${orderItemId}`,
+            adminHeaders
+          )
+        ).data.reservations[0]
+
+        expect(reservation.quantity).toBe(3) // one item with required quantity 3
+
+        reservation = (
+          await api.post(
+            `/admin/reservations/${reservation.id}`,
+            {
+              quantity: 2,
+            },
+            adminHeaders
+          )
+        ).data.reservation
+
+        expect(reservation.quantity).toBe(2)
+
+        const res = await api
+          .post(
+            `/admin/orders/${order.id}/fulfillments`,
+            {
+              shipping_option_id: seeder.shippingOption.id,
+              location_id: seeder.stockLocation.id,
+              items: [{ id: orderItemId, quantity: 1 }], // fulfill 1 orer item which requires 3 inventor items
             },
             adminHeaders
           )
@@ -2368,6 +2488,76 @@ medusaIntegrationTestRunner({
           type: "invalid_data",
           message: `Quantity to fulfill exceeds the reserved quantity for the item: ${order.items[0].id}`,
         })
+      })
+    })
+
+    describe("GET /orders/:id/shipping-options", () => {
+      let so1: AdminShippingOption
+      let so2: AdminShippingOption
+      let so3: AdminShippingOption
+
+      beforeEach(async () => {
+        seeder = await createOrderSeeder({ api, container: getContainer() })
+        order = seeder.order
+        order = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
+          .order
+
+        so1 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["us"],
+          })
+        ).shippingOption
+
+        so2 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["us", "ca"],
+          })
+        ).shippingOption
+
+        so3 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["de"],
+          })
+        ).shippingOption
+      })
+
+      it("should return the shipping options applicable for the order", async () => {
+        const { data } = await api.get(
+          `/admin/orders/${order.id}/shipping-options`,
+          adminHeaders
+        )
+
+        const originalShippingOptionId =
+          order.shipping_methods[0].shipping_option_id
+
+        expect(order.shipping_address.country_code).toEqual("us")
+
+        expect(data.shipping_options.length).toEqual(3)
+        expect(data.shipping_options).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: so1.id,
+              insufficient_inventory: true,
+            }),
+            expect.objectContaining({
+              id: so2.id,
+              insufficient_inventory: true, // new SO without location levels for the order item, should have insufficient inventory
+            }),
+            expect.objectContaining({
+              id: originalShippingOptionId,
+              insufficient_inventory: false, // order is created with this SO, location has to have enough inventory
+            }),
+          ])
+        )
       })
     })
 
