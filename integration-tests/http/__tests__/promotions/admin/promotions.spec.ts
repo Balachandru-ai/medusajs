@@ -1,6 +1,10 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { Modules, PromotionStatus, PromotionType } from "@medusajs/utils"
-import { createAdminUser, generatePublishableKey, generateStoreHeaders, } from "../../../../helpers/create-admin-user"
+import {
+  createAdminUser,
+  generatePublishableKey,
+  generateStoreHeaders,
+} from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
@@ -2469,7 +2473,8 @@ medusaIntegrationTestRunner({
             expect.arrayContaining([
               expect.objectContaining({
                 id: "shipping_option_type",
-                value: "shipping_methods.shipping_option.shipping_option_type_id",
+                value:
+                  "shipping_methods.shipping_option.shipping_option_type_id",
                 label: "Shipping Option Type",
                 required: false,
                 field_type: "multiselect",

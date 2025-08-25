@@ -1,5 +1,6 @@
 import {
   AdditionalData,
+  CartDTO,
   UpdateCartWorkflowInputDTO,
 } from "@medusajs/framework/types"
 import {
@@ -16,11 +17,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  emitEventStep,
-  useQueryGraphStep,
-  useRemoteQueryStep,
-} from "../../common"
+import { emitEventStep, useQueryGraphStep } from "../../common"
 import { deleteLineItemsStep } from "../../line-item"
 import {
   findOrCreateCustomerStep,
@@ -83,9 +80,9 @@ export const updateCartWorkflowId = "update-cart"
 export const updateCartWorkflow = createWorkflow(
   updateCartWorkflowId,
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
-    const cartToUpdate = useRemoteQueryStep({
-      entry_point: "cart",
-      variables: { id: input.id },
+    const { data: cartToUpdate } = useQueryGraphStep({
+      entity: "cart",
+      filters: { id: input.id },
       fields: [
         "id",
         "email",
@@ -95,18 +92,26 @@ export const updateCartWorkflow = createWorkflow(
         "region.*",
         "region.countries.*",
       ],
-      list: false,
-      throw_if_key_not_found: true,
+      pagination: {
+        take: 1,
+      },
+      options: {
+        throwIfKeyNotFound: true,
+        isList: false,
+      },
     }).config({ name: "get-cart" })
 
-    const cartDataInput = transform({ input, cartToUpdate }, (data) => {
-      return {
-        sales_channel_id:
-          data.input.sales_channel_id ?? data.cartToUpdate.sales_channel_id,
-        customer_id: data.cartToUpdate.customer_id,
-        email: data.input.email ?? data.cartToUpdate.email,
+    const cartDataInput = transform(
+      { input, cartToUpdate },
+      (data: { input: UpdateCartWorkflowInput; cartToUpdate: CartDTO }) => {
+        return {
+          sales_channel_id:
+            data.input.sales_channel_id ?? data.cartToUpdate.sales_channel_id,
+          customer_id: data.cartToUpdate.customer_id,
+          email: data.input.email ?? data.cartToUpdate.email,
+        }
       }
-    })
+    )
 
     const [salesChannel, customer] = parallelize(
       findSalesChannelStep({
@@ -120,16 +125,23 @@ export const updateCartWorkflow = createWorkflow(
 
     validateSalesChannelStep({ salesChannel })
 
-    const newRegion = when({ input }, (data) => {
+    const newRegion = when("should-fetch-region", { input }, (data) => {
       return !!data.input.region_id
     }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "region",
-        variables: { id: input.region_id },
+      const { data: newRegion } = useQueryGraphStep({
+        entity: "region",
+        filters: { id: input.region_id },
         fields: ["id", "countries.*", "currency_code", "name"],
-        list: false,
-        throw_if_key_not_found: true,
+        pagination: {
+          take: 1,
+        },
+        options: {
+          throwIfKeyNotFound: true,
+          isList: false,
+        },
       }).config({ name: "get-region" })
+
+      return newRegion
     })
 
     const region = transform({ cartToUpdate, newRegion }, (data) => {
@@ -239,9 +251,13 @@ export const updateCartWorkflow = createWorkflow(
       }
     )
 
-    when({ regionUpdated }, ({ regionUpdated }) => {
-      return !!regionUpdated
-    }).then(() => {
+    when(
+      "should-emit-region-updated",
+      { regionUpdated },
+      ({ regionUpdated }) => {
+        return !!regionUpdated
+      }
+    ).then(() => {
       emitEventStep({
         eventName: CartWorkflowEvents.REGION_UPDATED,
         data: { id: input.id },
@@ -258,7 +274,7 @@ export const updateCartWorkflow = createWorkflow(
 
     // In case the region is updated, we might have a new currency OR tax inclusivity setting
     // Therefore, we need to delete line items with a custom price for good measure
-    when({ regionUpdated }, ({ regionUpdated }) => {
+    when("should-delete-line-items", { regionUpdated }, ({ regionUpdated }) => {
       return !!regionUpdated
     }).then(() => {
       const lineItems = useQueryGraphStep({
