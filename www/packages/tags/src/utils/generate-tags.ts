@@ -45,7 +45,7 @@ const config: ConfigItem[] = [
     path: path.resolve("..", "..", "apps", "ui"),
     contentPaths: [
       {
-        path: path.join("src", "content", "docs"),
+        path: "app",
         omitFromPath: true,
       },
     ],

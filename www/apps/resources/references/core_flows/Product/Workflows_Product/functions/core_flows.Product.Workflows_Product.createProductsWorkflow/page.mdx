@@ -32,7 +32,7 @@ Learn more about adding rules to the product variant's prices in the Pricing Mod
 
 :::
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/394226b5c18d11072da826ed6a07d4e602e62f18/packages/core/core-flows/src/product/workflows/create-products.ts#L163" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/61a25dd07370282cad1dea30e13c3090ebea4f1b/packages/core/core-flows/src/product/workflows/create-products.ts#L163" />
 
 ## Examples
 
@@ -70,9 +70,9 @@ export async function POST(
               currency_code: "usd"
             }],
             manage_inventory: true,
-          }, ]
+          }, ],
+          shipping_profile_id: "sp_123",
         }],
-        shipping_profile_id: "sp_123",
         additional_data: {
           erp_id: "123"
         }
@@ -117,9 +117,9 @@ export default async function handleOrderPlaced({
               currency_code: "usd"
             }],
             manage_inventory: true,
-          }, ]
+          }, ],
+          shipping_profile_id: "sp_123",
         }],
-        shipping_profile_id: "sp_123",
         additional_data: {
           erp_id: "123"
         }
@@ -164,9 +164,9 @@ export default async function myCustomJob(
               currency_code: "usd"
             }],
             manage_inventory: true,
-          }, ]
+          }, ],
+          shipping_profile_id: "sp_123",
         }],
-        shipping_profile_id: "sp_123",
         additional_data: {
           erp_id: "123"
         }
@@ -212,9 +212,9 @@ const myWorkflow = createWorkflow(
                 currency_code: "usd"
               }],
               manage_inventory: true,
-            }, ]
+            }, ],
+            shipping_profile_id: "sp_123",
           }],
-          shipping_profile_id: "sp_123",
           additional_data: {
             erp_id: "123"
           }

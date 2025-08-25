@@ -88,6 +88,10 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/contentful"
   },
   {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
+  },
+  {
     "title": "Build Wishlist Plugin",
     "path": "https://docs.medusajs.com/resources/plugins/guides/wishlist"
   },
