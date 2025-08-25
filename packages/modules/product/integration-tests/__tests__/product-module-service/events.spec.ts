@@ -1,0 +1,912 @@
+import { IProductModuleService } from "@medusajs/framework/types"
+import {
+  CommonEvents,
+  composeMessage,
+  Modules,
+  ProductEvents,
+  ProductStatus,
+} from "@medusajs/framework/utils"
+import {
+  MockEventBusService,
+  moduleIntegrationTestRunner,
+} from "@medusajs/test-utils"
+import { buildProductAndRelationsData } from "../../__fixtures__/product"
+
+jest.setTimeout(300000)
+
+moduleIntegrationTestRunner<IProductModuleService>({
+  moduleName: Modules.PRODUCT,
+  injectedDependencies: {
+    [Modules.EVENT_BUS]: new MockEventBusService(),
+  },
+  testSuite: ({ MikroOrmWrapper, service }) => {
+    let eventBusSpy: jest.SpyInstance
+
+    beforeEach(() => {
+      eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    describe("ProductModuleService Events", () => {
+      describe("Product Creation - All Cascade Events", () => {
+        it.only("should emit all related events when creating a product with full relations", async () => {
+          const productData = buildProductAndRelationsData({
+            title: "Test Product",
+            images: [{ url: "image-1.jpg" }, { url: "image-2.jpg" }],
+            thumbnail: "image-1.jpg",
+            options: [
+              {
+                title: "size",
+                values: ["small", "medium", "large"],
+              },
+              {
+                title: "color",
+                values: ["red", "blue"],
+              },
+            ],
+            variants: [
+              {
+                title: "Small Red",
+                sku: "small-red",
+                options: { size: "small", color: "red" },
+              },
+              {
+                title: "Medium Blue",
+                sku: "medium-blue",
+                options: { size: "medium", color: "blue" },
+              },
+            ],
+          })
+
+          const products = await service.createProducts([productData])
+          const createdProduct = products[0]
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          // Should emit events for:
+          // 1. Product created
+          // 2. Product options created (2 options)
+          // 3. Product option values created (5 values total: 3 sizes + 2 colors)
+          // 4. Product variants created (2 variants)
+          // 5. Product images created (2 images)
+
+          const expectedEventsCount = 1 + 2 + 5 + 2 + 2 // 12 total events
+          expect(emittedEvents).toHaveLength(expectedEventsCount)
+
+          // Verify product created event
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_CREATED, {
+                data: { id: createdProduct.id },
+                object: "product",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+
+          // Verify product option created events
+          createdProduct.options.forEach((option) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_OPTION_CREATED, {
+                  data: { id: option.id },
+                  object: "product_option",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+
+            // Verify option value created events for each option
+            option.values.forEach((value) => {
+              expect(emittedEvents).toEqual(
+                expect.arrayContaining([
+                  composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_CREATED, {
+                    data: { id: value.id },
+                    object: "product_option_value",
+                    source: Modules.PRODUCT,
+                    action: CommonEvents.CREATED,
+                  }),
+                ])
+              )
+            })
+          })
+
+          // Verify product variant created events
+          createdProduct.variants.forEach((variant) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_VARIANT_CREATED, {
+                  data: { id: variant.id },
+                  object: "product_variant",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+          })
+
+          // Verify product image created events
+          createdProduct.images.forEach((image) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_IMAGE_CREATED, {
+                  data: { id: image.id },
+                  object: "product_image",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+          })
+        })
+      })
+
+      describe("Product Update - Cascade Events", () => {
+        let existingProduct: any
+
+        beforeEach(async () => {
+          const productData = buildProductAndRelationsData({
+            title: "Original Product",
+            images: [{ url: "original-image.jpg" }],
+          })
+          const products = await service.createProducts([productData])
+          existingProduct = products[0]
+          eventBusSpy.mockClear()
+        })
+
+        it("should emit update events when updating product and relations", async () => {
+          const updateData = {
+            id: existingProduct.id,
+            title: "Updated Product",
+            images: [
+              { url: "updated-image-1.jpg" },
+              { url: "updated-image-2.jpg" },
+            ],
+            options: [
+              {
+                title: "updated-option",
+                values: ["value1", "value2"],
+              },
+            ],
+            variants: [
+              {
+                title: "Updated Variant",
+                options: { "updated-option": "value1" },
+              },
+            ],
+          }
+
+          await service.updateProducts(existingProduct.id, updateData)
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          // Should include various update/create events for modified relations
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_UPDATED, {
+                data: { id: existingProduct.id },
+                object: "product",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("Product Deletion - All Cascade Delete Events", () => {
+        it("should emit all cascade delete events when soft deleting a product", async () => {
+          const productData = buildProductAndRelationsData({
+            title: "Product to Delete",
+            images: [
+              { url: "delete-image-1.jpg" },
+              { url: "delete-image-2.jpg" },
+            ],
+            options: [
+              {
+                title: "delete-option",
+                values: ["delete-value-1", "delete-value-2"],
+              },
+            ],
+            variants: [
+              {
+                title: "Delete Variant",
+                options: { "delete-option": "delete-value-1" },
+              },
+            ],
+          })
+
+          const products = await service.createProducts([productData])
+          const createdProduct = products[0]
+          eventBusSpy.mockClear()
+
+          await service.softDeleteProducts([createdProduct.id])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          // Should emit delete events for product and all its relations
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_DELETED, {
+                data: { id: [createdProduct.id] },
+                object: "product",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
+
+          // Should emit delete events for variants
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_VARIANT_DELETED, {
+                data: { id: [createdProduct.variants[0].id] },
+                object: "product_variant",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
+
+          // Should emit delete events for options
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_DELETED, {
+                data: { id: [createdProduct.options[0].id] },
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
+
+          // Should emit delete events for option values
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
+                data: { id: [createdProduct.options[0].values[0].id] },
+                object: "product_option_value",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
+
+          // Should emit delete events for images
+          createdProduct.images.forEach((image) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
+                  data: { id: [image.id] },
+                  object: "product_image",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.DELETED,
+                }),
+              ])
+            )
+          })
+        })
+      })
+
+      describe("Product Variant Operations - Isolated Events", () => {
+        let productWithOptions: any
+
+        beforeEach(async () => {
+          const productData = buildProductAndRelationsData({
+            options: [
+              {
+                title: "size",
+                values: ["small", "medium", "large"],
+              },
+              {
+                title: "color",
+                values: ["red", "blue", "green"],
+              },
+            ],
+          })
+          const products = await service.createProducts([productData])
+          productWithOptions = products[0]
+          eventBusSpy.mockClear()
+        })
+
+        it("should emit PRODUCT_VARIANT_CREATED event only when creating standalone variant", async () => {
+          const variantData = {
+            title: "New Standalone Variant",
+            product_id: productWithOptions.id,
+            options: { size: "large", color: "green" },
+          }
+
+          const variants = await service.createProductVariants([variantData])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_VARIANT_CREATED, {
+                data: { id: variants[0].id },
+                object: "product_variant",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit PRODUCT_VARIANT_UPDATED event only when updating variant", async () => {
+          const variant = productWithOptions.variants[0]
+
+          await service.updateProductVariants(variant.id, {
+            title: "Updated Variant Title",
+          })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_VARIANT_UPDATED, {
+                data: { id: variant.id },
+                object: "product_variant",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+      })
+
+      describe("Product Tag Operations - Events", () => {
+        it("should emit PRODUCT_TAG_CREATED event on createProductTags", async () => {
+          const tagData = { value: "New Tag" }
+
+          const tags = await service.createProductTags([tagData])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_TAG_CREATED, {
+                data: { id: tags[0].id },
+                object: "product_tag",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit PRODUCT_TAG_UPDATED event on updateProductTags", async () => {
+          const tags = await service.createProductTags([
+            { value: "Original Tag" },
+          ])
+          eventBusSpy.mockClear()
+
+          await service.updateProductTags(tags[0].id, { value: "Updated Tag" })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_TAG_UPDATED, {
+                data: { id: tags[0].id },
+                object: "product_tag",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit appropriate events on upsertProductTags", async () => {
+          const existingTag = await service.createProductTags([
+            { value: "Existing Tag" },
+          ])
+          eventBusSpy.mockClear()
+
+          const tags = await service.upsertProductTags([
+            { id: existingTag[0].id, value: "Updated Existing Tag" },
+            { value: "New Tag" },
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_TAG_UPDATED, {
+                data: { id: existingTag[0].id },
+                object: "product_tag",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_TAG_CREATED, {
+                data: { id: tags[1].id },
+                object: "product_tag",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("Product Type Operations - Events", () => {
+        it("should emit PRODUCT_TYPE_CREATED event on createProductTypes", async () => {
+          const typeData = { value: "New Type" }
+
+          const types = await service.createProductTypes([typeData])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_TYPE_CREATED, {
+                data: { id: types[0].id },
+                object: "product_type",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit PRODUCT_TYPE_UPDATED event on updateProductTypes", async () => {
+          const types = await service.createProductTypes([
+            { value: "Original Type" },
+          ])
+          eventBusSpy.mockClear()
+
+          await service.updateProductTypes(types[0].id, {
+            value: "Updated Type",
+          })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_TYPE_UPDATED, {
+                data: { id: types[0].id },
+                object: "product_type",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit appropriate events on upsertProductTypes", async () => {
+          const existingType = await service.createProductTypes([
+            { value: "Existing Type" },
+          ])
+          eventBusSpy.mockClear()
+
+          const types = await service.upsertProductTypes([
+            { id: existingType[0].id, value: "Updated Existing Type" },
+            { value: "New Type" },
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_TYPE_UPDATED, {
+                data: { id: existingType[0].id },
+                object: "product_type",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_TYPE_CREATED, {
+                data: { id: types[1].id },
+                object: "product_type",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("Product Option Operations - Events", () => {
+        let productWithOptions: any
+
+        beforeEach(async () => {
+          const productData = buildProductAndRelationsData()
+          const products = await service.createProducts([productData])
+          productWithOptions = products[0]
+          eventBusSpy.mockClear()
+        })
+
+        it("should emit PRODUCT_OPTION_CREATED and PRODUCT_OPTION_VALUE_CREATED events on createProductOptions", async () => {
+          const optionData = {
+            title: "New Option",
+            product_id: productWithOptions.id,
+            values: ["value1", "value2", "value3"],
+          }
+
+          const options = await service.createProductOptions([optionData])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          // Should emit 1 option created + 3 option values created = 4 events
+          expect(emittedEvents).toHaveLength(4)
+
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_CREATED, {
+                data: { id: options[0].id },
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+
+          // Verify each option value created event
+          options[0].values.forEach((value) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_CREATED, {
+                  data: { id: value.id },
+                  object: "product_option_value",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+          })
+        })
+
+        it("should emit PRODUCT_OPTION_UPDATED event on updateProductOptions", async () => {
+          const option = productWithOptions.options[0]
+
+          await service.updateProductOptions(option.id, {
+            title: "Updated Option",
+          })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_OPTION_UPDATED, {
+                data: { id: option.id },
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit appropriate events on upsertProductOptions", async () => {
+          const existingOption = productWithOptions.options[0]
+          const newOptionData = {
+            title: "New Option",
+            product_id: productWithOptions.id,
+            values: ["new1", "new2"],
+          }
+
+          const options = await service.upsertProductOptions([
+            { id: existingOption.id, title: "Updated Option" },
+            newOptionData,
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_UPDATED, {
+                data: { id: existingOption.id },
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_OPTION_CREATED, {
+                data: { id: options[1].id },
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("Product Option Value Operations - Events", () => {
+        let productWithOptions: any
+
+        beforeEach(async () => {
+          const productData = buildProductAndRelationsData()
+          const products = await service.createProducts([productData])
+          productWithOptions = products[0]
+          eventBusSpy.mockClear()
+        })
+
+        it("should emit PRODUCT_OPTION_VALUE_UPDATED event on updateProductOptionValues", async () => {
+          const optionValue = productWithOptions.options[0].values[0]
+
+          await service.updateProductOptionValues(optionValue.id, {
+            value: "Updated Value",
+          })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_UPDATED, {
+                data: { id: optionValue.id },
+                object: "product_option_value",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+      })
+
+      describe("Product Collection Operations - Events", () => {
+        it("should emit PRODUCT_COLLECTION_CREATED event on createProductCollections", async () => {
+          const collectionData = { title: "New Collection" }
+
+          const collections = await service.createProductCollections([
+            collectionData,
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_COLLECTION_CREATED, {
+                data: { id: collections[0].id },
+                object: "product_collection",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit PRODUCT_COLLECTION_UPDATED event on updateProductCollections", async () => {
+          const collections = await service.createProductCollections([
+            { title: "Original Collection" },
+          ])
+          eventBusSpy.mockClear()
+
+          await service.updateProductCollections(collections[0].id, {
+            title: "Updated Collection",
+          })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_COLLECTION_UPDATED, {
+                data: { id: collections[0].id },
+                object: "product_collection",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit appropriate events on upsertProductCollections", async () => {
+          const existingCollection = await service.createProductCollections([
+            { title: "Existing Collection" },
+          ])
+          eventBusSpy.mockClear()
+
+          const collections = await service.upsertProductCollections([
+            {
+              id: existingCollection[0].id,
+              title: "Updated Existing Collection",
+            },
+            { title: "New Collection" },
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_COLLECTION_UPDATED, {
+                data: { id: existingCollection[0].id },
+                object: "product_collection",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_COLLECTION_CREATED, {
+                data: { id: collections[1].id },
+                object: "product_collection",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("Product Category Operations - Events", () => {
+        it("should emit PRODUCT_CATEGORY_CREATED event on createProductCategories", async () => {
+          const categoryData = { name: "New Category" }
+
+          const categories = await service.createProductCategories([
+            categoryData,
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_CATEGORY_CREATED, {
+                data: { id: categories[0].id },
+                object: "product_category",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit PRODUCT_CATEGORY_UPDATED event on updateProductCategories", async () => {
+          const categories = await service.createProductCategories([
+            { name: "Original Category" },
+          ])
+          eventBusSpy.mockClear()
+
+          await service.updateProductCategories(categories[0].id, {
+            name: "Updated Category",
+          })
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy).toHaveBeenCalledWith(
+            [
+              composeMessage(ProductEvents.PRODUCT_CATEGORY_UPDATED, {
+                data: { id: categories[0].id },
+                object: "product_category",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+            ],
+            {
+              internal: true,
+            }
+          )
+        })
+
+        it("should emit appropriate events on upsertProductCategories", async () => {
+          const existingCategory = await service.createProductCategories([
+            { name: "Existing Category" },
+          ])
+          eventBusSpy.mockClear()
+
+          const categories = await service.upsertProductCategories([
+            { id: existingCategory[0].id, name: "Updated Existing Category" },
+            { name: "New Category" },
+          ])
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_CATEGORY_UPDATED, {
+                data: { id: existingCategory[0].id },
+                object: "product_category",
+                source: Modules.PRODUCT,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_CATEGORY_CREATED, {
+                data: { id: categories[1].id },
+                object: "product_category",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("Delete Operations - Base Service Automatic Events", () => {
+        it("should emit delete events for all entity types via base service", async () => {
+          // Create entities
+          const products = await service.createProducts([
+            buildProductAndRelationsData(),
+          ])
+          const tags = await service.createProductTags([{ value: "Test Tag" }])
+          const types = await service.createProductTypes([
+            { value: "Test Type" },
+          ])
+          const categories = await service.createProductCategories([
+            { name: "Test Category" },
+          ])
+          const collections = await service.createProductCollections([
+            { title: "Test Collection" },
+          ])
+
+          eventBusSpy.mockClear()
+
+          // Test delete operations - these are handled automatically by base service
+          await service.deleteProducts([products[0].id])
+          await service.deleteProductTags([tags[0].id])
+          await service.deleteProductTypes([types[0].id])
+          await service.deleteProductCategories([categories[0].id])
+          await service.deleteProductCollections([collections[0].id])
+
+          // Each delete should emit the appropriate delete event
+          expect(eventBusSpy).toHaveBeenCalledTimes(5)
+
+          // Verify each delete event was emitted
+          const allCalls = eventBusSpy.mock.calls
+          const allEvents = allCalls.flat(2)
+
+          expect(allEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_DELETED, {
+                data: { id: products[0].id },
+                object: "product",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_TAG_DELETED, {
+                data: { id: tags[0].id },
+                object: "product_tag",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_TYPE_DELETED, {
+                data: { id: types[0].id },
+                object: "product_type",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_CATEGORY_DELETED, {
+                data: { id: categories[0].id },
+                object: "product_category",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+              composeMessage(ProductEvents.PRODUCT_COLLECTION_DELETED, {
+                data: { id: collections[0].id },
+                object: "product_collection",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
+        })
+      })
+    })
+  },
+})

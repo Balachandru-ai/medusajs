@@ -666,6 +666,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createProductTypes(
     data:
@@ -681,6 +682,11 @@ export default class ProductModuleService
       ProductTypes.ProductTypeDTO[]
     >(types)
 
+    eventBuilders.createdProductType({
+      data: createdTypes,
+      sharedContext,
+    })
+
     return Array.isArray(data) ? createdTypes : createdTypes[0]
   }
 
@@ -694,6 +700,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO>
 
   @InjectTransactionManager()
+  @EmitEvents()
   async upsertProductTypes(
     data:
       | ProductTypes.UpsertProductTypeDTO[]
@@ -721,6 +728,19 @@ export default class ProductModuleService
       ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO
     >(result)
 
+    if (created.length) {
+      eventBuilders.createdProductType({
+        data: created,
+        sharedContext,
+      })
+    }
+    if (updated.length) {
+      eventBuilders.updatedProductType({
+        data: updated,
+        sharedContext,
+      })
+    }
+
     return Array.isArray(data) ? allTypes : allTypes[0]
   }
 
@@ -738,6 +758,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductTypes(
     idOrSelector: string | ProductTypes.FilterableProductTypeProps,
@@ -771,6 +792,11 @@ export default class ProductModuleService
       ProductTypes.ProductTypeDTO[]
     >(types)
 
+    eventBuilders.updatedProductType({
+      data: updatedTypes,
+      sharedContext,
+    })
+
     return isString(idOrSelector) ? updatedTypes[0] : updatedTypes
   }
 
@@ -786,6 +812,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createProductOptions(
     data:
@@ -800,6 +827,11 @@ export default class ProductModuleService
     const createdOptions = await this.baseRepository_.serialize<
       ProductTypes.ProductOptionDTO[]
     >(options)
+
+    eventBuilders.createdProductOption({
+      data: createdOptions,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? createdOptions : createdOptions[0]
   }
@@ -841,6 +873,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectTransactionManager()
+  @EmitEvents()
   async upsertProductOptions(
     data:
       | ProductTypes.UpsertProductOptionDTO[]
@@ -870,6 +903,19 @@ export default class ProductModuleService
       ProductTypes.ProductOptionDTO[] | ProductTypes.ProductOptionDTO
     >(result)
 
+    if (created.length) {
+      eventBuilders.createdProductOption({
+        data: created,
+        sharedContext,
+      })
+    }
+    if (updated.length) {
+      eventBuilders.updatedProductOption({
+        data: updated,
+        sharedContext,
+      })
+    }
+
     return Array.isArray(data) ? allOptions : allOptions[0]
   }
 
@@ -887,6 +933,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductOptions(
     idOrSelector: string | ProductTypes.FilterableProductOptionProps,
@@ -915,6 +962,11 @@ export default class ProductModuleService
     const updatedOptions = await this.baseRepository_.serialize<
       ProductTypes.ProductOptionDTO[]
     >(options)
+
+    eventBuilders.updatedProductOption({
+      data: updatedOptions,
+      sharedContext,
+    })
 
     return isString(idOrSelector) ? updatedOptions[0] : updatedOptions
   }
@@ -1446,6 +1498,49 @@ export default class ProductModuleService
       data: createdProducts,
       sharedContext,
     })
+
+    // Emit events for all cascade-created entities
+    for (const product of createdProducts) {
+      // Emit events for created options
+      if (product.options?.length) {
+        product.options.forEach((option: any) => {
+          eventBuilders.createdProductOption({
+            data: { id: option.id },
+            sharedContext,
+          })
+
+          // Emit events for created option values
+          if (option.values?.length) {
+            option.values.forEach((value: any) => {
+              eventBuilders.createdProductOptionValue({
+                data: { id: value.id },
+                sharedContext,
+              })
+            })
+          }
+        })
+      }
+
+      // Emit events for created variants
+      if (product.variants?.length) {
+        product.variants.forEach((variant: any) => {
+          eventBuilders.createdProductVariant({
+            data: { id: variant.id },
+            sharedContext,
+          })
+        })
+      }
+
+      // Emit events for created images
+      if (product.images?.length) {
+        product.images.forEach((image: any) => {
+          eventBuilders.createdProductImage({
+            data: { id: image.id },
+            sharedContext,
+          })
+        })
+      }
+    }
 
     return Array.isArray(data) ? createdProducts : createdProducts[0]
   }

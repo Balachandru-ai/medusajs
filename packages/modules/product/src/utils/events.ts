@@ -150,4 +150,22 @@ export const eventBuilders = {
     object: "product_option_value",
     eventName: ProductEvents.PRODUCT_OPTION_VALUE_DELETED,
   }),
+  createdProductImage: moduleEventBuilderFactory({
+    source: Modules.PRODUCT,
+    action: CommonEvents.CREATED,
+    object: "product_image",
+    eventName: ProductEvents.PRODUCT_IMAGE_CREATED,
+  }),
+  updatedProductImage: moduleEventBuilderFactory({
+    source: Modules.PRODUCT,
+    action: CommonEvents.UPDATED,
+    object: "product_image",
+    eventName: ProductEvents.PRODUCT_IMAGE_UPDATED,
+  }),
+  deletedProductImage: moduleEventBuilderFactory({
+    source: Modules.PRODUCT,
+    action: CommonEvents.DELETED,
+    object: "product_image",
+    eventName: ProductEvents.PRODUCT_IMAGE_DELETED,
+  }),
 }
