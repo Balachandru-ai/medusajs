@@ -35,6 +35,7 @@ import {
   ModulesSdkUtils,
   promiseAll,
 } from "@medusajs/framework/utils"
+import { isObject } from "@medusajs/utils"
 import {
   Fulfillment,
   FulfillmentProvider,
@@ -1408,9 +1409,9 @@ export default class FulfillmentModuleService
     dataArray.forEach((shippingOption) => {
       const existingShippingOption = existingShippingOptions.get(
         shippingOption.id
-      )! // Garuantueed to exist since the validation above have been performed
+      )! // Guaranteed to exist since the validation above have been performed
 
-      if (shippingOption.type && !("id" in shippingOption.type)) {
+      if (isObject(shippingOption.type) && !("id" in shippingOption.type)) {
         optionTypeDeletedIds.push(existingShippingOption.type.id)
       }
 
@@ -1534,7 +1535,7 @@ export default class FulfillmentModuleService
     const createdOptionTypeIds = updatedShippingOptions
       .filter((so) => {
         const updateData = shippingOptionsData.find((sod) => sod.id === so.id)
-        return updateData?.type && !("id" in updateData.type)
+        return isObject(updateData?.type) && !("id" in updateData.type)
       })
       .map((so) => so.type.id)
 
@@ -1695,11 +1696,18 @@ export default class FulfillmentModuleService
     idOrSelector: string | FulfillmentTypes.FilterableShippingOptionTypeProps,
     data: FulfillmentTypes.UpdateShippingOptionTypeDTO,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<FulfillmentTypes.ShippingOptionTypeDTO[] | FulfillmentTypes.ShippingOptionTypeDTO> {
+  ): Promise<
+    | FulfillmentTypes.ShippingOptionTypeDTO[]
+    | FulfillmentTypes.ShippingOptionTypeDTO
+  > {
     let normalizedInput: FulfillmentTypes.UpdateShippingOptionTypeDTO[] = []
     if (isString(idOrSelector)) {
       // Check if the type exists in the first place
-      await this.shippingOptionTypeService_.retrieve(idOrSelector, {}, sharedContext)
+      await this.shippingOptionTypeService_.retrieve(
+        idOrSelector,
+        {},
+        sharedContext
+      )
       normalizedInput = [{ id: idOrSelector, ...data }]
     } else {
       const types = await this.shippingOptionTypeService_.list(
@@ -2485,15 +2493,22 @@ export default class FulfillmentModuleService
      * Define the hierarchy of required properties for the geo zones.
      */
     const geoZoneRequirePropertyHierarchy = {
-      postal_expression: [
-        "country_code",
-        "province_code",
-        "city",
-        "postal_expression",
-      ],
-      city: ["country_code", "province_code", "city"],
-      province_code: ["country_code", "province_code"],
-      country_code: ["country_code"],
+      postal_expression: {
+        props: ["country_code", "province_code", "city", "postal_expression"],
+        type: "zip",
+      },
+      city: {
+        props: ["country_code", "province_code", "city"],
+        type: "city",
+      },
+      province_code: {
+        props: ["country_code", "province_code"],
+        type: "province",
+      },
+      country_code: {
+        props: ["country_code"],
+        type: "country",
+      },
     }
 
     /**
@@ -2503,18 +2518,21 @@ export default class FulfillmentModuleService
      */
 
     const geoZoneConstraints = Object.entries(geoZoneRequirePropertyHierarchy)
-      .map(([prop, requiredProps]) => {
+      .map(([prop, { props, type }]) => {
         if (address![prop]) {
-          return requiredProps.reduce((geoZoneConstraint, prop) => {
-            if (isPresent(address![prop])) {
-              geoZoneConstraint[prop] = address![prop]
-            }
-            return geoZoneConstraint
-          }, {} as Record<string, string | undefined>)
+          return {
+            type,
+            ...props.reduce((geoZoneConstraint, prop) => {
+              if (isPresent(address![prop])) {
+                geoZoneConstraint[prop] = address![prop]
+              }
+              return geoZoneConstraint
+            }, {} as Record<string, string | undefined>),
+          }
         }
         return null
       })
-      .filter((v): v is Record<string, any> => !!v)
+      .filter((v) => !!v)
 
     return geoZoneConstraints
   }

@@ -379,7 +379,7 @@ Emitted when a fulfillment is marked as delivered.
 
 <EventHeader headerLvl="3" headerProps={{ id: "shipmentcreated", children: (<>shipment.created</>), className: "flex flex-wrap justify-center gap-docs_0.25" }} eventName="shipment.created" payload={`\`\`\`ts
 {
-  id, // the ID of the shipment
+  id, // the ID of the fulfillment
   no_notification, // (boolean) whether to notify the customer
 }
 \`\`\``} />
@@ -390,7 +390,7 @@ Emitted when a shipment is created for an order.
 
 ```ts
 {
-  id, // the ID of the shipment
+  id, // the ID of the fulfillment
   no_notification, // (boolean) whether to notify the customer
 }
 ```

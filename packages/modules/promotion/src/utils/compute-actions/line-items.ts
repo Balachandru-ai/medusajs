@@ -6,11 +6,11 @@ import {
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
+  ApplicationMethodTargetType as TargetType,
+  calculateAdjustmentAmountFromPromotion,
   ComputedActions,
   MathBN,
   MedusaError,
-  ApplicationMethodTargetType as TargetType,
-  calculateAdjustmentAmountFromPromotion,
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
@@ -40,29 +40,6 @@ export function getComputedActionsForItems(
     items,
     appliedPromotionsMap,
     allocationOverride
-  )
-}
-
-export function getComputedActionsForShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
-  shippingMethods: PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
-  appliedPromotionsMap: Map<string, number>
-): PromotionTypes.ComputeActions[] {
-  validateContext("shipping_methods", shippingMethods)
-
-  return applyPromotionToItems(promotion, shippingMethods, appliedPromotionsMap)
-}
-
-export function getComputedActionsForOrder(
-  promotion: PromotionTypes.PromotionDTO,
-  itemApplicationContext: PromotionTypes.ComputeActionContext,
-  methodIdPromoValueMap: Map<string, number>
-): PromotionTypes.ComputeActions[] {
-  return getComputedActionsForItems(
-    promotion,
-    itemApplicationContext[TargetType.ITEMS],
-    methodIdPromoValueMap,
-    ApplicationMethodAllocation.ACROSS
   )
 }
 

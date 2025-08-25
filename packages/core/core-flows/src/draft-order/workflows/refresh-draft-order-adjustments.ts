@@ -28,6 +28,15 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
    * The draft order to refresh the adjustments for.
    */
   order: OrderDTO
+  
+  // TODO: I will reintroduce this type, once I have migrated all of the order flows to fit the expected type. 
+  //   Doing this in a single PR is too much work, so I'm going to do it in smaller PRs.
+  //
+  // order: Omit<OrderDTO, "items"> & {
+  //   items?: ComputeActionItemLine[]
+  //   promotions?: PromotionDTO[]
+  // }
+  
   /**
    * The promo codes to add or remove from the draft order.
    */
@@ -35,7 +44,7 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
   /**
    * The action to apply with the promo codes. You can
    * either:
-   * 
+   *
    * - Add the promo codes to the draft order.
    * - Remove the promo codes from the draft order.
    * - Replace the existing promo codes with the new ones.
@@ -47,10 +56,10 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
  * This workflow refreshes the adjustments or promotions for a draft order. It's used by other workflows
  * like {@link addDraftOrderItemsWorkflow} to refresh the promotions whenever changes
  * are made to the draft order.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * refreshing the adjustments or promotions for a draft order.
- * 
+ *
  * @example
  * const { result } = await refreshDraftOrderAdjustmentsWorkflow(container)
  * .run({
@@ -61,9 +70,9 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
  *     action: PromotionActions.ADD,
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Refresh the promotions in a draft order.
  */
 export const refreshDraftOrderAdjustmentsWorkflow = createWorkflow(
