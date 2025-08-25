@@ -8,7 +8,7 @@
   </a>
 </p>
 <h1 align="center">
-  Medusa Plugin Starter
+  Draft Order Plugin
 </h1>
 
 <h4 align="center">
@@ -17,7 +17,7 @@
 </h4>
 
 <p align="center">
-  Building blocks for digital commerce
+  Create and manage draft orders on behalf of customers in Medusa
 </p>
 <p align="center">
   <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
@@ -32,23 +32,45 @@
   </a>
 </p>
 
-## Compatibility
+## Overview
 
-This starter is compatible with versions >= 2.4.0 of `@medusajs/medusa`. 
+The Draft Order Plugin enables admin users to create and manage orders on behalf of customers. This is particularly useful for customer support scenarios or when customers place orders offline.
 
-## Getting Started
+## Features
 
-Visit the [Quickstart Guide](https://docs.medusajs.com/learn/installation) to set up a server.
+- **Create draft orders** from the Medusa Admin dashboard
+- **Manage items** in draft orders (add, update, remove)
+- **Add shipping methods** to draft orders
+- **Associate customers** with draft orders
+- **Convert draft orders** to regular orders for purchase completion
 
-Visit the [Plugins documentation](https://docs.medusajs.com/learn/fundamentals/plugins) to learn more about plugins and how to create them.
 
-Visit the [Docs](https://docs.medusajs.com/learn/installation#get-started) to learn more about our system requirements.
+## Installation
 
-## What is Medusa
+1. Install the Draft Order plugin
+```
+yarn add @medusajs/draft-order
+```
+2. Configure the plugin in your medusa-config.ts
+```
+module.exports = defineConfig({
+  projectConfig: {
+    ...
+  },
+  plugins: [
+    {
+      resolve: "@medusajs/draft-order",
+      options: {},
+    },
+  ],
+})
+```
+3. Start your server
+   
+## Requirements
+- Medusa application version >= 2.4.0
 
-Medusa is a set of commerce modules and tools that allow you to build rich, reliable, and performant commerce applications without reinventing core commerce logic. The modules can be customized and used to build advanced ecommerce stores, marketplaces, or any product that needs foundational commerce primitives. All modules are open-source and freely available on npm.
-
-Learn more about [Medusa’s architecture](https://docs.medusajs.com/learn/introduction/architecture) and [commerce modules](https://docs.medusajs.com/learn/fundamentals/modules/commerce-modules) in the Docs.
+## Support
 
 ## Community & Contributions
 
