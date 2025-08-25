@@ -7,15 +7,11 @@ import {
   UpdateProductVariantDTO,
 } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   Modules,
-  ProductEvents,
   ProductStatus,
 } from "@medusajs/framework/utils"
 
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 

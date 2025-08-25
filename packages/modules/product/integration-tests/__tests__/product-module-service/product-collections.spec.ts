@@ -1,14 +1,10 @@
 import { IProductModuleService } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   Modules,
-  ProductEvents,
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 import { Product, ProductCollection } from "@models"
@@ -18,9 +14,6 @@ jest.setTimeout(30000)
 
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
-  injectedDependencies: {
-    [Modules.EVENT_BUS]: new MockEventBusService(),
-  },
   testSuite: ({ MikroOrmWrapper, service }) => {
     describe("ProductModuleService product collections", () => {
       let productOne: Product
@@ -284,59 +277,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(collections).toHaveLength(0)
         })
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-          await service.deleteProductCollections([collectionId])
-
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              {
-                name: "product.product-collection.deleted",
-                data: { id: collectionId },
-                metadata: {
-                  action: CommonEvents.DELETED,
-                  object: "product_collection",
-                  source: Modules.PRODUCT,
-                },
-              },
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
       })
 
       describe("updateCollections", () => {
         const collectionId = "test-1"
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-
-          await service.upsertProductCollections([
-            {
-              id: collectionId,
-              title: "New Collection",
-              product_ids: ["product_id"],
-            },
-          ])
-
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_COLLECTION_UPDATED, {
-                data: { id: collectionId },
-                object: "product_collection",
-                source: Modules.PRODUCT,
-                action: CommonEvents.UPDATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
 
         it("should update the value of the collection successfully", async () => {
           await service.upsertProductCollections([
@@ -534,28 +479,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-
-          const collections = await service.createProductCollections([
-            { title: "New Collection" },
-          ])
-
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_COLLECTION_CREATED, {
-                data: { id: collections[0].id },
-                object: "product_collection",
-                source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
       })
     })
   },

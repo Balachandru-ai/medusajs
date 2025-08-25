@@ -4,11 +4,8 @@ import {
   ProductTagDTO,
 } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   kebabCase,
   Modules,
-  ProductEvents,
   ProductStatus,
 } from "@medusajs/framework/utils"
 import {
@@ -20,7 +17,6 @@ import {
 } from "@models"
 
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 import { UpdateProductInput } from "@types"
@@ -34,9 +30,6 @@ jest.setTimeout(300000)
 
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
-  injectedDependencies: {
-    [Modules.EVENT_BUS]: new MockEventBusService(),
-  },
   testSuite: ({ MikroOrmWrapper, service }) => {
     describe("ProductModuleService products", function () {
       let productCollectionOne: ProductCollection

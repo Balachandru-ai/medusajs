@@ -1,15 +1,11 @@
 import { IProductModuleService } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   Modules,
-  ProductEvents,
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { Product, ProductTag } from "@models"
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 
