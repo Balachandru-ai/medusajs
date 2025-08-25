@@ -380,6 +380,19 @@ export default class ProductModuleService
       ProductTypes.ProductVariantDTO[] | ProductTypes.ProductVariantDTO
     >(result)
 
+    if (created.length) {
+      eventBuilders.createdProductVariant({
+        data: created,
+        sharedContext,
+      })
+    }
+    if (updated.length) {
+      eventBuilders.updatedProductVariant({
+        data: updated,
+        sharedContext,
+      })
+    }
+
     return Array.isArray(data) ? allVariants : allVariants[0]
   }
 
@@ -501,6 +514,7 @@ export default class ProductModuleService
         sharedContext
       )
 
+    // Emit events for variants
     eventBuilders.createdProductVariant({
       data: performedActions.created[ProductVariant.name] ?? [],
       sharedContext,
@@ -512,6 +526,34 @@ export default class ProductModuleService
     eventBuilders.deletedProductVariant({
       data: performedActions.deleted[ProductVariant.name] ?? [],
       sharedContext,
+    })
+
+    // Emit events for option values that may have been created/updated/deleted
+    Object.entries(performedActions.created).forEach(([entityName, entities]) => {
+      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
+        eventBuilders.createdProductOptionValue({
+          data: entities,
+          sharedContext,
+        })
+      }
+    })
+
+    Object.entries(performedActions.updated).forEach(([entityName, entities]) => {
+      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
+        eventBuilders.updatedProductOptionValue({
+          data: entities,
+          sharedContext,
+        })
+      }
+    })
+
+    Object.entries(performedActions.deleted).forEach(([entityName, entities]) => {
+      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
+        eventBuilders.deletedProductOptionValue({
+          data: entities,
+          sharedContext,
+        })
+      }
     })
 
     return productVariants
@@ -1034,12 +1076,40 @@ export default class ProductModuleService
       } as UpdateProductOptionInput
     })
 
-    const { entities: productOptions } =
+    const { entities: productOptions, performedActions } =
       await this.productOptionService_.upsertWithReplace(
         normalizedInput,
         { relations: ["values"] },
         sharedContext
       )
+
+    // Emit events for option values that may have been created/updated/deleted
+    Object.entries(performedActions.created).forEach(([entityName, entities]) => {
+      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
+        eventBuilders.createdProductOptionValue({
+          data: entities,
+          sharedContext,
+        })
+      }
+    })
+
+    Object.entries(performedActions.updated).forEach(([entityName, entities]) => {
+      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
+        eventBuilders.updatedProductOptionValue({
+          data: entities,
+          sharedContext,
+        })
+      }
+    })
+
+    Object.entries(performedActions.deleted).forEach(([entityName, entities]) => {
+      if (entityName.includes('ProductOptionValue') && entities.length > 0) {
+        eventBuilders.deletedProductOptionValue({
+          data: entities,
+          sharedContext,
+        })
+      }
+    })
 
     return productOptions
   }
@@ -1760,11 +1830,119 @@ export default class ProductModuleService
       this.validateProductUpdatePayload(product)
     }
 
-    return this.productRepository_.deepUpdate(
+    const updatedProducts = await this.productRepository_.deepUpdate(
       normalizedProducts,
       ProductModuleService.validateVariantOptions,
       sharedContext
     )
+
+    // Emit cascade events for all relations that were updated
+    for (let i = 0; i < updatedProducts.length; i++) {
+      const updatedProduct = updatedProducts[i]
+      const productUpdate = normalizedProducts[i]
+
+      // Emit events for options that were created/updated
+      if (productUpdate.options) {
+        for (const optionData of productUpdate.options) {
+          if (optionData.id) {
+            // This is an update to an existing option
+            eventBuilders.updatedProductOption({
+              data: { id: optionData.id },
+              sharedContext,
+            })
+          } else {
+            // This is a new option created during update
+            const createdOption = updatedProduct.options?.find(
+              (o: any) => o.title === optionData.title
+            )
+            if (createdOption) {
+              eventBuilders.createdProductOption({
+                data: { id: createdOption.id },
+                sharedContext,
+              })
+            }
+          }
+
+          // Emit events for option values
+          if (optionData.values) {
+            for (const valueData of optionData.values) {
+              if (typeof valueData === 'object' && valueData && 'id' in valueData && (valueData as any).id) {
+                // This is an update to an existing option value
+                eventBuilders.updatedProductOptionValue({
+                  data: { id: (valueData as any).id },
+                  sharedContext,
+                })
+              } else {
+                // This is a new option value created during update
+                const relatedOption = updatedProduct.options?.find(
+                  (o: any) => o.title === optionData.title
+                )
+                const valueString = typeof valueData === 'string' ? valueData : (valueData as any)?.value
+                const createdValue = relatedOption?.values?.find(
+                  (v: any) => v.value === valueString
+                )
+                if (createdValue) {
+                  eventBuilders.createdProductOptionValue({
+                    data: { id: createdValue.id },
+                    sharedContext,
+                  })
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Emit events for variants that were created/updated
+      if (productUpdate.variants) {
+        for (const variantData of productUpdate.variants) {
+          if (variantData.id) {
+            // This is an update to an existing variant
+            eventBuilders.updatedProductVariant({
+              data: { id: variantData.id },
+              sharedContext,
+            })
+          } else {
+            // This is a new variant created during update
+            const createdVariant = updatedProduct.variants?.find(
+              (v: any) => v.title === variantData.title
+            )
+            if (createdVariant) {
+              eventBuilders.createdProductVariant({
+                data: { id: createdVariant.id },
+                sharedContext,
+              })
+            }
+          }
+        }
+      }
+
+      // Emit events for images that were created/updated
+      if (productUpdate.images) {
+        for (const imageData of productUpdate.images) {
+          if (imageData.id) {
+            // This is an update to an existing image
+            eventBuilders.updatedProductImage({
+              data: { id: imageData.id },
+              sharedContext,
+            })
+          } else {
+            // This is a new image created during update
+            const createdImage = updatedProduct.images?.find(
+              (img: any) => img.url === imageData.url
+            )
+            if (createdImage) {
+              eventBuilders.createdProductImage({
+                data: { id: createdImage.id },
+                sharedContext,
+              })
+            }
+          }
+        }
+      }
+    }
+
+    return updatedProducts
   }
 
   // @ts-expect-error

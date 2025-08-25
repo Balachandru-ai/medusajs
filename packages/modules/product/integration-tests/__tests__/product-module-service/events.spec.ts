@@ -32,7 +32,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
     describe("ProductModuleService Events", () => {
       describe("Product Creation - All Cascade Events", () => {
-        it.only("should emit all related events when creating a product with full relations", async () => {
+        it("should emit all related events when creating a product with full relations", async () => {
           const productData = buildProductAndRelationsData({
             title: "Test Product",
             images: [{ url: "image-1.jpg" }, { url: "image-2.jpg" }],
@@ -160,24 +160,21 @@ moduleIntegrationTestRunner<IProductModuleService>({
           eventBusSpy.mockClear()
         })
 
-        it("should emit update events when updating product and relations", async () => {
+        it("should emit cascade events when updating product with new relations", async () => {
           const updateData = {
             id: existingProduct.id,
             title: "Updated Product",
-            images: [
-              { url: "updated-image-1.jpg" },
-              { url: "updated-image-2.jpg" },
-            ],
+            images: [{ url: "new-image-1.jpg" }, { url: "new-image-2.jpg" }],
             options: [
               {
-                title: "updated-option",
-                values: ["value1", "value2"],
+                title: "new-size-option",
+                values: ["small", "large"],
               },
             ],
             variants: [
               {
-                title: "Updated Variant",
-                options: { "updated-option": "value1" },
+                title: "New Variant",
+                options: { "new-size-option": "small" },
               },
             ],
           }
@@ -187,7 +184,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
-          // Should include various update/create events for modified relations
+          // Should emit product update event
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_UPDATED, {
@@ -198,10 +195,61 @@ moduleIntegrationTestRunner<IProductModuleService>({
               }),
             ])
           )
+
+          // Should emit option created event for new option
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_CREATED, {
+                data: expect.objectContaining({ id: expect.any(String) }),
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+
+          // Should emit option value created events for new option values
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_CREATED, {
+                data: expect.objectContaining({ id: expect.any(String) }),
+                object: "product_option_value",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+
+          // Should emit variant created event for new variant
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_VARIANT_CREATED, {
+                data: expect.objectContaining({ id: expect.any(String) }),
+                object: "product_variant",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+
+          // Should emit image created events for new images
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_IMAGE_CREATED, {
+                data: expect.objectContaining({ id: expect.any(String) }),
+                object: "product_image",
+                source: Modules.PRODUCT,
+                action: CommonEvents.CREATED,
+              }),
+            ])
+          )
+
+          // Total count should include: 1 product update + 1 option created + 2 option values created + 1 variant created + 2 images created = 7 events
+          expect(emittedEvents).toHaveLength(7)
         })
       })
 
-      describe("Product Deletion - All Cascade Delete Events", () => {
+      describe("Product Deletion", () => {
         it("should emit all cascade delete events when soft deleting a product", async () => {
           const productData = buildProductAndRelationsData({
             title: "Product to Delete",
@@ -272,7 +320,12 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
-                data: { id: [createdProduct.options[0].values[0].id] },
+                data: {
+                  id: [
+                    createdProduct.options[0].values[0].id,
+                    createdProduct.options[0].values[1].id,
+                  ],
+                },
                 object: "product_option_value",
                 source: Modules.PRODUCT,
                 action: CommonEvents.DELETED,
@@ -281,18 +334,21 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
 
           // Should emit delete events for images
-          createdProduct.images.forEach((image) => {
-            expect(emittedEvents).toEqual(
-              expect.arrayContaining([
-                composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
-                  data: { id: [image.id] },
-                  object: "product_image",
-                  source: Modules.PRODUCT,
-                  action: CommonEvents.DELETED,
-                }),
-              ])
-            )
-          })
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
+                data: {
+                  id: [
+                    createdProduct.images[0].id,
+                    createdProduct.images[1].id,
+                  ],
+                },
+                object: "product_image",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
         })
       })
 
@@ -530,7 +586,13 @@ moduleIntegrationTestRunner<IProductModuleService>({
         let productWithOptions: any
 
         beforeEach(async () => {
-          const productData = buildProductAndRelationsData()
+          const productData = buildProductAndRelationsData({
+            title: "Product with Options",
+            options: [
+              { title: "Size", values: ["small", "medium", "large"] },
+              { title: "Color", values: ["red", "blue", "green"] },
+            ],
+          })
           const products = await service.createProducts([productData])
           productWithOptions = products[0]
           eventBusSpy.mockClear()
@@ -639,7 +701,12 @@ moduleIntegrationTestRunner<IProductModuleService>({
         let productWithOptions: any
 
         beforeEach(async () => {
-          const productData = buildProductAndRelationsData()
+          const productData = buildProductAndRelationsData({
+            options: [
+              { title: "Size", values: ["small", "medium", "large"] },
+              { title: "Color", values: ["red", "blue", "green"] },
+            ],
+          })
           const products = await service.createProducts([productData])
           productWithOptions = products[0]
           eventBusSpy.mockClear()
@@ -842,7 +909,12 @@ moduleIntegrationTestRunner<IProductModuleService>({
         it("should emit delete events for all entity types via base service", async () => {
           // Create entities
           const products = await service.createProducts([
-            buildProductAndRelationsData(),
+            buildProductAndRelationsData({
+              options: [
+                { title: "Size", values: ["small", "medium", "large"] },
+                { title: "Color", values: ["red", "blue", "green"] },
+              ],
+            }),
           ])
           const tags = await service.createProductTags([{ value: "Test Tag" }])
           const types = await service.createProductTypes([
