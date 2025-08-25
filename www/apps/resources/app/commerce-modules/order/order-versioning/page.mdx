@@ -4,13 +4,14 @@ export const metadata = {
 
 # {metadata.title}
 
-In this document, you’ll learn how an order and its details are versioned.
 
-## What's Versioning?
+In this document, you’ll learn how orders and their details are versioned.
 
-Versioning means assigning a version number to a record, such as an order and its items. This is useful to view the different versions of the order following changes in its lifetime.
+## What is Order Versioning?
 
-When changes are made on an order, such as an item is added or returned, the order's version changes.
+Versioning means assigning a version number to a record, such as an order and its items. This is useful for viewing the different versions of an order following changes throughout its lifetime.
+
+When changes are confirmed on an order, such as when an item is added or returned, the order's version changes.
 
 ---
 
@@ -18,15 +19,15 @@ When changes are made on an order, such as an item is added or returned, the ord
 
 The `Order` and `OrderSummary` data models have a `version` property that indicates the current version. By default, its value is `1`.
 
-Other order-related data models, such as `OrderItem`, also has a `version` property, but it indicates the version it belongs to.
+Other order-related data models, such as `OrderItem`, also have a `version` property, but it indicates the version to which the record belongs.
 
 ---
 
 ## How the Version Changes
 
-When the order is changed, such as an item is exchanged, this changes the version of the order and its related data:
+When the order is changed, such as when an item is exchanged, Medusa updates the order's version and its related data:
 
 1. The version of the order and its summary is incremented.
-2. Related order data that have a `version` property, such as the `OrderItem`, are duplicated. The duplicated item has the new version, whereas the original item has the previous version.
+2. Related order data that have a `version` property, such as `OrderItem`, are duplicated. The duplicated item has the new version, while the original item retains the previous version.
 
-When the order is retrieved, only the related data having the same version is retrieved.
+When the order is retrieved, only the related data with the same version is returned.

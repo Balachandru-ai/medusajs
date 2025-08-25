@@ -38,8 +38,16 @@ export abstract class AbstractEventBusModuleService
   */
   // Given a eventGroupId, all the grouped events will be released
   abstract releaseGroupedEvents(eventGroupId: string): Promise<void>
-  // Given a eventGroupId, all the grouped events will be cleared
-  abstract clearGroupedEvents(eventGroupId: string): Promise<void>
+
+  // Given a eventGroupId, all the grouped events will be cleared unless eventNames are provided
+  // If eventNames are provided, only the events that match the eventNames will be cleared from the
+  // group
+  abstract clearGroupedEvents(
+    eventGroupId: string,
+    options?: {
+      eventNames?: string[]
+    }
+  ): Promise<void>
 
   protected storeSubscribers({
     event,

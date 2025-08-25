@@ -34,6 +34,12 @@ export type AdminGetOrdersOrderItemsParamsType = z.infer<
   typeof AdminGetOrdersOrderParams
 >
 
+export const AdminGetOrderShippingOptionList = z.object({})
+
+export type AdminGetOrderShippingOptionListType = z.infer<
+  typeof AdminGetOrderShippingOptionList
+>
+
 /**
  * Parameters used to filter and configure the pagination of the retrieved order.
  */
