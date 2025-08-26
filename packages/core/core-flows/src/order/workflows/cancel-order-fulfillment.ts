@@ -103,7 +103,8 @@ export const cancelOrderFulfillmentValidateOrder = createStep(
       (f) => f.id === input.fulfillment_id
     )
     if (!fulfillment) {
-      throw new Error(
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
         `Fulfillment with id ${input.fulfillment_id} not found in the order`
       )
     }

@@ -1,15 +1,15 @@
-import zod from "zod"
+import { dynamicImport, FileSystem, isFileSkipped } from "@medusajs/utils"
 import { join } from "path"
-import { dynamicImport, FileSystem } from "@medusajs/utils"
+import zod from "zod"
 
 import { logger } from "../logger"
 import {
-  type MiddlewaresConfig,
-  type BodyParserConfigRoute,
-  type MiddlewareDescriptor,
-  type MedusaErrorHandlerFunction,
   type AdditionalDataValidatorRoute,
+  type BodyParserConfigRoute,
   HTTP_METHODS,
+  type MedusaErrorHandlerFunction,
+  type MiddlewareDescriptor,
+  type MiddlewaresConfig,
 } from "./types"
 
 /**
@@ -50,6 +50,10 @@ export class MiddlewareFileLoader {
    */
   async #processMiddlewareFile(absolutePath: string): Promise<void> {
     const middlewareExports = await dynamicImport(absolutePath)
+
+    if (isFileSkipped(middlewareExports)) {
+      return
+    }
 
     const middlewareConfig = middlewareExports.default
     if (!middlewareConfig) {

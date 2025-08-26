@@ -1,4 +1,4 @@
-import { InternalModuleDeclaration, ModuleDefinition } from "@medusajs/types"
+import { ModuleDefinition } from "@medusajs/types"
 import { ModulesDefinition } from "../../definitions"
 import { MODULE_SCOPE } from "../../types"
 import { registerMedusaModule } from "../register-modules"
@@ -35,7 +35,9 @@ describe("module definitions loader", () => {
       [defaultDefinition.key]: defaultDefinition,
     })
 
-    const res = registerMedusaModule(defaultDefinition.key)
+    const res = registerMedusaModule({
+      moduleKey: defaultDefinition.key,
+    })
 
     expect(res[defaultDefinition.key]).toEqual(
       expect.objectContaining({
@@ -50,10 +52,13 @@ describe("module definitions loader", () => {
   })
 
   it("Resolves a custom module without pre-defined definition", () => {
-    const res = registerMedusaModule("customModulesABC", {
-      resolve: testServiceResolved,
-      options: {
-        test: 123,
+    const res = registerMedusaModule({
+      moduleKey: "customModulesABC",
+      moduleDeclaration: {
+        resolve: testServiceResolved,
+        options: {
+          test: 123,
+        },
       },
     })
 
@@ -80,7 +85,10 @@ describe("module definitions loader", () => {
         [defaultDefinition.key]: defaultDefinition,
       })
 
-      const res = registerMedusaModule(defaultDefinition.key, false)
+      const res = registerMedusaModule({
+        moduleKey: defaultDefinition.key,
+        moduleDeclaration: false,
+      })
 
       expect(res[defaultDefinition.key]).toEqual(
         expect.objectContaining({
@@ -98,7 +106,10 @@ describe("module definitions loader", () => {
       })
 
       try {
-        registerMedusaModule(defaultDefinition.key, false)
+        registerMedusaModule({
+          moduleKey: defaultDefinition.key,
+          moduleDeclaration: false,
+        })
       } catch (err) {
         expect(err.message).toEqual(
           `Module: ${defaultDefinition.label} is required`
@@ -118,7 +129,9 @@ describe("module definitions loader", () => {
       [defaultDefinition.key]: definition,
     })
 
-    const res = registerMedusaModule(defaultDefinition.key)
+    const res = registerMedusaModule({
+      moduleKey: defaultDefinition.key,
+    })
 
     expect(res[defaultDefinition.key]).toEqual(
       expect.objectContaining({
@@ -138,10 +151,10 @@ describe("module definitions loader", () => {
         [defaultDefinition.key]: defaultDefinition,
       })
 
-      const res = registerMedusaModule(
-        defaultDefinition.key,
-        defaultDefinition.defaultPackage
-      )
+      const res = registerMedusaModule({
+        moduleKey: defaultDefinition.key,
+        moduleDeclaration: defaultDefinition.defaultPackage,
+      })
 
       expect(res[defaultDefinition.key]).toEqual(
         expect.objectContaining({
@@ -162,10 +175,13 @@ describe("module definitions loader", () => {
         [defaultDefinition.key]: defaultDefinition,
       })
 
-      const res = registerMedusaModule(defaultDefinition.key, {
-        scope: MODULE_SCOPE.INTERNAL,
-        resolve: defaultDefinition.defaultPackage,
-      } as InternalModuleDeclaration)
+      const res = registerMedusaModule({
+        moduleKey: defaultDefinition.key,
+        moduleDeclaration: {
+          scope: MODULE_SCOPE.INTERNAL,
+          resolve: defaultDefinition.defaultPackage as string,
+        },
+      })
 
       expect(res[defaultDefinition.key]).toEqual(
         expect.objectContaining({
@@ -186,9 +202,12 @@ describe("module definitions loader", () => {
         [defaultDefinition.key]: defaultDefinition,
       })
 
-      const res = registerMedusaModule(defaultDefinition.key, {
-        options: { test: 123 },
-      } as any)
+      const res = registerMedusaModule({
+        moduleKey: defaultDefinition.key,
+        moduleDeclaration: {
+          options: { test: 123 },
+        },
+      })
 
       expect(res[defaultDefinition.key]).toEqual(
         expect.objectContaining({
@@ -209,11 +228,14 @@ describe("module definitions loader", () => {
         [defaultDefinition.key]: defaultDefinition,
       })
 
-      const res = registerMedusaModule(defaultDefinition.key, {
-        resolve: defaultDefinition.defaultPackage,
-        options: { test: 123 },
-        scope: "internal",
-      } as any)
+      const res = registerMedusaModule({
+        moduleKey: defaultDefinition.key,
+        moduleDeclaration: {
+          scope: MODULE_SCOPE.INTERNAL,
+          resolve: defaultDefinition.defaultPackage as string,
+          options: { test: 123 },
+        },
+      })
 
       expect(res[defaultDefinition.key]).toEqual(
         expect.objectContaining({

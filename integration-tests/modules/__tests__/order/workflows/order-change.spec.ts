@@ -7,15 +7,15 @@ import {
   deleteOrderChangeWorkflow,
   deleteOrderChangeWorkflowId,
 } from "@medusajs/core-flows"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IOrderModuleService, OrderChangeDTO, OrderDTO } from "@medusajs/types"
 import { Modules } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { createOrderFixture, prepareDataFixtures } from "./__fixtures__"
 
 jest.setTimeout(50000)
 
 medusaIntegrationTestRunner({
-  env: { MEDUSA_FF_MEDUSA_V2: true },
+  env: {},
   testSuite: ({ getContainer }) => {
     let container
 

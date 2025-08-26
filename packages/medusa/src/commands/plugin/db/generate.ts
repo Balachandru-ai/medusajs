@@ -1,11 +1,12 @@
-import { glob } from "glob"
 import { logger } from "@medusajs/framework/logger"
 import {
-  toUnixSlash,
+  defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
-  defineMikroOrmCliConfig,
+  isFileSkipped,
+  toUnixSlash,
 } from "@medusajs/framework/utils"
+import { glob } from "glob"
 import { dirname, join } from "path"
 
 import { MetadataStorage } from "@mikro-orm/core"
@@ -68,6 +69,9 @@ async function getEntitiesForModule(path: string) {
 
   for (const entityPath of entityPaths) {
     const entityExports = await dynamicImport(entityPath)
+    if (isFileSkipped(entityExports)) {
+      continue
+    }
 
     const validEntities = Object.values(entityExports).filter(
       (potentialEntity) => {

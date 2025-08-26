@@ -49,7 +49,7 @@ import { createAuthenticatedCustomer } from "../../../helpers/create-authenticat
 
 jest.setTimeout(200000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
