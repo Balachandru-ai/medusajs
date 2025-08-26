@@ -22,6 +22,7 @@ swap:
   "Next.js Storefront": "Next.js Starter Storefront"
   "Medusa Cloud": "Cloud"
   " cloud ": " Cloud "
+  "flex usage": "Flex Usage"
 exceptions:
   - 'storefront framework'
   - 'Storefront Framework'

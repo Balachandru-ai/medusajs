@@ -38,5 +38,5 @@ export const ShippingOption = model
     }),
   })
   .cascades({
-    delete: ["rules", "type"],
+    delete: ["rules"],
   })
