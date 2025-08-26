@@ -8,6 +8,7 @@ import {
 import {
   FreeTextSearchFilterKeyPrefix,
   InjectManager,
+  InjectTransactionManager,
   isDefined,
   MedusaContext,
   MedusaError,
@@ -15,6 +16,8 @@ import {
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
 import { ProductCategory } from "@models"
+import { ProductCategoryRepository } from "@repositories"
+import { UpdateCategoryInput } from "@types"
 
 type InjectedDependencies = {
   productCategoryRepository: DAL.TreeRepositoryService
@@ -141,5 +144,57 @@ export default class ProductCategoryService extends MedusaInternalService<
       transformOptions,
       sharedContext
     )
+  }
+
+  @InjectTransactionManager("productCategoryRepository_")
+  async create(
+    data: ProductTypes.CreateProductCategoryDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
+    return await (
+      this.productCategoryRepository_ as unknown as ProductCategoryRepository
+    ).create(data, sharedContext)
+  }
+
+  @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
+  async update(
+    data: UpdateCategoryInput[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
+    return await (
+      this.productCategoryRepository_ as unknown as ProductCategoryRepository
+    ).update(data, sharedContext)
+  }
+
+  @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
+  async delete(
+    ids: string[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<string[]> {
+    return await this.productCategoryRepository_.delete(ids, sharedContext)
+  }
+
+  @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
+  async softDelete(
+    ids: string[],
+    @MedusaContext() sharedContext?: Context
+  ): Promise<Record<string, string[]> | void> {
+    return (await (
+      this.productCategoryRepository_ as unknown as ProductCategoryRepository
+    ).softDelete(ids, sharedContext)) as any
+  }
+
+  @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
+  async restore(
+    ids: string[],
+    @MedusaContext() sharedContext?: Context
+  ): Promise<Record<string, string[]> | void> {
+    return (await (
+      this.productCategoryRepository_ as unknown as ProductCategoryRepository
+    ).restore(ids, sharedContext)) as any
   }
 }

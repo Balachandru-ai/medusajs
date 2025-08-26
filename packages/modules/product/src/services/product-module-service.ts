@@ -56,6 +56,7 @@ import {
   UpdateTypeInput,
 } from "../types"
 import { joinerConfig } from "./../joiner-config"
+import { eventBuilders } from "../utils/events"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -1404,10 +1405,11 @@ export default class ProductModuleService
       ProductTypes.ProductCategoryDTO[]
     >(categories)
 
-    // eventBuilders.createdProductCategory({
-    //   data: createdCategories,
-    //   sharedContext,
-    // })
+    // TODO: Same as the update categories, for some reason I cant get the tree repository update
+    eventBuilders.createdProductCategory({
+      data: createdCategories,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? createdCategories : createdCategories[0]
   }
@@ -1421,7 +1423,7 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCategoryDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductCategories(
     data:
@@ -1431,6 +1433,22 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductCategoryDTO[] | ProductTypes.ProductCategoryDTO
   > {
+    const categories = await this.upsertProductCategories_(data, sharedContext)
+
+    const serializedCategories = await this.baseRepository_.serialize<
+      ProductTypes.ProductCategoryDTO[]
+    >(categories)
+
+    return Array.isArray(data) ? serializedCategories : serializedCategories[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductCategories_(
+    data:
+      | ProductTypes.UpsertProductCategoryDTO[]
+      | ProductTypes.UpsertProductCategoryDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (category): category is UpdateCategoryInput => !!category.id
@@ -1461,25 +1479,22 @@ export default class ProductModuleService
       )
     }
 
-    const createdCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(created)
-    const updatedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(updated)
+    // TODO: Same as the update categories, for some reason I cant get the tree repository update
+    // event. I ll need to investigate this
+    if (created.length) {
+      eventBuilders.createdProductCategory({
+        data: created,
+        sharedContext,
+      })
+    }
+    if (updated.length) {
+      eventBuilders.updatedProductCategory({
+        data: updated,
+        sharedContext,
+      })
+    }
 
-    // eventBuilders.createdProductCategory({
-    //   data: createdCategories,
-    //   sharedContext,
-    // })
-
-    // eventBuilders.updatedProductCategory({
-    //   data: updatedCategories,
-    //   sharedContext,
-    // })
-
-    const result = [...createdCategories, ...updatedCategories]
-    return Array.isArray(data) ? result : result[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -1515,13 +1530,19 @@ export default class ProductModuleService
       ProductTypes.ProductCategoryDTO[]
     >(categories)
 
+    // TODO: for some reason I cant get the tree repository update
+    // event. I ll need to investigate this
+    eventBuilders.updatedProductCategory({
+      data: serializedCategories,
+      sharedContext,
+    })
+
     return isString(idOrSelector)
       ? serializedCategories[0]
       : serializedCategories
   }
 
   @InjectTransactionManager()
-  @EmitEvents()
   protected async updateProductCategories_(
     idOrSelector: string | ProductTypes.FilterableProductTypeProps,
     data: ProductTypes.UpdateProductCategoryDTO,
@@ -1553,11 +1574,6 @@ export default class ProductModuleService
       normalizedInput,
       sharedContext
     )
-
-    // eventBuilders.updatedProductCategory({
-    //   data: updatedCategories,
-    //   sharedContext,
-    // })
 
     return categories
   }
