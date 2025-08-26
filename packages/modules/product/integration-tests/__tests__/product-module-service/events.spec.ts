@@ -1,4 +1,7 @@
-import { IProductModuleService } from "@medusajs/framework/types"
+import {
+  InferEntityType,
+  IProductModuleService,
+} from "@medusajs/framework/types"
 import {
   CommonEvents,
   composeMessage,
@@ -11,6 +14,7 @@ import {
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 import { buildProductAndRelationsData } from "../../__fixtures__/product"
+import { ProductOption } from "../../../src/models"
 
 jest.setTimeout(300000)
 
@@ -154,13 +158,40 @@ moduleIntegrationTestRunner<IProductModuleService>({
           const productData = buildProductAndRelationsData({
             title: "Original Product",
             images: [{ url: "original-image.jpg" }],
+            options: [
+              {
+                title: "existing-option",
+                values: ["value-1"],
+              },
+              {
+                title: "existing-option-2",
+                values: ["value-1"],
+              },
+            ],
+            variants: [
+              {
+                title: "existing-variant",
+                options: {
+                  "existing-option": "value-1",
+                  "existing-option-2": "value-1",
+                },
+              },
+            ],
           })
           const products = await service.createProducts([productData])
           existingProduct = products[0]
           eventBusSpy.mockClear()
         })
 
-        it("should emit cascade events when updating product with new relations", async () => {
+        it("should emit cascade events when updating product with relations", async () => {
+          const existingOption = existingProduct.options.find(
+            (option: any) => option.title === "existing-option"
+          )! as InferEntityType<typeof ProductOption>
+          const existingVariant = existingProduct.variants[0]
+          const expectedDeletedOptionId = existingProduct.options.find(
+            (option: any) => option.title === "existing-option-2"
+          )!.id
+
           const updateData = {
             id: existingProduct.id,
             title: "Updated Product",
@@ -170,19 +201,50 @@ moduleIntegrationTestRunner<IProductModuleService>({
                 title: "new-size-option",
                 values: ["small", "large"],
               },
+              {
+                id: existingOption.id,
+                title: "updated-existing-option",
+                values: ["value-1"],
+              },
             ],
             variants: [
               {
+                id: existingVariant.id,
+                title: "updated-existing-variant",
+                options: {
+                  "new-size-option": "small",
+                  "updated-existing-option": "value-1",
+                },
+              },
+              {
                 title: "New Variant",
-                options: { "new-size-option": "small" },
+                options: {
+                  "new-size-option": "large",
+                  "updated-existing-option": "value-1",
+                },
               },
             ],
           }
 
           await service.updateProducts(existingProduct.id, updateData)
+          const updatedProduct = await service.retrieveProduct(
+            existingProduct.id,
+            {
+              relations: [
+                "options",
+                "options.values",
+                "variants",
+                "images",
+                "tags",
+              ],
+            }
+          )
 
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
+
+          // Total count should include: 1 product update + 1 option created + 2 option values created + 1 option update + 1 option deleted + 1 variant created + 1 variant updated + 2 images created = 10 events
+          expect(emittedEvents).toHaveLength(10)
 
           // Should emit product update event
           expect(emittedEvents).toEqual(
@@ -209,13 +271,43 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
 
           // Should emit option value created events for new option values
+          const newOptionValues = updatedProduct.options.find(
+            (option) => option.title === "new-size-option"
+          )!.values
+
+          newOptionValues.forEach((value) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_CREATED, {
+                  data: expect.objectContaining({ id: value.id }),
+                  object: "product_option_value",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+          })
+
+          // should emit option updated event for updated option
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
-              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_CREATED, {
-                data: expect.objectContaining({ id: expect.any(String) }),
-                object: "product_option_value",
+              composeMessage(ProductEvents.PRODUCT_OPTION_UPDATED, {
+                data: expect.objectContaining({ id: existingOption.id }),
+                object: "product_option",
                 source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
+                action: CommonEvents.UPDATED,
+              }),
+            ])
+          )
+
+          // Should emit option deleted event for deleted option
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_DELETED, {
+                data: expect.objectContaining({ id: expectedDeletedOptionId }),
+                object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
               }),
             ])
           )
@@ -232,20 +324,31 @@ moduleIntegrationTestRunner<IProductModuleService>({
             ])
           )
 
-          // Should emit image created events for new images
+          // Should emit variant updated event for updated variant
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
-              composeMessage(ProductEvents.PRODUCT_IMAGE_CREATED, {
-                data: expect.objectContaining({ id: expect.any(String) }),
-                object: "product_image",
+              composeMessage(ProductEvents.PRODUCT_VARIANT_UPDATED, {
+                data: expect.objectContaining({ id: existingVariant.id }),
+                object: "product_variant",
                 source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
+                action: CommonEvents.UPDATED,
               }),
             ])
           )
 
-          // Total count should include: 1 product update + 1 option created + 2 option values created + 1 variant created + 2 images created = 7 events
-          expect(emittedEvents).toHaveLength(7)
+          // Should emit image created events for new images
+          updatedProduct.images.forEach((image) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_IMAGE_CREATED, {
+                  data: expect.objectContaining({ id: expect.any(String) }),
+                  object: "product_image",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+          })
         })
       })
 

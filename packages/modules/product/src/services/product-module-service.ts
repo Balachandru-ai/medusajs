@@ -1828,13 +1828,95 @@ export default class ProductModuleService
     data: UpdateProductInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
+    const originalProducts = await this.productService_.list(
+      {
+        id: data.map((d) => d.id),
+      },
+      {
+        relations: ["options", "options.values", "variants", "images", "tags"],
+      },
+      sharedContext
+    )
+
     const normalizedProducts = await this.normalizeUpdateProductInput(
       data,
-      sharedContext
+      originalProducts
     )
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
+    }
+
+    // Pre-compute future deleted options to emit event for
+    const deletedProductToOptionsMap = new Map<string, string[]>()
+    for (const product of originalProducts) {
+      const deletedOptions = product.options.filter((originalOption) => {
+        const updatedOptionIndex = normalizedProducts
+          .find((normalizedProduct) => normalizedProduct.id === product.id)!
+          .options!.findIndex(
+            (updatedOption) =>
+              updatedOption.id === originalOption.id ||
+              updatedOption.title === originalOption.title
+          )
+
+        return updatedOptionIndex === -1
+      })
+
+      deletedProductToOptionsMap.set(
+        product.id,
+        deletedOptions.map((option) => option.id)
+      )
+    }
+
+    // Pre-compute future deleted option values to emit event for
+    const deletedOptionValuesMap = new Map<
+      string,
+      Array<{ optionId: string; valueId: string; value: string }>
+    >()
+
+    for (const originalProduct of originalProducts) {
+      const deletedValues: Array<{
+        optionId: string
+        valueId: string
+        value: string
+      }> = []
+
+      for (const originalOption of originalProduct.options) {
+        const updatedProduct = normalizedProducts.find(
+          (np) => np.id === originalProduct.id
+        )!
+        const updatedOption = updatedProduct.options?.find(
+          (uo) =>
+            uo.id === originalOption.id || uo.title === originalOption.title
+        )
+
+        if (updatedOption) {
+          // Option still exists, check for deleted values
+          for (const originalValue of originalOption.values || []) {
+            const valueExists = updatedOption.values?.some((updatedValue) => {
+              const valueString =
+                typeof updatedValue === "string"
+                  ? updatedValue
+                  : (updatedValue as any)?.value ||
+                    (updatedValue as any)?.id === originalValue.id
+              return (
+                valueString === originalValue.value ||
+                (updatedValue as any)?.id === originalValue.id
+              )
+            })
+
+            if (!valueExists) {
+              deletedValues.push({
+                optionId: originalOption.id,
+                valueId: originalValue.id,
+                value: originalValue.value,
+              })
+            }
+          }
+        }
+      }
+
+      deletedOptionValuesMap.set(originalProduct.id, deletedValues)
     }
 
     const updatedProducts = await this.productRepository_.deepUpdate(
@@ -1872,39 +1954,62 @@ export default class ProductModuleService
 
           // Emit events for option values
           if (optionData.values) {
-            for (const valueData of optionData.values) {
-              if (
-                typeof valueData === "object" &&
-                valueData &&
-                "id" in valueData &&
-                (valueData as any).id
-              ) {
-                // This is an update to an existing option value
-                eventBuilders.updatedProductOptionValue({
-                  data: { id: (valueData as any).id },
+            for (const valueData of optionData.values as unknown as {
+              id?: string
+              value: string
+            }[]) {
+              const updatedOption = updatedProduct.options.find(
+                (option) =>
+                  option.id === optionData.id ||
+                  option.title === optionData.title
+              )!
+
+              if (!valueData.id) {
+                // This is a new option value created during update
+                const id = updatedOption.values?.find(
+                  (value) => value.value === valueData.value
+                )?.id!
+
+                eventBuilders.createdProductOptionValue({
+                  data: { id },
                   sharedContext,
                 })
               } else {
-                // This is a new option value created during update
-                const relatedOption = updatedProduct.options?.find(
-                  (o: any) => o.title === optionData.title
+                // This is a potential option value update, we still check the value to be sure
+                // It is an update (values are different)
+                const originalValue = updatedOption.values?.find(
+                  (value) => value.id === valueData.id
                 )
-                const valueString =
-                  typeof valueData === "string"
-                    ? valueData
-                    : (valueData as any)?.value
-                const createdValue = relatedOption?.values?.find(
-                  (v: any) => v.value === valueString
-                )
-                if (createdValue) {
-                  eventBuilders.createdProductOptionValue({
-                    data: { id: createdValue.id },
+
+                if (originalValue?.value !== valueData.value) {
+                  eventBuilders.updatedProductOptionValue({
+                    data: { id: valueData.id },
                     sharedContext,
                   })
                 }
               }
             }
           }
+        }
+
+        // Emit events for options that were deleted
+        const deletedOptions =
+          deletedProductToOptionsMap.get(updatedProduct.id) ?? []
+        for (const optionId of deletedOptions) {
+          eventBuilders.deletedProductOption({
+            data: { id: optionId },
+            sharedContext,
+          })
+        }
+
+        // Emit events for option values that were deleted
+        const deletedOptionValues =
+          deletedOptionValuesMap.get(updatedProduct.id) ?? []
+        for (const deletedValue of deletedOptionValues) {
+          eventBuilders.deletedProductOptionValue({
+            data: { id: deletedValue.valueId },
+            sharedContext,
+          })
         }
       }
 
@@ -2106,8 +2211,7 @@ export default class ProductModuleService
     const products_ = Array.isArray(products) ? products : [products]
 
     const normalizedProducts = (await this.normalizeUpdateProductInput(
-      products_ as UpdateProductInput[],
-      sharedContext
+      products_ as UpdateProductInput[]
     )) as ProductTypes.CreateProductDTO[]
 
     for (const productData of normalizedProducts) {
@@ -2147,7 +2251,7 @@ export default class ProductModuleService
       : UpdateProductInput
   >(
     products: T,
-    @MedusaContext() sharedContext: Context = {}
+    originalProducts?: InferEntityType<typeof Product>[]
   ): Promise<TOutput> {
     const products_ = Array.isArray(products) ? products : [products]
     const productsIds = products_.map((p) => p.id).filter(Boolean)
@@ -2155,11 +2259,33 @@ export default class ProductModuleService
     let dbOptions: InferEntityType<typeof ProductOption>[] = []
 
     if (productsIds.length) {
-      dbOptions = await this.productOptionService_.list(
-        { product_id: productsIds },
-        { relations: ["values"] },
-        sharedContext
+      const missingProductIds = productsIds.filter(
+        (id) => !originalProducts?.some((p) => p.id === id)
       )
+
+      if (missingProductIds.length) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Original products must be provided when normalizing update product input. Missing products: ${missingProductIds.join(
+            ", "
+          )}`
+        )
+      }
+
+      if (!originalProducts?.some((p) => "options" in p)) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          "Options must be provided in the original products data"
+        )
+      }
+
+      // Re map options to handle non serialized data as well
+      dbOptions = originalProducts
+        .map((originalProduct) =>
+          originalProduct.options.map((option) => option)
+        )
+        .flat()
+        .filter(Boolean)
     }
 
     const normalizedProducts: UpdateProductInput[] = []
@@ -2173,7 +2299,9 @@ export default class ProductModuleService
       if (productData.options?.length) {
         ;(productData as any).options = productData.options?.map((option) => {
           const dbOption = dbOptions.find(
-            (o) => o.title === option.title && o.product_id === productData.id
+            (o) =>
+              (o.title === option.title || o.id === option.id) &&
+              o.product_id === productData.id
           )
           return {
             title: option.title,
