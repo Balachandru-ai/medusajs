@@ -7,14 +7,13 @@ import {
   composeMessage,
   Modules,
   ProductEvents,
-  ProductStatus,
 } from "@medusajs/framework/utils"
 import {
   MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
-import { buildProductAndRelationsData } from "../../__fixtures__/product"
 import { ProductOption } from "../../../src/models"
+import { buildProductAndRelationsData } from "../../__fixtures__/product"
 
 jest.setTimeout(300000)
 

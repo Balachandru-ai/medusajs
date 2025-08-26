@@ -1645,11 +1645,11 @@ export default class ProductModuleService
       (product): product is ProductTypes.CreateProductDTO => !product.id
     )
 
-    let created: InferEntityType<typeof Product>[] = []
+    let created: ProductTypes.ProductDTO[] = []
     let updated: InferEntityType<typeof Product>[] = []
 
     if (forCreate.length) {
-      created = await this.createProducts_(forCreate, sharedContext)
+      created = await this.createProducts(forCreate, sharedContext)
     }
     if (forUpdate.length) {
       updated = await this.updateProducts_(forUpdate, sharedContext)
@@ -1659,20 +1659,6 @@ export default class ProductModuleService
     const allProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[] | ProductTypes.ProductDTO
     >(result)
-
-    if (created.length) {
-      eventBuilders.createdProduct({
-        data: created,
-        sharedContext,
-      })
-    }
-
-    if (updated.length) {
-      eventBuilders.updatedProduct({
-        data: updated,
-        sharedContext,
-      })
-    }
 
     return Array.isArray(data) ? allProducts : allProducts[0]
   }
@@ -1722,11 +1708,6 @@ export default class ProductModuleService
     const updatedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
-
-    eventBuilders.updatedProduct({
-      data: updatedProducts,
-      sharedContext,
-    })
 
     return isString(idOrSelector) ? updatedProducts[0] : updatedProducts
   }
@@ -1851,13 +1832,14 @@ export default class ProductModuleService
     const deletedProductToOptionsMap = new Map<string, string[]>()
     for (const product of originalProducts) {
       const deletedOptions = product.options.filter((originalOption) => {
-        const updatedOptionIndex = normalizedProducts
-          .find((normalizedProduct) => normalizedProduct.id === product.id)!
-          .options!.findIndex(
-            (updatedOption) =>
-              updatedOption.id === originalOption.id ||
-              updatedOption.title === originalOption.title
-          )
+        const updatedOptionIndex =
+          normalizedProducts
+            .find((normalizedProduct) => normalizedProduct.id === product.id)!
+            .options?.findIndex(
+              (updatedOption) =>
+                updatedOption.id === originalOption.id ||
+                updatedOption.title === originalOption.title
+            ) ?? 0 // If there was no option in the normalized product, then do not assume it was deleted
 
         return updatedOptionIndex === -1
       })
@@ -1929,6 +1911,12 @@ export default class ProductModuleService
     for (let i = 0; i < updatedProducts.length; i++) {
       const updatedProduct = updatedProducts[i]
       const productUpdate = normalizedProducts[i]
+
+      // Emit event for product update
+      eventBuilders.updatedProduct({
+        data: { id: updatedProduct.id },
+        sharedContext,
+      })
 
       // Emit events for options that were created/updated
       if (productUpdate.options) {
@@ -2244,6 +2232,12 @@ export default class ProductModuleService
     ) as TOutput
   }
 
+  /**
+   * Normalizes the input for the update product input
+   * @param products - The products to normalize
+   * @param originalProducts - The original products to use for the normalization (must include options and option values relations)
+   * @returns The normalized products
+   */
   protected async normalizeUpdateProductInput<
     T extends UpdateProductInput | UpdateProductInput[],
     TOutput = T extends UpdateProductInput[]
@@ -2259,33 +2253,14 @@ export default class ProductModuleService
     let dbOptions: InferEntityType<typeof ProductOption>[] = []
 
     if (productsIds.length) {
-      const missingProductIds = productsIds.filter(
-        (id) => !originalProducts?.some((p) => p.id === id)
-      )
-
-      if (missingProductIds.length) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `Original products must be provided when normalizing update product input. Missing products: ${missingProductIds.join(
-            ", "
-          )}`
-        )
-      }
-
-      if (!originalProducts?.some((p) => "options" in p)) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          "Options must be provided in the original products data"
-        )
-      }
-
       // Re map options to handle non serialized data as well
-      dbOptions = originalProducts
-        .map((originalProduct) =>
-          originalProduct.options.map((option) => option)
-        )
-        .flat()
-        .filter(Boolean)
+      dbOptions =
+        originalProducts
+          ?.map((originalProduct) =>
+            originalProduct.options.map((option) => option)
+          )
+          .flat()
+          .filter(Boolean) ?? []
     }
 
     const normalizedProducts: UpdateProductInput[] = []
