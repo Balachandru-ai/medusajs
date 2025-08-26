@@ -24,10 +24,15 @@ function buildSafeJsonPathQuery(
   value: any
 ): string {
   let jsonPathOperator = operator
+  let caseInsensitiveFlag = ""
   if (operator === "=") {
     jsonPathOperator = "=="
   } else if (operator.toUpperCase().includes("LIKE")) {
     jsonPathOperator = "like_regex"
+
+    if (operator.toUpperCase() === "ILIKE") {
+      caseInsensitiveFlag = ' flag "i"'
+    }
   } else if (operator === "IS") {
     jsonPathOperator = "=="
   } else if (operator === "IS NOT") {
@@ -47,7 +52,7 @@ function buildSafeJsonPathQuery(
     }
   }
 
-  return `$.${field} ${jsonPathOperator} ${value}`
+  return `$.${field} ${jsonPathOperator} ${value}${caseInsensitiveFlag}`
 }
 
 export const OPERATOR_MAP = {
