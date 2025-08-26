@@ -5050,7 +5050,7 @@ moduleIntegrationTestRunner({
               target_type: "items",
               allocation: "each",
               value: 1000,
-              max_quantity: 1,
+              max_quantity: 4,
               apply_to_quantity: 4,
               buy_rules_min_quantity: 1,
               target_rules: [
