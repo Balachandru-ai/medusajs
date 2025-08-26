@@ -20,7 +20,9 @@ const TERMINAL_SIZE = process.stdout.columns
  * Generate migrations for all scanned modules in a plugin
  */
 const main = async function ({ directory }) {
-  const container = await initializeContainer(directory)
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   try {

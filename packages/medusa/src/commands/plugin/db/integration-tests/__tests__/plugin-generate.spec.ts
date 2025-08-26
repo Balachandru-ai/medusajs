@@ -1,5 +1,3 @@
-import { logger as defaultLogger } from "@medusajs/framework/logger"
-
 import { FileSystem } from "@medusajs/framework/utils"
 import { join } from "path"
 import main from "../../generate"
@@ -101,7 +99,7 @@ describe("plugin-generate", () => {
           "plugins-1-no-default"
         ),
       })
-      expect(defaultLogger.error).toHaveBeenCalledWith(
+      expect(logger.error).toHaveBeenCalledWith(
         "The module should default export the `Module()`",
         new Error("The module should default export the `Module()`")
       )
