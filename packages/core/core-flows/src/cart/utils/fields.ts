@@ -166,7 +166,6 @@ export const productVariantsFields = [
   "product.discountable",
   "product.is_giftcard",
   "product.shipping_profile.id",
-  "calculated_price.*",
   "inventory_items.inventory_item_id",
   "inventory_items.required_quantity",
   "inventory_items.inventory.requires_shipping",

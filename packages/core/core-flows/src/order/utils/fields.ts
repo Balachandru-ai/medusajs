@@ -14,7 +14,6 @@ export const productVariantsFields = [
   "product.type.id",
   "product.collection.title",
   "product.handle",
-  "calculated_price.*",
   "inventory_items.inventory_item_id",
   "inventory_items.required_quantity",
   "inventory_items.inventory.requires_shipping",

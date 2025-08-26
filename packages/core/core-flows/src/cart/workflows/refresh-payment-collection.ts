@@ -59,7 +59,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
     idempotent: true,
   },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
       return useRemoteQueryStep({
@@ -91,7 +91,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       cart,
     })
 
-    when({ cart }, ({ cart }) => {
+    when("should-update-payment-collection", { cart }, ({ cart }) => {
       const valueIsEqual = MathBN.eq(
         cart.payment_collection?.raw_amount ?? -1,
         cart.raw_total
