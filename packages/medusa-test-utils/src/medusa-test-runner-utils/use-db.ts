@@ -11,12 +11,9 @@ import { join } from "path"
  * Initiates the database connection
  */
 export async function initDb() {
-  const { pgConnectionLoader, featureFlagsLoader } = await import(
-    "@medusajs/framework"
-  )
+  const { pgConnectionLoader } = await import("@medusajs/framework")
 
   const pgConnection = await pgConnectionLoader()
-  await featureFlagsLoader()
 
   return pgConnection
 }

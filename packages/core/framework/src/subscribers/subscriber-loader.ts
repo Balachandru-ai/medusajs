@@ -1,10 +1,5 @@
-import {
-  Event,
-  IEventBusModuleService,
-  MedusaContainer,
-  Subscriber,
-} from "@medusajs/types"
-import { kebabCase, Modules } from "@medusajs/utils"
+import { Event, IEventBusModuleService, Subscriber } from "@medusajs/types"
+import { isFileSkipped, kebabCase, Modules } from "@medusajs/utils"
 import { parse } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
@@ -46,6 +41,10 @@ export class SubscriberLoader extends ResourceLoader {
     path: string,
     fileExports: Record<string, unknown>
   ) {
+    if (isFileSkipped(fileExports)) {
+      return
+    }
+
     const isValid = this.validateSubscriber(fileExports, path)
 
     this.logger.debug(`Registering subscribers from ${path}.`)

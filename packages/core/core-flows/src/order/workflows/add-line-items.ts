@@ -25,13 +25,14 @@ import {
 } from "../../cart/utils/prepare-line-item-data"
 import { pricingContextResult } from "../../cart/utils/schemas"
 import { confirmVariantInventoryWorkflow } from "../../cart/workflows/confirm-variant-inventory"
-import { useRemoteQueryStep } from "../../common"
+import { useQueryGraphStep, useRemoteQueryStep } from "../../common"
 import { createOrderLineItemsStep } from "../steps"
 import { productVariantsFields } from "../utils/fields"
+import { getVariantPriceSetsStep } from "../../cart"
 
 function prepareLineItems(data) {
   const items = (data.input.items ?? []).map((item) => {
-    const variant = data.variants?.find((v) => v.id === item.variant_id)!
+    const variant = data.variants?.find((v) => v.id === item.variant_id)
 
     const input: PrepareLineItemDataInput = {
       item,
@@ -41,11 +42,11 @@ function prepareLineItems(data) {
         item.is_tax_inclusive ??
         variant?.calculated_price?.is_calculated_price_tax_inclusive,
       isCustomPrice: isDefined(item?.unit_price),
-      taxLines: item.tax_lines || [],
-      adjustments: item.adjustments || [],
+      taxLines: item.tax_lines ?? [],
+      adjustments: item.adjustments ?? [],
     }
 
-    if (variant && !input.unitPrice) {
+    if (variant && !isDefined(input.unitPrice)) {
       input.unitPrice = variant.calculated_price?.calculated_amount
     }
 
@@ -193,30 +194,66 @@ export const addOrderLineItemsWorkflow = createWorkflow(
       }
     )
 
-    const variants = when({ variantIds }, ({ variantIds }) => {
-      return !!variantIds.length
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "variants",
+    const variants = when(
+      "fetch-variants-with-calculated-price",
+      { variantIds },
+      ({ variantIds }) => {
+        return !!variantIds.length
+      }
+    ).then(() => {
+      const { data: variantsData } = useQueryGraphStep({
+        entity: "variants",
         fields: deduplicate([
           ...productVariantsFields,
           ...requiredVariantFieldsForInventoryConfirmation,
         ]),
-        variables: {
+        filters: {
           id: variantIds,
-          calculated_price: {
-            context: pricingContext,
-          },
         },
       })
-    })
 
-    validateVariantPricesStep({ variants })
+      const calculatedPriceContext = transform(
+        { pricingContext, items: input.items },
+        (data): { variantId: string; context: Record<string, unknown> }[] => {
+          const baseContext = data.pricingContext
+
+          return (data.items ?? [])
+            .filter((i) => i.variant_id)
+            .map((item) => {
+              return {
+                variantId: item.variant_id!,
+                context: {
+                  ...baseContext,
+                  quantity: item.quantity,
+                },
+              }
+            })
+        }
+      )
+
+      const calculatedPriceSets = getVariantPriceSetsStep({
+        data: calculatedPriceContext,
+      })
+
+      const variants = transform(
+        { variantsData, calculatedPriceSets },
+        ({ variantsData, calculatedPriceSets }) => {
+          return variantsData.map((variant) => {
+            variant.calculated_price = calculatedPriceSets[variant.id]
+            return variant
+          })
+        }
+      )
+
+      validateVariantPricesStep({ variants })
+
+      return variants
+    })
 
     confirmVariantInventoryWorkflow.runAsStep({
       input: {
         sales_channel_id: salesChannel.id,
-        variants,
+        variants: variants!,
         items: input.items!,
       },
     })

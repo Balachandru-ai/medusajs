@@ -37,6 +37,9 @@ export const GET = async (
     promotionType: promotion?.type || req.query.promotion_type,
     applicationMethodType:
       promotion?.application_method?.type || req.query.application_method_type,
+    applicationMethodTargetType:
+      promotion?.application_method?.target_type ||
+      req.query.application_method_target_type,
   })[ruleType]
   const promotionRules: any[] = []
 

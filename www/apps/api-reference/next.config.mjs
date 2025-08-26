@@ -50,7 +50,6 @@ const withMDX = createMDX({
             },
             ui: {
               projectPath: path.resolve("..", "ui"),
-              contentPath: "src/content/docs",
             },
             "user-guide": {
               projectPath: path.resolve("..", "user-guide"),

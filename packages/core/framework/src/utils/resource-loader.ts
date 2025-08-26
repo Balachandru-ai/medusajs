@@ -94,7 +94,7 @@ export abstract class ResourceLoader {
     })
 
     const resources = await promiseAll(promises)
-    return resources.flat()
+    return resources.flat().filter(Boolean)
   }
 
   /**

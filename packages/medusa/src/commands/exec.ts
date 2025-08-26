@@ -2,6 +2,7 @@ import { ExecArgs } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   dynamicImport,
+  isFileSkipped,
 } from "@medusajs/framework/utils"
 import express from "express"
 import { existsSync } from "fs"
@@ -31,6 +32,10 @@ export default async function exec({ file, args }: Options) {
     }
 
     const scriptToExec = (await dynamicImport(path.resolve(filePath))).default
+
+    if (isFileSkipped(scriptToExec)) {
+      throw new Error(`File is disabled.`)
+    }
 
     if (!scriptToExec || typeof scriptToExec !== "function") {
       throw new Error(`File doesn't default export a function to execute.`)

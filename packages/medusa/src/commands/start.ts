@@ -13,6 +13,7 @@ import {
   generateContainerTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
+  isFileSkipped,
   isPresent,
 } from "@medusajs/framework/utils"
 
@@ -48,7 +49,11 @@ export async function registerInstrumentation(directory: string) {
   const instrumentation = await dynamicImport(
     path.join(directory, INSTRUMENTATION_FILE)
   )
-  if (typeof instrumentation.register === "function") {
+
+  if (
+    typeof instrumentation.register === "function" &&
+    !isFileSkipped(instrumentation)
+  ) {
     logger.info("OTEL registered")
     instrumentation.register()
   } else {

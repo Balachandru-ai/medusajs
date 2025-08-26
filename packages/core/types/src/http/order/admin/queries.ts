@@ -56,3 +56,5 @@ export interface AdminOrderItemsFilters extends FindParams {
   order_id?: string[] | string
   version?: number[] | number
 }
+
+export interface AdminGetOrderShippingOptionList {}

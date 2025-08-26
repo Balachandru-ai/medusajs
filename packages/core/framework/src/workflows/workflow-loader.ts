@@ -1,4 +1,7 @@
 import { MedusaContainer } from "@medusajs/types"
+import { isFileSkipped } from "@medusajs/utils"
+import { MedusaWorkflow } from "@medusajs/workflows-sdk"
+import { logger } from "../logger"
 import { ResourceLoader } from "../utils/resource-loader"
 
 export class WorkflowLoader extends ResourceLoader {
@@ -12,7 +15,18 @@ export class WorkflowLoader extends ResourceLoader {
     path: string,
     fileExports: Record<string, unknown>
   ) {
-    this.logger.debug(`Registering workflows from ${path}.`)
+    if (isFileSkipped(fileExports)) {
+      const exportedFns = Object.keys(fileExports)
+      for (const exportedFn of exportedFns) {
+        const fn = fileExports[exportedFn] as any
+        if (fn?.getName?.()) {
+          MedusaWorkflow.unregisterWorkflow(fn.getName())
+        }
+      }
+      return
+    }
+
+    logger.debug(`Registering workflows from ${path}.`)
   }
 
   /**

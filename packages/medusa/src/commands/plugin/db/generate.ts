@@ -5,12 +5,14 @@ import {
   defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
+  isFileSkipped,
   toUnixSlash,
 } from "@medusajs/framework/utils"
-import { MetadataStorage } from "@mikro-orm/core"
-import { MikroORM } from "@mikro-orm/postgresql"
 import { glob } from "glob"
 import { dirname, join } from "path"
+
+import { MetadataStorage } from "@mikro-orm/core"
+import { MikroORM } from "@mikro-orm/postgresql"
 import { initializeContainer } from "../../../loaders"
 
 const TERMINAL_SIZE = process.stdout.columns
@@ -75,6 +77,9 @@ async function getEntitiesForModule(path: string) {
 
   for (const entityPath of entityPaths) {
     const entityExports = await dynamicImport(entityPath)
+    if (isFileSkipped(entityExports)) {
+      continue
+    }
 
     const validEntities = Object.values(entityExports).filter(
       (potentialEntity) => {

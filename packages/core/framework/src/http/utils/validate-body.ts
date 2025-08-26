@@ -1,11 +1,12 @@
 import { z } from "zod"
 import { NextFunction } from "express"
 import { MedusaRequest, MedusaResponse } from "../types"
-import { zodValidator } from "../../zod/zod-helpers"
+import { zodValidator } from "../../zod"
 
 export function validateAndTransformBody(
   zodSchema:
     | z.ZodObject<any, any>
+    | z.ZodEffects<any, any>
     | ((
         customSchema?: z.ZodOptional<z.ZodNullable<z.ZodObject<any, any>>>
       ) => z.ZodObject<any, any> | z.ZodEffects<any, any>)

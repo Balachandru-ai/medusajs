@@ -93,8 +93,19 @@ const Content = React.forwardRef<
   (
     {
       className,
+      /**
+       * The space in pixels between the dropdown menu and its trigger element.
+       */
       sideOffset = 8,
+      /**
+       * The distance in pixels from the boundary edges where collision detection should occur.
+       */
       collisionPadding = 8,
+      /**
+       * The alignment of the dropdown menu relative to its trigger element.
+       * 
+       * @defaultValue center
+       */
       align = "center",
       ...props
     },

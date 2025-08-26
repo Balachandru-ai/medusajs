@@ -14,7 +14,6 @@ import { clx } from "@/utils/clx"
 /**
  * This component is based on the [Radix UI Tabs](https://radix-ui.com/primitives/docs/components/tabs) primitves.
  *
- * @excludeExternal
  */
 const ProgressTabsRoot = (props: RadixTabs.TabsProps) => {
   return <RadixTabs.Root {...props} />

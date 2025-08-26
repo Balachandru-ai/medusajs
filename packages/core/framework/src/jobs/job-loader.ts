@@ -1,6 +1,6 @@
 import type { SchedulerOptions } from "@medusajs/orchestration"
 import { MedusaContainer } from "@medusajs/types"
-import { isObject, MedusaError } from "@medusajs/utils"
+import { isFileSkipped, isObject, MedusaError } from "@medusajs/utils"
 import {
   createStep,
   createWorkflow,
@@ -30,6 +30,10 @@ export class JobLoader extends ResourceLoader {
       config: CronJobConfig
     }
   ) {
+    if (isFileSkipped(fileExports)) {
+      return
+    }
+
     this.validateConfig(fileExports.config)
     this.logger.debug(`Registering job from ${path}.`)
     this.register({
