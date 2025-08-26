@@ -93,13 +93,6 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
       }),
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
-        categories: (_filters, fields: string[]) => {
-          if (!fields.some((field) => field.startsWith("categories"))) {
-            return
-          }
-
-          return { is_internal: false, is_active: true }
-        },
       }),
       normalizeDataForContext(),
       setPricingContext(),
