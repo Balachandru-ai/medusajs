@@ -8,28 +8,32 @@ import {
 import {
   FreeTextSearchFilterKeyPrefix,
   InjectManager,
-  InjectTransactionManager,
   isDefined,
   MedusaContext,
   MedusaError,
+  MedusaInternalService,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
 import { ProductCategory } from "@models"
-import { ProductCategoryRepository } from "@repositories"
-import { UpdateCategoryInput } from "@types"
 
 type InjectedDependencies = {
   productCategoryRepository: DAL.TreeRepositoryService
 }
-export default class ProductCategoryService {
+export default class ProductCategoryService extends MedusaInternalService<
+  InjectedDependencies,
+  typeof ProductCategory
+>(ProductCategory) {
   protected readonly productCategoryRepository_: DAL.TreeRepositoryService
 
   constructor({ productCategoryRepository }: InjectedDependencies) {
+    // @ts-expect-error
+    super(...arguments)
     this.productCategoryRepository_ = productCategoryRepository
   }
 
   // TODO: Add support for object filter
   @InjectManager("productCategoryRepository_")
+  // @ts-expect-error
   async retrieve(
     productCategoryId: string,
     config: FindConfig<ProductTypes.ProductCategoryDTO> = {},
@@ -137,53 +141,5 @@ export default class ProductCategoryService {
       transformOptions,
       sharedContext
     )
-  }
-
-  @InjectTransactionManager("productCategoryRepository_")
-  async create(
-    data: ProductTypes.CreateProductCategoryDTO[],
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<InferEntityType<typeof ProductCategory>[]> {
-    return await (
-      this.productCategoryRepository_ as unknown as ProductCategoryRepository
-    ).create(data, sharedContext)
-  }
-
-  @InjectTransactionManager("productCategoryRepository_")
-  async update(
-    data: UpdateCategoryInput[],
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<InferEntityType<typeof ProductCategory>[]> {
-    return await (
-      this.productCategoryRepository_ as unknown as ProductCategoryRepository
-    ).update(data, sharedContext)
-  }
-
-  @InjectTransactionManager("productCategoryRepository_")
-  async delete(
-    ids: string[],
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<string[]> {
-    return await this.productCategoryRepository_.delete(ids, sharedContext)
-  }
-
-  @InjectTransactionManager("productCategoryRepository_")
-  async softDelete(
-    ids: string[],
-    @MedusaContext() sharedContext?: Context
-  ): Promise<Record<string, string[]> | void> {
-    return (await (
-      this.productCategoryRepository_ as unknown as ProductCategoryRepository
-    ).softDelete(ids, sharedContext)) as any
-  }
-
-  @InjectTransactionManager("productCategoryRepository_")
-  async restore(
-    ids: string[],
-    @MedusaContext() sharedContext?: Context
-  ): Promise<Record<string, string[]> | void> {
-    return (await (
-      this.productCategoryRepository_ as unknown as ProductCategoryRepository
-    ).restore(ids, sharedContext)) as any
   }
 }

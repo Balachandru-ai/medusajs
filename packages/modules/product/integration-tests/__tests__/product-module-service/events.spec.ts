@@ -187,9 +187,10 @@ moduleIntegrationTestRunner<IProductModuleService>({
             (option: any) => option.title === "existing-option"
           )! as InferEntityType<typeof ProductOption>
           const existingVariant = existingProduct.variants[0]
-          const expectedDeletedOptionId = existingProduct.options.find(
+          const expectedDeletedOption = existingProduct.options.find(
             (option: any) => option.title === "existing-option-2"
-          )!.id
+          )!
+          const expectedDeletedImage = existingProduct.images[0]
 
           const updateData = {
             id: existingProduct.id,
@@ -242,8 +243,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
-          // Total count should include: 1 product update + 1 option created + 2 option values created + 1 option update + 1 option deleted + 1 variant created + 1 variant updated + 2 images created = 10 events
-          expect(emittedEvents).toHaveLength(10)
+          // Total count should include: 1 product update + 1 option created + 2 option values created + 1 option update + 1 option deleted + 1 option value deleted + 1 variant created + 1 variant updated + 2 images created + 1 image deleted = 12 events
+          expect(emittedEvents).toHaveLength(12)
 
           // Should emit product update event
           expect(emittedEvents).toEqual(
@@ -303,8 +304,22 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_OPTION_DELETED, {
-                data: expect.objectContaining({ id: expectedDeletedOptionId }),
+                data: expect.objectContaining({ id: expectedDeletedOption.id }),
                 object: "product_option",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
+
+          // Should emit option value event for deleted option value
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
+                data: expect.objectContaining({
+                  id: expectedDeletedOption.values[0].id,
+                }),
+                object: "product_option_value",
                 source: Modules.PRODUCT,
                 action: CommonEvents.DELETED,
               }),
@@ -348,6 +363,18 @@ moduleIntegrationTestRunner<IProductModuleService>({
               ])
             )
           })
+
+          // Should emit image deleted events for deleted images
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
+                data: expect.objectContaining({ id: expectedDeletedImage.id }),
+                object: "product_image",
+                source: Modules.PRODUCT,
+                action: CommonEvents.DELETED,
+              }),
+            ])
+          )
         })
       })
 
@@ -382,11 +409,14 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
+          // Total count should include: 1 product deleted + 1 variant deleted + 1 option deleted + 2 option values deleted + 2 images deleted = 7 events
+          expect(emittedEvents).toHaveLength(7)
+
           // Should emit delete events for product and all its relations
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_DELETED, {
-                data: { id: [createdProduct.id] },
+                data: { id: createdProduct.id },
                 object: "product",
                 source: Modules.PRODUCT,
                 action: CommonEvents.DELETED,
@@ -398,7 +428,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_VARIANT_DELETED, {
-                data: { id: [createdProduct.variants[0].id] },
+                data: { id: createdProduct.variants[0].id },
                 object: "product_variant",
                 source: Modules.PRODUCT,
                 action: CommonEvents.DELETED,
@@ -410,7 +440,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_OPTION_DELETED, {
-                data: { id: [createdProduct.options[0].id] },
+                data: { id: createdProduct.options[0].id },
                 object: "product_option",
                 source: Modules.PRODUCT,
                 action: CommonEvents.DELETED,
@@ -419,38 +449,36 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
 
           // Should emit delete events for option values
-          expect(emittedEvents).toEqual(
-            expect.arrayContaining([
-              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
-                data: {
-                  id: [
-                    createdProduct.options[0].values[0].id,
-                    createdProduct.options[0].values[1].id,
-                  ],
-                },
-                object: "product_option_value",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-            ])
-          )
+          createdProduct.options[0].values.forEach((value) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
+                  data: {
+                    id: value.id,
+                  },
+                  object: "product_option_value",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.DELETED,
+                }),
+              ])
+            )
+          })
 
           // Should emit delete events for images
-          expect(emittedEvents).toEqual(
-            expect.arrayContaining([
-              composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
-                data: {
-                  id: [
-                    createdProduct.images[0].id,
-                    createdProduct.images[1].id,
-                  ],
-                },
-                object: "product_image",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-            ])
-          )
+          createdProduct.images.forEach((image) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
+                  data: {
+                    id: image.id,
+                  },
+                  object: "product_image",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.DELETED,
+                }),
+              ])
+            )
+          })
         })
       })
 
@@ -587,6 +615,9 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
+          // Total count should include: 1 tag updated + 1 tag created = 2 events
+          expect(emittedEvents).toHaveLength(2)
+
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_TAG_UPDATED, {
@@ -673,6 +704,9 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
+          // Total count should include: 1 type updated + 1 type created = 2 events
+          expect(emittedEvents).toHaveLength(2)
+
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_TYPE_UPDATED, {
@@ -720,9 +754,10 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
-          // Should emit 1 option created event (option values are not emitted separately)
-          expect(emittedEvents).toHaveLength(1)
+          // Total count should include: 1 option created + 3 option values created = 4 events
+          expect(emittedEvents).toHaveLength(4)
 
+          // Should emit 1 option created event
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(ProductEvents.PRODUCT_OPTION_CREATED, {
@@ -733,6 +768,20 @@ moduleIntegrationTestRunner<IProductModuleService>({
               }),
             ])
           )
+
+          // Should emit 3 option values created events
+          options[0].values.forEach((value) => {
+            expect(emittedEvents).toEqual(
+              expect.arrayContaining([
+                composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_CREATED, {
+                  data: { id: value.id },
+                  object: "product_option_value",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }),
+              ])
+            )
+          })
         })
 
         it("should emit PRODUCT_OPTION_UPDATED event on updateProductOptions", async () => {
@@ -956,7 +1005,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-        it("should emit PRODUCT_CATEGORY_UPDATED event on updateProductCategories", async () => {
+        it.only("should emit PRODUCT_CATEGORY_UPDATED event on updateProductCategories", async () => {
           const categories = await service.createProductCategories([
             { name: "Original Category" },
           ])

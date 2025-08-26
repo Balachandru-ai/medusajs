@@ -9,7 +9,12 @@ import {
   PerformedActions,
   UpsertWithReplaceConfig,
 } from "@medusajs/types"
-import type { EntityClass, EntitySchema } from "@mikro-orm/core"
+import {
+  EventType,
+  type EntityClass,
+  type EntityManager,
+  type EntitySchema,
+} from "@mikro-orm/core"
 import {
   isDefined,
   isObject,
@@ -27,23 +32,43 @@ import {
   InjectTransactionManager,
   MedusaContext,
 } from "./decorators"
+import { MedusaMikroOrmEventSubscriber } from "./create-medusa-mikro-orm-event-subscriber"
+
+type InternalService = {
+  new <TContainer extends object = object, TEntity extends object = any>(
+    container: TContainer
+  ): ModulesSdkTypes.IMedusaInternalService<TEntity, TContainer>
+}
 
 type SelectorAndData = {
   selector: FilterQuery<any> | BaseFilterable<FilterQuery<any>>
   data: any
 }
 
+function registerInternalServiceEventSubscriber(
+  context: Context,
+  subscriber?: MedusaMikroOrmEventSubscriber
+) {
+  const manager = (context.transactionManager ??
+    context.manager) as EntityManager
+  if (manager && subscriber) {
+    const subscriberInstance = new subscriber(context)
+    // There is no public API to unregister subscribers or check if a subscriber is already
+    // registered. This means that we need to manually check if the subscriber is already
+    // registered, otherwise we will register the same subscriber twice.
+    const hasListeners = (manager.getEventManager() as any).subscribers.some(
+      (s) => s.constructor.name === subscriberInstance.constructor.name
+    )
+    if (!hasListeners) {
+      manager.getEventManager().registerSubscriber(subscriberInstance)
+    }
+  }
+}
+
 export function MedusaInternalService<
   TContainer extends object = object,
   TEntity extends object = any
->(
-  rawModel: any
-): {
-  new (container: TContainer): ModulesSdkTypes.IMedusaInternalService<
-    TEntity,
-    TContainer
-  >
-} {
+>(rawModel: any): InternalService {
   const model = DmlEntity.isDmlEntity(rawModel)
     ? toMikroORMEntity(rawModel)
     : rawModel
@@ -54,12 +79,18 @@ export function MedusaInternalService<
   class AbstractService_
     implements ModulesSdkTypes.IMedusaInternalService<TEntity, TContainer>
   {
+    #eventSubscriber?: MedusaMikroOrmEventSubscriber
+
     readonly __container__: TContainer;
     [key: string]: any
 
     constructor(container: TContainer) {
       this.__container__ = container
       this[propertyRepositoryName] = container[injectedRepositoryName]
+    }
+
+    setEventSubscriber(subscriber: MedusaMikroOrmEventSubscriber) {
+      this.#eventSubscriber = subscriber
     }
 
     static applyFreeTextSearchFilter(
@@ -223,6 +254,11 @@ export function MedusaInternalService<
           | InferEntityType<TEntity>[]
       }
 
+      registerInternalServiceEventSubscriber(
+        sharedContext,
+        this.#eventSubscriber
+      )
+
       const data_ = Array.isArray(data) ? data : [data]
       const entities = await this[propertyRepositoryName].create(
         data_,
@@ -259,6 +295,11 @@ export function MedusaInternalService<
           | InferEntityType<TEntity>
           | InferEntityType<TEntity>[]
       }
+
+      registerInternalServiceEventSubscriber(
+        sharedContext,
+        this.#eventSubscriber
+      )
 
       let shouldReturnArray = false
       if (Array.isArray(input)) {
@@ -419,6 +460,11 @@ export function MedusaInternalService<
         return []
       }
 
+      registerInternalServiceEventSubscriber(
+        sharedContext,
+        this.#eventSubscriber
+      )
+
       const primaryKeys = AbstractService_.retrievePrimaryKeys(model)
 
       if (
@@ -489,6 +535,11 @@ export function MedusaInternalService<
         return [[], {}]
       }
 
+      registerInternalServiceEventSubscriber(
+        sharedContext,
+        this.#eventSubscriber
+      )
+
       return await this[propertyRepositoryName].softDelete(
         idsOrFilter,
         sharedContext
@@ -520,6 +571,11 @@ export function MedusaInternalService<
       data: any | any[],
       @MedusaContext() sharedContext: Context = {}
     ): Promise<InferEntityType<TEntity> | InferEntityType<TEntity>[]> {
+      registerInternalServiceEventSubscriber(
+        sharedContext,
+        this.#eventSubscriber
+      )
+
       const data_ = Array.isArray(data) ? data : [data]
       const entities = await this[propertyRepositoryName].upsert(
         data_,
@@ -556,10 +612,62 @@ export function MedusaInternalService<
       entities: InferEntityType<TEntity> | InferEntityType<TEntity>[]
       performedActions: PerformedActions
     }> {
+      registerInternalServiceEventSubscriber(
+        sharedContext,
+        this.#eventSubscriber
+      )
+
       const data_ = Array.isArray(data) ? data : [data]
       const { entities, performedActions } = await this[
         propertyRepositoryName
       ].upsertWithReplace(data_, config, sharedContext)
+
+      const manager = (sharedContext.transactionManager ??
+        sharedContext.manager) as EntityManager
+      const eventManager = manager.getEventManager()
+
+      /**
+       * Since the upsertWithReplace method is not emitting events, we need to do it manually
+       * by dispatching the events manually.
+       */
+
+      const createdEntities = performedActions.created[model.name]
+      const updatedEntities = performedActions.updated[model.name]
+      const deletedEntities = performedActions.deleted[model.name]
+
+      if (createdEntities) {
+        createdEntities.forEach((entity) => {
+          eventManager.dispatchEvent(EventType.afterCreate, {
+            entity,
+            meta: {
+              className: model.name,
+            } as Parameters<typeof eventManager.dispatchEvent>[2],
+          })
+        })
+      }
+
+      if (updatedEntities) {
+        updatedEntities.forEach((entity) => {
+          eventManager.dispatchEvent(EventType.afterUpdate, {
+            entity,
+            meta: {
+              className: model.name,
+            } as Parameters<typeof eventManager.dispatchEvent>[2],
+          })
+        })
+      }
+
+      if (deletedEntities) {
+        deletedEntities.forEach((entity) => {
+          eventManager.dispatchEvent(EventType.afterDelete, {
+            entity,
+            meta: {
+              className: model.name,
+            } as Parameters<typeof eventManager.dispatchEvent>[2],
+          })
+        })
+      }
+
       return {
         entities: Array.isArray(data) ? entities : entities[0],
         performedActions,
@@ -567,5 +675,5 @@ export function MedusaInternalService<
     }
   }
 
-  return AbstractService_ as any
+  return AbstractService_ as InternalService
 }
