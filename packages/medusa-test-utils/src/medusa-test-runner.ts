@@ -51,11 +51,13 @@ interface TestRunnerConfig {
   hooks?: {
     beforeServerStart?: (container: MedusaContainer) => Promise<void>
   }
+  cwd?: string
 }
 
 class MedusaTestRunner {
   private dbName: string
   private schema: string
+  private modulesConfigPath: string
   private cwd: string
   private env: Record<string, any>
   private debug: boolean
@@ -85,7 +87,8 @@ class MedusaTestRunner {
       config.dbName ??
       `medusa-${moduleName.toLowerCase()}-integration-${tempName}`
     this.schema = config.schema ?? "public"
-    this.cwd = config.medusaConfigFile ?? process.cwd()
+    this.cwd = config.cwd ?? config.medusaConfigFile ?? process.cwd()
+    this.modulesConfigPath = config.medusaConfigFile ?? this.cwd
     this.env = config.env ?? {}
     this.debug = config.debug ?? false
     this.inApp = config.inApp ?? false
@@ -150,7 +153,10 @@ class MedusaTestRunner {
 
   private async setupApplication(): Promise<void> {
     const { container, MedusaAppLoader } = await import("@medusajs/framework")
-    const appLoader = new MedusaAppLoader()
+    const appLoader = new MedusaAppLoader({
+      medusaConfigPath: this.modulesConfigPath,
+      cwd: this.cwd,
+    })
 
     // Load plugins modules
     const configModule = container.resolve(
@@ -173,7 +179,7 @@ class MedusaTestRunner {
       `Migrating database with core migrations and links ${this.dbName}`
     )
     await migrateDatabase(appLoader)
-    await syncLinks(appLoader, this.cwd, container, logger)
+    await syncLinks(appLoader, this.modulesConfigPath, container, logger)
     await clearInstances()
 
     this.loadedApplication = await appLoader.load()
@@ -184,7 +190,7 @@ class MedusaTestRunner {
         container: appContainer,
         port,
       } = await startApp({
-        cwd: this.cwd,
+        cwd: this.modulesConfigPath,
         env: this.env,
       })
 
@@ -270,6 +276,8 @@ class MedusaTestRunner {
       const { MedusaAppLoader } = await import("@medusajs/framework")
       const medusaAppLoader = new MedusaAppLoader({
         container: copiedContainer,
+        medusaConfigPath: this.modulesConfigPath,
+        cwd: this.cwd,
       })
       await medusaAppLoader.runModulesLoader()
     } catch (error) {
@@ -319,6 +327,7 @@ export function medusaIntegrationTestRunner({
   inApp = false,
   testSuite,
   hooks,
+  cwd,
 }: {
   moduleName?: string
   env?: Record<string, any>
@@ -329,6 +338,7 @@ export function medusaIntegrationTestRunner({
   inApp?: boolean
   testSuite: (options: MedusaSuiteOptions) => void
   hooks?: TestRunnerConfig["hooks"]
+  cwd?: string
 }) {
   const runner = new MedusaTestRunner({
     moduleName,
@@ -339,6 +349,7 @@ export function medusaIntegrationTestRunner({
     debug,
     inApp,
     hooks,
+    cwd,
   })
 
   return describe("", () => {

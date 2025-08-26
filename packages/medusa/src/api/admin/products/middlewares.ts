@@ -1,10 +1,11 @@
 import {
-  featureFlagRouter,
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
-import multer from "multer"
 import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
+import { FeatureFlag } from "@medusajs/framework/utils"
+import multer from "multer"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
@@ -33,7 +34,6 @@ import {
   CreateProduct,
   CreateProductVariant,
 } from "./validators"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
 
 const upload = multer({ storage: multer.memoryStorage() })
 
@@ -47,7 +47,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductQueryConfig
       ),
       (req, res, next) => {
-        if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+        if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
           return next()
         }
 
