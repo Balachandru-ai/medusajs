@@ -283,6 +283,11 @@ export default class ProductModuleService
       ProductTypes.ProductVariantDTO[]
     >(variants)
 
+    eventBuilders.createdProductVariant({
+      data: createdVariants,
+      sharedContext,
+    })
+
     return Array.isArray(data) ? createdVariants : createdVariants[0]
   }
 
@@ -331,13 +336,6 @@ export default class ProductModuleService
       sharedContext
     )
 
-    eventBuilders.createdProductVariant({
-      data: createdVariants,
-      sharedContext,
-    })
-
-    // TODO: missing relation events
-
     return createdVariants
   }
 
@@ -368,11 +366,11 @@ export default class ProductModuleService
       (variant): variant is ProductTypes.CreateProductVariantDTO => !variant.id
     )
 
-    let created: InferEntityType<typeof ProductVariant>[] = []
+    let created: ProductTypes.ProductVariantDTO[] = []
     let updated: InferEntityType<typeof ProductVariant>[] = []
 
     if (forCreate.length) {
-      created = await this.createVariants_(forCreate, sharedContext)
+      created = await this.createProductVariants(forCreate, sharedContext)
     }
     if (forUpdate.length) {
       updated = await this.updateVariants_(forUpdate, sharedContext)
@@ -517,40 +515,6 @@ export default class ProductModuleService
       data: performedActions.deleted[ProductVariant.name] ?? [],
       sharedContext,
     })
-
-    // Emit events for option values that may have been created/updated/deleted
-    Object.entries(performedActions.created).forEach(
-      ([entityName, entities]) => {
-        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
-          eventBuilders.createdProductOptionValue({
-            data: entities,
-            sharedContext,
-          })
-        }
-      }
-    )
-
-    Object.entries(performedActions.updated).forEach(
-      ([entityName, entities]) => {
-        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
-          eventBuilders.updatedProductOptionValue({
-            data: entities,
-            sharedContext,
-          })
-        }
-      }
-    )
-
-    Object.entries(performedActions.deleted).forEach(
-      ([entityName, entities]) => {
-        if (entityName.includes("ProductOptionValue") && entities.length > 0) {
-          eventBuilders.deletedProductOptionValue({
-            data: entities,
-            sharedContext,
-          })
-        }
-      }
-    )
 
     return productVariants
   }
