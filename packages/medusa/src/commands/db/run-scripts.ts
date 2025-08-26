@@ -1,6 +1,5 @@
 import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { MigrationScriptsMigrator } from "@medusajs/framework/migrations"
 import {
   ContainerRegistrationKeys,
@@ -22,8 +21,12 @@ const TERMINAL_SIZE = process.stdout.columns
  */
 export async function runMigrationScripts({
   directory,
+  container,
+  logger,
 }: {
   directory: string
+  container: MedusaContainer
+  logger: Logger
 }): Promise<boolean> {
   let onApplicationPrepareShutdown: () => Promise<void> = async () =>
     Promise.resolve()
@@ -32,11 +35,9 @@ export async function runMigrationScripts({
   let plugins: PluginDetails[]
 
   try {
-    const container_ = await initializeContainer(directory)
-    const logger = container_.resolve(ContainerRegistrationKeys.LOGGER)
-    await ensureDbExists(container_)
+    await ensureDbExists(container)
 
-    const configModule = container_.resolve(
+    const configModule = container.resolve(
       ContainerRegistrationKeys.CONFIG_MODULE
     )
 
@@ -53,7 +54,7 @@ export async function runMigrationScripts({
       ...plugins.map((plugin) => join(plugin.resolve, "migration-scripts")),
     ]
 
-    const migrator = new MigrationScriptsMigrator({ container: container_ })
+    const migrator = new MigrationScriptsMigrator({ container: container })
     await migrator.ensureMigrationsTable()
     const pendingScripts = await migrator.getPendingMigrations(
       scriptsSourcePaths
@@ -121,13 +122,18 @@ const main = async function ({
   directory: string
   container?: MedusaContainer
 }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     const migrated = await runMigrationScripts({
       directory,
+      container: container,
+      logger,
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {
-    defaultLogger.error(error)
+    logger.error(error)
     process.exit(1)
   }
 }

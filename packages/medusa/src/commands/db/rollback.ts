@@ -1,6 +1,5 @@
 import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -14,9 +13,10 @@ import { ensureDbExists } from "../utils"
 const TERMINAL_SIZE = process.stdout.columns
 
 const main = async function ({ directory, modules }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
-    const container = await initializeContainer(directory)
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
     /**
      * Setup
      */
@@ -49,15 +49,15 @@ const main = async function ({ directory, modules }) {
 
     process.exit()
   } catch (error) {
-    defaultLogger.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     if (error.code && error.code === MedusaError.Codes.UNKNOWN_MODULES) {
-      defaultLogger.error(error.message)
+      logger.error(error.message)
       const modulesList = error.allModules.map(
         (name: string) => `          - ${name}`
       )
-      defaultLogger.error(`Available modules:\n${modulesList.join("\n")}`)
+      logger.error(`Available modules:\n${modulesList.join("\n")}`)
     } else {
-      defaultLogger.error(error.message, error)
+      logger.error(error.message, error)
     }
     process.exit(1)
   }

@@ -1,4 +1,9 @@
-import { Event, IEventBusModuleService, Subscriber } from "@medusajs/types"
+import {
+  Event,
+  IEventBusModuleService,
+  MedusaContainer,
+  Subscriber,
+} from "@medusajs/types"
 import { isFileSkipped, kebabCase, Modules } from "@medusajs/utils"
 import { parse } from "path"
 import { configManager } from "../config"

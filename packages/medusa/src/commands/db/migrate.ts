@@ -1,11 +1,11 @@
 import { MEDUSA_CLI_PATH, MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
+import { Logger, MedusaContainer } from "@medusajs/types"
 import { fork } from "child_process"
 import path, { join } from "path"
 import { initializeContainer } from "../../loaders"
@@ -26,18 +26,20 @@ export async function migrate({
   skipScripts,
   executeAllLinks,
   executeSafeLinks,
+  logger,
+  container,
 }: {
   directory: string
   skipLinks: boolean
   skipScripts: boolean
   executeAllLinks: boolean
   executeSafeLinks: boolean
+  logger: Logger
+  container: MedusaContainer
 }): Promise<boolean> {
   /**
    * Setup
    */
-  const container = await initializeContainer(directory)
-  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   await ensureDbExists(container)
 
@@ -107,6 +109,11 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     const migrated = await migrate({
       directory,
@@ -114,10 +121,12 @@ const main = async function ({
       skipScripts,
       executeAllLinks,
       executeSafeLinks,
+      logger,
+      container,
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {
-    defaultLogger.error(error)
+    logger.error(error)
     process.exit(1)
   }
 }

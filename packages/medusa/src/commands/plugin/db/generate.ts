@@ -1,4 +1,3 @@
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import type { Logger } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
@@ -21,12 +20,12 @@ const TERMINAL_SIZE = process.stdout.columns
  * Generate migrations for all scanned modules in a plugin
  */
 const main = async function ({ directory }) {
-  try {
-    const container = await initializeContainer(directory, {
-      skipDbConnection: true,
-    })
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
+  try {
     const moduleDescriptors = [] as {
       serviceName: string
       migrationsPath: string
@@ -61,9 +60,9 @@ const main = async function ({ directory }) {
 
     process.exit()
   } catch (error) {
-    defaultLogger.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
 
-    defaultLogger.error(error.message, error)
+    logger.error(error.message, error)
     process.exit(1)
   }
 }

@@ -1,5 +1,4 @@
 import input from "@inquirer/input"
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import type { Logger } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
@@ -160,19 +159,19 @@ export async function dbCreate({
 }
 
 const main = async function ({ directory, interactive, db }) {
-  try {
-    const container = await initializeContainer(directory, {
-      skipDbConnection: true,
-    })
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
+  try {
     const created = await dbCreate({ directory, interactive, db, logger })
     process.exit(created ? 0 : 1)
   } catch (error) {
     if (error.name === "ExitPromptError") {
       process.exit()
     }
-    defaultLogger.error(error)
+    logger.error(error)
     process.exit(1)
   }
 }

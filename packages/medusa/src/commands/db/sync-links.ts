@@ -1,7 +1,6 @@
 import checkbox from "@inquirer/checkbox"
 import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import {
   LinkMigrationsPlannerAction,
   Logger,
@@ -194,15 +193,15 @@ export async function syncLinks(
 }
 
 const main = async function ({ directory, executeSafe, executeAll }) {
-  try {
-    const container = await initializeContainer(directory)
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
+  try {
     await ensureDbExists(container)
 
     const configModule = container.resolve(
       ContainerRegistrationKeys.CONFIG_MODULE
     )
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
     const medusaAppLoader = new MedusaAppLoader()
 
@@ -222,7 +221,7 @@ const main = async function ({ directory, executeSafe, executeAll }) {
     })
     process.exit()
   } catch (error) {
-    defaultLogger.error(error)
+    logger.error(error)
     process.exit(1)
   }
 }

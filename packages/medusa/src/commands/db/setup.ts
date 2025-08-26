@@ -1,4 +1,3 @@
-import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { initializeContainer } from "../../loaders"
 import { dbCreate } from "./create"
@@ -13,10 +12,10 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
-  try {
-    const container = await initializeContainer(directory)
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
+  try {
     const created = await dbCreate({ directory, interactive, db, logger })
     if (!created) {
       process.exit(1)
@@ -28,6 +27,8 @@ const main = async function ({
       skipScripts,
       executeAllLinks,
       executeSafeLinks,
+      logger,
+      container,
     })
 
     process.exit(migrated ? 0 : 1)
@@ -35,7 +36,7 @@ const main = async function ({
     if (error.name === "ExitPromptError") {
       process.exit()
     }
-    defaultLogger.error(error)
+    logger.error(error)
     process.exit(1)
   }
 }
