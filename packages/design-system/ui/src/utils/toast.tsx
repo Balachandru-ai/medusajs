@@ -3,6 +3,8 @@ import { ToastAction, ToastVariant, ToasterPosition } from "@/types"
 import * as React from "react"
 import { ExternalToast, toast as toastFn } from "sonner"
 
+const DEFAULT_TOAST_POSITION = "top-right"
+
 interface BaseToastProps {
   id?: string | number
   position?: ToasterPosition
@@ -16,7 +18,11 @@ interface ToastProps extends BaseToastProps {
   action?: ToastAction
 }
 
-function create(variant: ToastVariant, title: React.ReactNode, props: ToastProps = {}) {
+function create(
+  variant: ToastVariant,
+  title: React.ReactNode,
+  props: ToastProps = {}
+) {
   const external: ExternalToast = {
     position: props.position,
     duration: props.duration,
@@ -50,13 +56,15 @@ function message(
   /**
    * The props of the toast.
    */
-  props: ToastProps = {}
+  props: ToastProps = {
+    position: DEFAULT_TOAST_POSITION,
+  }
 ) {
   return create("message", title, props)
 }
 
 function custom() {
-  return create("message", "Custom",)
+  return create("message", "Custom")
 }
 
 interface VariantToastProps extends Omit<ToastProps, "icon"> {}
@@ -68,7 +76,9 @@ function info(
   /**
    * The props of the toast.
    */
-  props: VariantToastProps = {}
+  props: VariantToastProps = {
+    position: DEFAULT_TOAST_POSITION,
+  }
 ) {
   return create("info", title, props)
 }
@@ -80,7 +90,9 @@ function error(
   /**
    * The props of the toast.
    */
-  props: VariantToastProps = {}
+  props: VariantToastProps = {
+    position: DEFAULT_TOAST_POSITION,
+  }
 ) {
   return create("error", title, props)
 }
@@ -92,7 +104,9 @@ function success(
   /**
    * The props of the toast.
    */
-  props: VariantToastProps = { }
+  props: VariantToastProps = {
+    position: DEFAULT_TOAST_POSITION,
+  }
 ) {
   return create("success", title, props)
 }
@@ -104,7 +118,9 @@ function warning(
   /**
    * The props of the toast.
    */
-  props: VariantToastProps = {}
+  props: VariantToastProps = {
+    position: DEFAULT_TOAST_POSITION,
+  }
 ) {
   return create("warning", title, props)
 }
@@ -116,7 +132,9 @@ function loading(
   /**
    * The props of the toast.
    */
-  props: VariantToastProps = {}
+  props: VariantToastProps = {
+    position: DEFAULT_TOAST_POSITION,
+  }
 ) {
   return create("loading", title, { ...props, dismissable: false })
 }

@@ -491,6 +491,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "ref",
+          "title": "Integrate Payload CMS",
+          "path": "/integrations/guides/payload",
+          "description": "Learn how to integrate Payload CMS with Medusa to manage your product content.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
           "title": "Localization with Contentful",
           "path": "/integrations/guides/contentful",
           "description": "Learn how to implement localization in Medusa by integrating Contentful.",

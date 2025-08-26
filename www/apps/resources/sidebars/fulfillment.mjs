@@ -27,7 +27,12 @@ export const fulfillmentSidebar = [
           {
             type: "link",
             path: "/commerce-modules/fulfillment/concepts",
-            title: "Fulfillment Concepts",
+            title: "General Concepts",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/fulfillment/item-fulfillment",
+            title: "Item Fulfillment",
           },
           {
             type: "link",
@@ -38,11 +43,6 @@ export const fulfillmentSidebar = [
             type: "link",
             path: "/commerce-modules/fulfillment/shipping-option",
             title: "Shipping Option",
-          },
-          {
-            type: "link",
-            path: "/commerce-modules/fulfillment/item-fulfillment",
-            title: "Item Fulfillment",
           },
           {
             type: "link",

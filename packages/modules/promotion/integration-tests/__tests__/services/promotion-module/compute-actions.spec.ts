@@ -1,10 +1,5 @@
 import { IPromotionModuleService } from "@medusajs/framework/types"
-import {
-  ApplicationMethodType,
-  Modules,
-  PromotionStatus,
-  PromotionType,
-} from "@medusajs/framework/utils"
+import { ApplicationMethodType, Modules, PromotionStatus, PromotionType, } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
@@ -464,7 +459,7 @@ moduleIntegrationTestRunner({
                 type: "fixed",
                 target_type: "items",
                 allocation: "each",
-                value: 500,
+                value: 100,
                 max_quantity: 5,
                 target_rules: [
                   {

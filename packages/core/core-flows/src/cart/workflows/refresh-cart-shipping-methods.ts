@@ -52,7 +52,7 @@ export const refreshCartShippingMethodsWorkflowId =
 export const refreshCartShippingMethodsWorkflow = createWorkflow(
   refreshCartShippingMethodsWorkflowId,
   (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
       return useRemoteQueryStep({
@@ -94,9 +94,13 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
       cart,
     })
 
-    when({ listShippingOptionsInput }, ({ listShippingOptionsInput }) => {
-      return !!listShippingOptionsInput?.length
-    }).then(() => {
+    when(
+      "should-prepare-shipping-methods",
+      { listShippingOptionsInput },
+      ({ listShippingOptionsInput }) => {
+        return !!listShippingOptionsInput?.length
+      }
+    ).then(() => {
       const shippingOptions =
         listShippingOptionsForCartWithPricingWorkflow.runAsStep({
           input: {

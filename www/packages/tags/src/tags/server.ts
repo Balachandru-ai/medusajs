@@ -124,6 +124,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
   },
   {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
+  },
+  {
     "title": "Integrate Segment",
     "path": "https://docs.medusajs.com/resources/integrations/guides/segment"
   },
