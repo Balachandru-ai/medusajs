@@ -9,7 +9,7 @@ export const generatedEditDates = {
   "app/products/export/page.mdx": "2025-07-31T14:29:30.511Z",
   "app/settings/return-reasons/page.mdx": "2025-05-30T13:31:05.596Z",
   "app/settings/regions/page.mdx": "2025-05-30T13:30:59.228Z",
-  "app/orders/page.mdx": "2025-05-30T13:28:32.793Z",
+  "app/orders/page.mdx": "2025-08-26T09:21:49.782Z",
   "app/settings/users/invites/page.mdx": "2025-08-01T11:25:25.130Z",
   "app/settings/developer/page.mdx": "2025-02-25T15:11:55.392Z",
   "app/settings/profile/page.mdx": "2025-05-30T13:30:55.079Z",
@@ -31,7 +31,7 @@ export const generatedEditDates = {
   "app/products/collections/page.mdx": "2025-05-30T13:29:05.948Z",
   "app/customers/manage/page.mdx": "2025-07-31T14:28:07.889Z",
   "app/discounts/create/page.mdx": "2024-05-03T17:36:38+03:00",
-  "app/orders/payments/page.mdx": "2025-07-31T14:28:56.252Z",
+  "app/orders/payments/page.mdx": "2025-08-26T09:54:18.417Z",
   "app/discounts/page.mdx": "2024-05-03T17:36:38+03:00",
   "app/orders/exchanges/page.mdx": "2025-05-30T13:27:55.646Z",
   "app/products/create/page.mdx": "2025-05-30T13:29:24.876Z",
@@ -55,5 +55,8 @@ export const generatedEditDates = {
   "app/settings/developer/publishable-api-keys/page.mdx": "2025-05-30T13:30:19.734Z",
   "app/settings/developer/secret-api-keys/page.mdx": "2025-05-30T13:30:23.919Z",
   "app/settings/developer/workflows/page.mdx": "2025-02-25T15:52:48.349Z",
-  "app/reset-password/page.mdx": "2025-05-30T13:30:13.055Z"
+  "app/reset-password/page.mdx": "2025-05-30T13:30:13.055Z",
+  "app/orders/draft-orders/create/page.mdx": "2025-08-26T09:34:53.621Z",
+  "app/orders/draft-orders/manage/page.mdx": "2025-08-26T09:47:17.568Z",
+  "app/orders/draft-orders/page.mdx": "2025-08-26T09:31:53.784Z"
 }

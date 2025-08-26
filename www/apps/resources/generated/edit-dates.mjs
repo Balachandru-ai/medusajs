@@ -41,7 +41,7 @@ export const generatedEditDates = {
   "app/commerce-modules/order/return/page.mdx": "2025-02-26T11:22:49.675Z",
   "app/commerce-modules/order/tax-lines/page.mdx": "2024-10-09T10:22:49.335Z",
   "app/commerce-modules/order/transactions/page.mdx": "2024-10-09T10:23:36.485Z",
-  "app/commerce-modules/order/page.mdx": "2025-04-17T08:48:15.314Z",
+  "app/commerce-modules/order/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/commerce-modules/payment/_events/_events-table/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/payment/_events/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/payment/module-options/page.mdx": "2024-10-15T12:51:40.574Z",
@@ -6567,5 +6567,6 @@ export const generatedEditDates = {
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
   "app/integrations/guides/payload/page.mdx": "2025-08-21T05:24:11.537Z",
-  "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z"
+  "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z",
+  "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z"
 }

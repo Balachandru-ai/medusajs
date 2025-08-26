@@ -6038,6 +6038,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/commerce-modules/order/draft-orders",
+              "title": "Draft Orders",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/commerce-modules/order/return",
               "title": "Return",
               "children": []
@@ -6202,8 +6210,32 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Create Draft Order",
+              "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/create",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Draft Orders",
+              "path": "https://docs.medusajs.com/user-guide/orders/draft-orders",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Edit Order Items",
               "path": "https://docs.medusajs.com/user-guide/orders/edit",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Manage Draft Order",
+              "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage",
               "children": []
             },
             {

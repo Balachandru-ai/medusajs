@@ -4,6 +4,18 @@ export const order = [
     "path": "https://docs.medusajs.com/user-guide/orders/claims"
   },
   {
+    "title": "Create Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/create"
+  },
+  {
+    "title": "Manage Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage"
+  },
+  {
+    "title": "Draft Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders"
+  },
+  {
     "title": "Edit Order Items",
     "path": "https://docs.medusajs.com/user-guide/orders/edit"
   },

@@ -59,7 +59,11 @@ const TagOperationParametersDescription = ({
       {schema.externalDocs && (
         <span>
           Related guide:{" "}
-          <Link href={schema.externalDocs.url} target="_blank">
+          <Link
+            href={schema.externalDocs.url}
+            target="_blank"
+            variant="content"
+          >
             {schema.externalDocs.description || "Read More"}
           </Link>
         </span>

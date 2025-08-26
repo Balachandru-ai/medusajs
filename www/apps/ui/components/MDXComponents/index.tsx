@@ -1,6 +1,5 @@
 import type { MDXComponents as MDXComponentsType } from "mdx/types"
 import {
-  Link,
   MDXComponents as UiMdxComponents,
   InlineThemeImage,
   InlineIcon,
@@ -8,7 +7,6 @@ import {
 
 const MDXComponents: MDXComponentsType = {
   ...UiMdxComponents,
-  a: Link,
   InlineThemeImage,
   InlineIcon,
 }

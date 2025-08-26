@@ -66,6 +66,23 @@ export const sidebar = [
             title: "Manage Claims",
             path: "/orders/claims",
           },
+          {
+            type: "link",
+            title: "Draft Orders",
+            path: "/orders/draft-orders",
+            children: [
+              {
+                type: "link",
+                title: "Create Draft Order",
+                path: "/orders/draft-orders/create",
+              },
+              {
+                type: "link",
+                title: "Manage Draft Order",
+                path: "/orders/draft-orders/manage",
+              },
+            ],
+          },
         ],
       },
       {

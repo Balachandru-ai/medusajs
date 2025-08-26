@@ -127,6 +127,31 @@ export const generatedSidebars = [
             "title": "Manage Claims",
             "path": "/orders/claims",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Draft Orders",
+            "path": "/orders/draft-orders",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Create Draft Order",
+                "path": "/orders/draft-orders/create",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Manage Draft Order",
+                "path": "/orders/draft-orders/manage",
+                "children": []
+              }
+            ]
           }
         ]
       },

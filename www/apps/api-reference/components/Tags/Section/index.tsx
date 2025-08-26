@@ -153,7 +153,11 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
               {tag.externalDocs && (
                 <p className="mt-1">
                   <span className="text-medium-plus">Related guide:</span>{" "}
-                  <Link href={tag.externalDocs.url} target="_blank">
+                  <Link
+                    href={tag.externalDocs.url}
+                    target="_blank"
+                    variant="content"
+                  >
                     {tag.externalDocs.description || "Read More"}
                   </Link>
                 </p>
