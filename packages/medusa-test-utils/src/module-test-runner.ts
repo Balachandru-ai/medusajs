@@ -141,7 +141,6 @@ export function moduleIntegrationTestRunner<TService = any>({
     preventConnectionDestroyWarning: true,
     cwd,
   }
-  console.log("INIT MODULES =============================", cwd)
 
   let shutdown: () => Promise<void>
   let moduleService
