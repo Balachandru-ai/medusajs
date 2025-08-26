@@ -10,8 +10,6 @@ const DB_URL = `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`
 process.env.POSTGRES_URL = DB_URL
 process.env.LOG_LEVEL = "error"
 
-const enableMedusaV2 = process.env.MEDUSA_FF_MEDUSA_V2 == "true"
-
 const customTaxProviderRegistration = {
   resolve: {
     services: [require("@medusajs/tax/dist/providers/system").default],
@@ -50,9 +48,7 @@ module.exports = defineConfig({
       cookieSecret: "test",
     },
   },
-  featureFlags: {
-    medusa_v2: enableMedusaV2,
-  },
+  featureFlags: {},
   modules: [
     {
       key: "testingModule",

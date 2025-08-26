@@ -1,5 +1,5 @@
 import { FeatureFlagTypes } from "@medusajs/types"
-import { isObject, isString } from "../../common"
+import { isObject, isString } from "../common"
 
 export class FlagRouter implements FeatureFlagTypes.IFlagRouter {
   private readonly flags: Record<string, boolean | Record<string, boolean>> = {}
@@ -75,3 +75,5 @@ export class FlagRouter implements FeatureFlagTypes.IFlagRouter {
     }))
   }
 }
+
+export const FeatureFlag = new FlagRouter({})

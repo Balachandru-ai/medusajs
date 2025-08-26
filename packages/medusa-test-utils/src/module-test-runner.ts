@@ -27,6 +27,7 @@ function createMikroOrmWrapper(options: {
   moduleModels?: (Function | DmlEntity<any, any>)[]
   resolve?: string
   dbConfig: any
+  cwd?: string
 }): {
   MikroOrmWrapper: TestDatabase
   models: (Function | DmlEntity<any, any>)[]
@@ -36,7 +37,7 @@ function createMikroOrmWrapper(options: {
 
   if (!options.moduleModels) {
     const basePath = normalizeImportPathWithSource(
-      options.resolve ?? process.cwd()
+      options.resolve ?? options.cwd ?? process.cwd()
     )
 
     const modelsPath = fs.existsSync(`${basePath}/dist/models`)
@@ -74,6 +75,7 @@ export function moduleIntegrationTestRunner<TService = any>({
   testSuite,
   resolve,
   injectedDependencies = {},
+  cwd,
 }: {
   moduleName: string
   moduleModels?: any[]
@@ -85,6 +87,7 @@ export function moduleIntegrationTestRunner<TService = any>({
   injectedDependencies?: Record<string, any>
   resolve?: string
   debug?: boolean
+  cwd?: string
   testSuite: (options: SuiteOptions<TService>) => void
 }) {
   const moduleSdkImports = require("@medusajs/framework/modules-sdk")
@@ -107,6 +110,7 @@ export function moduleIntegrationTestRunner<TService = any>({
     moduleModels,
     resolve,
     dbConfig,
+    cwd,
   })
 
   moduleModels = models
@@ -135,6 +139,7 @@ export function moduleIntegrationTestRunner<TService = any>({
     databaseConfig: dbConfig,
     joinerConfig,
     preventConnectionDestroyWarning: true,
+    cwd,
   }
 
   let shutdown: () => Promise<void>
