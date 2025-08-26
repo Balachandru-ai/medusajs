@@ -15,9 +15,7 @@ const defaultConfig = {
 } as boxen.Options
 
 export default async function ({ types, directory }) {
-  const container = await initializeContainer(directory, {
-    skipDbConnection: true,
-  })
+  const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const args = process.argv

@@ -10,9 +10,7 @@ export default async function developPlugin({
 }: {
   directory: string
 }) {
-  const container = await initializeContainer(directory, {
-    skipDbConnection: true,
-  })
+  const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   let isBusy = false

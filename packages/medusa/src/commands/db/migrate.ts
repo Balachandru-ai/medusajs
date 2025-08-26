@@ -109,9 +109,7 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
-  const container = await initializeContainer(directory, {
-    skipDbConnection: true,
-  })
+  const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   try {
