@@ -9,9 +9,6 @@ import express from "express"
 import querystring from "querystring"
 import supertest from "supertest"
 
-import { config } from "../mocks"
-import { ConfigModule, MedusaContainer } from "@medusajs/types"
-import { configManager } from "@medusajs/framework/config"
 import {
   ApiLoader,
   container,
@@ -19,6 +16,9 @@ import {
   logger,
   MedusaRequest,
 } from "@medusajs/framework"
+import { configManager } from "@medusajs/framework/config"
+import { ConfigModule, MedusaContainer } from "@medusajs/types"
+import { config } from "../mocks"
 
 function asArray(resolvers) {
   return {
@@ -37,12 +37,11 @@ export const createServer = async (rootDir) => {
 
   const moduleResolutions = {}
   Object.entries(ModulesDefinition).forEach(([moduleKey, module]) => {
-    moduleResolutions[moduleKey] = registerMedusaModule(
+    moduleResolutions[moduleKey] = registerMedusaModule({
       moduleKey,
-      module.defaultModuleDeclaration,
-      undefined,
-      module
-    )[moduleKey]
+      moduleDeclaration: module.defaultModuleDeclaration,
+      moduleExports: module as any,
+    })[moduleKey]
   })
 
   configManager.loadConfig({

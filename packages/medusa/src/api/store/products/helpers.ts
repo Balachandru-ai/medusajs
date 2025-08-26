@@ -28,6 +28,22 @@ export const refetchProduct = async (
   return await refetchEntity("product", idOrFilter, scope, fields)
 }
 
+export const filterOutInternalProductCategories = (
+  products: HttpTypes.StoreProduct[]
+) => {
+  return products.forEach((product: HttpTypes.StoreProduct) => {
+    if (!product.categories) {
+      return
+    }
+
+    product.categories = product.categories.filter(
+      (category) =>
+        !(category as HttpTypes.StoreProductCategory & { is_internal: boolean })
+          .is_internal
+    )
+  })
+}
+
 export const wrapProductsWithTaxPrices = async <T>(
   req: RequestWithContext<T>,
   products: HttpTypes.StoreProduct[]

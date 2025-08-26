@@ -24,7 +24,7 @@ import {
 
 jest.setTimeout(500000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const providerId = "manual_test-provider"
 const variantSkuWithInventory = "test-variant"
 let inventoryItem

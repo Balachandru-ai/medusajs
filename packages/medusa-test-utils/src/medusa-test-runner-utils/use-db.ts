@@ -1,6 +1,6 @@
 import type { MedusaAppLoader } from "@medusajs/framework"
-import { Logger, MedusaContainer } from "@medusajs/framework/types"
 import { logger } from "@medusajs/framework/logger"
+import { Logger, MedusaContainer } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -11,12 +11,9 @@ import { join } from "path"
  * Initiates the database connection
  */
 export async function initDb() {
-  const { pgConnectionLoader, featureFlagsLoader } = await import(
-    "@medusajs/framework"
-  )
+  const { pgConnectionLoader } = await import("@medusajs/framework")
 
   const pgConnection = await pgConnectionLoader()
-  await featureFlagsLoader()
 
   return pgConnection
 }

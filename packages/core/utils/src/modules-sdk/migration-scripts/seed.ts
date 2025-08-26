@@ -2,9 +2,9 @@ import { LoaderOptions, Logger, ModulesSdkTypes } from "@medusajs/types"
 import { EntitySchema } from "@mikro-orm/core"
 import { EOL } from "os"
 import { resolve } from "path"
+import { dynamicImport, isFileSkipped } from "../../common"
 import { mikroOrmCreateConnection } from "../../dal"
 import { loadDatabaseConfig } from "../load-module-database-config"
-import { dynamicImport } from "../../common"
 
 /**
  * Utility function to build a seed script that will insert the seed data.
@@ -51,6 +51,10 @@ export function buildSeedScript({
         throw e
       }
     )
+
+    if (isFileSkipped(dataSeed)) {
+      return
+    }
 
     const dbData = loadDatabaseConfig(moduleName, options)!
     const entities = Object.values(models) as unknown as EntitySchema[]

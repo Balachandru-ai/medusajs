@@ -1,5 +1,5 @@
 import { InlineIcon } from "docs-ui"
-import { Plus, EllipsisHorizontal } from "@medusajs/icons"
+import { Plus, EllipsisHorizontal, ChevronUpDown } from "@medusajs/icons"
 
 export const metadata = {
   title: `Organizations`,
@@ -33,7 +33,7 @@ If you're a member of multiple organizations, you can switch between them to vie
 
 To switch to a different organization:
 
-1. Click on the organization name at the top left of the Cloud dashboard.
+1. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon next to the organization name at the top left of the Cloud dashboard.
 2. Choose the organization you want to switch to from the dropdown.
 
 This will change the view to the selected organization, and you'll see its projects, resources, and settings.
@@ -47,7 +47,7 @@ This will change the view to the selected organization, and you'll see its proje
 To view an organization's settings:
 
 1. If you're in a different organization, [switch to the organization](#switch-organization) whose settings you want to view.
-2. Click on the [organization switcher](#switch-organization) at the top left of the Cloud dashboard.
+2. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon in the [organization switcher](#switch-organization) at the top left of the Cloud dashboard.
 3. Choose "Organization Settings" from the dropdown.
 
 This will open a new window where you can view and manage an organization's settings.
@@ -200,4 +200,4 @@ To edit your profile's details:
 
 ## Manage Billing Details
 
-Refer to the [Billing & Usage](../billing-usage/page.mdx) guide to learn how to manage your organization's billing details, including payment methods, invoices, and usage.
+Refer to the [Billing](../billing/page.mdx) guide to learn how to manage your organization's billing details, including payment methods, invoices, and usage.

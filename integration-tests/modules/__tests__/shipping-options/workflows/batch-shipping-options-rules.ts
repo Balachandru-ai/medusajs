@@ -23,7 +23,7 @@ import {
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const provider_id = "manual_test-provider"
 
 async function createShippingOptionFixture({
