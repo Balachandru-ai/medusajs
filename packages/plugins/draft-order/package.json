@@ -33,9 +33,6 @@
     "prepare": "cross-env NODE_ENV=production yarn run build",
     "link:watch": "medusa plugin:publish && medusa plugin:develop"
   },
-  "publishConfig": {
-    "access": "restricted"
-  },
   "dependencies": {
     "@ariakit/react": "^0.4.15",
     "@hookform/resolvers": "3.4.2",
