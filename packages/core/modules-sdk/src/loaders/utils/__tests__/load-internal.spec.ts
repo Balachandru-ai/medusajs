@@ -16,6 +16,7 @@ import { ModuleProviderService as ModuleServiceWithProviderProvider1 } from "../
 import { ModuleProvider2Service as ModuleServiceWithProviderProvider2 } from "../__fixtures__/module-with-providers/provider-2"
 import { loadInternalModule, loadResources } from "../load-internal"
 
+const container = createMedusaContainer()
 describe("load internal", () => {
   describe("loadResources", () => {
     describe("when loading the module resources from a path", () => {
@@ -43,6 +44,7 @@ describe("load internal", () => {
         ).toBeUndefined()
 
         const resources = await loadResources({
+          container,
           moduleResolution,
           discoveryPath: moduleResolution.resolutionPath as string,
         })
@@ -125,6 +127,7 @@ describe("load internal", () => {
         ).toBeUndefined()
 
         const resources = await loadResources({
+          container,
           moduleResolution,
           discoveryPath: moduleResolution.resolutionPath as string,
         })
@@ -207,6 +210,7 @@ describe("load internal", () => {
         ).toBeUndefined()
 
         const resources = await loadResources({
+          container,
           moduleResolution,
           discoveryPath: moduleResolution.resolutionPath as string,
         })
@@ -288,6 +292,7 @@ describe("load internal", () => {
         ).toBeDefined()
 
         const resources = await loadResources({
+          container,
           moduleResolution,
           discoveryPath: moduleResolution.resolutionPath as string,
         })

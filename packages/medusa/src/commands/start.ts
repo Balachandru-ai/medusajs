@@ -1,25 +1,26 @@
+import { track } from "@medusajs/telemetry"
+import cluster from "cluster"
+import express from "express"
+import http from "http"
+import { scheduleJob } from "node-schedule"
 import os from "os"
 import path from "path"
-import http from "http"
-import express from "express"
-import cluster from "cluster"
-import { track } from "@medusajs/telemetry"
-import { scheduleJob } from "node-schedule"
 
+import { logger } from "@medusajs/framework/logger"
 import {
   dynamicImport,
   FileSystem,
+  generateContainerTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
+  isFileSkipped,
   isPresent,
-  generateContainerTypes,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
-import loaders from "../loaders"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import { parse } from "url"
+import loaders from "../loaders"
 
 const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
@@ -43,7 +44,11 @@ export async function registerInstrumentation(directory: string) {
   const instrumentation = await dynamicImport(
     path.join(directory, INSTRUMENTATION_FILE)
   )
-  if (typeof instrumentation.register === "function") {
+
+  if (
+    typeof instrumentation.register === "function" &&
+    !isFileSkipped(instrumentation)
+  ) {
     logger.info("OTEL registered")
     instrumentation.register()
   } else {

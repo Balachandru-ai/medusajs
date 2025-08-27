@@ -29,6 +29,7 @@ import {
   IRegionModuleService,
   ISalesChannelModuleService,
   IStockLocationService,
+  PricingContext,
 } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,
@@ -48,7 +49,7 @@ import { createAuthenticatedCustomer } from "../../../helpers/create-authenticat
 
 jest.setTimeout(200000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
@@ -759,11 +760,23 @@ medusaIntegrationTestRunner({
              * Tried jest, but for some reasons it is not able to provide
              * correct arguments passed to the function
              */
-            let pricingContext: any
-            const originalFn = pricingModule.listPriceSets.bind(pricingModule)
-            pricingModule.listPriceSets = function () {
-              pricingContext = { ...arguments[0].context }
-              return originalFn.bind(pricingModule)(...arguments)
+            let calculatePricesHasBeenCalled = false
+
+            const originalFn = pricingModule.calculatePrices.bind(pricingModule)
+            pricingModule.calculatePrices = function (...args) {
+              calculatePricesHasBeenCalled = true
+
+              const pricingContext = args[1]!.context
+
+              expect(pricingContext).toEqual(
+                expect.objectContaining({
+                  unit_price: 100,
+                  region_id: region.id,
+                  currency_code: "usd",
+                })
+              )
+
+              return originalFn.bind(pricingModule)(...args)
             }
 
             const { result } = await createCartWorkflow(appContainer).run({
@@ -782,15 +795,9 @@ medusaIntegrationTestRunner({
             })
 
             setPricingContextHook = undefined
-            pricingModule.listPriceSets = originalFn
+            pricingModule.calculatePrices = originalFn
 
-            expect(pricingContext).toEqual(
-              expect.objectContaining({
-                unit_price: 100,
-                region_id: region.id,
-                currency_code: "usd",
-              })
-            )
+            expect(calculatePricesHasBeenCalled).toBe(true)
 
             const cart = await cartModuleService.retrieveCart(result.id, {
               relations: ["items"],
@@ -924,11 +931,25 @@ medusaIntegrationTestRunner({
              * Tried jest, but for some reasons it is not able to provide
              * correct arguments passed to the function
              */
-            let pricingContext: any
-            const originalFn = pricingModule.listPriceSets.bind(pricingModule)
-            pricingModule.listPriceSets = function () {
-              pricingContext = { ...arguments[0].context }
-              return originalFn.bind(pricingModule)(...arguments)
+            let calculatePricesHasBeenCalled = false
+
+            const originalFn = pricingModule.calculatePrices.bind(pricingModule)
+            pricingModule.calculatePrices = function (...args) {
+              calculatePricesHasBeenCalled = true
+
+              const pricingContext = args[1]!.context
+
+              expect(pricingContext).toEqual(
+                expect.objectContaining({
+                  unit_price: 200,
+                  region_id: region.id,
+                  currency_code: "usd",
+                })
+              )
+              expect(pricingContext?.customer_id).toBeDefined()
+              expect(pricingContext?.customer_id).not.toEqual("1")
+
+              return originalFn.bind(pricingModule)(...args)
             }
 
             const { result } = await createCartWorkflow(appContainer).run({
@@ -947,17 +968,9 @@ medusaIntegrationTestRunner({
             })
 
             setPricingContextHook = undefined
-            pricingModule.listPriceSets = originalFn
+            pricingModule.calculatePrices = originalFn
 
-            expect(pricingContext).toEqual(
-              expect.objectContaining({
-                unit_price: 200,
-                region_id: region.id,
-                currency_code: "usd",
-              })
-            )
-            expect(pricingContext.customer_id).toBeDefined()
-            expect(pricingContext.customer_id).not.toEqual("1")
+            expect(calculatePricesHasBeenCalled).toBe(true)
 
             const cart = await cartModuleService.retrieveCart(result.id, {
               relations: ["items"],
@@ -1851,7 +1864,7 @@ medusaIntegrationTestRunner({
 
           expect(errors).toEqual([
             {
-              action: "validate-variant-prices",
+              action: "get-variant-price-sets",
               handlerType: "invoke",
               error: expect.objectContaining({
                 message: expect.stringContaining(
@@ -1960,10 +1973,22 @@ medusaIntegrationTestRunner({
              * correct arguments passed to the function
              */
             let pricingContext: any
-            const originalFn = pricingModule.listPriceSets.bind(pricingModule)
-            pricingModule.listPriceSets = function () {
-              pricingContext = { ...arguments[0].context }
-              return originalFn.bind(pricingModule)(...arguments)
+            let calculatePricessHaveBeenCalled = false
+            const originalFn = pricingModule.calculatePrices.bind(pricingModule)
+            pricingModule.calculatePrices = function (...args) {
+              pricingContext = args[1]!
+              calculatePricessHaveBeenCalled = true
+
+              expect(pricingContext).toEqual(
+                expect.objectContaining({
+                  context: expect.objectContaining({
+                    unit_price: 100,
+                    currency_code: "usd",
+                  }),
+                })
+              )
+
+              return originalFn.bind(pricingModule)(...args)
             }
 
             await addToCartWorkflow(appContainer).run({
@@ -1979,14 +2004,9 @@ medusaIntegrationTestRunner({
             })
 
             setPricingContextHook = undefined
-            pricingModule.listPriceSets = originalFn
+            pricingModule.calculatePrices = originalFn
 
-            expect(pricingContext).toEqual(
-              expect.objectContaining({
-                unit_price: 100,
-                currency_code: "usd",
-              })
-            )
+            expect(calculatePricessHaveBeenCalled).toBe(true)
 
             cart = await cartModuleService.retrieveCart(cart.id, {
               relations: ["items"],
@@ -2114,9 +2134,24 @@ medusaIntegrationTestRunner({
              * correct arguments passed to the function
              */
             let pricingContext: any
-            const originalFn = pricingModule.listPriceSets.bind(pricingModule)
-            pricingModule.listPriceSets = function () {
-              pricingContext = { ...arguments[0].context }
+            let calculatePricessHaveBeenCalled = false
+
+            const originalFn = pricingModule.calculatePrices.bind(pricingModule)
+            pricingModule.calculatePrices = function (...args) {
+              pricingContext = args[1]!
+              calculatePricessHaveBeenCalled = true
+
+              expect(pricingContext).toEqual(
+                expect.objectContaining({
+                  context: expect.objectContaining({
+                    unit_price: 200,
+                    region_id: cart.region_id,
+                    customer_id: cart.customer_id,
+                    currency_code: "usd",
+                  }),
+                })
+              )
+
               return originalFn.bind(pricingModule)(...arguments)
             }
 
@@ -2133,20 +2168,13 @@ medusaIntegrationTestRunner({
             })
 
             setPricingContextHook = undefined
-            pricingModule.listPriceSets = originalFn
-
-            expect(pricingContext).toEqual(
-              expect.objectContaining({
-                unit_price: 200,
-                region_id: cart.region_id,
-                customer_id: cart.customer_id,
-                currency_code: "usd",
-              })
-            )
+            pricingModule.calculatePrices = originalFn
 
             cart = await cartModuleService.retrieveCart(cart.id, {
               relations: ["items"],
             })
+
+            expect(calculatePricessHaveBeenCalled).toBe(true)
 
             expect(cart).toEqual(
               expect.objectContaining({

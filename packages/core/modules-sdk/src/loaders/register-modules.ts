@@ -14,15 +14,22 @@ import {
 import { ModulesDefinition } from "../definitions"
 import { MODULE_SCOPE } from "../types"
 
-export const registerMedusaModule = (
-  moduleKey: string,
+export const registerMedusaModule = ({
+  moduleKey,
+  moduleDeclaration,
+  moduleExports,
+  definition,
+  cwd,
+}: {
+  moduleKey: string
   moduleDeclaration?:
     | Partial<InternalModuleDeclaration | ExternalModuleDeclaration>
     | string
-    | false,
-  moduleExports?: ModuleExports,
+    | false
+  moduleExports?: ModuleExports
   definition?: ModuleDefinition
-): Record<string, ModuleResolution> => {
+  cwd?: string
+}): Record<string, ModuleResolution> => {
   const moduleResolutions = {} as Record<string, ModuleResolution>
 
   const modDefinition = definition ?? ModulesDefinition[moduleKey]
@@ -46,7 +53,8 @@ export const registerMedusaModule = (
   if (modDefinition === undefined) {
     moduleResolutions[moduleKey] = getCustomModuleResolution(
       moduleKey,
-      moduleDeclaration as InternalModuleDeclaration
+      moduleDeclaration as InternalModuleDeclaration,
+      cwd
     )
     return moduleResolutions
   }
@@ -54,7 +62,8 @@ export const registerMedusaModule = (
   moduleResolutions[moduleKey] = getInternalModuleResolution(
     modDefinition,
     moduleDeclaration as InternalModuleDeclaration,
-    moduleExports
+    moduleExports,
+    cwd
   )
 
   return moduleResolutions
@@ -62,13 +71,15 @@ export const registerMedusaModule = (
 
 function getCustomModuleResolution(
   key: string,
-  moduleConfig: InternalModuleDeclaration | string
+  moduleConfig: InternalModuleDeclaration | string,
+  cwd: string = process.cwd()
 ): ModuleResolution {
   const originalPath = normalizeImportPathWithSource(
-    (isString(moduleConfig) ? moduleConfig : moduleConfig.resolve) as string
+    (isString(moduleConfig) ? moduleConfig : moduleConfig.resolve) as string,
+    cwd
   )
   const resolutionPath = require.resolve(originalPath, {
-    paths: [process.cwd()],
+    paths: [cwd],
   })
 
   const conf = isObject(moduleConfig)
@@ -100,14 +111,16 @@ function getCustomModuleResolution(
 export const registerMedusaLinkModule = (
   definition: ModuleDefinition,
   moduleDeclaration: Partial<InternalModuleDeclaration>,
-  moduleExports?: ModuleExports
+  moduleExports?: ModuleExports,
+  cwd: string = process.cwd()
 ): Record<string, ModuleResolution> => {
   const moduleResolutions = {} as Record<string, ModuleResolution>
 
   moduleResolutions[definition.key] = getInternalModuleResolution(
     definition,
     moduleDeclaration as InternalModuleDeclaration,
-    moduleExports
+    moduleExports,
+    cwd
   )
 
   return moduleResolutions
@@ -116,7 +129,8 @@ export const registerMedusaLinkModule = (
 function getInternalModuleResolution(
   definition: ModuleDefinition,
   moduleConfig: InternalModuleDeclaration | string | false,
-  moduleExports?: ModuleExports
+  moduleExports?: ModuleExports,
+  cwd: string = process.cwd()
 ): ModuleResolution {
   if (typeof moduleConfig === "boolean") {
     if (!moduleConfig && definition.isRequired) {
@@ -140,10 +154,11 @@ function getInternalModuleResolution(
   const isStr = isString(moduleConfig)
   if (isStr || (isObj && moduleConfig.resolve)) {
     const originalPath = normalizeImportPathWithSource(
-      (isString(moduleConfig) ? moduleConfig : moduleConfig.resolve) as string
+      (isString(moduleConfig) ? moduleConfig : moduleConfig.resolve) as string,
+      cwd
     )
     resolutionPath = require.resolve(originalPath, {
-      paths: [process.cwd()],
+      paths: [cwd],
     })
   }
 

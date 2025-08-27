@@ -138,8 +138,32 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
-              "title": "Handle Password Reset Event",
+              "title": "Invite User Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Reset Password Email",
               "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Cart Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Order Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals",
               "children": []
             },
             {
@@ -457,6 +481,24 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Generate Invoices",
+          "path": "/how-to-tutorials/tutorials/invoice-generator",
+          "description": "Learn how to generate invoices for orders in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Integrate Payload CMS",
+          "path": "/integrations/guides/payload",
+          "description": "Learn how to integrate Payload CMS with Medusa to manage your product content.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Localization with Contentful",
           "path": "/integrations/guides/contentful",
@@ -515,6 +557,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "title": "Pre-Order Products",
           "path": "/how-to-tutorials/tutorials/preorder",
           "description": "Learn how to implement pre-order functionality for products in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Product Builder",
+          "path": "/how-to-tutorials/tutorials/product-builder",
+          "description": "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
           "children": []
         },
         {

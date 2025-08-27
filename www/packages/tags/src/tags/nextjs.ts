@@ -8,8 +8,16 @@ export const nextjs = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
   {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
+  },
+  {
     "title": "Implement Pre-Orders",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
+  },
+  {
+    "title": "Implement Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
   },
   {
     "title": "Saved Payment Methods",

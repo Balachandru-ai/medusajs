@@ -12,6 +12,7 @@ import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ICartModuleService,
   ICustomerModuleService,
+  IEventBusModuleService,
   IFulfillmentModuleService,
   IInventoryService,
   IPaymentModuleService,
@@ -20,6 +21,7 @@ import {
   IRegionModuleService,
   ISalesChannelModuleService,
   IStockLocationService,
+  Message,
 } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,
@@ -37,7 +39,7 @@ import { createAuthenticatedCustomer } from "../../../helpers/create-authenticat
 
 jest.setTimeout(200000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
@@ -60,6 +62,7 @@ medusaIntegrationTestRunner({
       let defaultRegion
       let customer, storeHeadersWithCustomer
       let setPricingContextHook: any
+      let eventBus: IEventBusModuleService
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -70,6 +73,7 @@ medusaIntegrationTestRunner({
         productModule = appContainer.resolve(Modules.PRODUCT)
         pricingModule = appContainer.resolve(Modules.PRICING)
         paymentModule = appContainer.resolve(Modules.PAYMENT)
+        eventBus = appContainer.resolve(Modules.EVENT_BUS)
         fulfillmentModule = appContainer.resolve(Modules.FULFILLMENT)
         inventoryModule = appContainer.resolve(Modules.INVENTORY)
         stockLocationModule = appContainer.resolve(Modules.STOCK_LOCATION)
@@ -747,6 +751,7 @@ medusaIntegrationTestRunner({
             paymentSession.id
           )
         })
+
         it("should complete cart when payment webhook and storefront are called in simultaneously", async () => {
           const salesChannel = await scModuleService.createSalesChannels({
             name: "Webshop",
@@ -875,6 +880,142 @@ medusaIntegrationTestRunner({
           expect(fullOrder.payment_collections[0].authorized_amount).toBe(3000)
           expect(fullOrder.payment_collections[0].captured_amount).toBe(3000)
           expect(fullOrder.payment_collections[0].status).toBe("completed")
+        })
+
+        it("should clear events when complete cart fails after emitting events", async () => {
+          const salesChannel = await scModuleService.createSalesChannels({
+            name: "Webshop",
+          })
+
+          const location = await stockLocationModule.createStockLocations({
+            name: "Warehouse",
+          })
+
+          const region = await regionModuleService.createRegions({
+            name: "US",
+            currency_code: "usd",
+          })
+
+          let cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+            region_id: region.id,
+          })
+
+          await remoteLink.create([
+            {
+              [Modules.SALES_CHANNEL]: {
+                sales_channel_id: salesChannel.id,
+              },
+              [Modules.STOCK_LOCATION]: {
+                stock_location_id: location.id,
+              },
+            },
+          ])
+
+          cart = await cartModuleService.retrieveCart(cart.id, {
+            select: ["id", "region_id", "currency_code", "sales_channel_id"],
+          })
+
+          await addToCartWorkflow(appContainer).run({
+            input: {
+              items: [
+                {
+                  title: "Test item",
+                  subtitle: "Test subtitle",
+                  thumbnail: "some-url",
+                  requires_shipping: false,
+                  is_discountable: false,
+                  is_tax_inclusive: false,
+                  unit_price: 3000,
+                  metadata: {
+                    foo: "bar",
+                  },
+                  quantity: 1,
+                },
+                {
+                  title: "zero price item",
+                  subtitle: "zero price item",
+                  thumbnail: "some-url",
+                  requires_shipping: false,
+                  is_discountable: false,
+                  is_tax_inclusive: false,
+                  unit_price: 0,
+                  quantity: 1,
+                },
+              ],
+              cart_id: cart.id,
+            },
+          })
+
+          cart = await cartModuleService.retrieveCart(cart.id, {
+            relations: ["items"],
+          })
+
+          await createPaymentCollectionForCartWorkflow(appContainer).run({
+            input: {
+              cart_id: cart.id,
+            },
+          })
+
+          const [paymentCollection] =
+            await paymentModule.listPaymentCollections({})
+
+          await createPaymentSessionsWorkflow(appContainer).run({
+            input: {
+              payment_collection_id: paymentCollection.id,
+              provider_id: "pp_system_default",
+              context: {},
+              data: {},
+            },
+          })
+
+          let grouppedEventBefore: Message[] = []
+          let eventGroupId!: string
+
+          /**
+           * Register order.placed listener to trigger the event group
+           * registration and be able to check the event group during
+           * the workflow execution against it after compensation
+           */
+
+          eventBus.subscribe("order.placed", async () => {
+            // noop
+          })
+
+          const workflow = completeCartWorkflow(appContainer)
+
+          workflow.addAction("throw", {
+            invoke: async function failStep({ context }) {
+              eventGroupId = context!.eventGroupId!
+              grouppedEventBefore = (
+                (eventBus as any).groupedEventsMap_ as Map<string, any>
+              ).get(context!.eventGroupId!)
+
+              throw new Error(
+                `Failed to do something before ending complete cart workflow`
+              )
+            },
+          })
+
+          const { errors } = await workflow.run({
+            input: {
+              id: cart.id,
+            },
+            throwOnError: false,
+          })
+
+          const grouppedEventAfter =
+            ((eventBus as any).groupedEventsMap_ as Map<string, any>).get(
+              eventGroupId
+            ) ?? []
+
+          expect(grouppedEventBefore).toHaveLength(1)
+          expect(grouppedEventAfter).toHaveLength(0) // events have been compensated
+
+          expect(errors[0].error.message).toBe(
+            "Failed to do something before ending complete cart workflow"
+          )
         })
       })
     })

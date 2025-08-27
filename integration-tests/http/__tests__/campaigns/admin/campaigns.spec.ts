@@ -17,7 +17,7 @@ export const campaignData = {
   budget: {
     type: CampaignBudgetType.SPEND,
     limit: 1000,
-    currency_code: "USD",
+    currency_code: "usd",
   },
 }
 
@@ -31,7 +31,7 @@ export const campaignsData = [
     budget: {
       type: CampaignBudgetType.SPEND,
       limit: 1000,
-      currency_code: "USD",
+      currency_code: "usd",
     },
   },
   {
@@ -56,7 +56,7 @@ const promotionData = {
     target_type: "items",
     type: "fixed",
     allocation: "each",
-    currency_code: "USD",
+    currency_code: "usd",
     value: 100,
     max_quantity: 100,
     target_rules: [
@@ -76,7 +76,7 @@ const promotionData = {
   ],
 }
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = {
   headers: { "x-medusa-access-token": "test_token" },
 }
@@ -122,7 +122,7 @@ medusaIntegrationTestRunner({
             value: 100,
             max_quantity: 100,
             target_rules: [],
-            currency_code: "USD",
+            currency_code: "usd",
           },
           rules: [],
         }

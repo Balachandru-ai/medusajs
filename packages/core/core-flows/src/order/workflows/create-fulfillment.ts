@@ -296,7 +296,8 @@ function prepareInventoryUpdate({
 
     if (!reservations?.length) {
       if (item.variant?.manage_inventory) {
-        throw new Error(
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
           `No stock reservation found for item ${item.id} - ${item.title} (${item.variant_title})`
         )
       }
@@ -306,13 +307,6 @@ function prepareInventoryUpdate({
     const inputQuantity = inputItemsMap[item.id]?.quantity ?? item.quantity
 
     reservations.forEach((reservation) => {
-      if (MathBN.gt(inputQuantity, reservation.quantity)) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `Quantity to fulfill exceeds the reserved quantity for the item: ${item.id}`
-        )
-      }
-
       const iItem = orderItem?.variant?.inventory_items.find(
         (ii) => ii.inventory.id === reservation.inventory_item_id
       )
@@ -326,6 +320,13 @@ function prepareInventoryUpdate({
         reservation.quantity,
         adjustemntQuantity
       )
+
+      if (MathBN.lt(remainingReservationQuantity, 0)) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Quantity to fulfill exceeds the reserved quantity for the item: ${item.id}`
+        )
+      }
 
       inventoryAdjustment.push({
         inventory_item_id: reservation.inventory_item_id,

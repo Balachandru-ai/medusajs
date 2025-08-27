@@ -54,6 +54,7 @@ export type AdminGetPromotionRuleParamsType = z.infer<
 export const AdminGetPromotionRuleParams = z.object({
   promotion_type: z.string().optional(),
   application_method_type: z.string().optional(),
+  application_method_target_type: z.string().optional(),
 })
 
 export type AdminGetPromotionRuleTypeParamsType = z.infer<
@@ -63,6 +64,7 @@ export const AdminGetPromotionRuleTypeParams = createSelectParams().merge(
   z.object({
     promotion_type: z.string().optional(),
     application_method_type: z.string().optional(),
+    application_method_target_type: z.string().optional(),
   })
 )
 
@@ -76,6 +78,7 @@ export const AdminGetPromotionsRuleValueParams = createFindParams({
   z.object({
     q: z.string().optional(),
     value: z.union([z.string(), z.array(z.string())]).optional(),
+    application_method_target_type: z.string().optional(),
   })
 )
 
