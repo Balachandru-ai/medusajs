@@ -487,6 +487,10 @@ export function MedusaService<
       data: { id: any } | { id: any }[]
       context: Context
     }) {
+      if (!context.messageAggregator) {
+        return
+      }
+
       const __joinerConfig = (
         typeof this.__joinerConfig === "function"
           ? this.__joinerConfig()

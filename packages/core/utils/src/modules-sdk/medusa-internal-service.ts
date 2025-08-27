@@ -47,7 +47,7 @@ type SelectorAndData = {
   data: any
 }
 
-function registerInternalServiceEventSubscriber(
+export function registerInternalServiceEventSubscriber(
   context: Context,
   subscriber?: MedusaMikroOrmEventSubscriber
 ) {
@@ -532,10 +532,29 @@ export function MedusaInternalService<
         return []
       }
 
-      return await this[propertyRepositoryName].delete(
+      const deletedIds = await this[propertyRepositoryName].delete(
         deleteCriteria,
         sharedContext
       )
+
+      // Delete are handled a bit differently since we are going to the DB directly, therefore
+      // just like upsert with replace, we need to dispatch the events manually.
+      if (deletedIds.length) {
+        const manager = (sharedContext.transactionManager ??
+          sharedContext.manager) as EntityManager
+        const eventManager = manager.getEventManager()
+
+        deletedIds.forEach((id) => {
+          eventManager.dispatchEvent(EventType.afterDelete, {
+            entity: { id },
+            meta: {
+              className: model.name,
+            } as Parameters<typeof eventManager.dispatchEvent>[2],
+          })
+        })
+      }
+
+      return deletedIds
     }
 
     @InjectTransactionManager(propertyRepositoryName)

@@ -1072,7 +1072,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
       })
 
       describe("Delete Operations - Base Service Automatic Events", () => {
-        it.only("should emit delete events for all entity types via base service", async () => {
+        it("should emit delete events for all entity types via base service", async () => {
           // Create entities
           const products = await service.createProducts([
             buildProductAndRelationsData({
