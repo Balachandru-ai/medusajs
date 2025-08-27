@@ -796,7 +796,7 @@ export const FulfillmentWorkflowEvents = {
    * @eventPayload
    * ```ts
    * {
-   *   id, // the ID of the shipment
+   *   id, // the ID of the fulfillment
    *   no_notification, // (boolean) whether to notify the customer
    * }
    * ```

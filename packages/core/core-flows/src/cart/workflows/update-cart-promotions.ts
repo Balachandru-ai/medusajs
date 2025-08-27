@@ -75,7 +75,7 @@ export const updateCartPromotionsWorkflowId = "update-cart-promotions"
 export const updateCartPromotionsWorkflow = createWorkflow(
   updateCartPromotionsWorkflowId,
   (input: WorkflowData<UpdateCartPromotionsWorkflowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
       return useRemoteQueryStep({

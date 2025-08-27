@@ -79,10 +79,29 @@ interface ChoiceBoxProps
   description: string
 }
 
+/**
+ * This component is based on the [Radix UI Radio Group Item](https://www.radix-ui.com/primitives/docs/components/radio-group#item) primitives.
+ */
 const ChoiceBox = React.forwardRef<
   React.ElementRef<typeof RadixRadioGroup.Item>,
   ChoiceBoxProps
->(({ className, id, label, description, ...props }, ref) => {
+>(({ 
+  className, 
+  id, 
+  /**
+   * The label for the radio button.
+   */
+  label, 
+  /**
+   * The description for the radio button.
+   */
+  description,
+  /**
+   * The value of the radio button.
+   */
+  value,
+  ...props
+}: ChoiceBoxProps, ref) => {
   const generatedId = React.useId()
 
   if (!id) {
@@ -102,6 +121,7 @@ const ChoiceBox = React.forwardRef<
         className
       )}
       {...props}
+      value={value}
       id={id}
       aria-describedby={descriptionId}
     >

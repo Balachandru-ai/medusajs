@@ -1329,6 +1329,13 @@ export function getRouteMap({
                       lazy: () =>
                         import("../../routes/product-tags/product-tag-edit"),
                     },
+                    {
+                      path: "metadata/edit",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-tags/product-tag-metadata"
+                        ),
+                    },
                   ],
                 },
               ],

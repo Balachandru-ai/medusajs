@@ -839,6 +839,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
+                  "title": "Implement Product Builder",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
                   "title": "Saved Payment Methods",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods",
                   "children": []

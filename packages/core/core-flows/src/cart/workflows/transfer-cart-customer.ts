@@ -93,34 +93,33 @@ export const transferCartCustomerWorkflow = createWorkflow(
       ({ cart, customer }) => cart.customer?.id !== customer.id
     )
 
-    when({ shouldTransfer }, ({ shouldTransfer }) => shouldTransfer).then(
-      () => {
-        const cartInput = transform(
-          { cart, customer },
-          ({ cart, customer }) => [
-            {
-              id: cart.id,
-              customer_id: customer.id,
-              email: customer.email,
-            },
-          ]
-        )
+    when(
+      "should-transfer-cart",
+      { shouldTransfer },
+      ({ shouldTransfer }) => shouldTransfer
+    ).then(() => {
+      const cartInput = transform({ cart, customer }, ({ cart, customer }) => [
+        {
+          id: cart.id,
+          customer_id: customer.id,
+          email: customer.email,
+        },
+      ])
 
-        updateCartsStep(cartInput)
+      updateCartsStep(cartInput)
 
-        refreshCartItemsWorkflow.runAsStep({
-          input: { cart_id: input.id, force_refresh: true },
-        })
+      refreshCartItemsWorkflow.runAsStep({
+        input: { cart_id: input.id, force_refresh: true },
+      })
 
-        emitEventStep({
-          eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
-          data: {
-            id: input.id,
-            customer_id: customer.customer_id,
-          },
-        })
-      }
-    )
+      emitEventStep({
+        eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
+        data: {
+          id: input.id,
+          customer_id: customer.customer_id,
+        },
+      })
+    })
 
     return new WorkflowResponse(void 0, {
       hooks: [validate],

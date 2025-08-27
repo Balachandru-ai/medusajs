@@ -30,7 +30,6 @@ const withMDX = mdx({
             },
             ui: {
               projectPath: path.resolve("..", "ui"),
-              contentPath: "src/content/docs",
             },
             resources: {
               projectPath: path.resolve("..", "resources"),
@@ -139,6 +138,11 @@ const nextConfig = {
     {
       source: "/support",
       destination: "/faq",
+      permanent: true,
+    },
+    {
+      source: "/billing-usage",
+      destination: "/billing",
       permanent: true,
     },
   ],

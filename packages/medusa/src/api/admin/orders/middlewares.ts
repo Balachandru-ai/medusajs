@@ -8,6 +8,7 @@ import {
   AdminCancelOrderTransferRequest,
   AdminCompleteOrder,
   AdminCreateOrderCreditLines,
+  AdminGetOrderShippingOptionList,
   AdminGetOrdersOrderItemsParams,
   AdminGetOrdersOrderParams,
   AdminGetOrdersParams,
@@ -59,6 +60,16 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformQuery(
         AdminGetOrdersOrderItemsParams,
         QueryConfig.listOrderItemsQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["GET"],
+    matcher: "/admin/orders/:id/shipping-options",
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetOrderShippingOptionList,
+        QueryConfig.listShippingOptionsQueryConfig
       ),
     ],
   },

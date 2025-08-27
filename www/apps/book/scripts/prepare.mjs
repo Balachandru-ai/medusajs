@@ -265,7 +265,7 @@ async function main() {
         },
       },
       {
-        dir: path.join(process.cwd(), "..", "ui", "src", "content", "docs"),
+        dir: path.join(process.cwd(), "..", "ui", "app"),
         options: {
           parserOptions: {
             ComponentExample: {
@@ -273,12 +273,18 @@ async function main() {
                 process.cwd(),
                 "..",
                 "ui",
-                "src",
+                "specs",
                 "examples"
               ),
             },
             ComponentReference: {
-              specsPath: path.join(process.cwd(), "..", "ui", "src", "specs"),
+              specsPath: path.join(
+                process.cwd(),
+                "..",
+                "ui",
+                "specs",
+                "components"
+              ),
             },
           },
         },

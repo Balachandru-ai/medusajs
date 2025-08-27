@@ -33,7 +33,8 @@
   "scripts": {
     "watch": "tsc --build --watch",
     "build": "rimraf dist && tsc --build",
-    "test": "jest --silent --bail --maxWorkers=50% --forceExit"
+    "test": "jest --silent --bail --maxWorkers=50% --forceExit",
+    "test:integration": "jest --no-cache --maxWorkers=50% --bail --detectOpenHandles --forceExit --logHeapUsage -- integration-tests/__tests__/**/*.spec.ts"
   },
   "dependencies": {
     "bullmq": "5.13.0",
