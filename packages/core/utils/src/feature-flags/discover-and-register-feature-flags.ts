@@ -4,17 +4,11 @@ import { FlagRouter } from "./flag-router"
 import { registerFeatureFlag } from "./register-flag"
 
 export interface DiscoverAndRegisterOptions {
-  /** Directory path to discover feature flags from */
   flagDir: string
-  /** Project config feature flags */
   projectConfigFlags?: Record<string, any>
-  /** Feature flag router instance */
   router: FlagRouter
-  /** Logger instance */
   logger?: Logger
-  /** Optional tracking function */
   track?: (key: string) => void
-  /** Maximum depth for directory discovery */
   maxDepth?: number
 }
 
