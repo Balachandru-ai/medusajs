@@ -1,3 +1,7 @@
+import { InputConfigModules } from "@medusajs/types"
+import { FeatureFlag } from "@medusajs/utils"
+import { EnvFeatureFlag } from "./src/feature-flags/env-ff"
+
 const { defineConfig } = require("@medusajs/framework/utils")
 
 const DB_HOST = process.env.DB_HOST
@@ -8,6 +12,16 @@ const DB_URL = `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`
 
 process.env.DATABASE_URL = DB_URL
 
+const modules = [] as InputConfigModules
+
+// The custom feature is available here and has default value set to true
+if (FeatureFlag.isFeatureEnabled(EnvFeatureFlag.key)) {
+  modules.push({
+    key: "custom",
+    resolve: "src/modules/custom",
+  })
+}
+
 module.exports = defineConfig({
   admin: {
     disable: true,
@@ -17,10 +31,5 @@ module.exports = defineConfig({
       jwtSecret: "secret",
     },
   },
-  modules: [
-    {
-      key: "custom",
-      resolve: "src/modules/custom",
-    },
-  ],
+  modules,
 })
