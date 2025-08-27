@@ -5351,7 +5351,7 @@ moduleIntegrationTestRunner({
                 },
                 {
                   action: "addItemAdjustment",
-                  item_id: "item_cotton_tshirt",
+                  item_id: "item_cotton_tshirt2",
                   amount: 10,
                   code: "BUY10GET200",
                 },
