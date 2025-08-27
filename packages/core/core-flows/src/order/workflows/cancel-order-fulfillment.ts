@@ -205,6 +205,7 @@ function prepareInventoryUpdate({
     location_id: string
     quantity: BigNumberInput
     line_item_id: string
+    allow_backorder: boolean
   }[] = []
   const toUpdate: {
     id: string
@@ -244,6 +245,7 @@ function prepareInventoryUpdate({
         location_id: fulfillment.location_id,
         quantity: fulfillmentItem.quantity, // <- this is the inventory quantity that is being fulfilled so it means it does include the required quantity
         line_item_id: fulfillmentItem.line_item_id as string,
+        allow_backorder: !!orderItem?.variant?.allow_backorder,
       })
     } else {
       toUpdate.push({
@@ -313,6 +315,7 @@ export const cancelOrderFulfillmentWorkflow = createWorkflow(
           "status",
           "items.id",
           "items.quantity",
+          "items.variant.allow_backorder",
           "items.variant.manage_inventory",
           "items.variant.inventory_items.inventory.id",
           "items.variant.inventory_items.required_quantity",
