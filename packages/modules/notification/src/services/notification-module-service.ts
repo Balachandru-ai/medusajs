@@ -19,7 +19,6 @@ import {
   promiseAll,
 } from "@medusajs/framework/utils"
 import { Notification } from "@models"
-import { eventBuilders } from "@utils"
 import NotificationProviderService from "./notification-provider"
 
 type InjectedDependencies = {
@@ -90,11 +89,6 @@ export default class NotificationModuleService
     const serialized = await this.baseRepository_.serialize<
       NotificationTypes.NotificationDTO[]
     >(createdNotifications)
-
-    eventBuilders.createdNotification({
-      data: serialized,
-      sharedContext,
-    })
 
     return Array.isArray(data) ? serialized : serialized[0]
   }
