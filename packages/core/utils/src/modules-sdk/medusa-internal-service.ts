@@ -38,6 +38,8 @@ type InternalService = {
   new <TContainer extends object = object, TEntity extends object = any>(
     container: TContainer
   ): ModulesSdkTypes.IMedusaInternalService<TEntity, TContainer>
+
+  setEventSubscriber(subscriber: MedusaMikroOrmEventSubscriber): void
 }
 
 type SelectorAndData = {
@@ -65,6 +67,21 @@ function registerInternalServiceEventSubscriber(
   }
 }
 
+export const MedusaInternalServiceSymbol = Symbol.for(
+  "MedusaInternalServiceSymbol"
+)
+
+/**
+ * Check if a value is a Medusa internal service
+ * @param value
+ */
+export function isMedusaInternalService(value: any): value is InternalService {
+  return (
+    !!value?.[MedusaInternalServiceSymbol] ||
+    !!value?.prototype?.[MedusaInternalServiceSymbol]
+  )
+}
+
 export function MedusaInternalService<
   TContainer extends object = object,
   TEntity extends object = any
@@ -79,6 +96,8 @@ export function MedusaInternalService<
   class AbstractService_
     implements ModulesSdkTypes.IMedusaInternalService<TEntity, TContainer>
   {
+    [MedusaInternalServiceSymbol] = true
+
     #eventSubscriber?: MedusaMikroOrmEventSubscriber
 
     readonly __container__: TContainer;
@@ -675,5 +694,7 @@ export function MedusaInternalService<
     }
   }
 
-  return AbstractService_ as InternalService
+  // We hide away the setEventSubscriber method from the public interface
+  // as it is not meant to be used by the user.
+  return AbstractService_ as unknown as InternalService
 }

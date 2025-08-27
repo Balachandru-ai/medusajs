@@ -21,11 +21,12 @@ import {
 } from "../common"
 import { DmlEntity } from "../dml"
 import { CommonEvents } from "../event-bus"
+import { createMedusaMikroOrmEventSubscriber } from "./create-medusa-mikro-orm-event-subscriber"
 import { EmitEvents, InjectManager, MedusaContext } from "./decorators"
 import { Modules } from "./definition"
 import { moduleEventBuilderFactory } from "./event-builder-factory"
 import { buildModelsNameToLinkableKeysMap } from "./joiner-config-builder"
-import { createMedusaMikroOrmEventSubscriber } from "./create-medusa-mikro-orm-event-subscriber"
+import { isMedusaInternalService } from "./medusa-internal-service"
 import {
   BaseMethods,
   ExtractKeysFromConfig,
@@ -138,36 +139,36 @@ export function MedusaService<
     ? ModelConfigurationsToConfigTemplate<TModels>
     : ModelsConfig
 > {
-  function emitSoftDeleteRestoreEvents(
-    this: AbstractModuleService_,
-    klassPrototype: any,
-    cascadedModelsMap: Record<string, string[]>,
-    action: string,
-    sharedContext: Context
-  ) {
-    const joinerConfig = (
-      typeof this.__joinerConfig === "function"
-        ? this.__joinerConfig()
-        : this.__joinerConfig
-    ) as ModuleJoinerConfig
+  // function emitSoftDeleteRestoreEvents(
+  //   this: AbstractModuleService_,
+  //   klassPrototype: any,
+  //   cascadedModelsMap: Record<string, string[]>,
+  //   action: string,
+  //   sharedContext: Context
+  // ) {
+  //   const joinerConfig = (
+  //     typeof this.__joinerConfig === "function"
+  //       ? this.__joinerConfig()
+  //       : this.__joinerConfig
+  //   ) as ModuleJoinerConfig
 
-    const emittedEntities = new Set<string>()
+  //   const emittedEntities = new Set<string>()
 
-    Object.entries(cascadedModelsMap).forEach(([linkableKey, ids]) => {
-      const entity = joinerConfig.linkableKeys?.[linkableKey]!
-      if (entity && !emittedEntities.has(entity)) {
-        emittedEntities.add(entity)
-        const linkableKeyEntity = camelToSnakeCase(entity).toLowerCase()
+  //   Object.entries(cascadedModelsMap).forEach(([linkableKey, ids]) => {
+  //     const entity = joinerConfig.linkableKeys?.[linkableKey]!
+  //     if (entity && !emittedEntities.has(entity)) {
+  //       emittedEntities.add(entity)
+  //       const linkableKeyEntity = camelToSnakeCase(entity).toLowerCase()
 
-        klassPrototype.aggregatedEvents.bind(this)({
-          action: action,
-          object: linkableKeyEntity,
-          data: { id: ids },
-          context: sharedContext,
-        })
-      }
-    })
-  }
+  //       klassPrototype.aggregatedEvents.bind(this)({
+  //         action: action,
+  //         object: linkableKeyEntity,
+  //         data: { id: ids },
+  //         context: sharedContext,
+  //       })
+  //     }
+  //   })
+  // }
 
   const buildAndAssignMethodImpl = function (
     klassPrototype: any,
@@ -385,14 +386,14 @@ export function MedusaService<
             }
           )
 
-          if (mappedCascadedModelsMap) {
-            emitSoftDeleteRestoreEvents.bind(this)(
-              klassPrototype,
-              mappedCascadedModelsMap,
-              CommonEvents.CREATED,
-              sharedContext
-            )
-          }
+          // if (mappedCascadedModelsMap) {
+          //   emitSoftDeleteRestoreEvents.bind(this)(
+          //     klassPrototype,
+          //     mappedCascadedModelsMap,
+          //     CommonEvents.CREATED,
+          //     sharedContext
+          //   )
+          // }
 
           return mappedCascadedModelsMap ? mappedCascadedModelsMap : void 0
         }
@@ -426,19 +427,33 @@ export function MedusaService<
       this.baseRepository_ = container.baseRepository
 
       /**
-       * Creating the model specific subscriber and setting it on the corresponding model service.
-       * The model service will be in charge of applying it when necessary and intercepting the
-       * events and context to forward back to the module service interceptEntityMutationEvents
+       * Create a global subscriber to listen to all the entities mutations
+       * and forward them to the module service interceptEntityMutationEvents
        * method.
+       *
+       * Assign the global subscriber to all internal services or class that extends it
+       * such that it can attach it accordingly and forward the events to the module service.
        */
-      const models_ = Object.values(models) as DmlEntity<any, any>[]
-      models_.forEach((model) => {
-        const modelRegistrationName = `${lowerCaseFirst(model.name)}Service`
-        const modelService = container[modelRegistrationName]
 
-        const subscriber = createMedusaMikroOrmEventSubscriber([model], this)
-        modelService.setEventSubscriber(subscriber)
-      })
+      const globalSubscriber = createMedusaMikroOrmEventSubscriber(
+        ["__medusa_entities_subscriber__"],
+        this
+      )
+
+      Object.keys(container)
+        .filter((key) => {
+          return key.endsWith("Service")
+        })
+        .forEach((key: string) => {
+          try {
+            const service = container[key]
+            if (isMedusaInternalService(service)) {
+              service.setEventSubscriber(globalSubscriber)
+            }
+          } catch (error) {
+            // Prevent circular issue which in that case would represent ourselves so we can skip
+          }
+        })
 
       const hasEventBusModuleService = Object.keys(this.__container__).find(
         (key) => key === Modules.EVENT_BUS

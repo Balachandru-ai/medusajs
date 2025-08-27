@@ -1,7 +1,5 @@
 import { Context } from "@medusajs/types"
 import { EventArgs, EventSubscriber } from "@mikro-orm/core"
-import { DmlEntity } from "../dml"
-
 type Service = {
   interceptEntityMutationEvents: (
     event: "afterCreate" | "afterUpdate" | "afterUpsert" | "afterDelete",
@@ -20,7 +18,7 @@ export type MedusaMikroOrmEventSubscriber = {
  * @returns
  */
 export function createMedusaMikroOrmEventSubscriber(
-  models: DmlEntity<any, any>[],
+  keys: string[],
   service: Service
 ): MedusaMikroOrmEventSubscriber {
   const klass = class MikroOrmEventSubscriber implements EventSubscriber {
@@ -65,7 +63,7 @@ export function createMedusaMikroOrmEventSubscriber(
   }
 
   Object.defineProperty(klass, "name", {
-    value: models.map((model) => model.name).join(","),
+    value: keys.join(","),
     writable: false,
   })
 

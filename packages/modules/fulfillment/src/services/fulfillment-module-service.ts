@@ -48,9 +48,7 @@ import {
   ShippingProfile,
 } from "@models"
 import {
-  buildCreatedFulfillmentEvents,
   buildCreatedFulfillmentSetEvents,
-  buildCreatedServiceZoneEvents,
   eventBuilders,
   isContextValid,
   Rule,
@@ -58,7 +56,6 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { UpdateShippingOptionsInput } from "../types/service"
-import { buildCreatedShippingOptionEvents } from "../utils/events"
 import FulfillmentProviderService from "./fulfillment-provider"
 
 const generateMethodForModels = {
@@ -70,7 +67,7 @@ const generateMethodForModels = {
   ShippingOptionRule,
   ShippingOptionType,
   FulfillmentProvider,
-  // Not adding Fulfillment to not auto generate the methods under the hood and only provide the methods we want to expose8
+  // Not adding Fulfillment to not auto generate the methods under the hood and only provide the methods we want to expose
 }
 
 type InjectedDependencies = {
@@ -405,10 +402,10 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    buildCreatedServiceZoneEvents({
-      serviceZones: createdServiceZones,
-      sharedContext,
-    })
+    // buildCreatedServiceZoneEvents({
+    //   serviceZones: createdServiceZones,
+    //   sharedContext,
+    // })
 
     return createdServiceZones
   }
@@ -468,10 +465,10 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    buildCreatedShippingOptionEvents({
-      shippingOptions: createdSO,
-      sharedContext,
-    })
+    // buildCreatedShippingOptionEvents({
+    //   shippingOptions: createdSO,
+    //   sharedContext,
+    // })
 
     return createdSO
   }
@@ -487,7 +484,7 @@ export default class FulfillmentModuleService
     sharedContext?: Context
   ): Promise<FulfillmentTypes.ShippingProfileDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   // @ts-expect-error
   async createShippingProfiles(
@@ -503,10 +500,10 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    eventBuilders.createdShippingProfile({
-      data: createdShippingProfiles,
-      sharedContext,
-    })
+    // eventBuilders.createdShippingProfile({
+    //   data: createdShippingProfiles,
+    //   sharedContext,
+    // })
 
     return await this.baseRepository_.serialize<
       | FulfillmentTypes.ShippingProfileDTO
@@ -561,10 +558,10 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    eventBuilders.createdGeoZone({
-      data: createdGeoZones,
-      sharedContext,
-    })
+    // eventBuilders.createdGeoZone({
+    //   data: createdGeoZones,
+    //   sharedContext,
+    // })
 
     return await this.baseRepository_.serialize<FulfillmentTypes.GeoZoneDTO[]>(
       Array.isArray(data) ? createdGeoZones : createdGeoZones[0]
@@ -629,10 +626,10 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    eventBuilders.createdShippingOptionRule({
-      data: createdSORules.map((sor) => ({ id: sor.id })),
-      sharedContext,
-    })
+    // eventBuilders.createdShippingOptionRule({
+    //   data: createdSORules.map((sor) => ({ id: sor.id })),
+    //   sharedContext,
+    // })
 
     return createdSORules
   }
@@ -679,10 +676,10 @@ export default class FulfillmentModuleService
       throw error
     }
 
-    buildCreatedFulfillmentEvents({
-      fulfillments: [fulfillment],
-      sharedContext,
-    })
+    // buildCreatedFulfillmentEvents({
+    //   fulfillments: [fulfillment],
+    //   sharedContext,
+    // })
 
     return await this.baseRepository_.serialize<FulfillmentTypes.FulfillmentDTO>(
       fulfillment
@@ -754,10 +751,10 @@ export default class FulfillmentModuleService
       throw error
     }
 
-    buildCreatedFulfillmentEvents({
-      fulfillments: [fulfillment],
-      sharedContext,
-    })
+    // buildCreatedFulfillmentEvents({
+    //   fulfillments: [fulfillment],
+    //   sharedContext,
+    // })
 
     return await this.baseRepository_.serialize<FulfillmentTypes.FulfillmentDTO>(
       fulfillment
@@ -943,14 +940,14 @@ export default class FulfillmentModuleService
     })
 
     if (serviceZoneIdsToDelete.length) {
-      eventBuilders.deletedServiceZone({
-        data: serviceZoneIdsToDelete.map((id) => ({ id })),
-        sharedContext,
-      })
-      eventBuilders.deletedGeoZone({
-        data: geoZoneIdsToDelete.map((id) => ({ id })),
-        sharedContext,
-      })
+      // eventBuilders.deletedServiceZone({
+      //   data: serviceZoneIdsToDelete.map((id) => ({ id })),
+      //   sharedContext,
+      // })
+      // eventBuilders.deletedGeoZone({
+      //   data: geoZoneIdsToDelete.map((id) => ({ id })),
+      //   sharedContext,
+      // })
 
       await promiseAll([
         this.geoZoneService_.delete(
@@ -973,31 +970,31 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    eventBuilders.updatedFulfillmentSet({
-      data: updatedFulfillmentSets,
-      sharedContext,
-    })
+    // eventBuilders.updatedFulfillmentSet({
+    //   data: updatedFulfillmentSets,
+    //   sharedContext,
+    // })
 
-    const createdServiceZoneIds: string[] = []
-    const createdGeoZoneIds = updatedFulfillmentSets
-      .flatMap((f) =>
-        [...f.service_zones].flatMap((serviceZone) => {
-          if (!existingServiceZoneIds.includes(serviceZone.id)) {
-            createdServiceZoneIds.push(serviceZone.id)
-          }
-          return serviceZone.geo_zones.map((g) => g.id)
-        })
-      )
-      .filter((id) => !existingGeoZoneIds.includes(id))
+    // const createdServiceZoneIds: string[] = []
+    // const createdGeoZoneIds = updatedFulfillmentSets
+    //   .flatMap((f) =>
+    //     [...f.service_zones].flatMap((serviceZone) => {
+    //       if (!existingServiceZoneIds.includes(serviceZone.id)) {
+    //         createdServiceZoneIds.push(serviceZone.id)
+    //       }
+    //       return serviceZone.geo_zones.map((g) => g.id)
+    //     })
+    //   )
+    //   .filter((id) => !existingGeoZoneIds.includes(id))
 
-    eventBuilders.createdServiceZone({
-      data: createdServiceZoneIds.map((id) => ({ id })),
-      sharedContext,
-    })
-    eventBuilders.createdGeoZone({
-      data: createdGeoZoneIds.map((id) => ({ id })),
-      sharedContext,
-    })
+    // eventBuilders.createdServiceZone({
+    //   data: createdServiceZoneIds.map((id) => ({ id })),
+    //   sharedContext,
+    // })
+    // eventBuilders.createdGeoZone({
+    //   data: createdGeoZoneIds.map((id) => ({ id })),
+    //   sharedContext,
+    // })
 
     return Array.isArray(data)
       ? updatedFulfillmentSets
@@ -1187,10 +1184,10 @@ export default class FulfillmentModuleService
     })
 
     if (geoZoneIdsToDelete.length) {
-      eventBuilders.deletedGeoZone({
-        data: geoZoneIdsToDelete.map((id) => ({ id })),
-        sharedContext,
-      })
+      // eventBuilders.deletedGeoZone({
+      //   data: geoZoneIdsToDelete.map((id) => ({ id })),
+      //   sharedContext,
+      // })
 
       await this.geoZoneService_.delete(
         {
@@ -1205,25 +1202,25 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    eventBuilders.updatedServiceZone({
-      data: updatedServiceZones,
-      sharedContext,
-    })
+    // eventBuilders.updatedServiceZone({
+    //   data: updatedServiceZones,
+    //   sharedContext,
+    // })
 
-    const createdGeoZoneIds = updatedServiceZones
-      .flatMap((serviceZone) => {
-        return serviceZone.geo_zones.map((g) => g.id)
-      })
-      .filter((id) => !existingGeoZoneIds.includes(id))
+    // const createdGeoZoneIds = updatedServiceZones
+    //   .flatMap((serviceZone) => {
+    //     return serviceZone.geo_zones.map((g) => g.id)
+    //   })
+    //   .filter((id) => !existingGeoZoneIds.includes(id))
 
-    eventBuilders.createdGeoZone({
-      data: createdGeoZoneIds.map((id) => ({ id })),
-      sharedContext,
-    })
-    eventBuilders.updatedGeoZone({
-      data: updatedGeoZoneIds.map((id) => ({ id })),
-      sharedContext,
-    })
+    // eventBuilders.createdGeoZone({
+    //   data: createdGeoZoneIds.map((id) => ({ id })),
+    //   sharedContext,
+    // })
+    // eventBuilders.updatedGeoZone({
+    //   data: updatedGeoZoneIds.map((id) => ({ id })),
+    //   sharedContext,
+    // })
 
     return Array.isArray(data) ? updatedServiceZones : updatedServiceZones[0]
   }
@@ -1501,70 +1498,77 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    this.handleShippingOptionUpdateEvents({
-      shippingOptionsData: dataArray,
-      updatedShippingOptions,
-      optionTypeDeletedIds,
-      updatedRuleIds,
-      existingRuleIds,
-      sharedContext,
-    })
+    // if (optionTypeDeletedIds.length) {
+    //   await this.shippingOptionTypeService_.delete(
+    //     optionTypeDeletedIds,
+    //     sharedContext
+    //   )
+    // }
+
+    // this.handleShippingOptionUpdateEvents({
+    //   shippingOptionsData: dataArray,
+    //   updatedShippingOptions,
+    //   optionTypeDeletedIds,
+    //   updatedRuleIds,
+    //   existingRuleIds,
+    //   sharedContext,
+    // })
 
     return Array.isArray(data)
       ? updatedShippingOptions
       : updatedShippingOptions[0]
   }
 
-  private handleShippingOptionUpdateEvents({
-    shippingOptionsData,
-    updatedShippingOptions,
-    optionTypeDeletedIds,
-    updatedRuleIds,
-    existingRuleIds,
-    sharedContext,
-  }) {
-    eventBuilders.updatedShippingOption({
-      data: updatedShippingOptions,
-      sharedContext,
-    })
-    eventBuilders.deletedShippingOptionType({
-      data: optionTypeDeletedIds.map((id) => ({ id })),
-      sharedContext,
-    })
+  // private handleShippingOptionUpdateEvents({
+  //   shippingOptionsData,
+  //   updatedShippingOptions,
+  //   optionTypeDeletedIds,
+  //   updatedRuleIds,
+  //   existingRuleIds,
+  //   sharedContext,
+  // }) {
+  //   eventBuilders.updatedShippingOption({
+  //     data: updatedShippingOptions,
+  //     sharedContext,
+  //   })
+  //   eventBuilders.deletedShippingOptionType({
+  //     data: optionTypeDeletedIds.map((id) => ({ id })),
+  //     sharedContext,
+  //   })
 
-    const createdOptionTypeIds = updatedShippingOptions
-      .filter((so) => {
-        const updateData = shippingOptionsData.find((sod) => sod.id === so.id)
-        return isObject(updateData?.type) && !("id" in updateData.type)
-      })
-      .map((so) => so.type.id)
+  //   const createdOptionTypeIds = updatedShippingOptions
+  //     .filter((so) => {
+  //       const updateData = shippingOptionsData.find((sod) => sod.id === so.id)
+  //       return isObject(updateData?.type) && !("id" in updateData.type)
+  //     })
+  //     .map((so) => so.type.id)
 
-    eventBuilders.createdShippingOptionType({
-      data: createdOptionTypeIds.map((id) => ({ id })),
-      sharedContext,
-    })
+  //   eventBuilders.createdShippingOptionType({
+  //     data: createdOptionTypeIds.map((id) => ({ id })),
+  //     sharedContext,
+  //   })
 
-    const createdRuleIds = updatedShippingOptions
-      .flatMap((so) =>
-        [...so.rules].map((rule) => {
-          if (existingRuleIds.includes(rule.id)) {
-            return
-          }
+  //   const createdRuleIds = updatedShippingOptions
+  //     .flatMap((so) =>
+  //       [...so.rules].map((rule) => {
+  //         if (existingRuleIds.includes(rule.id)) {
+  //           return
+  //         }
 
-          return rule.id
-        })
-      )
-      .filter((id): id is string => !!id)
+  //         return rule.id
+  //       })
+  //     )
+  //     .filter((id): id is string => !!id)
 
-    eventBuilders.createdShippingOptionRule({
-      data: createdRuleIds.map((id) => ({ id })),
-      sharedContext,
-    })
-    eventBuilders.updatedShippingOptionRule({
-      data: updatedRuleIds.map((id) => ({ id })),
-      sharedContext,
-    })
-  }
+  //   eventBuilders.createdShippingOptionRule({
+  //     data: createdRuleIds.map((id) => ({ id })),
+  //     sharedContext,
+  //   })
+  //   eventBuilders.updatedShippingOptionRule({
+  //     data: updatedRuleIds.map((id) => ({ id })),
+  //     sharedContext,
+  //   })
+  // }
 
   async upsertShippingOptions(
     data: FulfillmentTypes.UpsertShippingOptionDTO[],
@@ -1652,7 +1656,8 @@ export default class FulfillmentModuleService
     sharedContext?: Context
   ): Promise<FulfillmentTypes.ShippingOptionTypeDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async upsertShippingOptionTypes(
     data:
       | FulfillmentTypes.UpsertShippingOptionTypeDTO[]
@@ -1662,12 +1667,7 @@ export default class FulfillmentModuleService
     | FulfillmentTypes.ShippingOptionTypeDTO[]
     | FulfillmentTypes.ShippingOptionTypeDTO
   > {
-    const input = Array.isArray(data) ? data : [data]
-
-    const results = await this.shippingOptionTypeService_.upsert(
-      input,
-      sharedContext
-    )
+    const results = await this.updateShippingOptionTypes_(data, sharedContext)
 
     const allTypes = await this.baseRepository_.serialize<
       | FulfillmentTypes.ShippingOptionTypeDTO[]
@@ -1675,6 +1675,23 @@ export default class FulfillmentModuleService
     >(results)
 
     return Array.isArray(data) ? allTypes : allTypes[0]
+  }
+
+  @InjectTransactionManager()
+  protected async updateShippingOptionTypes_(
+    data:
+      | FulfillmentTypes.UpsertShippingOptionTypeDTO[]
+      | FulfillmentTypes.UpsertShippingOptionTypeDTO,
+    sharedContext: Context
+  ): Promise<InferEntityType<typeof ShippingOptionType>[]> {
+    const input = Array.isArray(data) ? data : [data]
+
+    const results = await this.shippingOptionTypeService_.upsert(
+      input,
+      sharedContext
+    )
+
+    return results
   }
 
   // @ts-expect-error
@@ -1691,6 +1708,7 @@ export default class FulfillmentModuleService
   ): Promise<FulfillmentTypes.ShippingOptionTypeDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateShippingOptionTypes(
     idOrSelector: string | FulfillmentTypes.FilterableShippingOptionTypeProps,
@@ -1747,7 +1765,8 @@ export default class FulfillmentModuleService
     sharedContext?: Context
   ): Promise<FulfillmentTypes.ShippingProfileDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateShippingProfiles(
     idOrSelector: string | FulfillmentTypes.FilterableShippingProfileProps,
@@ -1756,6 +1775,25 @@ export default class FulfillmentModuleService
   ): Promise<
     FulfillmentTypes.ShippingProfileDTO | FulfillmentTypes.ShippingProfileDTO[]
   > {
+    const profiles = await this.updateShippingProfiles_(
+      idOrSelector,
+      data,
+      sharedContext
+    )
+
+    const updatedProfiles = await this.baseRepository_.serialize<
+      FulfillmentTypes.ShippingProfileDTO[]
+    >(profiles)
+
+    return isString(idOrSelector) ? updatedProfiles[0] : updatedProfiles
+  }
+
+  @InjectTransactionManager()
+  protected async updateShippingProfiles_(
+    idOrSelector: string | FulfillmentTypes.FilterableShippingProfileProps,
+    data: FulfillmentTypes.UpdateShippingProfileDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ShippingProfile>[]> {
     let normalizedInput: ({
       id: string
     } & FulfillmentTypes.UpdateShippingProfileDTO)[] = []
@@ -1784,11 +1822,7 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    const updatedProfiles = await this.baseRepository_.serialize<
-      FulfillmentTypes.ShippingProfileDTO[]
-    >(profiles)
-
-    return isString(idOrSelector) ? updatedProfiles[0] : updatedProfiles
+    return profiles
   }
 
   async upsertShippingProfiles(
@@ -1800,7 +1834,8 @@ export default class FulfillmentModuleService
     sharedContext?: Context
   ): Promise<FulfillmentTypes.ShippingProfileDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async upsertShippingProfiles(
     data:
       | FulfillmentTypes.UpsertShippingProfileDTO[]
@@ -1808,6 +1843,24 @@ export default class FulfillmentModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<
     FulfillmentTypes.ShippingProfileDTO[] | FulfillmentTypes.ShippingProfileDTO
+  > {
+    const profiles = await this.upsertShippingProfiles_(data, sharedContext)
+
+    return await this.baseRepository_.serialize<
+      | FulfillmentTypes.ShippingProfileDTO[]
+      | FulfillmentTypes.ShippingProfileDTO
+    >(Array.isArray(data) ? profiles : profiles[0])
+  }
+
+  @InjectTransactionManager()
+  protected async upsertShippingProfiles_(
+    data:
+      | FulfillmentTypes.UpsertShippingProfileDTO[]
+      | FulfillmentTypes.UpsertShippingProfileDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | InferEntityType<typeof ShippingProfile>[]
+    | InferEntityType<typeof ShippingProfile>
   > {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter((prof) => !!prof.id)
@@ -1831,13 +1884,7 @@ export default class FulfillmentModuleService
       )
     }
 
-    const result = [...created, ...updated]
-    const allProfiles = await this.baseRepository_.serialize<
-      | FulfillmentTypes.ShippingProfileDTO[]
-      | FulfillmentTypes.ShippingProfileDTO
-    >(result)
-
-    return Array.isArray(data) ? allProfiles : allProfiles[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -1873,10 +1920,10 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    eventBuilders.updatedGeoZone({
-      data: updatedGeoZones,
-      sharedContext,
-    })
+    // eventBuilders.updatedGeoZone({
+    //   data: updatedGeoZones,
+    //   sharedContext,
+    // })
 
     const serialized = await this.baseRepository_.serialize<
       FulfillmentTypes.GeoZoneDTO[]
@@ -1940,10 +1987,10 @@ export default class FulfillmentModuleService
     const updatedShippingOptionRules =
       await this.shippingOptionRuleService_.update(data_, sharedContext)
 
-    eventBuilders.updatedShippingOptionRule({
-      data: updatedShippingOptionRules.map((rule) => ({ id: rule.id })),
-      sharedContext,
-    })
+    // eventBuilders.updatedShippingOptionRule({
+    //   data: updatedShippingOptionRules.map((rule) => ({ id: rule.id })),
+    //   sharedContext,
+    // })
 
     return Array.isArray(data)
       ? updatedShippingOptionRules
@@ -1980,9 +2027,9 @@ export default class FulfillmentModuleService
       )
 
     const updatedLabelIds: string[] = []
-    let deletedLabelIds: string[] = []
+    // let deletedLabelIds: string[] = []
 
-    const existingLabelIds = existingFulfillment.labels.map((label) => label.id)
+    // const existingLabelIds = existingFulfillment.labels.map((label) => label.id)
 
     /**
      * @note
@@ -1995,11 +2042,11 @@ export default class FulfillmentModuleService
      * and we also need to emit the events later on.
      */
     if (isDefined(data.labels) && isPresent(data.labels)) {
-      const dataLabelIds: string[] = data.labels
-        .filter((label): label is { id: string } => "id" in label)
-        .map((label) => label.id)
+      // const dataLabelIds: string[] = data.labels
+      //   .filter((label): label is { id: string } => "id" in label)
+      //   .map((label) => label.id)
 
-      deletedLabelIds = arrayDifference(existingLabelIds, dataLabelIds)
+      // deletedLabelIds = arrayDifference(existingLabelIds, dataLabelIds)
 
       for (let label of data.labels) {
         if (!("id" in label)) {
@@ -2029,48 +2076,48 @@ export default class FulfillmentModuleService
       sharedContext
     )
 
-    this.handleFulfillmentUpdateEvents(
-      fulfillment,
-      existingLabelIds,
-      updatedLabelIds,
-      deletedLabelIds,
-      sharedContext
-    )
+    // this.handleFulfillmentUpdateEvents(
+    //   fulfillment,
+    //   existingLabelIds,
+    //   updatedLabelIds,
+    //   deletedLabelIds,
+    //   sharedContext
+    // )
 
     return fulfillment
   }
 
-  private handleFulfillmentUpdateEvents(
-    fulfillment: InferEntityType<typeof Fulfillment>,
-    existingLabelIds: string[],
-    updatedLabelIds: string[],
-    deletedLabelIds: string[],
-    sharedContext: Context
-  ) {
-    eventBuilders.updatedFulfillment({
-      data: [{ id: fulfillment.id }],
-      sharedContext,
-    })
+  // private handleFulfillmentUpdateEvents(
+  //   fulfillment: InferEntityType<typeof Fulfillment>,
+  //   existingLabelIds: string[],
+  //   updatedLabelIds: string[],
+  //   deletedLabelIds: string[],
+  //   sharedContext: Context
+  // ) {
+  //   eventBuilders.updatedFulfillment({
+  //     data: [{ id: fulfillment.id }],
+  //     sharedContext,
+  //   })
 
-    eventBuilders.deletedFulfillmentLabel({
-      data: deletedLabelIds.map((id) => ({ id })),
-      sharedContext,
-    })
+  //   eventBuilders.deletedFulfillmentLabel({
+  //     data: deletedLabelIds.map((id) => ({ id })),
+  //     sharedContext,
+  //   })
 
-    eventBuilders.updatedFulfillmentLabel({
-      data: updatedLabelIds.map((id) => ({ id })),
-      sharedContext,
-    })
+  //   eventBuilders.updatedFulfillmentLabel({
+  //     data: updatedLabelIds.map((id) => ({ id })),
+  //     sharedContext,
+  //   })
 
-    const createdLabels = fulfillment.labels.filter((label) => {
-      return !existingLabelIds.includes(label.id)
-    })
+  //   const createdLabels = fulfillment.labels.filter((label) => {
+  //     return !existingLabelIds.includes(label.id)
+  //   })
 
-    eventBuilders.createdFulfillmentLabel({
-      data: createdLabels.map((label) => ({ id: label.id })),
-      sharedContext,
-    })
-  }
+  //   eventBuilders.createdFulfillmentLabel({
+  //     data: createdLabels.map((label) => ({ id: label.id })),
+  //     sharedContext,
+  //   })
+  // }
 
   @InjectManager()
   @EmitEvents()
@@ -2107,10 +2154,10 @@ export default class FulfillmentModuleService
         sharedContext
       )
 
-      eventBuilders.updatedFulfillment({
-        data: [{ id }],
-        sharedContext,
-      })
+      // eventBuilders.updatedFulfillment({
+      //   data: [{ id }],
+      //   sharedContext,
+      // })
     }
 
     const result = await this.baseRepository_.serialize<FulfillmentDTO>(
@@ -2211,6 +2258,7 @@ export default class FulfillmentModuleService
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   // @ts-expect-error
   async deleteShippingProfiles(
     ids: string | string[],
@@ -2226,6 +2274,7 @@ export default class FulfillmentModuleService
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   // @ts-expect-error
   async softDeleteShippingProfiles<
     TReturnableLinkableKeys extends string = string

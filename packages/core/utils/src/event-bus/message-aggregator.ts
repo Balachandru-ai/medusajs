@@ -9,12 +9,13 @@ import {
 import { composeMessage } from "./build-event-messages"
 
 export class MessageAggregator implements IMessageAggregator {
-  private messages: Message[] = []
+  #messagesHash: Set<string> = new Set()
+  #messages: Message[] = []
 
   constructor() {}
 
   count(): number {
-    return this.messages.length
+    return this.#messages.length
   }
 
   save(msg: Message | Message[]): void {
@@ -23,7 +24,19 @@ export class MessageAggregator implements IMessageAggregator {
       return
     }
 
-    this.messages.push(...messages)
+    for (const message of messages) {
+      try {
+        const hash = JSON.stringify(message)
+        if (!this.#messagesHash.has(hash)) {
+          this.#messagesHash.add(hash)
+          this.#messages.push(message)
+        }
+      } catch (e) {
+        // noop: if the message is not serializable, we don't want to deduplicate it
+        // It should not happen, but we don't want to fail the whole process
+        this.#messages.push(message)
+      }
+    }
   }
 
   saveRawMessageData<T>(
@@ -55,15 +68,15 @@ export class MessageAggregator implements IMessageAggregator {
     const { groupBy, sortBy } = format ?? {}
 
     if (sortBy) {
-      this.messages.sort((a, b) => this.compareMessages(a, b, sortBy))
+      this.#messages.sort((a, b) => this.compareMessages(a, b, sortBy))
     }
 
     let messages: { [group: string]: Message[] } = {
-      default: [...this.messages],
+      default: [...this.#messages],
     }
 
     if (groupBy) {
-      messages = this.messages.reduce<{
+      messages = this.#messages.reduce<{
         [key: string]: Message[]
       }>((acc, msg) => {
         const key = groupBy
@@ -91,7 +104,8 @@ export class MessageAggregator implements IMessageAggregator {
 
   clearMessages(): void {
     // Ensure no references are left over in case something rely on messages
-    this.messages.length = 0
+    this.#messages.length = 0
+    this.#messagesHash.clear()
   }
 
   private getValueFromPath(obj: any, path: string): any {

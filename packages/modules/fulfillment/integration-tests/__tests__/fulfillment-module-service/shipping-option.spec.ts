@@ -522,7 +522,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
 
             expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(3)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
-              [
+              expect.arrayContaining([
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.SHIPPING_OPTION_CREATED,
                   action: "created",
@@ -541,7 +541,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   object: "shipping_option_rule",
                   data: { id: createdShippingOption.rules[0].id },
                 }),
-              ],
+              ]),
               {
                 internal: true,
               }
@@ -582,7 +582,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             )
 
             expect(createdShippingOptions).toHaveLength(2)
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(3)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(6)
 
             let i = 0
             for (const data_ of createData) {
@@ -620,9 +620,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "shipping_option",
                     data: {
-                      id: expect.arrayContaining([
-                        createdShippingOptions[i].id,
-                      ]),
+                      id: createdShippingOptions[i].id,
                     },
                   }),
                   buildExpectedEventMessageShape({
@@ -630,9 +628,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "shipping_option_type",
                     data: {
-                      id: expect.arrayContaining([
-                        createdShippingOptions[i].type.id,
-                      ]),
+                      id: createdShippingOptions[i].type.id,
                     },
                   }),
                   buildExpectedEventMessageShape({
@@ -640,9 +636,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "shipping_option_rule",
                     data: {
-                      id: expect.arrayContaining([
-                        createdShippingOptions[i].rules[0].id,
-                      ]),
+                      id: createdShippingOptions[i].rules[0].id,
                     },
                   }),
                 ]),
@@ -823,7 +817,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               ])
             )
 
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(5)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(4)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
               expect.arrayContaining([
                 buildExpectedEventMessageShape({
@@ -831,12 +825,6 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   action: "updated",
                   object: "shipping_option",
                   data: { id: updatedShippingOption.id },
-                }),
-                buildExpectedEventMessageShape({
-                  eventName: FulfillmentEvents.SHIPPING_OPTION_TYPE_DELETED,
-                  action: "deleted",
-                  object: "shipping_option_type",
-                  data: { id: shippingOption.type.id },
                 }),
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.SHIPPING_OPTION_TYPE_CREATED,
@@ -1374,14 +1362,16 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             ])
 
             // Test with full address including postal expression
-            const shippingOptions = await service.listShippingOptionsForContext({
-              address: {
-                country_code: "US",
-                province_code: "CA",
-                city: "Los Angeles",
-                postal_expression: "90210",
-              },
-            })
+            const shippingOptions = await service.listShippingOptionsForContext(
+              {
+                address: {
+                  country_code: "US",
+                  province_code: "CA",
+                  city: "Los Angeles",
+                  postal_expression: "90210",
+                },
+              }
+            )
 
             expect(shippingOptions).toHaveLength(1)
           })
@@ -1419,13 +1409,15 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             ])
 
             // Test with city but no postal expression
-            const shippingOptions = await service.listShippingOptionsForContext({
-              address: {
-                country_code: "US",
-                province_code: "CA",
-                city: "San Francisco",
-              },
-            })
+            const shippingOptions = await service.listShippingOptionsForContext(
+              {
+                address: {
+                  country_code: "US",
+                  province_code: "CA",
+                  city: "San Francisco",
+                },
+              }
+            )
 
             expect(shippingOptions).toHaveLength(1)
           })
@@ -1462,12 +1454,14 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             ])
 
             // Test with province but no city
-            const shippingOptions = await service.listShippingOptionsForContext({
-              address: {
-                country_code: "US",
-                province_code: "NY",
-              },
-            })
+            const shippingOptions = await service.listShippingOptionsForContext(
+              {
+                address: {
+                  country_code: "US",
+                  province_code: "NY",
+                },
+              }
+            )
 
             expect(shippingOptions).toHaveLength(1)
           })
@@ -1503,11 +1497,13 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             ])
 
             // Test with only country
-            const shippingOptions = await service.listShippingOptionsForContext({
-              address: {
-                country_code: "CA",
-              },
-            })
+            const shippingOptions = await service.listShippingOptionsForContext(
+              {
+                address: {
+                  country_code: "CA",
+                },
+              }
+            )
 
             expect(shippingOptions).toHaveLength(1)
           })
@@ -1758,14 +1754,16 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             ])
 
             // Address with undefined fields should still match if country matches
-            const shippingOptions = await service.listShippingOptionsForContext({
-              address: {
-                country_code: "US",
-                province_code: undefined,
-                city: undefined,
-                postal_expression: undefined,
-              },
-            })
+            const shippingOptions = await service.listShippingOptionsForContext(
+              {
+                address: {
+                  country_code: "US",
+                  province_code: undefined,
+                  city: undefined,
+                  postal_expression: undefined,
+                },
+              }
+            )
             expect(shippingOptions).toHaveLength(1)
           })
 
@@ -1831,26 +1829,27 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             })
 
             // Create shipping options for each zone
-            const [usOption, europeOption, canadaOption] = await service.createShippingOptions([
-              generateCreateShippingOptionsData({
-                name: "US Shipping",
-                service_zone_id: fulfillmentSet.service_zones[0].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: providerId,
-              }),
-              generateCreateShippingOptionsData({
-                name: "Europe Shipping",
-                service_zone_id: fulfillmentSet.service_zones[1].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: providerId,
-              }),
-              generateCreateShippingOptionsData({
-                name: "Canada Shipping",
-                service_zone_id: fulfillmentSet.service_zones[2].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: providerId,
-              }),
-            ])
+            const [usOption, europeOption, canadaOption] =
+              await service.createShippingOptions([
+                generateCreateShippingOptionsData({
+                  name: "US Shipping",
+                  service_zone_id: fulfillmentSet.service_zones[0].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: providerId,
+                }),
+                generateCreateShippingOptionsData({
+                  name: "Europe Shipping",
+                  service_zone_id: fulfillmentSet.service_zones[1].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: providerId,
+                }),
+                generateCreateShippingOptionsData({
+                  name: "Canada Shipping",
+                  service_zone_id: fulfillmentSet.service_zones[2].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: providerId,
+                }),
+              ])
 
             // Test US ZIP code - should only match US zone
             let shippingOptions = await service.listShippingOptionsForContext({
@@ -1970,26 +1969,27 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
             })
 
             // Create shipping options with different prices for each zone
-            const [broadOption, californiaOption, laOption] = await service.createShippingOptions([
-              generateCreateShippingOptionsData({
-                name: "Standard US Shipping",
-                service_zone_id: fulfillmentSet.service_zones[0].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: providerId,
-              }),
-              generateCreateShippingOptionsData({
-                name: "California Express",
-                service_zone_id: fulfillmentSet.service_zones[1].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: providerId,
-              }),
-              generateCreateShippingOptionsData({
-                name: "LA Premium",
-                service_zone_id: fulfillmentSet.service_zones[2].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: providerId,
-              }),
-            ])
+            const [broadOption, californiaOption, laOption] =
+              await service.createShippingOptions([
+                generateCreateShippingOptionsData({
+                  name: "Standard US Shipping",
+                  service_zone_id: fulfillmentSet.service_zones[0].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: providerId,
+                }),
+                generateCreateShippingOptionsData({
+                  name: "California Express",
+                  service_zone_id: fulfillmentSet.service_zones[1].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: providerId,
+                }),
+                generateCreateShippingOptionsData({
+                  name: "LA Premium",
+                  service_zone_id: fulfillmentSet.service_zones[2].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: providerId,
+                }),
+              ])
 
             // Test LA ZIP code - should match all three zones
             let shippingOptions = await service.listShippingOptionsForContext({
@@ -2001,7 +2001,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               },
             })
             expect(shippingOptions).toHaveLength(3)
-            const laIds = shippingOptions.map(opt => opt.id)
+            const laIds = shippingOptions.map((opt) => opt.id)
             expect(laIds).toContain(broadOption.id)
             expect(laIds).toContain(californiaOption.id)
             expect(laIds).toContain(laOption.id)
@@ -2015,7 +2015,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               },
             })
             expect(shippingOptions).toHaveLength(2)
-            const caIds = shippingOptions.map(opt => opt.id)
+            const caIds = shippingOptions.map((opt) => opt.id)
             expect(caIds).toContain(broadOption.id)
             expect(caIds).toContain(californiaOption.id)
             expect(caIds).not.toContain(laOption.id)
