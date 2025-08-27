@@ -1,4 +1,5 @@
 import { createShippingOptionsWorkflow } from "@medusajs/core-flows"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   FulfillmentSetDTO,
   FulfillmentWorkflow,
@@ -13,11 +14,10 @@ import {
   RuleOperator,
   remoteQueryObjectFromString,
 } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const provider_id = "manual_test-provider"
 
 medusaIntegrationTestRunner({

@@ -6,13 +6,13 @@ import {
   updateFulfillmentWorkflow,
   updateFulfillmentWorkflowId,
 } from "@medusajs/core-flows"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   IFulfillmentModuleService,
   MedusaContainer,
   StockLocationDTO,
 } from "@medusajs/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   generateCreateFulfillmentData,
   generateCreateShippingOptionsData,
@@ -23,7 +23,7 @@ jest.setTimeout(50000)
 const providerId = "manual_test-provider"
 
 medusaIntegrationTestRunner({
-  env: { MEDUSA_FF_MEDUSA_V2: true },
+  env: {},
   testSuite: ({ getContainer }) => {
     describe("Workflows: Fulfillment", () => {
       let location: StockLocationDTO

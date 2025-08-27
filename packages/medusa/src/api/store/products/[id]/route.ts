@@ -2,6 +2,7 @@ import { isPresent, MedusaError } from "@medusajs/framework/utils"
 import { MedusaResponse } from "@medusajs/framework/http"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
+  filterOutInternalProductCategories,
   refetchProduct,
   RequestWithContext,
   wrapProductsWithTaxPrices,
@@ -33,6 +34,14 @@ export const GET = async (
     }
   }
 
+  const includesCategoriesField = req.queryConfig.fields.some((field) =>
+    field.startsWith("categories")
+  )
+
+  if (!req.queryConfig.fields.includes("categories.is_internal")) {
+    req.queryConfig.fields.push("categories.is_internal")
+  }
+
   const product = await refetchProduct(
     filters,
     req.scope,
@@ -51,6 +60,10 @@ export const GET = async (
       req,
       product.variants || []
     )
+  }
+
+  if (includesCategoriesField) {
+    filterOutInternalProductCategories([product])
   }
 
   await wrapProductsWithTaxPrices(req, [product])

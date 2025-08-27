@@ -1,13 +1,13 @@
-import { featureFlagRouter } from "@medusajs/framework"
 import { MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
+  FeatureFlag,
   isPresent,
   QueryContext,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../utils/middlewares"
 import { RequestWithContext, wrapProductsWithTaxPrices } from "./helpers"
 
@@ -15,7 +15,7 @@ export const GET = async (
   req: RequestWithContext<HttpTypes.StoreProductListParams>,
   res: MedusaResponse<HttpTypes.StoreProductListResponse>
 ) => {
-  if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+  if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
     // TODO: These filters are not supported by the index engine yet
     if (
       isPresent(req.filterableFields.tags) ||

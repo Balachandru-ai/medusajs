@@ -7,6 +7,7 @@
       "packages/medusa-test-utils",
       "packages/modules/*",
       "packages/modules/providers/*",
+      "packages/plugins/*",
       "packages/core/*",
       "packages/framework/*",
       "packages/cli/*",

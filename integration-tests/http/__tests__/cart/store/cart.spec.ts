@@ -20,7 +20,7 @@ import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
 
 const shippingAddressData = {

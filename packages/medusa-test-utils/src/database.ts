@@ -1,4 +1,6 @@
 import { logger } from "@medusajs/framework/logger"
+import { CustomDBMigrator } from "@medusajs/framework/utils"
+
 import {
   defineConfig,
   MikroORM,
@@ -54,6 +56,7 @@ export function getMikroOrmConfig({
       pathTs: pathToMigrations,
       silent: true,
     },
+    extensions: [CustomDBMigrator],
   })
 }
 

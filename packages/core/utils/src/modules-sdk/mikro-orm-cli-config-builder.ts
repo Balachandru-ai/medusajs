@@ -7,7 +7,7 @@ import type {
 } from "@mikro-orm/core"
 import { defineConfig } from "@mikro-orm/postgresql"
 import { kebabCase } from "../common"
-import { CustomTsMigrationGenerator } from "../dal"
+import { CustomDBMigrator, CustomTsMigrationGenerator } from "../dal"
 import { DmlEntity, toMikroOrmEntities } from "../dml"
 
 type Options = Partial<Omit<MikroORMOptions, "entities" | "entitiesTs">> & {
@@ -65,5 +65,6 @@ export function defineMikroOrmCliConfig(
       generator: CustomTsMigrationGenerator,
       ...options.migrations,
     },
+    extensions: [CustomDBMigrator],
   }) as ReturnedOptions
 }
