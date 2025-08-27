@@ -25,7 +25,7 @@ container.register(
 export async function featureFlagsLoader(
   sourcePath?: string
 ): Promise<FlagRouter> {
-  const { featureFlags: projectConfigFlags = {} } = configManager.config
+  const { featureFlags: projectConfigFlags = {} } = configManager?.config ?? {}
 
   if (!sourcePath) {
     return FeatureFlag
