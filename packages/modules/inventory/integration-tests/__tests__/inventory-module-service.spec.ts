@@ -436,17 +436,32 @@ moduleIntegrationTestRunner<IInventoryService>({
 
           const updated = await service.updateReservationItems(update)
 
+          const inventoryLevel =
+            await service.retrieveInventoryLevelByItemAndLocation(
+              reservationItem.inventory_item_id,
+              "location-1"
+            )
+
           expect(updated).toEqual(expect.objectContaining(update))
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(2)
           expect(eventBusSpy).toHaveBeenNthCalledWith(
             1,
-            [
+            expect.arrayContaining([
               composeMessage(InventoryEvents.RESERVATION_ITEM_UPDATED, {
                 data: { id: reservationItem.id },
-                object: "reservation-item",
+                object: "reservation_item",
                 source: Modules.INVENTORY,
                 action: CommonEvents.UPDATED,
               }),
-            ],
+              composeMessage(InventoryEvents.INVENTORY_LEVEL_UPDATED, {
+                data: { id: inventoryLevel.id },
+                object: "inventory_level",
+                source: Modules.INVENTORY,
+                action: CommonEvents.UPDATED,
+              }),
+            ]),
             {
               internal: true,
             }
@@ -457,19 +472,30 @@ moduleIntegrationTestRunner<IInventoryService>({
             quantity: 10,
           }
 
+          eventBusSpy.mockClear()
+
           const updated2 = await service.updateReservationItems(update2)
 
           expect(updated2).toEqual(expect.objectContaining(update2))
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(2)
           expect(eventBusSpy).toHaveBeenNthCalledWith(
-            2,
-            [
+            1,
+            expect.arrayContaining([
               composeMessage(InventoryEvents.RESERVATION_ITEM_UPDATED, {
                 data: { id: reservationItem.id },
-                object: "reservation-item",
+                object: "reservation_item",
                 source: Modules.INVENTORY,
                 action: CommonEvents.UPDATED,
               }),
-            ],
+              composeMessage(InventoryEvents.INVENTORY_LEVEL_UPDATED, {
+                data: { id: inventoryLevel.id },
+                object: "inventory_level",
+                source: Modules.INVENTORY,
+                action: CommonEvents.UPDATED,
+              }),
+            ]),
             {
               internal: true,
             }
