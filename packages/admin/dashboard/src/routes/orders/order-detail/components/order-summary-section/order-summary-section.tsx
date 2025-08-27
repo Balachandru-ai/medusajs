@@ -191,6 +191,7 @@ export const OrderSummarySection = ({
       <Header order={order} orderPreview={orderPreview} />
       <ItemBreakdown order={order} reservations={reservations!} />
       <CostBreakdown order={order} />
+      <DiscountBreakdown order={order} />
       <CreditLinesBreakdown order={order} plugins={plugins} />
       <Total order={order} />
 
@@ -569,51 +570,30 @@ const CostBreakdown = ({
   const [isTaxOpen, setIsTaxOpen] = useState(false)
   const [isShippingOpen, setIsShippingOpen] = useState(false)
 
-  const discountCodes = useMemo(() => {
-    const codes = new Set()
-    order.items.forEach((item) =>
-      item.adjustments?.forEach((adj) => {
-        codes.add(adj.code)
+  const taxes = useMemo(() => {
+    const taxes: { label: string; total: number }[] = []
+    if (order.original_item_tax_total) {
+      taxes.push({
+        label: "Items",
+        total: order.original_item_tax_total,
       })
-    )
-
-    return Array.from(codes).sort()
+    }
+    if (order.original_shipping_tax_total) {
+      taxes.push({
+        label: "Shipping",
+        total: order.original_shipping_tax_total,
+      })
+    }
+    return taxes
   }, [order])
 
-  const taxCodes = useMemo(() => {
-    const taxCodeMap = {}
-
-    order.items.forEach((item) => {
-      item.tax_lines?.forEach((line) => {
-        taxCodeMap[line.code] = (taxCodeMap[line.code] || 0) + line.total
-      })
-    })
-
-    order.shipping_methods.forEach((sm) => {
-      sm.tax_lines?.forEach((line) => {
-        taxCodeMap[line.code] = (taxCodeMap[line.code] || 0) + line.total
-      })
-    })
-
-    return taxCodeMap
-  }, [order])
-
-  const automaticTaxesOn = !!order.region?.automatic_taxes
-  const hasTaxLines = !!Object.keys(taxCodes).length
-
-  const discountTotal = automaticTaxesOn
-    ? order.discount_total
-    : order.discount_subtotal
+  const hasTaxes = !!Object.keys(taxes).length
 
   return (
     <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
       <Cost
-        label={t(
-          automaticTaxesOn
-            ? "orders.summary.itemTotal"
-            : "orders.summary.itemSubtotal"
-        )}
-        value={getLocaleAmount(order.item_total, order.currency_code)}
+        label={"Subtotal"}
+        value={getLocaleAmount(order.subtotal, order.currency_code)}
       />
       <Cost
         label={
@@ -621,13 +601,7 @@ const CostBreakdown = ({
             onClick={() => setIsShippingOpen((o) => !o)}
             className="flex cursor-pointer items-center gap-1"
           >
-            <span>
-              {t(
-                automaticTaxesOn
-                  ? "orders.summary.shippingTotal"
-                  : "orders.summary.shippingSubtotal"
-              )}
-            </span>
+            <span>{t("orders.summary.shippingTotal")}</span>
             <TriangleDownMini
               style={{
                 transform: `rotate(${isShippingOpen ? 0 : -90}deg)`,
@@ -635,10 +609,7 @@ const CostBreakdown = ({
             />
           </div>
         }
-        value={getLocaleAmount(
-          automaticTaxesOn ? order.shipping_total : order.shipping_subtotal,
-          order.currency_code
-        )}
+        value={getLocaleAmount(order.shipping_subtotal, order.currency_code)}
       />
 
       {isShippingOpen && (
@@ -665,10 +636,7 @@ const CostBreakdown = ({
                     <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
                   </div>
                   <span className="txt-small text-ui-fg-muted">
-                    {getLocaleAmount(
-                      automaticTaxesOn ? sm.total : sm.subtotal,
-                      order.currency_code
-                    )}
+                    {getLocaleAmount(sm.subtotal, order.currency_code)}
                   </span>
                 </div>
               )
@@ -676,36 +644,18 @@ const CostBreakdown = ({
         </div>
       )}
 
-      <Cost
-        label={t(
-          automaticTaxesOn
-            ? "orders.summary.discountTotal"
-            : "orders.summary.discountSubtotal"
-        )}
-        secondaryValue={discountCodes.join(", ")}
-        value={
-          discountTotal > 0
-            ? `- ${getLocaleAmount(discountTotal, order.currency_code)}`
-            : "-"
-        }
-      />
-
       <>
         <div className="flex justify-between">
           <div
-            onClick={() => hasTaxLines && setIsTaxOpen((o) => !o)}
+            onClick={() => hasTaxes && setIsTaxOpen((o) => !o)}
             className={clx("flex items-center gap-1", {
-              "cursor-pointer": hasTaxLines,
+              "cursor-pointer": hasTaxes,
             })}
           >
             <span className="txt-small select-none">
-              {t(
-                automaticTaxesOn
-                  ? "orders.summary.taxTotalIncl"
-                  : "orders.summary.taxTotal"
-              )}
+              {t("orders.summary.taxTotal")}
             </span>
-            {hasTaxLines && (
+            {hasTaxes && (
               <TriangleDownMini
                 style={{
                   transform: `rotate(${isTaxOpen ? 0 : -90}deg)`,
@@ -716,21 +666,21 @@ const CostBreakdown = ({
 
           <div className="text-right">
             <Text size="small" leading="compact">
-              {getLocaleAmount(order.tax_total, order.currency_code)}
+              {getLocaleAmount(order.original_tax_total, order.currency_code)}
             </Text>
           </div>
         </div>
         {isTaxOpen && (
           <div className="flex flex-col gap-1 pl-5">
-            {Object.entries(taxCodes).map(([code, total]) => {
+            {taxes.map(({ label, total }) => {
               return (
                 <div
-                  key={code}
+                  key={label}
                   className="flex items-center justify-between gap-x-2"
                 >
                   <div>
                     <span className="txt-small text-ui-fg-subtle font-medium">
-                      {code}
+                      {label}
                     </span>
                   </div>
                   <div className="relative flex-1">
@@ -745,6 +695,116 @@ const CostBreakdown = ({
           </div>
         )}
       </>
+      <div className="text-ui-fg-base flex items-center justify-between">
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {t("fields.total")}
+        </Text>
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {getStylizedAmount(order.original_total, order.currency_code)}
+        </Text>
+      </div>
+    </div>
+  )
+}
+
+const DiscountBreakdown = ({
+  order,
+}: {
+  order: AdminOrder & { region?: AdminRegion | null }
+}) => {
+  const [isDiscountOpen, setIsDiscountOpen] = useState(false)
+
+  const discounts = useMemo(() => {
+    const discounts: { label: string; total: number; codes: string[] }[] = []
+    if (order.item_discount_total) {
+      discounts.push({
+        label: "Items",
+        total: order.item_discount_total,
+        codes: Array.from(
+          new Set(
+            order.items
+              .flatMap((item) => item.adjustments || [])
+              .map((adjustment) => adjustment.code!)
+          )
+        ).sort(),
+      })
+    }
+    if (order.shipping_discount_total) {
+      discounts.push({
+        label: "Shipping",
+        total: order.shipping_discount_total,
+        codes: Array.from(
+          new Set(
+            order.shipping_methods
+              .flatMap((shippingMethod) => shippingMethod.adjustments || [])
+              .map((adjustment) => adjustment.code!)
+          )
+        ).sort(),
+      })
+    }
+    return discounts
+  }, [order])
+
+  const hasDiscount = discounts.length > 0
+
+  return (
+    <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
+      <Cost
+        label={
+          <div
+            onClick={() => hasDiscount && setIsDiscountOpen((o) => !o)}
+            className={clx("flex items-center gap-1", {
+              "cursor-pointer": hasDiscount,
+            })}
+          >
+            <span>{"Discount"}</span>
+            {hasDiscount && (
+              <TriangleDownMini
+                style={{
+                  transform: `rotate(${isDiscountOpen ? 0 : -90}deg)`,
+                }}
+              />
+            )}
+          </div>
+        }
+        value={getLocaleAmount(order.discount_total, order.currency_code)}
+      />
+      {isDiscountOpen && (
+        <div className="flex flex-col gap-1 pl-5">
+          {discounts.map(({ label, total, codes }) => {
+            return (
+              <div
+                key={label}
+                className="flex items-center justify-between gap-x-2"
+              >
+                <div className="flex gap-1">
+                  <span className="txt-small text-ui-fg-subtle font-medium">
+                    {label}
+                  </span>
+                  <span className="txt-small text-ui-fg-subtle font-medium">
+                    ({codes.join(", ")})
+                  </span>
+                </div>
+                <div className="relative flex-1">
+                  <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
+                </div>
+                <span className="txt-small text-ui-fg-muted">
+                  {getLocaleAmount(total, order.currency_code)}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      <div className="text-ui-fg-base flex items-center justify-between">
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {"Total"}
+        </Text>
+        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+          {getStylizedAmount(order.total, order.currency_code)}
+        </Text>
+      </div>
     </div>
   )
 }
@@ -1138,15 +1198,6 @@ const Total = ({ order }: { order: AdminOrder }) => {
 
   return (
     <div className=" flex flex-col gap-y-2 px-6 py-4">
-      <div className="text-ui-fg-base flex items-center justify-between">
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {t("fields.total")}
-        </Text>
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {getStylizedAmount(order.original_total, order.currency_code)}
-        </Text>
-      </div>
-
       <div className="text-ui-fg-base flex items-center justify-between">
         <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {t("fields.paidTotal")}
