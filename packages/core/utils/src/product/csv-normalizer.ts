@@ -80,6 +80,28 @@ function processAsString<Output>(
 }
 
 /**
+ * Process a column value as a json object
+ */
+function processAsJson<Output>(
+  inputKey: string,
+  outputKey: keyof Output
+): ColumnProcessor<Output> {
+  return (csvRow, _, rowNumber, output) => {
+    const value = csvRow[inputKey]
+    if (isPresent(value)) {
+      if (typeof value === 'string') {
+        try {
+          output[outputKey] = JSON.parse(value);
+        } catch (error) {
+          throw createError(rowNumber, `Invalid value provided for "${inputKey}". Expected a valid JSON string, received "${value}"`);
+        }
+      }
+    }
+    return undefined
+  }
+}
+
+/**
  * Processes a column value but ignores it (no-op processor for system-generated fields)
  */
 function processAsIgnored<Output>(): ColumnProcessor<Output> {
@@ -193,7 +215,7 @@ const productStaticColumns: {
   ),
   "product weight": processAsNumber("product weight", "weight"),
   "product width": processAsNumber("product width", "width"),
-  "product metadata": processAsString("product metadata", "metadata"),
+  "product metadata": processAsJson("product metadata", "metadata"),
   "shipping profile id": processAsString(
     "shipping profile id",
     "shipping_profile_id"
@@ -257,7 +279,7 @@ const variantStaticColumns: {
   "variant height": processAsNumber("variant height", "height"),
   "variant length": processAsNumber("variant length", "length"),
   "variant material": processAsString("variant material", "material"),
-  "variant metadata": processAsString("variant metadata", "metadata"),
+  "variant metadata": processAsJson("variant metadata", "metadata"),
   "variant origin country": processAsString(
     "variant origin country",
     "origin_country"
