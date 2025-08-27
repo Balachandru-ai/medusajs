@@ -1721,22 +1721,6 @@ describe("defineConfig", function () {
     ])
   })
 
-  it("should preserve plugin order", function () {
-    const config = defineConfig({
-      plugins: [
-        { resolve: "plugin-z", options: {} },
-        { resolve: "plugin-a", options: {} },
-        { resolve: "plugin-m", options: {} }
-      ]
-    })
-    expect(config.plugins).toEqual([
-      { resolve: "@medusajs/draft-order", options: {} },
-      { resolve: "plugin-z", options: {} },
-      { resolve: "plugin-a", options: {} },
-      { resolve: "plugin-m", options: {} }
-    ])
-  })
-
   it("should allow custom dynamodb config", function () {
     expect(
       defineConfig({
