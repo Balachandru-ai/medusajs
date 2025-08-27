@@ -3170,6 +3170,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
         item_total: 200,
         item_subtotal: 500,
         item_tax_total: 0,
+        item_discount_total: 300,
         original_item_total: 500,
         original_item_subtotal: 500,
         original_item_tax_total: 0,

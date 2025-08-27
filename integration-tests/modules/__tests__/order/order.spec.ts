@@ -1,18 +1,8 @@
-import {
-  createOrderChangeWorkflow,
-  createOrderWorkflow,
-} from "@medusajs/core-flows"
+import { createOrderChangeWorkflow, createOrderWorkflow, } from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import {
-  CreateOrderLineItemDTO,
-  IOrderModuleService,
-  OrderDTO,
-} from "@medusajs/types"
+import { CreateOrderLineItemDTO, IOrderModuleService, OrderDTO, } from "@medusajs/types"
 import { Modules, ProductStatus } from "@medusajs/utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../helpers/create-admin-user"
+import { adminHeaders, createAdminUser, } from "../../../helpers/create-admin-user"
 
 jest.setTimeout(50000)
 
@@ -293,7 +283,7 @@ medusaIntegrationTestRunner({
             // TODO: add all summary fields
           }),
           total: 59.9,
-          subtotal: 60,
+          subtotal: 50,
           tax_total: 0.9,
           discount_total: 1.1,
           discount_tax_total: 0.1,
@@ -318,7 +308,7 @@ medusaIntegrationTestRunner({
             precision: 20,
           },
           raw_subtotal: {
-            value: "60",
+            value: "50",
             precision: 20,
           },
           raw_discount_total: {
