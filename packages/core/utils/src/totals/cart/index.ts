@@ -163,7 +163,6 @@ export function decorateCartTotals(
       discountTaxTotal,
       shippingMethodTotals.discount_tax_total
     )
-    // TODO - Change the nextjs cart too
 
     shippingSubtotal = MathBN.add(
       shippingSubtotal,

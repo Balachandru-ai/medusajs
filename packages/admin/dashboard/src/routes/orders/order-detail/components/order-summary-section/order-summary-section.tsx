@@ -592,7 +592,7 @@ const CostBreakdown = ({
   return (
     <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
       <Cost
-        label={"Subtotal"}
+        label={t("orders.summary.itemSubtotal")}
         value={getLocaleAmount(order.subtotal, order.currency_code)}
       />
       <Cost
@@ -601,7 +601,7 @@ const CostBreakdown = ({
             onClick={() => setIsShippingOpen((o) => !o)}
             className="flex cursor-pointer items-center gap-1"
           >
-            <span>{t("orders.summary.shippingTotal")}</span>
+            <span>{t("orders.summary.shippingSubtotal")}</span>
             <TriangleDownMini
               style={{
                 transform: `rotate(${isShippingOpen ? 0 : -90}deg)`,
@@ -712,6 +712,8 @@ const DiscountBreakdown = ({
 }: {
   order: AdminOrder & { region?: AdminRegion | null }
 }) => {
+  const { t } = useTranslation()
+
   const [isDiscountOpen, setIsDiscountOpen] = useState(false)
 
   const discounts = useMemo(() => {
@@ -757,7 +759,7 @@ const DiscountBreakdown = ({
               "cursor-pointer": hasDiscount,
             })}
           >
-            <span>{"Discount"}</span>
+            <span>{t("orders.summary.discountTotal")}</span>
             {hasDiscount && (
               <TriangleDownMini
                 style={{
@@ -1210,18 +1212,20 @@ const Total = ({ order }: { order: AdminOrder }) => {
         </Text>
       </div>
 
-      <div className="text-ui-fg-base flex items-center justify-between">
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {t("fields.creditTotal")}
-        </Text>
+      {getTotalCreditLines(order.credit_lines ?? []) > 0 && (
+        <div className="text-ui-fg-base flex items-center justify-between">
+          <Text className="text-ui-fg-subtle" size="small" leading="compact">
+            {t("fields.creditTotal")}
+          </Text>
 
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {getStylizedAmount(
-            getTotalCreditLines(order.credit_lines ?? []),
-            order.currency_code
-          )}
-        </Text>
-      </div>
+          <Text className="text-ui-fg-subtle" size="small" leading="compact">
+            {getStylizedAmount(
+              getTotalCreditLines(order.credit_lines ?? []),
+              order.currency_code
+            )}
+          </Text>
+        </div>
+      )}
 
       <div className="text-ui-fg-base flex items-center justify-between">
         <Text
