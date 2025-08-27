@@ -219,7 +219,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "fulfillment_set",
                     data: {
-                      id: expect.arrayContaining([fulfillmentSets[i].id]),
+                      id: fulfillmentSets[i].id,
                     },
                   }),
                 ]),
@@ -338,7 +338,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "fulfillment_set",
                     data: {
-                      id: expect.arrayContaining([fulfillmentSets[i].id]),
+                      id: fulfillmentSets[i].id,
                     },
                   }),
                   buildExpectedEventMessageShape({
@@ -346,9 +346,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "service_zone",
                     data: {
-                      id: expect.arrayContaining([
-                        fulfillmentSets[i].service_zones[0].id,
-                      ]),
+                      id: fulfillmentSets[i].service_zones[0].id,
                     },
                   }),
                 ]),
@@ -514,7 +512,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "fulfillment_set",
                     data: {
-                      id: expect.arrayContaining([fulfillmentSets[i].id]),
+                      id: fulfillmentSets[i].id,
                     },
                   }),
                   buildExpectedEventMessageShape({
@@ -522,9 +520,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "service_zone",
                     data: {
-                      id: expect.arrayContaining([
-                        fulfillmentSets[i].service_zones[0].id,
-                      ]),
+                      id: fulfillmentSets[i].service_zones[0].id,
                     },
                   }),
                   buildExpectedEventMessageShape({
@@ -532,9 +528,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     action: "created",
                     object: "geo_zone",
                     data: {
-                      id: expect.arrayContaining([
-                        fulfillmentSets[i].service_zones[0].geo_zones[0].id,
-                      ]),
+                      id: fulfillmentSets[i].service_zones[0].geo_zones[0].id,
                     },
                   }),
                 ]),
