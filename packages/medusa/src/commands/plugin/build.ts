@@ -1,13 +1,7 @@
 import { Compiler } from "@medusajs/framework/build-tools"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { initializeContainer } from "../../loaders"
+import { logger } from "@medusajs/framework/logger"
 
 export default async function build({ directory }: { directory: string }) {
-  const container = await initializeContainer(directory, {
-    skipDbConnection: true,
-  })
-  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-
   logger.info("Starting build...")
   const compiler = new Compiler(directory, logger)
 
