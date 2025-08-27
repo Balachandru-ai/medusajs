@@ -477,6 +477,18 @@ export function getComputedActionsForBuyGet(
 
   let appliedPromotionQuantity = MathBN.convert(0)
 
+  /*
+    This loop continues applying the promotion until one of the stopping conditions is met:
+    - No more items satisfy the minimum buy quantity requirement
+    - Maximum applicable promotion quantity is reached  
+    - No valid target items can be found for promotion application
+    
+    Each iteration:
+    1. Prepares an application state (selects buy items + eligible target items)
+    2. Applies promotion to the selected target items
+    3. Updates remaining quantities to prevent double-usage in next iteration
+    4. Updates the total eligible items for next iteration
+  */
   while (true) {
     // We prepare an application state for the promotion to be applied on all eligible items
     // We use this as a source of truth to update the remaining quantities of the eligible items
