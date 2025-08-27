@@ -1,7 +1,6 @@
 ---
 "@medusajs/utils": minor
 "@medusajs/dashboard": patch
-"@medusajs/cart": patch
 "@medusajs/types": patch
 ---
 
