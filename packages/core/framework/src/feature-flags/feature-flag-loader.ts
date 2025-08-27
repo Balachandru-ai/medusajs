@@ -1,17 +1,15 @@
 import { trackFeatureFlag } from "@medusajs/telemetry"
 import {
   ContainerRegistrationKeys,
-  discoverFeatureFlagsFromDir,
+  discoverAndRegisterFeatureFlags,
   FeatureFlag,
   FlagRouter,
-  registerFeatureFlag,
 } from "@medusajs/utils"
 import { asFunction } from "awilix"
 import { normalize } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
 import { logger } from "../logger"
-import { FlagSettings } from "./types"
 
 container.register(
   ContainerRegistrationKeys.FEATURE_FLAG_ROUTER,
@@ -37,16 +35,13 @@ export async function featureFlagsLoader(
 
   const flagDir = normalize(sourcePath)
 
-  const discovered = await discoverFeatureFlagsFromDir(flagDir)
-  for (const def of discovered) {
-    registerFeatureFlag({
-      flag: def as FlagSettings,
-      projectConfigFlags,
-      router: FeatureFlag,
-      logger,
-      track: (key) => trackFeatureFlag(key),
-    })
-  }
+  await discoverAndRegisterFeatureFlags({
+    flagDir,
+    projectConfigFlags,
+    router: FeatureFlag,
+    logger,
+    track: (key) => trackFeatureFlag(key),
+  })
 
   return FeatureFlag
 }

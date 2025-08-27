@@ -1,8 +1,7 @@
 import {
-  discoverFeatureFlagsFromDir,
   FeatureFlag,
   getConfigFile,
-  registerFeatureFlag,
+  discoverAndRegisterFeatureFlags,
 } from "@medusajs/framework/utils"
 
 export async function configLoaderOverride(
@@ -12,15 +11,12 @@ export async function configLoaderOverride(
   const { configManager } = await import("@medusajs/framework/config")
   const { logger } = await import("@medusajs/framework")
 
-  const discovered = await discoverFeatureFlagsFromDir(entryDirectory)
-  for (const def of discovered) {
-    registerFeatureFlag({
-      flag: def,
-      projectConfigFlags: {},
-      router: FeatureFlag,
-      logger,
-    })
-  }
+  await discoverAndRegisterFeatureFlags({
+    flagDir: entryDirectory,
+    projectConfigFlags: {},
+    router: FeatureFlag,
+    logger,
+  })
 
   const { configModule, error } = await getConfigFile<
     ReturnType<typeof configManager.loadConfig>
