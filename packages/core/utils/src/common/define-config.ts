@@ -54,9 +54,9 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   return {
     projectConfig,
     featureFlags: (config.featureFlags ?? {}) as ConfigModule["featureFlags"],
-    plugins: config.plugins || [],
     admin: adminConfig,
     modules: modules,
+    plugins,
   }
 }
 
@@ -133,12 +133,12 @@ function resolvePlugins(
     { resolve: "@medusajs/draft-order", options: {} },
   ]
 
+  if (!!configPlugins?.length) {
+    defaultPlugins.push(...configPlugins)
+  }
+
   // We don't have any cloud plugins yet, but we might in the future
   const cloudPlugins = [...defaultPlugins]
-
-  if (!!configPlugins?.length) {
-    cloudPlugins.push(...configPlugins)
-  }
 
   return isCloud ? cloudPlugins : defaultPlugins
 }

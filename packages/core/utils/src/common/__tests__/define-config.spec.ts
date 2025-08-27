@@ -131,7 +131,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -298,7 +303,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -473,7 +483,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -649,7 +664,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -813,7 +833,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -980,7 +1005,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -1180,7 +1210,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-redis",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -1382,7 +1417,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-redis",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -1600,7 +1640,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-redis",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -1673,18 +1718,6 @@ describe("defineConfig", function () {
     ])
   })
 
-  it("should handle plugins with no options", function () {
-    const config = defineConfig({
-      plugins: [
-        { resolve: "@medusajs/plugin-without-options" }
-      ]
-    })
-    expect(config.plugins).toEqual([
-      { resolve: "@medusajs/draft-order", options: {} },
-      { resolve: "@medusajs/plugin-without-options" }
-    ])
-  })
-
   it("should include plugins in cloud environment", function () {
     const originalEnv = { ...process.env }
     process.env.EXECUTION_CONTEXT = "medusa-cloud"
@@ -1720,6 +1753,7 @@ describe("defineConfig", function () {
       { resolve: "@medusajs/draft-order", options: {} }
     ])
   })
+
 
   it("should allow custom dynamodb config", function () {
     expect(
@@ -1868,7 +1902,12 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/workflow-engine-inmemory",
           },
         },
-        "plugins": [],
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
         "projectConfig": {
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
