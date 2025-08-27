@@ -6402,7 +6402,6 @@ __metadata:
     "@medusajs/framework": 2.9.0
     "@medusajs/icons": 2.9.0
     "@medusajs/js-sdk": 2.9.0
-    "@medusajs/medusa": 2.9.0
     "@medusajs/test-utils": 2.9.0
     "@medusajs/types": 2.9.0
     "@medusajs/ui": 4.0.19
@@ -6439,7 +6438,6 @@ __metadata:
     "@medusajs/cli": 2.9.0
     "@medusajs/framework": 2.9.0
     "@medusajs/icons": 2.9.0
-    "@medusajs/medusa": 2.9.0
     "@medusajs/test-utils": 2.9.0
     "@medusajs/ui": 4.0.19
     "@mikro-orm/cli": 6.4.3
