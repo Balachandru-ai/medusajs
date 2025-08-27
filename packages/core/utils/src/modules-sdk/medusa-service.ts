@@ -139,37 +139,6 @@ export function MedusaService<
     ? ModelConfigurationsToConfigTemplate<TModels>
     : ModelsConfig
 > {
-  // function emitSoftDeleteRestoreEvents(
-  //   this: AbstractModuleService_,
-  //   klassPrototype: any,
-  //   cascadedModelsMap: Record<string, string[]>,
-  //   action: string,
-  //   sharedContext: Context
-  // ) {
-  //   const joinerConfig = (
-  //     typeof this.__joinerConfig === "function"
-  //       ? this.__joinerConfig()
-  //       : this.__joinerConfig
-  //   ) as ModuleJoinerConfig
-
-  //   const emittedEntities = new Set<string>()
-
-  //   Object.entries(cascadedModelsMap).forEach(([linkableKey, ids]) => {
-  //     const entity = joinerConfig.linkableKeys?.[linkableKey]!
-  //     if (entity && !emittedEntities.has(entity)) {
-  //       emittedEntities.add(entity)
-  //       const linkableKeyEntity = camelToSnakeCase(entity).toLowerCase()
-
-  //       klassPrototype.aggregatedEvents.bind(this)({
-  //         action: action,
-  //         object: linkableKeyEntity,
-  //         data: { id: ids },
-  //         context: sharedContext,
-  //       })
-  //     }
-  //   })
-  // }
-
   const buildAndAssignMethodImpl = function (
     klassPrototype: any,
     method: string,
@@ -224,13 +193,6 @@ export function MedusaService<
           const service = this.__container__[serviceRegistrationName]
           const models_ = await service.create(data, sharedContext)
 
-          // klassPrototype.aggregatedEvents.bind(this)({
-          //   action: CommonEvents.CREATED,
-          //   object: camelToSnakeCase(modelName).toLowerCase(),
-          //   data: models_,
-          //   context: sharedContext,
-          // })
-
           return await this.baseRepository_.serialize<T | T[]>(models_)
         }
 
@@ -245,13 +207,6 @@ export function MedusaService<
         ): Promise<T | T[]> {
           const service = this.__container__[serviceRegistrationName]
           const response = await service.update(data, sharedContext)
-
-          // klassPrototype.aggregatedEvents.bind(this)({
-          //   action: CommonEvents.UPDATED,
-          //   object: camelToSnakeCase(modelName).toLowerCase(),
-          //   data: response,
-          //   context: sharedContext,
-          // })
 
           return await this.baseRepository_.serialize<T | T[]>(response)
         }
@@ -306,15 +261,6 @@ export function MedusaService<
             primaryKeyValues_,
             sharedContext
           )
-
-          // ids.map((id) =>
-          //   klassPrototype.aggregatedEvents.bind(this)({
-          //     action: CommonEvents.DELETED,
-          //     object: camelToSnakeCase(modelName).toLowerCase(),
-          //     data: isString(id) ? { id: id } : id,
-          //     context: sharedContext,
-          //   })
-          // )
         }
 
         applyMethod(methodImplementation, 1)
@@ -344,15 +290,6 @@ export function MedusaService<
               pick: config.returnLinkableKeys,
             }
           )
-
-          // if (mappedCascadedModelsMap) {
-          //   emitSoftDeleteRestoreEvents.bind(this)(
-          //     klassPrototype,
-          //     mappedCascadedModelsMap,
-          //     CommonEvents.DELETED,
-          //     sharedContext
-          //   )
-          // }
 
           return mappedCascadedModelsMap ? mappedCascadedModelsMap : void 0
         }
@@ -385,15 +322,6 @@ export function MedusaService<
               pick: config.returnLinkableKeys,
             }
           )
-
-          // if (mappedCascadedModelsMap) {
-          //   emitSoftDeleteRestoreEvents.bind(this)(
-          //     klassPrototype,
-          //     mappedCascadedModelsMap,
-          //     CommonEvents.CREATED,
-          //     sharedContext
-          //   )
-          // }
 
           return mappedCascadedModelsMap ? mappedCascadedModelsMap : void 0
         }
