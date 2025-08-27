@@ -283,10 +283,10 @@ function applyPromotionToTargetItems(
   appliedPromotionQuantity: BigNumberInput
 } {
   const computedActions: PromotionTypes.ComputeActions[] = []
+  let appliedPromotionQuantity = MathBN.convert(0)
   let remainingQtyToApply = MathBN.convert(
     applicationConfig.targetApplyQuantity
   )
-  let appliedPromotionQuantity = MathBN.convert(0)
 
   for (const targetItem of targetItems) {
     if (MathBN.lte(remainingQtyToApply, 0)) {
@@ -297,7 +297,6 @@ function applyPromotionToTargetItems(
     const appliedPromoValue =
       methodIdPromoValueMap.get(item.id) ?? MathBN.convert(0)
     const multiplier = MathBN.min(targetItem.quantity, remainingQtyToApply)
-
     const pricePerUnit = MathBN.div(item.subtotal, item.quantity)
     const applicableAmount = MathBN.mult(pricePerUnit, multiplier)
     const amount = MathBN.mult(
@@ -374,22 +373,20 @@ function updateEligibleItemQuantities(
 }
 
 function updateEligibleItems(
-  totalEligibleItems: EligibleItem[],
+  totalEligibleItemsMap: Map<string, EligibleItem>,
   applicationItems: EligibleItem[]
 ): void {
-  for (const buyItem of applicationItems) {
-    const existingBuyItem = totalEligibleItems.find(
-      (item) => item.item_id === buyItem.item_id
-    )
+  for (const item of applicationItems) {
+    const existingItem = totalEligibleItemsMap.get(item.item_id)
 
     // If the item already exists, we add the quantity to the existing item
-    if (existingBuyItem) {
-      existingBuyItem.quantity = MathBN.add(
-        existingBuyItem.quantity,
-        buyItem.quantity
+    if (existingItem) {
+      existingItem.quantity = MathBN.add(
+        existingItem.quantity,
+        item.quantity
       ).toNumber()
     } else {
-      totalEligibleItems.push({ ...buyItem })
+      totalEligibleItemsMap.set(item.item_id, { ...item })
     }
   }
 }
@@ -473,8 +470,8 @@ export function getComputedActionsForBuyGet(
     promotion.code!
   )
 
-  const totalEligibleBuyItems: EligibleItem[] = []
-  const totalEligibleTargetItems: EligibleItem[] = []
+  const totalEligibleBuyItemsMap = new Map<string, EligibleItem>()
+  const totalEligibleTargetItemsMap = new Map<string, EligibleItem>()
   const itemIdPromotionAmountMap = new Map<string, BigNumberInput>()
   const computedActions: PromotionTypes.ComputeActions[] = []
 
@@ -527,8 +524,11 @@ export function getComputedActionsForBuyGet(
       applicationState
     )
 
-    updateEligibleItems(totalEligibleBuyItems, applicationState.buyItems)
-    updateEligibleItems(totalEligibleTargetItems, applicationState.targetItems)
+    updateEligibleItems(totalEligibleBuyItemsMap, applicationState.buyItems)
+    updateEligibleItems(
+      totalEligibleTargetItemsMap,
+      applicationState.targetItems
+    )
   }
 
   const finalActions = createComputedActionsFromPromotionApplication(
@@ -537,8 +537,14 @@ export function getComputedActionsForBuyGet(
   )
   computedActions.push(...finalActions)
 
-  eligibleBuyItemMap.set(promotion.code!, totalEligibleBuyItems)
-  eligibleTargetItemMap.set(promotion.code!, totalEligibleTargetItems)
+  eligibleBuyItemMap.set(
+    promotion.code!,
+    Array.from(totalEligibleBuyItemsMap.values())
+  )
+  eligibleTargetItemMap.set(
+    promotion.code!,
+    Array.from(totalEligibleTargetItemsMap.values())
+  )
 
   return computedActions
 }
