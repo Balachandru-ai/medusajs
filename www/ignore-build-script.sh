@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# Exit early if the PR branch doesn't start with 'docs/'
+if [[ ! "$VERCEL_GIT_COMMIT_REF" =~ ^docs/ ]]; then
+  echo "🛑 - Build cancelled: Branch does not start with 'docs/'"
+  exit 0;
+fi
+
 if [[ "$1" == "docs-old" ]]; then
-  echo "Can't build old docs"
+  echo "🛑 - Build cancelled: Can't build old docs"
   exit 0;
 fi
 
