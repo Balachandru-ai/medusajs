@@ -77,6 +77,7 @@
     "@medusajs/auth": "2.9.0",
     "@medusajs/auth-emailpass": "2.9.0",
     "@medusajs/auth-github": "2.9.0",
+    "@medusajs/draft-order": "2.9.0",
     "@medusajs/auth-google": "2.9.0",
     "@medusajs/cache-inmemory": "2.9.0",
     "@medusajs/cache-redis": "2.9.0",

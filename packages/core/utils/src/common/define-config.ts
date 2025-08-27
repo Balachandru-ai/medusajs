@@ -12,9 +12,9 @@ import {
 } from "../modules-sdk"
 import { isObject } from "./is-object"
 import { isString } from "./is-string"
-import { tryConvertToNumber } from "./try-convert-to-number"
 import { normalizeImportPathWithSource } from "./normalize-import-path-with-source"
 import { resolveExports } from "./resolve-exports"
+import { tryConvertToNumber } from "./try-convert-to-number"
 
 const MEDUSA_CLOUD_EXECUTION_CONTEXT = "medusa-cloud"
 const DEFAULT_SECRET = "supersecret"
@@ -49,6 +49,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
   const modules = resolveModules(config.modules, options, config.projectConfig)
+  const plugins = resolvePlugins(config.plugins, options)
 
   return {
     projectConfig,
@@ -122,6 +123,24 @@ export function transformModules(
   }, {})
 
   return remappedModules as Exclude<ConfigModule["modules"], undefined>
+}
+
+function resolvePlugins(
+  configPlugins: InputConfig["plugins"],
+  { isCloud }: { isCloud: boolean }
+): ConfigModule["plugins"] {
+  const defaultPlugins: ConfigModule["plugins"] = [
+    { resolve: "@medusajs/draft-order", options: {} },
+  ]
+
+  // We don't have any cloud plugins yet, but we might in the future
+  const cloudPlugins = [...defaultPlugins]
+
+  if (!!configPlugins?.length) {
+    cloudPlugins.push(...configPlugins)
+  }
+
+  return isCloud ? cloudPlugins : defaultPlugins
 }
 
 /**
