@@ -1,4 +1,5 @@
 .env
+.medusa
 node_modules
 *yarn-error.log
 .pnp.*
