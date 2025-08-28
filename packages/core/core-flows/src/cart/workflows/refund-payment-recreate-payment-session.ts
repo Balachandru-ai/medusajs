@@ -64,7 +64,7 @@ export const refundPaymentAndRecreatePaymentSessionWorkflowId =
 export const refundPaymentAndRecreatePaymentSessionWorkflow = createWorkflow(
   {
     name: refundPaymentAndRecreatePaymentSessionWorkflowId,
-    idempotent: true,
+    idempotent: false,
   },
   (
     input: WorkflowData<refundPaymentAndRecreatePaymentSessionWorkflowInput>

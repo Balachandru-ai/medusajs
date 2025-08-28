@@ -51,7 +51,7 @@ export const transferCartCustomerWorkflowId = "transfer-cart-customer"
 export const transferCartCustomerWorkflow = createWorkflow(
   {
     name: transferCartCustomerWorkflowId,
-    idempotent: true,
+    idempotent: false,
   },
   (input: WorkflowData<TransferCartCustomerWorkflowInput>) => {
     const cartQuery = useQueryGraphStep({
