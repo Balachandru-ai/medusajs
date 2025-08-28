@@ -1,4 +1,5 @@
 import {
+  ConfigModule,
   Constructor,
   IModuleService,
   InternalModuleDeclaration,
@@ -16,14 +17,18 @@ import {
   ContainerRegistrationKeys,
   createMedusaContainer,
   defineJoinerConfig,
+  discoverFeatureFlagsFromDir,
   DmlEntity,
   dynamicImport,
+  FeatureFlag,
   getProviderRegistrationKey,
+  isFileSkipped,
   isString,
   MedusaModuleProviderType,
   MedusaModuleType,
   Modules,
   ModulesSdkUtils,
+  registerFeatureFlag,
   stringifyCircular,
   toMikroOrmEntities,
 } from "@medusajs/utils"
@@ -193,6 +198,7 @@ export async function loadInternalModule(args: {
 
   if (loadedModule.discoveryPath) {
     moduleResources = await loadResources({
+      container,
       moduleResolution: resolution,
       discoveryPath: loadedModule.discoveryPath,
       logger,
@@ -379,6 +385,7 @@ export async function loadInternalModule(args: {
 }
 
 export async function loadModuleMigrations(
+  container: MedusaContainer,
   resolution: ModuleResolution,
   moduleExports?: ModuleExports
 ): Promise<{
@@ -449,6 +456,7 @@ export async function loadModuleMigrations(
 
       if (!runMigrationsCustom || !revertMigrationCustom) {
         const moduleResources = await loadResources({
+          container,
           moduleResolution: resolution,
           discoveryPath: loadedModule.discoveryPath,
           loadedModuleLoaders: loadedModule?.loaders,
@@ -536,17 +544,21 @@ async function importAllFromDir(path: string) {
 
   return (
     await Promise.all(filesToLoad.map((filePath) => dynamicImport(filePath)))
-  ).flatMap((value) => {
-    return Object.values(value)
-  })
+  )
+    .filter((value) => !isFileSkipped(value))
+    .flatMap((value) => {
+      return Object.values(value)
+    })
 }
 
 export async function loadResources({
+  container,
   moduleResolution,
   discoveryPath,
   logger,
   loadedModuleLoaders,
 }: {
+  container: MedusaContainer
   moduleResolution: ModuleResolution
   discoveryPath: string
   logger?: Logger
@@ -566,8 +578,31 @@ export async function loadResources({
       return []
     }
 
+    const flagDir = resolve(normalizedPath)
+    const discovered = await discoverFeatureFlagsFromDir(flagDir, 1)
+
+    const configModule = container.resolve(
+      ContainerRegistrationKeys.CONFIG_MODULE,
+      {
+        allowUnregistered: true,
+      }
+    ) as ConfigModule
+
+    for (const def of discovered) {
+      registerFeatureFlag({
+        flag: def,
+        projectConfigFlags: configModule?.featureFlags ?? {},
+        router: FeatureFlag,
+        logger,
+      })
+    }
+
     const [moduleService, services, models, repositories] = await Promise.all([
       dynamicImport(modulePath).then((moduleExports) => {
+        if (isFileSkipped(moduleExports)) {
+          return
+        }
+
         const mod = moduleExports.default ?? moduleExports
         return mod.service
       }),

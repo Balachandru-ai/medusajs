@@ -1,7 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
-  ICartModuleService,
-  IFulfillmentModuleService,
   IInventoryServiceNext,
   IPricingModuleService,
   IProductModuleService,
@@ -24,7 +22,7 @@ import { setupTaxStructure } from "../fixtures"
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,

@@ -1,7 +1,4 @@
-import {
-  MedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework/http"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const AUTHENTICATE = false
@@ -13,14 +10,14 @@ export const GET = async (
   const featureFlagRouter = req.scope.resolve(
     ContainerRegistrationKeys.FEATURE_FLAG_ROUTER
   ) as any
-  
+
   const flags = featureFlagRouter.listFlags()
-  
+
   // Convert array of flags to a simple key-value object
   const featureFlags: Record<string, boolean> = {}
-  flags.forEach(flag => {
+  flags.forEach((flag) => {
     featureFlags[flag.key] = flag.value
   })
-  
+
   res.json({ feature_flags: featureFlags })
 }

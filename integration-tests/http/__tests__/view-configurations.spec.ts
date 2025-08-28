@@ -1,10 +1,9 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { adminHeaders, createAdminUser } from "../../helpers/create-admin-user"
-import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 jest.setTimeout(50000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true, MEDUSA_FF_VIEW_CONFIGURATIONS: true }
+const env = { MEDUSA_FF_VIEW_CONFIGURATIONS: true }
 
 medusaIntegrationTestRunner({
   env,

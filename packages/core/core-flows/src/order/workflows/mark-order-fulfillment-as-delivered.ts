@@ -7,7 +7,12 @@ import {
   ProductVariantDTO,
   RegisterOrderDeliveryDTO,
 } from "@medusajs/framework/types"
-import { FulfillmentWorkflowEvents, MathBN, Modules } from "@medusajs/framework/utils"
+import {
+  FulfillmentWorkflowEvents,
+  MathBN,
+  MedusaError,
+  Modules,
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -102,7 +107,8 @@ export const orderFulfillmentDeliverablilityValidationStep = createStep(
     )
 
     if (!orderFulfillment) {
-      throw new Error(
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
         `Fulfillment with id ${fulfillment.id} not found in the order`
       )
     }
