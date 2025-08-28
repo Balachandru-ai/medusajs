@@ -1,7 +1,7 @@
 ---
 "@medusajs/framework": patch
 "@medusajs/medusa": patch
-"@medusajs/medusa-test-utils": patch
+"@medusajs/test-utils": patch
 "@medusajs/modules-sdk": patch
 "@medusajs/utils": patch
 ---
