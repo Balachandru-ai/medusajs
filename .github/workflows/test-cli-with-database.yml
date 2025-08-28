@@ -53,12 +53,8 @@ jobs:
         with:
           extension: cli-database
 
-      - name: Build and install local Medusa CLI
-        run: |
-          cd packages/medusa/medusa-cli
-          yarn build
-          npm pack
-          npm i -g medusajs-cli-*.tgz
+      - name: Install Medusa cli
+        run: npm i -g @medusajs/cli@preview
 
       - name: Create Medusa project
         working-directory: ..
