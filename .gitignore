@@ -34,3 +34,4 @@ dist/**
 /packages/**/.cache
 
 .cursorignore
+**/.medusa

@@ -2,6 +2,9 @@ import { listShippingOptionsForOrderWorkflow } from "@medusajs/core-flows"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { AdminShippingOption, HttpTypes } from "@medusajs/framework/types"
 
+/**
+ * @since 2.10.0
+ */
 export const GET = async (
   req: MedusaRequest<{}, HttpTypes.AdminGetOrderShippingOptionList>,
   res: MedusaResponse<{ shipping_options: AdminShippingOption[] }>
