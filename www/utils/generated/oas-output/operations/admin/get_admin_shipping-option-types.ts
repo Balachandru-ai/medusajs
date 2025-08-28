@@ -1,20 +1,22 @@
 /**
- * @oas [get] /admin/reservations
- * operationId: GetReservations
- * summary: List Reservations
- * description: Retrieve a list of reservations. The reservations can be filtered by fields such as `id`. The reservations can also be sorted or paginated.
+ * @oas [get] /admin/shipping-option-types
+ * operationId: GetShippingOptionTypes
+ * summary: List Shipping Option Types
+ * description: Retrieve a list of shipping option types. The shipping option types can be filtered by fields such as `id`. The shipping option types can also be sorted or paginated.
  * x-authenticated: true
  * parameters:
  *   - name: fields
  *     in: query
- *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *       fields. without prefix it will replace the entire default fields.
+ *     description: |-
+ *       Comma-separated fields that should be included in the returned data.
+ *       if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
+ *       without prefix it will replace the entire default fields.
  *     required: false
  *     schema:
  *       type: string
  *       title: fields
- *       description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *         fields. without prefix it will replace the entire default fields.
+ *       description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *         fields. Without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  *   - name: offset
@@ -45,122 +47,73 @@
  *       type: string
  *       title: order
  *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *   - name: location_id
+ *       externalDocs:
+ *         url: "#pagination"
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
+ *   - name: q
+ *     in: query
+ *     description: Search query to apply on the shipping option type's searchable properties.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: q
+ *       description: Search query to apply on the shipping option type's searchable properties.
+ *   - name: id
  *     in: query
  *     required: false
  *     schema:
  *       oneOf:
  *         - type: string
- *           title: location_id
- *           description: Filter by a location's ID to retrieve its associated reservations.
+ *           title: id
+ *           description: Filter by a shipping option type's ID.
  *         - type: array
- *           description: Filter by location IDs to retrieve its associated reservations.
+ *           description: Filter by shipping option type IDs.
  *           items:
  *             type: string
- *             title: location_id
- *             description: A location ID.
- *   - name: inventory_item_id
+ *             title: id
+ *             description: A shipping option type's ID.
+ *   - name: label
  *     in: query
  *     required: false
  *     schema:
  *       oneOf:
  *         - type: string
- *           title: inventory_item_id
- *           description: Filter by an inventory item's ID to retrieve its associated reservations.
+ *           title: label
+ *           description: Filter by a shipping option type's label.
  *         - type: array
- *           description: Filter by inventory item IDs to retrieve its associated reservations.
+ *           description: Filter by shipping option type labels.
  *           items:
  *             type: string
- *             title: inventory_item_id
- *             description: An inventory item ID
- *   - name: line_item_id
+ *             title: label
+ *             description: A label.
+ *   - name: code
  *     in: query
  *     required: false
  *     schema:
  *       oneOf:
  *         - type: string
- *           title: line_item_id
- *           description: Filter by a line item's ID to retrieve its associated reservations.
+ *           title: code
+ *           description: Filter by a shipping option type's code.
  *         - type: array
- *           description: Filter by line item IDs to retrieve its associated reservations.
+ *           description: Filter by shipping option type codes.
  *           items:
  *             type: string
- *             title: line_item_id
- *             description: A line item ID
- *   - name: created_by
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: created_by
- *           description: Filter by the ID of a user to retrieve the reservations they created.
- *         - type: array
- *           description: Filter by user IDs to retrieve the reservations they created.
- *           items:
- *             type: string
- *             title: created_by
- *             description: A user's ID.
- *   - name: description
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: description
- *           description: Filter by a reservation's description. This filter applies a full-text match. To search by keywords, use the `q` query parameter instead.
- *         - type: object
- *           description: Apply filters on the reservation's description.
- *           properties:
- *             $eq:
- *               type: string
- *               description: Filter by an exact match.
- *             $ne:
- *               type: string
- *               description: Filter by values not matching this parameter.
- *             $in:
- *               type: array
- *               description: Filter by values in this array's items.
- *               items:
- *                 type: string
- *             $nin:
- *               type: array
- *               description: Filter by values not in this array's items.
- *               items:
- *                 type: string
- *             $like:
- *               type: string
- *               description: Apply a `like` filter. Useful for strings only.
- *             $ilike:
- *               type: string
- *               description: Apply a case-insensitive `like` filter. Useful for strings only.
- *             $re:
- *               type: string
- *               description: Apply a regex filter. Useful for strings only.
- *             $contains:
- *               type: array
- *               description: Filter arrays that contain some of the values of this parameter.
- *               items:
- *                 type: string
- *             $gt:
- *               type: string
- *               description: Filter by values greater than this parameter. Useful for numbers and dates only.
- *             $gte:
- *               type: string
- *               description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
- *             $lt:
- *               type: string
- *               description: Filter by values less than this parameter. Useful for numbers and dates only.
- *             $lte:
- *               type: string
- *               description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+ *             title: code
+ *             description: A code.
  *   - name: created_at
  *     in: query
- *     description: Filter by a reservation's creation date.
+ *     description: Filter by a shipping option type's creation date.
  *     required: false
  *     schema:
  *       type: object
- *       description: Filter by a reservation's creation date.
+ *       description: Filter by a shipping option type's creation date.
  *       properties:
  *         $and:
  *           type: array
@@ -275,11 +228,11 @@
  *           description: Filter by whether a value for this parameter exists (not `null`).
  *   - name: updated_at
  *     in: query
- *     description: Filter by a reservation's update date.
+ *     description: Filter by a shipping option type's update date.
  *     required: false
  *     schema:
  *       type: object
- *       description: Filter by a reservation's update date.
+ *       description: Filter by a shipping option type's update date.
  *       properties:
  *         $and:
  *           type: array
@@ -394,11 +347,11 @@
  *           description: Filter by whether a value for this parameter exists (not `null`).
  *   - name: deleted_at
  *     in: query
- *     description: Filter by a reservation's deletion date.
+ *     description: Filter by a shipping option type's deletion date.
  *     required: false
  *     schema:
  *       type: object
- *       description: Filter by a reservation's deletion date.
+ *       description: Filter by a shipping option type's deletion date.
  *       properties:
  *         $and:
  *           type: array
@@ -511,28 +464,26 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
- *   - name: with_deleted
+ *   - name: $and
  *     in: query
- *     description: Whether to include deleted records in the result.
+ *     description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
  *     required: false
  *     schema:
- *       type: boolean
- *       title: with_deleted
- *       description: Whether to include deleted records in the result.
- *   - name: order_id
+ *       type: array
+ *       description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+ *       items:
+ *         type: object
+ *       title: $and
+ *   - name: $or
  *     in: query
+ *     description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
  *     required: false
  *     schema:
- *       oneOf:
- *         - type: string
- *           title: order_id
- *           description: Filter by an order's ID to retrieve its associated reservations.
- *         - type: array
- *           description: Filter by multiple order IDs to retrieve their associated reservations.
- *           items:
- *             type: string
- *             title: order_id
- *             description: An order's ID.
+ *       type: array
+ *       description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+ *       items:
+ *         type: object
+ *       title: $or
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -551,53 +502,24 @@
  *         },
  *       })
  * 
- *       sdk.admin.reservation.list()
- *       .then(({ reservations, count, limit, offset }) => {
- *         console.log(reservations)
+ *       sdk.admin.shippingOptionType.list()
+ *       .then(({ shipping_option_types, count, limit, offset }) => {
+ *         console.log(shipping_option_types)
  *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl '{backend_url}/admin/reservations' \
+ *       curl '{backend_url}/admin/shipping-option-types' \
  *       -H 'Authorization: Bearer {access_token}'
  * tags:
- *   - Reservations
+ *   - Shipping Option Types
  * responses:
  *   "200":
  *     description: OK
  *     content:
  *       application/json:
  *         schema:
- *           allOf:
- *             - type: object
- *               description: The paginated list of reservations.
- *               required:
- *                 - limit
- *                 - offset
- *                 - count
- *               properties:
- *                 limit:
- *                   type: number
- *                   title: limit
- *                   description: The maximum number of items returned.
- *                 offset:
- *                   type: number
- *                   title: offset
- *                   description: The number of items skipped before retrieving the returned items.
- *                 count:
- *                   type: number
- *                   title: count
- *                   description: The total number of items.
- *             - type: object
- *               description: The paginated list of reservations.
- *               required:
- *                 - reservations
- *               properties:
- *                 reservations:
- *                   type: array
- *                   description: The list of reservations.
- *                   items:
- *                     $ref: "#/components/schemas/AdminReservation"
+ *           $ref: "#/components/schemas/AdminShippingOptionTypeListResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -610,6 +532,7 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * x-since: 2.10.0
  * 
 */
 

@@ -12052,7 +12052,6 @@ components:
         - shipping_profile_id
         - price_type
         - provider_id
-        - type
         - prices
       properties:
         name:
@@ -12125,6 +12124,10 @@ components:
           description: The shipping option's rules.
           items:
             $ref: '#/components/schemas/AdminCreateShippingOptionRule'
+        type_id:
+          type: string
+          title: type_id
+          description: The ID of the shipping option type that this shipping option belongs to.
     AdminCreateShippingOptionRule:
       type: object
       description: The details of the shipping option rule.
@@ -19946,6 +19949,10 @@ components:
           description: The associated inventory item's ID.
         inventory:
           $ref: '#/components/schemas/AdminInventoryItem'
+        required_quantity:
+          type: number
+          title: required_quantity
+          description: The inventory item's required quantity.
     AdminProductVariantInventoryLink:
       type: object
       description: The details of an association between a product variant and an inventory item.
@@ -21264,6 +21271,69 @@ components:
           type: string
           title: shipping_option_id
           description: The type's shipping option id.
+    AdminShippingOptionTypeDeleteResponse:
+      type: object
+      description: The response returned after deleting a shipping option type.
+      x-schemaName: AdminShippingOptionTypeDeleteResponse
+      required:
+        - id
+        - object
+        - deleted
+      properties:
+        id:
+          type: string
+          title: id
+          description: The shipping option type's ID.
+        object:
+          type: string
+          title: object
+          description: The name of the deleted object.
+          default: shipping_option_type
+        deleted:
+          type: boolean
+          title: deleted
+          description: Whether the Shipping Option Type was deleted.
+    AdminShippingOptionTypeListResponse:
+      type: object
+      description: The paginated list of shipping option types.
+      x-schemaName: AdminShippingOptionTypeListResponse
+      required:
+        - limit
+        - offset
+        - count
+        - shipping_option_types
+      properties:
+        limit:
+          type: number
+          title: limit
+          description: The maximum number of items returned.
+        offset:
+          type: number
+          title: offset
+          description: The number of items skipped before returning the results.
+        count:
+          type: number
+          title: count
+          description: The total number of items.
+        estimate_count:
+          type: number
+          title: estimate_count
+          description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+          x-featureFlag: index_engine
+        shipping_option_types:
+          type: array
+          description: The list of shipping option types.
+          items:
+            $ref: '#/components/schemas/AdminShippingOptionType'
+    AdminShippingOptionTypeResponse:
+      type: object
+      description: The shipping option type's details.
+      x-schemaName: AdminShippingOptionTypeResponse
+      required:
+        - shipping_option_type
+      properties:
+        shipping_option_type:
+          $ref: '#/components/schemas/AdminShippingOptionType'
     AdminShippingProfile:
       type: object
       description: The shipping profile's details..
