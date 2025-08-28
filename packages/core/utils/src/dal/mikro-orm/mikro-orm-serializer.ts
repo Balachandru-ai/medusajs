@@ -25,12 +25,12 @@ const STATIC_OPTIONS_SHAPE: {
   ignoreSerializers?: boolean
   forceObject?: boolean
 } = {
-  populate: undefined,
+  populate: ["*"],
   exclude: undefined,
-  preventCircularRef: undefined,
+  preventCircularRef: true,
   skipNull: undefined,
   ignoreSerializers: undefined,
-  forceObject: undefined,
+  forceObject: true,
 }
 
 const EMPTY_ARRAY: string[] = []
@@ -564,10 +564,15 @@ export const mikroOrmSerializer = <TOutput extends object>(
   }
 ): Promise<TOutput> => {
   return new Promise<TOutput>((resolve) => {
-    options ??= STATIC_OPTIONS_SHAPE
-    options.populate ??= ["*"]
-    options.preventCircularRef ??= true
-    options.forceObject ??= true
+    // Use the shared reference directly (this gives you the speedup)
+    if (!options) {
+      options = STATIC_OPTIONS_SHAPE
+    } else {
+      // Don't mutate the shared reference, create a copy if needed
+      if (options === STATIC_OPTIONS_SHAPE) {
+        options = { ...STATIC_OPTIONS_SHAPE, ...options }
+      }
+    }
 
     const data_ = (Array.isArray(data) ? data : [data]).filter(Boolean)
 
