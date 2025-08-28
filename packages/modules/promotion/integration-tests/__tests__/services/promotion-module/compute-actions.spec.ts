@@ -5146,6 +5146,384 @@ moduleIntegrationTestRunner({
             ])
           })
 
+          it("should handle 2+1 free promotion correctly for same product", async () => {
+            const twoGetOneFreePromotion = await createDefaultPromotion(
+              service,
+              {
+                code: "2PLUS1FREE",
+                type: PromotionType.BUYGET,
+                application_method: {
+                  type: "percentage",
+                  target_type: "items",
+                  value: 100,
+                  allocation: "each",
+                  max_quantity: 10, // Allow multiple applications
+                  apply_to_quantity: 1,
+                  buy_rules_min_quantity: 2,
+                  target_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                  buy_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                } as any,
+              }
+            )
+
+            // Test with 2 items - should get no promotion (need at least 3 for 2+1)
+            let context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 2,
+                  subtotal: 1000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            let result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([])
+
+            // Test with 3 items - should get 1 free
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 3,
+                  subtotal: 1500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (1500/3) = 500
+                code: "2PLUS1FREE",
+              },
+            ])
+
+            // Test with 5 items - should get 1 free (not 2, as you need 6 for 2 free)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 5,
+                  subtotal: 2500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (2500/5) = 500
+                code: "2PLUS1FREE",
+              },
+            ])
+
+            // Test with 6 items - should get 2 free
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 6,
+                  subtotal: 3000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 items * (3000/6) = 1000
+                code: "2PLUS1FREE",
+              },
+            ])
+          })
+
+          it("should handle multiple 2+1 free promotions correctly for same product", async () => {
+            // Apply 2+1 free promotion on the same product to a maximum of 2 items
+            const firstTwoGetOneFreePromotion = await createDefaultPromotion(
+              service,
+              {
+                code: "FIRST2PLUS1FREE",
+                type: PromotionType.BUYGET,
+                application_method: {
+                  type: "percentage",
+                  target_type: "items",
+                  value: 100,
+                  allocation: "each",
+                  max_quantity: 2,
+                  apply_to_quantity: 1,
+                  buy_rules_min_quantity: 2,
+                  target_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                  buy_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                } as any,
+              }
+            )
+
+            // Apply 2+1 free promotion on the same product to a maximum of 1 item
+            const secondTwoGetOneFreePromotion = await createDefaultPromotion(
+              service,
+              {
+                code: "SECOND2PLUS1FREE",
+                type: PromotionType.BUYGET,
+                application_method: {
+                  type: "percentage",
+                  target_type: "items",
+                  value: 100,
+                  allocation: "each",
+                  max_quantity: 1,
+                  apply_to_quantity: 1,
+                  buy_rules_min_quantity: 2,
+                  target_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                  buy_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                } as any,
+              }
+            )
+
+            // Test with 3 items - should get 1 free from first promotion (2 buy + 1 target)
+            let context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 3,
+                  subtotal: 1500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            let result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // Only first promotion should apply (3 items: 2 buy + 1 target = 3, no items left for second)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (1500/3) = 500
+                code: "FIRST2PLUS1FREE",
+              },
+            ])
+
+            // Test with 6 items - should get 2 free total (2 from first promotion and 1 from second promotion)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 6,
+                  subtotal: 3000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // Both promotions should apply: 6 items allows for 2 applications from first promotion and 1 from second promotion
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 item * (3000/6) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (3000/6) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+
+            // Test with 7 items - should still get 2 free total (not 3) (2 from first promotion and 1 from second promotion)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 7,
+                  subtotal: 3500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // 7 items: first promotion uses 3 (2+1), second uses 3 (2+1), 1 item left over (2 from first promotion and 1 from second promotion)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 item * (3500/7) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (3500/7) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+
+            // Test with 9 items - should get 3 free total (2 from first promotion and 1 from second promotion)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 9,
+                  subtotal: 4500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // 9 items: first promotion can apply twice (6 items), second once (3 items) (2 from first promotion and 1 from second promotion)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 items * (4500/9) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (4500/9) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 1000,
+                  subtotal: 500000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // 1000 items: first promotion can apply twice (6 items), second once (3 items) (2 from first promotion and 1 from second promotion)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 items * (4500/9) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (4500/9) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+          })
+
           it("should compute adjustment accurately for a single item when multiple buyget promos are applied", async () => {
             const buyXGetXPromotionBulk1 = await createDefaultPromotion(
               service,

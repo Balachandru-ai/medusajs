@@ -339,34 +339,59 @@ function applyPromotionToTargetItems(
   return { computedActions, appliedPromotionQuantity }
 }
 
+/*
+  Updates the remaining quantities of the eligible items (buy and target) based on the application.
+  This is used to prevent double-usage of the same item in the next iteration of the
+  application loop.
+
+  We track the total consumed quantities per item to handle buy+target scenarios of the same item.
+*/
 function updateEligibleItemQuantities(
   remainingBuyQuantities: Map<string, BigNumberInput>,
   remainingTargetQuantities: Map<string, BigNumberInput>,
   application: PromotionApplication
 ): void {
+  const totalConsumedQuantities = new Map<string, BigNumberInput>()
+
   for (const buyItem of application.buyItems) {
-    const currentRemaining =
-      remainingBuyQuantities.get(buyItem.item_id) || MathBN.convert(0)
-    remainingBuyQuantities.set(
+    const currentConsumed =
+      totalConsumedQuantities.get(buyItem.item_id) || MathBN.convert(0)
+
+    totalConsumedQuantities.set(
       buyItem.item_id,
-      MathBN.sub(currentRemaining, buyItem.quantity)
+      MathBN.add(currentConsumed, buyItem.quantity)
     )
   }
 
   for (const targetItem of application.targetItems) {
-    const currentTargetRemaining =
-      remainingTargetQuantities.get(targetItem.item_id) || MathBN.convert(0)
-    remainingTargetQuantities.set(
-      targetItem.item_id,
-      MathBN.sub(currentTargetRemaining, targetItem.quantity)
-    )
+    const currentConsumed =
+      totalConsumedQuantities.get(targetItem.item_id) || MathBN.convert(0)
 
-    if (remainingBuyQuantities.has(targetItem.item_id)) {
+    totalConsumedQuantities.set(
+      targetItem.item_id,
+      MathBN.add(currentConsumed, targetItem.quantity)
+    )
+  }
+
+  // Update remaining quantities of buy and target items based on totalConsumedQuantities tracked from previous iterations
+  for (const [itemId, consumedQuantity] of totalConsumedQuantities) {
+    if (remainingBuyQuantities.has(itemId)) {
       const currentBuyRemaining =
-        remainingBuyQuantities.get(targetItem.item_id) || MathBN.convert(0)
+        remainingBuyQuantities.get(itemId) || MathBN.convert(0)
+
       remainingBuyQuantities.set(
-        targetItem.item_id,
-        MathBN.sub(currentBuyRemaining, targetItem.quantity)
+        itemId,
+        MathBN.sub(currentBuyRemaining, consumedQuantity)
+      )
+    }
+
+    if (remainingTargetQuantities.has(itemId)) {
+      const currentTargetRemaining =
+        remainingTargetQuantities.get(itemId) || MathBN.convert(0)
+
+      remainingTargetQuantities.set(
+        itemId,
+        MathBN.sub(currentTargetRemaining, consumedQuantity)
       )
     }
   }
