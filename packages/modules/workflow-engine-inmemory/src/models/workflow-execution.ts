@@ -34,4 +34,8 @@ export const WorkflowExecution = model
       on: ["state"],
       where: "deleted_at IS NULL",
     },
+    {
+      on: ["run_id"],
+      where: "deleted_at IS NULL",
+    },
   ])

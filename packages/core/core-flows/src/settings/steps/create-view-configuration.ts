@@ -8,6 +8,13 @@ export type CreateViewConfigurationStepInput = CreateViewConfigurationDTO
 
 export const createViewConfigurationStepId = "create-view-configuration"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const createViewConfigurationStep = createStep(
   createViewConfigurationStepId,
   async (data: CreateViewConfigurationStepInput, { container }) => {

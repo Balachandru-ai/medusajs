@@ -6,8 +6,8 @@ import { scheduleJob } from "node-schedule"
 import os from "os"
 import path from "path"
 
-import { logger } from "@medusajs/framework/logger"
 import {
+  ContainerRegistrationKeys,
   dynamicImport,
   FileSystem,
   generateContainerTypes,
@@ -20,7 +20,7 @@ import {
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import { parse } from "url"
-import loaders from "../loaders"
+import loaders, { initializeContainer } from "../loaders"
 
 const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
@@ -33,6 +33,11 @@ const INSTRUMENTATION_FILE = "instrumentation"
  * errors.
  */
 export async function registerInstrumentation(directory: string) {
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   const fileSystem = new FileSystem(directory)
   const exists =
     (await fileSystem.exists(`${INSTRUMENTATION_FILE}.ts`)) ||
@@ -82,10 +87,10 @@ function displayAdminUrl({
     return
   }
 
-  const logger = container.resolve("logger")
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const {
     admin: { path: adminPath, disable },
-  } = container.resolve("configModule")
+  } = container.resolve(ContainerRegistrationKeys.CONFIG_MODULE)
 
   if (disable) {
     return
@@ -140,6 +145,9 @@ async function start(args: {
   cluster?: number
 }) {
   const { port = 9000, host, directory, types } = args
+
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")
