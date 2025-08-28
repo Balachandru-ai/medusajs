@@ -2909,7 +2909,9 @@
     "from": "From",
     "to": "To",
     "beaware": "Be aware",
-    "loading": "Loading"
+    "loading": "Loading",
+    "selectValue": "Select Value",
+    "selectValues": "Select Values"
   },
   "fields": {
     "amount": "Amount",

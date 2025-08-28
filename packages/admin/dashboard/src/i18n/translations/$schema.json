@@ -10805,6 +10805,12 @@
         },
         "loading": {
           "type": "string"
+        },
+        "selectValue": {
+          "type": "string"
+        },
+        "selectValues": {
+          "type": "string"
         }
       },
       "required": [
@@ -10817,7 +10823,9 @@
         "from",
         "to",
         "beaware",
-        "loading"
+        "loading",
+        "selectValue",
+        "selectValues"
       ],
       "additionalProperties": false
     },
