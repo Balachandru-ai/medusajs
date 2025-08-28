@@ -111,7 +111,7 @@ export const generatedEditDates = {
   "app/learn/resources/contribution-guidelines/admin-translations/page.mdx": "2025-02-11T16:57:46.726Z",
   "app/learn/resources/contribution-guidelines/docs/page.mdx": "2025-08-20T06:41:30.822Z",
   "app/learn/resources/usage/page.mdx": "2025-02-26T13:35:34.824Z",
-  "app/learn/configurations/medusa-config/page.mdx": "2025-08-28T15:32:46.809Z",
+  "app/learn/configurations/medusa-config/page.mdx": "2025-08-28T15:35:36.344Z",
   "app/learn/configurations/ts-aliases/page.mdx": "2025-07-23T15:32:18.008Z",
   "app/learn/production/worker-mode/page.mdx": "2025-07-18T15:19:45.352Z",
   "app/learn/fundamentals/module-links/read-only/page.mdx": "2025-08-15T11:52:13.403Z",
@@ -128,5 +128,5 @@ export const generatedEditDates = {
   "app/learn/introduction/from-v1-to-v2/page.mdx": "2025-07-30T08:13:48.592Z",
   "app/learn/debugging-and-testing/debug-workflows/page.mdx": "2025-07-30T13:45:14.117Z",
   "app/learn/fundamentals/data-models/json-properties/page.mdx": "2025-07-31T14:25:01.268Z",
-  "app/learn/debugging-and-testing/logging/custom-logger/page.mdx": "2025-08-28T15:32:46.809Z"
+  "app/learn/debugging-and-testing/logging/custom-logger/page.mdx": "2025-08-28T15:35:41.846Z"
 }
