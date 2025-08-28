@@ -133,7 +133,7 @@ function resolvePlugins(
     { resolve: "@medusajs/draft-order", options: {} },
   ]
 
-  if (!!configPlugins?.length) {
+  if (configPlugins?.length) {
     defaultPlugins.push(...configPlugins)
   }
 
