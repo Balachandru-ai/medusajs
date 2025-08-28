@@ -1,32 +1,32 @@
 [
   {
     "entities": 10,
-    "timeOldMs": 0.763746,
-    "timeNewMs": 0.6960124000000001,
-    "speedup": 16.914896636678023
+    "timeOldMs": 0.7418085,
+    "timeNewMs": 0.22072509999999998,
+    "speedup": 277.55724109526057
   },
   {
     "entities": 50,
-    "timeOldMs": 2.6348459999999996,
-    "timeNewMs": 1.6865833,
-    "speedup": 52.268822332374356
+    "timeOldMs": 2.3415624,
+    "timeNewMs": 0.5932085,
+    "speedup": 283.9156269814157
   },
   {
     "entities": 100,
-    "timeOldMs": 3.639950099999999,
-    "timeNewMs": 3.1441,
-    "speedup": 18.03477672755831
+    "timeOldMs": 3.9735249,
+    "timeNewMs": 1.0540167000000003,
+    "speedup": 270.61585975672875
   },
   {
     "entities": 1000,
-    "timeOldMs": 40.7740209,
-    "timeNewMs": 45.8333208,
-    "speedup": 11.504568462437925
+    "timeOldMs": 33.2404085,
+    "timeNewMs": 9.1275916,
+    "speedup": 264.0082721579618
   },
   {
     "entities": 10000,
-    "timeOldMs": 341.66370399999994,
-    "timeNewMs": 294.2663164,
-    "speedup": 16.103542755496637
+    "timeOldMs": 312.9137002,
+    "timeNewMs": 92.0821375,
+    "speedup": 243.25984888436864
   }
 ]
