@@ -56,7 +56,7 @@ export const refreshPaymentCollectionForCartWorkflowId =
 export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
   {
     name: refreshPaymentCollectionForCartWorkflowId,
-    idempotent: true,
+    idempotent: false,
   },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
