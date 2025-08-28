@@ -280,11 +280,6 @@ export const sidebar = [
           },
           {
             type: "link",
-            title: "Shipping Option Types",
-            path: "/settings/shipping-option-types",
-          },
-          {
-            type: "link",
             title: "Product Types",
             path: "/settings/product-types",
           },
@@ -305,8 +300,13 @@ export const sidebar = [
               },
               {
                 type: "link",
-                title: "Manage Shipping Profiles",
+                title: "Shipping Profiles",
                 path: "/settings/locations-and-shipping/shipping-profiles",
+              },
+              {
+                type: "link",
+                title: "Shipping Option Types",
+                path: "/settings/locations-and-shipping/shipping-option-types",
               },
             ],
           },

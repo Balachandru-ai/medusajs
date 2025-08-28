@@ -455,14 +455,6 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "Shipping Option Types",
-            "path": "/settings/shipping-option-types",
-            "children": []
-          },
-          {
-            "loaded": true,
-            "isPathHref": true,
-            "type": "link",
             "title": "Product Types",
             "path": "/settings/product-types",
             "children": []
@@ -494,8 +486,16 @@ export const generatedSidebars = [
                 "loaded": true,
                 "isPathHref": true,
                 "type": "link",
-                "title": "Manage Shipping Profiles",
+                "title": "Shipping Profiles",
                 "path": "/settings/locations-and-shipping/shipping-profiles",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Shipping Option Types",
+                "path": "/settings/locations-and-shipping/shipping-option-types",
                 "children": []
               }
             ]

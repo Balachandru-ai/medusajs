@@ -5,7 +5,7 @@ export const generatedEditDates = {
   "app/settings/sales-channels/page.mdx": "2025-05-30T13:31:09.754Z",
   "app/settings/users/page.mdx": "2025-05-30T13:31:29.991Z",
   "app/page.mdx": "2025-02-26T14:18:27.755Z",
-  "app/settings/page.mdx": "2025-02-19T15:46:09.018Z",
+  "app/settings/page.mdx": "2025-08-28T13:59:06.712Z",
   "app/products/export/page.mdx": "2025-07-31T14:29:30.511Z",
   "app/settings/return-reasons/page.mdx": "2025-05-30T13:31:05.596Z",
   "app/settings/regions/page.mdx": "2025-05-30T13:30:59.228Z",
@@ -47,8 +47,8 @@ export const generatedEditDates = {
   "app/price-lists/manage/page.mdx": "2025-05-30T13:28:47.929Z",
   "app/price-lists/page.mdx": "2025-05-30T13:28:53.668Z",
   "app/settings/tax-regions/page.mdx": "2025-05-30T13:31:21.021Z",
-  "app/settings/locations-and-shipping/locations/page.mdx": "2025-07-31T14:31:03.081Z",
-  "app/settings/locations-and-shipping/page.mdx": "2025-05-30T13:30:41.759Z",
+  "app/settings/locations-and-shipping/locations/page.mdx": "2025-08-28T14:06:20.266Z",
+  "app/settings/locations-and-shipping/page.mdx": "2025-08-28T14:01:34.185Z",
   "app/settings/locations-and-shipping/shipping-profiles/page.mdx": "2025-05-30T13:30:37.452Z",
   "app/settings/product-tags/page.mdx": "2025-05-30T13:30:46.705Z",
   "app/settings/product-types/page.mdx": "2025-05-30T13:30:50.623Z",
@@ -58,5 +58,6 @@ export const generatedEditDates = {
   "app/reset-password/page.mdx": "2025-05-30T13:30:13.055Z",
   "app/orders/draft-orders/create/page.mdx": "2025-08-26T09:34:53.621Z",
   "app/orders/draft-orders/manage/page.mdx": "2025-08-26T09:47:17.568Z",
-  "app/orders/draft-orders/page.mdx": "2025-08-26T09:31:53.784Z"
+  "app/orders/draft-orders/page.mdx": "2025-08-26T09:31:53.784Z",
+  "app/settings/locations-and-shipping/shipping-option-types/page.mdx": "2025-08-28T14:03:13.999Z"
 }
