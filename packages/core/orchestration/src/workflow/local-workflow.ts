@@ -467,7 +467,8 @@ export class LocalWorkflow {
     idempotencyKey: string,
     error?: Error | any,
     context?: Context,
-    subscribe?: DistributedTransactionEvents
+    subscribe?: DistributedTransactionEvents,
+    forcePermanentFailure?: boolean
   ): Promise<DistributedTransactionType> {
     this.medusaContext = context
     const { handler, orchestrator } = this.workflow
@@ -483,6 +484,7 @@ export class LocalWorkflow {
       error,
       handler: handler(this.container_, context),
       onLoad: this.onLoad.bind(this),
+      forcePermanentFailure,
     })
 
     try {
