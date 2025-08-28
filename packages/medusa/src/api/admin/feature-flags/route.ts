@@ -3,6 +3,9 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const AUTHENTICATE = false
 
+/**
+ * @since 2.10.0
+ */
 export const GET = async (
   req: MedusaRequest,
   res: MedusaResponse<{ feature_flags: Record<string, boolean> }>

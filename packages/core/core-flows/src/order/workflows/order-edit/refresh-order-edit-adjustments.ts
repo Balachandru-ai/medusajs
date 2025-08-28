@@ -26,15 +26,72 @@ export interface RefreshOrderEditAdjustmentsWorkflowInput {
    * The order edit to refresh the adjustments for.
    */
   order: {
+    /**
+     * The ID of the order.
+     */
     id: string
+    /**
+     * The status of the order.
+     */
     status: OrderStatus
+    /**
+     * The 2 character ISO code for the currency.
+     * 
+     * @example
+     * "usd"
+     */
     currency_code: string
+    /**
+     * The date the order was canceled at.
+     */
     canceled_at?: string | Date
+    /**
+     * The items in the order.
+     */
     items: ComputeActionItemLine[]
+    /**
+     * The promotions applied to the order.
+     */
     promotions: PromotionDTO[]
   }
 }
 
+/**
+ * This workflow refreshes the adjustments for an order edit. It's used by other workflows, such as
+ * {@link beginOrderEditOrderWorkflow}.
+ * 
+ * You can use this workflow within your own customizations or custom workflows, allowing you to wrap custom logic around refreshing adjustments for order edits
+ * in your custom flows.
+ * 
+ * @since 2.10.0
+ * 
+ * @example
+ * const { result } = await refreshOrderEditAdjustmentsWorkflow(container)
+ *   .run({
+ *     input: {
+ *       order: {
+ *         id: "order_123",
+ *         // Imported from @medusajs/framework/types
+ *         status: OrderStatus.PENDING,
+ *         currency_code: "usd",
+ *         items: [
+ *           {
+ *             id: "item_1",
+ *             quantity: 1,
+ *             subtotal: 10,
+ *             original_total: 10,
+ *             is_discountable: true
+ *           }
+ *         ],
+ *         promotions: [],
+ *       },
+ *     },
+ *   })
+ * 
+ * @summary
+ *
+ * Refreshes adjustments for an order edit.
+ */
 export const refreshOrderEditAdjustmentsWorkflow = createWorkflow(
   refreshOrderEditAdjustmentsWorkflowId,
   function (input: WorkflowData<RefreshOrderEditAdjustmentsWorkflowInput>) {
