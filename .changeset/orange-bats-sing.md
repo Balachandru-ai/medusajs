@@ -2,4 +2,4 @@
 "@medusajs/dashboard": patch
 ---
 
-fix(dashboard): fules form operator change
+fix(dashboard): rules form operator change
