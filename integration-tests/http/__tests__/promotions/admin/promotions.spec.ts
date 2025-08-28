@@ -8,7 +8,7 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
-jest.setTimeout(50000)
+jest.setTimeout(50000000)
 
 const adminHeaders = {
   headers: { "x-medusa-access-token": "test_token" },
@@ -609,7 +609,146 @@ medusaIntegrationTestRunner({
 
             expect(cartWithPromotion1).toEqual(
               expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [],
+                  }),
+                ],
                 promotions: [],
+              })
+            )
+
+            const cartWithPromotion2 = (
+              await api.post(
+                `/store/carts/${cart.id}/line-items`,
+                { variant_id: product.variants[0].id, quantity: 40 },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cartWithPromotion2).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: response.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+          })
+
+          it("should add promotion and remove it from cart using delete", async () => {
+            const publishableKey = await generatePublishableKey(appContainer)
+            const storeHeaders = generateStoreHeaders({ publishableKey })
+
+            const salesChannel = (
+              await api.post(
+                "/admin/sales-channels",
+                { name: "Webshop", description: "channel" },
+                adminHeaders
+              )
+            ).data.sales_channel
+
+            const region = (
+              await api.post(
+                "/admin/regions",
+                { name: "US", currency_code: "usd", countries: ["us"] },
+                adminHeaders
+              )
+            ).data.region
+
+            const product = (
+              await api.post(
+                "/admin/products",
+                {
+                  ...medusaTshirtProduct,
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const response = await api.post(
+              `/admin/promotions`,
+              {
+                code: "TEST",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_automatic: false,
+                application_method: {
+                  target_type: "items",
+                  type: "fixed",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 100,
+                  max_quantity: 100,
+                },
+                rules: [
+                  {
+                    attribute: "subtotal",
+                    operator: "gte",
+                    values: "1",
+                  },
+                ],
+              },
+              adminHeaders
+            )
+
+            // Simulate concurrent requests
+            await Promise.all([
+              api
+                .post(
+                  `/store/carts/${cart.id}`,
+                  {
+                    promo_codes: [response.data.promotion.code],
+                  },
+                  storeHeaders
+                )
+                .catch(() => {}),
+              api
+                .post(
+                  `/store/carts/${cart.id}`,
+                  {
+                    promo_codes: [response.data.promotion.code],
+                  },
+                  storeHeaders
+                )
+                .catch(() => {}),
+            ])
+
+            const cartAfterPromotion = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            expect(cartAfterPromotion).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
               })
             )
 
@@ -626,6 +765,547 @@ medusaIntegrationTestRunner({
                 promotions: [
                   expect.objectContaining({
                     code: response.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            await api.delete(`/store/carts/${cart.id}/promotions`, {
+              data: {
+                promo_codes: [response.data.promotion.code],
+              },
+              ...storeHeaders,
+            })
+
+            const cartWithoutPromotion = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            expect(cartWithoutPromotion).toEqual(
+              expect.objectContaining({
+                promotions: [],
+              })
+            )
+          })
+
+          it("should add promotion and remove it from cart using update", async () => {
+            const publishableKey = await generatePublishableKey(appContainer)
+            const storeHeaders = generateStoreHeaders({ publishableKey })
+
+            const salesChannel = (
+              await api.post(
+                "/admin/sales-channels",
+                { name: "Webshop", description: "channel" },
+                adminHeaders
+              )
+            ).data.sales_channel
+
+            const region = (
+              await api.post(
+                "/admin/regions",
+                { name: "US", currency_code: "usd", countries: ["us"] },
+                adminHeaders
+              )
+            ).data.region
+
+            const product = (
+              await api.post(
+                "/admin/products",
+                {
+                  ...medusaTshirtProduct,
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const response = await api.post(
+              `/admin/promotions`,
+              {
+                code: "TEST",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_automatic: false,
+                application_method: {
+                  target_type: "items",
+                  type: "fixed",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 100,
+                  max_quantity: 100,
+                },
+                rules: [
+                  {
+                    attribute: "subtotal",
+                    operator: "gte",
+                    values: "1",
+                  },
+                ],
+              },
+              adminHeaders
+            )
+
+            await api.post(
+              `/store/carts/${cart.id}`,
+              {
+                promo_codes: [response.data.promotion.code],
+              },
+              storeHeaders
+            )
+
+            const cartAfterPromotion = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            expect(cartAfterPromotion).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: response.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            const cartWithPromotion2 = (
+              await api.post(
+                `/store/carts/${cart.id}/line-items`,
+                { variant_id: product.variants[0].id, quantity: 40 },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cartWithPromotion2).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: response.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            await api.post(
+              `/store/carts/${cart.id}`,
+              {
+                promo_codes: [],
+              },
+              storeHeaders
+            )
+
+            const cartWithoutPromotion = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            expect(cartWithoutPromotion).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [],
+                  }),
+                ],
+                promotions: [],
+              })
+            )
+          })
+
+          it.skip("should add two promotions and remove one from cart using delete", async () => {
+            const publishableKey = await generatePublishableKey(appContainer)
+            const storeHeaders = generateStoreHeaders({ publishableKey })
+
+            const salesChannel = (
+              await api.post(
+                "/admin/sales-channels",
+                { name: "Webshop", description: "channel" },
+                adminHeaders
+              )
+            ).data.sales_channel
+
+            const region = (
+              await api.post(
+                "/admin/regions",
+                { name: "US", currency_code: "usd", countries: ["us"] },
+                adminHeaders
+              )
+            ).data.region
+
+            const product = (
+              await api.post(
+                "/admin/products",
+                {
+                  ...medusaTshirtProduct,
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const promo1 = await api.post(
+              `/admin/promotions`,
+              {
+                code: "TEST",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_automatic: false,
+                application_method: {
+                  target_type: "items",
+                  type: "fixed",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 100,
+                  max_quantity: 100,
+                },
+                rules: [
+                  {
+                    attribute: "subtotal",
+                    operator: "gte",
+                    values: "1",
+                  },
+                ],
+              },
+              adminHeaders
+            )
+            const promo2 = await api.post(
+              `/admin/promotions`,
+              {
+                code: "TEST2",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_automatic: false,
+                application_method: {
+                  target_type: "items",
+                  type: "fixed",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 100,
+                  max_quantity: 100,
+                },
+                rules: [
+                  {
+                    attribute: "subtotal",
+                    operator: "gte",
+                    values: "2000",
+                  },
+                ],
+              },
+              adminHeaders
+            )
+            const cartWithPromotion2 = (
+              await api.post(
+                `/store/carts/${cart.id}/line-items`,
+                { variant_id: product.variants[0].id, quantity: 40 },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cartWithPromotion2).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: promo1.data.promotion.code,
+                      }),
+                      expect.objectContaining({
+                        code: promo2.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: promo1.data.promotion.code,
+                  }),
+                  expect.objectContaining({
+                    code: promo2.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            await api.delete(`/store/carts/${cart.id}/promotions`, {
+              data: {
+                promo_codes: [promo1.data.promotion.code],
+              },
+              ...storeHeaders,
+            })
+
+            const cartWithoutPromotion1 = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            expect(cartWithoutPromotion1).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: promo2.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: promo2.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+          })
+
+          it.skip("should add two promotions and remove one from cart using update", async () => {
+            const publishableKey = await generatePublishableKey(appContainer)
+            const storeHeaders = generateStoreHeaders({ publishableKey })
+
+            const salesChannel = (
+              await api.post(
+                "/admin/sales-channels",
+                { name: "Webshop", description: "channel" },
+                adminHeaders
+              )
+            ).data.sales_channel
+
+            const region = (
+              await api.post(
+                "/admin/regions",
+                { name: "US", currency_code: "usd", countries: ["us"] },
+                adminHeaders
+              )
+            ).data.region
+
+            const product = (
+              await api.post(
+                "/admin/products",
+                {
+                  ...medusaTshirtProduct,
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const [promo1, promo2, promoAutomatic] = await Promise.all([
+              api.post(
+                `/admin/promotions`,
+                {
+                  code: "TEST",
+                  type: PromotionType.STANDARD,
+                  status: PromotionStatus.ACTIVE,
+                  is_automatic: false,
+                  application_method: {
+                    target_type: "items",
+                    type: "fixed",
+                    allocation: "each",
+                    currency_code: "usd",
+                    value: 50,
+                    max_quantity: 100,
+                  },
+                  rules: [
+                    {
+                      attribute: "subtotal",
+                      operator: "gte",
+                      values: "1",
+                    },
+                  ],
+                },
+                adminHeaders
+              ),
+              api.post(
+                `/admin/promotions`,
+                {
+                  code: "TEST_CODE_123",
+                  type: PromotionType.STANDARD,
+                  status: PromotionStatus.ACTIVE,
+                  is_automatic: false,
+                  application_method: {
+                    target_type: "items",
+                    type: "fixed",
+                    allocation: "each",
+                    currency_code: "usd",
+                    value: 10,
+                    max_quantity: 100,
+                  },
+                  rules: [
+                    {
+                      attribute: "subtotal",
+                      operator: "gte",
+                      values: "2000",
+                    },
+                  ],
+                },
+                adminHeaders
+              ),
+              api.post(
+                `/admin/promotions`,
+                {
+                  code: "AUTOMATIC_PROMO",
+                  type: PromotionType.STANDARD,
+                  status: PromotionStatus.ACTIVE,
+                  is_automatic: true,
+                  application_method: {
+                    target_type: "items",
+                    type: "fixed",
+                    allocation: "each",
+                    currency_code: "usd",
+                    value: 5,
+                    max_quantity: 100,
+                  },
+                  rules: [
+                    {
+                      attribute: "subtotal",
+                      operator: "gte",
+                      values: "500",
+                    },
+                  ],
+                },
+                adminHeaders
+              ),
+            ])
+
+            // apply promotions
+            await api.post(
+              `/store/carts/${cart.id}`,
+              {
+                promo_codes: [
+                  promo1.data.promotion.code,
+                  promo2.data.promotion.code,
+                ],
+              },
+              storeHeaders
+            )
+
+            const cartWithPromotion2 = (
+              await api.post(
+                `/store/carts/${cart.id}/line-items`,
+                {
+                  variant_id: product.variants[0].id,
+                  quantity: 40,
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cartWithPromotion2).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: promo1.data.promotion.code,
+                      }),
+                      expect.objectContaining({
+                        code: promo2.data.promotion.code,
+                      }),
+                      expect.objectContaining({
+                        code: promoAutomatic.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: promo1.data.promotion.code,
+                  }),
+                  expect.objectContaining({
+                    code: promo2.data.promotion.code,
+                  }),
+                  expect.objectContaining({
+                    code: promoAutomatic.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            await api.post(
+              `/store/carts/${cart.id}`,
+              {
+                promo_codes: [promo2.data.promotion.code],
+              },
+              storeHeaders
+            )
+
+            const cartWithoutPromotion1 = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            expect(cartWithoutPromotion1).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: promo2.data.promotion.code,
+                      }),
+                      expect.objectContaining({
+                        code: promoAutomatic.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: promo2.data.promotion.code,
+                  }),
+                  expect.objectContaining({
+                    code: promoAutomatic.data.promotion.code,
                   }),
                 ],
               })

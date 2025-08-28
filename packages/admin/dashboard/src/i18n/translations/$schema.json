@@ -5934,9 +5934,22 @@
               },
               "required": ["label", "description"],
               "additionalProperties": false
+            },
+            "shippingOptionTypes": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "description"],
+              "additionalProperties": false
             }
           },
-          "required": ["header", "shippingProfiles"],
+          "required": ["header", "shippingProfiles", "shippingOptionTypes"],
           "additionalProperties": false
         },
         "salesChannels": {

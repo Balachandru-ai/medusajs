@@ -54,7 +54,10 @@ export const refreshPaymentCollectionForCartWorkflowId =
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
-  refreshPaymentCollectionForCartWorkflowId,
+  {
+    name: refreshPaymentCollectionForCartWorkflowId,
+    idempotent: true,
+  },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return !input.cart

@@ -1,14 +1,18 @@
-import path from "path"
+import { Compiler } from "@medusajs/framework/build-tools"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import * as swcCore from "@swc/core"
 import { execFile } from "child_process"
-import { logger } from "@medusajs/framework/logger"
-import { Compiler } from "@medusajs/framework/build-tools"
+import path from "path"
+import { initializeContainer } from "../../loaders"
 
 export default async function developPlugin({
   directory,
 }: {
   directory: string
 }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   let isBusy = false
   const compiler = new Compiler(directory, logger)
   const parsedConfig = await compiler.loadTSConfigFile()

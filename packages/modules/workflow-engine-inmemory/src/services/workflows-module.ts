@@ -180,6 +180,7 @@ export class WorkflowsModuleService<
       ...(restContext ?? {}),
       ...(options_.context ?? {}),
       eventGroupId,
+      runId: options_.runId,
       preventReleaseEvents: localPreventReleaseEvents,
     }
 
