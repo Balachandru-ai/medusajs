@@ -8,17 +8,17 @@ In this guide, you'll learn how to override the default [Logger](../page.mdx) in
 
 ## Why Override the Logger?
 
-Medusa's default logger logs your application's events, errors, and general log messages into the console. However, you might want to customize this behavior for your specific use case.
+Medusa's default `Logger` logs your application's events, errors, and general log messages into the console. However, you might want to customize this behavior for your specific use case.
 
-For example, you might want to change the logs format, or add additional metadata to your logs. In those cases, it's useful to override the default logger with your custom implementation.
+For example, you might want to change the logs format, or add additional metadata to your logs. In those cases, it's useful to override the default `Logger` with your custom implementation.
 
-After overriding the logger, Medusa will use your custom logger whenever it needs to log a message.
+After overriding the `Logger`, Medusa will use your custom logger whenever it needs to log a message.
 
 ---
 
 ## How to Override the Logger?
 
-To override the default logger:
+To override the default `Logger`:
 
 1. Create a class that extends the `Logger` interface from `@medusajs/framework/types`.
 2. Pass the class in the Medusa configurations.
