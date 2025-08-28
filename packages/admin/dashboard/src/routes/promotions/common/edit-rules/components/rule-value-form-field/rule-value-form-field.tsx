@@ -6,14 +6,13 @@ import {
 import { Input } from "@medusajs/ui"
 import { useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 
 import { Form } from "../../../../../../components/common/form"
 import { Combobox } from "../../../../../../components/inputs/combobox"
 import { useStore } from "../../../../../../hooks/api"
 import { useComboboxData } from "../../../../../../hooks/use-combobox-data"
 import { sdk } from "../../../../../../lib/client"
-import { isDirty } from "zod"
 
 type RuleValueFormFieldType = {
   form: any
@@ -56,8 +55,6 @@ export const RuleValueFormField = ({
   applicationMethodTargetType,
 }: RuleValueFormFieldType) => {
   const { t } = useTranslation()
-
-  const firstRender = useRef(true)
 
   const attribute = attributes?.find(
     (attr) => attr.value === fieldRule.attribute
