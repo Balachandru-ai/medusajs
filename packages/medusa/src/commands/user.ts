@@ -1,7 +1,6 @@
-import { logger } from "@medusajs/framework/logger"
-import { Modules } from "@medusajs/framework/utils"
-import express from "express"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { track } from "@medusajs/telemetry"
+import express from "express"
 import loaders from "../loaders"
 
 export default async function ({
@@ -25,6 +24,7 @@ export default async function ({
       directory,
       expressApp: app,
     })
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
     const userService = container.resolve(Modules.USER)
     const authService = container.resolve(Modules.AUTH)

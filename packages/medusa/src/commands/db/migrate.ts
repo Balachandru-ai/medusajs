@@ -1,18 +1,17 @@
 import { MEDUSA_CLI_PATH, MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { join } from "path"
-
+import { Logger, MedusaContainer } from "@medusajs/types"
 import { fork } from "child_process"
-import path from "path"
+import path, { join } from "path"
 import { initializeContainer } from "../../loaders"
 import { ensureDbExists } from "../utils"
 import { syncLinks } from "./sync-links"
+
 const TERMINAL_SIZE = process.stdout.columns
 
 const cliPath = path.resolve(MEDUSA_CLI_PATH, "..", "..", "cli.js")
@@ -27,17 +26,21 @@ export async function migrate({
   skipScripts,
   executeAllLinks,
   executeSafeLinks,
+  logger,
+  container,
 }: {
   directory: string
   skipLinks: boolean
   skipScripts: boolean
   executeAllLinks: boolean
   executeSafeLinks: boolean
+  logger: Logger
+  container: MedusaContainer
 }): Promise<boolean> {
   /**
    * Setup
    */
-  const container = await initializeContainer(directory)
+
   await ensureDbExists(container)
 
   const medusaAppLoader = new MedusaAppLoader()
@@ -51,7 +54,7 @@ export async function migrate({
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   /**
    * Run migrations
@@ -60,17 +63,19 @@ export async function migrate({
   await medusaAppLoader.runModulesMigrations({
     action: "run",
   })
-  console.log(new Array(TERMINAL_SIZE).join("-"))
+  logger.log(new Array(TERMINAL_SIZE).join("-"))
   logger.info("Migrations completed")
 
   /**
    * Sync links
    */
   if (!skipLinks) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     await syncLinks(medusaAppLoader, {
       executeAll: executeAllLinks,
       executeSafe: executeSafeLinks,
+      directory,
+      container,
     })
   }
 
@@ -78,7 +83,7 @@ export async function migrate({
     /**
      * Run migration scripts
      */
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     const childProcess = fork(cliPath, ["db:migrate:scripts"], {
       cwd: directory,
       env: process.env,
@@ -104,6 +109,9 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     const migrated = await migrate({
       directory,
@@ -111,6 +119,8 @@ const main = async function ({
       skipScripts,
       executeAllLinks,
       executeSafeLinks,
+      logger,
+      container,
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {

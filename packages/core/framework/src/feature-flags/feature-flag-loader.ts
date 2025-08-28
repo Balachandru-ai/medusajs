@@ -9,7 +9,7 @@ import { asFunction } from "awilix"
 import { normalize } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
-import { logger } from "../logger"
+import { logger as defaultLogger } from "../logger"
 
 container.register(
   ContainerRegistrationKeys.FEATURE_FLAG_ROUTER,
@@ -25,9 +25,9 @@ export async function featureFlagsLoader(
 ): Promise<FlagRouter> {
   const confManager = !!configManager.baseDir
     ? configManager.config
-    : { featureFlags: {} }
+    : { featureFlags: {}, logger: defaultLogger }
 
-  const { featureFlags: projectConfigFlags = {} } = confManager
+  const { featureFlags: projectConfigFlags = {}, logger } = confManager
 
   if (!sourcePath) {
     return FeatureFlag

@@ -1,5 +1,6 @@
-import { logger } from "@medusajs/framework/logger"
+import type { Logger } from "@medusajs/framework/types"
 import {
+  ContainerRegistrationKeys,
   defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
@@ -11,6 +12,7 @@ import { dirname, join } from "path"
 
 import { MetadataStorage } from "@mikro-orm/core"
 import { MikroORM } from "@mikro-orm/postgresql"
+import { initializeContainer } from "../../../loaders"
 
 const TERMINAL_SIZE = process.stdout.columns
 
@@ -18,6 +20,11 @@ const TERMINAL_SIZE = process.stdout.columns
  * Generate migrations for all scanned modules in a plugin
  */
 const main = async function ({ directory }) {
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     const moduleDescriptors = [] as {
       serviceName: string
@@ -46,14 +53,14 @@ const main = async function ({ directory }) {
      */
     logger.info("Generating migrations...")
 
-    await generateMigrations(moduleDescriptors)
+    await generateMigrations(moduleDescriptors, logger)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migrations generated")
 
     process.exit()
   } catch (error) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
 
     logger.error(error.message, error)
     process.exit(1)
@@ -101,7 +108,8 @@ async function generateMigrations(
     serviceName: string
     migrationsPath: string
     entities: any[]
-  }[] = []
+  }[] = [],
+  logger: Logger
 ) {
   const DB_HOST = process.env.DB_HOST ?? "localhost"
   const DB_USERNAME = process.env.DB_USERNAME ?? ""

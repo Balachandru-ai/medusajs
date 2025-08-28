@@ -62,7 +62,8 @@ async function loadCustomLinks(directory: string, container: MedusaContainer) {
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const { LinkLoader } = await import("@medusajs/framework")
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 }

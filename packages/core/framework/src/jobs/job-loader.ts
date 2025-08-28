@@ -6,7 +6,6 @@ import {
   createWorkflow,
   StepResponse,
 } from "@medusajs/workflows-sdk"
-import { logger } from "../logger"
 import { ResourceLoader } from "../utils/resource-loader"
 
 type CronJobConfig = {
@@ -20,8 +19,8 @@ type CronJobHandler = (container: MedusaContainer) => Promise<any>
 export class JobLoader extends ResourceLoader {
   protected resourceName = "job"
 
-  constructor(sourceDir: string | string[]) {
-    super(sourceDir)
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
+    super(sourceDir, container)
   }
 
   protected async onFileLoaded(
@@ -36,7 +35,7 @@ export class JobLoader extends ResourceLoader {
     }
 
     this.validateConfig(fileExports.config)
-    logger.debug(`Registering job from ${path}.`)
+    this.logger.debug(`Registering job from ${path}.`)
     this.register({
       config: fileExports.config,
       handler: fileExports.default,
@@ -96,7 +95,7 @@ export class JobLoader extends ResourceLoader {
           const res = await handler(container)
           return new StepResponse(res, res)
         } catch (error) {
-          logger.error(
+          this.logger.error(
             `Scheduled job ${config.name} failed with error: ${error.message}`
           )
           throw error
@@ -125,6 +124,6 @@ export class JobLoader extends ResourceLoader {
   async load() {
     await super.discoverResources()
 
-    logger.debug(`Jobs registered.`)
+    this.logger.debug(`Jobs registered.`)
   }
 }

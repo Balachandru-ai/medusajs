@@ -1,9 +1,24 @@
-import { logger } from "@medusajs/framework/logger"
 import { FileSystem } from "@medusajs/framework/utils"
 import { join } from "path"
 import main from "../../generate"
 
+const logger = {
+  log: jest.fn(),
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+}
+
 jest.mock("@medusajs/framework/logger")
+jest.mock("../../../../../loaders", () => {
+  return {
+    initializeContainer: jest.fn().mockImplementation(() => {
+      return {
+        resolve: jest.fn(() => logger),
+      }
+    }),
+  }
+})
 
 describe("plugin-generate", () => {
   beforeEach(() => {
@@ -13,6 +28,8 @@ describe("plugin-generate", () => {
       .mockImplementation((code?: string | number | null) => {
         return code as never
       })
+
+    jest.mock("@medusajs/framework/logger")
   })
 
   afterEach(async () => {
