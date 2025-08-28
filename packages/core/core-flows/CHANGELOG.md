@@ -1,5 +1,14 @@
 # @medusajs/core-flows
 
+## 2.10.1
+
+### Patch Changes
+
+- [#13336](https://github.com/medusajs/medusa/pull/13336) [`8176d0f684be95331ce3bec31d67c5f857f9c85a`](https://github.com/medusajs/medusa/commit/8176d0f684be95331ce3bec31d67c5f857f9c85a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(core-flows): revert idempotent cart
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
 ## 2.10.0
 
 ### Minor Changes
