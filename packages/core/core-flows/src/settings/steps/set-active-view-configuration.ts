@@ -9,6 +9,13 @@ export type SetActiveViewConfigurationStepInput = {
 
 export const setActiveViewConfigurationStepId = "set-active-view-configuration"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const setActiveViewConfigurationStep = createStep(
   setActiveViewConfigurationStepId,
   async (input: SetActiveViewConfigurationStepInput, { container }) => {

@@ -5,8 +5,12 @@ export type IndexOperatorMap<T> = {
   $gt?: T
   $gte?: T
   $ne?: T
-  $in?: T
+  $in?: T[]
+  $nin?: T[]
   $is?: T
   $like?: T
   $ilike?: T
+  $and?: T[]
+  $or?: T[]
+  $not?: T | T[]
 }

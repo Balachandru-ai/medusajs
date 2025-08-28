@@ -26,9 +26,21 @@ export interface GetVariantPriceSetsStepInput {
   context?: Record<string, unknown>
 }
 
+/**
+ * The details of the variants to get price sets for.
+ */
 export interface GetVariantPriceSetsStepBulkInput {
+  /**
+   * The variants to get price sets for.
+   */
   data: {
+    /**
+     * The ID of the variant to get the price set for.
+     */
     variantId: string
+    /**
+     * The context to use when calculating the price set.
+     */
     context?: Record<string, unknown>
   }[]
 }
