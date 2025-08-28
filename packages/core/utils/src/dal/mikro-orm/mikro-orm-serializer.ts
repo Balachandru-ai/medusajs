@@ -1,3 +1,8 @@
+/**
+ * This is an optimized mikro orm serializer to create a highly optimized serialization pipeline
+ * that leverages V8's JIT compilation and inline caching mechanisms.
+ */
+
 import {
   Collection,
   EntityDTO,
@@ -18,7 +23,6 @@ type CustomSerializeOptions<T, P = any> = SerializeOptions<T, P & string> & {
   populate?: [keyof T][] | boolean
 }
 
-// V8 Optimization: Static object shapes for consistent property access patterns
 const STATIC_OPTIONS_SHAPE = {
   populate: undefined,
   exclude: undefined,
@@ -28,32 +32,25 @@ const STATIC_OPTIONS_SHAPE = {
   forceObject: undefined,
 }
 
-// V8 Optimization: Pre-allocated arrays to avoid hidden class transitions
 const EMPTY_ARRAY: string[] = []
-const EMPTY_OBJECT = {}
 
-// V8 Optimization: Constants for string operations (avoid string allocation)
 const WILDCARD = "*"
 const DOT = "."
 const UNDERSCORE = "_"
 
-// V8 Optimization: Monomorphic function with consistent parameter shapes
 function isVisible<T extends object>(
   meta: EntityMetadata<T>,
   propName: string,
   options: CustomSerializeOptions<T> = STATIC_OPTIONS_SHAPE
 ): boolean {
-  // V8 Optimization: Early return for monomorphic path
   const populate = options.populate
   if (populate === true) {
     return true
   }
 
-  // V8 Optimization: Use monomorphic array check
   if (Array.isArray(populate)) {
     const exclude = options.exclude
     if (exclude && exclude.length > 0) {
-      // V8 Optimization: Monomorphic loop with consistent array access
       const excludeLen = exclude.length
       for (let i = 0; i < excludeLen; i++) {
         if (exclude[i] === propName) {
@@ -62,18 +59,15 @@ function isVisible<T extends object>(
       }
     }
 
-    // V8 Optimization: Pre-compute string length to avoid repeated property access
     const propNameLen = propName.length
     const propPrefix = propName + DOT
     const populateLen = populate.length
 
-    // V8 Optimization: Monomorphic loop with consistent array access
     for (let i = 0; i < populateLen; i++) {
       const item = populate[i]
       if (item === propName || item === WILDCARD) {
         return true
       }
-      // V8 Optimization: Use length check before substring for early exit
       if (
         item.length > propNameLen &&
         item.substring(0, propNameLen + 1) === propPrefix
@@ -83,16 +77,13 @@ function isVisible<T extends object>(
     }
   }
 
-  // V8 Optimization: Cache property access to maintain monomorphic shape
   const prop = meta.properties[propName]
   const visible = (prop && !prop.hidden) || prop === undefined
-  // V8 Optimization: Use charAt(0) for single character check (faster than startsWith)
   const prefixed = prop && !prop.primary && propName.charAt(0) === UNDERSCORE
 
   return visible && !prefixed
 }
 
-// V8 Optimization: Monomorphic function with consistent parameter shapes
 function isPopulated<T extends object>(
   entity: T,
   propName: string,
@@ -100,13 +91,11 @@ function isPopulated<T extends object>(
 ): boolean {
   const populate = options.populate
 
-  // V8 Optimization: Monomorphic array check
   if (Array.isArray(populate)) {
     const propNameLen = propName.length
     const propPrefix = propName + DOT
     const populateLen = populate.length
 
-    // V8 Optimization: Monomorphic loop with consistent array access
     for (let i = 0; i < populateLen; i++) {
       const item = populate[i]
       if (item === propName || item === WILDCARD) {
@@ -122,7 +111,6 @@ function isPopulated<T extends object>(
     return false
   }
 
-  // V8 Optimization: Monomorphic boolean check
   if (typeof populate === "boolean") {
     return populate
   }
@@ -137,7 +125,6 @@ function isPopulated<T extends object>(
  * @param options
  * @param parents
  */
-// V8 Optimization: Monomorphic function with consistent parameter shapes
 function filterEntityPropToSerialize({
   propName,
   meta,
@@ -149,25 +136,21 @@ function filterEntityPropToSerialize({
   options: CustomSerializeOptions<any>
   parents?: string[]
 }): boolean {
-  // V8 Optimization: Use consistent array shape
   const parentsArray = parents || EMPTY_ARRAY
 
   const isVisibleRes = isVisible(meta, propName, options)
   const prop = meta.properties[propName]
 
-  // Only prevent circular references if prop is a relation
   if (
     prop &&
     options.preventCircularRef &&
     isVisibleRes &&
     prop.kind !== ReferenceKind.SCALAR
   ) {
-    // mapToPk would represent a foreign key and we want to keep them
     if (!!prop.mapToPk) {
       return true
     }
 
-    // V8 Optimization: Monomorphic loop with consistent array access
     const parentsLen = parentsArray.length
     for (let i = 0; i < parentsLen; i++) {
       if (parentsArray[i] === prop.type) {
@@ -181,11 +164,9 @@ function filterEntityPropToSerialize({
 }
 
 export class EntitySerializer {
-  // V8 Optimization: Static property cache with consistent Map shape
   private static propertyCache = new Map<string, string>()
   private static PROPERTY_CACHE_SIZE = 2000
 
-  // V8 Optimization: Pre-allocated objects for consistent shapes
   private static readonly EMPTY_PARENTS: string[] = []
   private static readonly EMPTY_KEYS = new Set<string>()
 
@@ -194,7 +175,6 @@ export class EntitySerializer {
     options: CustomSerializeOptions<T, P> = STATIC_OPTIONS_SHAPE,
     parents: string[] = EMPTY_ARRAY
   ): EntityDTO<Loaded<T, P>> {
-    // V8 Optimization: Use consistent array shape
     const parents_ =
       parents.length > 0 ? Array.from(new Set(parents)) : this.EMPTY_PARENTS
 
@@ -217,14 +197,11 @@ export class EntitySerializer {
       visitedSerialized?: Map<string, any>
     }
 
-    // V8 Optimization: Use consistent object shape
     const ret = {} as EntityDTO<Loaded<T, P>>
 
-    // V8 Optimization: Reuse Set object to maintain hidden class
     const keys = this.EMPTY_KEYS
     keys.clear()
 
-    // V8 Optimization: Batch add keys to maintain Set hidden class
     const primaryKeys = meta.primaryKeys
     const primaryKeysLen = primaryKeys.length
     for (let i = 0; i < primaryKeysLen; i++) {
@@ -242,16 +219,13 @@ export class EntitySerializer {
       root.visited.add(entity)
     }
 
-    // V8 Optimization: Convert to array once and use monomorphic loop
     const keysArray = Array.from(keys)
     const keysLen = keysArray.length
 
-    // V8 Optimization: Cache frequently accessed properties
     const className = meta.className
     const platform = wrapped.__platform
     const skipNull = options.skipNull
 
-    // V8 Optimization: Single pass processing with monomorphic loop
     for (let i = 0; i < keysLen; i++) {
       const prop = keysArray[i]
 
@@ -288,7 +262,6 @@ export class EntitySerializer {
       }
 
       if (typeof val !== "undefined" && !(val === null && skipNull)) {
-        // V8 Optimization: Direct property assignment to maintain object shape
         ret[this.propertyName(meta, prop as keyof T & string, platform)] =
           val as T[keyof T & string]
       }
@@ -302,11 +275,9 @@ export class EntitySerializer {
       return ret
     }
 
-    // V8 Optimization: Cache meta.props reference to maintain monomorphic access
     const metaProps = meta.props
     const metaPropsLen = metaProps.length
 
-    // V8 Optimization: Monomorphic loop for decorated getters
     for (let i = 0; i < metaPropsLen; i++) {
       const prop = metaProps[i]
       if (
@@ -320,7 +291,6 @@ export class EntitySerializer {
       }
     }
 
-    // V8 Optimization: Monomorphic loop for decorated get methods
     for (let i = 0; i < metaPropsLen; i++) {
       const prop = metaProps[i]
       if (
@@ -341,13 +311,11 @@ export class EntitySerializer {
     return ret
   }
 
-  // V8 Optimization: Monomorphic function with consistent parameter shapes
   private static propertyName<T>(
     meta: EntityMetadata<T>,
     prop: string,
     platform?: Platform
   ): string {
-    // V8 Optimization: Cache property name lookups with consistent Map shape
     const cacheKey = `${meta.className}:${prop}:${
       platform?.constructor.name || "no-platform"
     }`
@@ -367,7 +335,6 @@ export class EntitySerializer {
       result = prop
     }
 
-    // V8 Optimization: Cache the result with consistent Map shape
     if (this.propertyCache.size >= this.PROPERTY_CACHE_SIZE) {
       this.propertyCache.clear()
     }
@@ -376,14 +343,12 @@ export class EntitySerializer {
     return result
   }
 
-  // V8 Optimization: Monomorphic function with consistent parameter shapes
   private static processProperty<T extends object>(
     prop: string,
     entity: T,
     options: CustomSerializeOptions<T>,
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
-    // V8 Optimization: Use consistent array shape
     const parents_ =
       parents.length > 0
         ? [...parents, entity.constructor.name]
@@ -395,7 +360,6 @@ export class EntitySerializer {
     const property = wrapped.__meta.properties[prop]
     const serializer = property?.serializer
 
-    // getter method
     if ((entity[prop] as unknown) instanceof Function) {
       const returnValue = (
         entity[prop] as unknown as () => T[keyof T & string]
@@ -454,21 +418,17 @@ export class EntitySerializer {
     ) as unknown as T[keyof T]
   }
 
-  // V8 Optimization: Monomorphic function with consistent parameter shapes
   private static extractChildOptions<T extends object, U extends object>(
     options: CustomSerializeOptions<T>,
     prop: keyof T & string
   ): CustomSerializeOptions<U> {
-    // V8 Optimization: Pre-compute prop prefix to maintain monomorphic string operations
     const propPrefix = prop + DOT
     const propPrefixLen = propPrefix.length
 
-    // V8 Optimization: Monomorphic function with consistent array operations
     const extractChildElements = (items: string[]) => {
       const result: string[] = []
       const itemsLen = items.length
 
-      // V8 Optimization: Monomorphic loop with consistent array access
       for (let i = 0; i < itemsLen; i++) {
         const field = items[i]
         if (
@@ -481,7 +441,6 @@ export class EntitySerializer {
       return result
     }
 
-    // V8 Optimization: Use consistent object shape
     const populate = options.populate
     const exclude = options.exclude
 
@@ -498,7 +457,6 @@ export class EntitySerializer {
     } as CustomSerializeOptions<U>
   }
 
-  // V8 Optimization: Monomorphic function with consistent parameter shapes
   private static processEntity<T extends object>(
     prop: keyof T & string,
     entity: T,
@@ -506,7 +464,6 @@ export class EntitySerializer {
     options: CustomSerializeOptions<T>,
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
-    // V8 Optimization: Use consistent array shape
     const parents_ =
       parents.length > 0
         ? [...parents, entity.constructor.name]
@@ -531,14 +488,12 @@ export class EntitySerializer {
     ) as T[keyof T]
   }
 
-  // V8 Optimization: Monomorphic function with consistent parameter shapes
   private static processCollection<T extends object>(
     prop: keyof T & string,
     entity: T,
     options: CustomSerializeOptions<T>,
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
-    // V8 Optimization: Use consistent array shape
     const parents_ =
       parents.length > 0
         ? [...parents, entity.constructor.name]
@@ -553,10 +508,8 @@ export class EntitySerializer {
     const itemsLen = items.length
     const result = new Array(itemsLen)
 
-    // V8 Optimization: Pre-compute child options to maintain monomorphic calls
     const childOptions = this.extractChildOptions(options, prop)
 
-    // V8 Optimization: Monomorphic loop with consistent array access
     for (let i = 0; i < itemsLen; i++) {
       const item = items[i]
       if (isPopulated(item, prop, options)) {
@@ -570,7 +523,6 @@ export class EntitySerializer {
   }
 }
 
-// V8 Optimization: Monomorphic function with consistent parameter shapes
 export const mikroOrmSerializer = <TOutput extends object>(
   data: any,
   options?: Parameters<typeof EntitySerializer.serialize>[1] & {
@@ -579,17 +531,13 @@ export const mikroOrmSerializer = <TOutput extends object>(
   }
 ): Promise<TOutput> => {
   return new Promise<TOutput>((resolve) => {
-    // V8 Optimization: Use consistent object shape
     options ??= STATIC_OPTIONS_SHAPE
 
-    // V8 Optimization: Use consistent array operations
     const data_ = (Array.isArray(data) ? data : [data]).filter(Boolean)
 
-    // V8 Optimization: Pre-allocate arrays to maintain consistent shapes
     const forSerialization: unknown[] = []
     const notForSerialization: unknown[] = []
 
-    // V8 Optimization: Monomorphic loop with consistent array access
     const dataLen = data_.length
     for (let i = 0; i < dataLen; i++) {
       const object = data_[i]
