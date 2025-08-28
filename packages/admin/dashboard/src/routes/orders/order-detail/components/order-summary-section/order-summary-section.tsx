@@ -571,16 +571,16 @@ const CostBreakdown = ({
   const [isShippingOpen, setIsShippingOpen] = useState(false)
 
   const taxes = useMemo(() => {
-    const taxes: { label: string; total: number }[] = []
+    const taxes: { type: "item" | "shipping"; total: number }[] = []
     if (order.original_item_tax_total) {
       taxes.push({
-        label: "Items",
+        type: "item",
         total: order.original_item_tax_total,
       })
     }
     if (order.original_shipping_tax_total) {
       taxes.push({
-        label: "Shipping",
+        type: "shipping",
         total: order.original_shipping_tax_total,
       })
     }
@@ -593,7 +593,7 @@ const CostBreakdown = ({
     <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
       <Cost
         label={t("orders.summary.itemSubtotal")}
-        value={getLocaleAmount(order.subtotal, order.currency_code)}
+        value={getLocaleAmount(order.item_subtotal, order.currency_code)}
       />
       <Cost
         label={
@@ -672,15 +672,15 @@ const CostBreakdown = ({
         </div>
         {isTaxOpen && (
           <div className="flex flex-col gap-1 pl-5">
-            {taxes.map(({ label, total }) => {
+            {taxes.map(({ type, total }) => {
               return (
                 <div
-                  key={label}
+                  key={type}
                   className="flex items-center justify-between gap-x-2"
                 >
                   <div>
                     <span className="txt-small text-ui-fg-subtle font-medium">
-                      {label}
+                      {t(`fields.${type}`)}
                     </span>
                   </div>
                   <div className="relative flex-1">
@@ -717,10 +717,14 @@ const DiscountBreakdown = ({
   const [isDiscountOpen, setIsDiscountOpen] = useState(false)
 
   const discounts = useMemo(() => {
-    const discounts: { label: string; total: number; codes: string[] }[] = []
+    const discounts: {
+      type: "item" | "shipping"
+      total: number
+      codes: string[]
+    }[] = []
     if (order.item_discount_total) {
       discounts.push({
-        label: "Items",
+        type: "item",
         total: order.item_discount_total,
         codes: Array.from(
           new Set(
@@ -733,7 +737,7 @@ const DiscountBreakdown = ({
     }
     if (order.shipping_discount_total) {
       discounts.push({
-        label: "Shipping",
+        type: "shipping",
         total: order.shipping_discount_total,
         codes: Array.from(
           new Set(
@@ -773,15 +777,15 @@ const DiscountBreakdown = ({
       />
       {isDiscountOpen && (
         <div className="flex flex-col gap-1 pl-5">
-          {discounts.map(({ label, total, codes }) => {
+          {discounts.map(({ type, total, codes }) => {
             return (
               <div
-                key={label}
+                key={type}
                 className="flex items-center justify-between gap-x-2"
               >
                 <div className="flex gap-1">
                   <span className="txt-small text-ui-fg-subtle font-medium">
-                    {label}
+                    {t(`fields.${type}`)}
                   </span>
                   <span className="txt-small text-ui-fg-subtle font-medium">
                     ({codes.join(", ")})
@@ -801,7 +805,7 @@ const DiscountBreakdown = ({
 
       <div className="text-ui-fg-base flex items-center justify-between">
         <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {"Total"}
+          {t("orders.summary.totalAfterDiscount")}
         </Text>
         <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {getStylizedAmount(order.total, order.currency_code)}
