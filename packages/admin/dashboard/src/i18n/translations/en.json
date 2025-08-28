@@ -1567,6 +1567,10 @@
       "shippingProfiles": {
         "label": "Shipping Profiles",
         "description": "Group products by shipping requirements"
+      },
+      "shippingOptionTypes": {
+        "label": "Shipping Option Types",
+        "description": "Group shipping options by types"
       }
     },
     "salesChannels": {
