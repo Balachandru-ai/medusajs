@@ -1,5 +1,5 @@
 import { OrderDetailDTO } from "@medusajs/framework/types"
-import { isDefined, MathBN } from "@medusajs/framework/utils"
+import { isDefined, MathBN, MEDUSA_EPSILON } from "@medusajs/framework/utils"
 
 export const getLastPaymentStatus = (order: OrderDetailDTO) => {
   const PaymentStatus = {
@@ -55,10 +55,12 @@ export const getLastPaymentStatus = (order: OrderDetailDTO) => {
   }
 
   if (paymentStatus[PaymentStatus.REFUNDED] > 0) {
-    if (
-      paymentStatus[PaymentStatus.REFUNDED] ===
-      paymentStatus[PaymentStatus.CAPTURED]
-    ) {
+    const diff = MathBN.sub(
+      paymentStatus[PaymentStatus.CAPTURED],
+      paymentStatus[PaymentStatus.REFUNDED]
+    )
+    const isZero = MathBN.lte(diff, MEDUSA_EPSILON)
+    if (isZero) {
       return PaymentStatus.REFUNDED
     }
 
