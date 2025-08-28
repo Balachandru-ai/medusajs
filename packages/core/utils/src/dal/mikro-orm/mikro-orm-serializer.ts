@@ -14,16 +14,17 @@ import {
   Reference,
   ReferenceKind,
   SerializationContext,
-  SerializeOptions,
   Utils,
 } from "@mikro-orm/core"
 
-type CustomSerializeOptions<T, P = any> = SerializeOptions<T, P & string> & {
+const STATIC_OPTIONS_SHAPE: {
+  populate?: string[] | boolean
+  exclude?: string[]
   preventCircularRef?: boolean
-  populate?: [keyof T][] | boolean
-}
-
-const STATIC_OPTIONS_SHAPE = {
+  skipNull?: boolean
+  ignoreSerializers?: boolean
+  forceObject?: boolean
+} = {
   populate: undefined,
   exclude: undefined,
   preventCircularRef: undefined,
@@ -41,7 +42,10 @@ const UNDERSCORE = "_"
 function isVisible<T extends object>(
   meta: EntityMetadata<T>,
   propName: string,
-  options: CustomSerializeOptions<T> = STATIC_OPTIONS_SHAPE
+  options: Parameters<typeof EntitySerializer.serialize>[1] & {
+    preventCircularRef?: boolean
+    populate?: string[] | boolean
+  } = STATIC_OPTIONS_SHAPE
 ): boolean {
   const populate = options.populate
   if (populate === true) {
@@ -87,7 +91,10 @@ function isVisible<T extends object>(
 function isPopulated<T extends object>(
   entity: T,
   propName: string,
-  options: CustomSerializeOptions<T> = STATIC_OPTIONS_SHAPE
+  options: Parameters<typeof EntitySerializer.serialize>[1] & {
+    preventCircularRef?: boolean
+    populate?: string[] | boolean
+  } = STATIC_OPTIONS_SHAPE
 ): boolean {
   const populate = options.populate
 
@@ -133,7 +140,10 @@ function filterEntityPropToSerialize({
 }: {
   propName: string
   meta: EntityMetadata
-  options: CustomSerializeOptions<any>
+  options: Parameters<typeof EntitySerializer.serialize>[1] & {
+    preventCircularRef?: boolean
+    populate?: string[] | boolean
+  }
   parents?: string[]
 }): boolean {
   const parentsArray = parents || EMPTY_ARRAY
@@ -172,7 +182,7 @@ export class EntitySerializer {
 
   static serialize<T extends object, P extends string = never>(
     entity: T,
-    options: CustomSerializeOptions<T, P> = STATIC_OPTIONS_SHAPE,
+    options = STATIC_OPTIONS_SHAPE,
     parents: string[] = EMPTY_ARRAY
   ): EntityDTO<Loaded<T, P>> {
     const parents_ =
@@ -346,7 +356,10 @@ export class EntitySerializer {
   private static processProperty<T extends object>(
     prop: string,
     entity: T,
-    options: CustomSerializeOptions<T>,
+    options: Parameters<typeof EntitySerializer.serialize>[1] & {
+      preventCircularRef?: boolean
+      populate?: string[] | boolean
+    },
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
     const parents_ =
@@ -419,9 +432,15 @@ export class EntitySerializer {
   }
 
   private static extractChildOptions<T extends object, U extends object>(
-    options: CustomSerializeOptions<T>,
+    options: Parameters<typeof EntitySerializer.serialize>[1] & {
+      preventCircularRef?: boolean
+      populate?: string[] | boolean
+    },
     prop: keyof T & string
-  ): CustomSerializeOptions<U> {
+  ): Parameters<typeof EntitySerializer.serialize>[1] & {
+    preventCircularRef?: boolean
+    populate?: string[] | boolean
+  } {
     const propPrefix = prop + DOT
     const propPrefixLen = propPrefix.length
 
@@ -454,14 +473,20 @@ export class EntitySerializer {
         Array.isArray(exclude) && !exclude.includes(WILDCARD)
           ? extractChildElements(exclude)
           : exclude,
-    } as CustomSerializeOptions<U>
+    } as Parameters<typeof EntitySerializer.serialize>[1] & {
+      preventCircularRef?: boolean
+      populate?: string[] | boolean
+    }
   }
 
   private static processEntity<T extends object>(
     prop: keyof T & string,
     entity: T,
     platform: Platform,
-    options: CustomSerializeOptions<T>,
+    options: Parameters<typeof EntitySerializer.serialize>[1] & {
+      preventCircularRef?: boolean
+      populate?: string[] | boolean
+    },
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
     const parents_ =
@@ -471,8 +496,9 @@ export class EntitySerializer {
 
     const child = Reference.unwrapReference(entity[prop] as T)
     const wrapped = helper(child)
+    // Fixed: was incorrectly calling isPopulated(child, prop, options) instead of isPopulated(entity, prop, options)
     const populated =
-      isPopulated(child, prop, options) && wrapped.isInitialized()
+      isPopulated(entity, prop, options) && wrapped.isInitialized()
     const expand = populated || options.forceObject || !wrapped.__managed
 
     if (expand) {
@@ -491,7 +517,10 @@ export class EntitySerializer {
   private static processCollection<T extends object>(
     prop: keyof T & string,
     entity: T,
-    options: CustomSerializeOptions<T>,
+    options: Parameters<typeof EntitySerializer.serialize>[1] & {
+      preventCircularRef?: boolean
+      populate?: string[] | boolean
+    },
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
     const parents_ =
@@ -510,9 +539,13 @@ export class EntitySerializer {
 
     const childOptions = this.extractChildOptions(options, prop)
 
+    // Check if the collection property itself should be populated
+    // Fixed: was incorrectly calling isPopulated(item, prop, options) instead of isPopulated(entity, prop, options)
+    const shouldPopulateCollection = isPopulated(entity, prop, options)
+
     for (let i = 0; i < itemsLen; i++) {
       const item = items[i]
-      if (isPopulated(item, prop, options)) {
+      if (shouldPopulateCollection) {
         result[i] = this.serialize(item, childOptions, parents_)
       } else {
         result[i] = helper(item).getPrimaryKey()
@@ -532,11 +565,14 @@ export const mikroOrmSerializer = <TOutput extends object>(
 ): Promise<TOutput> => {
   return new Promise<TOutput>((resolve) => {
     options ??= STATIC_OPTIONS_SHAPE
+    options.populate ??= ["*"]
+    options.preventCircularRef ??= true
+    options.forceObject ??= true
 
     const data_ = (Array.isArray(data) ? data : [data]).filter(Boolean)
 
-    const forSerialization: unknown[] = []
-    const notForSerialization: unknown[] = []
+    const forSerialization: object[] = []
+    const notForSerialization: object[] = []
 
     const dataLen = data_.length
     for (let i = 0; i < dataLen; i++) {
@@ -549,12 +585,7 @@ export const mikroOrmSerializer = <TOutput extends object>(
     }
 
     let result: any = forSerialization.map((entity) =>
-      EntitySerializer.serialize(entity, {
-        forceObject: true,
-        populate: ["*"],
-        preventCircularRef: true,
-        ...options,
-      } as CustomSerializeOptions<any>)
+      EntitySerializer.serialize(entity, options)
     ) as TOutput[]
 
     if (notForSerialization.length) {
