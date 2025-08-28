@@ -293,7 +293,7 @@ jobs:
         working-directory: www/utils/packages/react-docs-generator
 
       - name: Generate Colors
-        run: yarn copy-colors
+        run: yarn prep
         working-directory: www/apps/ui
 
       - name: Update Medusa Dependencies
