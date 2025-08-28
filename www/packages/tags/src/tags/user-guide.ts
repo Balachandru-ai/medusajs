@@ -188,6 +188,10 @@ export const userGuide = [
     "path": "https://docs.medusajs.com/user-guide/settings/sales-channels"
   },
   {
+    "title": "Manage Shipping Option Types",
+    "path": "https://docs.medusajs.com/user-guide/settings/shipping-option-types"
+  },
+  {
     "title": "Manage Store",
     "path": "https://docs.medusajs.com/user-guide/settings/store"
   },

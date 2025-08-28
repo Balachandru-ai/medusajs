@@ -3494,6 +3494,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Manage Shipping Option Types",
+              "path": "https://docs.medusajs.com/user-guide/settings/shipping-option-types",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Manage Shipping Options",
               "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/locations",
               "children": []

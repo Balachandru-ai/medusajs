@@ -455,6 +455,14 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "title": "Shipping Option Types",
+            "path": "/settings/shipping-option-types",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "title": "Product Types",
             "path": "/settings/product-types",
             "children": []

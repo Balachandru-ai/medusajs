@@ -280,6 +280,11 @@ export const sidebar = [
           },
           {
             type: "link",
+            title: "Shipping Option Types",
+            path: "/settings/shipping-option-types",
+          },
+          {
+            type: "link",
             title: "Product Types",
             path: "/settings/product-types",
           },
