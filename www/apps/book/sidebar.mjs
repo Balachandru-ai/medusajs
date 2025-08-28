@@ -635,6 +635,13 @@ export const sidebars = [
             type: "link",
             path: "/learn/debugging-and-testing/logging",
             title: "Logging",
+            children: [
+              {
+                type: "link",
+                path: "/learn/debugging-and-testing/logging/custom-logger",
+                title: "Override Logger",
+              },
+            ],
           },
         ],
       },

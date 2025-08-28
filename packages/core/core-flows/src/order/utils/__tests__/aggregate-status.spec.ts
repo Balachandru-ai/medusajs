@@ -1,3 +1,4 @@
+import { MathBN, MEDUSA_EPSILON } from "@medusajs/framework/utils"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
@@ -71,8 +72,18 @@ describe("Aggregate Order Status", () => {
     expect(
       getLastPaymentStatus({
         payment_collections: [
-          { status: "authorized", refunded_amount: 10, amount: 10 },
-          { status: "authorized", refunded_amount: 5, amount: 10 },
+          {
+            status: "authorized",
+            refunded_amount: 10,
+            captured_amount: 10,
+            amount: 10,
+          },
+          {
+            status: "authorized",
+            refunded_amount: 5,
+            captured_amount: 10,
+            amount: 10,
+          },
           { status: "canceled" },
         ],
       } as any)
@@ -89,6 +100,26 @@ describe("Aggregate Order Status", () => {
         ],
       } as any)
     ).toEqual("partially_refunded")
+
+    expect(
+      getLastPaymentStatus({
+        payment_collections: [
+          {
+            status: "authorized",
+            captured_amount: 10,
+            refunded_amount: 10,
+            amount: 10,
+          },
+          {
+            status: "authorized",
+            captured_amount: 10,
+            refunded_amount: MathBN.sub(10, MEDUSA_EPSILON),
+            amount: 10,
+          },
+          { status: "canceled" },
+        ],
+      } as any)
+    ).toEqual("refunded")
 
     expect(
       getLastPaymentStatus({

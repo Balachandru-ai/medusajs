@@ -1,14 +1,16 @@
-import slugify from "slugify"
-import { basename } from "path"
 import input from "@inquirer/input"
-import { logger } from "@medusajs/framework/logger"
+import type { Logger } from "@medusajs/framework/types"
 import {
+  ContainerRegistrationKeys,
   createClient,
   createDb,
   dbExists,
   EnvEditor,
   parseConnectionString,
 } from "@medusajs/framework/utils"
+import { basename } from "path"
+import slugify from "slugify"
+import { initializeContainer } from "../../loaders"
 
 async function connectClient(client: ReturnType<typeof createClient>) {
   try {
@@ -27,10 +29,12 @@ export async function dbCreate({
   db,
   directory,
   interactive,
+  logger,
 }: {
   db: string | undefined
   directory: string
   interactive: boolean
+  logger: Logger
 }): Promise<boolean> {
   let dbName = db
 
@@ -155,8 +159,13 @@ export async function dbCreate({
 }
 
 const main = async function ({ directory, interactive, db }) {
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
-    const created = await dbCreate({ directory, interactive, db })
+    const created = await dbCreate({ directory, interactive, db, logger })
     process.exit(created ? 0 : 1)
   } catch (error) {
     if (error.name === "ExitPromptError") {

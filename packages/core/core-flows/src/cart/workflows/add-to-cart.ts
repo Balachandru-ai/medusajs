@@ -114,7 +114,10 @@ export const addToCartWorkflowId = "add-to-cart"
  * :::
  */
 export const addToCartWorkflow = createWorkflow(
-  addToCartWorkflowId,
+  {
+    name: addToCartWorkflowId,
+    idempotent: true,
+  },
   (input: WorkflowData<AddToCartWorkflowInputDTO & AdditionalData>) => {
     const cartQuery = useQueryGraphStep({
       entity: "cart",

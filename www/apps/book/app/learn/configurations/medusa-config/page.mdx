@@ -39,6 +39,7 @@ The `defineConfig` utility accepts an object having the following properties:
 - [modules](#module-configurations-modules): Configurations related to registered modules.
 - [plugins](#plugin-configurations-plugins): Configurations related to registered plugins.
 - [featureFlags](#feature-flags-featureFlags): Configurations to manage enabled beta features in the Medusa application.
+- [logger](#custom-logger-logger): Override the default logger.
 
 ### Using Environment Variables
 
@@ -1130,4 +1131,25 @@ After enabling a feature flag, make sure to run migrations, as the feature may i
 
 ```bash
 npx medusa db:migrate
+```
+
+---
+
+## Custom Logger (`logger`)
+
+The `logger` configuration allows you to override the default [Logger](../../debugging-and-testing/logging/page.mdx) used in the Medusa application with your custom implementation.
+
+Learn more about creating a custom logger in the [Override Logger](../../debugging-and-testing/logging/custom-logger/page.mdx) chapter.
+
+The `logger` configuration accepts an instance of a class that extends the `Logger` interface.
+
+### Example
+
+```ts title="medusa-config.ts"
+import { logger } from "./src/logger/my-logger"
+
+module.exports = defineConfig({
+  // ...
+  logger,
+})
 ```

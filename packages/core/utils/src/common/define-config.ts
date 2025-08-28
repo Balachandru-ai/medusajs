@@ -56,6 +56,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
     featureFlags: (config.featureFlags ?? {}) as ConfigModule["featureFlags"],
     admin: adminConfig,
     modules: modules,
+    logger: config.logger,
     plugins,
   }
 }

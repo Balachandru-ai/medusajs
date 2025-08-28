@@ -10,6 +10,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -179,6 +180,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "GithubModuleService": {
             "resolve": "./modules/github",
@@ -354,6 +356,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "GithubModuleService": {
             "options": {
@@ -535,6 +538,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "GithubModuleServiceOverride": {
             "options": {
@@ -712,6 +716,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -884,6 +889,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -1058,6 +1064,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -1265,6 +1272,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -1488,6 +1496,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -1791,6 +1800,7 @@ describe("defineConfig", function () {
           "path": "/app",
         },
         "featureFlags": {},
+        "logger": undefined,
         "modules": {
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",

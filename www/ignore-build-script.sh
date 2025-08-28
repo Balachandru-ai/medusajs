@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Exit early if the PR branch doesn't start with 'docs/'
-if [[ ! "$VERCEL_GIT_COMMIT_REF" =~ ^docs/ ]]; then
-  echo "🛑 - Build cancelled: Branch does not start with 'docs/'"
-  exit 0;
-fi
-
 if [[ "$1" == "docs-old" ]]; then
   echo "🛑 - Build cancelled: Can't build old docs"
   exit 0;
@@ -32,6 +26,12 @@ if [[ "$VERCEL_ENV" == "production" && $diffResult -eq 1 ]] ; then
   # Proceed with the build for production with changes
   echo "✅ - Build can proceed (production with changes)"
   exit 1;
+fi
+
+# Exit early if the PR branch doesn't start with 'docs/'
+if [[ ! "$VERCEL_GIT_COMMIT_REF" =~ ^docs/ ]]; then
+  echo "🛑 - Build cancelled: Branch does not start with 'docs/'"
+  exit 0;
 fi
 
 # For preview environments, check project-specific directories

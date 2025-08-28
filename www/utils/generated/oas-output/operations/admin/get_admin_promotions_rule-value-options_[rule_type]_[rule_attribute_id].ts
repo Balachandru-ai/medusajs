@@ -82,6 +82,14 @@
  *       type: boolean
  *       title: with_deleted
  *       description: Whether to include deleted records in the result.
+ *   - name: application_method_target_type
+ *     in: query
+ *     description: The application method target type to retrieve rules for.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: application_method_target_type
+ *       description: The application method target type to retrieve rules for.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

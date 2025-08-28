@@ -10,7 +10,6 @@ import { asFunction } from "awilix"
 import { normalize } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
-import { logger } from "../logger"
 import { FlagSettings } from "./types"
 
 container.register(
@@ -25,7 +24,7 @@ container.register(
 export async function featureFlagsLoader(
   sourcePath?: string
 ): Promise<FlagRouter> {
-  const { featureFlags: projectConfigFlags = {} } = configManager.config
+  const { featureFlags: projectConfigFlags = {}, logger } = configManager.config
 
   if (!sourcePath) {
     return FeatureFlag

@@ -1,3 +1,4 @@
+import { MedusaContainer } from "@medusajs/types"
 import { isFileSkipped } from "@medusajs/utils"
 import { MedusaWorkflow } from "@medusajs/workflows-sdk"
 import { logger } from "../logger"
@@ -6,8 +7,8 @@ import { ResourceLoader } from "../utils/resource-loader"
 export class WorkflowLoader extends ResourceLoader {
   protected resourceName = "workflow"
 
-  constructor(sourceDir: string | string[]) {
-    super(sourceDir)
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
+    super(sourceDir, container)
   }
 
   protected async onFileLoaded(
@@ -35,6 +36,6 @@ export class WorkflowLoader extends ResourceLoader {
   async load() {
     await super.discoverResources()
 
-    logger.debug(`Workflows registered.`)
+    this.logger.debug(`Workflows registered.`)
   }
 }
