@@ -1822,7 +1822,7 @@ export class TransactionOrchestrator extends EventEmitter {
         curTransaction,
         step,
         error,
-        0
+        step.definition.maxRetries
       )
 
       if (ret.transactionIsCancelling) {
