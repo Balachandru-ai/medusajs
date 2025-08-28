@@ -1595,7 +1595,7 @@ medusaIntegrationTestRunner({
         expect(orderResult2.original_total).toEqual(23.2)
       })
 
-      it.only("should add, remove, and add buy-get adjustment depending on the quantity of the buy rule product", async () => {
+      it("should add, remove, and add buy-get adjustment depending on the quantity of the buy rule product", async () => {
         promotionModule = container.resolve(Modules.PROMOTION)
 
         appliedPromotion = await promotionModule.createPromotions({
@@ -1730,7 +1730,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        // console.log("result", JSON.stringify(result, null, 2))
+        console.log("result", JSON.stringify(result, null, 2))
 
         expect(result.total).toEqual(20)
         expect(result.original_total).toEqual(20)
