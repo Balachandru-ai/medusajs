@@ -475,6 +475,8 @@ export function getComputedActionsForBuyGet(
   const itemIdPromotionAmountMap = new Map<string, BigNumberInput>()
   const computedActions: PromotionTypes.ComputeActions[] = []
 
+  const MAX_PROMOTION_ITERATIONS = 1000
+  let iterationCount = 0
   let appliedPromotionQuantity = MathBN.convert(0)
 
   /*
@@ -482,6 +484,7 @@ export function getComputedActionsForBuyGet(
     - No more items satisfy the minimum buy quantity requirement
     - Maximum applicable promotion quantity is reached  
     - No valid target items can be found for promotion application
+    - Maximum iteration count is reached (safety check)
     
     Each iteration:
     1. Prepares an application state (selects buy items + eligible target items)
@@ -490,6 +493,15 @@ export function getComputedActionsForBuyGet(
     4. Updates the total eligible items for next iteration
   */
   while (true) {
+    iterationCount++
+
+    if (iterationCount > MAX_PROMOTION_ITERATIONS) {
+      console.warn(
+        `Buy-get promotion ${promotion.code} exceeded maximum iterations (${MAX_PROMOTION_ITERATIONS}). Breaking loop to prevent infinite execution.`
+      )
+
+      break
+    }
     // We prepare an application state for the promotion to be applied on all eligible items
     // We use this as a source of truth to update the remaining quantities of the eligible items
     // and the total eligible items

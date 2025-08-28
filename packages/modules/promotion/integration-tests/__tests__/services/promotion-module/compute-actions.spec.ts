@@ -5376,7 +5376,6 @@ moduleIntegrationTestRunner({
                 type: "percentage",
                 target_type: "items",
                 apply_to_quantity: 1,
-                max_quantity: 100,
                 buy_rules_min_quantity: 2,
                 target_rules: [
                   {
