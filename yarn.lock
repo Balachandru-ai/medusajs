@@ -6391,7 +6391,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/draft-order@workspace:packages/plugins/draft-order":
+"@medusajs/draft-order@2.9.0, @medusajs/draft-order@workspace:packages/plugins/draft-order":
   version: 0.0.0-use.local
   resolution: "@medusajs/draft-order@workspace:packages/plugins/draft-order"
   dependencies:
@@ -6402,7 +6402,6 @@ __metadata:
     "@medusajs/framework": 2.9.0
     "@medusajs/icons": 2.9.0
     "@medusajs/js-sdk": 2.9.0
-    "@medusajs/medusa": 2.9.0
     "@medusajs/test-utils": 2.9.0
     "@medusajs/types": 2.9.0
     "@medusajs/ui": 4.0.19
@@ -6439,7 +6438,6 @@ __metadata:
     "@medusajs/cli": 2.9.0
     "@medusajs/framework": 2.9.0
     "@medusajs/icons": 2.9.0
-    "@medusajs/medusa": 2.9.0
     "@medusajs/test-utils": 2.9.0
     "@medusajs/ui": 4.0.19
     "@mikro-orm/cli": 6.4.3
@@ -6895,6 +6893,7 @@ __metadata:
     "@medusajs/core-flows": 2.9.0
     "@medusajs/currency": 2.9.0
     "@medusajs/customer": 2.9.0
+    "@medusajs/draft-order": 2.9.0
     "@medusajs/event-bus-local": 2.9.0
     "@medusajs/event-bus-redis": 2.9.0
     "@medusajs/file": 2.9.0

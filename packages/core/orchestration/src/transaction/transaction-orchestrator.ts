@@ -1803,12 +1803,14 @@ export class TransactionOrchestrator extends EventEmitter {
     handler,
     transaction,
     onLoad,
+    forcePermanentFailure,
   }: {
     responseIdempotencyKey: string
     error?: Error | any
     handler?: TransactionStepHandler
     transaction?: DistributedTransactionType
     onLoad?: (transaction: DistributedTransactionType) => Promise<void> | void
+    forcePermanentFailure?: boolean
   }): Promise<DistributedTransactionType> {
     const [curTransaction, step] =
       await TransactionOrchestrator.getTransactionAndStepFromIdempotencyKey(
@@ -1830,7 +1832,8 @@ export class TransactionOrchestrator extends EventEmitter {
         curTransaction,
         step,
         error,
-        0
+        // On permanent failure, the step should not consider any retries
+        forcePermanentFailure ? 0 : step.definition.maxRetries
       )
 
       if (ret.transactionIsCancelling) {

@@ -4,10 +4,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  AdditionalData,
-  ListShippingOptionsForOrderWorkflowInput,
-} from "@medusajs/types"
+import { ListShippingOptionsForOrderWorkflowInput } from "@medusajs/types"
 
 import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
@@ -18,16 +15,9 @@ export const listShippingOptionsForOrderWorkflowId =
  * This workflow lists the shipping options of an order. It's executed by the
  * [List Shipping Options Store API Route](https://docs.medusajs.com/api/store#orders_getidshippingoptions).
  *
- * :::note
- *
- * This workflow doesn't retrieve the calculated prices of the shipping options. If you need to retrieve the prices of the shipping options,
- * use the {@link listShippingOptionsForOrderWithPricingWorkflow} workflow.
- *
- * :::
- *
  * You can use this workflow within your own customizations or custom workflows, allowing you to wrap custom logic around to retrieve the shipping options of an order
  * in your custom flows.
- * 
+ *
  * @since 2.10.0
  *
  * @example
@@ -41,15 +31,11 @@ export const listShippingOptionsForOrderWorkflowId =
  * @summary
  *
  * List a order's shipping options.
- * 
+ *
  */
 export const listShippingOptionsForOrderWorkflow = createWorkflow(
   listShippingOptionsForOrderWorkflowId,
-  (
-    input: WorkflowData<
-      ListShippingOptionsForOrderWorkflowInput & AdditionalData
-    >
-  ) => {
+  (input: WorkflowData<ListShippingOptionsForOrderWorkflowInput>) => {
     const orderQuery = useQueryGraphStep({
       entity: "order",
       filters: { id: input.order_id },
