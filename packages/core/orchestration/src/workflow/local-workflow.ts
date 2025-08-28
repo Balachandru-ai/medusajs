@@ -362,6 +362,7 @@ export class LocalWorkflow {
       handler: handler(this.container_, context),
       payload: input,
       flowMetadata,
+      context,
       onLoad: this.onLoad.bind(this),
     })
 
