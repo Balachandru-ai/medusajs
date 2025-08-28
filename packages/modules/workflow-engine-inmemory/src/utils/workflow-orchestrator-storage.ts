@@ -138,8 +138,6 @@ export class InMemoryDistributedTransactionStorage
   private async deleteFromDb(data: TransactionCheckpoint) {
     await this.workflowExecutionService_.delete([
       {
-        // workflow_id: data.flow.modelId,
-        // transaction_id: data.flow.transactionId,
         run_id: data.flow.runId,
       },
     ])
