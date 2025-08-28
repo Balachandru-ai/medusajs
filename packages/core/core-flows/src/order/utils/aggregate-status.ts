@@ -26,21 +26,25 @@ export const getLastPaymentStatus = (order: OrderDetailDTO) => {
       (isDefined(paymentCollection.amount) &&
         MathBN.eq(paymentCollection.amount, 0))
     ) {
-      paymentStatus[PaymentStatus.CAPTURED] += MathBN.gte(
-        paymentCollection.captured_amount as number,
-        paymentCollection.amount
+      const isGte = MathBN.lte(
+        MathBN.sub(
+          paymentCollection.amount,
+          paymentCollection.captured_amount as number
+        ),
+        MEDUSA_EPSILON
       )
-        ? 1
-        : 0.5
+      paymentStatus[PaymentStatus.CAPTURED] += isGte ? 1 : 0.5
     }
 
     if (MathBN.gt(paymentCollection.refunded_amount ?? 0, 0)) {
-      paymentStatus[PaymentStatus.REFUNDED] += MathBN.gte(
-        paymentCollection.refunded_amount as number,
-        paymentCollection.amount
+      const isGte = MathBN.lte(
+        MathBN.sub(
+          paymentCollection.amount,
+          paymentCollection.refunded_amount as number
+        ),
+        MEDUSA_EPSILON
       )
-        ? 1
-        : 0.5
+      paymentStatus[PaymentStatus.REFUNDED] += isGte ? 1 : 0.5
     }
 
     paymentStatus[paymentCollection.status] += 1
@@ -55,12 +59,10 @@ export const getLastPaymentStatus = (order: OrderDetailDTO) => {
   }
 
   if (paymentStatus[PaymentStatus.REFUNDED] > 0) {
-    const diff = MathBN.sub(
-      paymentStatus[PaymentStatus.CAPTURED],
-      paymentStatus[PaymentStatus.REFUNDED]
-    )
-    const isZero = MathBN.lte(diff, MEDUSA_EPSILON)
-    if (isZero) {
+    if (
+      paymentStatus[PaymentStatus.REFUNDED] ===
+      paymentStatus[PaymentStatus.CAPTURED]
+    ) {
       return PaymentStatus.REFUNDED
     }
 
