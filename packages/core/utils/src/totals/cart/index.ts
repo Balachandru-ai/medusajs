@@ -151,6 +151,8 @@ export function decorateCartTotals(
       shippingMethodsTotals[shippingMethod.id ?? index] ?? {}
     )
 
+    subtotal = MathBN.add(subtotal, shippingMethodTotals.subtotal)
+
     discountTotal = MathBN.add(
       discountTotal,
       shippingMethodTotals.discount_total
@@ -211,7 +213,7 @@ export function decorateCartTotals(
   const originalTotal = MathBN.add(itemsOriginalTotal, shippingOriginalTotal)
 
   // TODO: subtract (cart.gift_card_total + cart.gift_card_tax_total)
-  const tempTotal = MathBN.add(itemsSubtotal, shippingSubtotal, taxTotal)
+  const tempTotal = MathBN.add(subtotal, taxTotal)
   const total = MathBN.sub(tempTotal, discountSubtotal, creditLinesTotal)
 
   const cart = cartLike as any

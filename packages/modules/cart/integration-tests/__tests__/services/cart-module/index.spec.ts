@@ -3160,7 +3160,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
           value: "0",
         },
         total: 210,
-        subtotal: 500,
+        subtotal: 510,
         tax_total: 0,
         discount_total: 300,
         discount_subtotal: 300,
@@ -3186,7 +3186,7 @@ moduleIntegrationTestRunner<ICartModuleService>({
           precision: 20,
         },
         raw_subtotal: {
-          value: "500",
+          value: "510",
           precision: 20,
         },
         raw_tax_total: {

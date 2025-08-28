@@ -841,7 +841,7 @@ export interface BaseOrder {
    */
   total: number
   /**
-   * The total of the order excluding taxes, shipping methods and promotions.
+   * The total of the order excluding taxes and promotions.
    */
   subtotal: number
   /**
