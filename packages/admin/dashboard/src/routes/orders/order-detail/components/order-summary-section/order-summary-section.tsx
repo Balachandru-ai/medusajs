@@ -191,8 +191,7 @@ export const OrderSummarySection = ({
       <Header order={order} orderPreview={orderPreview} />
       <ItemBreakdown order={order} reservations={reservations!} />
       <CostBreakdown order={order} />
-      <DiscountBreakdown order={order} />
-      <CreditLinesBreakdown order={order} plugins={plugins} />
+      <DiscountAndTotalBreakdown order={order} plugins={plugins} />
       <Total order={order} />
 
       {(showAllocateButton || showReturns || showPayment || showRefund) && (
@@ -707,14 +706,19 @@ const CostBreakdown = ({
   )
 }
 
-const DiscountBreakdown = ({
+const DiscountAndTotalBreakdown = ({
   order,
+  plugins,
 }: {
   order: AdminOrder & { region?: AdminRegion | null }
+  plugins: AdminPlugin[]
 }) => {
   const { t } = useTranslation()
-
   const [isDiscountOpen, setIsDiscountOpen] = useState(false)
+  const [isCreditLinesOpen, setIsCreditLinesOpen] = useState(false)
+
+  const creditLines = order.credit_lines ?? []
+  const loyaltyPlugin = getLoyaltyPlugin(plugins)
 
   const discounts = useMemo(() => {
     const discounts: {
@@ -752,6 +756,7 @@ const DiscountBreakdown = ({
   }, [order])
 
   const hasDiscount = discounts.length > 0
+  const hasCreditLines = creditLines.length > 0
 
   return (
     <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
@@ -803,6 +808,106 @@ const DiscountBreakdown = ({
         </div>
       )}
 
+      {hasCreditLines && (
+        <>
+          <Cost
+            label={
+              <div
+                onClick={() => setIsCreditLinesOpen((o) => !o)}
+                className="flex cursor-pointer items-center gap-1"
+              >
+                <span>
+                  {loyaltyPlugin
+                    ? t("orders.giftCardsStoreCreditLines")
+                    : t("orders.creditLines.title")}
+                </span>
+                <TriangleDownMini
+                  style={{
+                    transform: `rotate(${isCreditLinesOpen ? 0 : -90}deg)`,
+                  }}
+                />
+              </div>
+            }
+            value={getLocaleAmount(
+              order.credit_line_total,
+              order.currency_code
+            )}
+          />
+          {isCreditLinesOpen && (
+            <div className="flex flex-col gap-1 pl-5">
+              {creditLines.map((creditLine) => {
+                const prettyReference = creditLine.reference
+                  ?.split("_")
+                  .join(" ")
+                  .split("-")
+                  .join(" ")
+
+                const prettyReferenceId = creditLine.reference_id ? (
+                  <DisplayId id={creditLine.reference_id} />
+                ) : null
+
+                return (
+                  <div
+                    key={creditLine.id}
+                    className="flex items-center justify-between gap-x-2"
+                  >
+                    <div className="flex items-center">
+                      <Text
+                        size="small"
+                        leading="compact"
+                        weight="plus"
+                        className="txt-small text-ui-fg-subtle font-medium"
+                      >
+                        <DisplayId id={creditLine.id} />
+                      </Text>
+                      <span className="txt-small text-ui-fg-subtle mx-1">
+                        -
+                      </span>
+                      <Tooltip
+                        content={format(
+                          new Date(creditLine.created_at),
+                          "dd MMM, yyyy, HH:mm:ss"
+                        )}
+                      >
+                        <Text
+                          size="small"
+                          leading="compact"
+                          className="txt-small text-ui-fg-subtle"
+                        >
+                          {format(
+                            new Date(creditLine.created_at),
+                            "dd MMM, yyyy"
+                          )}
+                        </Text>
+                      </Tooltip>
+                      <span className="txt-small text-ui-fg-subtle mx-1">
+                        -
+                      </span>
+                      <Text
+                        size="small"
+                        leading="compact"
+                        className="txt-small text-ui-fg-subtle capitalize"
+                      >
+                        ({prettyReference} {prettyReferenceId})
+                      </Text>
+                    </div>
+                    <div className="relative flex-1">
+                      <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
+                    </div>
+                    <span className="txt-small text-ui-fg-muted">
+                      {getLocaleAmount(
+                        creditLine.amount as number,
+                        order.currency_code
+                      )}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </>
+      )}
+
       <div className="text-ui-fg-base flex items-center justify-between">
         <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {t("orders.summary.totalAfterDiscount")}
@@ -811,109 +916,6 @@ const DiscountBreakdown = ({
           {getStylizedAmount(order.total, order.currency_code)}
         </Text>
       </div>
-    </div>
-  )
-}
-
-const CreditLinesBreakdown = ({
-  order,
-  plugins,
-}: {
-  order: AdminOrder & { region?: AdminRegion | null }
-  plugins: AdminPlugin[]
-}) => {
-  const { t } = useTranslation()
-  const [isCreditLinesOpen, setIsCreditLinesOpen] = useState(false)
-  const creditLines = order.credit_lines ?? []
-  const loyaltyPlugin = getLoyaltyPlugin(plugins)
-
-  if (creditLines.length === 0) {
-    return null
-  }
-
-  return (
-    <div className="text-ui-fg-subtle flex flex-col">
-      <>
-        <div
-          onClick={() => setIsCreditLinesOpen((o) => !o)}
-          className="bg-ui-bg-component flex cursor-pointer items-center justify-between border border-dashed px-6 py-4"
-        >
-          <div className="flex items-center gap-2">
-            <TriangleDownMini
-              style={{
-                transform: `rotate(${isCreditLinesOpen ? 0 : -90}deg)`,
-              }}
-            />
-            <span className="text-ui-fg-muted txt-small select-none">
-              {loyaltyPlugin
-                ? t("orders.giftCardsStoreCreditLines")
-                : t("orders.creditLines.title")}
-            </span>
-          </div>
-
-          <div>
-            <Text size="small" leading="compact">
-              {getLocaleAmount(order.credit_line_total, order.currency_code)}
-            </Text>
-          </div>
-        </div>
-
-        {isCreditLinesOpen && (
-          <div className="flex flex-col">
-            {creditLines.map((creditLine) => {
-              const prettyReference = creditLine.reference
-                ?.split("_")
-                .join(" ")
-                .split("-")
-                .join(" ")
-
-              const prettyReferenceId = creditLine.reference_id ? (
-                <DisplayId id={creditLine.reference_id} />
-              ) : null
-
-              return (
-                <div
-                  className="text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr] items-center px-6 py-4 py-4 sm:grid-cols-[1fr_1fr_1fr]"
-                  key={creditLine.id}
-                >
-                  <div className="w-full min-w-[60px] overflow-hidden">
-                    <Text
-                      size="small"
-                      leading="compact"
-                      weight="plus"
-                      className="truncate"
-                    >
-                      <DisplayId id={creditLine.id} />
-                    </Text>
-
-                    <Text size="small" leading="compact">
-                      {format(
-                        new Date(creditLine.created_at),
-                        "dd MMM, yyyy, HH:mm:ss"
-                      )}
-                    </Text>
-                  </div>
-
-                  <div className="hidden items-center justify-end gap-x-2 sm:flex">
-                    <Text size="small" leading="compact" className="capitalize">
-                      {prettyReference} ({prettyReferenceId})
-                    </Text>
-                  </div>
-
-                  <div className="flex items-center justify-end">
-                    <Text size="small" leading="compact">
-                      {getLocaleAmount(
-                        creditLine.amount as number,
-                        order.currency_code
-                      )}
-                    </Text>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </>
     </div>
   )
 }
