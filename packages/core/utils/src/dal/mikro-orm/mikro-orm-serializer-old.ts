@@ -18,54 +18,35 @@ type CustomSerializeOptions<T, P = any> = SerializeOptions<T, P & string> & {
   populate?: [keyof T][] | boolean
 }
 
-// Use monomorphic function for better V8 optimization
 function isVisible<T extends object>(
   meta: EntityMetadata<T>,
   propName: string,
   options: CustomSerializeOptions<T> = {}
 ): boolean {
-  const populate = options.populate
-
-  // Fast path for boolean true
-  if (populate === true) {
+  if (options.populate === true) {
     return true
   }
 
-  // Check populate array - use for loop for better performance
-  if (Array.isArray(populate)) {
-    const exclude = options.exclude
-    if (exclude) {
-      // Use indexOf which is faster than includes for small arrays
-      const excludeLen = exclude.length
-      for (let i = 0; i < excludeLen; i++) {
-        if (exclude[i] === propName) {
-          return false
-        }
-      }
-    }
+  if (
+    Array.isArray(options.populate) &&
+    options.exclude?.find((item) => item === propName)
+  ) {
+    return false
+  }
 
-    // Manual string concatenation for better performance
-    const propPrefix = propName + "."
-    const populateLen = populate.length
-    for (let i = 0; i < populateLen; i++) {
-      const item = populate[i]
-      if (item === propName || item === "*") {
-        return true
-      }
-      // Use charAt for better performance than startsWith
-      if (
-        item.length > propName.length &&
-        item.substring(0, propPrefix.length) === propPrefix
-      ) {
-        return true
-      }
-    }
+  if (
+    Array.isArray(options.populate) &&
+    (options.populate?.find(
+      (item) => item === propName || item.startsWith(propName + ".")
+    ) ||
+      options.populate.includes("*"))
+  ) {
+    return true
   }
 
   const prop = meta.properties[propName]
-  const visible = (prop && !prop.hidden) || prop === undefined
-  // Use charAt(0) instead of startsWith for single character check
-  const prefixed = prop && !prop.primary && propName.charAt(0) === "_"
+  const visible = (prop && !prop.hidden) || prop === undefined // allow unknown properties
+  const prefixed = prop && !prop.primary && propName.startsWith("_") // ignore prefixed properties, if it's not a PK
 
   return visible && !prefixed
 }
@@ -75,30 +56,18 @@ function isPopulated<T extends object>(
   propName: string,
   options: CustomSerializeOptions<T>
 ): boolean {
-  const populate = options.populate
-
-  if (Array.isArray(populate)) {
-    const propPrefix = propName + "."
-    const populateLen = populate.length
-
-    // Manual loop for better performance than some()
-    for (let i = 0; i < populateLen; i++) {
-      const item = populate[i]
-      if (item === propName || item === "*") {
-        return true
-      }
-      if (
-        item.length > propName.length &&
-        item.substring(0, propPrefix.length) === propPrefix
-      ) {
-        return true
-      }
-    }
-    return false
+  if (
+    Array.isArray(options.populate) &&
+    (options.populate?.find(
+      (item) => item === propName || item.startsWith(propName + ".")
+    ) ||
+      options.populate.includes("*"))
+  ) {
+    return true
   }
 
-  if (typeof populate === "boolean") {
-    return populate
+  if (typeof options.populate === "boolean") {
+    return options.populate
   }
 
   return false
@@ -150,7 +119,7 @@ export class EntitySerializer {
     options: CustomSerializeOptions<T, P> = {},
     parents: string[] = []
   ): EntityDTO<Loaded<T, P>> {
-    const parents_ = parents.length > 0 ? Array.from(new Set(parents)) : []
+    const parents_ = Array.from(new Set(parents))
 
     const wrapped = helper(entity)
     const meta = wrapped.__meta
@@ -180,54 +149,54 @@ export class EntitySerializer {
       root.visited.add(entity)
     }
 
-    // Convert to array once and use for loop for better V8 optimization
-    const keysArray = Array.from(keys)
-    const keysLen = keysArray.length
-    const className = meta.className
-    const platform = wrapped.__platform
-    const skipNull = options.skipNull
-
-    // Single pass processing - avoid intermediate arrays
-    for (let i = 0; i < keysLen; i++) {
-      const prop = keysArray[i]
-
-      if (
-        !filterEntityPropToSerialize({
+    ;[...keys]
+      /** Medusa Custom properties filtering **/
+      .filter((prop) =>
+        filterEntityPropToSerialize({
           propName: prop,
           meta,
           options,
           parents: parents_,
         })
-      ) {
-        continue
-      }
-
-      const cycle = root.visit(className, prop)
-
-      if (cycle && visited) {
-        continue
-      }
-
-      const val = this.processProperty<T>(
-        prop as keyof T & string,
-        entity,
-        options,
-        parents_
       )
+      .map((prop) => {
+        const cycle = root.visit(meta.className, prop)
 
-      if (!cycle) {
-        root.leave(className, prop)
-      }
+        if (cycle && visited) {
+          return [prop, undefined]
+        }
 
-      if (skipNull && Utils.isPlainObject(val)) {
-        Utils.dropUndefinedProperties(val, null)
-      }
+        const val = this.processProperty<T>(
+          prop as keyof T & string,
+          entity,
+          options,
+          parents_
+        )
 
-      if (typeof val !== "undefined" && !(val === null && skipNull)) {
-        ret[this.propertyName(meta, prop as keyof T & string, platform)] =
-          val as T[keyof T & string]
-      }
-    }
+        if (!cycle) {
+          root.leave(meta.className, prop)
+        }
+
+        if (options.skipNull && Utils.isPlainObject(val)) {
+          Utils.dropUndefinedProperties(val, null)
+        }
+
+        return [prop, val]
+      })
+      .filter(
+        ([, value]) =>
+          typeof value !== "undefined" && !(value === null && options.skipNull)
+      )
+      .forEach(
+        ([prop, value]) =>
+          (ret[
+            this.propertyName(
+              meta,
+              prop as keyof T & string,
+              wrapped.__platform
+            )
+          ] = value as T[keyof T & string])
+      )
 
     if (contextCreated) {
       root.close()
@@ -279,6 +248,7 @@ export class EntitySerializer {
     prop: string,
     platform?: Platform
   ): string {
+    /* istanbul ignore next */
     if (meta.properties[prop]?.serializedName) {
       return meta.properties[prop].serializedName as string
     }
@@ -367,39 +337,22 @@ export class EntitySerializer {
     options: CustomSerializeOptions<T>,
     prop: keyof T & string
   ): CustomSerializeOptions<U> {
-    const propPrefix = prop + "."
-    const prefixLen = propPrefix.length
-
     const extractChildElements = (items: string[]) => {
-      const result: string[] = []
-      const itemsLen = items.length
-
-      // Manual loop with pre-calculated prefix length for better performance
-      for (let i = 0; i < itemsLen; i++) {
-        const field = items[i]
-        if (
-          field.length > prefixLen &&
-          field.substring(0, prefixLen) === propPrefix
-        ) {
-          result.push(field.substring(prefixLen))
-        }
-      }
-      return result
+      return items
+        .filter((field) => field.startsWith(`${prop}.`))
+        .map((field) => field.substring(prop.length + 1))
     }
-
-    const populate = options.populate
-    const exclude = options.exclude
 
     return {
       ...options,
       populate:
-        Array.isArray(populate) && !populate.includes("*")
-          ? extractChildElements(populate as unknown as string[])
-          : populate,
+        Array.isArray(options.populate) && !options.populate.includes("*")
+          ? extractChildElements(options.populate as unknown as string[])
+          : options.populate,
       exclude:
-        Array.isArray(exclude) && !exclude.includes("*")
-          ? extractChildElements(exclude)
-          : exclude,
+        Array.isArray(options.exclude) && !options.exclude.includes("*")
+          ? extractChildElements(options.exclude)
+          : options.exclude,
     } as CustomSerializeOptions<U>
   }
 
@@ -444,22 +397,17 @@ export class EntitySerializer {
       return undefined
     }
 
-    const items = col.getItems(false)
-    const itemsLen = items.length
-    const result = new Array(itemsLen)
-    const childOptions = this.extractChildOptions(options, prop)
-
-    // Manual loop for better V8 optimization
-    for (let i = 0; i < itemsLen; i++) {
-      const item = items[i]
+    return col.getItems(false).map((item) => {
       if (isPopulated(item, prop, options)) {
-        result[i] = this.serialize(item, childOptions, parents_)
-      } else {
-        result[i] = helper(item).getPrimaryKey()
+        return this.serialize(
+          item,
+          this.extractChildOptions(options, prop),
+          parents_
+        )
       }
-    }
 
-    return result as unknown as T[keyof T]
+      return helper(item).getPrimaryKey()
+    }) as unknown as T[keyof T]
   }
 }
 
@@ -490,6 +438,7 @@ export const mikroOrmSerializer = <TOutput extends object>(
       EntitySerializer.serialize(entity, {
         forceObject: true,
         populate: ["*"],
+
         preventCircularRef: true,
         ...options,
       } as CustomSerializeOptions<any>)
