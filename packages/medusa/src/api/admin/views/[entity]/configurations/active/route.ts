@@ -9,6 +9,13 @@ import {
 import { HttpTypes } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<AdminGetActiveViewConfigurationParamsType>,
   res: MedusaResponse<
@@ -54,6 +61,13 @@ export const GET = async (
   }
 }
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminSetActiveViewConfigurationType>,
   res: MedusaResponse<{ success: boolean }>
