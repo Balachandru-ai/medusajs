@@ -13,10 +13,12 @@ export const listShippingOptionsForOrderWorkflowId =
   "list-shipping-options-for-order"
 /**
  * This workflow lists the shipping options of an order. It's executed by the
- * [List Order Shipping Options Admin API Route](https://docs.medusajs.com/api/admin#order-get_shippingoptions).
+ * [List Shipping Options Store API Route](https://docs.medusajs.com/api/store#orders_getidshippingoptions).
  *
  * You can use this workflow within your own customizations or custom workflows, allowing you to wrap custom logic around to retrieve the shipping options of an order
  * in your custom flows.
+ *
+ * @since 2.10.0
  *
  * @example
  * const { result } = await listShippingOptionsForOrderWorkflow(container)
@@ -30,7 +32,6 @@ export const listShippingOptionsForOrderWorkflowId =
  *
  * List a order's shipping options.
  *
- * :::
  */
 export const listShippingOptionsForOrderWorkflow = createWorkflow(
   listShippingOptionsForOrderWorkflowId,
