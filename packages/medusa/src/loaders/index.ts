@@ -126,7 +126,7 @@ export async function initializeContainer(
   rootDirectory: string
 ): Promise<MedusaContainer> {
   await configLoader(rootDirectory, "medusa-config")
-  await featureFlagsLoader(join(__dirname, "feature-flags"))
+  await featureFlagsLoader(join(__dirname, ".."))
 
   container.register({
     [ContainerRegistrationKeys.LOGGER]: asValue(logger),

@@ -35,12 +35,12 @@ export const createServer = async (rootDir) => {
 
   const moduleResolutions = {}
   Object.entries(ModulesDefinition).forEach(([moduleKey, module]) => {
-    moduleResolutions[moduleKey] = registerMedusaModule(
+    moduleResolutions[moduleKey] = registerMedusaModule({
       moduleKey,
-      module.defaultModuleDeclaration,
-      undefined,
-      module
-    )[moduleKey]
+      moduleDeclaration: module.defaultModuleDeclaration,
+      moduleExports: undefined,
+      definition: module,
+    })[moduleKey]
   })
 
   configManager.loadConfig({

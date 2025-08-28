@@ -178,6 +178,13 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
+        title: "Product Builder",
+        path: "/how-to-tutorials/tutorials/product-builder",
+        description:
+          "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
+      },
+      {
+        type: "link",
         title: "Product Reviews",
         path: "/how-to-tutorials/tutorials/product-reviews",
         description:

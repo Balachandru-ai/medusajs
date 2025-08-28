@@ -6559,13 +6559,14 @@ export const generatedEditDates = {
   "app/commerce-modules/promotion/promotion-taxes/page.mdx": "2025-06-27T15:44:46.638Z",
   "app/troubleshooting/payment/page.mdx": "2025-07-16T10:20:24.799Z",
   "app/recipes/personalized-products/example/page.mdx": "2025-07-22T08:53:58.182Z",
-  "app/how-to-tutorials/tutorials/preorder/page.mdx": "2025-07-18T06:57:19.943Z",
+  "app/how-to-tutorials/tutorials/preorder/page.mdx": "2025-08-13T12:09:06.154Z",
   "references/js_sdk/admin/Order/methods/js_sdk.admin.Order.archive/page.mdx": "2025-07-24T08:20:57.709Z",
   "references/js_sdk/admin/Order/methods/js_sdk.admin.Order.complete/page.mdx": "2025-07-24T08:20:57.714Z",
   "app/commerce-modules/cart/cart-totals/page.mdx": "2025-07-31T15:18:13.978Z",
   "app/commerce-modules/order/order-totals/page.mdx": "2025-07-31T15:12:10.633Z",
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
+  "app/how-to-tutorials/tutorials/product-builder/page.mdx": "2025-08-14T11:21:18.409Z",
   "app/integrations/guides/payload/page.mdx": "2025-08-21T05:24:11.537Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z"
 }

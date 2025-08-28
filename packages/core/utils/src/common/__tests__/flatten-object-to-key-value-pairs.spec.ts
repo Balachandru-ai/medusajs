@@ -167,7 +167,6 @@ describe("flattenObjectToKeyValuePairs", function () {
     }
 
     const keyValueParis = flattenObjectToKeyValuePairs(cart)
-    console.log(JSON.stringify(keyValueParis, null, 2))
     expect(keyValueParis).toEqual({
       id: "cart_01JRDH08QD8CZ0KJDVE410KM1J",
       currency_code: "usd",

@@ -228,6 +228,7 @@ export default class ProductModuleService
       this.getProductFindConfig_(config),
       sharedContext
     )
+
     const serializedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
