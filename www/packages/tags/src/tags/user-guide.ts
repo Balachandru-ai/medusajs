@@ -28,6 +28,18 @@ export const userGuide = [
     "path": "https://docs.medusajs.com/user-guide/orders/claims"
   },
   {
+    "title": "Create Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/create"
+  },
+  {
+    "title": "Manage Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage"
+  },
+  {
+    "title": "Draft Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders"
+  },
+  {
     "title": "Edit Order Items",
     "path": "https://docs.medusajs.com/user-guide/orders/edit"
   },
@@ -174,6 +186,10 @@ export const userGuide = [
   {
     "title": "Manage Sales Channels",
     "path": "https://docs.medusajs.com/user-guide/settings/sales-channels"
+  },
+  {
+    "title": "Manage Shipping Option Types",
+    "path": "https://docs.medusajs.com/user-guide/settings/shipping-option-types"
   },
   {
     "title": "Manage Store",

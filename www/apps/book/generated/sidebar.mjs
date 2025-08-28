@@ -1209,7 +1209,18 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/debugging-and-testing/logging",
             "title": "Logging",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/debugging-and-testing/logging/custom-logger",
+                "title": "Override Logger",
+                "children": [],
+                "chapterTitle": "7.6.1. Override Logger",
+                "number": "7.6.1."
+              }
+            ],
             "chapterTitle": "7.6. Logging",
             "number": "7.6."
           }

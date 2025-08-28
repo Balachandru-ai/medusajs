@@ -22,6 +22,7 @@ const TagsOperationFeatureFlagNotice = ({
           <Link
             href="https://docs.medusajs.com/development/feature-flags/toggle"
             target="__blank"
+            variant="content"
           >
             enable its feature flag: <code>{featureFlag}</code>
           </Link>

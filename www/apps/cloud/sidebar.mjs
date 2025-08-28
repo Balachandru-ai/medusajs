@@ -100,7 +100,11 @@ export const sidebar = [
           {
             type: "link",
             title: "Draft Orders",
-            path: "/draft-order-plugin",
+            path: "https://docs.medusajs.com/resources/commerce-modules/order/draft-orders",
+            badge: {
+              text: "Published",
+              variant: "blue",
+            },
           },
         ],
       },
