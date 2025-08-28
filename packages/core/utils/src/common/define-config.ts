@@ -129,18 +129,27 @@ function resolvePlugins(
   configPlugins: InputConfig["plugins"],
   { isCloud }: { isCloud: boolean }
 ): ConfigModule["plugins"] {
-  const defaultPlugins: ConfigModule["plugins"] = [
-    { resolve: "@medusajs/draft-order", options: {} },
-  ]
+  const defaultPlugins: Map<string, ConfigModule["plugins"][number]> = new Map([
+    [
+      "@medusajs/draft-order",
+      { resolve: "@medusajs/draft-order", options: {} },
+    ],
+  ])
 
   if (configPlugins?.length) {
-    defaultPlugins.push(...configPlugins)
+    configPlugins.forEach((plugin) => {
+      if (typeof plugin === "string") {
+        defaultPlugins.set(plugin, { resolve: plugin, options: {} })
+      } else {
+        defaultPlugins.set(plugin.resolve, plugin)
+      }
+    })
   }
 
   // We don't have any cloud plugins yet, but we might in the future
-  const cloudPlugins = [...defaultPlugins]
+  const cloudPlugins = [...Array.from(defaultPlugins.values())]
 
-  return isCloud ? cloudPlugins : defaultPlugins
+  return isCloud ? cloudPlugins : Array.from(defaultPlugins.values())
 }
 
 /**
