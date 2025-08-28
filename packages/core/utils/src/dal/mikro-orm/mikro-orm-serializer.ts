@@ -568,8 +568,16 @@ export const mikroOrmSerializer = <TOutput extends object>(
     if (!options) {
       options = STATIC_OPTIONS_SHAPE
     } else {
-      // Don't mutate the shared reference, create a copy if needed
-      if (options === STATIC_OPTIONS_SHAPE) {
+      // check if options props have same values as STATIC_OPTIONS_SHAPE
+      if (
+        Object.keys(options).every(
+          (key) =>
+            options![key as keyof typeof options] ===
+            STATIC_OPTIONS_SHAPE[key as keyof typeof STATIC_OPTIONS_SHAPE]
+        )
+      ) {
+        options = STATIC_OPTIONS_SHAPE
+      } else {
         options = { ...STATIC_OPTIONS_SHAPE, ...options }
       }
     }
