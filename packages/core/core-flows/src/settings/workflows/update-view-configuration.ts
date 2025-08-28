@@ -21,6 +21,13 @@ export type UpdateViewConfigurationWorkflowInput = {
 
 export const updateViewConfigurationWorkflowId = "update-view-configuration"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const updateViewConfigurationWorkflow = createWorkflow(
   updateViewConfigurationWorkflowId,
   (
