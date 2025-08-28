@@ -1,6 +1,9 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { ClaimType, Modules, RuleOperator } from "@medusajs/utils"
-import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
+import {
+  adminHeaders,
+  createAdminUser,
+} from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
 
@@ -501,20 +504,22 @@ medusaIntegrationTestRunner({
           .data.order
 
         // Totals summary after all
-        expect(orderResult).toMatchObject({
-          // This now adds a shipping_tax_total, but the item_tax_total hasn't been updated
-          total: 333.9,
-          subtotal: 300,
-          tax_total: 18.9,
-          summary: expect.objectContaining({
-            paid_total: 212,
-            refunded_total: 0,
-            transaction_total: 212,
-            pending_difference: 15.9,
-            current_order_total: 333.9,
-            original_order_total: 212,
-          }),
-        })
+        expect(orderResult).toEqual(
+          expect.objectContaining({
+            // This now adds a shipping_tax_total, but the item_tax_total hasn't been updated
+            total: 333.9,
+            subtotal: 315,
+            tax_total: 18.9,
+            summary: expect.objectContaining({
+              paid_total: 212,
+              refunded_total: 0,
+              transaction_total: 212,
+              pending_difference: 15.9,
+              current_order_total: 333.9,
+              original_order_total: 212,
+            }),
+          })
+        )
 
         // Lets create one more claim without fulfilling the previous one
         claimWithInboundAndOutbound = (
@@ -533,19 +538,21 @@ medusaIntegrationTestRunner({
           .data.order
 
         // Nothing changes from the previous expectation
-        expect(orderResult).toMatchObject({
-          total: 333.9,
-          subtotal: 300,
-          tax_total: 18.9,
-          summary: expect.objectContaining({
-            paid_total: 212,
-            refunded_total: 0,
-            transaction_total: 212,
-            pending_difference: 15.9,
-            current_order_total: 333.9,
-            original_order_total: 212,
-          }),
-        })
+        expect(orderResult).toEqual(
+          expect.objectContaining({
+            total: 333.9,
+            subtotal: 315,
+            tax_total: 18.9,
+            summary: expect.objectContaining({
+              paid_total: 212,
+              refunded_total: 0,
+              transaction_total: 212,
+              pending_difference: 15.9,
+              current_order_total: 333.9,
+              original_order_total: 212,
+            }),
+          })
+        )
 
         inboundItem = orderResult.items[1]
 
@@ -577,19 +584,21 @@ medusaIntegrationTestRunner({
         orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
           .data.order
 
-        expect(orderResult).toMatchObject({
-          total: 439.9,
-          subtotal: 400,
-          tax_total: 24.9,
-          summary: expect.objectContaining({
-            paid_total: 212,
-            refunded_total: 0,
-            transaction_total: 212,
-            pending_difference: 15.9,
-            current_order_total: 439.9,
-            original_order_total: 333.9,
-          }),
-        })
+        expect(orderResult).toEqual(
+          expect.objectContaining({
+            total: 439.9,
+            subtotal: 415,
+            tax_total: 24.9,
+            summary: expect.objectContaining({
+              paid_total: 212,
+              refunded_total: 0,
+              transaction_total: 212,
+              pending_difference: 15.9,
+              current_order_total: 439.9,
+              original_order_total: 333.9,
+            }),
+          })
+        )
 
         pendingPaymentCollection = orderResult.payment_collections.find(
           (pc) => pc.status === "not_paid"
@@ -633,19 +642,21 @@ medusaIntegrationTestRunner({
           .data.order
 
         // Totals summary after payment has been marked as paid
-        expect(orderResult).toMatchObject({
-          total: 439.9,
-          subtotal: 400,
-          tax_total: 24.9,
-          summary: expect.objectContaining({
-            paid_total: 227.9,
-            refunded_total: 0,
-            transaction_total: 227.9,
-            pending_difference: 0,
-            current_order_total: 439.9,
-            original_order_total: 333.9,
-          }),
-        })
+        expect(orderResult).toEqual(
+          expect.objectContaining({
+            total: 439.9,
+            subtotal: 415,
+            tax_total: 24.9,
+            summary: expect.objectContaining({
+              paid_total: 227.9,
+              refunded_total: 0,
+              transaction_total: 227.9,
+              pending_difference: 0,
+              current_order_total: 439.9,
+              original_order_total: 333.9,
+            }),
+          })
+        )
       })
     })
   },

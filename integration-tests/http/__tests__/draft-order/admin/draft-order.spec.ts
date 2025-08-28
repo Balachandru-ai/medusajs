@@ -682,39 +682,42 @@ medusaIntegrationTestRunner({
          * Shipping method 2 -> 10$
          */
 
-        expect(edit).toMatchObject({
-          total: 25.5,
-          subtotal: 10,
-          tax_total: 0.5,
-          items: [
-            expect.objectContaining({
-              subtotal: 10,
-              total: 10.2,
-              tax_total: 0.2,
-              tax_lines: [
-                expect.objectContaining({
-                  rate: 2,
-                }),
-              ],
-            }),
-          ],
-          shipping_methods: expect.arrayContaining([
-            expect.objectContaining({
-              shipping_option_id: shippingOption.id,
-              amount: 5,
-              subtotal: 5,
-              total: 5.1,
-              tax_total: 0.1,
-            }),
-            expect.objectContaining({
-              shipping_option_id: shippingOptionHeavy.id,
-              amount: 10,
-              subtotal: 10,
-              total: 10.2,
-              tax_total: 0.2,
-            }),
-          ]),
-        })
+        expect(edit).toEqual(
+          expect.objectContaining({
+            total: 25.5,
+            subtotal: 25,
+            tax_total: 0.5,
+
+            items: [
+              expect.objectContaining({
+                subtotal: 10,
+                total: 10.2,
+                tax_total: 0.2,
+                tax_lines: [
+                  expect.objectContaining({
+                    rate: 2,
+                  }),
+                ],
+              }),
+            ],
+            shipping_methods: expect.arrayContaining([
+              expect.objectContaining({
+                shipping_option_id: shippingOption.id,
+                amount: 5,
+                subtotal: 5,
+                total: 5.1,
+                tax_total: 0.1,
+              }),
+              expect.objectContaining({
+                shipping_option_id: shippingOptionHeavy.id,
+                amount: 10,
+                subtotal: 10,
+                total: 10.2,
+                tax_total: 0.2,
+              }),
+            ]),
+          })
+        )
 
         /**
          * Remove Heavy shipping method
@@ -757,32 +760,35 @@ medusaIntegrationTestRunner({
           )
         ).data.draft_order
 
-        expect(order).toMatchObject({
-          total: 15.3,
-          subtotal: 10,
-          tax_total: 0.3,
+        expect(order).toEqual(
+          expect.objectContaining({
+            total: 15.3,
+            subtotal: 15,
+            tax_total: 0.3,
+
             items: [
               expect.objectContaining({
-              subtotal: 10,
-              total: 10.2,
-              tax_total: 0.2,
-              tax_lines: [
-                expect.objectContaining({
-                  rate: 2,
-                }),
-              ],
-            }),
-          ],
-          shipping_methods: expect.arrayContaining([
-            expect.objectContaining({
-              shipping_option_id: shippingOption.id,
-              amount: 5,
-              subtotal: 5,
-              total: 5.1,
-              tax_total: 0.1,
-            }),
-          ]),
-        })
+                subtotal: 10,
+                total: 10.2,
+                tax_total: 0.2,
+                tax_lines: [
+                  expect.objectContaining({
+                    rate: 2,
+                  }),
+                ],
+              }),
+            ],
+            shipping_methods: expect.arrayContaining([
+              expect.objectContaining({
+                shipping_option_id: shippingOption.id,
+                amount: 5,
+                subtotal: 5,
+                total: 5.1,
+                tax_total: 0.1,
+              }),
+            ]),
+          })
+        )
       })
     })
   },
