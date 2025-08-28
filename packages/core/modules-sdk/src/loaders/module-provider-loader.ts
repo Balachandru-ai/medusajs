@@ -1,6 +1,7 @@
 import { MedusaContainer, ModuleProvider } from "@medusajs/types"
 import {
   dynamicImport,
+  isFileSkipped,
   isString,
   lowerCaseFirst,
   normalizeImportPathWithSource,
@@ -51,6 +52,10 @@ export async function loadModuleProvider(
     throw new Error(
       `Unable to find module ${moduleName} -- perhaps you need to install its package?`
     )
+  }
+
+  if (isFileSkipped(loadedProvider)) {
+    return
   }
 
   loadedProvider = (loadedProvider as any).default ?? loadedProvider

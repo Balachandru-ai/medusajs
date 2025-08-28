@@ -74,7 +74,7 @@ function expectSoftDeleted(
   let shippingOption = serviceZone.shipping_options[0]
   expect(!!shippingOption.deleted_at).toEqual(softDeleted)
   expect(!!shippingOption.shipping_profile.deleted_at).toEqual(false)
-  expect(!!shippingOption.type.deleted_at).toEqual(softDeleted)
+  expect(!!shippingOption.type.deleted_at).toEqual(false) // do not cascade delete shipping option type since it is shared between shipping options
   expect(shippingOption.fulfillments).toHaveLength(1)
   expect(shippingOption.rules).toHaveLength(1)
 

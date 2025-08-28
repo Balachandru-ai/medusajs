@@ -17,13 +17,14 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { useQueryGraphStep } from "../../common"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import {
   createCartsStep,
   findOneOrAnyRegionStep,
   findOrCreateCustomerStep,
   findSalesChannelStep,
+  getVariantPriceSetsStep,
 } from "../steps"
 import { validateLineItemPricesStep } from "../steps/validate-line-item-prices"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
@@ -167,30 +168,62 @@ export const createCartWorkflow = createWorkflow(
       }
     )
 
-    const variants = when({ variantIds }, ({ variantIds }) => {
+    const variants = when("has-variants", { variantIds }, ({ variantIds }) => {
       return !!variantIds.length
     }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "variants",
+      const { data: variantsData } = useQueryGraphStep({
+        entity: "variants",
         fields: deduplicate([
           ...productVariantsFields,
           ...requiredVariantFieldsForInventoryConfirmation,
         ]),
-        variables: {
+        filters: {
           id: variantIds,
-          calculated_price: {
-            context: pricingContext,
-          },
         },
       })
-    })
 
-    validateVariantPricesStep({ variants })
+      const calculatedPriceContext = transform(
+        { pricingContext, items: input.items },
+        (data): { variantId: string; context: Record<string, unknown> }[] => {
+          const baseContext = data.pricingContext
+
+          return (data.items ?? [])
+            .filter((i) => i.variant_id)
+            .map((item) => {
+              return {
+                variantId: item.variant_id!,
+                context: {
+                  ...baseContext,
+                  quantity: item.quantity,
+                },
+              }
+            })
+        }
+      )
+
+      const calculatedPriceSets = getVariantPriceSetsStep({
+        data: calculatedPriceContext,
+      })
+
+      const variants = transform(
+        { variantsData, calculatedPriceSets },
+        ({ variantsData, calculatedPriceSets }) => {
+          return variantsData.map((variant) => {
+            variant.calculated_price = calculatedPriceSets[variant.id]
+            return variant
+          })
+        }
+      )
+
+      validateVariantPricesStep({ variants })
+
+      return variants
+    })
 
     confirmVariantInventoryWorkflow.runAsStep({
       input: {
         sales_channel_id: salesChannel.id,
-        variants,
+        variants: variants!,
         items: input.items!,
       },
     })

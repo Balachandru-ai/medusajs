@@ -8,6 +8,9 @@ import { createShippingOptionTypesWorkflow } from "@medusajs/core-flows"
 import { refetchShippingOptionType } from "./helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
+/**
+ * @since 2.10.0
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminShippingOptionTypeListParams>,
   res: MedusaResponse<HttpTypes.AdminShippingOptionTypeListResponse>
@@ -29,6 +32,9 @@ export const GET = async (
   })
 }
 
+/**
+ * @since 2.10.0
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateShippingOptionType>,
   res: MedusaResponse<HttpTypes.AdminShippingOptionTypeResponse>

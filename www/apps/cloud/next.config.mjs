@@ -140,6 +140,11 @@ const nextConfig = {
       destination: "/faq",
       permanent: true,
     },
+    {
+      source: "/billing-usage",
+      destination: "/billing",
+      permanent: true,
+    },
   ],
 }
 

@@ -28,15 +28,15 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
    * The draft order to refresh the adjustments for.
    */
   order: OrderDTO
-  
-  // TODO: I will reintroduce this type, once I have migrated all of the order flows to fit the expected type. 
+
+  // TODO: I will reintroduce this type, once I have migrated all of the order flows to fit the expected type.
   //   Doing this in a single PR is too much work, so I'm going to do it in smaller PRs.
   //
   // order: Omit<OrderDTO, "items"> & {
   //   items?: ComputeActionItemLine[]
   //   promotions?: PromotionDTO[]
   // }
-  
+
   /**
    * The promo codes to add or remove from the draft order.
    */
