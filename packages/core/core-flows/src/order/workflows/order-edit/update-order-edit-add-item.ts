@@ -22,7 +22,6 @@ import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
-import { refreshOrderEditAdjustmentsWorkflow } from "./refresh-order-edit-adjustments"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
@@ -185,12 +184,6 @@ export const updateOrderEditAddItemWorkflow = createWorkflow(
     )
 
     updateOrderChangeActionsStep([updateData])
-
-    refreshOrderEditAdjustmentsWorkflow.runAsStep({
-      input: {
-        order: order,
-      },
-    })
 
     return new WorkflowResponse(previewOrderChangeStep(order.id))
   }
