@@ -19,6 +19,18 @@ export type UpdateShippingOptionTypesStepInput = {
 export const updateShippingOptionTypesStepId = "update-shipping-option-types"
 /**
  * This step updates shipping option types matching the specified filters.
+ * 
+ * @since 2.10.0
+ * 
+ * @example
+ * const shippingOptionTypes = updateShippingOptionTypesStep({
+ *   selector: {
+ *     id: "sotype_123"
+ *   },
+ *   update: {
+ *     label: "Standard"
+ *   }
+ * })
  */
 export const updateShippingOptionTypesStep = createStep(
   updateShippingOptionTypesStepId,
