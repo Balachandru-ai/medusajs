@@ -399,7 +399,7 @@ export class Promotion {
    *
    * @param ruleType - The type of rules to retrieve the attributes for. Can be `rules`, `buy-rules`, or `target-rules`.
    * @param promotionType - The type of promotion to retrieve the attributes for. It can be `standard` or `buyget`.
-   * @param applicationMethodTargetType - The type of application method to retrieve the attributes for. It can be `order`, `items` or `shipping_methods`.
+   * @param applicationMethodTargetType - The type of application method to retrieve the attributes for. It can be `order`, `items` (default) or `shipping_methods`.
    * @param headers - Headers to pass in the request.
    * @returns The list of rule attributes.
    *

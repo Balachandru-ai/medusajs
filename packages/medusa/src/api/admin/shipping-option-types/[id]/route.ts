@@ -15,6 +15,9 @@ import {
 import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 
+/**
+ * @since 2.10.0
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<AdminGetShippingOptionTypeParamsType>,
   res: MedusaResponse<HttpTypes.AdminShippingOptionTypeResponse>
@@ -28,6 +31,9 @@ export const GET = async (
   res.status(200).json({ shipping_option_type: shippingOptionType })
 }
 
+/**
+ * @since 2.10.0
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminUpdateShippingOptionTypeType>,
   res: MedusaResponse<HttpTypes.AdminShippingOptionTypeResponse>
@@ -61,6 +67,9 @@ export const POST = async (
   res.status(200).json({ shipping_option_type: shippingOptionType })
 }
 
+/**
+ * @since 2.10.0
+ */
 export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminShippingOptionTypeDeleteResponse>
