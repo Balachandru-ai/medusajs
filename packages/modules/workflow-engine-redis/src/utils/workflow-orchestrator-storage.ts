@@ -351,12 +351,6 @@ export class RedisDistributedTransactionStorage
         }
       }
 
-      if (workflowId === "workflow_1") {
-        console.log(
-          ">>>>>>>>> get from db",
-          JSON.stringify(trx.context?.data, null, 2)
-        )
-      }
       return {
         flow: flow ?? (trx.execution as TransactionFlow),
         context: trx.context?.data as TransactionContext,
