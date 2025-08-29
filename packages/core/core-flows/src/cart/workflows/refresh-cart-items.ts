@@ -130,7 +130,7 @@ export const refreshCartItemsWorkflowId = "refresh-cart-items"
 export const refreshCartItemsWorkflow = createWorkflow(
   {
     name: refreshCartItemsWorkflowId,
-    idempotent: true,
+    idempotent: false,
   },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
     const setPricingContext = createHook(

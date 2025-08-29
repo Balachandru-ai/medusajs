@@ -40,7 +40,7 @@ export const deleteLineItemsWorkflowId = "delete-line-items"
 export const deleteLineItemsWorkflow = createWorkflow(
   {
     name: deleteLineItemsWorkflowId,
-    idempotent: true,
+    idempotent: false,
   },
   (input: WorkflowData<DeleteLineItemsWorkflowInput>) => {
     deleteLineItemsStep(input.ids)
