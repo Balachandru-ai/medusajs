@@ -147,7 +147,7 @@ export class InMemoryDistributedTransactionStorage
       return
     }
 
-    const promise = this.workflowExecutionService_.upsert([
+    await this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
         transaction_id: data.flow.transactionId,
@@ -161,12 +161,6 @@ export class InMemoryDistributedTransactionStorage
         retention_time: retentionTime,
       },
     ])
-
-    if (isNotStarted || isFinished || currentStepsIsAsync) {
-      await promise
-    } else {
-      return
-    }
   }
 
   private async deleteFromDb(data: TransactionCheckpoint) {
