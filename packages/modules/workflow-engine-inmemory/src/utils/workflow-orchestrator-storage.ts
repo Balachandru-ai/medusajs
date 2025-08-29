@@ -126,22 +126,56 @@ export class InMemoryDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
+    /**
+     * Bit of explanation:
+     *
+     * When a workflow run, it run all sync step in memory until it reaches a async step.
+     * In that case, it might handover to another process to continue the execution. Thats why
+     * we need to save the current state of the flow. Then from there, it will run again all
+     * sync steps until the next async step. an so on so forth.
+     *
+     * To summarize, we only trully need to save the data when we are reaching any steps that
+     * trigger a handover to a potential other process.
+     *
+     * This allows us to spare some resources and time by not over communicating with the external
+     * database when it is not really needed
+     */
+
     const isFlowInvoking = data.flow.state === TransactionState.INVOKING
-    const currentSteps = Object.values(data.flow.steps).filter((step) => {
+
+    const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
+    let currentStep!: TransactionStep
+
+    const targetStates = isFlowInvoking
+      ? [
+          TransactionStepState.INVOKING,
+          TransactionStepState.DONE,
+          TransactionStepState.FAILED,
+        ]
+      : [TransactionStepState.COMPENSATING]
+
+    // Find the current step from the end
+    for (let i = stepsArray.length - 1; i >= 0; i--) {
+      const step = stepsArray[i]
+
       if (step.id === "_root") {
-        return false
+        break
       }
 
-      if (isFlowInvoking) {
-        return step.invoke.state === TransactionStepState.INVOKING
+      const isTargetState = targetStates.includes(step.invoke?.state)
+
+      if (isTargetState) {
+        currentStep = step
+        break
       }
+    }
 
-      return step.compensate.state === TransactionStepState.COMPENSATING
-    })
-
-    const currentStepsIsAsync = currentSteps.some(
-      (currentStep) => currentStep?.definition?.async === true
-    )
+    const currentStepsIsAsync = currentStep
+      ? stepsArray.some(
+          (step) =>
+            step?.definition?.async === true && step.depth === currentStep.depth
+        )
+      : false
 
     if (!(isNotStarted || isFinished) && !currentStepsIsAsync) {
       return
