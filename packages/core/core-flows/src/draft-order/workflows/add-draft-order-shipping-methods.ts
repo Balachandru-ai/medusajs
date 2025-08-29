@@ -1,16 +1,24 @@
 import {
   ChangeActionType,
+  isDefined,
   OrderChangeStatus,
   PromotionActions,
+  ShippingOptionPriceType,
 } from "@medusajs/framework/utils"
 import {
+  createStep,
   createWorkflow,
   transform,
   when,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { BigNumberInput, OrderChangeDTO, OrderDTO } from "@medusajs/types"
+import {
+  BigNumberInput,
+  OrderChangeDTO,
+  OrderDTO,
+  ShippingOptionDTO,
+} from "@medusajs/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrderChangeActionsWorkflow,
@@ -22,6 +30,26 @@ import { prepareShippingMethod } from "../../order/utils/prepare-shipping-method
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+
+const validateShippingOptionStep = createStep(
+  "validate-shipping-option",
+  async (data: {
+    shippingOptions: ShippingOptionDTO[]
+    input: AddDraftOrderShippingMethodsWorkflowInput
+  }) => {
+    const shippingOption = data.shippingOptions[0]
+    const customAmount = data.input.custom_amount
+
+    if (
+      shippingOption.price_type === ShippingOptionPriceType.CALCULATED &&
+      !isDefined(customAmount)
+    ) {
+      throw new Error(
+        "Calculated shipping options are not currently supported on draft orders without a custom amount."
+      )
+    }
+  }
+)
 
 export const addDraftOrderShippingMethodsWorkflowId =
   "add-draft-order-shipping-methods"
@@ -100,6 +128,7 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
       fields: [
         "id",
         "name",
+        "price_type",
         "calculated_price.calculated_amount",
         "calculated_price.is_calculated_price_tax_inclusive",
       ],
@@ -110,6 +139,8 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
         },
       },
     }).config({ name: "fetch-shipping-option" })
+
+    validateShippingOptionStep({ shippingOptions, input })
 
     const shippingMethodInput = transform(
       {
