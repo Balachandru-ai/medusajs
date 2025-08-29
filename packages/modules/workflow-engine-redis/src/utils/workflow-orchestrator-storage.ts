@@ -350,42 +350,12 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    // Use Redis lock for race condition prevention instead of expensive checks
     const lockKey = `${RedisDistributedTransactionStorage.EXECUTION_LOCK_PREFIX}${key}`
-    const isInitialCheckpoint = data.flow.state === TransactionState.NOT_STARTED
-    const isCancelled = !!data.flow.cancelledAt
-    const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
-    const isCompensating = data.flow.state === TransactionState.COMPENSATING
 
-    if (isInitialCheckpoint && !isCompensating) {
-      const lockAcquired = await this.redisClient.set(
-        lockKey,
-        Date.now().toString(),
-        "EX",
-        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL,
-        "NX"
-      )
-
-      if (!lockAcquired) {
-        throw new SkipExecutionError(
-          "Transaction already started for transactionId: " +
-            data.flow.transactionId
-        )
-      }
-    } else if (!isInitialCheckpoint && !isCancelled) {
-      const lockExists = await this.redisClient.exists(lockKey)
-      if (!lockExists) {
-        throw new SkipExecutionError(
-          "Execution lock not found - likely finished by another execution"
-        )
-      }
-
-      // Renew the lock TTL to prevent expiration during long-running workflows
-      await this.redisClient.expire(
-        lockKey,
-        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL
-      )
-    }
+    await this.#preventRaceConditionExecutionIfNecessary({
+      data,
+      lockKey,
+    })
 
     if (hasFinished && retentionTime) {
       Object.assign(data, {
@@ -394,7 +364,9 @@ export class RedisDistributedTransactionStorage
     }
 
     // Only set if not exists
-    const shouldSetNX = isInitialCheckpoint && isManualTransactionId
+    const shouldSetNX =
+      data.flow.state === TransactionState.NOT_STARTED &&
+      !data.flow.transactionId.startsWith("auto-")
 
     // Prepare operations to be executed in batch or pipeline
     const data_ = {
@@ -424,6 +396,7 @@ export class RedisDistributedTransactionStorage
     }
 
     // Clean up lock when transaction finishes or is cancelled
+    const isCancelled = !!data.flow.cancelledAt
     if (hasFinished || isCancelled) {
       pipeline.del(lockKey)
     }
@@ -642,7 +615,48 @@ export class RedisDistributedTransactionStorage
     )
   }
 
-  // Removed expensive race condition logic - now using Redis locks for prevention
+  async #preventRaceConditionExecutionIfNecessary({
+    data,
+    lockKey,
+  }: {
+    data: TransactionCheckpoint
+    lockKey: string
+  }) {
+    // Use Redis lock for race condition prevention instead of expensive checks
+    const isInitialCheckpoint = data.flow.state === TransactionState.NOT_STARTED
+    const isCancelled = !!data.flow.cancelledAt
+    const isCompensating = data.flow.state === TransactionState.COMPENSATING
+
+    if (isInitialCheckpoint && !isCompensating) {
+      const lockAcquired = await this.redisClient.set(
+        lockKey,
+        Date.now().toString(),
+        "EX",
+        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL,
+        "NX"
+      )
+
+      if (!lockAcquired) {
+        throw new SkipExecutionError(
+          "Transaction already started for transactionId: " +
+            data.flow.transactionId
+        )
+      }
+    } else if (!isInitialCheckpoint && !isCancelled) {
+      const lockExists = await this.redisClient.exists(lockKey)
+      if (!lockExists) {
+        throw new SkipExecutionError(
+          "Execution lock not found - likely finished by another execution"
+        )
+      }
+
+      // Renew the lock TTL to prevent expiration during long-running workflows
+      await this.redisClient.expire(
+        lockKey,
+        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL
+      )
+    }
+  }
 
   async clearExpiredExecutions() {
     await this.workflowExecutionService_.delete({
