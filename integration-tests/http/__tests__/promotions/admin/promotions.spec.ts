@@ -7,9 +7,8 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
-import Redis from "ioredis"
 
-jest.setTimeout(50000000)
+jest.setTimeout(50000)
 
 const adminHeaders = {
   headers: { "x-medusa-access-token": "test_token" },
