@@ -70,20 +70,6 @@ medusaIntegrationTestRunner({
         appContainer = getContainer()
       })
 
-      // afterAll(async () => {
-      //   // empty redis
-      //   const connection = new Redis("localhost:6379", {
-      //     lazyConnect: true,
-      //   })
-
-      //   await new Promise(async (resolve) => {
-      //     await connection.connect(resolve)
-      //   })
-
-      //   await connection.flushall()
-      //   await connection.disconnect()
-      // })
-
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
 
@@ -661,7 +647,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.only("should add promotion and remove it from cart using delete", async () => {
+          it("should add promotion and remove it from cart using delete", async () => {
             const publishableKey = await generatePublishableKey(appContainer)
             const storeHeaders = generateStoreHeaders({ publishableKey })
 
