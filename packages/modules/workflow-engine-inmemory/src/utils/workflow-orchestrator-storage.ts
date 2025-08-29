@@ -347,6 +347,12 @@ export class InMemoryDistributedTransactionStorage
     key: string
     options?: TransactionOptions
   }) {
+    // TODO: comment, we have been able to try to replace this entire function
+    // with a locking first approach. We might come back to that another time.
+    // This remove the necessity of all the below logic to prevent race conditions
+    // by preventing the exact same execution to run at the same time.
+    // See early commits from: https://github.com/medusajs/medusa/pull/13345/commits
+
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
     )
