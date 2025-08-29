@@ -39,6 +39,7 @@ import {
 } from "../__fixtures__"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
 import { TestDatabase } from "../utils"
+import { Redis } from "ioredis"
 
 jest.setTimeout(300000)
 
@@ -94,6 +95,20 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       beforeEach(async () => {
         await TestDatabase.clearTables()
         jest.clearAllMocks()
+      })
+
+      afterAll(async () => {
+        // empty redis
+        const connection = new Redis("localhost:6379", {
+          lazyConnect: true,
+        })
+
+        await new Promise(async (resolve) => {
+          await connection.connect(resolve)
+        })
+
+        await connection.flushall()
+        await connection.disconnect()
       })
 
       let query: RemoteQueryFunction
@@ -152,7 +167,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       describe("Testing basic workflow", function () {
         describe("Cancel transaction", function () {
           it("should cancel an ongoing execution with async unfinished yet step", (done) => {
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -219,7 +234,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           it("should cancel a complete execution with a sync workflow running as async", async () => {
             const workflowId = "workflow-to-cancel-id" + ulid()
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -274,7 +289,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           it("should cancel an ongoing execution with a sync workflow running as async", async () => {
             const workflowId = "workflow-to-cancel-id" + ulid()
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -329,7 +344,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           it("should cancel an ongoing execution with sync steps only", async () => {
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -379,7 +394,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should prevent executing twice the same workflow in perfect concurrency with the same transactionId and non idempotent and not async but retention time is set", async () => {
-          const transactionId = "concurrency_transaction_id"
+          const transactionId = "concurrency_transaction_id" + ulid()
           const workflowId = "concurrency_workflow_id" + ulid()
 
           const step1 = createStep("step1", async () => {
@@ -771,7 +786,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should complete an async workflow that returns a StepResponse", (done) => {
-          const transactionId = "transaction_1"
+          const transactionId = "transaction_1" + ulid()
           workflowOrcModule
             .run("workflow_async_background", {
               input: {
@@ -801,7 +816,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should subscribe to a async workflow and receive the response when it finishes", (done) => {
-          const transactionId = "trx_123"
+          const transactionId = "trx_123" + ulid()
 
           const onFinish = jest.fn()
 

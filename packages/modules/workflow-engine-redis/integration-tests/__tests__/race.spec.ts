@@ -38,7 +38,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
     describe("Testing race condition of the workflow during retry", () => {
       it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
-        const transactionId = "transaction_id"
+        const transactionId = "transaction_id" + ulid()
         const workflowId = "workflow-1" + ulid()
         const subWorkflowId = "sub-" + workflowId
 
@@ -122,8 +122,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       })
 
       it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
-        const transactionId = "transaction_id"
-        const workflowId = "RACE_workflow-1"
+        const transactionId = "transaction_id" + ulid()
+        const workflowId = "RACE_workflow-1" + ulid()
 
         const step0InvokeMock = jest.fn()
         const step0CompensateMock = jest.fn()

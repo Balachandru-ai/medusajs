@@ -3,7 +3,6 @@ import {
   IDistributedSchedulerStorage,
   IDistributedTransactionStorage,
   SchedulerOptions,
-  SkipCancelledExecutionError,
   SkipExecutionError,
   TransactionCheckpoint,
   TransactionContext,
@@ -14,11 +13,9 @@ import {
 } from "@medusajs/framework/orchestration"
 import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
-  isPresent,
   MedusaError,
   promiseAll,
   TransactionState,
-  TransactionStepState,
 } from "@medusajs/framework/utils"
 import { raw } from "@mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
@@ -55,6 +52,8 @@ export class RedisDistributedTransactionStorage
   private cleanerQueue_?: Queue
 
   #isWorkerMode: boolean = false
+  private static readonly EXECUTION_LOCK_PREFIX = "exec_lock:"
+  private static readonly EXECUTION_LOCK_TTL = 3600 // 1 hour
 
   constructor({
     workflowExecutionService,
@@ -351,11 +350,42 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    await this.#preventRaceConditionExecutionIfNecessary({
-      data,
-      key,
-      options,
-    })
+    // Use Redis lock for race condition prevention instead of expensive checks
+    const lockKey = `${RedisDistributedTransactionStorage.EXECUTION_LOCK_PREFIX}${key}`
+    const isInitialCheckpoint = data.flow.state === TransactionState.NOT_STARTED
+    const isCancelled = !!data.flow.cancelledAt
+    const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
+    const isCompensating = data.flow.state === TransactionState.COMPENSATING
+
+    if (isInitialCheckpoint && !isCompensating) {
+      const lockAcquired = await this.redisClient.set(
+        lockKey,
+        Date.now().toString(),
+        "EX",
+        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL,
+        "NX"
+      )
+
+      if (!lockAcquired) {
+        throw new SkipExecutionError(
+          "Transaction already started for transactionId: " +
+            data.flow.transactionId
+        )
+      }
+    } else if (!isInitialCheckpoint && !isCancelled) {
+      const lockExists = await this.redisClient.exists(lockKey)
+      if (!lockExists) {
+        throw new SkipExecutionError(
+          "Execution lock not found - likely finished by another execution"
+        )
+      }
+
+      // Renew the lock TTL to prevent expiration during long-running workflows
+      await this.redisClient.expire(
+        lockKey,
+        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL
+      )
+    }
 
     if (hasFinished && retentionTime) {
       Object.assign(data, {
@@ -363,10 +393,8 @@ export class RedisDistributedTransactionStorage
       })
     }
 
-    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
-    const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
     // Only set if not exists
-    const shouldSetNX = isNotStarted && isManualTransactionId
+    const shouldSetNX = isInitialCheckpoint && isManualTransactionId
 
     // Prepare operations to be executed in batch or pipeline
     const data_ = {
@@ -393,6 +421,11 @@ export class RedisDistributedTransactionStorage
       }
     } else {
       pipeline.unlink(key)
+    }
+
+    // Clean up lock when transaction finishes or is cancelled
+    if (hasFinished || isCancelled) {
+      pipeline.del(lockKey)
     }
 
     const pipelinePromise = pipeline.exec().then((result) => {
@@ -609,147 +642,7 @@ export class RedisDistributedTransactionStorage
     )
   }
 
-  async #preventRaceConditionExecutionIfNecessary({
-    data,
-    key,
-    options,
-  }: {
-    data: TransactionCheckpoint
-    key: string
-    options?: TransactionOptions
-  }) {
-    const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
-      data.flow.state
-    )
-
-    /**
-     * In case many execution can succeed simultaneously, we need to ensure that the latest
-     * execution does continue if a previous execution is considered finished
-     */
-    const currentFlow = data.flow
-
-    const rawData = await this.redisClient.get(key)
-    let data_ = {} as TransactionCheckpoint
-    if (rawData) {
-      data_ = JSON.parse(rawData)
-    } else {
-      const getOptions = {
-        ...options,
-        isCancelling: !!data.flow.cancelledAt,
-      } as Parameters<typeof this.get>[1]
-
-      data_ =
-        (await this.get(key, getOptions)) ??
-        ({ flow: {} } as TransactionCheckpoint)
-    }
-
-    const { flow: latestUpdatedFlow } = data_
-
-    if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
-      /**
-       * the initial checkpoint expect no other checkpoint to have been stored.
-       * In case it is not the initial one and another checkpoint is trying to
-       * find if a concurrent execution has finished, we skip the execution.
-       * The already finished execution would have deleted the checkpoint already.
-       */
-      throw new SkipExecutionError("Already finished by another execution")
-    }
-
-    // First ensure that the latest execution was not cancelled, otherwise we skip the execution
-    const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
-    const currentTransactionCancelledAt = currentFlow.cancelledAt
-
-    if (
-      !!latestTransactionCancelledAt &&
-      currentTransactionCancelledAt == null
-    ) {
-      throw new SkipCancelledExecutionError(
-        "Workflow execution has been cancelled during the execution"
-      )
-    }
-
-    const currentFlowSteps = Object.values(currentFlow.steps || {})
-    const latestUpdatedFlowSteps = latestUpdatedFlow.steps
-      ? Object.values(
-          latestUpdatedFlow.steps as Record<string, TransactionStep>
-        )
-      : []
-
-    // Predefined states for quick lookup
-    const invokingStates = [
-      TransactionStepState.INVOKING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const compensatingStates = [
-      TransactionStepState.COMPENSATING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const isInvokingState = (step: TransactionStep) =>
-      invokingStates.includes(step.invoke?.state)
-
-    const isCompensatingState = (step: TransactionStep) =>
-      compensatingStates.includes(step.compensate?.state)
-
-    const currentFlowLastInvokingStepIndex =
-      currentFlowSteps.findIndex(isInvokingState)
-
-    const latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
-      ? 1 // There is no other execution, so the current execution is the latest
-      : latestUpdatedFlowSteps.findIndex(isInvokingState)
-
-    const reversedCurrentFlowSteps = [...currentFlowSteps].reverse()
-    const currentFlowLastCompensatingStepIndex =
-      reversedCurrentFlowSteps.findIndex(isCompensatingState)
-
-    const reversedLatestUpdatedFlowSteps = [...latestUpdatedFlowSteps].reverse()
-    const latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
-      ? -1
-      : reversedLatestUpdatedFlowSteps.findIndex(isCompensatingState)
-
-    const isLatestExecutionFinishedIndex = -1
-    const invokeShouldBeSkipped =
-      (latestUpdatedFlowLastInvokingStepIndex ===
-        isLatestExecutionFinishedIndex ||
-        currentFlowLastInvokingStepIndex <
-          latestUpdatedFlowLastInvokingStepIndex) &&
-      currentFlowLastInvokingStepIndex !== isLatestExecutionFinishedIndex
-
-    const compensateShouldBeSkipped =
-      currentFlowLastCompensatingStepIndex <
-        latestUpdatedFlowLastCompensatingStepIndex &&
-      currentFlowLastCompensatingStepIndex !== isLatestExecutionFinishedIndex &&
-      latestUpdatedFlowLastCompensatingStepIndex !==
-        isLatestExecutionFinishedIndex
-
-    const isCompensatingMismatch =
-      latestUpdatedFlow.state === TransactionState.COMPENSATING &&
-      ![TransactionState.REVERTED, TransactionState.FAILED].includes(
-        currentFlow.state
-      ) &&
-      currentFlow.state !== latestUpdatedFlow.state
-
-    const isRevertedMismatch =
-      latestUpdatedFlow.state === TransactionState.REVERTED &&
-      currentFlow.state !== TransactionState.REVERTED
-
-    const isFailedMismatch =
-      latestUpdatedFlow.state === TransactionState.FAILED &&
-      currentFlow.state !== TransactionState.FAILED
-
-    if (
-      (data.flow.state !== TransactionState.COMPENSATING &&
-        invokeShouldBeSkipped) ||
-      (data.flow.state === TransactionState.COMPENSATING &&
-        compensateShouldBeSkipped) ||
-      isCompensatingMismatch ||
-      isRevertedMismatch ||
-      isFailedMismatch
-    ) {
-      throw new SkipExecutionError("Already finished by another execution")
-    }
-  }
+  // Removed expensive race condition logic - now using Redis locks for prevention
 
   async clearExpiredExecutions() {
     await this.workflowExecutionService_.delete({
