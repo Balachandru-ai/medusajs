@@ -717,21 +717,17 @@ medusaIntegrationTestRunner({
               adminHeaders
             )
 
-            // Simulate concurrent requests
-            const startTime = performance.now()
-
-            for (let i = 0; i < 10; i++) {
-              await Promise.all([
-                api
-                  .post(
-                    `/store/carts/${cart.id}`,
-                    {
-                      promo_codes: [response.data.promotion.code],
-                    },
-                    storeHeaders
-                  )
-                  .catch(() => {}),
-                /*
+            await Promise.all([
+              api
+                .post(
+                  `/store/carts/${cart.id}`,
+                  {
+                    promo_codes: [response.data.promotion.code],
+                  },
+                  storeHeaders
+                )
+                .catch(() => {}),
+              /*
               api
                 .post(
                   `/store/carts/${cart.id}`,
@@ -742,11 +738,7 @@ medusaIntegrationTestRunner({
                 )
                 .catch(() => {}),
                 */
-              ])
-            }
-
-            const endTime = performance.now()
-            console.log(`Time taken: ${endTime - startTime} milliseconds`)
+            ])
 
             const cartAfterPromotion = (
               await api.get(`/store/carts/${cart.id}`, storeHeaders)
