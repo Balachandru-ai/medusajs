@@ -323,7 +323,7 @@
  *         },
  *       })
  * 
- *       sdk.admin.promotion.create({ 
+ *       sdk.admin.promotion.create({
  *         name: "My Promotion",
  *         description: "This is a test promotion",
  *         code: "PROMO123",

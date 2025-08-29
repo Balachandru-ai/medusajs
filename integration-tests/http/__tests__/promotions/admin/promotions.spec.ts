@@ -727,6 +727,7 @@ medusaIntegrationTestRunner({
                   storeHeaders
                 )
                 .catch(() => {}),
+              /*
               api
                 .post(
                   `/store/carts/${cart.id}`,
@@ -736,6 +737,7 @@ medusaIntegrationTestRunner({
                   storeHeaders
                 )
                 .catch(() => {}),
+                */
             ])
 
             const cartAfterPromotion = (

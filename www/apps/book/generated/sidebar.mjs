@@ -916,6 +916,16 @@ export const generatedSidebars = [
                 "children": [],
                 "chapterTitle": "3.9.1. Execution Number",
                 "number": "3.9.1."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/fundamentals/scheduled-jobs/interval",
+                "title": "Set Interval",
+                "children": [],
+                "chapterTitle": "3.9.2. Set Interval",
+                "number": "3.9.2."
               }
             ],
             "chapterTitle": "3.9. Scheduled Jobs",
@@ -1209,7 +1219,18 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/debugging-and-testing/logging",
             "title": "Logging",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/debugging-and-testing/logging/custom-logger",
+                "title": "Override Logger",
+                "children": [],
+                "chapterTitle": "7.6.1. Override Logger",
+                "number": "7.6.1."
+              }
+            ],
             "chapterTitle": "7.6. Logging",
             "number": "7.6."
           }

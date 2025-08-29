@@ -44,6 +44,11 @@ export const orderSidebar = [
           },
           {
             type: "link",
+            path: "/commerce-modules/order/draft-orders",
+            title: "Draft Orders",
+          },
+          {
+            type: "link",
             path: "/commerce-modules/order/return",
             title: "Return",
           },
