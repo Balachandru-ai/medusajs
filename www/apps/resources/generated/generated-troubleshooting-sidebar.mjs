@@ -43,6 +43,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "path": "/troubleshooting/general-errors",
           "title": "General Errors",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/pnpm",
+          "title": "pnpm Errors",
+          "children": []
         }
       ]
     },

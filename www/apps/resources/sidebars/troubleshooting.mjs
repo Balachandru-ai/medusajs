@@ -28,6 +28,11 @@ export const troubleshootingSidebar = [
         path: "/troubleshooting/general-errors",
         title: "General Errors",
       },
+      {
+        type: "link",
+        path: "/troubleshooting/pnpm",
+        title: "pnpm Errors",
+      },
     ],
   },
   {
