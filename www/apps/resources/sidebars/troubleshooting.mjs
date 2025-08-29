@@ -101,6 +101,11 @@ export const troubleshootingSidebar = [
       },
       {
         type: "link",
+        path: "/troubleshooting/scheduled-job-not-running",
+        title: "Scheduled Job Not Running",
+      },
+      {
+        type: "link",
         path: "/troubleshooting/test-errors",
         title: "Test Errors",
       },

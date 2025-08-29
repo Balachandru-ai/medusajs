@@ -154,6 +154,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/troubleshooting/scheduled-job-not-running",
+          "title": "Scheduled Job Not Running",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/troubleshooting/test-errors",
           "title": "Test Errors",
           "children": []
