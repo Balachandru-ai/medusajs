@@ -6570,5 +6570,6 @@ export const generatedEditDates = {
   "app/integrations/guides/payload/page.mdx": "2025-08-21T05:24:11.537Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z",
   "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z",
-  "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-08-29T11:32:54.117Z"
+  "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-08-29T11:32:54.117Z",
+  "app/troubleshooting/pnpm/page.mdx": "2025-08-29T12:21:24.692Z"
 }
