@@ -290,7 +290,7 @@ export class InMemoryDistributedTransactionStorage
       if (!retentionTime) {
         // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
         if (!flow.metadata?.parentStepIdempotencyKey) {
-          void this.deleteFromDb(data)
+          await this.deleteFromDb(data)
         } else {
           await this.saveToDb(data, retentionTime)
         }

@@ -445,8 +445,7 @@ export class RedisDistributedTransactionStorage
     if (hasFinished && !retentionTime) {
       // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
       if (!data.flow.metadata?.parentStepIdempotencyKey) {
-        void this.deleteFromDb(data)
-        await pipelinePromise
+        await promiseAll([pipelinePromise, this.deleteFromDb(data)])
       } else {
         await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
       }
