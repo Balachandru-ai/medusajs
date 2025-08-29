@@ -1,6 +1,7 @@
 import {
   ChangeActionType,
   isDefined,
+  MedusaError,
   OrderChangeStatus,
   PromotionActions,
   ShippingOptionPriceType,
@@ -44,7 +45,8 @@ const validateShippingOptionStep = createStep(
       shippingOption.price_type === ShippingOptionPriceType.CALCULATED &&
       !isDefined(customAmount)
     ) {
-      throw new Error(
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
         "Calculated shipping options are not currently supported on draft orders without a custom amount."
       )
     }
