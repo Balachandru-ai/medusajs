@@ -698,8 +698,12 @@ const CostBreakdown = ({
         <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {t("fields.total")}
         </Text>
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {getStylizedAmount(order.original_total, order.currency_code)}
+        <Text
+          className="text-ui-fg-subtle text-bold"
+          size="small"
+          leading="compact"
+        >
+          {getLocaleAmount(order.original_total, order.currency_code)}
         </Text>
       </div>
     </div>
@@ -912,8 +916,12 @@ const DiscountAndTotalBreakdown = ({
         <Text className="text-ui-fg-subtle" size="small" leading="compact">
           {t("orders.summary.totalAfterDiscount")}
         </Text>
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
-          {getStylizedAmount(order.total, order.currency_code)}
+        <Text
+          className="text-ui-fg-subtle text-bold"
+          size="small"
+          leading="compact"
+        >
+          {getLocaleAmount(order.total, order.currency_code)}
         </Text>
       </div>
     </div>
@@ -1242,7 +1250,7 @@ const Total = ({ order }: { order: AdminOrder }) => {
           {t("orders.returns.outstandingAmount")}
         </Text>
         <Text
-          className="text-ui-fg-subtle text-bold"
+          className="text-ui-fg-subtle text-bold" // ici
           size="small"
           leading="compact"
         >
