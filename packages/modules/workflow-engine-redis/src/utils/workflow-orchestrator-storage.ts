@@ -53,7 +53,7 @@ export class RedisDistributedTransactionStorage
 
   #isWorkerMode: boolean = false
   private static readonly EXECUTION_LOCK_PREFIX = "workflow_engine:exec_lock:"
-  private static readonly EXECUTION_LOCK_TTL = 3600 // 1 hour
+  private static readonly EXECUTION_LOCK_TTL = 1800 // 30min in seconds
 
   constructor({
     workflowExecutionService,
