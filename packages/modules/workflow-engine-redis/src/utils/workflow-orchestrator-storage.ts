@@ -53,7 +53,10 @@ export class RedisDistributedTransactionStorage
 
   #isWorkerMode: boolean = false
   private static readonly EXECUTION_LOCK_PREFIX = "workflow_engine:exec_lock:"
-  private static readonly EXECUTION_LOCK_TTL = 1800 // 30min in seconds
+  private static readonly EXECUTION_LOCK_TTL = 60 // 1 minute in seconds
+  private static readonly HEARTBEAT_INTERVAL = 30000 // 30 seconds in milliseconds
+  private activeLocks = new Set<string>()
+  private heartbeatTimer?: NodeJS.Timeout
 
   constructor({
     workflowExecutionService,
@@ -94,6 +97,7 @@ export class RedisDistributedTransactionStorage
   }
 
   async onApplicationPrepareShutdown() {
+    this.stopHeartbeat()
     // Close worker gracefully, i.e. wait for the current jobs to finish
     await this.worker?.close()
     await this.jobWorker?.close()
@@ -115,6 +119,7 @@ export class RedisDistributedTransactionStorage
   }
 
   async onApplicationStart() {
+    this.startHeartbeat()
     const allowedJobs = [
       JobType.RETRY,
       JobType.STEP_TIMEOUT,
@@ -197,6 +202,38 @@ export class RedisDistributedTransactionStorage
 
   setWorkflowOrchestratorService(workflowOrchestratorService) {
     this.workflowOrchestratorService_ = workflowOrchestratorService
+  }
+
+  private startHeartbeat() {
+    this.heartbeatTimer = setInterval(async () => {
+      try {
+        await this.extendActiveLocks()
+      } catch (error) {
+        this.logger_?.warn("Failed to extend locks during heartbeat")
+      }
+    }, RedisDistributedTransactionStorage.HEARTBEAT_INTERVAL)
+  }
+
+  private stopHeartbeat() {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer)
+      this.heartbeatTimer = undefined
+    }
+  }
+
+  private async extendActiveLocks() {
+    if (this.activeLocks.size === 0) return
+
+    const pipeline = this.redisClient.pipeline()
+
+    for (const lockKey of this.activeLocks) {
+      pipeline.expire(
+        lockKey,
+        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL
+      )
+    }
+
+    await pipeline.exec()
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
@@ -399,6 +436,7 @@ export class RedisDistributedTransactionStorage
     const isCancelled = !!data.flow.cancelledAt
     if (hasFinished || isCancelled) {
       pipeline.del(lockKey)
+      this.activeLocks.delete(lockKey)
     }
 
     const pipelinePromise = pipeline.exec().then((result) => {
@@ -642,6 +680,9 @@ export class RedisDistributedTransactionStorage
             data.flow.transactionId
         )
       }
+
+      // Track this lock for heartbeat extension
+      this.activeLocks.add(lockKey)
     } else if (!isInitialCheckpoint && !isCancelled) {
       const lockExists = await this.redisClient.exists(lockKey)
       if (!lockExists) {
@@ -649,12 +690,6 @@ export class RedisDistributedTransactionStorage
           "Execution lock not found - likely finished by another execution"
         )
       }
-
-      // Renew the lock TTL to prevent expiration during long-running workflows
-      await this.redisClient.expire(
-        lockKey,
-        RedisDistributedTransactionStorage.EXECUTION_LOCK_TTL
-      )
     }
   }
 
