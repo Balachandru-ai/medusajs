@@ -52,7 +52,7 @@ export const refreshCartShippingMethodsWorkflowId =
 export const refreshCartShippingMethodsWorkflow = createWorkflow(
   {
     name: refreshCartShippingMethodsWorkflowId,
-    idempotent: false,
+    idempotent: true,
   },
   (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
     const fetchCart = when("fetch-cart", { input }, ({ input }) => {

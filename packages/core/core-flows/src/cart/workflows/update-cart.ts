@@ -80,7 +80,7 @@ export const updateCartWorkflowId = "update-cart"
 export const updateCartWorkflow = createWorkflow(
   {
     name: updateCartWorkflowId,
-    idempotent: false,
+    idempotent: true,
   },
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
     const { data: cartToUpdate } = useQueryGraphStep({

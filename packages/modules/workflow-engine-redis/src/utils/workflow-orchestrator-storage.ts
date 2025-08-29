@@ -16,6 +16,7 @@ import {
   MedusaError,
   promiseAll,
   TransactionState,
+  TransactionStepState,
 } from "@medusajs/framework/utils"
 import { raw } from "@mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
@@ -237,7 +238,35 @@ export class RedisDistributedTransactionStorage
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
-    await this.workflowExecutionService_.upsert([
+    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
+    const isFinished = [
+      TransactionState.DONE,
+      TransactionState.FAILED,
+      TransactionState.REVERTED,
+    ].includes(data.flow.state)
+
+    const isFlowInvoking = data.flow.state === TransactionState.INVOKING
+    const currentSteps = Object.values(data.flow.steps).filter((step) => {
+      if (step.id === "_root") {
+        return false
+      }
+
+      if (isFlowInvoking) {
+        return step.invoke.state === TransactionStepState.INVOKING
+      }
+
+      return step.compensate.state === TransactionStepState.COMPENSATING
+    })
+
+    const currentStepsIsAsync = currentSteps.some(
+      (currentStep) => currentStep?.definition?.async === true
+    )
+
+    if (!(isNotStarted || isFinished) && !currentStepsIsAsync) {
+      return
+    }
+
+    const promise = this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
         transaction_id: data.flow.transactionId,
@@ -251,6 +280,12 @@ export class RedisDistributedTransactionStorage
         retention_time: retentionTime,
       },
     ])
+
+    if (isNotStarted || isFinished || currentStepsIsAsync) {
+      await promise
+    } else {
+      return
+    }
   }
 
   private async deleteFromDb(data: TransactionCheckpoint) {
@@ -359,6 +394,12 @@ export class RedisDistributedTransactionStorage
         }
       }
 
+      if (workflowId === "workflow_1") {
+        console.log(
+          ">>>>>>>>> get from db",
+          JSON.stringify(trx.context?.data, null, 2)
+        )
+      }
       return {
         flow: flow ?? (trx.execution as TransactionFlow),
         context: trx.context?.data as TransactionContext,
@@ -461,7 +502,8 @@ export class RedisDistributedTransactionStorage
     if (hasFinished && !retentionTime) {
       // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
       if (!data.flow.metadata?.parentStepIdempotencyKey) {
-        await promiseAll([pipelinePromise, this.deleteFromDb(data)])
+        void this.deleteFromDb(data)
+        await pipelinePromise
       } else {
         await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
       }

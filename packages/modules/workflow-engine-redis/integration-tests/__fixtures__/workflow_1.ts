@@ -42,6 +42,7 @@ const step_2 = createStep(
 const step_3 = createStep(
   "step_3",
   jest.fn((res) => {
+    console.log(">>>>>>>>> accessing res from workflow_1 step_3")
     return new StepResponse({
       done: {
         inputFromSyncStep: res.notAsyncResponse,

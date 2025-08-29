@@ -448,6 +448,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           expect(executionsList).toHaveLength(1)
 
+          console.log(">>>>>>>>> setting step success")
           const { result } = await workflowOrcModule.setStepSuccess({
             idempotencyKey: {
               action: TransactionHandlerType.INVOKE,
@@ -458,6 +459,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             stepResponse: { uhuuuu: "yeaah!" },
           })
 
+          console.log(">>>>>>>>> setting step success done")
           ;({ data: executionsList } = await query.graph({
             entity: "workflow_executions",
             fields: ["id"],
@@ -472,12 +474,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should return a list of workflow executions and keep it saved when there is a retentionTime set", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_2", {
             input: {
               value: "123",
             },
             throwOnError: true,
-            transactionId: "transaction_1",
+            transactionId,
           })
 
           let { data: executionsList } = await query.graph({
@@ -492,7 +495,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               action: TransactionHandlerType.INVOKE,
               stepId: "new_step_name",
               workflowId: "workflow_2",
-              transactionId: "transaction_1",
+              transactionId,
             },
             stepResponse: { uhuuuu: "yeaah!" },
           })
@@ -505,11 +508,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should return a list of failed workflow executions and keep it saved when there is a retentionTime set", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_2", {
             input: {
               value: "123",
             },
-            transactionId: "transaction_1",
+            transactionId,
           })
 
           let { data: executionsList } = await query.graph({
@@ -524,7 +528,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               action: TransactionHandlerType.INVOKE,
               stepId: "new_step_name",
               workflowId: "workflow_2",
-              transactionId: "transaction_1",
+              transactionId,
             },
             stepResponse: { uhuuuu: "yeaah!" },
             options: {
@@ -717,11 +721,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should revert the entire transaction when a step timeout expires in a async step", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_step_timeout_async", {
             input: {
               myInput: "123",
             },
-            transactionId: "transaction_1",
+            transactionId,
             throwOnError: false,
           })
 
@@ -733,7 +738,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               input: {
                 myInput: "123",
               },
-              transactionId: "transaction_1",
+              transactionId,
               throwOnError: false,
             }
           )) as Awaited<{
@@ -845,18 +850,19 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should not skip step if condition is true", function (done) {
+          const transactionId = "trx_123_when" + ulid()
           void workflowOrcModule.run("wf-when", {
             input: {
               callSubFlow: true,
             },
-            transactionId: "trx_123_when",
+            transactionId,
             throwOnError: true,
             logOnError: true,
           })
 
           void workflowOrcModule.subscribe({
             workflowId: "wf-when",
-            transactionId: "trx_123_when",
+            transactionId,
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 done()
@@ -869,12 +875,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         it("should cancel an async sub workflow when compensating", (done) => {
           const workflowId = "workflow_async_background_fail"
-
+          const transactionId = "trx_123_compensate_async_sub_workflow" + ulid()
           void workflowOrcModule.run(workflowId, {
             input: {
               callSubFlow: true,
             },
-            transactionId: "trx_123_compensate_async_sub_workflow",
+            transactionId,
             throwOnError: false,
             logOnError: false,
           })

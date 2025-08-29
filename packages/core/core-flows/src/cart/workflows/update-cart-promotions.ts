@@ -75,7 +75,7 @@ export const updateCartPromotionsWorkflowId = "update-cart-promotions"
 export const updateCartPromotionsWorkflow = createWorkflow(
   {
     name: updateCartPromotionsWorkflowId,
-    idempotent: false,
+    idempotent: true,
   },
   (input: WorkflowData<UpdateCartPromotionsWorkflowInput>) => {
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {

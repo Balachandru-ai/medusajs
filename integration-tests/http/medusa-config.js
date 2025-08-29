@@ -31,6 +31,14 @@ module.exports = defineConfig({
     },
   },
   modules: {
+    // [Modules.WORKFLOW_ENGINE]: {
+    //   resolve: "@medusajs/workflow-engine-redis",
+    //   options: {
+    //     redis: {
+    //       url: "redis://localhost:6379",
+    //     },
+    //   },
+    // },
     [Modules.FULFILLMENT]: {
       /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
       options: {

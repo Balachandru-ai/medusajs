@@ -95,7 +95,7 @@ export const completeCartWorkflow = createWorkflow(
   {
     name: completeCartWorkflowId,
     store: true,
-    idempotent: false,
+    idempotent: true,
     retentionTime: THREE_DAYS,
   },
   (input: WorkflowData<CompleteCartWorkflowInput>) => {

@@ -7,6 +7,7 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
+import Redis from "ioredis"
 
 jest.setTimeout(50000000)
 
@@ -68,6 +69,20 @@ medusaIntegrationTestRunner({
       beforeAll(async () => {
         appContainer = getContainer()
       })
+
+      // afterAll(async () => {
+      //   // empty redis
+      //   const connection = new Redis("localhost:6379", {
+      //     lazyConnect: true,
+      //   })
+
+      //   await new Promise(async (resolve) => {
+      //     await connection.connect(resolve)
+      //   })
+
+      //   await connection.flushall()
+      //   await connection.disconnect()
+      // })
 
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
@@ -646,7 +661,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it("should add promotion and remove it from cart using delete", async () => {
+          it.only("should add promotion and remove it from cart using delete", async () => {
             const publishableKey = await generatePublishableKey(appContainer)
             const storeHeaders = generateStoreHeaders({ publishableKey })
 
@@ -717,17 +732,20 @@ medusaIntegrationTestRunner({
             )
 
             // Simulate concurrent requests
-            await Promise.all([
-              api
-                .post(
-                  `/store/carts/${cart.id}`,
-                  {
-                    promo_codes: [response.data.promotion.code],
-                  },
-                  storeHeaders
-                )
-                .catch(() => {}),
-              /*
+            const startTime = performance.now()
+
+            for (let i = 0; i < 10; i++) {
+              await Promise.all([
+                api
+                  .post(
+                    `/store/carts/${cart.id}`,
+                    {
+                      promo_codes: [response.data.promotion.code],
+                    },
+                    storeHeaders
+                  )
+                  .catch(() => {}),
+                /*
               api
                 .post(
                   `/store/carts/${cart.id}`,
@@ -738,7 +756,11 @@ medusaIntegrationTestRunner({
                 )
                 .catch(() => {}),
                 */
-            ])
+              ])
+            }
+
+            const endTime = performance.now()
+            console.log(`Time taken: ${endTime - startTime} milliseconds`)
 
             const cartAfterPromotion = (
               await api.get(`/store/carts/${cart.id}`, storeHeaders)
