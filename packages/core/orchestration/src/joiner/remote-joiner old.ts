@@ -148,89 +148,6 @@ export class RemoteJoiner {
     }, {})
   }
 
-  // compute ids to fetch for a relationship
-  private computeIdsForRelationship(
-    items: any[],
-    relationship: JoinerRelationship
-  ) {
-    const field = relationship.inverse
-      ? relationship.primaryKey
-      : relationship.foreignKey.split(".").pop()!
-    const fieldsArray = field.split(",")
-
-    const idsToFetch: Set<any> = new Set()
-    items.forEach((item) => {
-      if (!item) return
-      const values = fieldsArray.map((f) => item?.[f])
-      if (values.length !== fieldsArray.length) return
-      if (fieldsArray.length === 1) {
-        const v = values[0]
-        if (Array.isArray(v)) v.forEach((x) => idsToFetch.add(x))
-        else idsToFetch.add(v)
-      } else {
-        idsToFetch.add(values)
-      }
-    })
-
-    return { field, fieldsArray, idsToFetch }
-  }
-
-  // assign fetched related data to items
-  private assignRelatedToItems(params: {
-    items: any[]
-    relationship: JoinerRelationship
-    relatedDataMap: Map<string, any>
-    field: string
-    fieldsArray: string[]
-  }) {
-    const { items, relationship, relatedDataMap, field, fieldsArray } = params
-
-    items.forEach((item) => {
-      if (!item) return
-
-      const itemKey = fieldsArray.map((f) => item[f]).join(",")
-
-      if (item[relationship.alias]) {
-        if (Array.isArray(item[field])) {
-          for (let i = 0; i < item[relationship.alias].length; i++) {
-            const it = item[relationship.alias][i]
-            item[relationship.alias][i] = Object.assign(
-              it,
-              relatedDataMap[it[relationship.primaryKey]]
-            )
-          }
-          return
-        }
-
-        item[relationship.alias] = Object.assign(
-          item[relationship.alias],
-          relatedDataMap[itemKey]
-        )
-        return
-      }
-
-      if (Array.isArray(item[field])) {
-        item[relationship.alias] = item[field].map((id) => {
-          if (relationship.isList && !Array.isArray(relatedDataMap[id])) {
-            relatedDataMap[id] = isDefined(relatedDataMap[id])
-              ? [relatedDataMap[id]]
-              : []
-          }
-
-          return relatedDataMap[id]
-        })
-      } else {
-        if (relationship.isList && !Array.isArray(relatedDataMap[itemKey])) {
-          relatedDataMap[itemKey] = isDefined(relatedDataMap[itemKey])
-            ? [relatedDataMap[itemKey]]
-            : []
-        }
-
-        item[relationship.alias] = relatedDataMap[itemKey]
-      }
-    })
-  }
-
   static parseQuery(
     graphqlQuery: string,
     variables?: Record<string, unknown>
@@ -777,16 +694,18 @@ export class RemoteJoiner {
   }): Promise<void> {
     const { items, parsedExpands, implodeMapping = [], options } = params
 
-    if (parsedExpands.size === 0) {
+    if (!parsedExpands) {
       return
     }
 
-    // Helper to compute the items at the parent path of a given expand path
-    const getItemsForPath = (rootItems: any[], fullPath: string) => {
-      let nestedItems = rootItems
-      const expandedPathLevels = fullPath.split(".")
+    for (const [expandedPath, expand] of parsedExpands.entries()) {
+      if (expandedPath === BASE_PATH) {
+        continue
+      }
 
-      // Skip BASE_PATH and stop before the last segment (leaf relation property)
+      let nestedItems = items
+      const expandedPathLevels = expandedPath.split(".")
+
       for (let idx = 1; idx < expandedPathLevels.length - 1; idx++) {
         nestedItems = RemoteJoiner.getNestedItems(
           nestedItems,
@@ -794,133 +713,17 @@ export class RemoteJoiner {
         )
       }
 
-      return nestedItems
-    }
-
-    const root = parsedExpands.get(BASE_PATH) as any
-    const globalExecutionStages: Array<
-      Array<{ service: string; paths: string[] }>
-    > = root?.globalExecutionStages
-
-    // Execute stages sequentially; within a stage try to batch paths per service by pkField
-    for (const stage of globalExecutionStages) {
-      // For each service group in stage, attempt batching
-      await Promise.all(
-        stage.map(async ({ service, paths }) => {
-          // Prepare per-path context
-          const pathCtx: Array<{
-            path: string
-            expand: RemoteExpandProperty
-            relationship: JoinerRelationship
-            nestedItems: any[]
-            field: string
-            fieldsArray: string[]
-            ids: Set<any>
-          }> = []
-
-          for (const path of paths) {
-            const expand = parsedExpands.get(path)
-            if (!expand) continue
-            const nestedItems = getItemsForPath(items, path)
-            if (!nestedItems?.length) continue
-            const relationship = this.getEntityRelationship({
-              parentServiceConfig: expand.parentConfig!,
-              property: expand.property,
-              entity: expand.entity,
-            })
-            if (!relationship) continue
-
-            const { field, fieldsArray, idsToFetch } =
-              this.computeIdsForRelationship(nestedItems, relationship)
-
-            if (idsToFetch.size === 0) continue
-            pathCtx.push({
-              path,
-              expand,
-              relationship,
-              nestedItems,
-              field,
-              fieldsArray,
-              ids: idsToFetch,
-            })
-          }
-
-          if (!pathCtx.length) return
-
-          // Group by pkField to ensure compatibility for batching
-          const byPkField = new Map<string, typeof pathCtx>()
-          for (const ctx of pathCtx) {
-            const key = ctx.field
-            if (!byPkField.has(key)) byPkField.set(key, [])
-            byPkField.get(key)!.push(ctx)
-          }
-
-          // For each pkField group, try to do a single fetch
-          for (const [pkField, ctxs] of byPkField.entries()) {
-            // Union ids and fields/args across paths
-            const unionIds: any[] = Array.from(
-              new Set<any>(ctxs.flatMap((c) => Array.from(c.ids)))
-            )
-            const unionFields = Array.from(
-              new Set<string>(ctxs.flatMap((c) => c.expand.fields ?? []))
-            )
-            const unionArgs = ctxs.flatMap((c) => c.expand.args ?? [])
-
-            // Build synthetic expand based on first expand
-            const base = ctxs[0].expand
-            const aggExpand: RemoteExpandProperty = {
-              ...base,
-              fields: unionFields,
-              args: unionArgs.length ? unionArgs : undefined,
-            }
-
-            // Use first relationship for fetch (pkField matches across the group)
-            const relationship = ctxs[0].relationship
-
-            // Perform a single fetch
-            const relatedDataArray = await this.fetchData({
-              expand: aggExpand,
-              pkField,
-              ids: unionIds,
-              relationship,
-              options,
-            })
-
-            const joinFields = relationship.inverse
-              ? relationship.foreignKey.split(",")
-              : relationship.primaryKey.split(",")
-
-            const relData = relatedDataArray.path
-              ? relatedDataArray.data[relatedDataArray.path!]
-              : relatedDataArray.data
-
-            const relatedDataMap = RemoteJoiner.createRelatedDataMap(
-              relData,
-              joinFields
-            )
-
-            // Assign results back per path
-            for (const ctx of ctxs) {
-              this.assignRelatedToItems({
-                items: ctx.nestedItems,
-                relationship: ctx.relationship,
-                relatedDataMap,
-                field: ctx.field,
-                fieldsArray: ctx.fieldsArray,
-              })
-            }
-          }
+      if (nestedItems.length > 0) {
+        await this.expandProperty({
+          items: nestedItems,
+          parentServiceConfig: expand.parentConfig!,
+          expand,
+          options,
         })
-      )
+      }
     }
 
-    if (implodeMapping.length > 0) {
-      this.handleFieldAliases({
-        items,
-        parsedExpands,
-        implodeMapping,
-      })
-    }
+    this.handleFieldAliases({ items, parsedExpands, implodeMapping })
   }
 
   private getEntityRelationship(params: {
@@ -954,7 +757,6 @@ export class RemoteJoiner {
     return rel as JoinerRelationship
   }
 
-  /*
   private async expandProperty(params: {
     items: any[]
     parentServiceConfig: InternalJoinerServiceConfig
@@ -984,9 +786,7 @@ export class RemoteJoiner {
       options,
     })
   }
-  */
 
-  /*
   private async expandRelationshipProperty(params: {
     items: any[]
     expand: RemoteExpandProperty
@@ -1111,7 +911,6 @@ export class RemoteJoiner {
       }
     })
   }
-  */
 
   private parseExpands(
     params: InternalParseExpandsParams
@@ -1145,126 +944,7 @@ export class RemoteJoiner {
 
     const groupedExpands = this.groupExpands(parsedExpands)
 
-    this.buildQueryPlanner(groupedExpands)
-
     return groupedExpands
-  }
-
-  private buildQueryPlanner(
-    parsedExpands: Map<string, RemoteExpandProperty>
-  ): void {
-    type Group = {
-      service: string
-      entity?: string
-      paths: string[]
-      depth: number
-    }
-
-    // Debug: stringify parsedExpands Map safely and concisely
-    JSON.stringify(
-      Array.from(parsedExpands.entries()).map(([k, v]) => [
-        k,
-        {
-          property: (v as any).property,
-          parent: (v as any).parent,
-          service: v?.serviceConfig?.serviceName,
-          parentService: (v as any).parentConfig?.serviceName,
-          fields: (v as any).fields,
-          expands: (v as any).expands
-            ? Object.fromEntries(
-                Object.entries((v as any).expands as Record<string, any>).map(
-                  ([ek, ev]) => [
-                    ek,
-                    {
-                      service: ev?.serviceConfig?.serviceName,
-                      entity: (ev as any).entity,
-                      fields: (ev as any).fields,
-                      expands: (ev as any).expands,
-                    },
-                  ]
-                )
-              )
-            : undefined,
-        },
-      ]),
-      null,
-      2
-    )
-    //console.log("parsedExpands", parsedExpandsJSON)
-
-    type Entry = {
-      path: string
-      svc: string
-      ent?: string
-      parentSvc?: string
-      parentEnt?: string
-    }
-
-    const entries = Array.from(parsedExpands.entries())
-    const pending: Entry[] = []
-    for (const [path, expand] of entries) {
-      if (path === BASE_PATH) {
-        continue
-      }
-
-      pending.push({
-        path,
-        svc: expand.serviceConfig?.serviceName || "",
-        ent: (expand as any).entity,
-        parentSvc: (expand as any).parentConfig?.serviceName,
-      })
-    }
-
-    const stages: Array<Array<Group>> = []
-
-    // Root group
-    const rootExp = parsedExpands.get(BASE_PATH) as any
-    const rootKey = rootExp?.serviceConfig?.serviceName
-    const placedByDepthKeys: Array<Set<string>> = [new Set([rootKey])]
-    stages.push([
-      {
-        service: rootExp?.serviceConfig?.serviceName || "",
-        entity: rootExp?.entity,
-        paths: [],
-        depth: 0,
-      },
-    ])
-
-    while (pending.length) {
-      const prevDepth = stages.length - 1
-      const prevKeys = placedByDepthKeys[prevDepth] || new Set()
-      const stageGroups = new Map<string, Group>()
-      const nextPending: Entry[] = []
-
-      for (const item of pending) {
-        const parentKey = item.parentSvc!
-        if (!prevKeys.has(parentKey)) {
-          nextPending.push(item)
-          continue
-        }
-
-        const key = item.svc
-        if (!stageGroups.has(key)) {
-          stageGroups.set(key, {
-            service: item.svc,
-            entity: item.ent,
-            paths: [],
-            depth: prevDepth + 1,
-          })
-        }
-        stageGroups.get(key)!.paths.push(item.path)
-      }
-
-      stages.push(Array.from(stageGroups.values()))
-      placedByDepthKeys.push(new Set(stageGroups.keys()))
-      pending.length = 0
-      pending.push(...nextPending)
-    }
-
-    //console.log("stages", JSON.stringify(stages, null, 2))
-
-    const root = parsedExpands.get(BASE_PATH)!
-    root.globalExecutionStages = stages
   }
 
   private parseProperties(params: {

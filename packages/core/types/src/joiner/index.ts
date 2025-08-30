@@ -106,6 +106,7 @@ export type InternalJoinerServiceConfig = Omit<
 }
 
 export interface RemoteExpandProperty {
+  globalExecutionStages?: any[]
   property: string
   parent: string
   parentConfig?: InternalJoinerServiceConfig
