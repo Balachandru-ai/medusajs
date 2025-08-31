@@ -11,8 +11,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { AdditionalData, CartDTO } from "@medusajs/types"
+import { useQueryGraphStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
-import { updateLineItemsStep } from "../steps"
+import { getVariantPriceSetsStep, updateLineItemsStep } from "../steps"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
 import {
   cartFieldsForPricingContext,
@@ -23,13 +25,12 @@ import {
   prepareLineItemData,
   PrepareLineItemDataInput,
 } from "../utils/prepare-line-item-data"
+import { pricingContextResult } from "../utils/schemas"
 import { refreshCartShippingMethodsWorkflow } from "./refresh-cart-shipping-methods"
 import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
 import { updateTaxLinesWorkflow } from "./update-tax-lines"
 import { upsertTaxLinesWorkflow } from "./upsert-tax-lines"
-import { AdditionalData } from "@medusajs/types"
-import { pricingContextResult } from "../utils/schemas"
 
 /**
  * The details of the cart to refresh.
@@ -127,7 +128,10 @@ export const refreshCartItemsWorkflowId = "refresh-cart-items"
  *
  */
 export const refreshCartItemsWorkflow = createWorkflow(
-  refreshCartItemsWorkflowId,
+  {
+    name: refreshCartItemsWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
     const setPricingContext = createHook(
       "setPricingContext",
@@ -142,47 +146,76 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-calculate-prices", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
-      const cart = useRemoteQueryStep({
-        entry_point: "cart",
+      const { data: cart } = useQueryGraphStep({
+        entity: "cart",
         fields: cartFieldsForRefreshSteps,
-        variables: { id: input.cart_id },
-        list: false,
+        filters: { id: input.cart_id },
+        pagination: {
+          take: 1,
+        },
+        options: {
+          isList: false,
+        },
       })
 
-      const variantIds = transform({ cart }, (data) => {
+      const variantIds = transform({ cart }, (data: { cart: CartDTO }) => {
         return (data.cart.items ?? []).map((i) => i.variant_id).filter(Boolean)
       })
 
       const cartPricingContext = transform(
         { cart, setPricingContextResult },
-        (data) => {
-          return {
-            ...filterObjectByKeys(data.cart, cartFieldsForPricingContext),
+        (data): { variantId: string; context: Record<string, unknown> }[] => {
+          const cart = data.cart
+          const baseContext = {
+            ...filterObjectByKeys(cart, cartFieldsForPricingContext),
             ...(data.setPricingContextResult
               ? data.setPricingContextResult
               : {}),
-            currency_code: data.cart.currency_code,
-            region_id: data.cart.region_id,
-            region: data.cart.region,
-            customer_id: data.cart.customer_id,
-            customer: data.cart.customer,
+            currency_code: cart.currency_code,
+            region_id: cart.region_id,
+            region: cart.region,
+            customer_id: cart.customer_id,
+            customer: cart.customer,
           }
+
+          return cart.items
+            .filter((i) => i.variant_id)
+            .map((item) => {
+              return {
+                variantId: item.variant_id,
+                context: {
+                  ...baseContext,
+                  quantity: item.quantity,
+                },
+              }
+            })
         }
       )
 
-      const variants = useRemoteQueryStep({
-        entry_point: "variants",
+      const { data: variantsData } = useQueryGraphStep({
+        entity: "variants",
         fields: productVariantsFields,
-        variables: {
+        filters: {
           id: variantIds,
-          calculated_price: {
-            context: cartPricingContext,
-          },
         },
       }).config({ name: "fetch-variants" })
+
+      const calculatedPriceSets = getVariantPriceSetsStep({
+        data: cartPricingContext,
+      })
+
+      const variants = transform(
+        { variantsData, calculatedPriceSets },
+        ({ variantsData, calculatedPriceSets }) => {
+          return variantsData.map((variant) => {
+            variant.calculated_price = calculatedPriceSets[variant.id]
+            return variant
+          })
+        }
+      )
 
       validateVariantPricesStep({ variants })
 
@@ -244,7 +277,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
       input: refreshCartInput,
     })
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-update-tax-lines", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       updateTaxLinesWorkflow.runAsStep({
@@ -252,7 +285,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
       })
     })
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-upsert-tax-lines", { input }, ({ input }) => {
       return (
         !input.force_refresh &&
         (!!input.items?.length || !!input.shipping_methods?.length)

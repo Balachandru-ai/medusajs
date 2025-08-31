@@ -21,6 +21,7 @@ import {
   IPromotionModuleService,
   IRegionModuleService,
   ISalesChannelModuleService,
+  ISettingsModuleService,
   IStockLocationService,
   IStoreModuleService,
   ITaxModuleService,
@@ -41,7 +42,7 @@ declare module "@medusajs/types" {
      */
     [ContainerRegistrationKeys.REMOTE_LINK]: Link
     /**
-     * @version 2.2.0
+     * @since 2.2.0
      */
     [ContainerRegistrationKeys.LINK]: Link
     [ContainerRegistrationKeys.CONFIG_MODULE]: ConfigModule
@@ -74,6 +75,7 @@ declare module "@medusajs/types" {
     [Modules.FILE]: IFileModuleService
     [Modules.NOTIFICATION]: INotificationModuleService
     [Modules.LOCKING]: ILockingModule
+    [Modules.SETTINGS]: ISettingsModuleService
   }
 }
 

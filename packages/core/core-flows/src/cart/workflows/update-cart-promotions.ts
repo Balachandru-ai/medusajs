@@ -73,9 +73,12 @@ export const updateCartPromotionsWorkflowId = "update-cart-promotions"
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const updateCartPromotionsWorkflow = createWorkflow(
-  updateCartPromotionsWorkflowId,
+  {
+    name: updateCartPromotionsWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<UpdateCartPromotionsWorkflowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
       return useRemoteQueryStep({

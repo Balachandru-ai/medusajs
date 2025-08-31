@@ -6,6 +6,7 @@ import {
   ContainerRegistrationKeys,
   defaultCurrencies,
   defineLink,
+  Modules,
 } from "@medusajs/utils"
 import { setTimeout } from "timers/promises"
 import {
@@ -35,6 +36,7 @@ async function populateData(api: any) {
       origin_country: "USA",
       shipping_profile_id: shippingProfile.id,
       options: [{ title: "Denominations", values: ["100"] }],
+      material: "test-material",
       variants: [
         {
           title: `Test variant 1`,
@@ -61,6 +63,7 @@ async function populateData(api: any) {
       status: "published",
       shipping_profile_id: shippingProfile.id,
       options: [{ title: "Colors", values: ["Red"] }],
+      material: "extra-material",
       variants: new Array(2).fill(0).map((_, i) => ({
         title: `extra variant ${i}`,
         sku: `extra-variant-${i}`,
@@ -81,9 +84,16 @@ async function populateData(api: any) {
     },
   ]
 
-  await api.post("/admin/products/batch", { create: payload }, adminHeaders)
+  const response = await api.post(
+    "/admin/products/batch",
+    { create: payload },
+    adminHeaders
+  )
+  const products = response.data.created
 
   await setTimeout(4000)
+
+  return products
 }
 
 process.env.ENABLE_INDEX_MODULE = "true"
@@ -117,7 +127,22 @@ medusaIntegrationTestRunner({
       })
 
       it("should use query.index to query the index module and hydrate the data", async () => {
-        await populateData(api)
+        const products = await populateData(api)
+
+        const brandModule = appContainer.resolve("brand")
+        const link = appContainer.resolve(ContainerRegistrationKeys.LINK)
+        const brand = await brandModule.createBrands({
+          name: "Medusa Brand",
+        })
+
+        await link.create({
+          [Modules.PRODUCT]: {
+            product_id: products.find((p) => p.title === "Extra product").id,
+          },
+          brand: {
+            brand_id: brand.id,
+          },
+        })
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -132,6 +157,8 @@ medusaIntegrationTestRunner({
                 "description",
                 "status",
                 "title",
+                "brand.name",
+                "brand.id",
                 "variants.sku",
                 "variants.barcode",
                 "variants.material",
@@ -142,8 +169,28 @@ medusaIntegrationTestRunner({
                 "variants.inventory_items.inventory.description",
               ],
               filters: {
-                "variants.sku": { $like: "%-1" },
-                "variants.prices.amount": { $gt: 30 },
+                $and: [
+                  { status: "published" },
+                  { material: { $ilike: "%material%" } },
+                  {
+                    $or: [
+                      {
+                        brand: {
+                          name: { $ilike: "%brand" },
+                        },
+                      },
+                      { title: { $ilike: "%duct%" } },
+                    ],
+                  },
+                  {
+                    variants: {
+                      $and: [
+                        { sku: { $like: "%-1" } },
+                        { "prices.amount": { $gt: 30 } },
+                      ],
+                    },
+                  },
+                ],
               },
               pagination: {
                 take: 10,
@@ -171,6 +218,10 @@ medusaIntegrationTestRunner({
             description: "extra description",
             title: "Extra product",
             status: "published",
+            brand: {
+              id: expect.any(String),
+              name: "Medusa Brand",
+            },
             variants: [
               {
                 sku: "extra-variant-0",
@@ -247,6 +298,7 @@ medusaIntegrationTestRunner({
             description: "test-product-description",
             title: "Test Product",
             status: "published",
+            brand: undefined,
             variants: [
               {
                 sku: "test-variant-1",

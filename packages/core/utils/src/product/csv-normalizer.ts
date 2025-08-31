@@ -80,6 +80,37 @@ function processAsString<Output>(
 }
 
 /**
+ * Process a column value as a json object
+ */
+function processAsJson<Output>(
+  inputKey: string,
+  outputKey: keyof Output
+): ColumnProcessor<Output> {
+  return (csvRow, _, rowNumber, output) => {
+    const value = csvRow[inputKey]
+    if (isPresent(value)) {
+      if (typeof value === 'string') {
+        try {
+          output[outputKey] = JSON.parse(value);
+        } catch (error) {
+          throw createError(rowNumber, `Invalid value provided for "${inputKey}". Expected a valid JSON string, received "${value}"`);
+        }
+      }
+    }
+    return undefined
+  }
+}
+
+/**
+ * Processes a column value but ignores it (no-op processor for system-generated fields)
+ */
+function processAsIgnored<Output>(): ColumnProcessor<Output> {
+  return () => {
+    // Do nothing - this column is intentionally ignored
+  }
+}
+
+/**
  * Processes the column value as a boolean
  */
 function processAsBoolean<Output>(
@@ -159,9 +190,9 @@ const productStaticColumns: {
   "product id": processAsString("product id", "id"),
   "product handle": processAsString("product handle", "handle"),
   "product title": processAsString("product title", "title"),
+  "product subtitle": processAsString("product subtitle", "subtitle"),
   "product status": processAsString("product status", "status"),
   "product description": processAsString("product description", "description"),
-  "product subtitle": processAsString("product subtitle", "subtitle"),
   "product external id": processAsString("product external id", "external_id"),
   "product thumbnail": processAsString("product thumbnail", "thumbnail"),
   "product collection id": processAsString(
@@ -184,11 +215,17 @@ const productStaticColumns: {
   ),
   "product weight": processAsNumber("product weight", "weight"),
   "product width": processAsNumber("product width", "width"),
-  "product metadata": processAsString("product metadata", "metadata"),
+  "product metadata": processAsJson("product metadata", "metadata"),
   "shipping profile id": processAsString(
     "shipping profile id",
     "shipping_profile_id"
   ),
+  // Product properties that should be imported
+  "product is giftcard": processAsBoolean("product is giftcard", "is_giftcard"),
+  // System-generated timestamp fields that should be ignored during import
+  "product created at": processAsIgnored(),
+  "product deleted at": processAsIgnored(),
+  "product updated at": processAsIgnored(),
 }
 
 /**
@@ -242,7 +279,7 @@ const variantStaticColumns: {
   "variant height": processAsNumber("variant height", "height"),
   "variant length": processAsNumber("variant length", "length"),
   "variant material": processAsString("variant material", "material"),
-  "variant metadata": processAsString("variant metadata", "metadata"),
+  "variant metadata": processAsJson("variant metadata", "metadata"),
   "variant origin country": processAsString(
     "variant origin country",
     "origin_country"
@@ -253,6 +290,12 @@ const variantStaticColumns: {
   ),
   "variant width": processAsNumber("variant width", "width"),
   "variant weight": processAsNumber("variant weight", "weight"),
+  // System-generated timestamp fields that should be ignored during import
+  "variant created at": processAsIgnored(),
+  "variant deleted at": processAsIgnored(),
+  "variant updated at": processAsIgnored(),
+  // This field should be ignored as it's redundant (variant already belongs to product)
+  "variant product id": processAsIgnored(),
 }
 
 /**

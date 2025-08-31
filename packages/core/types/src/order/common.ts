@@ -2488,11 +2488,6 @@ export interface FilterableOrderLineItemProps
   id?: string | string[]
 
   /**
-   * Filter line items by their associated order's ID.
-   */
-  order_id?: string | string[]
-
-  /**
    * Filter by line items' title.
    */
   title?: string
@@ -2548,11 +2543,6 @@ export interface FilterableOrderShippingMethodProps
    * The IDs to filter the shipping methods by.
    */
   id?: string | string[]
-
-  /**
-   * Filter the shipping methods by their associated order's ID.
-   */
-  order_id?: string | string[]
 
   /**
    * Filter shipping methods by their name.
@@ -2814,32 +2804,6 @@ export interface FilterableOrderTransactionProps
    * Filter the transactions by their creation date.
    */
   created_at?: OperatorMap<string>
-}
-
-/**
- * The filters to apply on the retrieved order items.
- */
-export interface FilterableOrderItemProps
-  extends BaseFilterable<FilterableOrderItemProps> {
-  /**
-   * The IDs to filter the order items by.
-   */
-  id?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their associated order's ID.
-   */
-  order_id?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their version.
-   */
-  version?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their associated line item's ID.
-   */
-  item_id?: string | string[] | OperatorMap<string>
 }
 
 /**

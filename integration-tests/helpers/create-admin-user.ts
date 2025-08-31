@@ -22,16 +22,18 @@ export const adminHeaders = {
 export const createAdminUser = async (
   dbConnection,
   adminHeaders,
-  container?
+  container?,
+  options?: { email?: string }
 ) => {
   const appContainer = container ?? getContainer()!
+  const email = options?.email ?? "admin@medusa.js"
 
   const userModule: IUserModuleService = appContainer.resolve(Modules.USER)
   const authModule: IAuthModuleService = appContainer.resolve(Modules.AUTH)
   const user = await userModule.createUsers({
     first_name: "Admin",
     last_name: "User",
-    email: "admin@medusa.js",
+    email,
   })
 
   const hashConfig = { logN: 15, r: 8, p: 1 }
@@ -41,7 +43,7 @@ export const createAdminUser = async (
     provider_identities: [
       {
         provider: "emailpass",
-        entity_id: "admin@medusa.js",
+        entity_id: email,
         provider_metadata: {
           password: passwordHash.toString("base64"),
         },

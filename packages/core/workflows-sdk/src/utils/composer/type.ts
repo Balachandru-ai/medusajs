@@ -113,6 +113,7 @@ export type CreateWorkflowComposerContext = {
   flow: OrchestratorBuilder
   isAsync: boolean
   handlers: WorkflowHandler
+  overriddenHandler: WorkflowHandler
   stepBinder: <TOutput = unknown>(
     fn: StepFunctionResult
   ) => WorkflowData<TOutput>
@@ -190,6 +191,11 @@ export interface StepExecutionContext {
    * A string indicating the ID of the current transaction.
    */
   transactionId?: string
+
+  /**
+   * A string indicating the ID of the current run.
+   */
+  runId?: string
 
   /**
    * Get access to the result returned by a named step. Returns undefined

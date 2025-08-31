@@ -1,5 +1,43 @@
 # @medusajs/workflow-engine-redis
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Minor Changes
+
+- [#13236](https://github.com/medusajs/medusa/pull/13236) [`9412669e654c994e2dbee9cf61c18004d79f6475`](https://github.com/medusajs/medusa/commit/9412669e654c994e2dbee9cf61c18004d79f6475) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(core-flows): idempotent cart operations and nested workflow deletion lifecycle fix
+
+### Patch Changes
+
+- [#13319](https://github.com/medusajs/medusa/pull/13319) [`ff152e7ace60232c02932bbd06a759e555a823d4`](https://github.com/medusajs/medusa/commit/ff152e7ace60232c02932bbd06a759e555a823d4) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Use the step definition max retries on set step failure
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12976](https://github.com/medusajs/medusa/pull/12976) [`eb83954f23077c0714125b6f2f19fd0ef0f288f9`](https://github.com/medusajs/medusa/commit/eb83954f23077c0714125b6f2f19fd0ef0f288f9) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(workflow-engine-\*): Align event subscribers management
+
+- [#12982](https://github.com/medusajs/medusa/pull/12982) [`238e7d53c13a1c033886d7c33254919f8b5b22dc`](https://github.com/medusajs/medusa/commit/238e7d53c13a1c033886d7c33254919f8b5b22dc) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(wfe): should notify when finished + add state info
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
 ## 2.8.7
 
 ### Patch Changes

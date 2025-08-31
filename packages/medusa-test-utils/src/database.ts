@@ -1,3 +1,6 @@
+import { logger } from "@medusajs/framework/logger"
+import { CustomDBMigrator } from "@medusajs/framework/utils"
+
 import {
   defineConfig,
   MikroORM,
@@ -5,7 +8,6 @@ import {
   SqlEntityManager,
 } from "@mikro-orm/postgresql"
 import { createDatabase, dropDatabase } from "pg-god"
-import { logger } from "@medusajs/framework/logger"
 import { execOrTimeout } from "./medusa-test-runner-utils"
 
 const DB_HOST = process.env.DB_HOST ?? "localhost"
@@ -54,6 +56,7 @@ export function getMikroOrmConfig({
       pathTs: pathToMigrations,
       silent: true,
     },
+    extensions: [CustomDBMigrator],
   })
 }
 

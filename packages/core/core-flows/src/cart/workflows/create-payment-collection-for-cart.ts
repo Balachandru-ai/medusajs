@@ -79,7 +79,10 @@ export const createPaymentCollectionForCartWorkflowId =
  * Create payment collection for cart.
  */
 export const createPaymentCollectionForCartWorkflow = createWorkflow(
-  createPaymentCollectionForCartWorkflowId,
+  {
+    name: createPaymentCollectionForCartWorkflowId,
+    idempotent: false,
+  },
   (
     input: WorkflowData<CreatePaymentCollectionForCartWorkflowInputDTO>
   ): WorkflowData<void> => {

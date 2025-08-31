@@ -1,5 +1,41 @@
 # @medusajs/pricing
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13258](https://github.com/medusajs/medusa/pull/13258) [`06ef9197f825c78b9d8d3e1f4f3a0ca995853331`](https://github.com/medusajs/medusa/commit/06ef9197f825c78b9d8d3e1f4f3a0ca995853331) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(pricing): Fix excessive db queries during price sets update
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- [#13079](https://github.com/medusajs/medusa/pull/13079) [`02dd83f59a0f02badd99f6e05c083aabbe6daa96`](https://github.com/medusajs/medusa/commit/02dd83f59a0f02badd99f6e05c083aabbe6daa96) Thanks [@olivermrbl](https://github.com/olivermrbl)! - feat(pricing): Calculate prices with multiple rule values
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12981](https://github.com/medusajs/medusa/pull/12981) [`822217fa366d4399d3f6a0407451c9649197d5d9`](https://github.com/medusajs/medusa/commit/822217fa366d4399d3f6a0407451c9649197d5d9) Thanks [@riqwan](https://github.com/riqwan)! - fix(pricing): fix pricing query when max_quantity is null
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
 ## 2.8.7
 
 ### Patch Changes

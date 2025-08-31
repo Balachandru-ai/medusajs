@@ -116,6 +116,20 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
+        title: "Generate Invoices",
+        path: "/how-to-tutorials/tutorials/invoice-generator",
+        description:
+          "Learn how to generate invoices for orders in your Medusa store.",
+      },
+      {
+        type: "ref",
+        title: "Integrate Payload CMS",
+        path: "/integrations/guides/payload",
+        description:
+          "Learn how to integrate Payload CMS with Medusa to manage your product content.",
+      },
+      {
+        type: "link",
         title: "Loyalty Points System",
         path: "/how-to-tutorials/tutorials/loyalty-points",
         description:
@@ -142,11 +156,32 @@ While tutorials show you a specific use case, they also help you understand how 
           "Learn how to integrate Mailchimp with Medusa to manage and automate newsletters.",
       },
       {
+        type: "ref",
+        title: "Personalized Products",
+        path: "/recipes/personalized-products/example",
+        description:
+          "Learn how to implement personalized products in your Medusa store.",
+      },
+      {
         type: "link",
         title: "Phone Authentication",
         path: "/how-to-tutorials/tutorials/phone-auth",
         description:
           "Learn how to allow users to authenticate using their phone numbers.",
+      },
+      {
+        type: "link",
+        title: "Pre-Order Products",
+        path: "/how-to-tutorials/tutorials/preorder",
+        description:
+          "Learn how to implement pre-order functionality for products in your Medusa store.",
+      },
+      {
+        type: "link",
+        title: "Product Builder",
+        path: "/how-to-tutorials/tutorials/product-builder",
+        description:
+          "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
       },
       {
         type: "link",

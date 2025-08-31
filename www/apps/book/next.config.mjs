@@ -31,7 +31,6 @@ const withMDX = mdx({
             },
             ui: {
               projectPath: path.resolve("..", "ui"),
-              contentPath: "src/content/docs",
             },
             "user-guide": {
               projectPath: path.resolve("..", "user-guide"),
@@ -191,6 +190,12 @@ const nextConfig = {
         {
           source: "/cloud/:path*",
           destination: `${process.env.NEXT_PUBLIC_CLOUD_URL || "https://localhost:3001"}/cloud/:path*`,
+          basePath: false,
+        },
+        {
+          source: "/mcp",
+          destination:
+            process.env.NEXT_MCP_SERVER_URL || "https://localhost:3001/mcp",
           basePath: false,
         },
       ],

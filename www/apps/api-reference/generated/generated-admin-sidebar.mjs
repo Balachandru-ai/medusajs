@@ -22,6 +22,12 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "link",
+      "title": "Manage Metadata",
+      "path": "manage-metadata",
+      "loaded": true
+    },
+    {
+      "type": "link",
       "title": "Select Fields and Relations",
       "path": "select-fields-and-relations",
       "loaded": true
@@ -213,6 +219,13 @@ const generatedgeneratedAdminSidebarSidebar = {
           }
         }
       ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Feature Flags",
+      "children": [],
       "loaded": false,
       "showLoadingIfEmpty": true
     },
@@ -663,6 +676,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "sales-channels_saleschannel_schema",
           "title": "SalesChannel Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Shipping Option Types",
+      "children": [
+        {
+          "type": "link",
+          "path": "shipping-option-types_shippingoptiontype_schema",
+          "title": "ShippingOptionType Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",

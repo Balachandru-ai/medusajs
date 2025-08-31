@@ -1206,7 +1206,12 @@ function buildSchemaFromFilterableLinks(
         })
         .join("\n")
 
-      return `extend type ${entity} ${events} {
+      return `
+      type ${entity} ${events} {
+        id: ID!
+      }
+        
+      extend type ${entity} {
 ${fieldDefinitions}
 }`
     })

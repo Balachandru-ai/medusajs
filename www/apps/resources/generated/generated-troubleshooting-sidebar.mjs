@@ -43,6 +43,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "path": "/troubleshooting/general-errors",
           "title": "General Errors",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/pnpm",
+          "title": "pnpm Errors",
+          "children": []
         }
       ]
     },
@@ -154,6 +162,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/troubleshooting/scheduled-job-not-running",
+          "title": "Scheduled Job Not Running",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/troubleshooting/test-errors",
           "title": "Test Errors",
           "children": []
@@ -222,6 +238,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "type": "link",
           "path": "/troubleshooting/s3",
           "title": "S3 Module Provider Errors",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/payment",
+          "title": "Payment Provider Errors",
           "children": []
         }
       ]

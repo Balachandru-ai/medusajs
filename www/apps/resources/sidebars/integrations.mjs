@@ -54,6 +54,11 @@ export const integrationsSidebar = [
       },
       {
         type: "link",
+        path: "/integrations/guides/payload",
+        title: "Payload CMS",
+      },
+      {
+        type: "link",
         path: "/integrations/guides/sanity",
         title: "Sanity",
       },

@@ -39,6 +39,7 @@ The `defineConfig` utility accepts an object having the following properties:
 - [modules](#module-configurations-modules): Configurations related to registered modules.
 - [plugins](#plugin-configurations-plugins): Configurations related to registered plugins.
 - [featureFlags](#feature-flags-featureFlags): Configurations to manage enabled beta features in the Medusa application.
+- [logger](#custom-logger-logger): Override the default logger.
 
 ### Using Environment Variables
 
@@ -69,6 +70,87 @@ module.exports = defineConfig({
 ## Project Configurations (`projectConfig`)
 
 The `projectConfig` object contains essential configurations related to the Medusa application, such as database and CORS configurations.
+
+### cookieOptions
+
+<Note>
+
+This option is available since Medusa [v2.8.5](https://github.com/medusajs/medusa/releases/tag/v2.8.5).
+
+</Note>
+
+The `projectConfig.cookieOptions` configuration defines cookie options to be passed to `express-session` when creating the session cookie. This configuration is useful when simulating a production environment locally, where you may need to set options like `secure` or `sameSite`.
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    cookieOptions: {
+      sameSite: "lax",
+    },
+    // ...
+  },
+  // ...
+})
+```
+
+#### Properties
+
+Aside from the following options, you can pass any property that the [express-session's cookie option accepts](https://www.npmjs.com/package/express-session).
+
+<TypeList
+  types={[
+    {
+      name: "secure",
+      type: "`boolean`",
+      description: `Whether the cookie should only be sent over HTTPS. This is useful in production environments where you want to ensure that cookies are only sent over secure connections.`,
+      defaultValue: `false in development, true in production`
+    },
+    {
+      name: "sameSite",
+      type: "`lax` | `strict` | `none`",
+      description: `Controls the SameSite attribute of the cookie.`,
+      defaultValue: `"none" in production. In development, this attribute is not set.`
+    },
+    {
+      name: "maxAge",
+      type: "`number`",
+      description: "The maximum age of the cookie in milliseconds set in the `Set-Cookie` header.",
+      defaultValue: "Either the `sessionOptions.ttl` option, or `10` hours."
+    },
+    {
+      name: "httpOnly",
+      type: "`boolean`",
+      description: "Whether to set the `HttpOnly Set-Cookie` attribute.",
+      defaultValue: `true`
+    },
+    {
+      name: "priority",
+      type: "`low` \| `medium` \| `high`",
+      description: "The value of the [Priority Set-Cookie attribute](https://tools.ietf.org/html/draft-west-cookie-priority-00#section-4.1)",
+      defaultValue: `medium`
+    },
+    {
+      name: "domain",
+      type: "`string`",
+      description: "The value of the `Domain Set-Cookie` attribute. By default, no domain is set, and most clients will consider the cookie to apply to the current domain only."
+    },
+    {
+      name: "path",
+      type: "`string`",
+      description: "The value of the `Path Set-Cookie` attribute",
+      defaultValue: `/`
+    },
+    {
+      name: "signed",
+      type: "`boolean`",
+      description: "Whether to sign the cookie.",
+      defaultValue: `true`
+    }
+  ]}
+  openedLevel={1}
+/>
 
 ### databaseDriverOptions
 
@@ -1049,4 +1131,25 @@ After enabling a feature flag, make sure to run migrations, as the feature may i
 
 ```bash
 npx medusa db:migrate
+```
+
+---
+
+## Custom Logger (`logger`)
+
+The `logger` configuration allows you to override the default [Logger](../../debugging-and-testing/logging/page.mdx) used in the Medusa application with your custom implementation.
+
+Learn more about creating a custom logger in the [Override Logger](../../debugging-and-testing/logging/custom-logger/page.mdx) chapter.
+
+The `logger` configuration accepts an instance of a class that extends the `Logger` interface.
+
+### Example
+
+```ts title="medusa-config.ts"
+import { logger } from "./src/logger/my-logger"
+
+module.exports = defineConfig({
+  // ...
+  logger,
+})
 ```

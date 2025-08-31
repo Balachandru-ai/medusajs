@@ -6,11 +6,11 @@ export const metadata = {
 
 In this document, you’ll learn about shipping options and their rules.
 
-## What’s a Shipping Option?
+## What is a Shipping Option?
 
-A shipping option is a way of shipping an item. Each fulfillment provider provides a set of shipping options. For example, a provider may provide a shipping option for express shipping and another for standard shipping.
+A shipping option is a way of shipping an item. Each fulfillment provider offers a set of shipping options. For example, a provider may offer a shipping option for express shipping and another for standard shipping.
 
-When the customer places their order, they choose a shipping option to be used to fulfill their items.
+When the customer places an order, they choose a shipping option to fulfill their items.
 
 A shipping option is represented by the [ShippingOption data model](/references/fulfillment/models/ShippingOption).
 
@@ -18,17 +18,17 @@ A shipping option is represented by the [ShippingOption data model](/references/
 
 ## Service Zone Restrictions
 
-A shipping option is restricted by a service zone, limiting the locations a shipping option be used in.
+A shipping option is restricted by a service zone, which limits the locations where the shipping option can be used.
 
-For example, a fulfillment provider may have a shipping option that can be used in the United States, and another in Canada.
+For example, a fulfillment provider may have a shipping option that can be used in the United States and another in Canada.
 
 ![A diagram showcasing the relation between shipping options and service zones.](https://res.cloudinary.com/dza7lstvk/image/upload/v1712330831/Medusa%20Resources/shipping-option-service-zone_pobh6k.jpg)
 
-Service zones can be more restrictive, such as restricting to certain cities or province codes.
+Service zones can be more restrictive, such as limiting to certain cities or province codes.
 
 <Note title="Tip">
 
-The province code is always in lower-case and in [ISO 3166-2 format](https://en.wikipedia.org/wiki/ISO_3166-2).
+The province code is always in lowercase and in [ISO 3166-2 format](https://en.wikipedia.org/wiki/ISO_3166-2).
 
 </Note>
 
@@ -38,15 +38,15 @@ The province code is always in lower-case and in [ISO 3166-2 format](https://en.
 
 ## Shipping Option Rules
 
-You can restrict shipping options by custom rules, such as the item’s weight or the customer’s group.
+You can restrict shipping options by custom rules, such as the item’s weight or the customer group.
 
 <Note title="Tip">
 
-You can also restrict a shipping option's price based on specific conditions. For example, you can make a shipping option's price free based on the cart's total. Learn more in the Pricing Module's [Price Rules](../../pricing/price-rules/page.mdx#how-to-set-rules-on-a-price) guide.
+You can also restrict a shipping option's price based on specific conditions. For example, you can make a shipping option's price free based on the cart total. Learn more in the Pricing Module's [Price Rules](../../pricing/price-rules/page.mdx#how-to-set-rules-on-a-price) guide.
 
 </Note>
 
-These rules are represented by the [ShippingOptionRule data model](/references/fulfillment/models/ShippingOptionRule). Its properties define the custom rule:
+These rules are represented by the [ShippingOptionRule data model](/references/fulfillment/models/ShippingOptionRule). Its properties define the custom rules:
 
 - `attribute`: The name of a property or table that the rule applies to. For example, `customer_group`.
 - `operator`: The operator used in the condition. For example:
@@ -62,16 +62,18 @@ A shipping option can have multiple rules. For example, you can add rules to a s
 
 ---
 
-## Shipping Profile and Types
+## Shipping Profiles and Types
 
-A shipping option belongs to a type. For example, a shipping option’s type may be `express`, while another `standard`. The type is represented by the [ShippingOptionType data model](/references/fulfillment/models/ShippingOptionType).
+A shipping option belongs to a type and a profile.
 
-A shipping option also belongs to a shipping profile, as each shipping profile defines the type of items to be shipped in a similar manner.
+A shipping option type defines a group of shipping options with shared shipping characteristics. For example, a shipping option’s type may be `express`, while another may be `standard`. The type is represented by the [ShippingOptionType data model](/references/fulfillment/models/ShippingOptionType).
+
+A shipping profile defines a group of items (such as products) that are shipped in a similar manner. For example, the "Standard" shipping profile applies to all products, whereas the "Digital" shipping profile applies to digital products. Shipping profiles are represented by the [ShippingProfile data model](/references/fulfillment/models/ShippingProfile).
 
 ---
 
 ## data Property
 
-When fulfilling an item, you might use a third-party fulfillment provider that requires additional custom data to be passed along from the checkout or order-creation process.
+When fulfilling an item, you might use a third-party fulfillment provider that requires additional custom data to be passed along from the checkout or order creation process.
 
-The `ShippingOption` data model has a `data` property. It's an object that stores custom data relevant later when creating and processing a fulfillment.
+The `ShippingOption` data model has a `data` property. It's an object that stores custom data relevant for creating and processing a fulfillment later.

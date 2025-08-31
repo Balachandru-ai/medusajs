@@ -36,12 +36,24 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
   {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
+  },
+  {
     "title": "Loyalty Points",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
   },
   {
     "title": "Phone Authentication",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/phone-auth"
+  },
+  {
+    "title": "Pre-Orders",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
+  },
+  {
+    "title": "Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
   },
   {
     "title": "Product Reviews",
@@ -64,6 +76,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
   },
   {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
+  },
+  {
     "title": "Integrate Segment",
     "path": "https://docs.medusajs.com/resources/integrations/guides/segment"
   },
@@ -78,5 +94,9 @@ export const tutorial = [
   {
     "title": "Bundled Products",
     "path": "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard"
+  },
+  {
+    "title": "Personalized Products",
+    "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
   }
 ]

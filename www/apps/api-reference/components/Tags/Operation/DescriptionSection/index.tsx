@@ -78,12 +78,12 @@ const TagsOperationDescriptionSection = ({
             badgeClassName="ml-0.5"
           />
         )}
-        {operation["x-version"] && (
+        {operation["x-since"] && (
           <Tooltip
-            text={`This API route is available since v${operation["x-version"]}`}
+            text={`This API route is available since v${operation["x-since"]}`}
           >
             <Badge variant="blue" className="ml-0.5">
-              v{operation["x-version"]}
+              v{operation["x-since"]}
             </Badge>
           </Tooltip>
         )}
@@ -117,7 +117,11 @@ const TagsOperationDescriptionSection = ({
       {operation.externalDocs && (
         <>
           Related guide:{" "}
-          <Link href={operation.externalDocs.url} target="_blank">
+          <Link
+            href={operation.externalDocs.url}
+            target="_blank"
+            variant="content"
+          >
             {operation.externalDocs.description || "Read More"}
           </Link>
         </>

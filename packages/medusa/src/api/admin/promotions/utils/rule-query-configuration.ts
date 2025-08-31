@@ -49,4 +49,9 @@ export const ruleQueryConfigurations = {
     labelAttr: "value",
     valueAttr: "id",
   },
+  shipping_option_type: {
+    entryPoint: "shipping_option_type",
+    labelAttr: "label",
+    valueAttr: "id",
+  },
 }

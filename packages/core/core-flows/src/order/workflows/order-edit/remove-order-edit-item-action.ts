@@ -5,14 +5,18 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
+import {
+  ChangeActionType,
+  OrderChangeStatus
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
   createStep,
   createWorkflow,
+  transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useQueryGraphStep } from "../../../common"
 import {
   deleteOrderChangeActionsStep,
   previewOrderChangeStep,
@@ -21,6 +25,7 @@ import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
  * The data to validate that an item that was added in an order edit can be removed.
@@ -41,17 +46,17 @@ export type RemoveOrderEditItemActionValidationStepInput = {
 }
 
 /**
- * This step validates that an item that was added in the order edit can be removed 
+ * This step validates that an item that was added in the order edit can be removed
  * from the order edit. If the order is canceled or the order change is not active,
  * the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = removeOrderEditItemActionValidationStep({
  *   order: {
@@ -103,10 +108,10 @@ export const removeItemOrderEditActionWorkflowId =
 /**
  * This workflow removes an item that was added to an order edit. It's used by the
  * [Remove Item from Order Edit Admin API Route](https://docs.medusajs.com/api/admin#order-edits_deleteordereditsiditemsaction_id).
- * 
- * You can use this workflow within your customizations or your own custom workflows, allowing you to remove an item that was 
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to remove an item that was
  * added to an order edit in your custom flow.
- * 
+ *
  * @example
  * const { result } = await removeItemOrderEditActionWorkflow(container)
  * .run({
@@ -115,9 +120,9 @@ export const removeItemOrderEditActionWorkflowId =
  *     action_id: "orchact_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove an item that was added to an order edit.
  */
 export const removeItemOrderEditActionWorkflow = createWorkflow(
@@ -125,25 +130,34 @@ export const removeItemOrderEditActionWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.DeleteOrderEditItemActionWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: ["id", "status", "canceled_at", "items.*"],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "order-query" })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
+    })
+
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
       fields: ["id", "status", "version", "actions.*"],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     removeOrderEditItemActionValidationStep({
       order,
