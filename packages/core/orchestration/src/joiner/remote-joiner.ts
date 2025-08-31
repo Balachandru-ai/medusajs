@@ -781,12 +781,10 @@ export class RemoteJoiner {
       return
     }
 
-    // Helper to compute the items at the parent path of a given expand path
     const getItemsForPath = (rootItems: any[], fullPath: string) => {
       let nestedItems = rootItems
       const expandedPathLevels = fullPath.split(".")
 
-      // Skip BASE_PATH and stop before the last segment (leaf relation property)
       for (let idx = 1; idx < expandedPathLevels.length - 1; idx++) {
         nestedItems = RemoteJoiner.getNestedItems(
           nestedItems,
@@ -798,42 +796,48 @@ export class RemoteJoiner {
     }
 
     const root = parsedExpands.get(BASE_PATH) as any
-    const globalExecutionStages: Array<
-      Array<{ service: string; paths: string[] }>
-    > = root?.globalExecutionStages
+    const globalExecutionStages: {
+      service: string
+      paths: string[]
+      depth: number
+    }[][] = root?.globalExecutionStages
 
-    // Execute stages sequentially; within a stage try to batch paths per service by pkField
     for (const stage of globalExecutionStages) {
       // For each service group in stage, attempt batching
+      // console.log(`STAGE ${stage[0].depth} EXECUTION`)
       await Promise.all(
         stage.map(async ({ service, paths }) => {
-          // Prepare per-path context
-          const pathCtx: Array<{
+          const pathCtx: {
             path: string
             expand: RemoteExpandProperty
             relationship: JoinerRelationship
             nestedItems: any[]
             field: string
             fieldsArray: string[]
-            ids: Set<any>
-          }> = []
+            ids: Set<string>
+          }[] = []
 
           for (const path of paths) {
-            const expand = parsedExpands.get(path)
-            if (!expand) continue
+            const expand = parsedExpands.get(path)!
             const nestedItems = getItemsForPath(items, path)
-            if (!nestedItems?.length) continue
+
+            if (!nestedItems?.length) {
+              continue
+            }
+
             const relationship = this.getEntityRelationship({
               parentServiceConfig: expand.parentConfig!,
               property: expand.property,
               entity: expand.entity,
             })
-            if (!relationship) continue
+
+            if (!relationship) {
+              continue
+            }
 
             const { field, fieldsArray, idsToFetch } =
               this.computeIdsForRelationship(nestedItems, relationship)
 
-            if (idsToFetch.size === 0) continue
             pathCtx.push({
               path,
               expand,
@@ -845,28 +849,33 @@ export class RemoteJoiner {
             })
           }
 
-          if (!pathCtx.length) return
+          if (!pathCtx.length) {
+            return
+          }
 
-          // Group by pkField to ensure compatibility for batching
-          const byPkField = new Map<string, typeof pathCtx>()
+          // Group by pkField
+          const byPkField = new Map()
           for (const ctx of pathCtx) {
             const key = ctx.field
-            if (!byPkField.has(key)) byPkField.set(key, [])
+            if (!byPkField.has(key)) {
+              byPkField.set(key, [])
+            }
+
             byPkField.get(key)!.push(ctx)
           }
 
           // For each pkField group, try to do a single fetch
           for (const [pkField, ctxs] of byPkField.entries()) {
-            // Union ids and fields/args across paths
-            const unionIds: any[] = Array.from(
-              new Set<any>(ctxs.flatMap((c) => Array.from(c.ids)))
+            const unionIds: string[] = Array.from(
+              new Set(ctxs.flatMap((c) => Array.from(c.ids)))
             )
             const unionFields = Array.from(
-              new Set<string>(ctxs.flatMap((c) => c.expand.fields ?? []))
+              new Set(ctxs.flatMap((c) => c.expand.fields ?? []))
             )
             const unionArgs = ctxs.flatMap((c) => c.expand.args ?? [])
 
-            // Build synthetic expand based on first expand
+            //console.log(" ALL ctxs", ctxs, JSON.stringify(unionArgs, null, 2))
+
             const base = ctxs[0].expand
             const aggExpand: RemoteExpandProperty = {
               ...base,
@@ -912,6 +921,10 @@ export class RemoteJoiner {
           }
         })
       )
+
+      // console.log(
+      //   ` END STAGE EXECUTION ==============================================`
+      // )
     }
 
     if (implodeMapping.length > 0) {
@@ -953,165 +966,6 @@ export class RemoteJoiner {
 
     return rel as JoinerRelationship
   }
-
-  /*
-  private async expandProperty(params: {
-    items: any[]
-    parentServiceConfig: InternalJoinerServiceConfig
-    expand?: RemoteExpandProperty
-    options?: RemoteJoinerOptions
-  }): Promise<void> {
-    const { items, parentServiceConfig, expand, options } = params
-
-    if (!expand) {
-      return
-    }
-
-    const relationship = this.getEntityRelationship({
-      parentServiceConfig,
-      property: expand.property,
-      entity: expand.entity,
-    })
-
-    if (!relationship) {
-      return
-    }
-
-    await this.expandRelationshipProperty({
-      items,
-      expand,
-      relationship,
-      options,
-    })
-  }
-  */
-
-  /*
-  private async expandRelationshipProperty(params: {
-    items: any[]
-    expand: RemoteExpandProperty
-    relationship: JoinerRelationship
-    options?: RemoteJoinerOptions
-  }): Promise<void> {
-    const { items, expand, relationship, options } = params
-
-    const field = relationship.inverse
-      ? relationship.primaryKey
-      : relationship.foreignKey.split(".").pop()!
-    const fieldsArray = field.split(",")
-
-    const idsToFetch: Set<any> = new Set()
-
-    const requestedFields = new Set(expand.fields ?? [])
-    const fieldsById = new Map<string, string[]>()
-    items.forEach((item) => {
-      const values = fieldsArray.map((field) => item?.[field])
-
-      if (values.length === fieldsArray.length) {
-        if (item?.[relationship.alias]) {
-          for (const field of requestedFields.values()) {
-            if (field in item[relationship.alias]) {
-              requestedFields.delete(field)
-              fieldsById.delete(field)
-            } else {
-              if (!fieldsById.has(field)) {
-                fieldsById.set(field, [])
-              }
-
-              fieldsById
-                .get(field)!
-                .push(fieldsArray.length === 1 ? values[0] : values)
-            }
-          }
-        } else {
-          if (fieldsArray.length === 1) {
-            idsToFetch.add(values[0])
-          } else {
-            idsToFetch.add(values)
-          }
-        }
-      }
-    })
-
-    for (const values of fieldsById.values()) {
-      values.forEach((val) => {
-        idsToFetch.add(val)
-      })
-    }
-
-    if (idsToFetch.size === 0) {
-      return
-    }
-
-    const relatedDataArray = await this.fetchData({
-      expand,
-      pkField: field,
-      ids: Array.from(idsToFetch),
-      relationship,
-      options,
-    })
-
-    const joinFields = relationship.inverse
-      ? relationship.foreignKey.split(",")
-      : relationship.primaryKey.split(",")
-
-    const relData = relatedDataArray.path
-      ? relatedDataArray.data[relatedDataArray.path!]
-      : relatedDataArray.data
-
-    const relatedDataMap = RemoteJoiner.createRelatedDataMap(
-      relData,
-      joinFields
-    )
-
-    items.forEach((item) => {
-      if (!item) {
-        return
-      }
-
-      const itemKey = fieldsArray.map((field) => item[field]).join(",")
-
-      if (item[relationship.alias]) {
-        if (Array.isArray(item[field])) {
-          for (let i = 0; i < item[relationship.alias].length; i++) {
-            const it = item[relationship.alias][i]
-            item[relationship.alias][i] = Object.assign(
-              it,
-              relatedDataMap[it[relationship.primaryKey]]
-            )
-          }
-          return
-        }
-
-        item[relationship.alias] = Object.assign(
-          item[relationship.alias],
-          relatedDataMap[itemKey]
-        )
-        return
-      }
-
-      if (Array.isArray(item[field])) {
-        item[relationship.alias] = item[field].map((id) => {
-          if (relationship.isList && !Array.isArray(relatedDataMap[id])) {
-            relatedDataMap[id] = isDefined(relatedDataMap[id])
-              ? [relatedDataMap[id]]
-              : []
-          }
-
-          return relatedDataMap[id]
-        })
-      } else {
-        if (relationship.isList && !Array.isArray(relatedDataMap[itemKey])) {
-          relatedDataMap[itemKey] = isDefined(relatedDataMap[itemKey])
-            ? [relatedDataMap[itemKey]]
-            : []
-        }
-
-        item[relationship.alias] = relatedDataMap[itemKey]
-      }
-    })
-  }
-  */
 
   private parseExpands(
     params: InternalParseExpandsParams
@@ -1159,38 +1013,6 @@ export class RemoteJoiner {
       paths: string[]
       depth: number
     }
-
-    // Debug: stringify parsedExpands Map safely and concisely
-    JSON.stringify(
-      Array.from(parsedExpands.entries()).map(([k, v]) => [
-        k,
-        {
-          property: (v as any).property,
-          parent: (v as any).parent,
-          service: v?.serviceConfig?.serviceName,
-          parentService: (v as any).parentConfig?.serviceName,
-          fields: (v as any).fields,
-          expands: (v as any).expands
-            ? Object.fromEntries(
-                Object.entries((v as any).expands as Record<string, any>).map(
-                  ([ek, ev]) => [
-                    ek,
-                    {
-                      service: ev?.serviceConfig?.serviceName,
-                      entity: (ev as any).entity,
-                      fields: (ev as any).fields,
-                      expands: (ev as any).expands,
-                    },
-                  ]
-                )
-              )
-            : undefined,
-        },
-      ]),
-      null,
-      2
-    )
-    //console.log("parsedExpands", parsedExpandsJSON)
 
     type Entry = {
       path: string
@@ -1260,8 +1082,6 @@ export class RemoteJoiner {
       pending.length = 0
       pending.push(...nextPending)
     }
-
-    //console.log("stages", JSON.stringify(stages, null, 2))
 
     const root = parsedExpands.get(BASE_PATH)!
     root.globalExecutionStages = stages
@@ -1595,8 +1415,21 @@ export class RemoteJoiner {
           targetExpand = targetExpand.expands[key] ??= {}
         }
 
-        targetExpand.fields = [...new Set(expand.fields)]
-        targetExpand.args = expand.args
+        // Merge fields (union) instead of overwriting
+        const nextFields = [
+          ...new Set([
+            ...(targetExpand.fields ?? []),
+            ...(expand.fields ?? []),
+          ]),
+        ]
+        targetExpand.fields = nextFields
+        // Merge args if present; avoid setting when undefined/empty
+        if (expand.args?.length) {
+          const existingArgs = targetExpand.args
+          targetExpand.args = existingArgs
+            ? existingArgs.concat(expand.args)
+            : expand.args
+        }
 
         mergedExpands.delete(path)
         mergedPaths.set(path, expand)
