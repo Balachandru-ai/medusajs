@@ -3,6 +3,7 @@ import { Filter as MikroORMFilter } from "@mikro-orm/core"
 import { TSMigrationGenerator } from "@mikro-orm/migrations"
 import { isString, retryExecution, stringifyCircular } from "../../common"
 import { normalizeMigrationSQL } from "../utils"
+import { CustomDBMigrator } from "./custom-db-migrator"
 
 type FilterDef = Parameters<typeof MikroORMFilter>[0]
 
@@ -107,6 +108,7 @@ export async function mikroOrmCreateConnection(
         false
       ),
     },
+    extensions: [CustomDBMigrator],
     // We don't want to do any DB checks when establishing the connection. This happens once when creating the pg_connection, and it can happen again explicitly if necessary.
     connect: false,
     ensureDatabase: false,

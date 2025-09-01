@@ -65,7 +65,6 @@ function checkLocalLinkExists({
   fileToCheck = fileToCheck.replace(/^\//, "")
   // get absolute path of the URL
   const linkedFilePath = path.resolve(basePath, fileToCheck).replace(/#.*$/, "")
-  // console.log(link, currentPageFilePath, basePath, fileToCheck, linkedFilePath)
   // check if the file exists
   if (existsSync(linkedFilePath)) {
     return
@@ -130,13 +129,10 @@ function mdxPageExists(pagePath: string): boolean {
     return false
   }
 
-  if (existsSync(path.join(pagePath, "page.mdx"))) {
-    return true
-  }
-
-  // for projects that use a convention other than mdx
-  // check if an mdx file exists with the same name
-  return readdirSync(pagePath).some((fileName) => fileName.endsWith(".mdx"))
+  return (
+    existsSync(path.join(pagePath, "page.mdx")) ||
+    existsSync(path.join(pagePath, "page.tsx"))
+  )
 }
 
 function componentChecker({

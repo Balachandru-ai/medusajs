@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$1" == "docs-old" ]]; then
-  echo "Can't build old docs"
+  echo "🛑 - Build cancelled: Can't build old docs"
   exit 0;
 fi
 
@@ -20,7 +20,21 @@ diffResult=$?
 
 echo "DIFF RESULT (www): $diffResult"
 
-# For preview environments, also check project-specific directories
+
+# Check for production build condition before preview checks
+if [[ "$VERCEL_ENV" == "production" && $diffResult -eq 1 ]] ; then
+  # Proceed with the build for production with changes
+  echo "✅ - Build can proceed (production with changes)"
+  exit 1;
+fi
+
+# Exit early if the PR branch doesn't start with 'docs/'
+if [[ ! "$VERCEL_GIT_COMMIT_REF" =~ ^docs/ ]]; then
+  echo "🛑 - Build cancelled: Branch does not start with 'docs/'"
+  exit 0;
+fi
+
+# For preview environments, check project-specific directories
 if [[ "$VERCEL_ENV" == "preview" && -n "$PROJECT_NAME" ]]; then
   # Check for changes in the specific project directory
   PROJECT_DIR="${SCRIPT_DIR}/apps/${PROJECT_NAME}"
@@ -50,18 +64,14 @@ if [[ "$VERCEL_ENV" == "preview" && -n "$PROJECT_NAME" ]]; then
     previewShouldBuild=1
   fi
   echo "PREVIEW SHOULD BUILD: $previewShouldBuild"
+
+  if [[ $previewShouldBuild -eq 1 ]]; then
+    # Proceed with the build for preview if there are changes in project or packages directory
+    echo "✅ - Build can proceed (preview with project/packages changes)"
+    exit 1;
+  fi
 fi
 
-if [[ ("$VERCEL_ENV" == "production" && $diffResult -eq 1) || "$VERCEL_GIT_COMMIT_REF" = "docs/"* ]] ; then
-  # Proceed with the build for production with changes or docs branches
-  echo "✅ - Build can proceed (production with changes or docs branch)"
-  exit 1;
-elif [[ "$VERCEL_ENV" == "preview" && -n "$PROJECT_NAME" && $previewShouldBuild -eq 1 ]]; then
-  # Proceed with the build for preview if there are changes in project or packages directory
-  echo "✅ - Build can proceed (preview with project/packages changes)"
-  exit 1;
-else
-  # Don't build
-  echo "🛑 - Build cancelled: Conditions don't match"
-  exit 0;
-fi
+# Don't build
+echo "🛑 - Build cancelled: Conditions don't match"
+exit 0;

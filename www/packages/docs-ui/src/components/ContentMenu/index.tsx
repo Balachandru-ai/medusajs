@@ -17,8 +17,8 @@ export const ContentMenu = () => {
         "hidden lg:flex w-full max-w-sidebar-lg",
         "flex-col gap-docs_2 pb-docs_1.5 pr-docs_1",
         "fixed top-[57px] right-docs_0.25 z-10",
-        showCollapsedNavbar && "h-[calc(100%-112px)] pt-[84px]",
-        !showCollapsedNavbar && "h-[calc(100%-56px)] pt-[28px]"
+        showCollapsedNavbar && "max-h-[calc(100%-112px)] pt-[84px]",
+        !showCollapsedNavbar && "max-h-[calc(100%-56px)] pt-[28px]"
       )}
     >
       <ContentMenuVersion />

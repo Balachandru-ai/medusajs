@@ -18,9 +18,9 @@ export const viewsQueryKeys = queryKeysFactory(VIEWS_QUERY_KEY)
 // Generic hook to get columns for any entity
 export const useEntityColumns = (entity: string, options?: Omit<
   UseQueryOptions<
-    HttpTypes.AdminOrderColumnsResponse,
+    HttpTypes.AdminViewsEntityColumnsResponse,
     FetchError,
-    HttpTypes.AdminOrderColumnsResponse,
+    HttpTypes.AdminViewsEntityColumnsResponse,
     QueryKey
   >,
   "queryFn" | "queryKey"

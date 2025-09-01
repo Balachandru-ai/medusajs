@@ -54,9 +54,12 @@ export const refreshPaymentCollectionForCartWorkflowId =
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
-  refreshPaymentCollectionForCartWorkflowId,
+  {
+    name: refreshPaymentCollectionForCartWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
       return useRemoteQueryStep({
@@ -88,7 +91,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       cart,
     })
 
-    when({ cart }, ({ cart }) => {
+    when("should-update-payment-collection", { cart }, ({ cart }) => {
       const valueIsEqual = MathBN.eq(
         cart.payment_collection?.raw_amount ?? -1,
         cart.raw_total

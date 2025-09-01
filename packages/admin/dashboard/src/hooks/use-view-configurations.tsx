@@ -54,7 +54,7 @@ export const useViewConfigurations = (entity: string) => {
   // Create view mutation
   const createView = useCreateViewConfigurationBase(entity, {
     onSuccess: (data) => {
-      toast.success(`View "${data.view_configuration.name}" created successfully`)
+      toast.success(`View created`)
     },
     onError: (error) => {
       handleError(error, "Failed to create view")
@@ -64,7 +64,6 @@ export const useViewConfigurations = (entity: string) => {
   // Set active view mutation
   const setActiveView = useSetActiveViewConfigurationBase(entity, {
     onSuccess: () => {
-      toast.success("Active view updated")
     },
     onError: (error) => {
       handleError(error, "Failed to update active view")
@@ -72,18 +71,11 @@ export const useViewConfigurations = (entity: string) => {
   })
 
   return useMemo(() => ({
-    // Feature flag state
     isViewConfigEnabled,
-
-    // Query results
     listViews,
     activeView,
-
-    // Mutations
     createView,
     setActiveView,
-
-    // Helper to check if default view is active
     isDefaultViewActive: activeView?.is_default_active ?? true,
   }), [
     isViewConfigEnabled,
@@ -98,7 +90,7 @@ export const useViewConfigurations = (entity: string) => {
 export const useViewConfiguration = (entity: string, viewId: string) => {
   const updateView = useUpdateViewConfigurationBase(entity, viewId, {
     onSuccess: (data) => {
-      toast.success(`View "${data.view_configuration.name}" updated successfully`)
+      toast.success(`View updated`)
     },
     onError: (error) => {
       handleError(error, "Failed to update view")

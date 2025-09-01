@@ -107,13 +107,13 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
           </Drawer.Title>
           <Drawer.Description asChild>
             <Text>
-              {editingView 
-                ? "Change the name of your saved view" 
+              {editingView
+                ? "Change the name of your saved view"
                 : "Save your current configuration as a new view"}
             </Text>
           </Drawer.Description>
         </Drawer.Header>
-        
+
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-1 flex-col">
           <Drawer.Body className="flex-1">
             <div className="flex flex-col gap-y-2">
@@ -121,7 +121,7 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
                 View Name
               </Label>
               <Input
-                {...register("name", { 
+                {...register("name", {
                   required: "Name is required",
                   validate: value => value.trim().length > 0 || "Name cannot be empty"
                 })}
@@ -136,20 +136,20 @@ export const SaveViewDialog: React.FC<SaveViewDialogProps> = ({
               )}
             </div>
           </Drawer.Body>
-          
+
           <Drawer.Footer>
             <Drawer.Close asChild>
-              <Button 
-                variant="secondary" 
-                size="small" 
+              <Button
+                variant="secondary"
+                size="small"
                 type="button"
               >
                 Cancel
               </Button>
             </Drawer.Close>
-            <Button 
-              variant="primary" 
-              size="small" 
+            <Button
+              variant="primary"
+              size="small"
               type="submit"
               isLoading={isLoading}
             >

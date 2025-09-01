@@ -50,9 +50,12 @@ export const refreshCartShippingMethodsWorkflowId =
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const refreshCartShippingMethodsWorkflow = createWorkflow(
-  refreshCartShippingMethodsWorkflowId,
+  {
+    name: refreshCartShippingMethodsWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
       return useRemoteQueryStep({
@@ -94,9 +97,13 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
       cart,
     })
 
-    when({ listShippingOptionsInput }, ({ listShippingOptionsInput }) => {
-      return !!listShippingOptionsInput?.length
-    }).then(() => {
+    when(
+      "should-prepare-shipping-methods",
+      { listShippingOptionsInput },
+      ({ listShippingOptionsInput }) => {
+        return !!listShippingOptionsInput?.length
+      }
+    ).then(() => {
       const shippingOptions =
         listShippingOptionsForCartWithPricingWorkflow.runAsStep({
           input: {

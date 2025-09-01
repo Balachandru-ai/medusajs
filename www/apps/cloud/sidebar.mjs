@@ -100,7 +100,11 @@ export const sidebar = [
           {
             type: "link",
             title: "Draft Orders",
-            path: "/draft-order-plugin",
+            path: "https://docs.medusajs.com/resources/commerce-modules/order/draft-orders",
+            badge: {
+              text: "Published",
+              variant: "blue",
+            },
           },
         ],
       },
@@ -111,14 +115,19 @@ export const sidebar = [
         children: [
           {
             type: "link",
-            title: "Billing & Usage",
-            path: "/billing-usage",
+            title: "Overview",
+            path: "/billing",
+          },
+          {
+            type: "link",
+            title: "Manage Billing Details",
+            path: "/billing/manage",
           },
         ],
       },
       {
         type: "category",
-        title: "Monitoring & Support",
+        title: "Monitoring",
         initialOpen: true,
         children: [
           {
@@ -130,6 +139,11 @@ export const sidebar = [
             type: "link",
             title: "Notifications",
             path: "/notifications",
+          },
+          {
+            type: "link",
+            title: "Usage",
+            path: "/usage",
           },
         ],
       },

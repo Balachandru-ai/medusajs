@@ -72,7 +72,7 @@ export const ConfigurableOrderListTable = () => {
   // React to activeView changes
   useEffect(() => {
     if (!apiColumns) return
-    
+
     // Apply view configuration when activeView changes
     originalHandleViewChange(currentActiveView, apiColumns)
 

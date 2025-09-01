@@ -50,9 +50,4 @@ export interface AdminOrderItemsFilters extends FindParams {
 
 export interface AdminOrderChangesFilters extends BaseOrderChangesFilters {}
 
-export interface AdminOrderItemsFilters extends FindParams {
-  id?: string[] | string
-  item_id?: string[] | string
-  order_id?: string[] | string
-  version?: number[] | number
-}
+export interface AdminGetOrderShippingOptionList {}

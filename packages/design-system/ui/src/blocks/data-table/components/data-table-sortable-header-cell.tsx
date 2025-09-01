@@ -29,8 +29,8 @@ export const DataTableSortableHeaderCell = React.forwardRef<
   const transformStyle = transform ? {
     x: transform.x,
     y: 0,
-    scaleX: transform.scaleX,
-    scaleY: transform.scaleY,
+    scaleX: 1,
+    scaleY: 1
   } : null
 
   const style: React.CSSProperties = {
@@ -39,6 +39,7 @@ export const DataTableSortableHeaderCell = React.forwardRef<
     transition,
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 50 : undefined,
+    backgroundColor: "white",
     position: 'relative' as const,
   }
 

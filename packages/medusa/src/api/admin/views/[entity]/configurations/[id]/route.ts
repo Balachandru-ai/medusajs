@@ -7,6 +7,13 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { updateViewConfigurationWorkflow } from "@medusajs/core-flows"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminGetViewConfigurationParams>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationResponse>
@@ -32,6 +39,13 @@ export const GET = async (
   res.json({ view_configuration: viewConfiguration })
 }
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminUpdateViewConfigurationType>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationResponse>
@@ -63,6 +77,13 @@ export const POST = async (
   res.json({ view_configuration: result })
 }
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationDeleteResponse>

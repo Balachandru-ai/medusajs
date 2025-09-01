@@ -1,5 +1,9 @@
 import { BaseFilterable, OperatorMap } from "../../../dal"
-import { ApplicationMethodTypeValues } from "../../../promotion"
+import {
+  ApplicationMethodTargetTypeValues,
+  ApplicationMethodTypeValues,
+  PromotionTypeValues,
+} from "../../../promotion"
 import { FindParams, SelectParams } from "../../common"
 
 export interface AdminGetPromotionParams extends SelectParams {}
@@ -59,13 +63,29 @@ export interface AdminGetPromotionsParams
 }
 
 export interface AdminGetPromotionRuleParams {
-  promotion_type?: string
-  application_method_type?: string
+  /**
+   * The type of promotion to retrieve the attributes for.
+   */
+  promotion_type?: PromotionTypeValues
+  /**
+   * The type of application method to retrieve the attributes for.
+   */
+  application_method_type?: ApplicationMethodTypeValues
+  /**
+   * The type of application method to retrieve the attributes for.
+   */
+  application_method_target_type?: ApplicationMethodTargetTypeValues
 }
 
 export interface AdminGetPromotionRuleTypeParams extends SelectParams {
-  promotion_type?: string
-  application_method_type?: string
+  /**
+   * The type of promotion to retrieve the attributes for.
+   */
+  promotion_type?: PromotionTypeValues
+  /**
+   * The type of application method to retrieve the attributes for.
+   */
+  application_method_type?: ApplicationMethodTypeValues
 }
 
 export interface AdminGetPromotionsRuleValueParams extends FindParams {
@@ -77,4 +97,5 @@ export interface AdminGetPromotionsRuleValueParams extends FindParams {
    * Filter by rule value.
    */
   value?: string | string[]
+  application_method_target_type?: ApplicationMethodTargetTypeValues
 }
