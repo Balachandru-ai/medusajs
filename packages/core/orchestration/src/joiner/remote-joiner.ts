@@ -202,7 +202,9 @@ export class RemoteJoiner {
     const { items, relationship, relatedDataMap, field, fieldsArray } = params
 
     items.forEach((item) => {
-      if (!item) return
+      if (!item) {
+        return
+      }
 
       const itemKey = fieldsArray.map((f) => item[f]).join(",")
 
