@@ -299,7 +299,7 @@ export const EditPromotionDetailsForm = ({
                                 onChange(
                                   e.target.value === ""
                                     ? null
-                                    : parseInt(e.target.value)
+                                    : parseFloat(e.target.value)
                                 )
                               }}
                             />

@@ -36,7 +36,10 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCampaigns } from "../../../../../hooks/api/campaigns"
 import { useCreatePromotion } from "../../../../../hooks/api/promotions"
-import { getCurrencySymbol } from "../../../../../lib/data/currencies"
+import {
+  currencies,
+  getCurrencySymbol,
+} from "../../../../../lib/data/currencies"
 import { DEFAULT_CAMPAIGN_VALUES } from "../../../../campaigns/common/constants"
 import { RulesFormField } from "../../../common/edit-rules/components/rules-form-field"
 import { AddCampaignPromotionFields } from "../../../promotion-add-campaign/components/add-campaign-promotion-form"
@@ -742,6 +745,9 @@ export const CreatePromotionForm = () => {
                           const currencyCode =
                             form.getValues().application_method.currency_code
 
+                          const currencyInfo =
+                            currencies[currencyCode?.toUpperCase() || "USD"]
+
                           return (
                             <Form.Item className="basis-1/2">
                               <Form.Label
@@ -759,10 +765,16 @@ export const CreatePromotionForm = () => {
                                   <CurrencyInput
                                     {...field}
                                     min={0}
-                                    onValueChange={(value) => {
-                                      onChange(value ? parseInt(value) : "")
-                                    }}
                                     code={currencyCode || "USD"}
+                                    onValueChange={(_value, _name, values) =>
+                                      onChange(values?.value)
+                                    }
+                                    decimalScale={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
+                                    decimalsLimit={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
                                     symbol={
                                       currencyCode
                                         ? getCurrencySymbol(currencyCode)
@@ -783,7 +795,7 @@ export const CreatePromotionForm = () => {
                                       onChange(
                                         e.target.value === ""
                                           ? null
-                                          : parseInt(e.target.value)
+                                          : parseFloat(e.target.value)
                                       )
                                     }}
                                   />
