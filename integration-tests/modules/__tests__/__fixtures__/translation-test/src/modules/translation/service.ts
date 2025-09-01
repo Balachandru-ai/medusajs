@@ -36,27 +36,11 @@ export class TranslationModule extends MedusaService({
       q.select("tr.value")
     }
 
-    // Filters: id or key arrays
     const key = filters?.key
     if (id) {
       q.whereIn("tr.id", Array.isArray(id) ? id : [id])
     } else if (key) {
       q.whereIn("tr.key", Array.isArray(key) ? key : [key])
-    }
-
-    // Ordering, if any
-    if (find?.order) {
-      // Support string, array, or object { column: direction }
-      const order = find.order
-      if (typeof order === "string") {
-        q.orderBy(order)
-      } else if (Array.isArray(order)) {
-        q.orderBy(order as any)
-      } else if (order && typeof order === "object") {
-        Object.entries(order).forEach(([col, dir]) => {
-          q.orderBy(col as any, (dir as any) || "asc")
-        })
-      }
     }
 
     // console.log(q.toString())
