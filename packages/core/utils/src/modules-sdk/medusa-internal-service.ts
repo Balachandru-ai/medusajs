@@ -669,39 +669,51 @@ export function MedusaInternalService<
        * by dispatching the events manually.
        */
 
-      const createdEntities = performedActions.created[model.name]
-      const updatedEntities = performedActions.updated[model.name]
-      const deletedEntities = performedActions.deleted[model.name]
+      const createdEntities = !!Object.keys(performedActions.created).length
+      const updatedEntities = !!Object.keys(performedActions.updated).length
+      const deletedEntities = !!Object.keys(performedActions.deleted).length
 
       if (createdEntities) {
-        createdEntities.forEach((entity) => {
-          eventManager.dispatchEvent(EventType.afterCreate, {
-            entity,
-            meta: {
-              className: model.name,
-            } as Parameters<typeof eventManager.dispatchEvent>[2],
+        Object.entries(
+          performedActions.created as Record<string, any[]>
+        ).forEach(([modelName, entities]) => {
+          entities.forEach((entity) => {
+            eventManager.dispatchEvent(EventType.afterCreate, {
+              entity,
+              meta: {
+                className: modelName,
+              } as Parameters<typeof eventManager.dispatchEvent>[2],
+            })
           })
         })
       }
 
       if (updatedEntities) {
-        updatedEntities.forEach((entity) => {
-          eventManager.dispatchEvent(EventType.afterUpdate, {
-            entity,
-            meta: {
-              className: model.name,
-            } as Parameters<typeof eventManager.dispatchEvent>[2],
+        Object.entries(
+          performedActions.updated as Record<string, any[]>
+        ).forEach(([modelName, entities]) => {
+          entities.forEach((entity) => {
+            eventManager.dispatchEvent(EventType.afterUpdate, {
+              entity,
+              meta: {
+                className: modelName,
+              } as Parameters<typeof eventManager.dispatchEvent>[2],
+            })
           })
         })
       }
 
       if (deletedEntities) {
-        deletedEntities.forEach((entity) => {
-          eventManager.dispatchEvent(EventType.afterDelete, {
-            entity,
-            meta: {
-              className: model.name,
-            } as Parameters<typeof eventManager.dispatchEvent>[2],
+        Object.entries(
+          performedActions.deleted as Record<string, any[]>
+        ).forEach(([modelName, entities]) => {
+          entities.forEach((entity) => {
+            eventManager.dispatchEvent(EventType.afterDelete, {
+              entity,
+              meta: {
+                className: modelName,
+              } as Parameters<typeof eventManager.dispatchEvent>[2],
+            })
           })
         })
       }
