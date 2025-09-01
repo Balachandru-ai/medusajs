@@ -622,6 +622,9 @@ describe("RemoteJoiner", () => {
       query {
         order {
           id
+          product_user_alias (arg: { random: 123 }) {
+            name
+          }
           products {
             variant {
               user_shortcut(arg: 123) {
@@ -649,10 +652,31 @@ describe("RemoteJoiner", () => {
       ],
       [
         {
+          service: "product",
+          fieds: ["id", "user_id"],
+          args: [
+            {
+              name: "arg",
+              value: {
+                random: 123,
+              },
+            },
+          ],
+        },
+      ],
+      [
+        {
           service: "variantService",
           fieds: ["id", "product_id"],
         },
       ],
+      [
+        {
+          service: "user",
+          fieds: ["name", "id"],
+        },
+      ],
+
       [
         {
           service: "product",
@@ -672,6 +696,15 @@ describe("RemoteJoiner", () => {
         },
       ],
     ])
+
+    expect(data[1]).toEqual(
+      expect.objectContaining({
+        product_user_alias: {
+          id: 3,
+          name: "aaa bbb",
+        },
+      })
+    )
 
     expect(data[0].products[0]).toEqual({
       variant_id: 991,

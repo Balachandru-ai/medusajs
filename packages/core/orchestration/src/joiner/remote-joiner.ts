@@ -867,7 +867,7 @@ export class RemoteJoiner {
             const expand = parsedExpands.get(path)!
             const nestedItems = getItemsForPath(items, path)
 
-            if (!nestedItems?.length) {
+            if (!nestedItems?.length || !expand) {
               continue
             }
 
@@ -1044,86 +1044,95 @@ export class RemoteJoiner {
 
     const groupedExpands = this.groupExpands(parsedExpands)
 
-    this.buildQueryPlanner(groupedExpands)
+    this.buildQueryPlan(parsedExpands, groupedExpands)
 
     return groupedExpands
   }
 
-  private buildQueryPlanner(
-    parsedExpands: Map<string, RemoteExpandProperty>
+  private buildQueryPlan(
+    fullParsedExpands: Map<string, RemoteExpandProperty>,
+    groupedExpands: Map<string, RemoteExpandProperty>
   ): void {
-    const entries = Array.from(parsedExpands.entries())
-    const pending: {
-      path: string
-      service: string
-      entity?: string
-      parentService?: string
-      parentEntity?: string
-    }[] = []
-    for (const [path, expand] of entries) {
-      if (path === BASE_PATH) {
-        continue
-      }
-
-      pending.push({
-        path,
-        service: expand.serviceConfig?.serviceName || "",
-        entity: expand.entity,
-        parentService: expand.parentConfig?.serviceName,
-      })
-    }
-
     const stages: ExecutionStage[][] = []
 
-    // Root group
-    const rootExp = parsedExpands.get(BASE_PATH)!
-    const rootKey = rootExp.serviceConfig.serviceName
-    const placedByDepthKeys: Array<Set<string>> = [new Set([rootKey])]
+    // Root stage
+    const rootExp = groupedExpands.get(BASE_PATH)!
+    const rootService = rootExp.serviceConfig.serviceName
+
     stages.push([
       {
-        service: rootExp?.serviceConfig?.serviceName || "",
-        entity: rootExp?.entity,
+        service: rootService,
+        entity: rootExp.entity,
         paths: [],
         depth: 0,
       },
     ])
 
-    while (pending.length) {
-      const prevDepth = stages.length - 1
-      const prevKeys = placedByDepthKeys[prevDepth] || new Set()
-      const stageGroups = new Map<string, ExecutionStage>()
-      const nextPending: any[] = []
+    // Build service sequence for each path
+    const getServiceSequence = (path: string): string[] => {
+      const sequence: string[] = []
+      let currentPath = path
 
-      for (const item of pending) {
-        const parentKey = item.parentService!
-        if (!prevKeys.has(parentKey)) {
-          nextPending.push(item)
-          continue
+      while (currentPath && currentPath !== BASE_PATH) {
+        const expand = fullParsedExpands.get(currentPath)
+        if (!expand) {
+          break
         }
 
-        const key = item.service
-        if (!stageGroups.has(key)) {
-          stageGroups.set(key, {
-            service: item.service,
-            entity: item.entity,
-            paths: [],
-            depth: prevDepth + 1,
-          })
-        }
-        stageGroups.get(key)!.paths.push(item.path)
+        sequence.unshift(expand.serviceConfig.serviceName)
+        currentPath = expand.parent
       }
 
-      if (!stageGroups.size) {
-        throw new Error("Something went wrong")
-      }
-
-      stages.push(Array.from(stageGroups.values()))
-      placedByDepthKeys.push(new Set(stageGroups.keys()))
-      pending.length = 0
-      pending.push(...nextPending)
+      return sequence
     }
 
-    const root = parsedExpands.get(BASE_PATH)!
+    // Group paths by their service sequence length and last service in sequence
+    const pathsBySequenceDepth = new Map<number, Map<string, string[]>>()
+
+    for (const [path, expand] of groupedExpands.entries()) {
+      if (path === BASE_PATH) {
+        continue
+      }
+
+      const serviceSequence = getServiceSequence(path)
+      const sequenceDepth = serviceSequence.length
+      const lastService = expand.serviceConfig.serviceName
+
+      if (!pathsBySequenceDepth.has(sequenceDepth)) {
+        pathsBySequenceDepth.set(sequenceDepth, new Map())
+      }
+
+      const depthMap = pathsBySequenceDepth.get(sequenceDepth)!
+      if (!depthMap.has(lastService)) {
+        depthMap.set(lastService, [])
+      }
+
+      depthMap.get(lastService)!.push(path)
+    }
+
+    const maxDepth = Math.max(...Array.from(pathsBySequenceDepth.keys()))
+
+    for (let depth = 1; depth <= maxDepth; depth++) {
+      const serviceMap = pathsBySequenceDepth.get(depth)
+      if (!serviceMap) {
+        continue
+      }
+
+      const stageGroups: ExecutionStage[] = []
+      for (const [service, paths] of serviceMap.entries()) {
+        stageGroups.push({
+          service,
+          paths,
+          depth: depth,
+        })
+      }
+
+      if (stageGroups.length > 0) {
+        stages.push(stageGroups)
+      }
+    }
+
+    const root = groupedExpands.get(BASE_PATH)!
     root.executionStages = stages
   }
 
