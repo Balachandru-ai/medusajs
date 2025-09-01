@@ -39,7 +39,7 @@ const WILDCARD = "*"
 const DOT = "."
 const UNDERSCORE = "_"
 
-// V8 optimization: Inline function for maximum performance, no shared state
+// JIT-friendly function with predictable patterns
 function isVisible<T extends object>(
   meta: EntityMetadata<T>,
   propName: string,
@@ -48,17 +48,17 @@ function isVisible<T extends object>(
     populate?: string[] | boolean
   } = STATIC_OPTIONS_SHAPE
 ): boolean {
-  // V8 optimization: Fast path with monomorphic behavior
+  // Fast path for boolean populate
   const populate = options.populate
   if (populate === true) {
     return true
   }
 
   if (Array.isArray(populate)) {
+    // Check exclusions first (early exit)
     const exclude = options.exclude
     if (exclude && exclude.length > 0) {
       const excludeLen = exclude.length
-      // V8 optimization: Traditional for loop for better performance
       for (let i = 0; i < excludeLen; i++) {
         if (exclude[i] === propName) {
           return false
@@ -66,12 +66,13 @@ function isVisible<T extends object>(
       }
     }
 
-    // V8 optimization: Avoid string operations in tight loops
+    // Hoist computations outside loop
     const propNameLen = propName.length
     const propPrefix = propName + DOT
+    const propPrefixLen = propPrefix.length
     const populateLen = populate.length
 
-    // V8 optimization: Loop unrolling for common cases
+    // Simple loop that JIT can optimize well
     for (let i = 0; i < populateLen; i++) {
       const item = populate[i]
       if (item === propName || item === WILDCARD) {
@@ -79,22 +80,22 @@ function isVisible<T extends object>(
       }
       if (
         item.length > propNameLen &&
-        item.substring(0, propNameLen + 1) === propPrefix
+        item.substring(0, propPrefixLen) === propPrefix
       ) {
         return true
       }
     }
+    return false
   }
 
-  // V8 optimization: Inline property access for hot path
+  // Inline property check for non-array case
   const prop = meta.properties[propName]
   const visible = (prop && !prop.hidden) || prop === undefined
   const prefixed = prop && !prop.primary && propName.charAt(0) === UNDERSCORE
-
   return visible && !prefixed
 }
 
-// V8 optimization: Thread-safe function with no shared state
+// Clean, JIT-friendly function
 function isPopulated<T extends object>(
   entity: T,
   propName: string,
@@ -105,31 +106,33 @@ function isPopulated<T extends object>(
 ): boolean {
   const populate = options.populate
 
-  // V8 optimization: Fast path for boolean
+  // Fast path for boolean
   if (typeof populate === "boolean") {
     return populate
   }
 
-  if (Array.isArray(populate)) {
-    // V8 optimization: Pre-compute values to avoid recalculation
-    const propNameLen = propName.length
-    const propPrefix = propName + DOT
-    const populateLen = populate.length
-
-    // V8 optimization: Traditional for loop with early exit
-    for (let i = 0; i < populateLen; i++) {
-      const item = populate[i]
-      if (item === propName || item === WILDCARD) {
-        return true
-      }
-      if (
-        item.length > propNameLen &&
-        item.substring(0, propNameLen + 1) === propPrefix
-      ) {
-        return true
-      }
-    }
+  if (!Array.isArray(populate)) {
     return false
+  }
+
+  // Hoist computations for JIT optimization
+  const propNameLen = propName.length
+  const propPrefix = propName + DOT
+  const propPrefixLen = propPrefix.length
+  const populateLen = populate.length
+
+  // Simple predictable loop
+  for (let i = 0; i < populateLen; i++) {
+    const item = populate[i]
+    if (item === propName || item === WILDCARD) {
+      return true
+    }
+    if (
+      item.length > propNameLen &&
+      item.substring(0, propPrefixLen) === propPrefix
+    ) {
+      return true
+    }
   }
 
   return false
@@ -185,7 +188,7 @@ function filterEntityPropToSerialize({
 }
 
 export class EntitySerializer {
-  // V8 optimization: Thread-safe per-instance cache to avoid concurrency issues
+  // Thread-safe per-instance cache to avoid concurrency issues
   private static readonly PROPERTY_CACHE_SIZE = 2000
 
   static serialize<T extends object, P extends string = never>(
@@ -193,7 +196,7 @@ export class EntitySerializer {
     options: Partial<typeof STATIC_OPTIONS_SHAPE> = STATIC_OPTIONS_SHAPE,
     parents: string[] = EMPTY_ARRAY
   ): EntityDTO<Loaded<T, P>> {
-    // V8 optimization: Avoid Array.from and Set when possible
+    // Avoid Array.from and Set allocation for hot path
     const parents_ = parents.length > 0 ? Array.from(new Set(parents)) : []
 
     const wrapped = helper(entity)
@@ -217,7 +220,7 @@ export class EntitySerializer {
 
     const ret = {} as EntityDTO<Loaded<T, P>>
 
-    // V8 optimization: Pre-allocate Set with known size for better performance
+    // Use Set for deduplication but keep it simple
     const keys = new Set<string>()
 
     const primaryKeys = meta.primaryKeys
@@ -240,24 +243,25 @@ export class EntitySerializer {
     const keysArray = Array.from(keys)
     const keysLen = keysArray.length
 
-    // V8 optimization: Hoist invariant calculations
+    // Hoist invariant calculations
     const className = meta.className
     const platform = wrapped.__platform
     const skipNull = options.skipNull
     const metaProperties = meta.properties
+    const preventCircularRef = options.preventCircularRef
 
-    // V8 optimization: Process properties in single loop with inline filtering
+    // Clean property processing loop
     for (let i = 0; i < keysLen; i++) {
       const prop = keysArray[i]
 
-      // Inline filterEntityPropToSerialize for better performance
+      // Simple filtering logic
       const isVisibleRes = isVisible(meta, prop, options)
       const propMeta = metaProperties[prop]
 
       let shouldSerialize = isVisibleRes
       if (
         propMeta &&
-        options.preventCircularRef &&
+        preventCircularRef &&
         isVisibleRes &&
         propMeta.kind !== ReferenceKind.SCALAR
       ) {
@@ -279,10 +283,7 @@ export class EntitySerializer {
       }
 
       const cycle = root.visit(className, prop)
-
-      if (cycle && visited) {
-        continue
-      }
+      if (cycle && visited) continue
 
       const val = this.processProperty<T>(
         prop as keyof T & string,
@@ -313,7 +314,7 @@ export class EntitySerializer {
       return ret
     }
 
-    // V8 optimization: Process getters efficiently
+    // Clean getter processing
     const metaProps = meta.props
     const metaPropsLen = metaProps.length
 
@@ -321,7 +322,7 @@ export class EntitySerializer {
       const prop = metaProps[i]
       const propName = prop.name
 
-      // V8 optimization: Combine conditions to reduce function calls
+      // Clear, readable conditions
       if (
         prop.getter &&
         prop.getterName === undefined &&
@@ -351,7 +352,7 @@ export class EntitySerializer {
     return ret
   }
 
-  // V8 optimization: Thread-safe property name resolution with WeakMap for per-entity caching
+  // Thread-safe property name resolution with WeakMap for per-entity caching
   private static propertyNameCache = new WeakMap<
     EntityMetadata<any>,
     Map<string, string>
@@ -362,7 +363,7 @@ export class EntitySerializer {
     prop: string,
     platform?: Platform
   ): string {
-    // V8 optimization: Use WeakMap per metadata to avoid global cache conflicts
+    // Use WeakMap per metadata to avoid global cache conflicts
     let entityCache = this.propertyNameCache.get(meta)
     if (!entityCache) {
       entityCache = new Map<string, string>()
@@ -376,7 +377,7 @@ export class EntitySerializer {
       return cached
     }
 
-    // V8 optimization: Inline property resolution for hot path
+    // Inline property resolution for hot path
     let result: string
     const property = meta.properties[prop]
 
@@ -389,7 +390,7 @@ export class EntitySerializer {
       result = prop
     }
 
-    // V8 optimization: Prevent cache from growing too large
+    // Prevent cache from growing too large
     if (entityCache.size >= this.PROPERTY_CACHE_SIZE) {
       entityCache.clear() // Much faster than selective deletion
     }
@@ -407,21 +408,22 @@ export class EntitySerializer {
     },
     parents: string[] = EMPTY_ARRAY
   ): T[keyof T] | undefined {
-    // V8 optimization: Avoid array allocation for single element case
+    // Avoid array allocation when not needed
     const parents_ =
       parents.length > 0
         ? [...parents, entity.constructor.name]
         : [entity.constructor.name]
 
-    // V8 optimization: Avoid split when not needed
+    // Handle dotted properties efficiently
     const parts = prop.split(DOT)
     prop = parts[0] as string & keyof T
+
     const wrapped = helper(entity)
     const property = wrapped.__meta.properties[prop]
     const serializer = property?.serializer
     const propValue = entity[prop]
 
-    // V8 optimization: Fast path for function properties
+    // Fast path for function properties
     if ((propValue as unknown) instanceof Function) {
       const returnValue = (propValue as unknown as () => T[keyof T & string])()
       if (!options.ignoreSerializers && serializer) {
@@ -435,7 +437,7 @@ export class EntitySerializer {
       return serializer(propValue)
     }
 
-    // V8 optimization: Inline type checks for hot paths
+    // Type checks in optimal order
     if (Utils.isCollection(propValue)) {
       return this.processCollection(
         prop as keyof T & string,
@@ -458,13 +460,9 @@ export class EntitySerializer {
     /* istanbul ignore next */
     if (property?.reference === ReferenceKind.EMBEDDED) {
       if (Array.isArray(propValue)) {
-        // V8 optimization: Use traditional for loop for better performance
-        const arr = propValue as object[]
-        const result = new Array(arr.length)
-        for (let i = 0; i < arr.length; i++) {
-          result[i] = helper(arr[i]).toJSON()
-        }
-        return result as T[keyof T]
+        return (propValue as object[]).map((item) =>
+          helper(item).toJSON()
+        ) as T[keyof T]
       }
 
       if (Utils.isObject(propValue)) {
@@ -473,17 +471,15 @@ export class EntitySerializer {
     }
 
     const customType = property?.customType
-
     if (customType) {
       return customType.toJSON(propValue, wrapped.__platform)
     }
-
     return wrapped.__platform.normalizePrimaryKey(
       propValue as unknown as IPrimaryKey
     ) as unknown as T[keyof T]
   }
 
-  private static extractChildOptions<T extends object, U extends object>(
+  private static extractChildOptions<T extends object>(
     options: Parameters<typeof EntitySerializer.serialize>[1] & {
       preventCircularRef?: boolean
       populate?: string[] | boolean
@@ -496,12 +492,12 @@ export class EntitySerializer {
     const propPrefix = prop + DOT
     const propPrefixLen = propPrefix.length
 
-    // V8 optimization: Inline function to avoid call overhead
+    // Inline function to avoid call overhead
     const extractChildElements = (items: string[]) => {
       const result: string[] = []
       const itemsLen = items.length
 
-      // V8 optimization: Traditional for loop for better performance
+      // Traditional for loop for better performance
       for (let i = 0; i < itemsLen; i++) {
         const field = items[i]
         if (
@@ -517,7 +513,7 @@ export class EntitySerializer {
     const populate = options.populate
     const exclude = options.exclude
 
-    // V8 optimization: Avoid object spread when possible
+    // Avoid object spread when possible
     const result = {
       populate:
         Array.isArray(populate) && !populate.includes(WILDCARD)
@@ -626,13 +622,13 @@ export const mikroOrmSerializer = <TOutput extends object>(
   >
 ): Promise<TOutput> => {
   return new Promise<TOutput>((resolve) => {
-    // V8 optimization: Use shared reference for identical options
+    // Efficient options handling
     if (!options) {
       options = STATIC_OPTIONS_SHAPE
     } else {
-      // V8 optimization: Fast path for identical options
-      const optionKeys = Object.keys(options)
+      // Check if we can use static shape
       let useStatic = true
+      const optionKeys = Object.keys(options)
       for (let i = 0; i < optionKeys.length; i++) {
         const key = optionKeys[i] as keyof typeof options
         if (
@@ -656,7 +652,7 @@ export const mikroOrmSerializer = <TOutput extends object>(
     const forSerialization: object[] = []
     const notForSerialization: object[] = []
 
-    // V8 optimization: Traditional for loop for better performance
+    // Simple classification loop
     const dataLen = data_.length
     for (let i = 0; i < dataLen; i++) {
       const object = data_[i]
@@ -667,7 +663,7 @@ export const mikroOrmSerializer = <TOutput extends object>(
       }
     }
 
-    // V8 optimization: Pre-allocate result array for better performance
+    // Pre-allocate result array
     const forSerializationLen = forSerialization.length
     const result: any = new Array(forSerializationLen)
 
@@ -675,7 +671,7 @@ export const mikroOrmSerializer = <TOutput extends object>(
       result[i] = EntitySerializer.serialize(forSerialization[i], options)
     }
 
-    // V8 optimization: Avoid concat when possible
+    // Simple result construction
     let finalResult: any
     if (notForSerialization.length > 0) {
       finalResult = result.concat(notForSerialization)
