@@ -13,7 +13,6 @@ import {
   DataTableFilteringState,
   DataTablePaginationState,
   DataTableSortingState,
-  clx,
 } from "@medusajs/ui"
 import React, { ReactNode, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
@@ -93,7 +92,6 @@ interface DataTableProps<TData> {
   onColumnOrderChange?: (order: ColumnOrderState) => void
   enableViewSelector?: boolean
   entity?: string
-  onViewChange?: (view: any) => void
   currentColumns?: {
     visible: string[]
     order: string[]
@@ -129,7 +127,6 @@ export const DataTable = <TData,>({
   onColumnOrderChange,
   enableViewSelector = false,
   entity,
-  onViewChange,
   currentColumns,
   filterBarContent,
 }: DataTableProps<TData>) => {
@@ -378,13 +375,14 @@ export const DataTable = <TData,>({
             {effectiveEnableViewSelector && entity && (
               <ViewPills
                 entity={entity}
-                onViewChange={onViewChange}
                 currentColumns={currentColumns}
                 currentConfiguration={currentConfiguration}
               />
             )}
           </div>
           <div className="flex items-center gap-x-2">
+            {enableFiltering && <UiDataTable.FilterMenu />}
+            {enableSorting && <UiDataTable.SortingMenu />}
             {enableSearch && (
               <div className="w-full md:w-auto">
                 <UiDataTable.Search
