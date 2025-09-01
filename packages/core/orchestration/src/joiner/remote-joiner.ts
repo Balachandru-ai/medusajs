@@ -1,5 +1,6 @@
 import {
   ComputedJoinerRelationship,
+  ExecutionStage,
   InternalJoinerServiceConfig,
   JoinerRelationship,
   JoinerServiceConfigAlias,
@@ -840,15 +841,15 @@ export class RemoteJoiner {
     }
 
     const root = parsedExpands.get(BASE_PATH) as any
-    const globalExecutionStages: {
+    const executionStages: {
       service: string
       paths: string[]
       depth: number
-    }[][] = root?.globalExecutionStages
+    }[][] = root?.executionStages
     // remove root
-    root?.globalExecutionStages.shift()
+    root?.executionStages.shift()
 
-    for (const stage of globalExecutionStages) {
+    for (const stage of executionStages) {
       await Promise.all(
         stage.map(async ({ service, paths }) => {
           const pathCtx: {
@@ -1051,23 +1052,14 @@ export class RemoteJoiner {
   private buildQueryPlanner(
     parsedExpands: Map<string, RemoteExpandProperty>
   ): void {
-    type Group = {
-      service: string
-      entity?: string
-      paths: string[]
-      depth: number
-    }
-
-    type Entry = {
+    const entries = Array.from(parsedExpands.entries())
+    const pending: {
       path: string
       service: string
       entity?: string
       parentService?: string
       parentEntity?: string
-    }
-
-    const entries = Array.from(parsedExpands.entries())
-    const pending: Entry[] = []
+    }[] = []
     for (const [path, expand] of entries) {
       if (path === BASE_PATH) {
         continue
@@ -1081,7 +1073,7 @@ export class RemoteJoiner {
       })
     }
 
-    const stages: Array<Array<Group>> = []
+    const stages: ExecutionStage[][] = []
 
     // Root group
     const rootExp = parsedExpands.get(BASE_PATH)!
@@ -1099,8 +1091,8 @@ export class RemoteJoiner {
     while (pending.length) {
       const prevDepth = stages.length - 1
       const prevKeys = placedByDepthKeys[prevDepth] || new Set()
-      const stageGroups = new Map<string, Group>()
-      const nextPending: Entry[] = []
+      const stageGroups = new Map<string, ExecutionStage>()
+      const nextPending: any[] = []
 
       for (const item of pending) {
         const parentKey = item.parentService!
@@ -1121,6 +1113,10 @@ export class RemoteJoiner {
         stageGroups.get(key)!.paths.push(item.path)
       }
 
+      if (!stageGroups.size) {
+        throw new Error("Something went wrong")
+      }
+
       stages.push(Array.from(stageGroups.values()))
       placedByDepthKeys.push(new Set(stageGroups.keys()))
       pending.length = 0
@@ -1128,7 +1124,7 @@ export class RemoteJoiner {
     }
 
     const root = parsedExpands.get(BASE_PATH)!
-    root.globalExecutionStages = stages
+    root.executionStages = stages
   }
 
   private parseProperties(params: {
