@@ -9,6 +9,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   arrayDifference,
+  CommonEvents,
   EmitEvents,
   generateEntityId,
   generateJwtToken,
@@ -146,7 +147,7 @@ export default class UserModuleService
     moduleEventBuilderFactory({
       eventName: UserEvents.INVITE_TOKEN_GENERATED,
       source: Modules.USER,
-      action: "token_generated",
+      action: CommonEvents.UPDATED,
       object: "invite",
     })({
       data: serializedInvites,
@@ -280,7 +281,7 @@ export default class UserModuleService
     moduleEventBuilderFactory({
       eventName: UserEvents.INVITE_TOKEN_GENERATED,
       source: Modules.USER,
-      action: "token_generated",
+      action: CommonEvents.CREATED,
       object: "invite",
     })({
       data: serializedInvites,
@@ -355,7 +356,7 @@ export default class UserModuleService
     moduleEventBuilderFactory({
       eventName: UserEvents.INVITE_TOKEN_GENERATED,
       source: Modules.USER,
-      action: "token_generated",
+      action: CommonEvents.UPDATED,
       object: "invite",
     })({
       data: serializedInvites,

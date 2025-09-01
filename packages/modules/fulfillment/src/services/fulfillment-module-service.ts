@@ -1839,9 +1839,6 @@ export default class FulfillmentModuleService
       )
 
     const updatedLabelIds: string[] = []
-    // let deletedLabelIds: string[] = []
-
-    // const existingLabelIds = existingFulfillment.labels.map((label) => label.id)
 
     /**
      * @note
@@ -1854,12 +1851,6 @@ export default class FulfillmentModuleService
      * and we also need to emit the events later on.
      */
     if (isDefined(data.labels) && isPresent(data.labels)) {
-      // const dataLabelIds: string[] = data.labels
-      //   .filter((label): label is { id: string } => "id" in label)
-      //   .map((label) => label.id)
-
-      // deletedLabelIds = arrayDifference(existingLabelIds, dataLabelIds)
-
       for (let label of data.labels) {
         if (!("id" in label)) {
           continue
