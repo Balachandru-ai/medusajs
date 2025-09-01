@@ -42,6 +42,7 @@ import { TaxRate } from "./tax-rate"
 import { TaxRegion } from "./tax-region"
 import { Upload } from "./upload"
 import { User } from "./user"
+import { Views } from "./views"
 import { WorkflowExecution } from "./workflow-execution"
 import { ShippingOptionType } from "./shipping-option-type"
 
@@ -226,6 +227,10 @@ export class Admin {
    * @tags plugin
    */
   public plugin: Plugin
+  /**
+   * @tags views
+   */
+  public views: Views
 
   constructor(client: Client) {
     this.invite = new Invite(client)
@@ -273,5 +278,6 @@ export class Admin {
     this.campaign = new Campaign(client)
     this.plugin = new Plugin(client)
     this.taxProvider = new TaxProvider(client)
+    this.views = new Views(client)
   }
 }

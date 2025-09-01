@@ -1,5 +1,21 @@
 # @medusajs/pricing
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13258](https://github.com/medusajs/medusa/pull/13258) [`06ef9197f825c78b9d8d3e1f4f3a0ca995853331`](https://github.com/medusajs/medusa/commit/06ef9197f825c78b9d8d3e1f4f3a0ca995853331) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(pricing): Fix excessive db queries during price sets update
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
 ## 2.9.0
 
 ### Minor Changes

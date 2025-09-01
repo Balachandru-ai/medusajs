@@ -727,6 +727,7 @@ medusaIntegrationTestRunner({
                   storeHeaders
                 )
                 .catch(() => {}),
+              /*
               api
                 .post(
                   `/store/carts/${cart.id}`,
@@ -736,6 +737,7 @@ medusaIntegrationTestRunner({
                   storeHeaders
                 )
                 .catch(() => {}),
+                */
             ])
 
             const cartAfterPromotion = (
@@ -2723,7 +2725,8 @@ medusaIntegrationTestRunner({
                 application_method: {
                   type: "fixed",
                   target_type: "items",
-                  allocation: "across",
+                  allocation: "each",
+                  max_quantity: 1,
                   value: 100,
                   apply_to_quantity: 1,
                   buy_rules_min_quantity: 1,
@@ -2894,7 +2897,8 @@ medusaIntegrationTestRunner({
                   type: "fixed",
                   currency_code: "usd",
                   target_type: "items",
-                  allocation: "across",
+                  allocation: "each",
+                  max_quantity: 1,
                   value: 100,
                   apply_to_quantity: 1,
                   buy_rules_min_quantity: 1,

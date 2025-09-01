@@ -823,6 +823,8 @@ export const ShippingOptionTypeWorkflowEvents = {
   /**
    * Emitted when shipping option types are updated.
    *
+   * @since 2.10.0
+   *
    * @eventPayload
    * ```ts
    * [{
@@ -834,6 +836,8 @@ export const ShippingOptionTypeWorkflowEvents = {
   /**
    * Emitted when shipping option types are created.
    *
+   * @since 2.10.0
+   *
    * @eventPayload
    * ```ts
    * [{
@@ -844,6 +848,8 @@ export const ShippingOptionTypeWorkflowEvents = {
   CREATED: "shipping-option-type.created",
   /**
    * Emitted when shipping option types are deleted.
+   *
+   * @since 2.10.0
    *
    * @eventPayload
    * ```ts
