@@ -68,6 +68,27 @@ export function validateApplicationMethodAttributes(
         `buy_rules_min_quantity is a required field for Promotion type of ${PromotionType.BUYGET}`
       )
     }
+
+    if (!isPresent(maxQuantity)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `application_method.max_quantity is a required field for Promotion type of ${PromotionType.BUYGET}`
+      )
+    }
+
+    if (!isPresent(applyToQuantity)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `application_method.apply_to_quantity is a required field for Promotion type of ${PromotionType.BUYGET}`
+      )
+    }
+
+    if (MathBN.lt(maxQuantity!, applyToQuantity!)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `max_quantity (${maxQuantity}) must be greater than or equal to apply_to_quantity (${applyToQuantity}) for BUYGET promotions.`
+      )
+    }
   }
 
   if (

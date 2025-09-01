@@ -114,12 +114,18 @@ tags:
       another.
 
 
-      These API routes allow admin users t create and manage exchanges.
+      These API routes allow admin users to create and manage exchanges.
     externalDocs:
       description: Learn more about the order exchanges.
       url: https://docs.medusajs.com/resources/commerce-modules/order/exchange
     x-associatedSchema:
       $ref: "#/components/schemas/AdminExchange"
+  - name: Feature Flags
+    description: >
+      Feature flags are used to enable or disable certain features in your Medusa
+      application.
+
+      These API routes allow admin users to view feature flags.
   - name: Fulfillment Providers
     description: >
       A fulfillment provider is a third-party integration or custom logic used
@@ -161,10 +167,10 @@ tags:
       $ref: "#/components/schemas/AdminFulfillment"
   - name: Gift Cards
     description: >
-      A gift card is a prepaid card that can be used to pay for items during checkout.
+      A gift card is a prepaid card that can be used to pay for items during
+      checkout.
 
-      Gift cards can be purchased by customers, or created by admin users. When a gift card is redeemed, its amount
-      is added to the customer's store credit account, which can then be used to pay for items during checkout.
+      Gift cards can be purchased by customers, or created by admin users. When a gift card is redeemed, its amount is added to the customer's store credit account, which can then be used to pay for items during checkout.
 
       These API routes allow admin users to manage gift cards, transfer gift cards between customers, and more.
 
@@ -471,6 +477,17 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/sales-channel
     x-associatedSchema:
       $ref: "#/components/schemas/AdminSalesChannel"
+  - name: Shipping Option Types
+    x-associatedSchema:
+      $ref: "#/components/schemas/AdminShippingOptionType"
+    description: >
+      Shipping option types define a group of shipping options with shared shipping characterstics. For example, 
+      you may have "Standard" and "Express" shipping option types.
+
+      These API routes allow admins to manage shipping option types.
+    externalDocs:
+      description: Learn more about shipping option types.
+      url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profiles-and-types
   - name: Shipping Options
     description: >
       A shipping option is a way of shipping an item to or from the customer.
@@ -520,8 +537,9 @@ tags:
       $ref: "#/components/schemas/AdminStockLocation"
   - name: Store Credit Accounts
     description: >
-      A store credit account is a ledger of store credit transactions for a customer. They hold the customer's store credit balance, 
-      including their credit and debit amounts.
+      A store credit account is a ledger of store credit transactions for a
+      customer. They hold the customer's store credit balance,  including their
+      credit and debit amounts.
 
       Store credit accounts allow you to build features that let customers pay for items using their store credit balance, such as gift cards or loyalty points.
 
@@ -592,8 +610,9 @@ tags:
       $ref: "#/components/schemas/AdminTaxRegion"
   - name: Transaction Groups
     description: >
-      A transaction group is a group of transactions that belong to a store credit account.
-      It allows you to group transactions together, such as all transactions related to a specific gift card.
+      A transaction group is a group of transactions that belong to a store
+      credit account. It allows you to group transactions together, such as all
+      transactions related to a specific gift card.
 
       These API routes allow admin users to list transaction groups.
 

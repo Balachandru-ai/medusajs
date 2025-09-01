@@ -8,7 +8,7 @@ import { Context, LoadedModule, MedusaContainer } from "@medusajs/types"
 
 type BaseFlowRunOptions = {
   context?: Context
-  resultFrom?: string | string[] | Symbol
+  resultFrom?: string | Symbol
   throwOnError?: boolean
   logOnError?: boolean
   events?: DistributedTransactionEvents
@@ -29,6 +29,7 @@ export type FlowRegisterStepFailureOptions<TData = unknown> =
   BaseFlowRunOptions & {
     idempotencyKey: string
     response?: TData
+    forcePermanentFailure?: boolean
   }
 
 export type FlowCancelOptions = {

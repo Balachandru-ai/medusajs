@@ -11,6 +11,7 @@ import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 
 const AND_OPERATOR = "$and"
 const OR_OPERATOR = "$or"
+const NOT_OPERATOR = "$not"
 
 function escapeJsonPathString(val: string): string {
   // Escape for JSONPath string
@@ -23,10 +24,15 @@ function buildSafeJsonPathQuery(
   value: any
 ): string {
   let jsonPathOperator = operator
+  let caseInsensitiveFlag = ""
   if (operator === "=") {
     jsonPathOperator = "=="
   } else if (operator.toUpperCase().includes("LIKE")) {
     jsonPathOperator = "like_regex"
+
+    if (operator.toUpperCase() === "ILIKE") {
+      caseInsensitiveFlag = ' flag "i"'
+    }
   } else if (operator === "IS") {
     jsonPathOperator = "=="
   } else if (operator === "IS NOT") {
@@ -46,7 +52,7 @@ function buildSafeJsonPathQuery(
     }
   }
 
-  return `$.${field} ${jsonPathOperator} ${value}`
+  return `$.${field} ${jsonPathOperator} ${value}${caseInsensitiveFlag}`
 }
 
 export const OPERATOR_MAP = {
@@ -57,6 +63,7 @@ export const OPERATOR_MAP = {
   $gte: ">=",
   $ne: "!=",
   $in: "IN",
+  $nin: "NOT IN",
   $is: "IS",
   $like: "LIKE",
   $ilike: "ILIKE",
@@ -104,6 +111,10 @@ export class QueryBuilder {
     this.idsOnly = args.idsOnly ?? false
   }
 
+  private isLogicalOperator(key: string) {
+    return key === AND_OPERATOR || key === OR_OPERATOR || key === NOT_OPERATOR
+  }
+
   private getStructureKeys(structure) {
     const collectKeys = (obj: any, keys = new Set<string>()) => {
       if (!isObject(obj)) {
@@ -111,7 +122,7 @@ export class QueryBuilder {
       }
 
       Object.keys(obj).forEach((key) => {
-        if (key === AND_OPERATOR || key === OR_OPERATOR) {
+        if (this.isLogicalOperator(key)) {
           if (Array.isArray(obj[key])) {
             obj[key].forEach((item) => collectKeys(item, keys))
           }
@@ -144,7 +155,7 @@ export class QueryBuilder {
   }
 
   private getGraphQLType(path, field) {
-    if (field === AND_OPERATOR || field === OR_OPERATOR) {
+    if (this.isLogicalOperator(field)) {
       return "JSON"
     }
 
@@ -269,12 +280,11 @@ export class QueryBuilder {
 
     keys.forEach((key) => {
       const pathAsArray = (parentPath ? `${parentPath}.${key}` : key).split(".")
-      const fieldOrLogicalOperator = pathAsArray.pop()
+      const fieldOrLogicalOperator = pathAsArray.pop()!
       let value = obj[key]
 
       if (
-        (fieldOrLogicalOperator === AND_OPERATOR ||
-          fieldOrLogicalOperator === OR_OPERATOR) &&
+        this.isLogicalOperator(fieldOrLogicalOperator) &&
         !Array.isArray(value)
       ) {
         value = [value]
@@ -310,10 +320,34 @@ export class QueryBuilder {
           })
         })
       } else if (
+        fieldOrLogicalOperator === NOT_OPERATOR &&
+        (Array.isArray(value) || isObject(value))
+      ) {
+        builder.whereNot((qb) => {
+          if (Array.isArray(value)) {
+            value.forEach((cond) => {
+              qb.andWhere((subBuilder) =>
+                this.parseWhere(
+                  aliasMapping,
+                  cond,
+                  subBuilder,
+                  pathAsArray.join(".")
+                )
+              )
+            })
+          } else {
+            this.parseWhere(
+              aliasMapping,
+              value as any,
+              qb,
+              pathAsArray.join(".")
+            )
+          }
+        })
+      } else if (
         isObject(value) &&
         !Array.isArray(value) &&
-        fieldOrLogicalOperator !== AND_OPERATOR &&
-        fieldOrLogicalOperator !== OR_OPERATOR
+        !this.isLogicalOperator(fieldOrLogicalOperator)
       ) {
         const currentPath = parentPath ? `${parentPath}.${key}` : key
 
@@ -335,7 +369,10 @@ export class QueryBuilder {
                 value[subKey]
               )
 
-              let val = operator === "IN" ? subValue : [subValue]
+              let val =
+                operator === "IN" || operator === "NOT IN"
+                  ? subValue
+                  : [subValue]
               if (operator === "=" && subValue === null) {
                 operator = "IS"
               } else if (operator === "!=" && subValue === null) {
@@ -355,7 +392,7 @@ export class QueryBuilder {
                     )}'::jsonb`
                   )
                 }
-              } else if (operator === "IN") {
+              } else if (operator === "IN" || operator === "NOT IN") {
                 if (val && !Array.isArray(val)) {
                   val = [val]
                 }
@@ -365,9 +402,12 @@ export class QueryBuilder {
 
                 const inPlaceholders = val.map(() => "?").join(",")
                 const hasId = field[field.length - 1] === "id"
+                const isNegated = operator === "NOT IN"
                 if (hasId) {
                   builder.whereRaw(
-                    `${aliasMapping[attr]}.id IN (${inPlaceholders})`,
+                    `${aliasMapping[attr]}.id ${
+                      isNegated ? "NOT IN" : "IN"
+                    } (${inPlaceholders})`,
                     val
                   )
                 } else {
@@ -379,10 +419,17 @@ export class QueryBuilder {
                     })
                   )
 
-                  builder.whereRaw(
-                    `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
-                    jsonbValues
-                  )
+                  if (isNegated) {
+                    builder.whereRaw(
+                      `NOT EXISTS (SELECT 1 FROM unnest(ARRAY[${inPlaceholders}]::JSONB[]) AS v(val) WHERE ${aliasMapping[attr]}.data${nested} @> v.val)`,
+                      jsonbValues
+                    )
+                  } else {
+                    builder.whereRaw(
+                      `${aliasMapping[attr]}.data${nested} @> ANY(ARRAY[${inPlaceholders}]::JSONB[])`,
+                      jsonbValues
+                    )
+                  }
                 }
               } else {
                 const potentialIdFields = field[field.length - 1]

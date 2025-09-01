@@ -48,6 +48,13 @@ type RegisterStepSuccessOptions<T> = Omit<
   "transactionId" | "input"
 >
 
+type RegisterStepFailureOptions<T> = Omit<
+  WorkflowOrchestratorRunOptions<T>,
+  "transactionId" | "input"
+> & {
+  forcePermanentFailure?: boolean
+}
+
 type IdempotencyKeyParts = {
   workflowId: string
   transactionId: string
@@ -493,7 +500,7 @@ export class WorkflowOrchestratorService {
   }: {
     idempotencyKey: string | IdempotencyKeyParts
     stepResponse: unknown
-    options?: RegisterStepSuccessOptions<T>
+    options?: RegisterStepFailureOptions<T>
   }) {
     const {
       context,
@@ -501,6 +508,7 @@ export class WorkflowOrchestratorService {
       resultFrom,
       container,
       events: eventHandlers,
+      forcePermanentFailure,
     } = options ?? {}
 
     let { throwOnError } = options ?? {}
@@ -529,6 +537,7 @@ export class WorkflowOrchestratorService {
       events,
       response: stepResponse,
       container: container ?? this.container_,
+      forcePermanentFailure,
     })
 
     if (ret.transaction.hasFinished()) {
