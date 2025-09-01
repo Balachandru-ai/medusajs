@@ -12,7 +12,6 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-  DragStartEvent,
 } from "@dnd-kit/core"
 import {
   arrayMove,
@@ -50,7 +49,6 @@ const DataTableTable = (props: DataTableTableProps) => {
 
   const [showStickyBorder, setShowStickyBorder] = React.useState(false)
   const scrollableRef = React.useRef<HTMLDivElement>(null)
-  const [activeId, setActiveId] = React.useState<string | null>(null)
 
   const { instance } = useDataTableContext()
 
@@ -82,10 +80,6 @@ const DataTableTable = (props: DataTableTableProps) => {
     })
   )
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string)
-  }
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
@@ -95,13 +89,11 @@ const DataTableTable = (props: DataTableTableProps) => {
 
       // Don't allow dragging fixed columns
       if (activeId === "select" || activeId === "action") {
-        setActiveId(null)
         return
       }
 
       // Don't allow dropping on fixed columns
       if (overId === "select" || overId === "action") {
-        setActiveId(null)
         return
       }
 
@@ -118,8 +110,6 @@ const DataTableTable = (props: DataTableTableProps) => {
         instance.setColumnOrderFromArray(newOrder)
       }
     }
-
-    setActiveId(null)
   }
 
   React.useEffect(() => {
@@ -184,7 +174,6 @@ const DataTableTable = (props: DataTableTableProps) => {
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
             <div
