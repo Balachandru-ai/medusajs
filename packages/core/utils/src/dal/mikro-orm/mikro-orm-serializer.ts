@@ -18,12 +18,12 @@ import {
 } from "@mikro-orm/core"
 
 const STATIC_OPTIONS_SHAPE: {
-  populate?: string[] | boolean
-  exclude?: string[]
-  preventCircularRef?: boolean
-  skipNull?: boolean
-  ignoreSerializers?: boolean
-  forceObject?: boolean
+  populate: string[] | boolean | undefined
+  exclude: string[] | undefined
+  preventCircularRef: boolean | undefined
+  skipNull: boolean | undefined
+  ignoreSerializers: boolean | undefined
+  forceObject: boolean | undefined
 } = {
   populate: ["*"],
   exclude: undefined,
@@ -177,16 +177,12 @@ export class EntitySerializer {
   private static propertyCache = new Map<string, string>()
   private static PROPERTY_CACHE_SIZE = 2000
 
-  private static readonly EMPTY_PARENTS: string[] = []
-  private static readonly EMPTY_KEYS = new Set<string>()
-
   static serialize<T extends object, P extends string = never>(
     entity: T,
-    options = STATIC_OPTIONS_SHAPE,
+    options: Partial<typeof STATIC_OPTIONS_SHAPE> = STATIC_OPTIONS_SHAPE,
     parents: string[] = EMPTY_ARRAY
   ): EntityDTO<Loaded<T, P>> {
-    const parents_ =
-      parents.length > 0 ? Array.from(new Set(parents)) : this.EMPTY_PARENTS
+    const parents_ = parents.length > 0 ? Array.from(new Set(parents)) : []
 
     const wrapped = helper(entity)
     const meta = wrapped.__meta
@@ -209,8 +205,7 @@ export class EntitySerializer {
 
     const ret = {} as EntityDTO<Loaded<T, P>>
 
-    const keys = this.EMPTY_KEYS
-    keys.clear()
+    const keys = new Set<string>()
 
     const primaryKeys = meta.primaryKeys
     const primaryKeysLen = primaryKeys.length
@@ -290,6 +285,7 @@ export class EntitySerializer {
 
     for (let i = 0; i < metaPropsLen; i++) {
       const prop = metaProps[i]
+
       if (
         prop.getter &&
         prop.getterName === undefined &&
@@ -299,10 +295,7 @@ export class EntitySerializer {
         ret[this.propertyName(meta, prop.name, platform)] =
           this.processProperty(prop.name, entity, options, parents_)
       }
-    }
 
-    for (let i = 0; i < metaPropsLen; i++) {
-      const prop = metaProps[i]
       if (
         prop.getterName &&
         (entity[prop.getterName] as unknown) instanceof Function &&
@@ -346,8 +339,11 @@ export class EntitySerializer {
     }
 
     if (this.propertyCache.size >= this.PROPERTY_CACHE_SIZE) {
-      this.propertyCache.clear()
+      // remove the first item
+      const firstKey = this.propertyCache.keys().next().value
+      this.propertyCache.delete(firstKey)
     }
+
     this.propertyCache.set(cacheKey, result)
 
     return result
@@ -558,10 +554,12 @@ export class EntitySerializer {
 
 export const mikroOrmSerializer = <TOutput extends object>(
   data: any,
-  options?: Parameters<typeof EntitySerializer.serialize>[1] & {
-    preventCircularRef?: boolean
-    populate?: string[] | boolean
-  }
+  options?: Partial<
+    Parameters<typeof EntitySerializer.serialize>[1] & {
+      preventCircularRef: boolean | undefined
+      populate: string[] | boolean | undefined
+    }
+  >
 ): Promise<TOutput> => {
   return new Promise<TOutput>((resolve) => {
     // Use the shared reference directly (this gives you the speedup)
