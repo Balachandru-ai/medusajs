@@ -845,6 +845,8 @@ export class RemoteJoiner {
       paths: string[]
       depth: number
     }[][] = root?.globalExecutionStages
+    // remove root
+    root?.globalExecutionStages.shift()
 
     for (const stage of globalExecutionStages) {
       await Promise.all(
@@ -861,11 +863,8 @@ export class RemoteJoiner {
           }[] = []
 
           for (const path of paths) {
-            console.log(path, " ==================")
             const expand = parsedExpands.get(path)!
             const nestedItems = getItemsForPath(items, path)
-
-            console.log({ nestedItems }, JSON.stringify(items, null, 2))
 
             if (!nestedItems?.length) {
               continue
@@ -876,8 +875,6 @@ export class RemoteJoiner {
               property: expand.property,
               entity: expand.entity,
             })
-
-            console.log({ relationship })
 
             if (!relationship) {
               continue
@@ -922,8 +919,6 @@ export class RemoteJoiner {
             )
             const unionArgs = ctxs.flatMap((c) => c.expand.args ?? [])
 
-            console.log(" FIELDS", unionFields)
-
             const base = ctxs[0].expand
             const aggExpand: RemoteExpandProperty = {
               ...base,
@@ -937,7 +932,6 @@ export class RemoteJoiner {
             // Use first relationship for fetch (pkField matches across the group)
             const relationship = ctxs[0].relationship
 
-            // Perform a single fetch
             const relatedDataArray = await this.fetchData({
               expand: aggExpand,
               pkField,
@@ -973,10 +967,6 @@ export class RemoteJoiner {
           }
         })
       )
-
-      // console.log(
-      //   ` END STAGE EXECUTION ==============================================`
-      // )
     }
 
     if (implodeMapping.length > 0) {
