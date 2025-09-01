@@ -2,4 +2,4 @@
 "@medusajs/dashboard": patch
 ---
 
-fix(dashboard): pormotion decimal value definition
+fix(dashboard): promotion decimal value definition
