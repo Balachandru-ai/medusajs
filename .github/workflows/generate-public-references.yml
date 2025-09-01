@@ -292,13 +292,13 @@ jobs:
         run: yarn generate:ui
         working-directory: www/utils/packages/react-docs-generator
 
-      - name: Generate Colors
-        run: yarn copy-colors
-        working-directory: www/apps/ui
-
       - name: Update Medusa Dependencies
         run: yarn up:medusa
         working-directory: www
+
+      - name: Generate Colors
+        run: yarn prep
+        working-directory: www/apps/ui
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
@@ -308,8 +308,8 @@ jobs:
           title: "chore(docs): Updated UI Reference (automated)"
           labels: "type: chore"
           add-paths: |
-            www/apps/ui/src/specs
-            www/apps/ui/src/config/colors.ts
+            www/apps/ui/specs
+            www/apps/ui/config/colors.ts
             www/**/package.json
             www/yarn.lock
           branch: "docs/generate-ui-ref"

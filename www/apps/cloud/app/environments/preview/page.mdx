@@ -61,6 +61,18 @@ To log into the Medusa Admin of the preview environment, use the admin credentia
 
 You can also [send requests to the preview deployment's API](../../deployments/page.mdx#send-requests-to-the-deployment).
 
+### Preview URL Format
+
+Medusa generates the preview environment URL by:
+
+- Taking the first `42` characters of the PR's branch name.
+- Appending a dash (`-`) followed by the project's handle.
+    - You can find the project's handle in the project dashboard's URL, which is of the format `cloud.medusajs.com/:org_id/projects/:project_handle`.
+- Removing unsafe characters.
+- Adding the `medusajs.app` subdomain.
+
+For example, if your PR's branch name is `feat/product-review` and the project's handle is `m1234`, the URL of the deployed preview environment would be `https://featproduct-review-m1234.medusajs.app`.
+
 ---
 
 ## Open Preview Environment Dashboard

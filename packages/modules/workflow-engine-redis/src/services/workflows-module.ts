@@ -250,7 +250,9 @@ export class WorkflowsModuleService<
     }: {
       idempotencyKey: string | object
       stepResponse: unknown
-      options?: Record<string, any>
+      options?: Record<string, any> & {
+        forcePermanentFailure?: boolean
+      }
     },
     @MedusaContext() context: Context = {}
   ) {

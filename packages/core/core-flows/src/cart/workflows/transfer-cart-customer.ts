@@ -1,3 +1,4 @@
+import { CartWorkflowEvents } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -9,7 +10,6 @@ import {
 import { emitEventStep, useQueryGraphStep } from "../../common"
 import { updateCartsStep } from "../steps"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
-import { CartWorkflowEvents } from "@medusajs/framework/utils"
 
 /**
  * The cart ownership transfer details.
@@ -49,7 +49,10 @@ export const transferCartCustomerWorkflowId = "transfer-cart-customer"
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const transferCartCustomerWorkflow = createWorkflow(
-  transferCartCustomerWorkflowId,
+  {
+    name: transferCartCustomerWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<TransferCartCustomerWorkflowInput>) => {
     const cartQuery = useQueryGraphStep({
       entity: "cart",
@@ -93,34 +96,33 @@ export const transferCartCustomerWorkflow = createWorkflow(
       ({ cart, customer }) => cart.customer?.id !== customer.id
     )
 
-    when({ shouldTransfer }, ({ shouldTransfer }) => shouldTransfer).then(
-      () => {
-        const cartInput = transform(
-          { cart, customer },
-          ({ cart, customer }) => [
-            {
-              id: cart.id,
-              customer_id: customer.id,
-              email: customer.email,
-            },
-          ]
-        )
+    when(
+      "should-transfer-cart",
+      { shouldTransfer },
+      ({ shouldTransfer }) => shouldTransfer
+    ).then(() => {
+      const cartInput = transform({ cart, customer }, ({ cart, customer }) => [
+        {
+          id: cart.id,
+          customer_id: customer.id,
+          email: customer.email,
+        },
+      ])
 
-        updateCartsStep(cartInput)
+      updateCartsStep(cartInput)
 
-        refreshCartItemsWorkflow.runAsStep({
-          input: { cart_id: input.id, force_refresh: true },
-        })
+      refreshCartItemsWorkflow.runAsStep({
+        input: { cart_id: input.id, force_refresh: true },
+      })
 
-        emitEventStep({
-          eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
-          data: {
-            id: input.id,
-            customer_id: customer.customer_id,
-          },
-        })
-      }
-    )
+      emitEventStep({
+        eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
+        data: {
+          id: input.id,
+          customer_id: customer.customer_id,
+        },
+      })
+    })
 
     return new WorkflowResponse(void 0, {
       hooks: [validate],

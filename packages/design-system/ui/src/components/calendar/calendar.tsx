@@ -21,11 +21,29 @@ import { CalendarButton } from "./calendar-button"
 import { CalendarGrid } from "./calendar-grid"
 
 interface CalendarValueProps {
+  /**
+   * The currently selected date.
+   */
   value?: Date | null
+  /**
+   * The date that is selected when the calendar first mounts (uncontrolled).
+   */
   defaultValue?: Date | null
+  /**
+   * A function that is triggered when the selected date changes.
+   */
   onChange?: (value: Date | null) => void
+  /**
+   * A function that determines whether a date is unavailable for selection.
+   */
   isDateUnavailable?: (date: Date) => boolean
+  /**
+   * The minimum date that can be selected.
+   */
   minValue?: Date
+  /**
+   * The maximum date that can be selected.
+   */
   maxValue?: Date
 }
 
@@ -36,6 +54,8 @@ interface CalendarProps
 /**
  * Calendar component used to select a date.
  * Its props are based on [React Aria Calendar](https://react-spectrum.adobe.com/react-aria/Calendar.html#calendar-1).
+ * 
+ * @excludeExternal
  */
 const Calendar = (props: CalendarProps) => {
   const [value, setValue] = React.useState<CalendarDate  | null | undefined>(

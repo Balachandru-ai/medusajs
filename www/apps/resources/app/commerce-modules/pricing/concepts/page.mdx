@@ -6,11 +6,21 @@ export const metadata = {
 
 In this document, you’ll learn about the main concepts in the Pricing Module.
 
+## Price Data Model
+
+The [Price](/references/pricing/models/Price) data model represents a specific price for a resource. For example, the price of a product variant in the USD currency.
+
+The `Price` data model has an `amount` property that represents the monetary value of the price. It's stored as an integer in base units. For example, `$20.00` is stored as `20`.
+
+The `Price` data model belongs to other data models like `PriceSet` and `PriceList` to provide a variety of pricing features, as explained below.
+
+---
+
 ## Price Set
 
-A [PriceSet](/references/pricing/models/PriceSet) represents a collection of prices that are linked to a resource (for example, a product or a shipping option).
+A [PriceSet](/references/pricing/models/PriceSet) represents a collection of prices that are linked to a resource (for example, a product variant or a shipping option).
 
-Each of these prices are represented by the [Price data module](/references/pricing/models/Price).
+Each of these prices is represented by the [Price data model](/references/pricing/models/Price).
 
 ![A diagram showcasing the relation between the price set and price](https://res.cloudinary.com/dza7lstvk/image/upload/v1709648650/Medusa%20Resources/price-set-money-amount_xeees0.jpg)
 

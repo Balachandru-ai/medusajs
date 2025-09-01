@@ -1,8 +1,13 @@
-import { dynamicImport, promiseAll, readDirRecursive } from "@medusajs/utils"
+import { Logger, MedusaContainer } from "@medusajs/types"
+import {
+  ContainerRegistrationKeys,
+  dynamicImport,
+  promiseAll,
+  readDirRecursive,
+} from "@medusajs/utils"
 import { Dirent } from "fs"
 import { access } from "fs/promises"
 import { join, parse } from "path"
-import { logger } from "../logger"
 
 export abstract class ResourceLoader {
   /**
@@ -22,8 +27,11 @@ export abstract class ResourceLoader {
    */
   #excludes: RegExp[] = [/^_[^/\\]*(\.[^/\\]+)?$/]
 
-  constructor(sourceDir: string | string[]) {
+  protected logger: Logger
+
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
     this.#sourceDir = sourceDir
+    this.logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   }
 
   /**
@@ -61,7 +69,7 @@ export abstract class ResourceLoader {
       try {
         await access(sourcePath)
       } catch {
-        logger.info(
+        this.logger.info(
           `No ${this.resourceName} to load from ${sourcePath}. skipped.`
         )
         return
@@ -86,7 +94,7 @@ export abstract class ResourceLoader {
     })
 
     const resources = await promiseAll(promises)
-    return resources.flat()
+    return resources.flat().filter(Boolean)
   }
 
   /**

@@ -288,6 +288,7 @@ export const CreatePromotionForm = () => {
   })
 
   const isTypeStandard = watchType === "standard"
+  const isTypeBuyGet = watchType === "buyget"
 
   const targetType = useWatch({
     control: form.control,
@@ -678,60 +679,62 @@ export const CreatePromotionForm = () => {
 
                   <RulesFormField form={form} ruleType={"rules"} />
 
-                  <Divider />
-
                   {!currentTemplate?.hiddenFields?.includes(
                     "application_method.type"
                   ) && (
-                    <Form.Field
-                      control={form.control}
-                      name="application_method.type"
-                      render={({ field }) => {
-                        return (
-                          <Form.Item>
-                            <Form.Label>
-                              {t("promotions.fields.value_type")}
-                            </Form.Label>
-                            <Form.Control>
-                              <RadioGroup
-                                className="flex gap-y-3"
-                                {...field}
-                                onValueChange={field.onChange}
-                              >
-                                <RadioGroup.ChoiceBox
-                                  value={"fixed"}
-                                  label={t(
-                                    "promotions.form.value_type.fixed.title"
-                                  )}
-                                  description={t(
-                                    "promotions.form.value_type.fixed.description"
-                                  )}
-                                  className={clx("basis-1/2")}
-                                />
+                    <>
+                      <Divider />
+                      <Form.Field
+                        control={form.control}
+                        name="application_method.type"
+                        render={({ field }) => {
+                          return (
+                            <Form.Item>
+                              <Form.Label>
+                                {t("promotions.fields.value_type")}
+                              </Form.Label>
+                              <Form.Control>
+                                <RadioGroup
+                                  className="flex gap-y-3"
+                                  {...field}
+                                  onValueChange={field.onChange}
+                                >
+                                  <RadioGroup.ChoiceBox
+                                    value={"fixed"}
+                                    label={t(
+                                      "promotions.form.value_type.fixed.title"
+                                    )}
+                                    description={t(
+                                      "promotions.form.value_type.fixed.description"
+                                    )}
+                                    className={clx("basis-1/2")}
+                                  />
 
-                                <RadioGroup.ChoiceBox
-                                  value={"percentage"}
-                                  label={t(
-                                    "promotions.form.value_type.percentage.title"
-                                  )}
-                                  description={t(
-                                    "promotions.form.value_type.percentage.description"
-                                  )}
-                                  className={clx("basis-1/2")}
-                                />
-                              </RadioGroup>
-                            </Form.Control>
-                            <Form.ErrorMessage />
-                          </Form.Item>
-                        )
-                      }}
-                    />
+                                  <RadioGroup.ChoiceBox
+                                    value={"percentage"}
+                                    label={t(
+                                      "promotions.form.value_type.percentage.title"
+                                    )}
+                                    description={t(
+                                      "promotions.form.value_type.percentage.description"
+                                    )}
+                                    className={clx("basis-1/2")}
+                                  />
+                                </RadioGroup>
+                              </Form.Control>
+                              <Form.ErrorMessage />
+                            </Form.Item>
+                          )
+                        }}
+                      />
+                    </>
                   )}
 
-                  <div className="flex gap-x-2 gap-y-4">
-                    {!currentTemplate?.hiddenFields?.includes(
-                      "application_method.value"
-                    ) && (
+                  {!currentTemplate?.hiddenFields?.includes(
+                    "application_method.value"
+                  ) && (
+                    <>
+                      <Divider />
                       <Form.Field
                         control={form.control}
                         name="application_method.value"
@@ -806,9 +809,17 @@ export const CreatePromotionForm = () => {
                           )
                         }}
                       />
-                    )}
+                    </>
+                  )}
 
-                    {isTypeStandard && watchAllocation === "each" && (
+                  {((isTypeStandard && watchAllocation === "each") ||
+                    isTypeBuyGet) && (
+                    <>
+                      {isTypeBuyGet && (
+                        <>
+                          <Divider />
+                        </>
+                      )}
                       <Form.Field
                         control={form.control}
                         name="application_method.max_quantity"
@@ -846,8 +857,8 @@ export const CreatePromotionForm = () => {
                           )
                         }}
                       />
-                    )}
-                  </div>
+                    </>
+                  )}
 
                   {isTypeStandard &&
                     !currentTemplate?.hiddenFields?.includes(
@@ -901,6 +912,7 @@ export const CreatePromotionForm = () => {
 
                   {!isTypeStandard && (
                     <>
+                      <Divider />
                       <RulesFormField
                         form={form}
                         ruleType={"buy-rules"}

@@ -26,6 +26,10 @@ export interface AdminGetReservationsParams {
    */
   line_item_id?: string | string[]
   /**
+   * Sort the reservations by the given field.
+   */
+  order_id?: string | string[]
+  /**
    * Filter by the ID(s) of the user(s) to retrieve the
    * reservations they created.
    */

@@ -5,7 +5,7 @@ import { featureFlagsLoader } from "@medusajs/framework/feature-flags"
 import { expressLoader } from "@medusajs/framework/http"
 import { JobLoader } from "@medusajs/framework/jobs"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { SubscriberLoader } from "@medusajs/framework/subscribers"
 import {
   ConfigModule,
@@ -46,7 +46,10 @@ const shouldLoadBackgroundProcessors = (configModule) => {
   )
 }
 
-async function subscribersLoader(plugins: PluginDetails[]) {
+async function subscribersLoader(
+  plugins: PluginDetails[],
+  container: MedusaContainer
+) {
   const pluginSubscribersSourcePaths = [
     /**
      * Load subscribers from the medusa/medusa package. Remove once the medusa core is converted to a plugin
@@ -54,19 +57,26 @@ async function subscribersLoader(plugins: PluginDetails[]) {
     join(__dirname, "../subscribers"),
   ].concat(plugins.map((plugin) => join(plugin.resolve, "subscribers")))
 
-  const subscriberLoader = new SubscriberLoader(pluginSubscribersSourcePaths)
+  const subscriberLoader = new SubscriberLoader(
+    pluginSubscribersSourcePaths,
+    undefined,
+    container
+  )
   await subscriberLoader.load()
 }
 
-async function jobsLoader(plugins: PluginDetails[]) {
+async function jobsLoader(
+  plugins: PluginDetails[],
+  container: MedusaContainer
+) {
   const pluginJobSourcePaths = [
     /**
-     * Load jobs from the medusa/medusa package. Remove once the medusa core is converted to a plugin
+     * Load jobs from the medusa/medusa package. Remove once the medusa core is  converted to a plugin
      */
     join(__dirname, "../jobs"),
   ].concat(plugins.map((plugin) => join(plugin.resolve, "jobs")))
 
-  const jobLoader = new JobLoader(pluginJobSourcePaths)
+  const jobLoader = new JobLoader(pluginJobSourcePaths, container)
   await jobLoader.load()
 }
 
@@ -81,8 +91,8 @@ async function loadEntrypoints(
   )
 
   if (shouldLoadBackgroundProcessors(configModule)) {
-    await subscribersLoader(plugins)
-    await jobsLoader(plugins)
+    await subscribersLoader(plugins, container)
+    await jobsLoader(plugins, container)
   }
 
   if (isWorkerMode(configModule)) {
@@ -110,6 +120,7 @@ async function loadEntrypoints(
 
   const { shutdown } = await expressLoader({
     app: expressApp,
+    container,
   })
 
   await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
@@ -123,17 +134,24 @@ async function loadEntrypoints(
 }
 
 export async function initializeContainer(
-  rootDirectory: string
+  rootDirectory: string,
+  options?: {
+    skipDbConnection?: boolean
+  }
 ): Promise<MedusaContainer> {
-  await configLoader(rootDirectory, "medusa-config")
-  await featureFlagsLoader(join(__dirname, "feature-flags"))
+  const configDir = await configLoader(rootDirectory, "medusa-config")
+  await featureFlagsLoader(join(__dirname, ".."))
 
+  const customLogger = configDir.logger ?? defaultLogger
   container.register({
-    [ContainerRegistrationKeys.LOGGER]: asValue(logger),
+    [ContainerRegistrationKeys.LOGGER]: asValue(customLogger),
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
   })
 
-  await pgConnectionLoader()
+  if (!options?.skipDbConnection) {
+    await pgConnectionLoader()
+  }
+
   return container
 }
 
@@ -151,6 +169,7 @@ export default async ({
   const configModule = container.resolve(
     ContainerRegistrationKeys.CONFIG_MODULE
   )
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const plugins = await getResolvedPlugins(rootDirectory, configModule, true)
   mergePluginModules(configModule, plugins)
@@ -162,7 +181,7 @@ export default async ({
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   const {
     onApplicationStart,
@@ -173,7 +192,7 @@ export default async ({
   } = await new MedusaAppLoader().load()
 
   const workflowsSourcePaths = plugins.map((p) => join(p.resolve, "workflows"))
-  const workflowLoader = new WorkflowLoader(workflowsSourcePaths)
+  const workflowLoader = new WorkflowLoader(workflowsSourcePaths, container)
   await workflowLoader.load()
 
   const entrypointsShutdown = await loadEntrypoints(

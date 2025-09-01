@@ -17,13 +17,14 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useQueryGraphStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
  * The data to validate that the quantity of an existing item in an order can be updated in an order edit.
@@ -42,14 +43,14 @@ export type OrderEditUpdateItemQuantityValidationStepInput = {
 /**
  * This step validates that the quantity of an existing item in an order can be updated in an order edit.
  * If the order is canceled or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = orderEditUpdateItemQuantityValidationStep({
  *   order: {
@@ -78,12 +79,12 @@ export const orderEditUpdateItemQuantityWorkflowId =
 /**
  * This workflow updates the quantity of an existing item in an order's edit. It's used by the
  * [Update Order Item Quantity Admin API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsiditemsitemitem_id).
- * 
+ *
  * You can also use this workflow to remove an item from an order by setting its quantity to `0`.
- * 
- * You can use this workflow within your customizations or your own custom workflows, allowing you to update the quantity of an existing 
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to update the quantity of an existing
  * item in an order's edit in your custom flow.
- * 
+ *
  * @example
  * const { result } = await orderEditUpdateItemQuantityWorkflow(container)
  * .run({
@@ -97,9 +98,9 @@ export const orderEditUpdateItemQuantityWorkflowId =
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update or remove an existing order item's quantity in the order's edit.
  */
 export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
@@ -107,25 +108,34 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.OrderEditUpdateItemQuantityWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: ["id", "status", "canceled_at", "items.*"],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "order-query" })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
-      fields: ["id", "status"],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
+    })
+
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
+      fields: ["id", "status", "version", "actions.*"],
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     orderEditUpdateItemQuantityValidationStep({
       order,

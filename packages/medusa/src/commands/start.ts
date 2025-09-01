@@ -1,25 +1,26 @@
+import { track } from "@medusajs/telemetry"
+import cluster from "cluster"
+import express from "express"
+import http from "http"
+import { scheduleJob } from "node-schedule"
 import os from "os"
 import path from "path"
-import http from "http"
-import express from "express"
-import cluster from "cluster"
-import { track } from "@medusajs/telemetry"
-import { scheduleJob } from "node-schedule"
 
 import {
+  ContainerRegistrationKeys,
   dynamicImport,
   FileSystem,
+  generateContainerTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
+  isFileSkipped,
   isPresent,
-  generateContainerTypes,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
-import loaders from "../loaders"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import { parse } from "url"
+import loaders, { initializeContainer } from "../loaders"
 
 const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
@@ -32,6 +33,11 @@ const INSTRUMENTATION_FILE = "instrumentation"
  * errors.
  */
 export async function registerInstrumentation(directory: string) {
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   const fileSystem = new FileSystem(directory)
   const exists =
     (await fileSystem.exists(`${INSTRUMENTATION_FILE}.ts`)) ||
@@ -43,7 +49,11 @@ export async function registerInstrumentation(directory: string) {
   const instrumentation = await dynamicImport(
     path.join(directory, INSTRUMENTATION_FILE)
   )
-  if (typeof instrumentation.register === "function") {
+
+  if (
+    typeof instrumentation.register === "function" &&
+    !isFileSkipped(instrumentation)
+  ) {
     logger.info("OTEL registered")
     instrumentation.register()
   } else {
@@ -77,10 +87,10 @@ function displayAdminUrl({
     return
   }
 
-  const logger = container.resolve("logger")
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const {
     admin: { path: adminPath, disable },
-  } = container.resolve("configModule")
+  } = container.resolve(ContainerRegistrationKeys.CONFIG_MODULE)
 
   if (disable) {
     return
@@ -135,6 +145,9 @@ async function start(args: {
   cluster?: number
 }) {
   const { port = 9000, host, directory, types } = args
+
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")
