@@ -3753,6 +3753,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dnd-kit/accessibility@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@dnd-kit/accessibility@npm:3.1.1"
+  dependencies:
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: be0bf41716dc58f9386bc36906ec1ce72b7b42b6d1d0e631d347afe9bd8714a829bd6f58a346dd089b1519e93918ae2f94497411a61a4f5e4d9247c6cfd1fef8
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/core@npm:^6.0.0":
+  version: 6.3.1
+  resolution: "@dnd-kit/core@npm:6.3.1"
+  dependencies:
+    "@dnd-kit/accessibility": ^3.1.1
+    "@dnd-kit/utilities": ^3.2.2
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 196db95d81096d9dc248983533eab91ba83591770fa5c894b1ac776f42af0d99522b3fd5bb3923411470e4733fcfa103e6ee17adc17b9b7eb54c7fbec5ff7c52
+  languageName: node
+  linkType: hard
+
 "@dnd-kit/core@npm:^6.1.0":
   version: 6.1.0
   resolution: "@dnd-kit/core@npm:6.1.0"
@@ -3764,6 +3789,19 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: c793eb97cb59285ca8937ebcdfcd27cff09d750ae06722e36ca5ed07925e41abc36a38cff98f9f6056f7a07810878d76909826142a2968330e7e22060e6be584
+  languageName: node
+  linkType: hard
+
+"@dnd-kit/sortable@npm:^7.0.0":
+  version: 7.0.2
+  resolution: "@dnd-kit/sortable@npm:7.0.2"
+  dependencies:
+    "@dnd-kit/utilities": ^3.2.0
+    tslib: ^2.0.0
+  peerDependencies:
+    "@dnd-kit/core": ^6.0.7
+    react: ">=16.8.0"
+  checksum: 06aeb113eeeb470bb2443bf1c48d597157bb3a1caa9740e60c2fa73a3076e753cd083a2d381f0556bd7e9873e851a49ce8ea14796ac02e2d796eabea4e27196d
   languageName: node
   linkType: hard
 
@@ -3780,7 +3818,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/utilities@npm:^3.2.2":
+"@dnd-kit/utilities@npm:^3.2.0, @dnd-kit/utilities@npm:^3.2.2":
   version: 3.2.2
   resolution: "@dnd-kit/utilities@npm:3.2.2"
   dependencies:
@@ -7533,6 +7571,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/ui@workspace:packages/design-system/ui"
   dependencies:
+    "@dnd-kit/core": ^6.0.0
+    "@dnd-kit/sortable": ^7.0.0
+    "@dnd-kit/utilities": ^3.2.0
     "@faker-js/faker": ^9.2.0
     "@medusajs/icons": 2.10.1
     "@medusajs/ui-preset": 2.10.1
