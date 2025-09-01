@@ -1060,10 +1060,10 @@ export class RemoteJoiner {
 
     type Entry = {
       path: string
-      svc: string
-      ent?: string
-      parentSvc?: string
-      parentEnt?: string
+      service: string
+      entity?: string
+      parentService?: string
+      parentEntity?: string
     }
 
     const entries = Array.from(parsedExpands.entries())
@@ -1075,9 +1075,9 @@ export class RemoteJoiner {
 
       pending.push({
         path,
-        svc: expand.serviceConfig?.serviceName || "",
-        ent: expand.entity,
-        parentSvc: expand.parentConfig?.serviceName,
+        service: expand.serviceConfig?.serviceName || "",
+        entity: expand.entity,
+        parentService: expand.parentConfig?.serviceName,
       })
     }
 
@@ -1103,17 +1103,17 @@ export class RemoteJoiner {
       const nextPending: Entry[] = []
 
       for (const item of pending) {
-        const parentKey = item.parentSvc!
+        const parentKey = item.parentService!
         if (!prevKeys.has(parentKey)) {
           nextPending.push(item)
           continue
         }
 
-        const key = item.svc
+        const key = item.service
         if (!stageGroups.has(key)) {
           stageGroups.set(key, {
-            service: item.svc,
-            entity: item.ent,
+            service: item.service,
+            entity: item.entity,
             paths: [],
             depth: prevDepth + 1,
           })
