@@ -749,10 +749,16 @@ export class RemoteJoiner {
     const removeChildren = (item: any, prop: string) => {
       if (Array.isArray(item)) {
         for (let i = 0; i < item.length; i++) {
-          item[i][prop] = undefined
+          Object.defineProperty(item[i], prop, {
+            value: undefined,
+            enumerable: false,
+          })
         }
       } else {
-        item[prop] = undefined
+        Object.defineProperty(item, prop, {
+          value: undefined,
+          enumerable: false,
+        })
       }
     }
 
@@ -1665,7 +1671,10 @@ export class RemoteJoiner {
           property: key,
         })
         if (isRel) {
-          delete shallowProperty[key]
+          Object.defineProperty(shallowProperty, key, {
+            value: undefined,
+            enumerable: false,
+          })
         }
       }
 
@@ -1847,7 +1856,10 @@ function gerPrimaryKeysAndOtherFilters({ serviceConfig, queryObj }): {
         value: filters[primaryKeyFilter],
       }
 
-      delete filters[primaryKeyFilter]
+      Object.defineProperty(filters, primaryKeyFilter, {
+        value: undefined,
+        enumerable: false,
+      })
     }
   }
 
