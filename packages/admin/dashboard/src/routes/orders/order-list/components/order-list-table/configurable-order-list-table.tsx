@@ -31,7 +31,6 @@ export const ConfigurableOrderListTable = () => {
   const { t } = useTranslation()
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
 
-  // Get view configurations
   const {
     activeView,
     createView,
@@ -39,27 +38,21 @@ export const ConfigurableOrderListTable = () => {
 
   const currentActiveView = activeView?.view_configuration || null
 
-  // Get update mutation for the current active view
   const { updateView } = useViewConfiguration("orders", currentActiveView?.id || "")
 
-  // Get columns from API
   const { columns: apiColumns, isLoading: isLoadingColumns } = useEntityColumns("orders", {
     enabled: isViewConfigEnabled,
   })
 
-  // Get filters
   const filters = useOrderTableFilters()
 
-  // Get current query params
   const queryParams = useQueryParams(
     ["q", "order", ...filters.map(f => f.id)],
     QUERY_PREFIX
   )
 
-  // Get setSearchParams hook
   const [_, setSearchParams] = useSearchParams()
 
-  // Use column state hook
   const {
     visibleColumns,
     columnOrder,
@@ -69,33 +62,24 @@ export const ConfigurableOrderListTable = () => {
     handleViewChange: originalHandleViewChange,
   } = useColumnState(apiColumns, currentActiveView)
 
-  // React to activeView changes
   useEffect(() => {
     if (!apiColumns) return
-
-    // Apply view configuration when activeView changes
     originalHandleViewChange(currentActiveView, apiColumns)
-
-    // Apply the view's filters, sorting, and search to URL params
     setSearchParams((prev) => {
-      // Clear all existing parameters with the prefix
       const keysToDelete = Array.from(prev.keys()).filter(key =>
         key.startsWith(QUERY_PREFIX + "_") || key === QUERY_PREFIX + "_q" || key === QUERY_PREFIX + "_order"
       )
       keysToDelete.forEach(key => prev.delete(key))
 
       if (currentActiveView) {
-        // Apply view's configuration
         const viewConfig = currentActiveView.configuration
 
-        // Apply filters
         if (viewConfig.filters) {
           Object.entries(viewConfig.filters).forEach(([key, value]) => {
             prev.set(`${QUERY_PREFIX}_${key}`, JSON.stringify(value))
           })
         }
 
-        // Apply sorting
         if (viewConfig.sorting) {
           const sortValue = viewConfig.sorting.desc
             ? `-${viewConfig.sorting.id}`
@@ -103,7 +87,6 @@ export const ConfigurableOrderListTable = () => {
           prev.set(`${QUERY_PREFIX}_order`, sortValue)
         }
 
-        // Apply search
         if (viewConfig.search) {
           prev.set(`${QUERY_PREFIX}_q`, viewConfig.search)
         }
@@ -113,16 +96,13 @@ export const ConfigurableOrderListTable = () => {
     })
   }, [currentActiveView, apiColumns])
 
-  // Debounced state for configuration changes
   const [debouncedHasConfigChanged, setDebouncedHasConfigChanged] = useState(false)
 
-  // Check if configuration has diverged from the active view
   const hasConfigurationChanged = useMemo(() => {
-    // Get current state
     const currentFilters: Record<string, any> = {}
     filters.forEach(filter => {
       if (queryParams[filter.id] !== undefined) {
-        currentFilters[filter.id] = JSON.parse(queryParams[filter.id])
+        currentFilters[filter.id] = JSON.parse(queryParams[filter.id] || "")
       }
     })
 
@@ -134,14 +114,12 @@ export const ConfigurableOrderListTable = () => {
       .sort()
 
     if (currentActiveView) {
-      // Compare against active view configuration
       const viewFilters = currentActiveView.configuration.filters || {}
       const viewSorting = currentActiveView.configuration.sorting
       const viewSearch = currentActiveView.configuration.search || ""
       const viewVisibleColumns = [...(currentActiveView.configuration.visible_columns || [])].sort()
       const viewColumnOrder = currentActiveView.configuration.column_order || []
 
-      // Check filters
       const filterKeys = new Set([...Object.keys(currentFilters), ...Object.keys(viewFilters)])
       for (const key of filterKeys) {
         if (JSON.stringify(currentFilters[key]) !== JSON.stringify(viewFilters[key])) {
@@ -149,34 +127,28 @@ export const ConfigurableOrderListTable = () => {
         }
       }
 
-      // Check sorting
       const normalizedCurrentSorting = currentSorting || undefined
       const normalizedViewSorting = viewSorting || undefined
       if (JSON.stringify(normalizedCurrentSorting) !== JSON.stringify(normalizedViewSorting)) {
         return true
       }
 
-      // Check search
       if (currentSearch !== viewSearch) {
         return true
       }
 
-      // Check visible columns
       if (JSON.stringify(currentVisibleColumns) !== JSON.stringify(viewVisibleColumns)) {
         return true
       }
 
-      // Check column order
       if (JSON.stringify(columnOrder) !== JSON.stringify(viewColumnOrder)) {
         return true
       }
     } else {
-      // No active view - check if we have any non-default state
       if (Object.keys(currentFilters).length > 0) return true
       if (currentSorting !== null) return true
       if (currentSearch !== "") return true
 
-      // Check if columns differ from API defaults
       if (apiColumns) {
         const currentVisibleSet = new Set(
           Object.entries(visibleColumns)
@@ -190,13 +162,11 @@ export const ConfigurableOrderListTable = () => {
             .map(col => col.field)
         )
 
-        // Check if the sets are different
         if (currentVisibleSet.size !== defaultVisibleSet.size ||
           [...currentVisibleSet].some(field => !defaultVisibleSet.has(field))) {
           return true
         }
 
-        // Also check column order against defaults
         const defaultOrder = apiColumns
           .sort((a, b) => (a.default_order ?? 500) - (b.default_order ?? 500))
           .map(col => col.field)
@@ -210,7 +180,6 @@ export const ConfigurableOrderListTable = () => {
     return false
   }, [currentActiveView, visibleColumns, columnOrder, filters, queryParams, apiColumns])
 
-  // Debounce the configuration changed state
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedHasConfigChanged(hasConfigurationChanged)
@@ -219,33 +188,26 @@ export const ConfigurableOrderListTable = () => {
     return () => clearTimeout(timer)
   }, [hasConfigurationChanged])
 
-  // Handler to reset configuration back to active view
   const handleClearConfiguration = useCallback(() => {
-    // Re-apply the current active view configuration
     if (apiColumns) {
       originalHandleViewChange(currentActiveView, apiColumns)
     }
 
-    // Clear all query parameters and re-apply from active view
     setSearchParams((prev) => {
-      // Remove all parameters with our prefix
       const keysToDelete = Array.from(prev.keys()).filter(key =>
         key.startsWith(QUERY_PREFIX + "_") || key === QUERY_PREFIX + "_q" || key === QUERY_PREFIX + "_order"
       )
       keysToDelete.forEach(key => prev.delete(key))
 
       if (currentActiveView?.configuration) {
-        // Re-apply view's configuration
         const viewConfig = currentActiveView.configuration
 
-        // Apply filters
         if (viewConfig.filters) {
           Object.entries(viewConfig.filters).forEach(([key, value]) => {
             prev.set(`${QUERY_PREFIX}_${key}`, JSON.stringify(value))
           })
         }
 
-        // Apply sorting
         if (viewConfig.sorting) {
           const sortValue = viewConfig.sorting.desc
             ? `-${viewConfig.sorting.id}`
@@ -253,7 +215,6 @@ export const ConfigurableOrderListTable = () => {
           prev.set(`${QUERY_PREFIX}_order`, sortValue)
         }
 
-        // Apply search
         if (viewConfig.search) {
           prev.set(`${QUERY_PREFIX}_q`, viewConfig.search)
         }
@@ -263,12 +224,11 @@ export const ConfigurableOrderListTable = () => {
     })
   }, [currentActiveView, apiColumns])
 
-  // Get current configuration for save button
   const currentConfiguration = useMemo(() => {
     const currentFilters: Record<string, any> = {}
     filters.forEach(filter => {
       if (queryParams[filter.id] !== undefined) {
-        currentFilters[filter.id] = JSON.parse(queryParams[filter.id])
+        currentFilters[filter.id] = JSON.parse(queryParams[filter.id] || "")
       }
     })
 
@@ -279,16 +239,14 @@ export const ConfigurableOrderListTable = () => {
     }
   }, [filters, queryParams])
 
-  // Save view handlers
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [editingView, setEditingView] = useState<any>(null)
 
   const handleSaveAsDefault = async () => {
     try {
       if (currentActiveView?.is_system_default) {
-        // Update existing system default
         await updateView.mutateAsync({
-          name: currentActiveView.name,
+          name: currentActiveView.name || null,
           configuration: {
             visible_columns: currentColumns.visible,
             column_order: currentColumns.order,
@@ -298,7 +256,6 @@ export const ConfigurableOrderListTable = () => {
           }
         })
       } else {
-        // Create new system default
         await createView.mutateAsync({
           name: "Default",
           is_system_default: true,
@@ -312,7 +269,7 @@ export const ConfigurableOrderListTable = () => {
           }
         })
       }
-    } catch (error) {
+    } catch (_) {
       // Error is handled by the hook
     }
   }
@@ -331,7 +288,7 @@ export const ConfigurableOrderListTable = () => {
           search: currentConfiguration.search || "",
         }
       })
-    } catch (error) {
+    } catch (_) {
       // Error is handled by the hook
     }
   }
@@ -341,10 +298,8 @@ export const ConfigurableOrderListTable = () => {
     setEditingView(null)
   }
 
-  // Calculate required fields based on visible columns
   const requiredFields = useRequiredFields(apiColumns, visibleColumns)
 
-  // Create filter bar content - use debounced state to prevent flashing
   const filterBarContent = debouncedHasConfigChanged ? (
     <>
       <Button
@@ -366,8 +321,7 @@ export const ConfigurableOrderListTable = () => {
     </>
   ) : null
 
-  // Fetch orders data
-  const { searchParams, raw } = useOrderTableQuery({
+  const { searchParams } = useOrderTableQuery({
     pageSize: PAGE_SIZE,
     prefix: QUERY_PREFIX,
   })
@@ -382,9 +336,7 @@ export const ConfigurableOrderListTable = () => {
     }
   )
 
-  // Build columns from API columns
   const columns = useConfigurableOrderTableColumns(apiColumns)
-
 
   if (isError) {
     throw error
@@ -415,7 +367,9 @@ export const ConfigurableOrderListTable = () => {
         filterBarContent={filterBarContent}
         rowHref={(row) => `/orders/${row.id}`}
         emptyState={{
-          message: t("orders.list.noRecordsMessage"),
+          empty: {
+            heading: t("orders.list.noRecordsMessage"),
+          }
         }}
         prefix={QUERY_PREFIX}
       />
@@ -430,10 +384,9 @@ export const ConfigurableOrderListTable = () => {
             setSaveDialogOpen(false)
             setEditingView(null)
           }}
-          onSaved={(newView) => {
+          onSaved={() => {
             setSaveDialogOpen(false)
             setEditingView(null)
-            // The view will be automatically set as active if set_active was true
           }}
         />
       )}

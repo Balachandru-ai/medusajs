@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { HttpTypes } from "@medusajs/types"
 import { toast } from "@medusajs/ui"
 import { FetchError } from "@medusajs/js-sdk"
 import { useFeatureFlag } from "../providers/feature-flag-provider"
@@ -11,9 +10,6 @@ import {
   useDeleteViewConfiguration as useDeleteViewConfigurationBase,
   useSetActiveViewConfiguration as useSetActiveViewConfigurationBase,
 } from "./api/views"
-
-// Re-export the type for convenience
-export type ViewConfiguration = HttpTypes.AdminViewConfiguration
 
 // Common error handler
 const handleError = (error: Error, message?: string) => {
@@ -37,23 +33,16 @@ export const useViewConfigurations = (entity: string) => {
   // List views
   const listViews = useViewConfigurationsBase(entity, { limit: 100 }, {
     enabled: isViewConfigEnabled && !!entity,
-    onError: (error) => {
-      handleError(error, "Failed to load view configurations")
-    },
   })
 
   // Active view
   const activeView = useActiveViewConfigurationBase(entity, {
     enabled: isViewConfigEnabled && !!entity,
-    onError: (error) => {
-      // Don't show error toast for active view fetch - it's expected to fail sometimes
-      console.error("Failed to fetch active view configuration:", error)
-    },
   })
 
   // Create view mutation
   const createView = useCreateViewConfigurationBase(entity, {
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success(`View created`)
     },
     onError: (error) => {
@@ -89,7 +78,7 @@ export const useViewConfigurations = (entity: string) => {
 // Hook for update/delete operations on a specific view
 export const useViewConfiguration = (entity: string, viewId: string) => {
   const updateView = useUpdateViewConfigurationBase(entity, viewId, {
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success(`View updated`)
     },
     onError: (error) => {

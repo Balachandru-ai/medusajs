@@ -143,7 +143,7 @@ export const useCreateViewConfiguration = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminCreateViewConfiguration) =>
+    mutationFn: (payload: Omit<HttpTypes.AdminCreateViewConfiguration, "entity">) =>
       sdk.admin.views.createConfiguration(entity, payload),
     ...options,
     onSuccess: (data, variables, context) => {
