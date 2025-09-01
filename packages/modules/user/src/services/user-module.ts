@@ -9,7 +9,6 @@ import {
 } from "@medusajs/framework/types"
 import {
   arrayDifference,
-  CommonEvents,
   EmitEvents,
   generateEntityId,
   generateJwtToken,
@@ -95,7 +94,7 @@ export default class UserModuleService
     }
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
   async validateInviteToken(
     token: string,
     @MedusaContext() sharedContext: Context = {}
@@ -129,9 +128,7 @@ export default class UserModuleService
       )
     }
 
-    return await this.baseRepository_.serialize<UserTypes.InviteDTO>(invite, {
-      populate: true,
-    })
+    return await this.baseRepository_.serialize<UserTypes.InviteDTO>(invite)
   }
 
   @InjectManager()
@@ -142,22 +139,21 @@ export default class UserModuleService
   ): Promise<UserTypes.InviteDTO[]> {
     const invites = await this.refreshInviteTokens_(inviteIds, sharedContext)
 
+    const serializedInvites = await this.baseRepository_.serialize<
+      UserTypes.InviteDTO[]
+    >(invites)
+
     moduleEventBuilderFactory({
       eventName: UserEvents.INVITE_TOKEN_GENERATED,
       source: Modules.USER,
       action: "token_generated",
       object: "invite",
     })({
-      data: invites,
+      data: serializedInvites,
       sharedContext,
     })
 
-    return await this.baseRepository_.serialize<UserTypes.InviteDTO[]>(
-      invites,
-      {
-        populate: true,
-      }
-    )
+    return serializedInvites
   }
 
   @InjectTransactionManager()
@@ -221,19 +217,7 @@ export default class UserModuleService
 
     const serializedUsers = await this.baseRepository_.serialize<
       UserTypes.UserDTO[] | UserTypes.UserDTO
-    >(users, {
-      populate: true,
-    })
-
-    moduleEventBuilderFactory({
-      eventName: UserEvents.USER_CREATED,
-      source: Modules.USER,
-      action: CommonEvents.CREATED,
-      object: "user",
-    })({
-      data: serializedUsers,
-      sharedContext,
-    })
+    >(users)
 
     return Array.isArray(data) ? serializedUsers : serializedUsers[0]
   }
@@ -262,19 +246,7 @@ export default class UserModuleService
 
     const serializedUsers = await this.baseRepository_.serialize<
       UserTypes.UserDTO[]
-    >(updatedUsers, {
-      populate: true,
-    })
-
-    moduleEventBuilderFactory({
-      eventName: UserEvents.USER_UPDATED,
-      source: Modules.USER,
-      action: CommonEvents.UPDATED,
-      object: "user",
-    })({
-      data: serializedUsers,
-      sharedContext,
-    })
+    >(updatedUsers)
 
     return Array.isArray(data) ? serializedUsers : serializedUsers[0]
   }
@@ -303,19 +275,7 @@ export default class UserModuleService
 
     const serializedInvites = await this.baseRepository_.serialize<
       UserTypes.InviteDTO[] | UserTypes.InviteDTO
-    >(invites, {
-      populate: true,
-    })
-
-    moduleEventBuilderFactory({
-      eventName: UserEvents.INVITE_CREATED,
-      source: Modules.USER,
-      action: CommonEvents.CREATED,
-      object: "invite",
-    })({
-      data: serializedInvites,
-      sharedContext,
-    })
+    >(invites)
 
     moduleEventBuilderFactory({
       eventName: UserEvents.INVITE_TOKEN_GENERATED,
@@ -390,14 +350,12 @@ export default class UserModuleService
 
     const serializedInvites = await this.baseRepository_.serialize<
       UserTypes.InviteDTO[]
-    >(updatedInvites, {
-      populate: true,
-    })
+    >(updatedInvites)
 
     moduleEventBuilderFactory({
-      eventName: UserEvents.INVITE_UPDATED,
+      eventName: UserEvents.INVITE_TOKEN_GENERATED,
       source: Modules.USER,
-      action: CommonEvents.UPDATED,
+      action: "token_generated",
       object: "invite",
     })({
       data: serializedInvites,
