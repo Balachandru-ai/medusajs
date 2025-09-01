@@ -18,6 +18,11 @@ export type JoinerRelationship = {
   args?: Record<string, any>
 }
 
+export type ComputedJoinerRelationship = JoinerRelationship & {
+  primaryKeyArr: string[]
+  foreignKeyArr: string[]
+}
+
 export interface JoinerServiceConfigAlias {
   name: string | string[]
   entity?: string

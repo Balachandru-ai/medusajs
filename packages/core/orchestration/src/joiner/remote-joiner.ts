@@ -1,4 +1,5 @@
 import {
+  ComputedJoinerRelationship,
   InternalJoinerServiceConfig,
   JoinerRelationship,
   JoinerServiceConfigAlias,
@@ -151,26 +152,40 @@ export class RemoteJoiner {
   // compute ids to fetch for a relationship
   private computeIdsForRelationship(
     items: any[],
-    relationship: JoinerRelationship
+    relationship: ComputedJoinerRelationship
   ) {
     const field = relationship.inverse
       ? relationship.primaryKey
       : relationship.foreignKey.split(".").pop()!
-    const fieldsArray = field.split(",")
+
+    const fieldsArray = relationship.inverse
+      ? relationship.primaryKeyArr
+      : relationship.foreignKeyArr
 
     const idsToFetch: Set<any> = new Set()
-    items.forEach((item) => {
-      if (!item) return
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      if (!item) {
+        continue
+      }
       const values = fieldsArray.map((f) => item?.[f])
-      if (values.length !== fieldsArray.length) return
+      if (values.length !== fieldsArray.length) {
+        continue
+      }
+
       if (fieldsArray.length === 1) {
-        const v = values[0]
-        if (Array.isArray(v)) v.forEach((x) => idsToFetch.add(x))
-        else idsToFetch.add(v)
+        const val = values[0]
+        if (Array.isArray(val)) {
+          for (let x = 0; x < val.length; x++) {
+            idsToFetch.add(val[x])
+          }
+        } else {
+          idsToFetch.add(val)
+        }
       } else {
         idsToFetch.add(values)
       }
-    })
+    }
 
     return { field, fieldsArray, idsToFetch }
   }
@@ -178,7 +193,7 @@ export class RemoteJoiner {
   // assign fetched related data to items
   private assignRelatedToItems(params: {
     items: any[]
-    relationship: JoinerRelationship
+    relationship: ComputedJoinerRelationship
     relatedDataMap: Map<string, any>
     field: string
     fieldsArray: string[]
@@ -298,6 +313,27 @@ export class RemoteJoiner {
         service_.relationships = relationships
       }
 
+      // Precompute key arrays for all existing relationships on the service
+      if (service_.relationships?.size) {
+        for (const [, relVal] of service_.relationships.entries()) {
+          if (Array.isArray(relVal)) {
+            for (let i = 0; i < relVal.length; i++) {
+              const rel = relVal[i] as ComputedJoinerRelationship
+              rel.primaryKeyArr = rel.primaryKey.split(",")
+              rel.foreignKeyArr = rel.foreignKey
+                .split(",")
+                .map((fk) => fk.split(".").pop()!)
+            }
+          } else if (relVal) {
+            const rel = relVal as ComputedJoinerRelationship
+            rel.primaryKeyArr = rel.primaryKey.split(",")
+            rel.foreignKeyArr = rel.foreignKey
+              .split(",")
+              .map((fk) => fk.split(".").pop()!)
+          }
+        }
+      }
+
       // add aliases
       const isReadOnlyDefinition =
         !isDefined(service_.serviceName) || service_.isReadOnlyLink
@@ -389,7 +425,13 @@ export class RemoteJoiner {
         const service_ = expandedRelationships.get(extend.serviceName)!
 
         const aliasName = extend.relationship.alias
-        const rel = extend.relationship
+        const rel = extend.relationship as ComputedJoinerRelationship
+
+        rel.primaryKeyArr = rel.primaryKey.split(",")
+        rel.foreignKeyArr = rel.foreignKey
+          .split(",")
+          .map((fk) => fk.split(".").pop()!)
+
         if (service_.relationships?.has(aliasName)) {
           const existing = service_.relationships.get(aliasName)!
           const newRelation = Array.isArray(existing)
@@ -416,7 +458,7 @@ export class RemoteJoiner {
 
       const service_ = this.serviceConfigCache.get(serviceName)!
       relationships.forEach((relationship, alias) => {
-        const rel = relationship as JoinerRelationship
+        const rel = relationship as ComputedJoinerRelationship
         if (service_.relationships?.has(alias)) {
           const existing = service_.relationships.get(alias)!
           const newRelation = Array.isArray(existing)
@@ -703,9 +745,11 @@ export class RemoteJoiner {
     }
     const removeChildren = (item: any, prop: string) => {
       if (Array.isArray(item)) {
-        item.forEach((currentItem) => delete currentItem[prop])
+        for (let i = 0; i < item.length; i++) {
+          item[i][prop] = undefined
+        }
       } else {
-        delete item[prop]
+        item[prop] = undefined
       }
     }
 
@@ -803,8 +847,6 @@ export class RemoteJoiner {
     }[][] = root?.globalExecutionStages
 
     for (const stage of globalExecutionStages) {
-      // For each service group in stage, attempt batching
-      // console.log(`STAGE ${stage[0].depth} EXECUTION`)
       await Promise.all(
         stage.map(async ({ service, paths }) => {
           const pathCtx: {
@@ -814,12 +856,16 @@ export class RemoteJoiner {
             nestedItems: any[]
             field: string
             fieldsArray: string[]
+            args?: any
             ids: Set<string>
           }[] = []
 
           for (const path of paths) {
+            console.log(path, " ==================")
             const expand = parsedExpands.get(path)!
             const nestedItems = getItemsForPath(items, path)
+
+            console.log({ nestedItems }, JSON.stringify(items, null, 2))
 
             if (!nestedItems?.length) {
               continue
@@ -830,6 +876,8 @@ export class RemoteJoiner {
               property: expand.property,
               entity: expand.entity,
             })
+
+            console.log({ relationship })
 
             if (!relationship) {
               continue
@@ -845,6 +893,7 @@ export class RemoteJoiner {
               nestedItems,
               field,
               fieldsArray,
+              args: expand.args,
               ids: idsToFetch,
             })
           }
@@ -864,7 +913,6 @@ export class RemoteJoiner {
             byPkField.get(key)!.push(ctx)
           }
 
-          // For each pkField group, try to do a single fetch
           for (const [pkField, ctxs] of byPkField.entries()) {
             const unionIds: string[] = Array.from(
               new Set(ctxs.flatMap((c) => Array.from(c.ids)))
@@ -874,13 +922,16 @@ export class RemoteJoiner {
             )
             const unionArgs = ctxs.flatMap((c) => c.expand.args ?? [])
 
-            //console.log(" ALL ctxs", ctxs, JSON.stringify(unionArgs, null, 2))
+            console.log(" FIELDS", unionFields)
 
             const base = ctxs[0].expand
             const aggExpand: RemoteExpandProperty = {
               ...base,
               fields: unionFields,
-              args: unionArgs.length ? unionArgs : undefined,
+            }
+
+            if (unionArgs.length) {
+              aggExpand.args = unionArgs
             }
 
             // Use first relationship for fetch (pkField matches across the group)
@@ -896,8 +947,8 @@ export class RemoteJoiner {
             })
 
             const joinFields = relationship.inverse
-              ? relationship.foreignKey.split(",")
-              : relationship.primaryKey.split(",")
+              ? relationship.foreignKeyArr
+              : relationship.primaryKeyArr
 
             const relData = relatedDataArray.path
               ? relatedDataArray.data[relatedDataArray.path!]
@@ -908,8 +959,9 @@ export class RemoteJoiner {
               joinFields
             )
 
-            // Assign results back per path
-            for (const ctx of ctxs) {
+            // Assign results per path
+            for (let ci = 0; ci < ctxs.length; ci++) {
+              const ctx = ctxs[ci]
               this.assignRelatedToItems({
                 items: ctx.nestedItems,
                 relationship: ctx.relationship,
@@ -940,7 +992,7 @@ export class RemoteJoiner {
     parentServiceConfig: InternalJoinerServiceConfig
     property: string
     entity?: string
-  }): JoinerRelationship {
+  }): ComputedJoinerRelationship {
     const { parentServiceConfig, property, entity } = params
 
     const propEntity = entity ?? parentServiceConfig?.entity
@@ -948,12 +1000,12 @@ export class RemoteJoiner {
 
     if (Array.isArray(rel)) {
       if (!propEntity) {
-        return rel[0]
+        return rel[0] as ComputedJoinerRelationship
       }
 
       const entityRel = rel.find((r) => r.entity === propEntity)
       if (entityRel) {
-        return entityRel
+        return entityRel as ComputedJoinerRelationship
       }
 
       // If entity is not found, return the relationship where the primary key matches
@@ -961,10 +1013,12 @@ export class RemoteJoiner {
         entity: propEntity,
       })!
 
-      return rel.find((r) => serviceEntity.primaryKeys.includes(r.primaryKey))!
+      return rel.find((r) =>
+        serviceEntity.primaryKeys.includes(r.primaryKey)
+      )! as ComputedJoinerRelationship
     }
 
-    return rel as JoinerRelationship
+    return rel as ComputedJoinerRelationship
   }
 
   private parseExpands(
@@ -1032,16 +1086,16 @@ export class RemoteJoiner {
       pending.push({
         path,
         svc: expand.serviceConfig?.serviceName || "",
-        ent: (expand as any).entity,
-        parentSvc: (expand as any).parentConfig?.serviceName,
+        ent: expand.entity,
+        parentSvc: expand.parentConfig?.serviceName,
       })
     }
 
     const stages: Array<Array<Group>> = []
 
     // Root group
-    const rootExp = parsedExpands.get(BASE_PATH) as any
-    const rootKey = rootExp?.serviceConfig?.serviceName
+    const rootExp = parsedExpands.get(BASE_PATH)!
+    const rootKey = rootExp.serviceConfig.serviceName
     const placedByDepthKeys: Array<Set<string>> = [new Set([rootKey])]
     stages.push([
       {
@@ -1325,9 +1379,13 @@ export class RemoteJoiner {
       }
 
       if (forwardArgumentsOnPath.includes(BASE_PATH + "." + midProp)) {
-        extraExtends.args = (existingExpand?.args ?? []).concat(
+        const forwarded = (existingExpand?.args ?? []).concat(
           expand?.args ?? []
         )
+
+        if (forwarded.length) {
+          extraExtends.args = forwarded
+        }
       }
 
       extMapping.push(extraExtends)
@@ -1415,7 +1473,6 @@ export class RemoteJoiner {
           targetExpand = targetExpand.expands[key] ??= {}
         }
 
-        // Merge fields (union) instead of overwriting
         const nextFields = [
           ...new Set([
             ...(targetExpand.fields ?? []),
@@ -1423,7 +1480,6 @@ export class RemoteJoiner {
           ]),
         ]
         targetExpand.fields = nextFields
-        // Merge args if present; avoid setting when undefined/empty
         if (expand.args?.length) {
           const existingArgs = targetExpand.args
           targetExpand.args = existingArgs

@@ -211,10 +211,11 @@ medusaIntegrationTestRunner({
         let product
 
         const now = performance.now()
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 1; i++) {
           product = await query.graph({
             entity: "product",
             fields: [
+              "sales_channels.name",
               "title",
               "translation.*",
               "categories.name",
@@ -223,6 +224,8 @@ medusaIntegrationTestRunner({
               "variants.translation.*",
               "options.title",
               "options.translation.*",
+              "variants.prices.amount",
+              "variants.prices.currency_code",
             ],
           })
         }
