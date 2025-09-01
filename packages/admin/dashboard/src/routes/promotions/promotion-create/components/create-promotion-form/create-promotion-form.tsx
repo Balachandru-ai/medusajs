@@ -288,6 +288,7 @@ export const CreatePromotionForm = () => {
   })
 
   const isTypeStandard = watchType === "standard"
+  const isTypeBuyGet = watchType === "buyget"
 
   const targetType = useWatch({
     control: form.control,
@@ -811,44 +812,52 @@ export const CreatePromotionForm = () => {
                     </>
                   )}
 
-                  {isTypeStandard && watchAllocation === "each" && (
-                    <Form.Field
-                      control={form.control}
-                      name="application_method.max_quantity"
-                      render={({ field }) => {
-                        return (
-                          <Form.Item className="basis-1/2">
-                            <Form.Label>
-                              {t("promotions.form.max_quantity.title")}
-                            </Form.Label>
+                  {((isTypeStandard && watchAllocation === "each") ||
+                    isTypeBuyGet) && (
+                    <>
+                      {isTypeBuyGet && (
+                        <>
+                          <Divider />
+                        </>
+                      )}
+                      <Form.Field
+                        control={form.control}
+                        name="application_method.max_quantity"
+                        render={({ field }) => {
+                          return (
+                            <Form.Item className="basis-1/2">
+                              <Form.Label>
+                                {t("promotions.form.max_quantity.title")}
+                              </Form.Label>
 
-                            <Form.Control>
-                              <Input
-                                {...form.register(
-                                  "application_method.max_quantity",
-                                  { valueAsNumber: true }
-                                )}
-                                type="number"
-                                min={1}
-                                placeholder="3"
-                              />
-                            </Form.Control>
+                              <Form.Control>
+                                <Input
+                                  {...form.register(
+                                    "application_method.max_quantity",
+                                    { valueAsNumber: true }
+                                  )}
+                                  type="number"
+                                  min={1}
+                                  placeholder="3"
+                                />
+                              </Form.Control>
 
-                            <Text
-                              size="small"
-                              leading="compact"
-                              className="text-ui-fg-subtle"
-                            >
-                              <Trans
-                                t={t}
-                                i18nKey="promotions.form.max_quantity.description"
-                                components={[<br key="break" />]}
-                              />
-                            </Text>
-                          </Form.Item>
-                        )
-                      }}
-                    />
+                              <Text
+                                size="small"
+                                leading="compact"
+                                className="text-ui-fg-subtle"
+                              >
+                                <Trans
+                                  t={t}
+                                  i18nKey="promotions.form.max_quantity.description"
+                                  components={[<br key="break" />]}
+                                />
+                              </Text>
+                            </Form.Item>
+                          )
+                        }}
+                      />
+                    </>
                   )}
 
                   {isTypeStandard &&

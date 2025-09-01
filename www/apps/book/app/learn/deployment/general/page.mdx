@@ -131,8 +131,10 @@ It’s highly recommended to instead use modules and providers suitable for prod
 - [Redis Cache Module](!resources!/infrastructure-modules/cache/redis)
 - [Redis Event Bus Module](!resources!/infrastructure-modules/event/redis)
 - [Workflow Engine Redis Module](!resources!/infrastructure-modules/workflow-engine/redis)
-- [S3 File Module Provider](!resources!/infrastructure-modules/file/s3) (or other file module providers production-ready).
-- [SendGrid Notification Module Provider](!resources!/infrastructure-modules/notification/sendgrid) (or other notification module providers production-ready).
+- [Redis Locking Module Provider](!resources!/infrastructure-modules/locking/redis)
+- [PostHog Analytics Module Provider](!resources!/infrastructure-modules/analytics/posthog) (If you're using analytics in your application. You can also use other analytics module providers that are production-ready).
+- [S3 File Module Provider](!resources!/infrastructure-modules/file/s3) (or other file module providers that are production-ready).
+- [SendGrid Notification Module Provider](!resources!/infrastructure-modules/notification/sendgrid) (or other notification module providers that are production-ready).
 
 Then, add these modules in `medusa-config.ts`:
 
@@ -162,6 +164,22 @@ module.exports = defineConfig({
         },
       },
     },
+    {
+      resolve: "@medusajs/medusa/locking",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/locking-redis",
+            id: "locking-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.LOCKING_REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
+
   ],
 })
 ```

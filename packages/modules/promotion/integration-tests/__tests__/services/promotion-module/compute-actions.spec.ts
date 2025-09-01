@@ -1,5 +1,10 @@
 import { IPromotionModuleService } from "@medusajs/framework/types"
-import { ApplicationMethodType, Modules, PromotionStatus, PromotionType, } from "@medusajs/framework/utils"
+import {
+  ApplicationMethodType,
+  Modules,
+  PromotionStatus,
+  PromotionType,
+} from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
@@ -4762,7 +4767,7 @@ moduleIntegrationTestRunner({
               target_type: "items",
               value: 100,
               allocation: "each",
-              max_quantity: 1,
+              max_quantity: 100,
               apply_to_quantity: 1,
               buy_rules_min_quantity: 1,
               target_rules: [
@@ -4791,7 +4796,7 @@ moduleIntegrationTestRunner({
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt2",
-              amount: 1000,
+              amount: 2000,
               code: "PROMOTION_TEST",
             },
           ])
@@ -4943,7 +4948,7 @@ moduleIntegrationTestRunner({
               type: "percentage",
               target_type: "items",
               allocation: "each",
-              max_quantity: 1,
+              max_quantity: 100,
               value: 100,
               apply_to_quantity: 4,
               buy_rules_min_quantity: 1,
@@ -5045,7 +5050,7 @@ moduleIntegrationTestRunner({
               target_type: "items",
               allocation: "each",
               value: 1000,
-              max_quantity: 1,
+              max_quantity: 4,
               apply_to_quantity: 4,
               buy_rules_min_quantity: 1,
               target_rules: [
@@ -5141,11 +5146,389 @@ moduleIntegrationTestRunner({
             ])
           })
 
+          it("should handle 2+1 free promotion correctly for same product", async () => {
+            const twoGetOneFreePromotion = await createDefaultPromotion(
+              service,
+              {
+                code: "2PLUS1FREE",
+                type: PromotionType.BUYGET,
+                application_method: {
+                  type: "percentage",
+                  target_type: "items",
+                  value: 100,
+                  allocation: "each",
+                  max_quantity: 10, // Allow multiple applications
+                  apply_to_quantity: 1,
+                  buy_rules_min_quantity: 2,
+                  target_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                  buy_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                } as any,
+              }
+            )
+
+            // Test with 2 items - should get no promotion (need at least 3 for 2+1)
+            let context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 2,
+                  subtotal: 1000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            let result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([])
+
+            // Test with 3 items - should get 1 free
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 3,
+                  subtotal: 1500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (1500/3) = 500
+                code: "2PLUS1FREE",
+              },
+            ])
+
+            // Test with 5 items - should get 1 free (not 2, as you need 6 for 2 free)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 5,
+                  subtotal: 2500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (2500/5) = 500
+                code: "2PLUS1FREE",
+              },
+            ])
+
+            // Test with 6 items - should get 2 free
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 6,
+                  subtotal: 3000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [twoGetOneFreePromotion.code!],
+              context
+            )
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 items * (3000/6) = 1000
+                code: "2PLUS1FREE",
+              },
+            ])
+          })
+
+          it("should handle multiple 2+1 free promotions correctly for same product", async () => {
+            // Apply 2+1 free promotion on the same product to a maximum of 2 items
+            const firstTwoGetOneFreePromotion = await createDefaultPromotion(
+              service,
+              {
+                code: "FIRST2PLUS1FREE",
+                type: PromotionType.BUYGET,
+                application_method: {
+                  type: "percentage",
+                  target_type: "items",
+                  value: 100,
+                  allocation: "each",
+                  max_quantity: 2,
+                  apply_to_quantity: 1,
+                  buy_rules_min_quantity: 2,
+                  target_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                  buy_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                } as any,
+              }
+            )
+
+            // Apply 2+1 free promotion on the same product to a maximum of 1 item
+            const secondTwoGetOneFreePromotion = await createDefaultPromotion(
+              service,
+              {
+                code: "SECOND2PLUS1FREE",
+                type: PromotionType.BUYGET,
+                application_method: {
+                  type: "percentage",
+                  target_type: "items",
+                  value: 100,
+                  allocation: "each",
+                  max_quantity: 1,
+                  apply_to_quantity: 1,
+                  buy_rules_min_quantity: 2,
+                  target_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                  buy_rules: [
+                    {
+                      attribute: "product.id",
+                      operator: "eq",
+                      values: [product1],
+                    },
+                  ],
+                } as any,
+              }
+            )
+
+            // Test with 3 items - should get 1 free from first promotion (2 buy + 1 target)
+            let context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 3,
+                  subtotal: 1500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            let result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // Only first promotion should apply (3 items: 2 buy + 1 target = 3, no items left for second)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (1500/3) = 500
+                code: "FIRST2PLUS1FREE",
+              },
+            ])
+
+            // Test with 6 items - should get 2 free total (2 from first promotion and 1 from second promotion)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 6,
+                  subtotal: 3000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // Both promotions should apply: 6 items allows for 2 applications from first promotion and 1 from second promotion
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 item * (3000/6) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (3000/6) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+
+            // Test with 7 items - should still get 2 free total (not 3) (2 from first promotion and 1 from second promotion)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 7,
+                  subtotal: 3500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // 7 items: first promotion uses 3 (2+1), second uses 3 (2+1), 1 item left over (2 from first promotion and 1 from second promotion)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 item * (3500/7) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (3500/7) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+
+            // Test with 9 items - should get 3 free total (2 from first promotion and 1 from second promotion)
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 9,
+                  subtotal: 4500,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // 9 items: first promotion can apply twice (6 items), second once (3 items) (2 from first promotion and 1 from second promotion)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 items * (4500/9) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (4500/9) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+
+            context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_1",
+                  quantity: 1000,
+                  subtotal: 500000,
+                  product: { id: product1 },
+                },
+              ],
+            }
+
+            result = await service.computeActions(
+              [
+                firstTwoGetOneFreePromotion.code!,
+                secondTwoGetOneFreePromotion.code!,
+              ],
+              context
+            )
+
+            // 1000 items: first promotion can apply twice (6 items), second once (3 items) (2 from first promotion and 1 from second promotion)
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 1000, // 2 items * (4500/9) = 1000
+                code: "FIRST2PLUS1FREE",
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_1",
+                amount: 500, // 1 item * (4500/9) = 500
+                code: "SECOND2PLUS1FREE",
+              },
+            ])
+          })
+
           it("should compute adjustment accurately for a single item when multiple buyget promos are applied", async () => {
             const buyXGetXPromotionBulk1 = await createDefaultPromotion(
               service,
               {
-                code: "BUY50GET100",
+                code: "BUY50GET1000",
                 type: PromotionType.BUYGET,
                 campaign_id: null,
                 application_method: {
@@ -5177,7 +5560,7 @@ moduleIntegrationTestRunner({
             const buyXGetXPromotionBulk2 = await createDefaultPromotion(
               service,
               {
-                code: "BUY10GET20",
+                code: "BUY10GET200",
                 type: PromotionType.BUYGET,
                 campaign_id: null,
                 application_method: {
@@ -5228,12 +5611,12 @@ moduleIntegrationTestRunner({
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 2500,
-                code: "BUY50GET100",
+                code: "BUY50GET1000",
               },
               {
                 action: "addItemAdjustment",
                 amount: 10,
-                code: "BUY10GET20",
+                code: "BUY10GET200",
                 item_id: "item_cotton_tshirt",
               },
             ])
@@ -5243,7 +5626,7 @@ moduleIntegrationTestRunner({
             const buyXGetXPromotionBulk1 = await createDefaultPromotion(
               service,
               {
-                code: "BUY50GET100",
+                code: "BUY50GET1000",
                 type: PromotionType.BUYGET,
                 campaign_id: null,
                 application_method: {
@@ -5275,7 +5658,7 @@ moduleIntegrationTestRunner({
             const buyXGetXPromotionBulk2 = await createDefaultPromotion(
               service,
               {
-                code: "BUY10GET20",
+                code: "BUY10GET200",
                 type: PromotionType.BUYGET,
                 campaign_id: null,
                 application_method: {
@@ -5336,19 +5719,395 @@ moduleIntegrationTestRunner({
                   action: "addItemAdjustment",
                   item_id: "item_cotton_tshirt2",
                   amount: 1225,
-                  code: "BUY50GET100",
+                  code: "BUY50GET1000",
                 },
                 {
                   action: "addItemAdjustment",
                   item_id: "item_cotton_tshirt",
                   amount: 1275,
-                  code: "BUY50GET100",
+                  code: "BUY50GET1000",
                 },
                 {
                   action: "addItemAdjustment",
                   item_id: "item_cotton_tshirt2",
                   amount: 10,
-                  code: "BUY10GET20",
+                  code: "BUY10GET200",
+                },
+              ])
+            )
+          })
+
+          it("should apply buyget promotion multiple times until eligible quantity is exhausted", async () => {
+            const buyProductId = "item_cotton_tshirt"
+            const getProductId = "item_cotton_tshirt2"
+
+            const buyXGetXPromotion = await createDefaultPromotion(service, {
+              code: "TEST_BUYGET_PROMOTION",
+              type: PromotionType.BUYGET,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: false,
+              is_automatic: false,
+              application_method: {
+                allocation: "each",
+                value: 100,
+                max_quantity: 100,
+                type: "percentage",
+                target_type: "items",
+                apply_to_quantity: 1,
+                buy_rules_min_quantity: 2,
+                target_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [getProductId],
+                  },
+                ],
+                buy_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyProductId],
+                  },
+                ],
+              },
+            })
+
+            const buyXGetXPromotion2 = await createDefaultPromotion(service, {
+              code: "TEST_BUYGET_PROMOTION_2",
+              type: PromotionType.BUYGET,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: false,
+              is_automatic: false,
+              application_method: {
+                allocation: "each",
+                value: 100,
+                type: "percentage",
+                target_type: "items",
+                apply_to_quantity: 1,
+                max_quantity: 100,
+                buy_rules_min_quantity: 1,
+                target_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [getProductId],
+                  },
+                ],
+                buy_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyProductId],
+                  },
+                ],
+              },
+            })
+
+            const context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: getProductId,
+                  quantity: 11,
+                  subtotal: 2750,
+                  original_total: 2750,
+                  is_discountable: true,
+                  product: { id: getProductId },
+                },
+                {
+                  id: buyProductId,
+                  quantity: 11,
+                  subtotal: 2750,
+                  original_total: 2750,
+                  is_discountable: true,
+                  product: { id: buyProductId },
+                },
+              ],
+            }
+
+            const result = await service.computeActions(
+              [buyXGetXPromotion.code!, buyXGetXPromotion2.code!],
+              context
+            )
+
+            const serializedResult = JSON.parse(JSON.stringify(result))
+
+            // The first promotion should apply until eligible quantities are exhausted (buy 2 get 1)
+            // The second promotion should apply to the remaining quantity (buy 1 get 1)
+            expect(serializedResult).toHaveLength(2)
+            expect(serializedResult).toEqual(
+              expect.arrayContaining([
+                {
+                  action: "addItemAdjustment",
+                  item_id: getProductId,
+                  amount: 1250,
+                  code: buyXGetXPromotion.code!,
+                },
+                {
+                  action: "addItemAdjustment",
+                  item_id: "item_cotton_tshirt2",
+                  amount: 250,
+                  code: "TEST_BUYGET_PROMOTION_2",
+                },
+              ])
+            )
+          })
+
+          it("should apply buyget promotion multiple times until max quantity is reached", async () => {
+            const buyProductId = "item_cotton_tshirt"
+            const getProductId = "item_cotton_tshirt2"
+
+            const buyXGetXPromotion = await createDefaultPromotion(service, {
+              code: "TEST_BUYGET_PROMOTION",
+              type: PromotionType.BUYGET,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: false,
+              is_automatic: false,
+              application_method: {
+                allocation: "each",
+                value: 100,
+                type: "percentage",
+                target_type: "items",
+                apply_to_quantity: 1,
+                max_quantity: 2,
+                buy_rules_min_quantity: 2,
+                target_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [getProductId],
+                  },
+                ],
+                buy_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyProductId],
+                  },
+                ],
+              },
+            })
+
+            const buyXGetXPromotion2 = await createDefaultPromotion(service, {
+              code: "TEST_BUYGET_PROMOTION_2",
+              type: PromotionType.BUYGET,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: false,
+              is_automatic: false,
+              application_method: {
+                allocation: "each",
+                value: 100,
+                type: "percentage",
+                target_type: "items",
+                apply_to_quantity: 1,
+                max_quantity: 1,
+                buy_rules_min_quantity: 1,
+                target_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [getProductId],
+                  },
+                ],
+                buy_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyProductId],
+                  },
+                ],
+              },
+            })
+
+            const context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: getProductId,
+                  quantity: 11,
+                  subtotal: 2750,
+                  original_total: 2750,
+                  is_discountable: true,
+                  product: { id: getProductId },
+                },
+                {
+                  id: buyProductId,
+                  quantity: 11,
+                  subtotal: 2750,
+                  original_total: 2750,
+                  is_discountable: true,
+                  product: { id: buyProductId },
+                },
+              ],
+            }
+
+            const result = await service.computeActions(
+              [buyXGetXPromotion.code!, buyXGetXPromotion2.code!],
+              context
+            )
+
+            const serializedResult = JSON.parse(JSON.stringify(result))
+
+            expect(serializedResult).toHaveLength(2)
+            expect(serializedResult).toEqual(
+              expect.arrayContaining([
+                {
+                  action: "addItemAdjustment",
+                  item_id: getProductId,
+                  amount: 500,
+                  code: buyXGetXPromotion.code!,
+                },
+                {
+                  action: "addItemAdjustment",
+                  item_id: getProductId,
+                  amount: 250,
+                  code: "TEST_BUYGET_PROMOTION_2",
+                },
+              ])
+            )
+          })
+
+          it("should apply buyget promotion multiple times until eligible quantity is exhausted on a single item", async () => {
+            const buyAndGetProductId = "item_cotton_tshirt"
+
+            const buyXGetXPromotion = await createDefaultPromotion(service, {
+              code: "TEST_BUYGET_PROMOTION",
+              type: PromotionType.BUYGET,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: false,
+              is_automatic: false,
+              application_method: {
+                allocation: "each",
+                value: 100,
+                max_quantity: 100,
+                type: "percentage",
+                target_type: "items",
+                apply_to_quantity: 1,
+                buy_rules_min_quantity: 2,
+                target_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyAndGetProductId],
+                  },
+                ],
+                buy_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyAndGetProductId],
+                  },
+                ],
+              },
+            })
+
+            const context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: buyAndGetProductId,
+                  quantity: 10,
+                  subtotal: 2500,
+                  original_total: 2500,
+                  is_discountable: true,
+                  product: { id: buyAndGetProductId },
+                },
+              ],
+            }
+
+            const result = await service.computeActions(
+              [buyXGetXPromotion.code!],
+              context
+            )
+
+            const serializedResult = JSON.parse(JSON.stringify(result))
+
+            expect(serializedResult).toHaveLength(1)
+            // Should apply buy get promotion 3 times to the same item
+            // Total eligible quantity is 10
+            // After first application, (10 - 3 [2 buy + 1 get]) = 7 (eligible) - 250
+            // After second application, (7 - 3 [2 buy + 1 get]) = 4 (eligible) - 250
+            // After third application, (4 - 3 [2 buy + 1 get]) = 1 (eligible) - 250
+            // Fourth application, not eligible as it requires atleast 2 eligible items to buy and 1 eligible item to get
+            expect(serializedResult).toEqual(
+              expect.arrayContaining([
+                {
+                  action: "addItemAdjustment",
+                  item_id: buyAndGetProductId,
+                  amount: 750,
+                  code: buyXGetXPromotion.code!,
+                },
+              ])
+            )
+          })
+
+          it("should apply buyget promotion multiple times until max quantity is reached on a single item", async () => {
+            const buyAndGetProductId = "item_cotton_tshirt"
+
+            const buyXGetXPromotion = await createDefaultPromotion(service, {
+              code: "TEST_BUYGET_PROMOTION",
+              type: PromotionType.BUYGET,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: false,
+              is_automatic: false,
+              application_method: {
+                allocation: "each",
+                value: 100,
+                max_quantity: 2,
+                type: "percentage",
+                target_type: "items",
+                apply_to_quantity: 1,
+                buy_rules_min_quantity: 2,
+                target_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyAndGetProductId],
+                  },
+                ],
+                buy_rules: [
+                  {
+                    operator: "eq",
+                    attribute: "items.product.id",
+                    values: [buyAndGetProductId],
+                  },
+                ],
+              },
+            })
+
+            const context = {
+              currency_code: "usd",
+              items: [
+                {
+                  id: buyAndGetProductId,
+                  quantity: 10,
+                  subtotal: 2500,
+                  original_total: 2500,
+                  is_discountable: true,
+                  product: { id: buyAndGetProductId },
+                },
+              ],
+            }
+
+            const result = await service.computeActions(
+              [buyXGetXPromotion.code!],
+              context
+            )
+
+            const serializedResult = JSON.parse(JSON.stringify(result))
+            expect(serializedResult).toHaveLength(1)
+            // Should apply buy get promotion 2 times (max quantity) to the same item
+            // Total eligible quantity is 10
+            // After first application, (10 - 2 [2 buy + 1 get]) = 8 (eligible) - 250
+            // After second application, (8 - 2 [2 buy + 1 get]) = 6 (eligible) - 250
+            // Third application, not eligible it exceeds max quantity
+            expect(serializedResult).toEqual(
+              expect.arrayContaining([
+                {
+                  action: "addItemAdjustment",
+                  item_id: buyAndGetProductId,
+                  amount: 500,
+                  code: buyXGetXPromotion.code!,
                 },
               ])
             )
