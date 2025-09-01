@@ -388,6 +388,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -424,6 +426,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -445,6 +449,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
             } as any,
           }).catch((e) => e)
@@ -458,6 +464,8 @@ moduleIntegrationTestRunner({
           const error = await createDefaultPromotion(service, {
             type: PromotionType.BUYGET,
             application_method: {
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -486,6 +494,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules: [
                 {
                   attribute: "product_collection.id",
@@ -513,6 +523,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -1058,6 +1070,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -1276,6 +1290,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               target_rules: [
                 {
