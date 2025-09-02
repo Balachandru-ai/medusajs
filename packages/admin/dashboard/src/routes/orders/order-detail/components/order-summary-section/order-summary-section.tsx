@@ -634,7 +634,7 @@ const CostBreakdown = ({
                   className="flex items-center justify-between gap-x-2"
                 >
                   <div>
-                    <span className="txt-small text-ui-fg-subtle font-medium">
+                    <span className="txt-small">
                       {sm.name}
                       {sm.detail.return_id &&
                         ` (${t("fields.returnShipping")})`}{" "}
