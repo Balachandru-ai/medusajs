@@ -648,6 +648,116 @@ describe("Transaction Orchestrator", () => {
     )
   })
 
+  it("Should not retry steps X times automatically when flag 'autoRetry' is set to false and then compensate steps afterward", async () => {
+    const mocks = {
+      one: jest.fn().mockImplementation((payload) => {
+        return payload
+      }),
+      compensateOne: jest.fn().mockImplementation((payload) => {
+        return payload
+      }),
+      two: jest.fn().mockImplementation((payload) => {
+        throw new Error()
+      }),
+      compensateTwo: jest.fn().mockImplementation((payload) => {
+        return payload
+      }),
+    }
+
+    async function handler(
+      actionId: string,
+      functionHandlerType: TransactionHandlerType,
+      payload: TransactionPayload
+    ) {
+      const command = {
+        firstMethod: {
+          [TransactionHandlerType.INVOKE]: () => {
+            mocks.one(payload)
+          },
+          [TransactionHandlerType.COMPENSATE]: () => {
+            mocks.compensateOne(payload)
+          },
+        },
+        secondMethod: {
+          [TransactionHandlerType.INVOKE]: () => {
+            mocks.two(payload)
+          },
+          [TransactionHandlerType.COMPENSATE]: () => {
+            mocks.compensateTwo(payload)
+          },
+        },
+      }
+
+      return command[actionId][functionHandlerType](payload)
+    }
+
+    const flow: TransactionStepsDefinition = {
+      next: {
+        action: "firstMethod",
+        maxRetries: 3,
+        autoRetry: false,
+        next: {
+          action: "secondMethod",
+          maxRetries: 3,
+          autoRetry: false,
+        },
+      },
+    }
+
+    const strategy = new TransactionOrchestrator({
+      id: "transaction-name",
+      definition: flow,
+    })
+
+    const transaction = await strategy.beginTransaction({
+      transactionId: "transaction_id_123",
+      handler,
+    })
+
+    await strategy.resume(transaction)
+
+    expect(transaction.transactionId).toBe("transaction_id_123")
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(1)
+
+    await strategy.resume(transaction)
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(2)
+
+    await strategy.resume(transaction)
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(3)
+
+    await strategy.resume(transaction)
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(4)
+
+    expect(transaction.getState()).toBe(TransactionState.REVERTED)
+    expect(mocks.compensateOne).toHaveBeenCalledTimes(1)
+
+    expect(mocks.two).nthCalledWith(
+      1,
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          attempt: 1,
+        }),
+      })
+    )
+
+    expect(mocks.two).nthCalledWith(
+      4,
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          attempt: 4,
+        }),
+      })
+    )
+  })
+
   it("Should fail a transaction if any step fails after retrying X time to compensate it", async () => {
     const mocks = {
       one: jest.fn().mockImplementation((payload) => {

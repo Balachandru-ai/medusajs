@@ -48,6 +48,12 @@ export type TransactionStepsDefinition = {
   maxRetries?: number
 
   /**
+   * If true, the step will be retried automatically in case of a temporary failure.
+   * The default is true.
+   */
+  autoRetry?: boolean
+
+  /**
    * The interval (in seconds) between retry attempts after a temporary failure.
    * The default is to retry immediately.
    */

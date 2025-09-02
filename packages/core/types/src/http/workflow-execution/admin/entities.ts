@@ -130,6 +130,11 @@ export interface WorkflowExecutionDefinition {
    */
   maxRetries?: number
   /**
+   * If true, the step will be retried automatically in case of a temporary failure.
+   * The default is true.
+   */
+  autoRetry?: boolean
+  /**
    * If true, the workflow will not wait for their sibling steps to complete before moving to the next step.
    */
   noWait?: boolean

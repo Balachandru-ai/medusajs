@@ -54,6 +54,7 @@ export class TransactionStep {
   }
   attempts: number
   failures: number
+  temporaryFailedAt: number | null
   lastAttempt: number | null
   retryRescheduledAt: number | null
   hasScheduledRetry: boolean
@@ -199,7 +200,8 @@ export class TransactionStep {
       (!this.isCompensating() &&
         state === TransactionStepState.NOT_STARTED &&
         flowState === TransactionState.INVOKING) ||
-      status === TransactionStepStatus.TEMPORARY_FAILURE
+      (status === TransactionStepStatus.TEMPORARY_FAILURE &&
+        !this.temporaryFailedAt)
     )
   }
 

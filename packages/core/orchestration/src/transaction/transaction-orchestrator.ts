@@ -419,6 +419,16 @@ export class TransactionOrchestrator extends EventEmitter {
 
         continue
       } else if (curState.status === TransactionStepStatus.TEMPORARY_FAILURE) {
+        if (
+          !stepDef.temporaryFailedAt &&
+          stepDef.definition.autoRetry === false
+        ) {
+          stepDef.temporaryFailedAt = Date.now()
+          continue
+        }
+
+        stepDef.temporaryFailedAt = null
+
         currentSteps.push(stepDef)
 
         if (!stepDef.canRetry()) {
@@ -677,10 +687,13 @@ export class TransactionOrchestrator extends EventEmitter {
     stopExecution: boolean
     transactionIsCancelling?: boolean
   }> {
+    const result = {
+      stopExecution: false,
+      transactionIsCancelling: false,
+    }
+
     if (SkipExecutionError.isSkipExecutionError(error)) {
-      return {
-        stopExecution: false,
-      }
+      return result
     }
 
     step.failures++
@@ -773,10 +786,15 @@ export class TransactionOrchestrator extends EventEmitter {
       if (step.hasTimeout()) {
         cleaningUp.push(transaction.clearStepTimeout(step))
       }
+    } else {
+      if (
+        step.getStates().status === TransactionStepStatus.TEMPORARY_FAILURE &&
+        step.definition.autoRetry === false
+      ) {
+        result.stopExecution = true
+      }
     }
 
-    let transactionIsCancelling = false
-    let shouldEmit = true
     try {
       await transaction.saveCheckpoint()
     } catch (error) {
@@ -784,11 +802,11 @@ export class TransactionOrchestrator extends EventEmitter {
         throw error
       }
 
-      transactionIsCancelling =
+      result.transactionIsCancelling =
         SkipCancelledExecutionError.isSkipCancelledExecutionError(error)
 
       if (SkipExecutionError.isSkipExecutionError(error)) {
-        shouldEmit = false
+        result.stopExecution = true
       }
     }
 
@@ -798,7 +816,7 @@ export class TransactionOrchestrator extends EventEmitter {
 
     await promiseAll(cleaningUp)
 
-    if (shouldEmit) {
+    if (!result.stopExecution) {
       const eventName = step.isCompensating()
         ? DistributedTransactionEvent.COMPENSATE_STEP_FAILURE
         : DistributedTransactionEvent.STEP_FAILURE
@@ -806,8 +824,8 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     return {
-      stopExecution: !shouldEmit,
-      transactionIsCancelling,
+      stopExecution: result.stopExecution,
+      transactionIsCancelling: result.transactionIsCancelling,
     }
   }
 
