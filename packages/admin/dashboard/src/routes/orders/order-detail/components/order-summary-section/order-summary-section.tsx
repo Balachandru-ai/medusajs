@@ -678,9 +678,7 @@ const CostBreakdown = ({
                   className="flex items-center justify-between gap-x-2"
                 >
                   <div>
-                    <span className="txt-small text-ui-fg-subtle font-medium">
-                      {t(`fields.${type}`)}
-                    </span>
+                    <span className="txt-small">{t(`fields.${type}`)}</span>
                   </div>
                   <div className="relative flex-1">
                     <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
@@ -793,12 +791,8 @@ const DiscountAndTotalBreakdown = ({
                 className="flex items-center justify-between gap-x-2"
               >
                 <div className="flex gap-1">
-                  <span className="txt-small text-ui-fg-subtle font-medium">
-                    {t(`fields.${type}`)}
-                  </span>
-                  <span className="txt-small text-ui-fg-subtle font-medium">
-                    ({codes.join(", ")})
-                  </span>
+                  <span className="txt-small">{t(`fields.${type}`)}</span>
+                  <span className="txt-small">({codes.join(", ")})</span>
                 </div>
                 <div className="relative flex-1">
                   <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
