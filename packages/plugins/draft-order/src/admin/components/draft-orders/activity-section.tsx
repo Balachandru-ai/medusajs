@@ -219,13 +219,13 @@ function getEditActivityItems(
     return a.ordering - b.ordering
   })
 
+  const addedPromotionMap = new Map<string, true>()
+  const removedPromotionMap = new Map<string, true>()
+
   for (const action of orderedActions) {
     if (!action.details) {
       continue
     }
-
-    const addedPromotionMap = new Map<string, true>()
-    const removedPromotionMap = new Map<string, true>()
 
     switch (action.action) {
       case "ITEM_ADD":
