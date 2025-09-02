@@ -1,5 +1,5 @@
 ---
-"@medusajs/core-flows": major
+"@medusajs/core-flows": patch
 ---
 
 feat(core-flows): return type in createPaymentCollectionForCartWorkflow
