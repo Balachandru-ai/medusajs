@@ -1,6 +1,7 @@
 import {
   CartDTO,
   CreatePaymentCollectionForCartWorkflowInputDTO,
+  PaymentCollectionDTO,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import {
@@ -86,7 +87,7 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
   },
   (
     input: WorkflowData<CreatePaymentCollectionForCartWorkflowInputDTO>
-  ): WorkflowData<void> => {
+  ): WorkflowResponse<PaymentCollectionDTO[]> => {
     const cart = useRemoteQueryStep({
       entry_point: "cart",
       fields: [
