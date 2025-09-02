@@ -9,6 +9,7 @@ import {
   parallelize,
   transform,
   WorkflowData,
+  WorkflowResponse
 } from "@medusajs/framework/workflows-sdk"
 import { createRemoteLinkStep } from "../../common/steps/create-remote-links"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
@@ -130,5 +131,7 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
     createRemoteLinkStep(cartPaymentLink).config({
       name: "cart-payment-collection-link",
     })
+
+    return new WorkflowResponse(created)
   }
 )
