@@ -8,7 +8,9 @@ export const metadata = {
 
 # {metadata.title}
 
-This method retrieves a list of records.
+This method of a module's service retrieves a list of records.
+
+The method's name is `listDataModel`, where `DataModel` is the plural pascal-case name of the data model.
 
 ## Retrieve List of Records
 
@@ -30,11 +32,11 @@ const posts = await postModuleService.listPosts({
 
 ### Parameters
 
-To retrieve records matching a set of filters, pass an object of the filters as a first parameter.
+To retrieve records matching a set of filters, pass an object of the filters as the first parameter.
 
 <Note>
 
-Learn more about accepted filters in [this documentation](../../tips/filtering/page.mdx).
+Refer to the [Filtering](../../tips/filtering/page.mdx) reference for more information on accepted filters and examples.
 
 </Note>
 
@@ -60,7 +62,7 @@ const posts = await postModuleService.listPosts({}, {
 
 ### Parameters
 
-To retrieve records with their relations, pass as a second parameter an object having a `relations` property. `relations`'s value is an array of relation names.
+To retrieve records with their relations, pass an object with a `relations` property as the second parameter. `relations`'s value is an array of relation names.
 
 ### Returns
 
@@ -78,7 +80,7 @@ const posts = await postModuleService.listPosts({}, {
 
 ### Parameters
 
-By default, retrieved records have all their properties. To select specific properties to retrieve, pass in the second object parameter a `select` property.
+By default, retrieved records have all their properties. To select specific properties to retrieve, pass a `select` property in the second object parameter.
 
 `select`'s value is an array of property names to retrieve.
 
@@ -88,7 +90,7 @@ The method returns an array of the first `15` records matching the filters.
 
 ---
 
-## Paginate Relations
+## Paginate Records
 
 ```ts
 const posts = await postModuleService.listPosts({}, {
@@ -122,7 +124,7 @@ const posts = await postModuleService.listPosts({}, {
 
 ### Parameters
 
-To sort records by one or more properties, pass to the second object parameter the `order` property. Its value is an object whose keys are the property names, and values can either be:
+To sort records by one or more properties, pass an `order` property in the second object parameter. Its value is an object whose keys are the property names, and values can either be:
 
 - `ASC` to sort by this property in the ascending order.
 - `DESC` to sort by this property in the descending order.

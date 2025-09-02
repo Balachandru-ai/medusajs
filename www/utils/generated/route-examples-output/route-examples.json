@@ -398,6 +398,9 @@
   "POST /admin/orders/{id}/fulfillments/{fulfillmentid}/mark-as-delivered": {
     "js-sdk": "sdk.admin.order.markAsDelivered(\n  \"order_123\",\n  \"ful_123\",\n)\n.then(({ order }) => {\n  console.log(order)\n})"
   },
+  "GET /admin/orders/{id}/shipping-options": {
+    "js-sdk": "sdk.admin.order.listShippingOptions(\"order_123\")\n.then(({ shipping_options }) => {\n  console.log(shipping_options)\n})"
+  },
   "GET /admin/orders/{id}/changes": {
     "js-sdk": "sdk.admin.order.listChanges(\"order_123\")\n.then(({ order_changes }) => {\n  console.log(order_changes)\n})"
   },
@@ -636,7 +639,7 @@
     "js-sdk": "sdk.admin.promotion.list()\n.then(({ promotions, count, limit, offset }) => {\n  console.log(promotions)\n})"
   },
   "POST /admin/promotions": {
-    "js-sdk": "sdk.admin.promotion.create({ \n  name: \"My Promotion\",\n  description: \"This is a test promotion\",\n  code: \"PROMO123\",\n  starts_at: \"2021-01-01\",\n  ends_at: \"2021-01-01\",\n})\n.then(({ promotion }) => {\n  console.log(promotion)\n})"
+    "js-sdk": "sdk.admin.promotion.create({\n  name: \"My Promotion\",\n  description: \"This is a test promotion\",\n  code: \"PROMO123\",\n  starts_at: \"2021-01-01\",\n  ends_at: \"2021-01-01\",\n})\n.then(({ promotion }) => {\n  console.log(promotion)\n})"
   },
   "POST /admin/promotions/{id}": {
     "js-sdk": "sdk.admin.promotion.update(\"promo_123\", {\n  code: \"PROMO123\",\n})\n.then(({ promotion }) => {\n  console.log(promotion)\n})"
@@ -919,6 +922,21 @@
   },
   "GET /admin/workflows-executions/{id}": {
     "js-sdk": "sdk.admin.workflowExecution.retrieve(\"wrk_123\")\n.then(({ workflow_execution }) => {\n  console.log(workflow_execution)\n})"
+  },
+  "POST /admin/shipping-option-types": {
+    "js-sdk": "sdk.admin.shippingOptionType.create({\n  label: \"Standard\",\n  code: \"standard\",\n  description: \"Ship in 2-3 days.\"\n})\n.then(({ shipping_option_type }) => {\n  console.log(shipping_option_type)\n})"
+  },
+  "POST /admin/shipping-option-types/{id}": {
+    "js-sdk": "sdk.admin.shippingOptionType.update(\"sotype_123\", {\n  code: \"express\"\n})\n.then(({ shipping_option_type }) => {\n  console.log(shipping_option_type)\n})"
+  },
+  "GET /admin/shipping-option-types": {
+    "js-sdk": "sdk.admin.shippingOptionType.list()\n.then(({ shipping_option_types, count, limit, offset }) => {\n  console.log(shipping_option_types)\n})"
+  },
+  "GET /admin/shipping-option-types/{id}": {
+    "js-sdk": "sdk.admin.shippingOptionType.retrieve(\"sotype_123\")\n.then(({ shipping_option_type }) => {\n  console.log(shipping_option_type)\n})"
+  },
+  "DELETE /admin/shipping-option-types/{id}": {
+    "js-sdk": "sdk.admin.shippingOptionType.delete(\"sotype_123\")\n.then(({ deleted }) => {\n  console.log(deleted)\n})"
   },
   "POST /auth/{actor}/{method}/register": {
     "js-sdk": "await sdk.auth.register(\n  \"customer\",\n  \"emailpass\",\n  {\n    email: \"customer@gmail.com\",\n    password: \"supersecret\"\n  }\n)\n\n// all subsequent requests will use the token in the header\nconst { customer } = await sdk.store.customer.create({\n  email: \"customer@gmail.com\",\n  password: \"supersecret\"\n})"

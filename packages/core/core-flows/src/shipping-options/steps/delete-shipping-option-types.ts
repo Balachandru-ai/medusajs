@@ -10,6 +10,8 @@ export type DeleteShippingOptionTypesStepInput = string[]
 export const deleteShippingOptionTypesStepId = "delete-shipping-option-types"
 /**
  * This step deletes one or more shipping option types.
+ * 
+ * @since 2.10.0
  */
 export const deleteShippingOptionTypesStep = createStep(
   deleteShippingOptionTypesStepId,

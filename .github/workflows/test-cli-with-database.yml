@@ -71,22 +71,22 @@ jobs:
         working-directory: ../cli-test
 
       - name: Run migrations
-        run: npx medusa db:migrate
+        run: yarn medusa db:migrate
         working-directory: ../cli-test
 
       - name: Create admin user
-        run: npx medusa user -e test@test.com -p password -i admin_123
+        run: yarn medusa user -e test@test.com -p password -i admin_123
         working-directory: ../cli-test
 
       - name: Run development server
-        run: npx medusa develop &
+        run: yarn medusa develop &
         working-directory: ../cli-test
 
       - name: Testing development server
         uses: ./.github/actions/test-server
 
       - name: Starting medusa
-        run: npx medusa start &
+        run: yarn medusa start &
         working-directory: ../cli-test
 
       - name: Testing server

@@ -1,6 +1,5 @@
 import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
 import { MigrationScriptsMigrator } from "@medusajs/framework/migrations"
 import {
   ContainerRegistrationKeys,
@@ -10,7 +9,7 @@ import {
 import { dirname, join } from "path"
 
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
-import { MedusaContainer, PluginDetails } from "@medusajs/types"
+import { Logger, MedusaContainer, PluginDetails } from "@medusajs/types"
 import { initializeContainer } from "../../loaders"
 import { ensureDbExists } from "../utils"
 
@@ -22,20 +21,23 @@ const TERMINAL_SIZE = process.stdout.columns
  */
 export async function runMigrationScripts({
   directory,
+  container,
+  logger,
 }: {
   directory: string
+  container: MedusaContainer
+  logger: Logger
 }): Promise<boolean> {
   let onApplicationPrepareShutdown: () => Promise<void> = async () =>
     Promise.resolve()
   let onApplicationShutdown: () => Promise<void> = async () => Promise.resolve()
-  let container_: MedusaContainer
+
   let plugins: PluginDetails[]
 
   try {
-    container_ = await initializeContainer(directory)
-    await ensureDbExists(container_)
+    await ensureDbExists(container)
 
-    const configModule = container_.resolve(
+    const configModule = container.resolve(
       ContainerRegistrationKeys.CONFIG_MODULE
     )
 
@@ -43,7 +45,7 @@ export async function runMigrationScripts({
 
     mergePluginModules(configModule, plugins)
 
-    const resources = await loadResources(plugins)
+    const resources = await loadResources(plugins, logger)
     onApplicationPrepareShutdown = resources.onApplicationPrepareShutdown
     onApplicationShutdown = resources.onApplicationShutdown
 
@@ -52,7 +54,7 @@ export async function runMigrationScripts({
       ...plugins.map((plugin) => join(plugin.resolve, "migration-scripts")),
     ]
 
-    const migrator = new MigrationScriptsMigrator({ container: container_ })
+    const migrator = new MigrationScriptsMigrator({ container: container })
     await migrator.ensureMigrationsTable()
     const pendingScripts = await migrator.getPendingMigrations(
       scriptsSourcePaths
@@ -63,15 +65,15 @@ export async function runMigrationScripts({
       return true
     }
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Pending migration scripts to execute")
     logger.info(`${pendingScripts.join("\n")}`)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Running migration scripts...")
     await migrator.run(scriptsSourcePaths)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migration scripts completed")
 
     return true
@@ -81,7 +83,10 @@ export async function runMigrationScripts({
   }
 }
 
-async function loadResources(plugins: any): Promise<{
+async function loadResources(
+  plugins: any,
+  logger: Logger
+): Promise<{
   onApplicationPrepareShutdown: () => Promise<void>
   onApplicationShutdown: () => Promise<void>
 }> {
@@ -97,7 +102,7 @@ async function loadResources(plugins: any): Promise<{
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   const medusaAppResources = await new MedusaAppLoader().load()
   const onApplicationPrepareShutdown =
@@ -117,9 +122,14 @@ const main = async function ({
   directory: string
   container?: MedusaContainer
 }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     const migrated = await runMigrationScripts({
       directory,
+      container: container,
+      logger,
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {

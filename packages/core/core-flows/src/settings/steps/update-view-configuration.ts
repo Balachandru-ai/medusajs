@@ -12,6 +12,13 @@ export type UpdateViewConfigurationStepInput = {
 
 export const updateViewConfigurationStepId = "update-view-configuration"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const updateViewConfigurationStep = createStep(
   updateViewConfigurationStepId,
   async (input: UpdateViewConfigurationStepInput, { container }) => {

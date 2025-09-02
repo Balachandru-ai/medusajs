@@ -135,6 +135,7 @@ describe("IndexModuleService query", function () {
           name: "Product",
           data: {
             id: "prod_1",
+            title: "Product 1",
           },
         },
         {
@@ -296,7 +297,24 @@ describe("IndexModuleService query", function () {
       },
     })
 
+    const { data: dataNot } = await module.query({
+      fields: ["product.*", "product.variants.*", "product.variants.prices.*"],
+      filters: {
+        product: {
+          variants: {
+            sku: {
+              $not: {
+                $eq: null,
+              },
+            },
+          },
+        },
+      },
+    })
+
     expect(data.length).toEqual(1)
+    expect(dataNot.length).toEqual(1)
+    expect(dataNot).toEqual(data)
 
     const { data: data2 } = await module.query({
       fields: ["product.*", "product.variants.*", "product.variants.prices.*"],
@@ -340,6 +358,7 @@ describe("IndexModuleService query", function () {
       },
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_2",
@@ -399,6 +418,7 @@ describe("IndexModuleService query", function () {
       },
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_2",
@@ -456,6 +476,7 @@ describe("IndexModuleService query", function () {
       },
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_1",
@@ -499,6 +520,7 @@ describe("IndexModuleService query", function () {
     expect(dataAsc).toEqual([
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_2",
@@ -597,6 +619,7 @@ describe("IndexModuleService query", function () {
     expect(data).toEqual([
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_1",
@@ -646,6 +669,7 @@ describe("IndexModuleService query", function () {
     expect(data).toEqual([
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_1",
@@ -782,6 +806,7 @@ describe("IndexModuleService query", function () {
     expect(data).toEqual([
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_1",
@@ -922,6 +947,7 @@ describe("IndexModuleService query", function () {
     expect(data).toEqual([
       {
         id: "prod_1",
+        title: "Product 1",
         variants: [
           {
             id: "var_1",
@@ -936,5 +962,166 @@ describe("IndexModuleService query", function () {
         ],
       },
     ])
+  })
+
+  it("should query products filtering product not in [X]", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+        deep: {
+          a: 1,
+          obj: {
+            b: 15,
+          },
+        },
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.*"],
+      filters: {
+        product: {
+          $not: [
+            {
+              id: {
+                $in: ["prod_1"],
+              },
+            },
+          ],
+        },
+      },
+    })
+    expect(data).toEqual(expected)
+  })
+
+  it("should query products filtering product not in [X] using $nin", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+        deep: {
+          a: 1,
+          obj: {
+            b: 15,
+          },
+        },
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.*"],
+      filters: {
+        product: {
+          id: {
+            $nin: ["prod_1"],
+          },
+        },
+      },
+    })
+    expect(data).toEqual(expected)
+  })
+
+  it("should query products with variants.sku not in [X] and title eq", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+        deep: {
+          a: 1,
+          obj: {
+            b: 15,
+          },
+        },
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.*", "variants.*"],
+      filters: {
+        product: {
+          variants: {
+            sku: {
+              $nin: ["sku 123"],
+            },
+          },
+          title: {
+            $eq: "Product 2 title",
+          },
+        },
+      },
+    })
+    expect(data).toEqual(expected)
+  })
+
+  it("should query products filtering title like and not equal specific value", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+        deep: {
+          a: 1,
+          obj: {
+            b: 15,
+          },
+        },
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.*"],
+      filters: {
+        product: {
+          $and: [
+            {
+              title: {
+                $like: "Product%",
+              },
+            },
+            {
+              $not: {
+                title: {
+                  $eq: "Product 1",
+                },
+              },
+            },
+          ],
+        },
+      },
+    })
+    expect(data).toEqual(expected)
+  })
+
+  it("should query products filtering title using $ilike", async () => {
+    const expected = [
+      {
+        id: "prod_2",
+        title: "Product 2 title",
+      },
+    ]
+
+    const { data } = await module.query({
+      fields: ["product.id", "product.title"],
+      filters: {
+        product: {
+          title: {
+            $ilike: "PROdUCt 2%",
+          },
+        },
+      },
+    })
+    expect(data).toEqual(expected)
+
+    const { data: sensitive } = await module.query({
+      fields: ["product.id", "product.title"],
+      filters: {
+        product: {
+          title: {
+            $like: "PROdUCt 2%",
+          },
+        },
+      },
+    })
+    expect(sensitive).toEqual([])
   })
 })
