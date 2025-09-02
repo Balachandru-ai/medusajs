@@ -1067,7 +1067,8 @@
       "itemSubtotal": "Item Subtotal",
       "shippingSubtotal": "Shipping Subtotal",
       "discountSubtotal": "Discount Subtotal",
-      "taxTotal": "Tax Total"
+      "taxTotal": "Tax Total",
+      "totalAfterDiscount": "Total After Discount"
     },
     "transfer": {
       "title": "Transfer ownership",
