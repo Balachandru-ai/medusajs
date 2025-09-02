@@ -423,6 +423,7 @@ export class TransactionOrchestrator extends EventEmitter {
           !stepDef.temporaryFailedAt &&
           stepDef.definition.autoRetry === false
         ) {
+          stepDef.temporaryFailedAt = Date.now()
           continue
         }
 
@@ -786,9 +787,14 @@ export class TransactionOrchestrator extends EventEmitter {
         cleaningUp.push(transaction.clearStepTimeout(step))
       }
     } else {
+      const isAsync = step.isCompensating()
+        ? step.definition.compensateAsync
+        : step.definition.async
+
       if (
         step.getStates().status === TransactionStepStatus.TEMPORARY_FAILURE &&
-        step.definition.autoRetry === false
+        step.definition.autoRetry === false &&
+        isAsync
       ) {
         step.temporaryFailedAt = Date.now()
         result.stopExecution = true
