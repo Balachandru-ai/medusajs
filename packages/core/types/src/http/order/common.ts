@@ -1071,6 +1071,11 @@ export interface BaseOrderChange {
  */
 export interface BaseOrderChangeAction {
   /**
+   * The ordering of the order change action
+   */
+  ordering: number
+
+  /**
    * The ID of the order change action
    */
   id: string
