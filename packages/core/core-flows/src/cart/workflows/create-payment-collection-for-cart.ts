@@ -87,7 +87,7 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
   },
   (
     input: WorkflowData<CreatePaymentCollectionForCartWorkflowInputDTO>
-  ): WorkflowResponse<PaymentCollectionDTO[]> => {
+  ): WorkflowResponse<PaymentCollectionDTO> => {
     const cart = useRemoteQueryStep({
       entry_point: "cart",
       fields: [
@@ -133,6 +133,6 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
       name: "cart-payment-collection-link",
     })
 
-    return new WorkflowResponse(created)
+    return new WorkflowResponse(created[0])
   }
 )
