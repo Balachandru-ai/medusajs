@@ -415,6 +415,9 @@ export class TransactionOrchestrator extends EventEmitter {
               stepDef.definition.retryIntervalAwaiting!
             )
           }
+        } else if (stepDef.retryRescheduledAt) {
+          // The step is not configured for awaiting retry but is manually force to retry
+          nextSteps.push(stepDef)
         }
 
         continue
@@ -573,6 +576,38 @@ export class TransactionOrchestrator extends EventEmitter {
       stopExecution: !shouldEmit,
       transactionIsCancelling,
     }
+  }
+
+  private static async retryStep(
+    transaction: DistributedTransactionType,
+    step: TransactionStep
+  ): Promise<void> {
+    if (!step.retryRescheduledAt) {
+      step.hasScheduledRetry = true
+      step.retryRescheduledAt = Date.now()
+
+      await transaction.scheduleRetry(step, 0)
+    }
+
+    transaction.getFlow().hasWaitingSteps = true
+
+    try {
+      await transaction.saveCheckpoint()
+    } catch (error) {
+      if (!TransactionOrchestrator.isExpectedError(error)) {
+        throw error
+      }
+    }
+
+    const cleaningUp: Promise<unknown>[] = []
+    if (step.hasRetryScheduled()) {
+      cleaningUp.push(transaction.clearRetry(step))
+    }
+    if (step.hasTimeout()) {
+      cleaningUp.push(transaction.clearStepTimeout(step))
+    }
+
+    await promiseAll(cleaningUp)
   }
 
   private static async skipStep({
@@ -1750,6 +1785,50 @@ export class TransactionOrchestrator extends EventEmitter {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
         `Cannot skip a step when status is ${step.getStates().status}`
+      )
+    }
+
+    return curTransaction
+  }
+
+  /**
+   * Manually force a step to retry even if it is still in awaiting status
+   * @param responseIdempotencyKey - The idempotency key for the step
+   * @param handler - The handler function to execute the step
+   * @param transaction - The current transaction. If not provided it will be loaded based on the responseIdempotencyKey
+   */
+  public async retryStep({
+    responseIdempotencyKey,
+    handler,
+    transaction,
+    onLoad,
+  }: {
+    responseIdempotencyKey: string
+    handler?: TransactionStepHandler
+    transaction?: DistributedTransactionType
+    onLoad?: (transaction: DistributedTransactionType) => Promise<void> | void
+  }): Promise<DistributedTransactionType> {
+    const [curTransaction, step] =
+      await TransactionOrchestrator.getTransactionAndStepFromIdempotencyKey(
+        responseIdempotencyKey,
+        handler,
+        transaction
+      )
+
+    if (onLoad) {
+      await onLoad(curTransaction)
+    }
+
+    if (step.getStates().status === TransactionStepStatus.WAITING) {
+      this.emit(DistributedTransactionEvent.RESUME, {
+        transaction: curTransaction,
+      })
+
+      await TransactionOrchestrator.retryStep(curTransaction, step)
+    } else {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        `Cannot retry step when status is ${step.getStates().status}`
       )
     }
 

@@ -55,6 +55,10 @@ import {
   step1CompensateMock as step1CompensateMockAutoRetriesFalse,
   step2CompensateMock as step2CompensateMockAutoRetriesFalse,
 } from "../__fixtures__/workflow_1_auto_retries_false"
+import {
+  step1InvokeMock as step1InvokeMockManualRetry,
+  step2InvokeMock as step2InvokeMockManualRetry,
+} from "../__fixtures__/workflow_1_manual_retry_step"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
 
 jest.setTimeout(60000)
@@ -365,6 +369,44 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           expect(execution.length).toEqual(1)
           expect(execution[0].state).toEqual(TransactionState.REVERTED)
         })
+      })
+
+      it("should manually retry a step that is taking too long to finish", (done) => {
+        const transactionId = "transaction-manual-retry" + ulid()
+        const workflowId = "workflow_1_manual_retry_step"
+
+        void workflowOrcModule
+          .run(workflowId, {
+            input: {},
+            transactionId,
+          })
+          .then(() => {
+            expect(step1InvokeMockManualRetry).toHaveBeenCalledTimes(1)
+            expect(step2InvokeMockManualRetry).toHaveBeenCalledTimes(1)
+
+            void workflowOrcModule.retryStep({
+              idempotencyKey: {
+                workflowId,
+                transactionId,
+                stepId: "step_2",
+                action: "invoke",
+              },
+            })
+          })
+
+        workflowOrcModule.subscribe({
+          workflowId,
+          transactionId,
+          subscriber: async (event) => {
+            if (event.eventType === "onFinish") {
+              expect(step1InvokeMockManualRetry).toHaveBeenCalledTimes(1)
+              expect(step2InvokeMockManualRetry).toHaveBeenCalledTimes(2)
+              done()
+            }
+          },
+        })
+
+        failTrap(done)
       })
 
       it("should retry steps X times automatically when maxRetries is set", (done) => {
