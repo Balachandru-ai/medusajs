@@ -63,6 +63,7 @@ import { getReturnableQuantity } from "../../../../../lib/rma"
 import { CopyPaymentLink } from "../copy-payment-link/copy-payment-link"
 import ReturnInfoPopover from "./return-info-popover"
 import ShippingInfoPopover from "./shipping-info-popover"
+import { formatPercentage } from "../../../../../lib/percentage-helpers.ts"
 
 type OrderSummarySectionProps = {
   order: AdminOrder
@@ -569,24 +570,33 @@ const CostBreakdown = ({
   const [isTaxOpen, setIsTaxOpen] = useState(false)
   const [isShippingOpen, setIsShippingOpen] = useState(false)
 
-  const taxes = useMemo(() => {
-    const taxes: { type: "item" | "shipping"; total: number }[] = []
-    if (order.original_item_tax_total) {
-      taxes.push({
-        type: "item",
-        total: order.original_item_tax_total,
+  const taxCodes = useMemo(() => {
+    const taxCodeMap: { [key: string]: { total: number; rate: number } } = {}
+
+    order.items.forEach((item) => {
+      item.tax_lines?.forEach((line) => {
+        const prevTotal = taxCodeMap[line.code]?.total || 0
+        taxCodeMap[line.code] = {
+          total: prevTotal + line.subtotal,
+          rate: line.rate,
+        }
       })
-    }
-    if (order.original_shipping_tax_total) {
-      taxes.push({
-        type: "shipping",
-        total: order.original_shipping_tax_total,
+    })
+
+    order.shipping_methods.forEach((sm) => {
+      sm.tax_lines?.forEach((line) => {
+        const prevTotal = taxCodeMap[line.code]?.total || 0
+        taxCodeMap[line.code] = {
+          total: prevTotal + line.subtotal,
+          rate: line.rate,
+        }
       })
-    }
-    return taxes
+    })
+
+    return taxCodeMap
   }, [order])
 
-  const hasTaxes = !!Object.keys(taxes).length
+  const hasTaxes = !!Object.keys(taxCodes).length
 
   return (
     <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
@@ -671,14 +681,17 @@ const CostBreakdown = ({
         </div>
         {isTaxOpen && (
           <div className="flex flex-col gap-1 pl-5">
-            {taxes.map(({ type, total }) => {
+            {Object.entries(taxCodes).map(([code, { total, rate }]) => {
               return (
                 <div
-                  key={type}
+                  key={code}
                   className="flex items-center justify-between gap-x-2"
                 >
-                  <div>
-                    <span className="txt-small">{t(`fields.${type}`)}</span>
+                  <div className="flex gap-1">
+                    <span className="txt-small">{code}</span>
+                    <span className="txt-small">
+                      ({formatPercentage(rate)})
+                    </span>
                   </div>
                   <div className="relative flex-1">
                     <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
