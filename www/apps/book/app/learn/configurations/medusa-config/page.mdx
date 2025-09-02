@@ -1103,17 +1103,7 @@ module.exports = {
 
 The `featureFlags` configuration allows you to manage enabled beta features in the Medusa application.
 
-Some features in the Medusa application are guarded by a feature flag. This ensures constant shipping of new features while maintaining the engine’s stability. You can enable or disable these features using the `featureFlags` configuration.
-
-The `featureFlags`'s value is an object whose keys are the names of the feature flags, and their values a boolean indicating whether the feature flag is enabled.
-
-<Note type="warning">
-
-Only enable feature flags in testing or development environments. Enabling a feature flag may introduce breaking changes or unexpected behavior.
-
-</Note>
-
-You can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/loaders/feature-flags).
+Learn more in the [Feature Flags](../../debugging-and-testing/feature-flags/page.mdx) chapter.
 
 ### Example
 
@@ -1125,12 +1115,6 @@ module.exports = defineConfig({
   },
   // ...
 })
-```
-
-After enabling a feature flag, make sure to run migrations, as the feature may introduce database changes:
-
-```bash
-npx medusa db:migrate
 ```
 
 ---
