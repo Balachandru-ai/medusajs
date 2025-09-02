@@ -423,7 +423,6 @@ export class TransactionOrchestrator extends EventEmitter {
           !stepDef.temporaryFailedAt &&
           stepDef.definition.autoRetry === false
         ) {
-          // stepDef.temporaryFailedAt = Date.now()
           continue
         }
 
