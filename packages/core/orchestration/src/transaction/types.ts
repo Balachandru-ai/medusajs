@@ -65,6 +65,11 @@ export type TransactionStepsDefinition = {
   retryIntervalAwaiting?: number
 
   /**
+   * The maximum number of times to retry a step even if its status is "TransactionStepStatus.WAITING".
+   */
+  maxAwaitingRetries?: number
+
+  /**
    * The maximum amount of time (in seconds) to wait for this step to complete.
    * This is NOT an execution timeout, the step will always be executed and wait for its response.
    * If the response is not received within the timeout set, it will be marked as "TransactionStepStatus.TIMEOUT" and the workflow will be reverted as soon as it receives the response.

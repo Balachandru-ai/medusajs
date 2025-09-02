@@ -148,6 +148,10 @@ export interface WorkflowExecutionDefinition {
    */
   retryIntervalAwaiting?: number
   /**
+   * The maximum number of times to retry a step even if its status is `TransactionStepStatus.WAITING`.
+   */
+  maxAwaitingRetries?: number
+  /**
    * If true, the response of this step will be stored.
    * Default is true.
    */

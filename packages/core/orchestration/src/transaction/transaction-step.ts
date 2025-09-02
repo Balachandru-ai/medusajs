@@ -190,7 +190,9 @@ export class TransactionStep {
       this.hasAwaitingRetry() &&
       this.lastAttempt &&
       Date.now() - this.lastAttempt >
-        this.definition.retryIntervalAwaiting! * 1e3
+        this.definition.retryIntervalAwaiting! * 1e3 &&
+      (!("maxAwaitingRetries" in this.definition) ||
+        this.attempts < this.definition.maxAwaitingRetries!)
     )
   }
 
