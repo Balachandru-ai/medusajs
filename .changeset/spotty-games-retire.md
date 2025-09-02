@@ -1,5 +1,5 @@
 ---
-"@medusajs/utils": minor
+"@medusajs/utils": patch
 "@medusajs/dashboard": patch
 "@medusajs/types": patch
 ---
