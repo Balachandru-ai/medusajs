@@ -285,6 +285,7 @@ export type TransactionFlow = {
   timedOutAt: number | null
   startedAt?: number
   cancelledAt?: number
+  temporaryFailedAt?: number | null
   state: TransactionState
   steps: {
     [key: string]: TransactionStep
