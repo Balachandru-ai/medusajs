@@ -10,10 +10,28 @@ import {
 
 import { sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
-import { queryKeysFactory } from "../../lib/query-key-factory"
+import { queryKeysFactory, TQueryKey } from "../../lib/query-key-factory"
 
 const VIEWS_QUERY_KEY = "views" as const
-export const viewsQueryKeys = queryKeysFactory(VIEWS_QUERY_KEY)
+const _viewsKeys = queryKeysFactory(VIEWS_QUERY_KEY) as TQueryKey<"views"> & {
+  columns: (entity: string) => any
+  active: (entity: string) => any
+  configurations: (entity: string, query?: any) => any
+}
+
+_viewsKeys.columns = function(entity: string) {
+  return [this.all, "columns", entity]
+}
+
+_viewsKeys.active = function(entity: string) {
+  return [this.detail(entity), "active"]
+}
+
+_viewsKeys.configurations = function(entity: string, query?: any) {
+  return [this.all, "configurations", entity, query]
+}
+
+export const viewsQueryKeys = _viewsKeys
 
 // Generic hook to get columns for any entity
 export const useEntityColumns = (entity: string, options?: Omit<
@@ -27,7 +45,7 @@ export const useEntityColumns = (entity: string, options?: Omit<
 >) => {
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.views.columns(entity),
-    queryKey: viewsQueryKeys.list(entity),
+    queryKey: viewsQueryKeys.columns(entity),
     ...options,
   })
 
@@ -52,7 +70,7 @@ export const useViewConfigurations = (
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.views.listConfigurations(entity, query),
-    queryKey: viewsQueryKeys.list(entity, query),
+    queryKey: viewsQueryKeys.configurations(entity, query),
     ...options,
   })
 
@@ -80,11 +98,13 @@ export const useActiveViewConfiguration = (
     "queryFn" | "queryKey"
   >
 ) => {
-  const { data, ...rest } = useQuery({
+  const query = useQuery({
     queryFn: () => sdk.admin.views.retrieveActiveConfiguration(entity),
-    queryKey: [viewsQueryKeys.detail(entity), "active"],
+    queryKey: viewsQueryKeys.active(entity),
     ...options,
   })
+
+  const { data, ...rest } = query
 
   return { ...data, ...rest }
 }
@@ -113,6 +133,7 @@ export const useViewConfiguration = (
   return { ...data, ...rest }
 }
 
+// Create view configuration with toast notifications
 export const useCreateViewConfiguration = (
   entity: string,
   options?: UseMutationOptions<
@@ -122,22 +143,23 @@ export const useCreateViewConfiguration = (
   >
 ) => {
   return useMutation({
-    mutationFn: (payload: HttpTypes.AdminCreateViewConfiguration) =>
+    mutationFn: (payload: Omit<HttpTypes.AdminCreateViewConfiguration, "entity">) =>
       sdk.admin.views.createConfiguration(entity, payload),
+    ...options,
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
+      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.configurations(entity) })
       // If set_active was true, also invalidate the active configuration
       if ((variables as any).set_active) {
         queryClient.invalidateQueries({
-          queryKey: [...viewsQueryKeys.detail(entity, "active")]
+          queryKey: viewsQueryKeys.active(entity)
         })
       }
       options?.onSuccess?.(data, variables, context)
     },
-    ...options,
   })
 }
 
+// Update view configuration
 export const useUpdateViewConfiguration = (
   entity: string,
   id: string,
@@ -150,12 +172,12 @@ export const useUpdateViewConfiguration = (
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminUpdateViewConfiguration) =>
       sdk.admin.views.updateConfiguration(entity, id, payload),
+    ...options,
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
+      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.configurations(entity) })
       queryClient.invalidateQueries({ queryKey: viewsQueryKeys.detail(id) })
       options?.onSuccess?.(data, variables, context)
     },
-    ...options,
   })
 }
 
@@ -171,19 +193,20 @@ export const useDeleteViewConfiguration = (
 ) => {
   return useMutation({
     mutationFn: () => sdk.admin.views.deleteConfiguration(entity, id),
+    ...options,
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
+      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.configurations(entity) })
       queryClient.invalidateQueries({ queryKey: viewsQueryKeys.detail(id) })
       // Also invalidate active configuration as it might have changed
       queryClient.invalidateQueries({
-        queryKey: [...viewsQueryKeys.detail(entity, "active")]
+        queryKey: viewsQueryKeys.active(entity)
       })
       options?.onSuccess?.(data, variables, context)
     },
-    ...options,
   })
 }
 
+// Set active view configuration
 export const useSetActiveViewConfiguration = (
   entity: string,
   options?: UseMutationOptions<
@@ -193,17 +216,23 @@ export const useSetActiveViewConfiguration = (
   >
 ) => {
   return useMutation({
-    mutationFn: (viewConfigurationId: string | null) =>
-      sdk.admin.views.setActiveConfiguration(entity, {
+    mutationFn: (viewConfigurationId: string | null) => {
+      return sdk.admin.views.setActiveConfiguration(entity, {
         view_configuration_id: viewConfigurationId
-      }),
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({
-        queryKey: [...viewsQueryKeys.detail(entity, "active")]
       })
-      queryClient.invalidateQueries({ queryKey: viewsQueryKeys.list(entity) })
-      options?.onSuccess?.(data, variables, context)
     },
     ...options,
+    onSuccess: async (data, variables, context) => {
+      // Invalidate active configuration
+      await queryClient.invalidateQueries({
+        queryKey: viewsQueryKeys.active(entity)
+      })
+      // Also invalidate the list as the active status might be shown there
+      await queryClient.invalidateQueries({ queryKey: viewsQueryKeys.configurations(entity) })
+      options?.onSuccess?.(data, variables, context)
+    },
+    onError: (error, variables, context) => {
+      options?.onError?.(error, variables, context)
+    },
   })
 }

@@ -19,7 +19,6 @@ export class Views {
     })
   }
 
-  // View configurations
   async listConfigurations(
     entity: string,
     query?: HttpTypes.AdminGetViewConfigurationsParams,

@@ -139,7 +139,10 @@ export async function initializeContainer(
     skipDbConnection?: boolean
   }
 ): Promise<MedusaContainer> {
+  // custom flags from medusa project
+  await featureFlagsLoader(rootDirectory)
   const configDir = await configLoader(rootDirectory, "medusa-config")
+  // core flags
   await featureFlagsLoader(join(__dirname, ".."))
 
   const customLogger = configDir.logger ?? defaultLogger

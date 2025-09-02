@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { HttpTypes } from "@medusajs/types"
 import { toast } from "@medusajs/ui"
 import { FetchError } from "@medusajs/js-sdk"
 import { useFeatureFlag } from "../providers/feature-flag-provider"
@@ -12,13 +11,8 @@ import {
   useSetActiveViewConfiguration as useSetActiveViewConfigurationBase,
 } from "./api/views"
 
-// Re-export the type for convenience
-export type ViewConfiguration = HttpTypes.AdminViewConfigurationResponse
-
 // Common error handler
 const handleError = (error: Error, message?: string) => {
-  console.error("View configuration error:", error)
-
   let errorMessage = message
   if (!errorMessage) {
     if (error instanceof FetchError) {
@@ -36,11 +30,12 @@ const handleError = (error: Error, message?: string) => {
 export const useViewConfigurations = (entity: string) => {
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
 
+  // List views
   const listViews = useViewConfigurationsBase(entity, { limit: 100 }, {
     enabled: isViewConfigEnabled && !!entity,
-
   })
 
+  // Active view
   const activeView = useActiveViewConfigurationBase(entity, {
     enabled: isViewConfigEnabled && !!entity,
   })
@@ -57,7 +52,8 @@ export const useViewConfigurations = (entity: string) => {
 
   // Set active view mutation
   const setActiveView = useSetActiveViewConfigurationBase(entity, {
-    onSuccess: () => { },
+    onSuccess: () => {
+    },
     onError: (error) => {
       handleError(error, "Failed to update active view")
     },
@@ -69,7 +65,7 @@ export const useViewConfigurations = (entity: string) => {
     activeView,
     createView,
     setActiveView,
-    isDefaultViewActive: activeView.data?.is_default_active ?? true,
+    isDefaultViewActive: activeView?.is_default_active ?? true,
   }), [
     isViewConfigEnabled,
     listViews,
@@ -79,6 +75,7 @@ export const useViewConfigurations = (entity: string) => {
   ])
 }
 
+// Hook for update/delete operations on a specific view
 export const useViewConfiguration = (entity: string, viewId: string) => {
   const updateView = useUpdateViewConfigurationBase(entity, viewId, {
     onSuccess: () => {
@@ -91,7 +88,7 @@ export const useViewConfiguration = (entity: string, viewId: string) => {
 
   const deleteView = useDeleteViewConfigurationBase(entity, viewId, {
     onSuccess: () => {
-      toast.success("View deleted")
+      toast.success("View deleted successfully")
     },
     onError: (error) => {
       handleError(error, "Failed to delete view")
