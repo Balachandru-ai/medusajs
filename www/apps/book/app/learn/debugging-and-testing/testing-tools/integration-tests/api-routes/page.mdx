@@ -632,3 +632,26 @@ const response = await api.post(`/custom`, form, {
   },
 })
 ```
+
+---
+
+## Write Tests for Feature-Flagged API Routes
+
+If your API route is hidden behind a [feature flag], you can use the `env` option of `medusaIntegrationTestRunner` its feature flag.
+
+For example:
+
+```ts title="integration-tests/http/custom-routes.spec.ts"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+
+medusaIntegrationTestRunner({
+  env: {
+    FF_BLOG_FEATURE: true,
+  },
+  testSuite: ({ api, getContainer }) => {
+    // TODO write tests...
+  },
+})
+```
+
+The `env` option accepts an object of environment variables to set for the test suite.
