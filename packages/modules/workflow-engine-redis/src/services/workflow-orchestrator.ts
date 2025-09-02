@@ -64,6 +64,7 @@ type IdempotencyKeyParts = {
 
 type NotifyOptions = {
   eventType: keyof DistributedTransactionEvents
+  isFlowAsync: boolean
   workflowId: string
   transactionId?: string
   step?: TransactionStep
@@ -373,6 +374,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId: transaction.transactionId,
@@ -471,6 +473,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId,
@@ -544,6 +547,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId,
@@ -669,16 +673,8 @@ export class WorkflowOrchestratorService {
       return
     }
 
-    if (publish) {
-      const channel = this.getChannelName(options.workflowId)
-      const message = JSON.stringify({
-        instanceId: this.instanceId,
-        data: options,
-      })
-      await this.redisPublisher.publish(channel, message)
-    }
-
     const {
+      isFlowAsync,
       eventType,
       workflowId,
       transactionId,
@@ -689,6 +685,15 @@ export class WorkflowOrchestratorService {
       state,
     } = options
 
+    if (publish && !isFlowAsync) {
+      const channel = this.getChannelName(options.workflowId)
+      const message = JSON.stringify({
+        instanceId: this.instanceId,
+        data: options,
+      })
+      await this.redisPublisher.publish(channel, message)
+    }
+
     const subscribers: TransactionSubscribers =
       this.subscribers.get(workflowId) ?? new Map()
 
@@ -698,6 +703,7 @@ export class WorkflowOrchestratorService {
           eventType,
           workflowId,
           transactionId,
+          isFlowAsync,
           step,
           response,
           result,
@@ -738,6 +744,7 @@ export class WorkflowOrchestratorService {
   }
 
   private buildWorkflowEvents({
+    isFlowAsync,
     customEventHandlers,
     workflowId,
     transactionId,
@@ -758,6 +765,7 @@ export class WorkflowOrchestratorService {
       state?: TransactionState
     }) => {
       await this.notify({
+        isFlowAsync,
         workflowId,
         transactionId,
         eventType,
