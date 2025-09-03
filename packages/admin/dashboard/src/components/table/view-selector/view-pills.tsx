@@ -16,7 +16,6 @@ import { SaveViewDialog } from "../save-view-dialog"
 
 interface ViewPillsProps {
   entity: string
-  onViewChange?: (view: ViewConfiguration | null) => void
   currentColumns?: {
     visible: string[]
     order: string[]
@@ -30,7 +29,6 @@ interface ViewPillsProps {
 
 export const ViewPills: React.FC<ViewPillsProps> = ({
   entity,
-  onViewChange,
   currentColumns,
   currentConfiguration,
 }) => {
@@ -40,8 +38,8 @@ export const ViewPills: React.FC<ViewPillsProps> = ({
     setActiveView,
     isDefaultViewActive,
   } = useViewConfigurations(entity)
-  
-  const views = listViews.data?.view_configurations || []
+
+  const views = listViews?.view_configurations || []
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [editingView, setEditingView] = useState<ViewConfiguration | null>(null)
@@ -50,43 +48,25 @@ export const ViewPills: React.FC<ViewPillsProps> = ({
   const [deletingViewId, setDeletingViewId] = useState<string | null>(null)
   const prompt = usePrompt()
 
-  const currentActiveView = activeView.data?.view_configuration || null
-
-  // Track if we've notified parent of initial view
-  const hasNotifiedInitialView = useRef(false)
+  const currentActiveView = activeView?.view_configuration || null
 
   // Get delete mutation for the current deleting view
   const { deleteView } = useViewConfiguration(entity, deletingViewId || '')
 
-  // Notify parent of initial view once
-  useEffect(() => {
-    if (!hasNotifiedInitialView.current && activeView.isSuccess) {
-      hasNotifiedInitialView.current = true
-      // Use setTimeout to ensure this happens after render
-      setTimeout(() => {
-        if (onViewChange) {
-          onViewChange(currentActiveView)
-        }
-      }, 0)
-    }
-  }, [activeView.isSuccess, currentActiveView]) // Remove onViewChange from dependencies
-
   const handleViewSelect = async (viewId: string | null) => {
-    if (viewId === null) {
-      // Select default view - clear the active view
-      await setActiveView.mutateAsync(null)
-      if (onViewChange) {
-        onViewChange(null)
+    try {
+      if (viewId === null) {
+        // Select default view - clear the active view
+        await setActiveView.mutateAsync(null)
+        return
       }
-      return
-    }
 
-    const view = views.find(v => v.id === viewId)
-    if (view) {
-      await setActiveView.mutateAsync(viewId)
-      if (onViewChange) {
-        onViewChange(view)
+      const view = views.find(v => v.id === viewId)
+      if (view) {
+        await setActiveView.mutateAsync(viewId)
       }
+    } catch (error) {
+      console.error("Error in handleViewSelect:", error)
     }
   }
 
@@ -108,18 +88,13 @@ export const ViewPills: React.FC<ViewPillsProps> = ({
   useEffect(() => {
     if (deletingViewId && deleteView.mutateAsync) {
       deleteView.mutateAsync().then(() => {
-        if (currentActiveView?.id === deletingViewId) {
-          if (onViewChange) {
-            onViewChange(null)
-          }
-        }
         setDeletingViewId(null)
       }).catch(() => {
         setDeletingViewId(null)
         // Error is handled by the hook
       })
     }
-  }, [deletingViewId, deleteView.mutateAsync, currentActiveView?.id, onViewChange])
+  }, [deletingViewId, deleteView.mutateAsync])
 
   const handleEditView = (view: ViewConfiguration) => {
     setEditingView(view)
@@ -282,10 +257,6 @@ export const ViewPills: React.FC<ViewPillsProps> = ({
             setEditingView(null)
             toast.success(`View "${newView.name}" saved successfully`)
             // The view is already set as active in SaveViewDialog
-            // Notify parent of the new active view
-            if (onViewChange) {
-              onViewChange(newView)
-            }
           }}
         />
       )}

@@ -91,7 +91,7 @@ npx medusa user --email <email> [--password <password>]
       </Table.Cell>
       <Table.Cell>
 
-      An automatically generated ID.
+      An automatically generated ID is used.
 
       </Table.Cell>
     </Table.Row>
@@ -103,9 +103,8 @@ npx medusa user --email <email> [--password <password>]
       </Table.Cell>
       <Table.Cell>
 
-      Whether to create an invite instead of a user. When using this option, you don't need to specify a password.
-      If ran successfully, you'll receive the invite token in the output.
-      
+      Whether to create a user invite instead of directly creating a user. Learn more in the [Create User Invite](#create-user-invite-with-medusa-cli) section.
+
       </Table.Cell>
       <Table.Cell>
 
@@ -120,3 +119,20 @@ npx medusa user --email <email> [--password <password>]
     </Table.Row>
   </Table.Body>
 </Table>
+
+---
+
+## Create User Invite with Medusa CLI
+
+The `user` command accepts the `--invite` option to create a user invite. The user must accept the invite before they can log into the Medusa Admin.
+
+For example:
+
+```bash
+npx medusa user --email user@example.com --invite
+```
+
+The command will create a user invite and output the invite token. You can then either:
+
+- Accept the invite in the Medusa Admin at the path `/app/invite?token=<invite_token>`
+- Accept the invite using the [Accept Invite API route](!api!/admin#invites_postinvitesaccept).
