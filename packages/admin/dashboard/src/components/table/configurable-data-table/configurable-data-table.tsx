@@ -5,7 +5,6 @@ import { DataTable } from "../../data-table"
 import { SaveViewDialog } from "../save-view-dialog"
 import { SaveViewDropdown } from "./save-view-dropdown"
 import { useTableConfiguration } from "../../../hooks/table/use-table-configuration"
-import { useOrderTableQuery } from "../../../hooks/table/query/use-order-table-query"
 import { useConfigurableTableColumns } from "../../../hooks/table/columns/use-configurable-table-columns"
 import { getEntityAdapter } from "../../../lib/table/entity-adapters"
 import { DataTableColumnDef, DataTableEmptyStateProps, DataTableFilter } from "@medusajs/ui"
@@ -94,6 +93,7 @@ function ConfigurableDataTableWithAdapter<TData>({
     isLoadingColumns,
     apiColumns,
     requiredFields,
+    queryParams,
   } = useTableConfiguration({
     entity,
     pageSize,
@@ -101,12 +101,28 @@ function ConfigurableDataTableWithAdapter<TData>({
     filters,
   })
 
-  // Get query params for data fetching
-  const { searchParams } = useOrderTableQuery({
-    pageSize,
-    prefix: queryPrefix,
+  // Build search params for data fetching
+  // Parse JSON stringified filter values back to their actual types
+  const parsedQueryParams = { ...queryParams }
+  filters.forEach(filter => {
+    const filterKey = filter.id
+    if (parsedQueryParams[filterKey] !== undefined) {
+      try {
+        // Parse JSON strings back to their actual values
+        parsedQueryParams[filterKey] = JSON.parse(parsedQueryParams[filterKey])
+      } catch {
+        // If parsing fails, keep the original value
+      }
+    }
   })
-
+  
+  const searchParams = {
+    ...parsedQueryParams,
+    fields: requiredFields,
+    limit: pageSize,
+    offset: parsedQueryParams.offset ? Number(parsedQueryParams.offset) : 0,
+  }
+  
   // Fetch data using adapter
   const fetchResult = adapter.useData(requiredFields, searchParams)
 

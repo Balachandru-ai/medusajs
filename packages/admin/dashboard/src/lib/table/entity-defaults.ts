@@ -24,11 +24,9 @@ export const ENTITY_DEFAULT_FIELDS = {
       "title",
       "handle",
       "status",
-      "created_at",
-      "updated_at",
       "thumbnail",
     ],
-    relations: ["*variants", "*categories", "*collections"]
+    relations: ["collection.title", "*sales_channels", "*variants"]
   },
   
   customers: {

@@ -2022,6 +2022,54 @@
           "required": ["draft", "published", "proposed", "rejected"],
           "additionalProperties": false
         },
+        "columns": {
+          "type": "object",
+          "properties": {
+            "product_display": {
+              "type": "string"
+            },
+            "variants_count": {
+              "type": "string"
+            },
+            "sales_channels_display": {
+              "type": "string"
+            },
+            "collection": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "thumbnail": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "handle": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "string"
+            },
+            "updated_at": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "product_display",
+            "variants_count",
+            "sales_channels_display",
+            "collection",
+            "status",
+            "thumbnail",
+            "title",
+            "handle",
+            "created_at",
+            "updated_at"
+          ],
+          "additionalProperties": false
+        },
         "fields": {
           "type": "object",
           "properties": {
@@ -2690,6 +2738,7 @@
         "variantCount_other",
         "deleteVariantWarning",
         "productStatus",
+        "columns",
         "fields",
         "variant",
         "options",
