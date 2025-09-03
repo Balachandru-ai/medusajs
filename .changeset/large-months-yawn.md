@@ -2,4 +2,4 @@
 "@medusajs/dashboard": patch
 ---
 
-Added support for 4 decimals tax rates.
+fix(dashboard): support more decimals for tx rates
