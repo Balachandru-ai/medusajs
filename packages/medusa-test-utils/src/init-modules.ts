@@ -1,3 +1,4 @@
+import { logger } from "@medusajs/framework/logger"
 import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
@@ -8,7 +9,6 @@ import {
   createPgConnection,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
 export interface InitModulesOptions {
   injectedDependencies?: Record<string, unknown>
@@ -24,6 +24,7 @@ export interface InitModulesOptions {
   }
   joinerConfig?: ModuleJoinerConfig[]
   preventConnectionDestroyWarning?: boolean
+  cwd?: string
 }
 
 export async function initModules({
@@ -32,6 +33,7 @@ export async function initModules({
   modulesConfig,
   joinerConfig,
   preventConnectionDestroyWarning = false,
+  cwd,
 }: InitModulesOptions) {
   const moduleSdkImports = require("@medusajs/framework/modules-sdk")
 
@@ -55,6 +57,7 @@ export async function initModules({
     modulesConfig,
     servicesConfig: joinerConfig,
     injectedDependencies,
+    cwd,
   })
 
   await medusaApp.onApplicationStart()

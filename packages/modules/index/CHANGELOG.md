@@ -1,5 +1,48 @@
 # @medusajs/index
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13289](https://github.com/medusajs/medusa/pull/13289) [`f764b3a36471a0ad9e9e05f125183464680e3a2d`](https://github.com/medusajs/medusa/commit/f764b3a36471a0ad9e9e05f125183464680e3a2d) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat(index): $nin and $not operators
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13137](https://github.com/medusajs/medusa/pull/13137) [`9725bff25d321011da7ba5096fe0946c5a8f0059`](https://github.com/medusajs/medusa/commit/9725bff25d321011da7ba5096fe0946c5a8f0059) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): handle $and and $or operators
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12889](https://github.com/medusajs/medusa/pull/12889) [`2f70f133511857b499a992b65a0a4d6170e03ab9`](https://github.com/medusajs/medusa/commit/2f70f133511857b499a992b65a0a4d6170e03ab9) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Order constraint and receive return
+
+- [#12888](https://github.com/medusajs/medusa/pull/12888) [`fa76f85bba253528964bacf86c061fef6d3d0742`](https://github.com/medusajs/medusa/commit/fa76f85bba253528964bacf86c061fef6d3d0742) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): merge filterable fields with default fields
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.7
+
 ## 2.8.6
 
 ### Patch Changes

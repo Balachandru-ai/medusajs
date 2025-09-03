@@ -1,3 +1,4 @@
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   CreateProductDTO,
   IPricingModuleService,
@@ -6,13 +7,12 @@ import {
   ProductVariantDTO,
 } from "@medusajs/types"
 import { Modules, PriceListStatus, PriceListType } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { createAdminUser } from "../../../../helpers/create-admin-user"
 import { createVariantPriceSet } from "../../../helpers/create-variant-price-set"
 
 jest.setTimeout(50000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
 
 async function createProductsWithVariants(

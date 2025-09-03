@@ -169,6 +169,11 @@ export interface UpdatePromotionDTO {
   type?: PromotionTypeValues
 
   /**
+   * Whether the promotion is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The status of the promotion:
    *
    * - `draft` indicates that a promotion is currently being prepared

@@ -8,6 +8,8 @@ import React, {
   useState,
 } from "react"
 import { Analytics, AnalyticsBrowser } from "@segment/analytics-next"
+// @ts-expect-error Doesn't have a types package
+import { loadReoScript } from "reodotdev"
 
 export type ExtraData = {
   section?: string
@@ -32,14 +34,16 @@ export type TrackedEvent = {
 const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 
 export type AnalyticsProviderProps = {
-  writeKey?: string
+  segmentWriteKey?: string
+  reoDevKey?: string
   children?: React.ReactNode
 }
 
 const LOCAL_STORAGE_KEY = "ajs_anonymous_id"
 
 export const AnalyticsProvider = ({
-  writeKey = "temp",
+  segmentWriteKey = "temp",
+  reoDevKey,
   children,
 }: AnalyticsProviderProps) => {
   // loaded is used to ensure that a connection has been made to segment
@@ -50,11 +54,11 @@ export const AnalyticsProvider = ({
   const analyticsBrowser = new AnalyticsBrowser()
   const [queue, setQueue] = useState<TrackedEvent[]>([])
 
-  const init = useCallback(() => {
+  const initSegment = useCallback(() => {
     if (!loaded) {
       analyticsBrowser
         .load(
-          { writeKey },
+          { writeKey: segmentWriteKey },
           {
             initialPageview: true,
             user: {
@@ -72,7 +76,7 @@ export const AnalyticsProvider = ({
         )
         .finally(() => setLoaded(true))
     }
-  }, [loaded, writeKey])
+  }, [loaded, segmentWriteKey])
 
   const track = useCallback(
     async (
@@ -110,8 +114,8 @@ export const AnalyticsProvider = ({
   )
 
   useEffect(() => {
-    init()
-  }, [init])
+    initSegment()
+  }, [initSegment])
 
   useEffect(() => {
     if (analytics && queue.length) {
@@ -122,6 +126,24 @@ export const AnalyticsProvider = ({
       setQueue([])
     }
   }, [analytics, queue])
+
+  useEffect(() => {
+    if (!reoDevKey) {
+      return
+    }
+
+    loadReoScript({
+      clientID: reoDevKey,
+    })
+      .then((Reo: any) => {
+        Reo.init({
+          clientID: reoDevKey,
+        })
+      })
+      .catch((e: any) => {
+        console.error(`Could not connect to Reodotdev. Error: ${e}`)
+      })
+  }, [reoDevKey])
 
   return (
     <AnalyticsContext.Provider

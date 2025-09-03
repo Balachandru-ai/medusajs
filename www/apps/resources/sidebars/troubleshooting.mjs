@@ -28,6 +28,11 @@ export const troubleshootingSidebar = [
         path: "/troubleshooting/general-errors",
         title: "General Errors",
       },
+      {
+        type: "link",
+        path: "/troubleshooting/pnpm",
+        title: "pnpm Errors",
+      },
     ],
   },
   {
@@ -101,6 +106,11 @@ export const troubleshootingSidebar = [
       },
       {
         type: "link",
+        path: "/troubleshooting/scheduled-job-not-running",
+        title: "Scheduled Job Not Running",
+      },
+      {
+        type: "link",
         path: "/troubleshooting/test-errors",
         title: "Test Errors",
       },
@@ -148,6 +158,11 @@ export const troubleshootingSidebar = [
         type: "link",
         path: "/troubleshooting/s3",
         title: "S3 Module Provider Errors",
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/payment",
+        title: "Payment Provider Errors",
       },
     ],
   },

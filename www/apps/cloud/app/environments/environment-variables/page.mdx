@@ -46,7 +46,8 @@ The following environment variable names are reserved by Cloud and you can't use
 To add environment variables to an environment:
 
 1. In the [environment's dashboard](../long-lived/page.mdx#open-environment-dashboard), click on the "Settings" tab.
-2. In the "Add new environment variables" section, there are different ways you can add environment variables:
+2. Choose the "Environment Variables" tab from the sidebar.
+3. In the "Add new environment variables" section, there are different ways you can add environment variables:
     - **Manually**:
       - Enter the key and value of the environment variable in the respective fields.
       - Click the "Add another" button to add another variable.
@@ -54,7 +55,7 @@ To add environment variables to an environment:
       - If you copied environment variables in a `.env` file format, you can paste them directly into the "Key" field. The environment variables will be pre-filled for you.
     - **Import `.env` file**:
       - If you have a `.env` file that defines your environment variables, click the "Import .env" button to upload the file. The environment variables will be automatically extracted and added to the list.
-3. Once you're done, click the "Save" button to save the environment variables.
+4. Once you're done, click the "Save" button to save the environment variables.
 
 <Note title="Important">
 
@@ -71,14 +72,15 @@ After adding the environment variables, you must [redeploy the environment](../l
 To edit an environment variable:
 
 1. In the [environment's dashboard](../long-lived/page.mdx#open-environment-dashboard), click on the "Settings" tab.
-2. In the "Environment variables" section, find the variable you want to edit.
-3. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the variable's right side.
-4. Choose "Edit" from the dropdown menu.
+2. Choose the "Environment Variables" tab from the sidebar.
+3. In the "Environment variables" section, find the variable you want to edit.
+4. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the variable's right side.
+5. Choose "Edit" from the dropdown menu.
 
 ![Edit environment variable in the environment's settings tab](https://res.cloudinary.com/dza7lstvk/image/upload/v1749816223/Cloud/CleanShot_2025-06-13_at_15.03.21_2x_a38dch.png)
 
-5. In the side window that opens, you can edit the variable's key, value, and whether it's sensitive.
-6. Once you're done, click the "Save" button.
+6. In the side window that opens, you can edit the variable's key, value, and whether it's sensitive.
+7. Once you're done, click the "Save" button.
 
 <Note title="Important">
 
@@ -95,9 +97,10 @@ After editing the environment variable, you must [redeploy the environment](../l
 To delete an environment variable:
 
 1. In the [environment's dashboard](../long-lived/page.mdx#open-environment-dashboard), click on the "Settings" tab.
-2. In the "Environment variables" section, find the variable you want to delete.
-3. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the variable's right side.
-4. Choose "Delete" from the dropdown menu.
+2. Choose the "Environment Variables" tab from the sidebar.
+3. In the "Environment variables" section, find the variable you want to delete.
+4. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the variable's right side.
+5. Choose "Delete" from the dropdown menu.
 
 <Note title="Important">
 
@@ -116,7 +119,8 @@ You can export an environment's variables as a `.env` file. This is useful for d
 To export an environment's variables:
 
 1. In the [environment's dashboard](../long-lived/page.mdx#open-environment-dashboard), click on the "Settings" tab.
-2. In the "Environment variables" section, click on the "Export .env" button at the top right of the section.
+2. Choose the "Environment Variables" tab from the sidebar.
+3. In the "Environment variables" section, click on the "Export .env" button at the top right of the section.
 
 A file download will start with the name `env.txt`, which contains the environment variables in `.env` format.
 

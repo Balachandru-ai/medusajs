@@ -1,5 +1,42 @@
 # Change Log
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12882](https://github.com/medusajs/medusa/pull/12882) [`779ed018b9c1328d6554a0f3d3569147edaeae56`](https://github.com/medusajs/medusa/commit/779ed018b9c1328d6554a0f3d3569147edaeae56) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(create-medusa-app): Allow to create project with specific medusa version
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.7
+
 ## 2.8.6
 
 ### Patch Changes

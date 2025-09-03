@@ -76,6 +76,7 @@ describe("Total calculation", function () {
       item_total: 73.5,
       item_subtotal: 65,
       item_tax_total: 8.5,
+      item_discount_total: 0,
       original_total: 73.5,
       original_tax_total: 8.5,
       original_item_subtotal: 65,
@@ -124,8 +125,8 @@ describe("Total calculation", function () {
           adjustments: [
             {
               amount: 10,
-              total: 11,
               subtotal: 10,
+              total: 11,
             },
           ],
           subtotal: 100,
@@ -149,6 +150,7 @@ describe("Total calculation", function () {
       item_total: 99,
       item_subtotal: 100,
       item_tax_total: 9,
+      item_discount_total: 11,
       original_item_total: 110,
       original_item_subtotal: 100,
       original_item_tax_total: 10,
@@ -244,16 +246,16 @@ describe("Total calculation", function () {
           adjustments: [
             {
               amount: 9,
-              subtotal: 8.181818181818182,
-              total: 9,
+              subtotal: 9,
+              total: 9.9,
             },
           ],
           subtotal: 90,
           total: 89.1,
           original_total: 99,
-          discount_total: 9,
+          discount_total: 9.9,
           discount_subtotal: 9,
-          discount_tax_total: 0.8181818181818182,
+          discount_tax_total: 0.9,
           tax_total: 8.1,
           original_tax_total: 9,
         },
@@ -298,17 +300,17 @@ describe("Total calculation", function () {
           adjustments: [
             {
               amount: 9,
-              subtotal: 8.181818181818182,
-              total: 9,
+              subtotal: 9,
+              total: 9.9,
             },
           ],
           amount: 99,
           subtotal: 90,
           total: 89.1,
           original_total: 99,
-          discount_total: 9,
+          discount_total: 9.9,
           discount_subtotal: 9,
-          discount_tax_total: 0.8181818181818182,
+          discount_tax_total: 0.9,
           tax_total: 8.1,
           original_tax_total: 9,
         },
@@ -342,20 +344,22 @@ describe("Total calculation", function () {
       total: 191.4,
       subtotal: 198,
       tax_total: 17.4,
-      discount_total: 24.6,
+      discount_total: 26.4,
       discount_subtotal: 24,
-      discount_tax_total: 2.2363636363636363,
+      discount_tax_total: 2.4,
       original_total: 217.8,
       original_tax_total: 19.8,
       item_total: 95.7,
       item_subtotal: 99,
       item_tax_total: 8.7,
+      item_discount_total: 13.2,
       original_item_total: 108.9,
       original_item_subtotal: 99,
       original_item_tax_total: 9.9,
       shipping_total: 95.7,
       shipping_subtotal: 99,
       shipping_tax_total: 8.7,
+      shipping_discount_total: 13.2,
       original_shipping_tax_total: 9.9,
       original_shipping_subtotal: 99,
       original_shipping_total: 108.9,
@@ -444,6 +448,7 @@ describe("Total calculation", function () {
       item_total: 100,
       item_subtotal: 90.9090909090909,
       item_tax_total: 9.090909090909092,
+      item_discount_total: 0,
       original_item_total: 100,
       original_item_subtotal: 90.9090909090909,
       original_item_tax_total: 9.090909090909092,
@@ -486,6 +491,7 @@ describe("Total calculation", function () {
       item_total: 110,
       item_subtotal: 100,
       item_tax_total: 10,
+      item_discount_total: 0,
       original_item_total: 110,
       original_item_subtotal: 100,
       original_item_tax_total: 10,
@@ -548,6 +554,7 @@ describe("Total calculation", function () {
       item_total: 210,
       item_subtotal: 190.9090909090909,
       item_tax_total: 19.09090909090909,
+      item_discount_total: 0,
       original_item_total: 210,
       original_item_subtotal: 190.9090909090909,
       original_item_tax_total: 19.09090909090909,
@@ -562,7 +569,7 @@ describe("Total calculation", function () {
      * TAX INCLUSIVE CART
      *
      * Total price -> 120 tax inclusive
-     * Fixed discount -> 10 tax inclusive
+     * Fixed discount -> 10 tax inclusive total (which results in a subtotal of 8.33 of the discount)
      * Tax rate -> 20%
      */
 
@@ -574,8 +581,7 @@ describe("Total calculation", function () {
           is_tax_inclusive: true,
           adjustments: [
             {
-              amount: 10,
-              is_tax_inclusive: true,
+              amount: 8.333333333333334,
             },
           ],
           tax_lines: [
@@ -615,8 +621,7 @@ describe("Total calculation", function () {
           ],
           adjustments: [
             {
-              is_tax_inclusive: true,
-              amount: 10, // <- amount is tax inclusive so it's equal to total
+              amount: 8.333333333333334,
               subtotal: 8.333333333333334,
               total: 10,
             },
@@ -625,7 +630,7 @@ describe("Total calculation", function () {
       ],
       subtotal: 100,
       tax_total: 18.333333333333332,
-      total: 110, // total is 120 - 10 tax inclusive discount
+      total: 110,
 
       original_item_subtotal: 100,
       original_item_tax_total: 20,
@@ -640,6 +645,7 @@ describe("Total calculation", function () {
       item_subtotal: 100,
       item_tax_total: 18.333333333333332,
       item_total: 110,
+      item_discount_total: 10,
 
       credit_line_subtotal: 0,
       credit_line_tax_total: 0,
@@ -751,12 +757,14 @@ describe("Total calculation", function () {
       item_total: 88,
       item_subtotal: 100,
       item_tax_total: 8,
+      item_discount_total: 22,
       original_item_total: 110,
       original_item_subtotal: 100,
       original_item_tax_total: 10,
       shipping_total: 25.3,
       shipping_subtotal: 25,
       shipping_tax_total: 2.3,
+      shipping_discount_total: 2.2,
       original_shipping_tax_total: 2.5,
       original_shipping_subtotal: 25,
       original_shipping_total: 27.5,
@@ -868,6 +876,7 @@ describe("Total calculation", function () {
       item_total: 88,
       item_subtotal: 100,
       item_tax_total: 8,
+      item_discount_total: 22,
       original_item_total: 110,
       original_item_subtotal: 100,
       original_item_tax_total: 10,
@@ -880,6 +889,345 @@ describe("Total calculation", function () {
       credit_line_subtotal: 40,
       credit_line_tax_total: 0,
       credit_line_total: 40,
+    })
+  })
+
+  it("should calculate carts with items + taxes + adjustments", function () {
+    const cart = {
+      items: [
+        {
+          unit_price: 119,
+          quantity: 1,
+          tax_lines: [
+            {
+              rate: 19,
+            },
+          ],
+          adjustments: [
+            {
+              amount: 119,
+            },
+          ],
+        },
+      ],
+    }
+
+    const serialized = JSON.parse(JSON.stringify(decorateCartTotals(cart)))
+
+    expect(serialized).toEqual({
+      items: [
+        {
+          unit_price: 119,
+          quantity: 1,
+          tax_lines: [
+            {
+              rate: 19,
+              subtotal: 22.61,
+            },
+          ],
+          adjustments: [
+            {
+              amount: 119,
+              subtotal: 119,
+              total: 141.61,
+            },
+          ],
+          subtotal: 119,
+          total: 0,
+          original_total: 141.61,
+          discount_total: 141.61,
+          discount_subtotal: 119,
+          discount_tax_total: 22.61,
+          tax_total: 0,
+          original_tax_total: 22.61,
+        },
+      ],
+      total: 0,
+      subtotal: 119,
+      tax_total: 0,
+      discount_total: 141.61,
+      discount_subtotal: 119,
+      discount_tax_total: 22.61,
+      original_total: 141.61,
+      original_tax_total: 22.61,
+      item_total: 0,
+      item_subtotal: 119,
+      item_tax_total: 0,
+      item_discount_total: 141.61,
+      original_item_total: 141.61,
+      original_item_subtotal: 119,
+      original_item_tax_total: 22.61,
+      credit_line_subtotal: 0,
+      credit_line_tax_total: 0,
+      credit_line_total: 0,
+    })
+  })
+
+  it("should calculate carts with items + taxes with is_tax_inclusive", function () {
+    const cartWithTax = {
+      items: [
+        {
+          unit_price: 119,
+          quantity: 1,
+          is_tax_inclusive: true,
+          tax_lines: [
+            {
+              rate: 19,
+            },
+          ],
+        },
+      ],
+    }
+
+    const cartWithoutTax = {
+      items: [
+        {
+          unit_price: 119,
+          quantity: 1,
+          is_tax_inclusive: false,
+          tax_lines: [
+            {
+              rate: 19,
+            },
+          ],
+        },
+      ],
+    }
+
+    const cartMixed = {
+      items: [...cartWithTax.items, ...cartWithoutTax.items],
+    }
+
+    const serializedWith = JSON.parse(
+      JSON.stringify(decorateCartTotals(cartWithTax))
+    )
+    const serializedWithout = JSON.parse(
+      JSON.stringify(decorateCartTotals(cartWithoutTax))
+    )
+    const serializedMixed = JSON.parse(
+      JSON.stringify(decorateCartTotals(cartMixed))
+    )
+
+    expect(serializedWith).toEqual({
+      credit_line_subtotal: 0,
+      credit_line_tax_total: 0,
+      credit_line_total: 0,
+      discount_subtotal: 0,
+      discount_tax_total: 0,
+      discount_total: 0,
+      item_subtotal: 100,
+      item_tax_total: 19,
+      item_discount_total: 0,
+      item_total: 119,
+      items: [
+        {
+          discount_subtotal: 0,
+          discount_tax_total: 0,
+          discount_total: 0,
+          is_tax_inclusive: true,
+          original_tax_total: 19,
+          original_total: 119,
+          quantity: 1,
+          subtotal: 100,
+          tax_lines: [
+            {
+              rate: 19,
+              subtotal: 19,
+              total: 19,
+            },
+          ],
+          tax_total: 19,
+          total: 119,
+          unit_price: 119,
+        },
+      ],
+      original_item_subtotal: 100,
+      original_item_tax_total: 19,
+      original_item_total: 119,
+      original_tax_total: 19,
+      original_total: 119,
+      subtotal: 100,
+      tax_total: 19,
+      total: 119,
+    })
+
+    expect(serializedWithout).toEqual({
+      credit_line_subtotal: 0,
+      credit_line_tax_total: 0,
+      credit_line_total: 0,
+      discount_subtotal: 0,
+      discount_tax_total: 0,
+      discount_total: 0,
+      item_subtotal: 119,
+      item_tax_total: 22.61,
+      item_total: 141.61,
+      item_discount_total: 0,
+      items: [
+        {
+          discount_subtotal: 0,
+          discount_tax_total: 0,
+          discount_total: 0,
+          is_tax_inclusive: false,
+          original_tax_total: 22.61,
+          original_total: 141.61,
+          quantity: 1,
+          subtotal: 119,
+          tax_lines: [
+            {
+              rate: 19,
+              subtotal: 22.61,
+              total: 22.61,
+            },
+          ],
+          tax_total: 22.61,
+          total: 141.61,
+          unit_price: 119,
+        },
+      ],
+      original_item_subtotal: 119,
+      original_item_tax_total: 22.61,
+      original_item_total: 141.61,
+      original_tax_total: 22.61,
+      original_total: 141.61,
+      subtotal: 119,
+      tax_total: 22.61,
+      total: 141.61,
+    })
+
+    expect(serializedMixed).toEqual({
+      credit_line_subtotal: 0,
+      credit_line_tax_total: 0,
+      credit_line_total: 0,
+      discount_subtotal: 0,
+      discount_tax_total: 0,
+      discount_total: 0,
+      item_subtotal: 219,
+      item_tax_total: 41.61,
+      item_total: 260.61,
+      item_discount_total: 0,
+      items: [
+        {
+          discount_subtotal: 0,
+          discount_tax_total: 0,
+          discount_total: 0,
+          is_tax_inclusive: true,
+          original_tax_total: 19,
+          original_total: 119,
+          quantity: 1,
+          subtotal: 100,
+          tax_lines: [
+            {
+              rate: 19,
+              subtotal: 19,
+              total: 19,
+            },
+          ],
+          tax_total: 19,
+          total: 119,
+          unit_price: 119,
+        },
+        {
+          discount_subtotal: 0,
+          discount_tax_total: 0,
+          discount_total: 0,
+          is_tax_inclusive: false,
+          original_tax_total: 22.61,
+          original_total: 141.61,
+          quantity: 1,
+          subtotal: 119,
+          tax_lines: [
+            {
+              rate: 19,
+              subtotal: 22.61,
+              total: 22.61,
+            },
+          ],
+          tax_total: 22.61,
+          total: 141.61,
+          unit_price: 119,
+        },
+      ],
+      original_item_subtotal: 219,
+      original_item_tax_total: 41.61,
+      original_item_total: 260.61,
+      original_tax_total: 41.61,
+      original_total: 260.61,
+      subtotal: 219,
+      tax_total: 41.61,
+      total: 260.61,
+    })
+  })
+
+  it("should calculate tax inclusive carts with items + taxes with tax inclusive adjustments", function () {
+    const cart = {
+      items: [
+        {
+          unit_price: 119,
+          quantity: 1,
+          is_tax_inclusive: true,
+          adjustments: [
+            {
+              amount: 100,
+            },
+          ],
+          tax_lines: [
+            {
+              rate: 19,
+            },
+          ],
+        },
+      ],
+    }
+
+    const serialized = JSON.parse(JSON.stringify(decorateCartTotals(cart)))
+
+    expect(serialized).toEqual({
+      credit_line_subtotal: 0,
+      credit_line_tax_total: 0,
+      credit_line_total: 0,
+      discount_subtotal: 100,
+      discount_tax_total: 19,
+      discount_total: 119,
+      item_subtotal: 100,
+      item_tax_total: 0,
+      item_total: 0,
+      item_discount_total: 119,
+      items: [
+        {
+          adjustments: [
+            {
+              amount: 100,
+              subtotal: 100,
+              total: 119,
+            },
+          ],
+          discount_subtotal: 100,
+          discount_tax_total: 19,
+          discount_total: 119,
+          is_tax_inclusive: true,
+          original_tax_total: 19,
+          original_total: 119,
+          quantity: 1,
+          subtotal: 100,
+          tax_lines: [
+            {
+              rate: 19,
+              subtotal: 19,
+            },
+          ],
+          tax_total: 0,
+          total: 0,
+          unit_price: 119,
+        },
+      ],
+      original_item_subtotal: 100,
+      original_item_tax_total: 19,
+      original_item_total: 119,
+      original_tax_total: 19,
+      original_total: 119,
+      subtotal: 100,
+      tax_total: 0,
+      total: 0,
     })
   })
 })

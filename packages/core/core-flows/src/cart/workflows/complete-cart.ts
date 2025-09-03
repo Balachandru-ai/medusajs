@@ -1,6 +1,8 @@
 import {
   CartCreditLineDTO,
   CartWorkflowDTO,
+  LinkDefinition,
+  PromotionDTO,
   UsageComputedActions,
 } from "@medusajs/framework/types"
 import {
@@ -326,12 +328,21 @@ export const completeCartWorkflow = createWorkflow(
       const linksToCreate = transform(
         { cart, createdOrder },
         ({ cart, createdOrder }) => {
-          const links: Record<string, any>[] = [
+          const links: LinkDefinition[] = [
             {
               [Modules.ORDER]: { order_id: createdOrder.id },
               [Modules.CART]: { cart_id: cart.id },
             },
           ]
+
+          if (cart.promotions?.length) {
+            cart.promotions.forEach((promotion: PromotionDTO) => {
+              links.push({
+                [Modules.ORDER]: { order_id: createdOrder.id },
+                [Modules.PROMOTION]: { promotion_id: promotion.id },
+              })
+            })
+          }
 
           if (isDefined(cart.payment_collection?.id)) {
             links.push({

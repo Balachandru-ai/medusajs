@@ -26,6 +26,7 @@ export const Modules = {
   NOTIFICATION: "notification",
   INDEX: "index",
   LOCKING: "locking",
+  SETTINGS: "settings",
 } as const
 
 export const MODULE_PACKAGE_NAMES = {
@@ -56,6 +57,7 @@ export const MODULE_PACKAGE_NAMES = {
   [Modules.NOTIFICATION]: "@medusajs/medusa/notification",
   [Modules.INDEX]: "@medusajs/medusa/index-module",
   [Modules.LOCKING]: "@medusajs/medusa/locking",
+  [Modules.SETTINGS]: "@medusajs/medusa/settings",
 }
 
 export const REVERSED_MODULE_PACKAGE_NAMES = Object.entries(

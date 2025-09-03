@@ -62,7 +62,10 @@ export const refundPaymentAndRecreatePaymentSessionWorkflowId =
  * Refund a payment and create a new payment session.
  */
 export const refundPaymentAndRecreatePaymentSessionWorkflow = createWorkflow(
-  refundPaymentAndRecreatePaymentSessionWorkflowId,
+  {
+    name: refundPaymentAndRecreatePaymentSessionWorkflowId,
+    idempotent: false,
+  },
   (
     input: WorkflowData<refundPaymentAndRecreatePaymentSessionWorkflowInput>
   ): WorkflowResponse<PaymentSessionDTO> => {

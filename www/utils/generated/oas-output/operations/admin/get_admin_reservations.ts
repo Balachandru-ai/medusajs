@@ -519,6 +519,20 @@
  *       type: boolean
  *       title: with_deleted
  *       description: Whether to include deleted records in the result.
+ *   - name: order_id
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: order_id
+ *           description: Filter by an order's ID to retrieve its associated reservations.
+ *         - type: array
+ *           description: Filter by multiple order IDs to retrieve their associated reservations.
+ *           items:
+ *             type: string
+ *             title: order_id
+ *             description: An order's ID.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

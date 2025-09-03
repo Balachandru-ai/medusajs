@@ -1,10 +1,13 @@
-import loaders from "../loaders"
-import express from "express"
-import path from "path"
-import { existsSync } from "fs"
-import { logger } from "@medusajs/framework/logger"
 import { ExecArgs } from "@medusajs/framework/types"
-import { dynamicImport } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  dynamicImport,
+  isFileSkipped,
+} from "@medusajs/framework/utils"
+import express from "express"
+import { existsSync } from "fs"
+import path from "path"
+import loaders, { initializeContainer } from "../loaders"
 
 type Options = {
   file: string
@@ -12,6 +15,11 @@ type Options = {
 }
 
 export default async function exec({ file, args }: Options) {
+  const container = await initializeContainer(process.cwd(), {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   logger.info(`Executing script at ${file}...`)
   const app = express()
   const directory = process.cwd()
@@ -24,6 +32,10 @@ export default async function exec({ file, args }: Options) {
     }
 
     const scriptToExec = (await dynamicImport(path.resolve(filePath))).default
+
+    if (isFileSkipped(scriptToExec)) {
+      throw new Error(`File is disabled.`)
+    }
 
     if (!scriptToExec || typeof scriptToExec !== "function") {
       throw new Error(`File doesn't default export a function to execute.`)

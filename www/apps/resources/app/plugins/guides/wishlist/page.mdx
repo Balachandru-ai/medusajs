@@ -239,7 +239,9 @@ export const Wishlist = model.define("wishlist", {
   id: model.id().primaryKey(),
   customer_id: model.text(),
   sales_channel_id: model.text(),
-  items: model.hasMany(() => WishlistItem),
+  items: model.hasMany(() => WishlistItem, {
+    mappedBy: "wishlist",
+  }),
 })
 .indexes([
   {
@@ -824,7 +826,7 @@ Next, use that token to register the customer:
 curl -X POST 'http://localhost:9000/store/customers' \
 --header 'Content-Type: application/json' \
 -H 'x-publishable-api-key: {api_key}' \
---header 'Authorization Bearer {token}' \
+--header 'Authorization: Bearer {token}' \
 --data-raw '{
     "email": "customer@gmail.com"
 }'

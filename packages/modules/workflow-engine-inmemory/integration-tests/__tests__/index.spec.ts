@@ -1,3 +1,4 @@
+import { MedusaContainer } from "@medusajs/framework"
 import {
   DistributedTransactionType,
   TransactionState,
@@ -43,7 +44,6 @@ import {
   workflowEventGroupIdStep2Mock,
 } from "../__fixtures__/workflow_event_group_id"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
-import { container, MedusaContainer } from "@medusajs/framework"
 
 jest.setTimeout(60000)
 
@@ -143,8 +143,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       })
 
       describe("Cancel transaction", function () {
-        it("should cancel an ongoing execution with async unfinished yet step", async () => {
-          const transactionId = "transaction-to-cancel-id"
+        it("should cancel an ongoing execution with async unfinished yet step", (done) => {
+          const transactionId = "transaction-to-cancel-id" + ulid()
           const step1 = createStep("step1", async () => {
             return new StepResponse("step1")
           })
@@ -168,30 +168,44 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             return new WorkflowResponse("finished")
           })
 
-          await workflowOrcModule.run(workflowId, {
-            input: {},
-            transactionId,
-          })
+          workflowOrcModule
+            .run(workflowId, {
+              input: {},
+              transactionId,
+            })
+            .then(async () => {
+              await setTimeoutPromise(100)
 
-          await setTimeoutPromise(100)
+              await workflowOrcModule.cancel(workflowId, {
+                transactionId,
+              })
 
-          await workflowOrcModule.cancel(workflowId, {
-            transactionId,
-          })
+              workflowOrcModule.subscribe({
+                workflowId,
+                transactionId,
+                subscriber: async (event) => {
+                  if (event.eventType === "onFinish") {
+                    const execution =
+                      await workflowOrcModule.listWorkflowExecutions({
+                        transaction_id: transactionId,
+                      })
 
-          await setTimeoutPromise(1000)
+                    expect(execution.length).toEqual(1)
+                    expect(execution[0].state).toEqual(
+                      TransactionState.REVERTED
+                    )
+                    done()
+                  }
+                },
+              })
+            })
 
-          const execution = await workflowOrcModule.listWorkflowExecutions({
-            transaction_id: transactionId,
-          })
-
-          expect(execution.length).toEqual(1)
-          expect(execution[0].state).toEqual(TransactionState.REVERTED)
+          failTrap(done)
         })
 
         it("should cancel a complete execution with a sync workflow running as async", async () => {
           const workflowId = "workflow-to-cancel-id" + ulid()
-          const transactionId = "transaction-to-cancel-id"
+          const transactionId = "transaction-to-cancel-id" + ulid()
           const step1 = createStep("step1", async () => {
             return new StepResponse("step1")
           })
@@ -243,7 +257,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         it("should cancel an ongoing execution with a sync workflow running as async", async () => {
           const workflowId = "workflow-to-cancel-id" + ulid()
-          const transactionId = "transaction-to-cancel-id"
+          const transactionId = "transaction-to-cancel-id" + ulid()
           const step1 = createStep("step1", async () => {
             return new StepResponse("step1")
           })
@@ -295,7 +309,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should cancel an ongoing execution with sync steps only", async () => {
-          const transactionId = "transaction-to-cancel-id"
+          const transactionId = "transaction-to-cancel-id" + ulid()
           const step1 = createStep("step1", async () => {
             return new StepResponse("step1")
           })
@@ -342,7 +356,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       })
 
       it("should prevent executing twice the same workflow in perfect concurrency with the same transactionId and non idempotent and not async but retention time is set", async () => {
-        const transactionId = "transaction_id"
+        const transactionId = "transaction_id" + ulid()
         const workflowId = "workflow_id" + ulid()
 
         const step1 = createStep("step1", async () => {
@@ -383,10 +397,11 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
       it("should execute an async workflow keeping track of the event group id provided in the context", async () => {
         const eventGroupId = "event-group-id"
+        const transactionId = "transaction_id" + ulid()
 
         await workflowOrcModule.run(eventGroupWorkflowId, {
           input: {},
-          transactionId: "transaction_id",
+          transactionId,
           context: {
             eventGroupId,
           },
@@ -398,7 +413,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             action: TransactionHandlerType.INVOKE,
             stepId: "step_1_event_group_id_background",
             workflowId: eventGroupWorkflowId,
-            transactionId: "transaction_id",
+            transactionId,
           },
           stepResponse: { hey: "oh" },
         })
@@ -413,9 +428,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       })
 
       it("should execute an async workflow keeping track of the event group id that has been auto generated", async () => {
+        const transactionId = "transaction_id_2" + ulid()
         await workflowOrcModule.run(eventGroupWorkflowId, {
           input: {},
-          transactionId: "transaction_id_2",
+          transactionId,
           throwOnError: true,
         })
 
@@ -424,7 +440,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             action: TransactionHandlerType.INVOKE,
             stepId: "step_1_event_group_id_background",
             workflowId: eventGroupWorkflowId,
-            transactionId: "transaction_id_2",
+            transactionId,
           },
           stepResponse: { hey: "oh" },
         })
@@ -568,12 +584,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should return a list of workflow executions and keep it saved when there is a retentionTime set", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_2", {
             input: {
               value: "123",
             },
             throwOnError: true,
-            transactionId: "transaction_1",
+            transactionId,
           })
 
           let { data: executionsList } = await query.graph({
@@ -588,7 +605,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               action: TransactionHandlerType.INVOKE,
               stepId: "new_step_name",
               workflowId: "workflow_2",
-              transactionId: "transaction_1",
+              transactionId,
             },
             stepResponse: { uhuuuu: "yeaah!" },
           })
@@ -610,7 +627,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should return a list of workflow executions and keep it saved when there is a retentionTime set but allow for executing the same workflow multiple times with different run_id if the workflow is considered done", async () => {
-          const transactionId = "transaction_1"
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run(
             "workflow_not_idempotent_with_retention",
             {
@@ -702,7 +719,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should subscribe to a async workflow and receive the response when it finishes", (done) => {
-          const transactionId = "trx_123"
+          const transactionId = "trx_123" + ulid()
 
           const onFinish = jest.fn(() => {
             done()
@@ -752,7 +769,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         it("should cancel and revert a non idempotent completed workflow with rentention time given a specific transaction id", async () => {
           const workflowId = "workflow_not_idempotent_with_retention"
-          const transactionId = "trx_123"
+          const transactionId = "trx_123" + ulid()
 
           await workflowOrcModule.run(workflowId, {
             input: {
@@ -898,7 +915,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           expect(spy).toHaveBeenCalledTimes(1)
 
-          console.log(spy.mock.results)
           expect(spy).toHaveReturnedWith(
             expect.objectContaining({ output: { testValue: "test" } })
           )
@@ -906,6 +922,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should fetch an idempotent workflow after its completion", async () => {
+          const transactionId = "transaction_1" + ulid()
           const { transaction: firstRun } = (await workflowOrcModule.run(
             "workflow_idempotent",
             {
@@ -913,7 +930,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                 value: "123",
               },
               throwOnError: true,
-              transactionId: "transaction_1",
+              transactionId,
             }
           )) as Awaited<{ transaction: DistributedTransactionType }>
 
@@ -929,7 +946,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                 value: "123",
               },
               throwOnError: true,
-              transactionId: "transaction_1",
+              transactionId,
             }
           )) as Awaited<{ transaction: DistributedTransactionType }>
 
@@ -943,6 +960,35 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           )
           expect(executionsList).toHaveLength(1)
           expect(executionsListAfter).toHaveLength(1)
+        })
+
+        it("should display error when multple async steps are running in parallel", (done) => {
+          void workflowOrcModule.run("workflow_parallel_async", {
+            input: {},
+            throwOnError: false,
+          })
+
+          void workflowOrcModule.subscribe({
+            workflowId: "workflow_parallel_async",
+            subscriber: (event) => {
+              if (event.eventType === "onFinish") {
+                done()
+                expect(event.errors).toEqual(
+                  expect.arrayContaining([
+                    expect.objectContaining({
+                      action: "step_2",
+                      handlerType: "invoke",
+                      error: expect.objectContaining({
+                        message: "Error in parallel step",
+                      }),
+                    }),
+                  ])
+                )
+              }
+            },
+          })
+
+          failTrap(done)
         })
       })
 

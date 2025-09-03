@@ -103,6 +103,7 @@ export type FormattingOptionType = {
   workflowDiagramComponent?: string
   isEventsReference?: boolean
   sortMembers?: boolean
+  internalType?: string
 }
 
 export type AllowedProjectDocumentsOption = {
@@ -344,8 +345,7 @@ export declare type MedusaEvent = {
   payload: string
   description?: string
   workflows: string[]
-  version?: string
+  since?: string
   deprecated?: boolean
   deprecated_message?: string
-  version?: string
 }

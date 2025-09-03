@@ -1,5 +1,48 @@
 # @medusajs/js-sdk
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/types@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- [#13208](https://github.com/medusajs/medusa/pull/13208) [`4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d`](https://github.com/medusajs/medusa/commit/4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard, js-sdk): shipping option type mngmt dashboard
+
+- [#13242](https://github.com/medusajs/medusa/pull/13242) [`492e0189573ffad4977a3559d71f39bf94d8b45d`](https://github.com/medusajs/medusa/commit/492e0189573ffad4977a3559d71f39bf94d8b45d) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard,core-flows,js-sdk,types,medusa): listing order's shipping option
+
+- Updated dependencies [[`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0), [`2f594291ad8d227b499b80a5bfe66f5963d42d6a`](https://github.com/medusajs/medusa/commit/2f594291ad8d227b499b80a5bfe66f5963d42d6a), [`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad`](https://github.com/medusajs/medusa/commit/67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad), [`9412669e654c994e2dbee9cf61c18004d79f6475`](https://github.com/medusajs/medusa/commit/9412669e654c994e2dbee9cf61c18004d79f6475), [`f764b3a36471a0ad9e9e05f125183464680e3a2d`](https://github.com/medusajs/medusa/commit/f764b3a36471a0ad9e9e05f125183464680e3a2d), [`fc4925327334c540c0125a91e81794c3c1f340e7`](https://github.com/medusajs/medusa/commit/fc4925327334c540c0125a91e81794c3c1f340e7), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b), [`34c3c14e0a1491ab80473605018b97981544167d`](https://github.com/medusajs/medusa/commit/34c3c14e0a1491ab80473605018b97981544167d), [`492e0189573ffad4977a3559d71f39bf94d8b45d`](https://github.com/medusajs/medusa/commit/492e0189573ffad4977a3559d71f39bf94d8b45d), [`6264a6262b0220c70ad35c0d56a93a39218ccb80`](https://github.com/medusajs/medusa/commit/6264a6262b0220c70ad35c0d56a93a39218ccb80)]:
+  - @medusajs/types@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- Updated dependencies [[`f1da73cb588a45afdeb80572d7d59987b5559252`](https://github.com/medusajs/medusa/commit/f1da73cb588a45afdeb80572d7d59987b5559252), [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a), [`9766570827ebf50d49d8daf956deecce6666a8cc`](https://github.com/medusajs/medusa/commit/9766570827ebf50d49d8daf956deecce6666a8cc)]:
+  - @medusajs/types@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12944](https://github.com/medusajs/medusa/pull/12944) [`0db5bf6f8cfb47c67435f92733879e990b500d83`](https://github.com/medusajs/medusa/commit/0db5bf6f8cfb47c67435f92733879e990b500d83) Thanks [@anteprimorac](https://github.com/anteprimorac)! - fix(js-sdk): add missing admin order archive and complete methods
+
+- Updated dependencies [[`468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8`](https://github.com/medusajs/medusa/commit/468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8), [`919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5`](https://github.com/medusajs/medusa/commit/919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5)]:
+  - @medusajs/types@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- Updated dependencies [[`42be9a88d61a11db7aebde2d6f4d96d43f54ea79`](https://github.com/medusajs/medusa/commit/42be9a88d61a11db7aebde2d6f4d96d43f54ea79)]:
+  - @medusajs/types@2.8.7
+
 ## 2.8.6
 
 ### Patch Changes

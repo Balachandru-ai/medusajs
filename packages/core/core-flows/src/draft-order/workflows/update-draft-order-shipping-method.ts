@@ -56,10 +56,10 @@ export interface UpdateDraftOrderShippingMethodWorkflowInput {
 /**
  * This workflow updates an existing shipping method in a draft order edit. It's used by the
  * [Update Shipping Method in Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethodsmethodmethod_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * updating an existing shipping method in a draft order edit.
- * 
+ *
  * @example
  * const { result } = await updateDraftOrderShippingMethodWorkflow(container)
  * .run({
@@ -71,9 +71,9 @@ export interface UpdateDraftOrderShippingMethodWorkflowInput {
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update an existing shipping method in a draft order edit.
  */
 export const updateDraftOrderShippingMethodWorkflow = createWorkflow(
@@ -123,19 +123,11 @@ export const updateDraftOrderShippingMethodWorkflow = createWorkflow(
       throw_if_key_not_found: true,
     }).config({ name: "refetched-order-query" })
 
-    const appliedPromoCodes = transform(refetchedOrder, (refetchedOrder) => {
-      const promotionLink = (refetchedOrder as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes = transform(
+      refetchedOrder,
+      (refetchedOrder) =>
+        refetchedOrder.promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     when(
       appliedPromoCodes,

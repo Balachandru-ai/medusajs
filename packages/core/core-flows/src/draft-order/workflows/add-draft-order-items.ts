@@ -27,24 +27,24 @@ export const addDraftOrderItemsWorkflowId = "add-draft-order-items"
 /**
  * This workflow adds items to a draft order. It's used by the
  * [Add Item to Draft Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedititems).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around adding items to
  * a draft order.
- * 
+ *
  * @example
  * const { result } = await addDraftOrderItemsWorkflow(container)
  * .run({
  *   input: {
  *     order_id: "order_123",
- *     items: [{ 
- *       variant_id: "variant_123", 
- *       quantity: 1 
+ *     items: [{
+ *       variant_id: "variant_123",
+ *       quantity: 1
  *     }]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Add items to a draft order.
  */
 export const addDraftOrderItemsWorkflow = createWorkflow(
@@ -52,13 +52,14 @@ export const addDraftOrderItemsWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.OrderEditAddNewItemWorkflowInput>
   ) {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: draftOrderFieldsForRefreshSteps,
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
-    }).config({ name: "order-query" })
+    const order: OrderDTO & { promotions: { code: string }[] } =
+      useRemoteQueryStep({
+        entry_point: "orders",
+        fields: draftOrderFieldsForRefreshSteps,
+        variables: { id: input.order_id },
+        list: false,
+        throw_if_key_not_found: true,
+      }).config({ name: "order-query" })
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
@@ -92,19 +93,10 @@ export const addDraftOrderItemsWorkflow = createWorkflow(
       },
     })
 
-    const appliedPromoCodes: string[] = transform(order, (order) => {
-      const promotionLink = (order as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      order,
+      (order) => order.promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     // If any the order has any promo codes, then we need to refresh the adjustments.
     when(

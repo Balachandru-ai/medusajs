@@ -3,7 +3,7 @@ import ReactMarkdown, {
   Options as ReactMarkdownOptions,
   Components,
 } from "react-markdown"
-import { MDXComponents, Link } from "@/components"
+import { MDXComponents } from "@/components"
 import clsx from "clsx"
 
 export type MarkdownContentProps = ReactMarkdownOptions & {
@@ -32,7 +32,6 @@ export const MarkdownContent = ({
               </pre>
             )
           },
-          a: Link,
         }
       }
       {...props}

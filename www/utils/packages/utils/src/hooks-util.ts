@@ -98,7 +98,12 @@ function cleanUpReflectionType(reflection: Reflection): Reflection {
     reflection.type?.type === "intersection" &&
     reflection.type.types.length >= 2
   ) {
-    reflection.type = reflection.type.types[1]
+    const allReferences = reflection.type.types.every(
+      (type) => type.type === "reference"
+    )
+    if (!allReferences) {
+      reflection.type = reflection.type.types[1]
+    }
   }
 
   if (reflection instanceof DeclarationReflection && reflection.children) {

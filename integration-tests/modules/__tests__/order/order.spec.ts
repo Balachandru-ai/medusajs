@@ -1,7 +1,14 @@
-import { createOrderChangeWorkflow } from "@medusajs/core-flows"
+import {
+  createOrderChangeWorkflow,
+  createOrderWorkflow,
+} from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { IOrderModuleService, OrderDTO } from "@medusajs/types"
-import { Modules } from "@medusajs/utils"
+import {
+  CreateOrderLineItemDTO,
+  IOrderModuleService,
+  OrderDTO,
+} from "@medusajs/types"
+import { Modules, ProductStatus } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -9,7 +16,7 @@ import {
 
 jest.setTimeout(50000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
@@ -24,6 +31,172 @@ medusaIntegrationTestRunner({
 
     beforeEach(async () => {
       await createAdminUser(dbConnection, adminHeaders, appContainer)
+    })
+
+    describe("CreateOrderWorkflow", () => {
+      it("should create an order with items quantity and no unit price and calculate prices based on the correct pricing context including quantity", async () => {
+        const salesChannel = await api.post(
+          "/admin/sales-channels",
+          {
+            name: "Test Sales Channel",
+            description: "Test Sales Channel Description",
+          },
+          adminHeaders
+        )
+
+        const productData = {
+          title: "Medusa T-Shirt based quantity",
+          handle: "t-shirt-with-quantity-prices",
+          status: ProductStatus.PUBLISHED,
+          sales_channels: [
+            {
+              id: salesChannel.data.sales_channel.id,
+            },
+          ],
+          options: [
+            {
+              title: "Size",
+              values: ["S"],
+            },
+          ],
+          variants: [
+            {
+              title: "S",
+              sku: "SHIRT-S-BLACK-w-quantity-prices",
+              options: {
+                Size: "S",
+              },
+              manage_inventory: false,
+              prices: [
+                {
+                  amount: 1500,
+                  currency_code: "usd",
+                  min_quantity: 1,
+                  max_quantity: 4,
+                },
+                {
+                  amount: 1000,
+                  currency_code: "usd",
+                  min_quantity: 5,
+                  max_quantity: 10,
+                },
+              ],
+            },
+          ],
+        }
+
+        const newProduct = await api.post(
+          `/admin/products`,
+          productData,
+          adminHeaders
+        )
+
+        const variantId = newProduct.data.product.variants[0].id
+        const salesChannelId = salesChannel.data.sales_channel.id
+        const customer = (
+          await api.post(
+            "/admin/customers",
+            {
+              email: "test1@email.com",
+            },
+            adminHeaders
+          )
+        ).data.customer
+        const region = (
+          await api.post(
+            "/admin/regions",
+            { name: "US", currency_code: "usd", countries: ["us"] },
+            adminHeaders
+          )
+        ).data.region
+
+        const { result: created } = await createOrderWorkflow(appContainer).run(
+          {
+            input: {
+              email: customer.email,
+              metadata: {
+                foo: "bar",
+              },
+              items: [
+                {
+                  title: "Medusa T-Shirt based quantity",
+                  variant_id: variantId,
+                  quantity: 6,
+                } as CreateOrderLineItemDTO,
+              ],
+              sales_channel_id: salesChannelId,
+              region_id: region.id,
+              shipping_address: {
+                first_name: "Test",
+                last_name: "Test",
+                address_1: "Test",
+                city: "Test",
+                country_code: "US",
+                postal_code: "12345",
+                phone: "12345",
+              },
+              billing_address: {
+                first_name: "Test",
+                last_name: "Test",
+                address_1: "Test",
+                city: "Test",
+                country_code: "US",
+                postal_code: "12345",
+              },
+              shipping_methods: [
+                {
+                  name: "Test shipping method",
+                  amount: 10,
+                  data: {},
+                  tax_lines: [
+                    {
+                      description: "shipping Tax 1",
+                      tax_rate_id: "tax_usa_shipping",
+                      code: "code",
+                      rate: 10,
+                    },
+                  ],
+                  adjustments: [
+                    {
+                      code: "VIP_10",
+                      amount: 1,
+                      description: "VIP discount",
+                      promotion_id: "prom_123",
+                    },
+                  ],
+                },
+              ],
+              currency_code: "usd",
+              customer_id: customer.id,
+            },
+          }
+        )
+
+        const order = (
+          await api.get(
+            "/admin/orders/" +
+              created.id +
+              "?fields=+raw_total,+raw_subtotal,+raw_discount_total",
+            adminHeaders
+          )
+        ).data.order
+
+        expect(order).toEqual(
+          expect.objectContaining({
+            original_item_subtotal: 6000,
+            original_item_tax_total: 0,
+            original_item_total: 6000,
+            original_shipping_subtotal: 10,
+            original_shipping_tax_total: 1,
+            original_shipping_total: 11,
+            original_tax_total: 1,
+            original_total: 6011,
+            item_subtotal: 6000,
+            item_tax_total: 0,
+            item_total: 6000,
+          })
+        )
+      })
     })
 
     describe("Orders - Admin", () => {
@@ -107,7 +280,7 @@ medusaIntegrationTestRunner({
           id: expect.any(String),
           status: "pending",
           version: 1,
-          display_id: 1,
+          display_id: 2,
           payment_collections: [],
           payment_status: "not_paid",
           region_id: "test_region_id",

@@ -179,6 +179,10 @@ export class Client {
     await this.setToken_(token)
   }
 
+  async getToken() {
+    return await this.getToken_()
+  }
+
   async clearToken() {
     await this.clearToken_()
   }

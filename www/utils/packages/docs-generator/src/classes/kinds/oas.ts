@@ -203,6 +203,10 @@ class OasKindGenerator extends FunctionKindGenerator {
       return false
     }
 
+    if (this.isIgnored(functionNode)) {
+      return false
+    }
+
     const hasCorrectRequestType = this.REQUEST_TYPE_NAMES.some(
       (name) => functionNode.parameters[0].type?.getText().startsWith(name)
     )
@@ -448,7 +452,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check deprecation and version in tags
-    const { deprecatedTag, versionTag, featureFlagTag } =
+    const { deprecatedTag, sinceTag, featureFlagTag } =
       this.getInformationFromTags(node)
 
     if (deprecatedTag) {
@@ -458,9 +462,9 @@ class OasKindGenerator extends FunctionKindGenerator {
         : undefined
     }
 
-    if (versionTag) {
-      oas["x-version"] = versionTag.comment
-        ? (versionTag.comment as string)
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
         : undefined
     }
 
@@ -804,7 +808,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check deprecation and version in tags
-    const { deprecatedTag, versionTag, featureFlagTag } =
+    const { deprecatedTag, sinceTag, featureFlagTag } =
       this.getInformationFromTags(node)
 
     if (deprecatedTag) {
@@ -817,12 +821,12 @@ class OasKindGenerator extends FunctionKindGenerator {
       delete oas["x-deprecated_message"]
     }
 
-    if (versionTag) {
-      oas["x-version"] = versionTag.comment
-        ? (versionTag.comment as string)
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
         : undefined
     } else {
-      delete oas["x-version"]
+      delete oas["x-since"]
     }
 
     if (featureFlagTag) {
@@ -2653,9 +2657,16 @@ class OasKindGenerator extends FunctionKindGenerator {
         if (
           fnText.includes(`${workflowName}(`) ||
           fnText.includes(`${workflowName} (`) ||
-          fnText.includes(`${workflowName}.`)
+          fnText.includes(`${workflowName}.`) ||
+          fnText.includes(`we.run(${workflowName}`) ||
+          fnText.includes(`we.run (${workflowName}`) ||
+          fnText.includes(`we.run(
+            ${workflowName}
+          )`)
         ) {
-          workflow = workflowName
+          // workaround for API routes that execute a workflow
+          // by its ID. Not very smart but will do for now.
+          workflow = workflowName.replace(/Id$/, "")
         }
       })
     })
@@ -2807,7 +2818,7 @@ class OasKindGenerator extends FunctionKindGenerator {
           description: event.description,
           deprecated: event.deprecated,
           deprecated_message: event.deprecated_message,
-          version: event.version,
+          since: event.since,
         }))
       )
     }

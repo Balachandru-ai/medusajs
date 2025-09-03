@@ -36,7 +36,10 @@ const TagsOperationDescriptionSectionEvents = ({
           <span>
             The following events are emitted by the workflow used in this API
             route. You can listen to and handle these events using a{" "}
-            <Link href="https://docs.medusajs.com/learn/fundamentals/events-and-subscribers">
+            <Link
+              href="https://docs.medusajs.com/learn/fundamentals/events-and-subscribers"
+              variant="content"
+            >
               Subscriber
             </Link>
           </span>
@@ -108,9 +111,9 @@ const TagsOperationDescriptionSectionEvent = ({
             ) : (
               <Badge variant="orange">Deprecated</Badge>
             ))}
-          {event.version && (
-            <Tooltip text={`This event is emitted since v${event.version}`}>
-              <Badge variant="blue">v{event.version}</Badge>
+          {event.since && (
+            <Tooltip text={`This event is emitted since v${event.since}`}>
+              <Badge variant="blue">v{event.since}</Badge>
             </Tooltip>
           )}
         </div>

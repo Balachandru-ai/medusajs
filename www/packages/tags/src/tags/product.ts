@@ -76,6 +76,14 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/examples/guides/custom-item-price"
   },
   {
+    "title": "Implement Pre-Order Products",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
+  },
+  {
+    "title": "Implement Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
     "title": "Implement Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },
@@ -84,12 +92,20 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/contentful"
   },
   {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
+  },
+  {
     "title": "Build Wishlist Plugin",
     "path": "https://docs.medusajs.com/resources/plugins/guides/wishlist"
   },
   {
     "title": "Implement Bundled Products",
     "path": "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard"
+  },
+  {
+    "title": "Implement Personalized Products",
+    "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
   },
   {
     "title": "Implement Express Checkout with Medusa",

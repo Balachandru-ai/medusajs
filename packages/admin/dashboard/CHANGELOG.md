@@ -1,5 +1,103 @@
 # @medusajs/dashboard
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.10.1
+  - @medusajs/js-sdk@2.10.1
+  - @medusajs/icons@2.10.1
+  - @medusajs/ui@4.0.21
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13267](https://github.com/medusajs/medusa/pull/13267) [`319a941d998b7a245507710568269261ee9c4950`](https://github.com/medusajs/medusa/commit/319a941d998b7a245507710568269261ee9c4950) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): zero in float currency inputs
+
+- [#13219](https://github.com/medusajs/medusa/pull/13219) [`e7b45f5fde288431a916f5cd55b70b40ca74f740`](https://github.com/medusajs/medusa/commit/e7b45f5fde288431a916f5cd55b70b40ca74f740) Thanks [@larsdecker](https://github.com/larsdecker)! - Improved the German Admin Translations
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- [#12572](https://github.com/medusajs/medusa/pull/12572) [`2f594291ad8d227b499b80a5bfe66f5963d42d6a`](https://github.com/medusajs/medusa/commit/2f594291ad8d227b499b80a5bfe66f5963d42d6a) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows, dashboard, types): improve allocation flows in Admin
+
+- [#13266](https://github.com/medusajs/medusa/pull/13266) [`36c20ed1888d11d959a5107880df41cb120c7b73`](https://github.com/medusajs/medusa/commit/36c20ed1888d11d959a5107880df41cb120c7b73) Thanks [@gladius882](https://github.com/gladius882)! - add missing polish translations
+
+- [#13269](https://github.com/medusajs/medusa/pull/13269) [`2d62e289131363f96668a7aaffee54b8c8114e53`](https://github.com/medusajs/medusa/commit/2d62e289131363f96668a7aaffee54b8c8114e53) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): show fulfilment option on SO edit
+
+- [#13226](https://github.com/medusajs/medusa/pull/13226) [`67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad`](https://github.com/medusajs/medusa/commit/67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard, core-flows): associate shipping option to type
+
+- [#13260](https://github.com/medusajs/medusa/pull/13260) [`9b38b750def5c5cb7a83850c95435bffaae48b2a`](https://github.com/medusajs/medusa/commit/9b38b750def5c5cb7a83850c95435bffaae48b2a) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard): shipping option tax rate overrides UI
+
+- [#13297](https://github.com/medusajs/medusa/pull/13297) [`87a61baf8fec17929002cc78bb8b4becc7dfd20d`](https://github.com/medusajs/medusa/commit/87a61baf8fec17929002cc78bb8b4becc7dfd20d) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): handle large resource count in tax rule override edit form
+
+- [#13323](https://github.com/medusajs/medusa/pull/13323) [`65dfcf9be4a4cc5ffac1794879fc1bc51956d296`](https://github.com/medusajs/medusa/commit/65dfcf9be4a4cc5ffac1794879fc1bc51956d296) Thanks [@willbouch](https://github.com/willbouch)! - chore(dashboard): move shipping option type page
+
+- [#13111](https://github.com/medusajs/medusa/pull/13111) [`c6b836bb03e0824ada0bce214d3ae0c99396a87d`](https://github.com/medusajs/medusa/commit/c6b836bb03e0824ada0bce214d3ae0c99396a87d) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): create product selected inventory item display
+
+- [#13272](https://github.com/medusajs/medusa/pull/13272) [`7f5b9fc5fa47e8e73c7afe54aa1bde4dd035086e`](https://github.com/medusajs/medusa/commit/7f5b9fc5fa47e8e73c7afe54aa1bde4dd035086e) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(medusa,dashboard): Retrieve `metadata` for product_tags by default and add metadta UI to product tag domain in admin dashboard
+
+- [#13208](https://github.com/medusajs/medusa/pull/13208) [`4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d`](https://github.com/medusajs/medusa/commit/4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard, js-sdk): shipping option type mngmt dashboard
+
+- [#13242](https://github.com/medusajs/medusa/pull/13242) [`492e0189573ffad4977a3559d71f39bf94d8b45d`](https://github.com/medusajs/medusa/commit/492e0189573ffad4977a3559d71f39bf94d8b45d) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard,core-flows,js-sdk,types,medusa): listing order's shipping option
+
+- [#13053](https://github.com/medusajs/medusa/pull/13053) [`20b8187e2ac2886cc3e9e66a6b68ad12106219a3`](https://github.com/medusajs/medusa/commit/20b8187e2ac2886cc3e9e66a6b68ad12106219a3) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): include end of the range date in filter results
+
+- [#12624](https://github.com/medusajs/medusa/pull/12624) [`6d8e4acdc794878755fdc411ac9cb5c05fbac06b`](https://github.com/medusajs/medusa/commit/6d8e4acdc794878755fdc411ac9cb5c05fbac06b) Thanks [@fPolic](https://github.com/fPolic)! - chore(dashboard): migrate inventory location levels table
+
+- Updated dependencies [[`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0), [`4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d`](https://github.com/medusajs/medusa/commit/4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d), [`492e0189573ffad4977a3559d71f39bf94d8b45d`](https://github.com/medusajs/medusa/commit/492e0189573ffad4977a3559d71f39bf94d8b45d), [`5b7a0412463ebab1dbc86c29024c1fd326ac47fc`](https://github.com/medusajs/medusa/commit/5b7a0412463ebab1dbc86c29024c1fd326ac47fc)]:
+  - @medusajs/js-sdk@2.10.0
+  - @medusajs/admin-shared@2.10.0
+  - @medusajs/ui@4.0.20
+  - @medusajs/icons@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13150](https://github.com/medusajs/medusa/pull/13150) [`b7083b9f0f21d0b6d9f3f3afd65b7ae0f8d378dc`](https://github.com/medusajs/medusa/commit/b7083b9f0f21d0b6d9f3f3afd65b7ae0f8d378dc) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): variants disappearing when removing an option on product creation
+
+- [#11982](https://github.com/medusajs/medusa/pull/11982) [`4da237f615b8cf1dac7935f2faeb97f2c145c62f`](https://github.com/medusajs/medusa/commit/4da237f615b8cf1dac7935f2faeb97f2c145c62f) Thanks [@SteelRazor47](https://github.com/SteelRazor47)! - fix(dashboard): correct overflow in a few settings edit forms
+
+- [#13094](https://github.com/medusajs/medusa/pull/13094) [`0452eba20b44be5a25eb371541172f39f29194b4`](https://github.com/medusajs/medusa/commit/0452eba20b44be5a25eb371541172f39f29194b4) Thanks [@fPolic](https://github.com/fPolic)! - chore(dashboard): add missing US state
+
+- Updated dependencies []:
+  - @medusajs/js-sdk@2.9.0
+  - @medusajs/admin-shared@2.9.0
+  - @medusajs/icons@2.9.0
+  - @medusajs/ui@4.0.19
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12989](https://github.com/medusajs/medusa/pull/12989) [`3fa1db9dea27d99d7b5796281f118210f35a2880`](https://github.com/medusajs/medusa/commit/3fa1db9dea27d99d7b5796281f118210f35a2880) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): allocation UI for orders with more than 20 reservation items
+
+- [#13019](https://github.com/medusajs/medusa/pull/13019) [`439c7118450c5f9ee0b541de9014093a42b7d0ea`](https://github.com/medusajs/medusa/commit/439c7118450c5f9ee0b541de9014093a42b7d0ea) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard, product): update product attributes
+
+- [#12939](https://github.com/medusajs/medusa/pull/12939) [`491b08e0448e3e7d69c09b9516c39f50e2f691a0`](https://github.com/medusajs/medusa/commit/491b08e0448e3e7d69c09b9516c39f50e2f691a0) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): clearing multiitem combobox
+
+- Updated dependencies [[`0db5bf6f8cfb47c67435f92733879e990b500d83`](https://github.com/medusajs/medusa/commit/0db5bf6f8cfb47c67435f92733879e990b500d83)]:
+  - @medusajs/js-sdk@2.8.8
+  - @medusajs/admin-shared@2.8.8
+  - @medusajs/icons@2.8.8
+  - @medusajs/ui@4.0.18
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12897](https://github.com/medusajs/medusa/pull/12897) [`1438b394aea8b570fa6703543faaea506ef816b0`](https://github.com/medusajs/medusa/commit/1438b394aea8b570fa6703543faaea506ef816b0) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): show TIP flag only for fixed promotions
+
+- [#12885](https://github.com/medusajs/medusa/pull/12885) [`42be9a88d61a11db7aebde2d6f4d96d43f54ea79`](https://github.com/medusajs/medusa/commit/42be9a88d61a11db7aebde2d6f4d96d43f54ea79) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Update TIP on promotions
+
+- Updated dependencies []:
+  - @medusajs/js-sdk@2.8.7
+  - @medusajs/admin-shared@2.8.7
+  - @medusajs/icons@2.8.7
+  - @medusajs/ui@4.0.17
+
 ## 2.8.6
 
 ### Patch Changes
