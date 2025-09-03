@@ -59,8 +59,8 @@ const CountRenderer: CellRenderer = (value, row, column) => {
 const StatusRenderer: CellRenderer = (value, row, column) => {
   if (!value) return '-'
   
-  // For product status specifically
-  if (column.field === 'status' && row.status) {
+  // For product status specifically (check if it's a product by looking for product-specific fields)
+  if (column.field === 'status' && row.status && (row.handle || row.is_giftcard !== undefined)) {
     return <ProductStatusCell status={row.status} />
   }
   

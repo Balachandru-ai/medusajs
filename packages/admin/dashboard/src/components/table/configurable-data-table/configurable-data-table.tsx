@@ -64,7 +64,7 @@ function ConfigurableDataTableWithAdapter<TData>({
   pageSize: pageSizeProp,
   queryPrefix: queryPrefixProp,
   layout = "fill",
-  // actions, // Currently unused
+  actions,
 }: ConfigurableDataTableProps<TData>) {
   const { t } = useTranslation()
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
@@ -249,6 +249,8 @@ function ConfigurableDataTableWithAdapter<TData>({
           }
         }}
         prefix={queryPrefix}
+        actions={actions}
+        enableFilterMenu={false}
       />
 
       {saveDialogOpen && (
@@ -292,7 +294,7 @@ function ConfigurableDataTableLegacy<TData>(props: LegacyConfigurableDataTablePr
     emptyState,
     isLoading = false,
     rowCount = 0,
-    // actions, // Currently unused
+    actions,
     layout = "fill",
   } = props
 
@@ -428,6 +430,8 @@ function ConfigurableDataTableLegacy<TData>(props: LegacyConfigurableDataTablePr
           }
         }}
         prefix={queryPrefix}
+        actions={actions}
+        enableFilterMenu={false}
       />
 
       {saveDialogOpen && (
