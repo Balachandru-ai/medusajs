@@ -70,11 +70,53 @@ The response of this API route has the status code `201`.
 
 ## Change Response Content Type
 
-To return response data other than a JSON object, use the `writeHead` method of the `MedusaResponse` object. It allows you to set the response headers, including the content type.
+To return response data other than a JSON object, you can either use the `set`, `setHeader`, or `writeHead` methods of the `MedusaResponse` object. They allow you to set the response headers, including the content type.
+
+### Example: Return PDF File
+
+To create an API route that returns a PDF file, you can set the `Content-Type` header to `application/pdf`:
+
+```ts title="src/api/custom/route.ts"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  // assuming you have the PDF file as buffer
+  res.set({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename="invoice-${id}.pdf"`,
+    "Content-Length": buffer.length,
+  })
+  res.send(buffer)
+}
+```
+
+The `set` method allows you to set multiple headers at once. It accepts an object of key-value header pairs.
+
+### Example: Return XML Content
+
+To create an API route that returns XML content, you can set the `Content-Type` header to `application/xml`:
+
+```ts title="src/api/custom/route.ts"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  // Assuming you have XML string
+  res.set({
+    "Content-Type": "application/xml; charset=utf-8",
+  })
+  res.send(xmlString)
+}
+```
 
 ### Example: Server-Sent Events (SSE)
 
-For example, to create an API route that returns server-sent events (SSE), you can set the `Content-Type` header to `text/event-stream`:
+To create an API route that returns server-sent events (SSE), you can set the `Content-Type` header to `text/event-stream`:
 
 export const streamHighlights = [
   ["7", "writeHead", "Set the response's headers."],
@@ -121,7 +163,7 @@ The `writeHead` method accepts two parameters:
 
 This API route opens a stream by setting the `Content-Type` to `text/event-stream`. It then simulates a stream by creating an interval that writes the stream data every three seconds.
 
-### Tip: Fetching Stream with JS SDK
+#### Tip: Fetching Stream with JS SDK
 
 The JS SDK has a `fetchStream` method that you can use to fetch data from an API route that returns a stream.
 
