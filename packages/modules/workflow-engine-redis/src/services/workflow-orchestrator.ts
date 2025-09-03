@@ -685,7 +685,7 @@ export class WorkflowOrchestratorService {
       state,
     } = options
 
-    if (publish && !isFlowAsync) {
+    if (publish && isFlowAsync) {
       const channel = this.getChannelName(options.workflowId)
       const message = JSON.stringify({
         instanceId: this.instanceId,
