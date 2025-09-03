@@ -68,7 +68,7 @@ export type QueryIndexFunction = {
           metadata: RemoteQueryFunctionReturnPagination
         }
       : Variables extends { skip?: number | undefined } | { skip?: number }
-      ? // TODO: the real type is the one in parenthsis but we put any for now as the current API is broken and need fixin in a separate iteration (RemoteQueryReturnedData<TEntry>[] | {rows: RemoteQueryReturnedData<TEntry>[] metadata: RemoteQueryFunctionReturnPagination })
+      ? // TODO: the real type is the one in parenthesis but we put any for now as the current API is broken and need fixing in a separate iteration (RemoteQueryReturnedData<TEntry>[] | {rows: RemoteQueryReturnedData<TEntry>[] metadata: RemoteQueryFunctionReturnPagination })
         any
       : RemoteQueryReturnedData<TEntry>[]
     : RemoteQueryReturnedData<TEntry>[]
