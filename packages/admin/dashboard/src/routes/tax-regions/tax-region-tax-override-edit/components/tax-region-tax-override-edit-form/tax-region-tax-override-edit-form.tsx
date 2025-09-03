@@ -3,6 +3,7 @@ import { MagnifyingGlass } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import {
   Button,
+  clx,
   Divider,
   Heading,
   Hint,
@@ -10,7 +11,6 @@ import {
   Label,
   Select,
   Text,
-  clx,
   toast,
 } from "@medusajs/ui"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
@@ -414,7 +414,8 @@ export const TaxRegionTaxOverrideEditForm = ({
                       <PercentageInput
                         {...field}
                         value={value?.value}
-                        decimalScale={4}
+                        decimalsLimit={4}
+                        bypassDefaultDecimalScale={true}
                         onValueChange={(value, _name, values) =>
                           onChange({
                             value: value,

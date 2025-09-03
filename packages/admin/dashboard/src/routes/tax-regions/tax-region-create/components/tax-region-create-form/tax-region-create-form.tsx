@@ -3,15 +3,12 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { InformationCircleSolid } from "@medusajs/icons"
-import { Button, Heading, Input, Text, Tooltip, toast } from "@medusajs/ui"
+import { Button, Heading, Input, Text, toast, Tooltip } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { Form } from "../../../../../components/common/form"
 import { CountrySelect } from "../../../../../components/inputs/country-select"
 import { PercentageInput } from "../../../../../components/inputs/percentage-input"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
+import { RouteFocusModal, useRouteModal, } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateTaxRegion } from "../../../../../hooks/api"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
@@ -221,7 +218,8 @@ export const TaxRegionCreateForm = ({ parentId }: TaxRegionCreateFormProps) => {
                               <PercentageInput
                                 {...field}
                                 value={value?.value}
-                                decimalScale={4}
+                                decimalsLimit={4}
+                                bypassDefaultDecimalScale={true}
                                 onValueChange={(value, _name, values) =>
                                   onChange({
                                     value: value,

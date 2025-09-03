@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Button,
+  clx,
   Divider,
   Heading,
   Hint,
@@ -8,7 +9,6 @@ import {
   Label,
   Select,
   Text,
-  clx,
   toast,
 } from "@medusajs/ui"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
@@ -414,7 +414,8 @@ export const TaxRegionCreateTaxOverrideForm = ({
                               <PercentageInput
                                 {...field}
                                 placeholder="0.00"
-                                decimalScale={4}
+                                decimalsLimit={4}
+                                bypassDefaultDecimalScale={true}
                                 value={value?.value}
                                 onValueChange={(value, _name, values) =>
                                   onChange({
