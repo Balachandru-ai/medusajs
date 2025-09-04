@@ -192,6 +192,7 @@ You should only use the methods in this reference when implementing complex cust
                 Functions: false,
                 Methods: false,
               },
+          internalType: "model-ref",
         },
         [`^modules/${snakeCaseModuleName}_models`]: {
           reflectionDescription: `This documentation provides a reference to the data models in the ${titleModuleName} Module`,
@@ -207,6 +208,7 @@ You should only use the methods in this reference when implementing complex cust
                 Variables: "Data Models",
               }
             : {},
+          internalType: "model-ref",
         },
       } as FormattingOptionsType)
     }, {} as FormattingOptionsType),

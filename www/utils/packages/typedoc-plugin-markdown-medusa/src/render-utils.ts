@@ -180,7 +180,7 @@ export function registerHelpers(theme: MarkdownTheme) {
   shouldExpandPropertiesHelper(theme)
   shouldExpandDeclarationChildrenHelper(theme)
   startSectionsHelper(theme)
-  ifDmlEntityHelper()
+  ifDmlEntityHelper(theme)
   dmlPropertiesHelper()
   ifWorkflowStepHelper()
   stepInputHelper(theme)
