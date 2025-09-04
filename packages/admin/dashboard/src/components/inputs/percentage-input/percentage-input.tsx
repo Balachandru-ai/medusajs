@@ -6,9 +6,9 @@ import Primitive from "react-currency-input-field"
 const MIN_DECIMAL_SCALE = 2
 
 function resolveDecimalScale(
-  value: string | readonly string[] | number | undefined
+  value: string | readonly string[] | number | undefined | null
 ): number | undefined {
-  if (value === undefined || Array.isArray(value)) {
+  if (value == null || Array.isArray(value)) {
     return MIN_DECIMAL_SCALE
   }
   return Math.max(

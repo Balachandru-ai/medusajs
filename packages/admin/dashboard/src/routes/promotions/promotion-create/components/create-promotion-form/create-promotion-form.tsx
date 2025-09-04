@@ -774,10 +774,9 @@ export const CreatePromotionForm = () => {
                                     value={value}
                                     decimalsLimit={0}
                                     decimalScale={0}
-                                    onValueChange={(value, _name) =>
-                                      onChange(
+                                    onValueChange={(value) => onChange(
                                         value === "" || value === undefined
-                                          ? undefined
+                                          ? null
                                           : parseInt(value)
                                       )
                                     }
