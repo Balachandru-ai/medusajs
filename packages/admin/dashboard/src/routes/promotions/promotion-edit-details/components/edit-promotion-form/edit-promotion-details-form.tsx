@@ -7,6 +7,7 @@ import { useEffect } from "react"
 import * as zod from "zod"
 
 import { Form } from "../../../../../components/common/form"
+import { DeprecatedPercentageInput } from "../../../../../components/inputs/percentage-input"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdatePromotion } from "../../../../../hooks/api/promotions"
@@ -15,7 +16,6 @@ import {
   getCurrencySymbol,
 } from "../../../../../lib/data/currencies"
 import { SwitchBox } from "../../../../../components/common/switch-box"
-import { DeprecatedPercentageInput } from "../../../../../components/inputs/percentage-input"
 
 type EditPromotionFormProps = {
   promotion: AdminPromotion
