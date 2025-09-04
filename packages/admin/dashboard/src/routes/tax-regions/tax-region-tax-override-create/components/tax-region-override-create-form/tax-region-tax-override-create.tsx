@@ -415,7 +415,6 @@ export const TaxRegionCreateTaxOverrideForm = ({
                                 {...field}
                                 placeholder="0.00"
                                 decimalsLimit={4}
-                                bypassDefaultDecimalScale={true}
                                 value={value?.value}
                                 onValueChange={(value, _name, values) =>
                                   onChange({

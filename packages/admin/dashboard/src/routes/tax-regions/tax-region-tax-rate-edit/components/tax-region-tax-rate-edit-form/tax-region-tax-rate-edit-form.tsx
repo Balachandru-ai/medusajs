@@ -118,7 +118,6 @@ export const TaxRegionTaxRateEditForm = ({
                         {...field}
                         value={value?.value}
                         decimalsLimit={4}
-                        bypassDefaultDecimalScale={true}
                         onValueChange={(value, _name, values) =>
                           onChange({
                             value: value,

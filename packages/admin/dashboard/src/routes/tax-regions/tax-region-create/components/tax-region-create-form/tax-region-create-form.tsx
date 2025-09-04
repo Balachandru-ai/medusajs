@@ -8,7 +8,10 @@ import { useTranslation } from "react-i18next"
 import { Form } from "../../../../../components/common/form"
 import { CountrySelect } from "../../../../../components/inputs/country-select"
 import { PercentageInput } from "../../../../../components/inputs/percentage-input"
-import { RouteFocusModal, useRouteModal, } from "../../../../../components/modals"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateTaxRegion } from "../../../../../hooks/api"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
@@ -219,7 +222,6 @@ export const TaxRegionCreateForm = ({ parentId }: TaxRegionCreateFormProps) => {
                                 {...field}
                                 value={value?.value}
                                 decimalsLimit={4}
-                                bypassDefaultDecimalScale={true}
                                 onValueChange={(value, _name, values) =>
                                   onChange({
                                     value: value,
