@@ -126,12 +126,18 @@ tags:
       another.
 
 
-      These API routes allow admin users t create and manage exchanges.
+      These API routes allow admin users to create and manage exchanges.
     externalDocs:
       description: Learn more about the order exchanges.
       url: https://docs.medusajs.com/resources/commerce-modules/order/exchange
     x-associatedSchema:
       $ref: ./components/schemas/AdminExchange.yaml
+  - name: Feature Flags
+    description: >
+      Feature flags are used to enable or disable certain features in your
+      Medusa application.
+
+      These API routes allow admin users to view feature flags.
   - name: Fulfillment Providers
     description: >
       A fulfillment provider is a third-party integration or custom logic used
@@ -516,6 +522,19 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/sales-channel
     x-associatedSchema:
       $ref: ./components/schemas/AdminSalesChannel.yaml
+  - name: Shipping Option Types
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminShippingOptionType.yaml
+    description: >
+      Shipping option types define a group of shipping options with shared
+      shipping characterstics. For example,  you may have "Standard" and
+      "Express" shipping option types.
+
+      These API routes allow admins to manage shipping option types.
+    externalDocs:
+      description: Learn more about shipping option types.
+      url: >-
+        https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profiles-and-types
   - name: Shipping Options
     description: >
       A shipping option is a way of shipping an item to or from the customer.
@@ -828,6 +847,8 @@ paths:
     $ref: paths/admin_exchanges_{id}_outbound_shipping-method_{action_id}.yaml
   /admin/exchanges/{id}/request:
     $ref: paths/admin_exchanges_{id}_request.yaml
+  /admin/feature-flags:
+    $ref: paths/admin_feature-flags.yaml
   /admin/fulfillment-providers:
     $ref: paths/admin_fulfillment-providers.yaml
   /admin/fulfillment-providers/{id}/options:
@@ -921,6 +942,8 @@ paths:
     $ref: paths/admin_orders_{id}_line-items.yaml
   /admin/orders/{id}/preview:
     $ref: paths/admin_orders_{id}_preview.yaml
+  /admin/orders/{id}/shipping-options:
+    $ref: paths/admin_orders_{id}_shipping-options.yaml
   /admin/orders/{id}/transfer:
     $ref: paths/admin_orders_{id}_transfer.yaml
   /admin/orders/{id}/transfer/cancel:
@@ -1071,6 +1094,10 @@ paths:
     $ref: paths/admin_sales-channels_{id}.yaml
   /admin/sales-channels/{id}/products:
     $ref: paths/admin_sales-channels_{id}_products.yaml
+  /admin/shipping-option-types:
+    $ref: paths/admin_shipping-option-types.yaml
+  /admin/shipping-option-types/{id}:
+    $ref: paths/admin_shipping-option-types_{id}.yaml
   /admin/shipping-options:
     $ref: paths/admin_shipping-options.yaml
   /admin/shipping-options/{id}:

@@ -37,6 +37,7 @@ import {
   TransactionStepTimeoutError,
   TransactionTimeoutError,
 } from "./errors"
+import { Context } from "@medusajs/types"
 
 /**
  * @class TransactionOrchestrator is responsible for managing and executing distributed transactions.
@@ -1380,7 +1381,8 @@ export class TransactionOrchestrator extends EventEmitter {
 
   private createTransactionFlow(
     transactionId: string,
-    flowMetadata?: TransactionFlow["metadata"]
+    flowMetadata?: TransactionFlow["metadata"],
+    context?: Context
   ): TransactionFlow {
     const [steps, features] = TransactionOrchestrator.buildSteps(
       this.definition
@@ -1390,7 +1392,7 @@ export class TransactionOrchestrator extends EventEmitter {
       modelId: this.id,
       options: this.options,
       transactionId: transactionId,
-      runId: ulid(),
+      runId: context?.runId ?? ulid(),
       metadata: flowMetadata,
       hasAsyncSteps: features.hasAsyncSteps,
       hasFailedSteps: false,
@@ -1541,12 +1543,14 @@ export class TransactionOrchestrator extends EventEmitter {
     handler,
     payload,
     flowMetadata,
+    context,
     onLoad,
   }: {
     transactionId: string
     handler: TransactionStepHandler
     payload?: unknown
     flowMetadata?: TransactionFlow["metadata"]
+    context?: Context
     onLoad?: (transaction: DistributedTransactionType) => Promise<void> | void
   }): Promise<DistributedTransactionType> {
     const existingTransaction =
@@ -1555,7 +1559,11 @@ export class TransactionOrchestrator extends EventEmitter {
     let newTransaction = false
     let modelFlow: TransactionFlow
     if (!existingTransaction) {
-      modelFlow = this.createTransactionFlow(transactionId, flowMetadata)
+      modelFlow = this.createTransactionFlow(
+        transactionId,
+        flowMetadata,
+        context
+      )
       newTransaction = true
     } else {
       modelFlow = existingTransaction.flow
@@ -1795,12 +1803,14 @@ export class TransactionOrchestrator extends EventEmitter {
     handler,
     transaction,
     onLoad,
+    forcePermanentFailure,
   }: {
     responseIdempotencyKey: string
     error?: Error | any
     handler?: TransactionStepHandler
     transaction?: DistributedTransactionType
     onLoad?: (transaction: DistributedTransactionType) => Promise<void> | void
+    forcePermanentFailure?: boolean
   }): Promise<DistributedTransactionType> {
     const [curTransaction, step] =
       await TransactionOrchestrator.getTransactionAndStepFromIdempotencyKey(
@@ -1822,7 +1832,8 @@ export class TransactionOrchestrator extends EventEmitter {
         curTransaction,
         step,
         error,
-        0
+        // On permanent failure, the step should not consider any retries
+        forcePermanentFailure ? 0 : step.definition.maxRetries
       )
 
       if (ret.transactionIsCancelling) {

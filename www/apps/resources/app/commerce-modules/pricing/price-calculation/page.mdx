@@ -166,27 +166,27 @@ const priceSet = await pricingModuleService.createPriceSets({
   prices: [
     // default price
     {
-      amount: 500,
+      amount: 5,
       currency_code: "EUR",
       rules: {},
     },
     // prices with rules
     {
-      amount: 400,
+      amount: 4,
       currency_code: "EUR",
       rules: {
         region_id: "reg_123",
       },
     },
     {
-      amount: 450,
+      amount: 4.5,
       currency_code: "EUR",
       rules: {
         city: "krakow",
       },
     },
     {
-      amount: 500,
+      amount: 5,
       currency_code: "EUR",
       rules: {
         city: "warsaw",
@@ -194,7 +194,7 @@ const priceSet = await pricingModuleService.createPriceSets({
       },
     },
     {
-      amount: 200,
+      amount: 2,
       currency_code: "EUR",
       min_quantity: 100,
     },
@@ -232,10 +232,10 @@ const priceSet = await pricingModuleService.createPriceSets({
     const price = {
       id: "<PRICE_SET_ID>",
       is_calculated_price_price_list: false,
-      calculated_amount: 500,
+      calculated_amount: 5,
 
       is_original_price_price_list: false,
-      original_amount: 500,
+      original_amount: 5,
 
       currency_code: "EUR",
 
@@ -299,10 +299,10 @@ const priceSet = await pricingModuleService.createPriceSets({
     const price = {
       id: "<PRICE_SET_ID>",
       is_calculated_price_price_list: false,
-      calculated_amount: 500,
+      calculated_amount: 5,
 
       is_original_price_price_list: false,
-      original_amount: 500,
+      original_amount: 5,
 
       currency_code: "EUR",
 
@@ -327,7 +327,7 @@ const priceSet = await pricingModuleService.createPriceSets({
     }
     ```
 
-    - Original price selection: The fourth price in the price list is selected as the best price.
+    - Original price selection: The fourth price in the price set is selected as the best price.
     - Calculated price selection: since there are no associated price lists, the calculated price is set to the original price.
 
     </TabsContent>
@@ -353,7 +353,7 @@ const priceSet = await pricingModuleService.createPriceSets({
             items: [
               {
                 id: "item_1",
-                quantity: 200,
+                quantity: 2,
                 // assuming the price set belongs to this variant
                 variant_id: "variant_1",
                 // ...
@@ -375,10 +375,10 @@ const priceSet = await pricingModuleService.createPriceSets({
     const price = {
       id: "<PRICE_SET_ID>",
       is_calculated_price_price_list: false,
-      calculated_amount: 200,
+      calculated_amount: 2,
 
       is_original_price_price_list: false,
-      original_amount: 200,
+      original_amount: 2,
 
       currency_code: "EUR",
 
@@ -403,7 +403,7 @@ const priceSet = await pricingModuleService.createPriceSets({
     }
     ```
 
-    - Original price selection: the fifth price in the price list is selected as the best price because the cart item quantity is 200.
+    - Original price selection: the fifth price in the price set is selected as the best price because the cart item quantity is `200`.
         - This is assuming the price set belongs to the cart item's variant.
     - Calculated price selection: since there are no associated price lists, the calculated price is set to the original price.
 
@@ -433,12 +433,12 @@ const priceSet = await pricingModuleService.createPriceSets({
       type: "sale",
       prices: [
         {
-          amount: 400,
+          amount: 4,
           currency_code: "EUR",
           price_set_id: priceSet.id,
         },
         {
-          amount: 450,
+          amount: 4.5,
           currency_code: "EUR",
           price_set_id: priceSet.id,
         },
@@ -466,10 +466,10 @@ const priceSet = await pricingModuleService.createPriceSets({
     const price = {
       id: "<PRICE_SET_ID>",
       is_calculated_price_price_list: true,
-      calculated_amount: 400,
+      calculated_amount: 4,
 
       is_original_price_price_list: false,
-      original_amount: 500,
+      original_amount: 5,
 
       currency_code: "EUR",
 
@@ -494,7 +494,7 @@ const priceSet = await pricingModuleService.createPriceSets({
     }
     ```
 
-    - Original price selection: The fourth price in the price list is selected as the best price.
+    - Original price selection: The fourth price in the price set is selected as the best price.
     - Calculated price selection: The first price of the price list is selected as the best price.
 
     </TabsContent>

@@ -48,10 +48,6 @@ const useSettingRoutes = (): INavItem[] => {
         to: "/settings/sales-channels",
       },
       {
-        label: t("shippingOptionTypes.domain"),
-        to: "/settings/shipping-option-types",
-      },
-      {
         label: t("productTypes.domain"),
         to: "/settings/product-types",
       },

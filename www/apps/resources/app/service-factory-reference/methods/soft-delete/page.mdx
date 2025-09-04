@@ -8,7 +8,9 @@ export const metadata = {
 
 # {metadata.title}
 
-This method soft deletes one or more records of the data model.
+This method of a module's service soft deletes one or more records of a data model.
+
+The method's name is of the format `softDeleteDataModel`, where `DataModel` is the plural pascal-case name of the data model.
 
 ## Soft Delete One Record
 
@@ -20,7 +22,7 @@ const deletedPosts = await postModuleService.softDeletePosts(
 
 ### Parameters
 
-To soft delete a record, pass its ID as a parameter of the method.
+To soft delete a record, pass its ID as a parameter to the method.
 
 ### Returns
 
@@ -28,9 +30,9 @@ The method returns an object, whose keys are of the format `{camel_case_data_mod
 
 For example, the returned object of the above example is:
 
-```ts
-deletedPosts = {
-  post_id: ["123"],
+```json
+{
+  "post_id": ["123"]
 }
 ```
 
@@ -47,7 +49,7 @@ const deletedPosts = await postModuleService.softDeletePosts([
 
 ### Parameters
 
-To soft delete multiple records, pass an array of IDs as a parameter of the method.
+To soft delete multiple records, pass an array of IDs as a parameter to the method.
 
 ### Returns
 
@@ -55,12 +57,12 @@ The method returns an object, whose keys are of the format `{camel_case_data_mod
 
 For example, the returned object of the above example is:
 
-```ts
-deletedPosts = {
-  post_id: [
+```json
+{
+  "post_id": [
     "123",
-    "321",
-  ],
+    "321"
+  ]
 }
 ```
 
@@ -76,11 +78,11 @@ const deletedPosts = await postModuleService.softDeletePosts({
 
 ### Parameters
 
-To soft delete records matching a set of filters, pass an object of filters as a parameter.
+To soft delete records matching a set of filters, pass an object of filters as a parameter to the method.
 
 <Note>
 
-Learn more about accepted filters in [this documentation](../../tips/filtering/page.mdx).
+Refer to the [Filtering](../../tips/filtering/page.mdx) reference for more information on accepted filters and examples.
 
 </Note>
 
@@ -90,8 +92,8 @@ The method returns an object, whose keys are of the format `{camel_case_data_mod
 
 For example, the returned object of the above example is:
 
-```ts
-deletedPosts = {
-  post_id: ["123"],
+```json
+{
+  "post_id": ["123"]
 }
 ```
