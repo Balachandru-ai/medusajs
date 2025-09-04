@@ -7,7 +7,7 @@ import { useEffect } from "react"
 import * as zod from "zod"
 
 import { Form } from "../../../../../components/common/form"
-import { DeprecatedPercentageInput } from "../../../../../components/inputs/percentage-input"
+import { PercentageInput } from "../../../../../components/inputs/percentage-input"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdatePromotion } from "../../../../../hooks/api/promotions"
@@ -289,19 +289,18 @@ export const EditPromotionDetailsForm = ({
                               value={field.value}
                             />
                           ) : (
-                            <DeprecatedPercentageInput
-                              key="amount"
-                              min={0}
-                              max={100}
+                            <PercentageInput
                               {...field}
                               value={field.value || ""}
-                              onChange={(e) => {
+                              decimalsLimit={0}
+                              decimalScale={0}
+                              onValueChange={(value, _name) =>
                                 onChange(
-                                  e.target.value === ""
-                                    ? null
-                                    : parseInt(e.target.value)
+                                  value === "" || value === undefined
+                                    ? undefined
+                                    : parseInt(value)
                                 )
-                              }}
+                              }
                             />
                           )}
                         </Form.Control>

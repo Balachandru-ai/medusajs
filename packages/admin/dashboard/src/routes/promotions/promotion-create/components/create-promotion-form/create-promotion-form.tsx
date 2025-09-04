@@ -28,11 +28,8 @@ import { useForm, useWatch } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { z } from "zod"
 import { Form } from "../../../../../components/common/form"
-import { DeprecatedPercentageInput } from "../../../../../components/inputs/percentage-input"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
+import { PercentageInput } from "../../../../../components/inputs/percentage-input"
+import { RouteFocusModal, useRouteModal, } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCampaigns } from "../../../../../hooks/api/campaigns"
 import { useCreatePromotion } from "../../../../../hooks/api/promotions"
@@ -772,20 +769,18 @@ export const CreatePromotionForm = () => {
                                     disabled={!currencyCode}
                                   />
                                 ) : (
-                                  <DeprecatedPercentageInput
-                                    key="amount"
-                                    className="text-right"
-                                    min={0}
-                                    max={100}
+                                  <PercentageInput
                                     {...field}
                                     value={value}
-                                    onChange={(e) => {
+                                    decimalsLimit={0}
+                                    decimalScale={0}
+                                    onValueChange={(value, _name) =>
                                       onChange(
-                                        e.target.value === ""
-                                          ? null
-                                          : parseInt(e.target.value)
+                                        value === "" || value === undefined
+                                          ? undefined
+                                          : parseInt(value)
                                       )
-                                    }}
+                                    }
                                   />
                                 )}
                               </Form.Control>
