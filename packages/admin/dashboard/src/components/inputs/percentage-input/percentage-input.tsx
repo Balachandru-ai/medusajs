@@ -12,7 +12,7 @@ function resolveDecimalScale(
     return MIN_DECIMAL_SCALE
   }
   return Math.max(
-    getNumberOfDecimalPlaces(value as number | string),
+    getNumberOfDecimalPlaces(parseFloat(value.toString())),
     MIN_DECIMAL_SCALE
   )
 }

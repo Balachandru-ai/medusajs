@@ -8,7 +8,7 @@
  * getDecimalPlaces(42) // 0
  * getDecimalPlaces(10.0000) // 0
  */
-export function getNumberOfDecimalPlaces(num: number | string): number {
+export function getNumberOfDecimalPlaces(num: number): number {
   // Convert to string and check if it contains a decimal point
   const str = num.toString()
   if (str.indexOf(".") === -1) {
