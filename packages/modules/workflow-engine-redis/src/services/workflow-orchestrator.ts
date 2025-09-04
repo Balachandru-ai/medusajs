@@ -64,6 +64,7 @@ type IdempotencyKeyParts = {
 
 type NotifyOptions = {
   eventType: keyof DistributedTransactionEvents
+  isFlowAsync: boolean
   workflowId: string
   transactionId?: string
   step?: TransactionStep
@@ -315,12 +316,6 @@ export class WorkflowOrchestratorService {
       throw new Error("Transaction ID is required")
     }
 
-    const events: FlowRunOptions["events"] = this.buildWorkflowEvents({
-      customEventHandlers: eventHandlers,
-      workflowId,
-      transactionId: transactionId,
-    })
-
     const exportedWorkflow = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
       throw new Error(`Workflow with id "${workflowId}" not found.`)
@@ -343,6 +338,12 @@ export class WorkflowOrchestratorService {
       }
       throw new Error("Transaction not found")
     }
+
+    const events: FlowRunOptions["events"] = this.buildWorkflowEvents({
+      customEventHandlers: eventHandlers,
+      workflowId,
+      transactionId: transactionId,
+    })
 
     const ret = await exportedWorkflow.cancel({
       transaction,
@@ -373,6 +374,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId: transaction.transactionId,
@@ -471,6 +473,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId,
@@ -544,6 +547,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId,
@@ -669,16 +673,8 @@ export class WorkflowOrchestratorService {
       return
     }
 
-    if (publish) {
-      const channel = this.getChannelName(options.workflowId)
-      const message = JSON.stringify({
-        instanceId: this.instanceId,
-        data: options,
-      })
-      await this.redisPublisher.publish(channel, message)
-    }
-
     const {
+      isFlowAsync,
       eventType,
       workflowId,
       transactionId,
@@ -689,6 +685,15 @@ export class WorkflowOrchestratorService {
       state,
     } = options
 
+    if (publish && isFlowAsync) {
+      const channel = this.getChannelName(options.workflowId)
+      const message = JSON.stringify({
+        instanceId: this.instanceId,
+        data: options,
+      })
+      await this.redisPublisher.publish(channel, message)
+    }
+
     const subscribers: TransactionSubscribers =
       this.subscribers.get(workflowId) ?? new Map()
 
@@ -698,6 +703,7 @@ export class WorkflowOrchestratorService {
           eventType,
           workflowId,
           transactionId,
+          isFlowAsync,
           step,
           response,
           result,
@@ -743,6 +749,7 @@ export class WorkflowOrchestratorService {
     transactionId,
   }): DistributedTransactionEvents {
     const notify = async ({
+      isFlowAsync,
       eventType,
       step,
       result,
@@ -750,6 +757,7 @@ export class WorkflowOrchestratorService {
       errors,
       state,
     }: {
+      isFlowAsync: boolean
       eventType: keyof DistributedTransactionEvents
       step?: TransactionStep
       response?: unknown
@@ -758,6 +766,7 @@ export class WorkflowOrchestratorService {
       state?: TransactionState
     }) => {
       await this.notify({
+        isFlowAsync,
         workflowId,
         transactionId,
         eventType,
@@ -772,31 +781,50 @@ export class WorkflowOrchestratorService {
     return {
       onTimeout: async ({ transaction }) => {
         customEventHandlers?.onTimeout?.({ transaction })
-        await notify({ eventType: "onTimeout" })
+        await notify({
+          eventType: "onTimeout",
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
 
       onBegin: async ({ transaction }) => {
         customEventHandlers?.onBegin?.({ transaction })
-        await notify({ eventType: "onBegin" })
+        await notify({
+          eventType: "onBegin",
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
       onResume: async ({ transaction }) => {
         customEventHandlers?.onResume?.({ transaction })
-        await notify({ eventType: "onResume" })
+        await notify({
+          eventType: "onResume",
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
       onCompensateBegin: async ({ transaction }) => {
         customEventHandlers?.onCompensateBegin?.({ transaction })
-        await notify({ eventType: "onCompensateBegin" })
+        await notify({
+          eventType: "onCompensateBegin",
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
       onFinish: async ({ transaction, result, errors }) => {
         customEventHandlers?.onFinish?.({ transaction, result, errors })
-        await notify({ eventType: "onFinish" })
+        await notify({
+          eventType: "onFinish",
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
 
       onStepBegin: async ({ step, transaction }) => {
         customEventHandlers?.onStepBegin?.({ step, transaction })
         this.activeStepsCount++
 
-        await notify({ eventType: "onStepBegin", step })
+        await notify({
+          eventType: "onStepBegin",
+          step,
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
       onStepSuccess: async ({ step, transaction }) => {
         const stepName = step.definition.action!
@@ -805,7 +833,12 @@ export class WorkflowOrchestratorService {
           transaction
         )
         customEventHandlers?.onStepSuccess?.({ step, transaction, response })
-        await notify({ eventType: "onStepSuccess", step, response })
+        await notify({
+          eventType: "onStepSuccess",
+          step,
+          response,
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
 
         this.activeStepsCount--
       },
@@ -816,14 +849,23 @@ export class WorkflowOrchestratorService {
           .filter((err) => err.action === stepName)
 
         customEventHandlers?.onStepFailure?.({ step, transaction, errors })
-        await notify({ eventType: "onStepFailure", step, errors })
+        await notify({
+          eventType: "onStepFailure",
+          step,
+          errors,
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
 
         this.activeStepsCount--
       },
       onStepAwaiting: async ({ step, transaction }) => {
         customEventHandlers?.onStepAwaiting?.({ step, transaction })
 
-        await notify({ eventType: "onStepAwaiting", step })
+        await notify({
+          eventType: "onStepAwaiting",
+          step,
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
 
         this.activeStepsCount--
       },
@@ -837,7 +879,12 @@ export class WorkflowOrchestratorService {
           response,
         })
 
-        await notify({ eventType: "onCompensateStepSuccess", step, response })
+        await notify({
+          eventType: "onCompensateStepSuccess",
+          step,
+          response,
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
       onCompensateStepFailure: async ({ step, transaction }) => {
         const stepName = step.definition.action!
@@ -847,7 +894,12 @@ export class WorkflowOrchestratorService {
 
         customEventHandlers?.onStepFailure?.({ step, transaction, errors })
 
-        await notify({ eventType: "onCompensateStepFailure", step, errors })
+        await notify({
+          eventType: "onCompensateStepFailure",
+          step,
+          errors,
+          isFlowAsync: transaction.getFlow().hasAsyncSteps,
+        })
       },
     }
   }

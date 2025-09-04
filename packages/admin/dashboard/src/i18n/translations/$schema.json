@@ -7997,9 +7997,12 @@
               "properties": {
                 "title": {
                   "type": "string"
+                },
+                "invalid": {
+                  "type": "string"
                 }
               },
-              "required": ["title"],
+              "required": ["title", "invalid"],
               "additionalProperties": false
             },
             "value_type": {
