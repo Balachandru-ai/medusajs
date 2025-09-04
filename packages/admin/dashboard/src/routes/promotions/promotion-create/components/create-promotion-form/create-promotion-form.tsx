@@ -28,8 +28,11 @@ import { useForm, useWatch } from "react-hook-form"
 import { Trans, useTranslation } from "react-i18next"
 import { z } from "zod"
 import { Form } from "../../../../../components/common/form"
-import { PercentageInput } from "../../../../../components/inputs/percentage-input"
-import { RouteFocusModal, useRouteModal, } from "../../../../../components/modals"
+import { DeprecatedPercentageInput } from "../../../../../components/inputs/percentage-input"
+import {
+  RouteFocusModal,
+  useRouteModal,
+} from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCampaigns } from "../../../../../hooks/api/campaigns"
 import { useCreatePromotion } from "../../../../../hooks/api/promotions"
@@ -782,15 +785,20 @@ export const CreatePromotionForm = () => {
                                     disabled={!currencyCode}
                                   />
                                 ) : (
-                                  <PercentageInput
+                                  <DeprecatedPercentageInput
+                                    key="amount"
+                                    className="text-right"
+                                    min={0}
+                                    max={100}
                                     {...field}
                                     value={value}
-                                    onValueChange={(value) => onChange(
-                                        value === "" || value === undefined
+                                    onChange={(e) => {
+                                      onChange(
+                                        e.target.value === ""
                                           ? null
-                                          : parseFloat(value)
+                                          : parseFloat(e.target.value)
                                       )
-                                    }
+                                    }}
                                   />
                                 )}
                               </Form.Control>

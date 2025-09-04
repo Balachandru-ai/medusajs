@@ -7,7 +7,6 @@ import { useEffect } from "react"
 import * as zod from "zod"
 
 import { Form } from "../../../../../components/common/form"
-import { PercentageInput } from "../../../../../components/inputs/percentage-input"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdatePromotion } from "../../../../../hooks/api/promotions"
@@ -16,6 +15,7 @@ import {
   getCurrencySymbol,
 } from "../../../../../lib/data/currencies"
 import { SwitchBox } from "../../../../../components/common/switch-box"
+import { DeprecatedPercentageInput } from "../../../../../components/inputs/percentage-input"
 
 type EditPromotionFormProps = {
   promotion: AdminPromotion
@@ -304,16 +304,19 @@ export const EditPromotionDetailsForm = ({
                               value={field.value}
                             />
                           ) : (
-                            <PercentageInput
+                            <DeprecatedPercentageInput
+                              key="amount"
+                              min={0}
+                              max={100}
                               {...field}
                               value={field.value || ""}
-                              onValueChange={(value) =>
+                              onChange={(e) => {
                                 onChange(
-                                  value === "" || value === undefined
+                                  e.target.value === ""
                                     ? null
-                                    : parseFloat(value)
+                                    : parseFloat(e.target.value)
                                 )
-                              }
+                              }}
                             />
                           )}
                         </Form.Control>
