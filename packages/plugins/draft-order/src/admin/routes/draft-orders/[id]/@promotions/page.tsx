@@ -78,24 +78,24 @@ const PromotionForm = ({ preview }: PromotionFormProps) => {
   const { mutateAsync: addPromotions, isPending: isAddingPromotions } =
     useDraftOrderAddPromotions(preview.id)
 
-  const promoCodes = getPromotionCodes(items, shipping_methods)
+  const promoIds = getPromotionIds(items, shipping_methods)
 
   const { promotions, isPending, isError, error } = usePromotions(
     {
-      code: promoCodes,
+      id: promoIds,
     },
     {
-      enabled: !!promoCodes.length,
+      enabled: !!promoIds.length,
     }
   )
 
   const comboboxData = useComboboxData({
-    queryKey: ["promotions", "combobox", promoCodes],
+    queryKey: ["promotions", "combobox", promoIds],
     queryFn: async (params) => {
       return await sdk.admin.promotion.list({
         ...params,
-        code: {
-          $nin: promoCodes,
+        id: {
+          $nin: promoIds,
         },
       })
     },
@@ -261,7 +261,7 @@ const PromotionItem = ({
     <div
       key={promotion.id}
       className={clx(
-        "px-3 py-2 rounded-lg bg-ui-bg-component shadow-elevation-card-rest flex items-center justify-between",
+        "bg-ui-bg-component shadow-elevation-card-rest flex items-center justify-between rounded-lg px-3 py-2",
         {
           "animate-pulse": isLoading,
         }
@@ -271,7 +271,7 @@ const PromotionItem = ({
         <Text size="small" weight="plus" leading="compact">
           {promotion.code}
         </Text>
-        <div className="flex items-center gap-1.5 text-ui-fg-subtle">
+        <div className="text-ui-fg-subtle flex items-center gap-1.5">
           {displayValue && (
             <div className="flex items-center gap-1.5">
               <Text size="small" leading="compact">
@@ -337,17 +337,17 @@ const formatPercentage = (value?: number | null, isPercentageValue = false) => {
   return formatter.format(val)
 }
 
-function getPromotionCodes(
+function getPromotionIds(
   items: HttpTypes.AdminOrderPreview["items"],
   shippingMethods: HttpTypes.AdminOrderPreview["shipping_methods"]
 ) {
-  const codes = new Set<string>()
+  const promotionIds = new Set<string>()
 
   for (const item of items) {
     if (item.adjustments) {
       for (const adjustment of item.adjustments) {
-        if (adjustment.code) {
-          codes.add(adjustment.code)
+        if (adjustment.promotion_id) {
+          promotionIds.add(adjustment.promotion_id)
         }
       }
     }
@@ -356,14 +356,14 @@ function getPromotionCodes(
   for (const shippingMethod of shippingMethods) {
     if (shippingMethod.adjustments) {
       for (const adjustment of shippingMethod.adjustments) {
-        if (adjustment.code) {
-          codes.add(adjustment.code)
+        if (adjustment.promotion_id) {
+          promotionIds.add(adjustment.promotion_id)
         }
       }
     }
   }
 
-  return Array.from(codes)
+  return Array.from(promotionIds)
 }
 
 export default Promotions

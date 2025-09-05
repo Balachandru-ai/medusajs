@@ -2151,7 +2151,8 @@
         "description": "The code your customers will enter during checkout."
       },
       "value": {
-        "title": "Promotion Value"
+        "title": "Promotion Value",
+        "invalid": "Invalid promotion value"
       },
       "value_type": {
         "fixed": {
