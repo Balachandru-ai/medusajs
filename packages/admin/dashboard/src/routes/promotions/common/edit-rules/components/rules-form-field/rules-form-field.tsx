@@ -29,6 +29,7 @@ type RulesFormFieldType = {
     | "application_method.buy_rules"
     | "rules"
     | "application_method.target_rules"
+  formType?: "create" | "edit"
 }
 
 export const RulesFormField = ({
@@ -38,6 +39,7 @@ export const RulesFormField = ({
   rulesToRemove,
   scope = "rules",
   promotion,
+  formType = "create",
 }: RulesFormFieldType) => {
   const { t } = useTranslation()
   const formData = form.getValues()
@@ -93,6 +95,10 @@ export const RulesFormField = ({
       return
     }
 
+    if (!fields.length || formType === "edit") {
+      return
+    }
+
     if (ruleType === "rules" && !fields.length) {
       form.resetField("rules")
 
@@ -123,6 +129,7 @@ export const RulesFormField = ({
     isLoading,
     ruleType,
     fields.length,
+    formType,
     form,
     replace,
     rules,
