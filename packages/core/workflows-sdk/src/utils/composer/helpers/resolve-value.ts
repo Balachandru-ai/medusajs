@@ -5,22 +5,30 @@ import {
   promiseAll,
 } from "@medusajs/utils"
 
-async function resolveProperty(property, transactionContext) {
+function resolveProperty(property, transactionContext) {
+  if (property == null || typeof property !== "object") {
+    return property
+  }
+
+  if (!property.__type) {
+    return property
+  }
+
   const { invoke: invokeRes } = transactionContext
 
   let res
 
-  if (property?.__type === OrchestrationUtils.SymbolInputReference) {
+  if (property.__type === OrchestrationUtils.SymbolInputReference) {
     res = transactionContext.payload
   } else if (
-    property?.__type === OrchestrationUtils.SymbolMedusaWorkflowResponse
+    property.__type === OrchestrationUtils.SymbolMedusaWorkflowResponse
   ) {
-    res = await resolveValue(property.$result, transactionContext)
+    res = resolveValue(property.$result, transactionContext)
   } else if (
-    property?.__type === OrchestrationUtils.SymbolWorkflowStepTransformer
+    property.__type === OrchestrationUtils.SymbolWorkflowStepTransformer
   ) {
-    res = await property.__resolver(transactionContext)
-  } else if (property?.__type === OrchestrationUtils.SymbolWorkflowStep) {
+    res = property.__resolver(transactionContext)
+  } else if (property.__type === OrchestrationUtils.SymbolWorkflowStep) {
     const output =
       invokeRes[property.__step__]?.output ?? invokeRes[property.__step__]
     if (output?.__type === OrchestrationUtils.SymbolWorkflowStepResponse) {
@@ -29,7 +37,7 @@ async function resolveProperty(property, transactionContext) {
       res = output
     }
   } else if (
-    property?.__type === OrchestrationUtils.SymbolWorkflowStepResponse
+    property.__type === OrchestrationUtils.SymbolWorkflowStepResponse
   ) {
     res = property.output
   } else {
@@ -43,6 +51,10 @@ async function resolveProperty(property, transactionContext) {
  * @internal
  */
 export async function resolveValue(input, transactionContext) {
+  if (input == null || typeof input !== "object") {
+    return input
+  }
+
   const unwrapInput = async (
     inputTOUnwrap: Record<string, unknown>,
     parentRef: any
@@ -52,36 +64,68 @@ export async function resolveValue(input, transactionContext) {
     }
 
     if (Array.isArray(inputTOUnwrap)) {
-      return await promiseAll(
+      const resolvedItems = await promiseAll(
         inputTOUnwrap.map((i) => resolveValue(i, transactionContext))
       )
+      return resolvedItems
     }
 
     if (typeof inputTOUnwrap !== "object") {
       return inputTOUnwrap
     }
 
-    for (const key of Object.keys(inputTOUnwrap)) {
-      parentRef[key] = deepCopy(
-        await resolveProperty(inputTOUnwrap[key], transactionContext)
-      )
+    const keys = Object.keys(inputTOUnwrap)
+    const promises: { promise: Promise<any>; keyIndex: number }[] = []
 
-      if (typeof parentRef[key] === "object") {
-        parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
+    // First pass: resolve properties and collect promises with their indices
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+      const result = resolveProperty(inputTOUnwrap[key], transactionContext)
+
+      if (result instanceof Promise) {
+        promises.push({ promise: result, keyIndex: i })
+      } else {
+        // Synchronous result - assign immediately
+        parentRef[key] = typeof result !== "object" ? result : deepCopy(result)
+
+        if (typeof parentRef[key] === "object" && parentRef[key] != null) {
+          parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
+        }
+      }
+    }
+
+    // Second pass: batch resolve only the promises and reassign to correct keys
+    if (promises.length > 0) {
+      const resolvedPromises = await promiseAll(promises.map((p) => p.promise))
+
+      for (let i = 0; i < promises.length; i++) {
+        const key = keys[promises[i].keyIndex]
+        parentRef[key] = deepCopy(resolvedPromises[i])
+
+        if (typeof parentRef[key] === "object" && parentRef[key] != null) {
+          parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
+        }
       }
     }
 
     return parentRef
   }
 
-  const copiedInput =
+  const input_ =
     input?.__type === OrchestrationUtils.SymbolWorkflowWorkflowData
       ? input.output
       : input
 
-  const result = copiedInput?.__type
-    ? await resolveProperty(copiedInput, transactionContext)
-    : await unwrapInput(copiedInput, {})
+  let result!: any
+
+  if (input_.__type) {
+    result = resolveProperty(input_, transactionContext)
+    if (result instanceof Promise) {
+      result = await result
+    }
+  } else {
+    result = await unwrapInput(input_, {})
+  }
 
   return parseStringifyIfNecessary(result)
 }
