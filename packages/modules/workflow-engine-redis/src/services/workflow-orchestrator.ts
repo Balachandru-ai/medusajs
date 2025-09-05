@@ -473,6 +473,7 @@ export class WorkflowOrchestratorService {
       const { result, errors } = ret
 
       this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
         eventType: "onFinish",
         workflowId,
         transactionId,
