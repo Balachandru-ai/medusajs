@@ -339,7 +339,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
 
     refreshPaymentCollectionForCartWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+      input: { cart: refetchedCart },
     })
 
     return new WorkflowResponse(refetchedCart, {

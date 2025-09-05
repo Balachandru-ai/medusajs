@@ -59,8 +59,12 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
+    const shouldExecute = transform({ input }, ({ input }) => {
+      return !!input.cart_id || (input.cart && !!input.cart.payment_collection)
+    })
+
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
-      return !input.cart
+      return !input.cart && shouldExecute
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "cart",
@@ -91,18 +95,26 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       cart,
     })
 
-    when("should-update-payment-collection", { cart }, ({ cart }) => {
-      const valueIsEqual = MathBN.eq(
-        cart.payment_collection?.raw_amount ?? -1,
-        cart.raw_total
-      )
+    when(
+      "should-update-payment-collection",
+      { cart, shouldExecute },
+      ({ cart }) => {
+        if (!shouldExecute) {
+          return false
+        }
 
-      if (valueIsEqual) {
-        return cart.payment_collection.currency_code !== cart.currency_code
+        const valueIsEqual = MathBN.eq(
+          cart.payment_collection?.raw_amount ?? -1,
+          cart.raw_total
+        )
+
+        if (valueIsEqual) {
+          return cart.payment_collection.currency_code !== cart.currency_code
+        }
+
+        return true
       }
-
-      return true
-    }).then(() => {
+    ).then(() => {
       const deletePaymentSessionInput = transform(
         { paymentCollection: cart.payment_collection },
         (data) => {
