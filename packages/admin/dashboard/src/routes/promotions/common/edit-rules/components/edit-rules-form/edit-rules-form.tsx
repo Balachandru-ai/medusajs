@@ -28,8 +28,6 @@ export const EditRulesForm = ({
   const { t } = useTranslation()
   const [rulesToRemove, setRulesToRemove] = useState([])
 
-  console.log(promotion)
-
   const form = useForm<EditRulesType>({
     defaultValues: {
       rules: generateRuleAttributes(promotion.rules as any),
