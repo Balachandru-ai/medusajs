@@ -216,7 +216,7 @@ const ItemsForm = ({ preview, currencyCode }: ItemsFormProps) => {
                 </RouteFocusModal.Title>
                 <RouteFocusModal.Description asChild>
                   <Text size="small" className="text-ui-fg-subtle">
-                    Edit the items in the draft order.
+                    Edit the items in the draft order
                   </Text>
                 </RouteFocusModal.Description>
               </div>
@@ -261,7 +261,7 @@ const ItemsForm = ({ preview, currencyCode }: ItemsFormProps) => {
                 </div>
                 <div className="bg-ui-bg-subtle shadow-elevation-card-rest rounded-xl">
                   <div className="px-[5px]">
-                    <div className="grid grid-cols-[1fr_1fr_1fr_28px] gap-3 px-4 py-2 text-ui-fg-muted">
+                    <div className="text-ui-fg-muted grid grid-cols-[2fr_1fr_2fr_28px] gap-3 px-4 py-2">
                       <div>
                         <Text size="small" weight="plus">
                           Item
@@ -282,7 +282,7 @@ const ItemsForm = ({ preview, currencyCode }: ItemsFormProps) => {
                   </div>
                   <div className="flex flex-col gap-y-1.5 px-[5px] pb-[5px]">
                     {itemCount <= 0 ? (
-                      <div className="flex items-center justify-center gap-x-3 bg-ui-bg-base rounded-lg p-4 shadow-elevation-card-rest flex-col gap-1">
+                      <div className="bg-ui-bg-base shadow-elevation-card-rest flex flex-col items-center justify-center gap-1 gap-x-3 rounded-lg p-4">
                         <Text size="small" weight="plus" leading="compact">
                           There are no items in this order
                         </Text>
@@ -300,7 +300,7 @@ const ItemsForm = ({ preview, currencyCode }: ItemsFormProps) => {
                         />
                       ))
                     ) : (
-                      <div className="flex items-center justify-center gap-x-3 bg-ui-bg-base rounded-lg p-4 shadow-elevation-card-rest flex-col gap-1">
+                      <div className="bg-ui-bg-base shadow-elevation-card-rest flex flex-col items-center justify-center gap-1 gap-x-3 rounded-lg p-4">
                         <Text size="small" weight="plus" leading="compact">
                           No items found
                         </Text>
@@ -348,7 +348,7 @@ const ItemsForm = ({ preview, currencyCode }: ItemsFormProps) => {
         </StackedFocusModal>
       </RouteFocusModal.Body>
       <RouteFocusModal.Footer>
-        <div className="flex items-center gap-x-2 justify-end">
+        <div className="flex items-center justify-end gap-x-2">
           <RouteFocusModal.Close asChild>
             <Button size="small" variant="secondary" type="button">
               Cancel
@@ -461,8 +461,8 @@ const VariantItem = ({ item, preview, currencyCode }: ItemProps) => {
   return (
     <Form {...form}>
       <form onSubmit={onSubmit}>
-        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_28px] gap-3 px-4 py-2 bg-ui-bg-base shadow-elevation-card-rest rounded-lg items-center">
-          <div className="flex items-center gap-x-3 w-full">
+        <div className="bg-ui-bg-base shadow-elevation-card-rest grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,2fr)_28px] items-center gap-3 rounded-lg px-4 py-2">
+          <div className="flex w-full items-center gap-x-3">
             <Thumbnail
               thumbnail={item.thumbnail}
               alt={item.product_title ?? undefined}
@@ -490,7 +490,7 @@ const VariantItem = ({ item, preview, currencyCode }: ItemProps) => {
             </div>
           </div>
           {editing ? (
-            <div className="flex-1 w-full">
+            <div className="w-full flex-1">
               <Form.Field
                 control={form.control}
                 name="quantity"
@@ -506,14 +506,14 @@ const VariantItem = ({ item, preview, currencyCode }: ItemProps) => {
               />
             </div>
           ) : (
-            <div className="flex-1 w-full">
+            <div className="w-full flex-1">
               <Text size="small" weight="plus">
                 {item.quantity}
               </Text>
             </div>
           )}
           {editing ? (
-            <div className="flex-1 w-full">
+            <div className="w-full flex-1">
               <Form.Field
                 control={form.control}
                 name="unit_price"
@@ -536,7 +536,7 @@ const VariantItem = ({ item, preview, currencyCode }: ItemProps) => {
               />
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-end w-full">
+            <div className="flex w-full flex-1 items-center justify-end">
               <Text size="small" weight="plus">
                 {getLocaleAmount(item.unit_price, currencyCode)}
               </Text>
@@ -670,7 +670,7 @@ const CustomItem = ({ item, preview, currencyCode }: ItemProps) => {
   return (
     <Form {...form}>
       <form onSubmit={onSubmit}>
-        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_28px] gap-3 px-4 py-2 bg-ui-bg-base shadow-elevation-card-rest rounded-lg items-center">
+        <div className="bg-ui-bg-base shadow-elevation-card-rest grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,2fr)_28px] items-center gap-3 rounded-lg px-4 py-2">
           <div className="flex items-center gap-x-3">
             <Thumbnail
               thumbnail={item.thumbnail}
@@ -737,7 +737,7 @@ const CustomItem = ({ item, preview, currencyCode }: ItemProps) => {
               }}
             />
           ) : (
-            <div className="flex-1 flex items-center justify-end">
+            <div className="flex flex-1 items-center justify-end">
               <Text size="small" weight="plus">
                 {getLocaleAmount(item.unit_price, currencyCode)}
               </Text>
@@ -917,7 +917,7 @@ const ExistingItemsForm = ({ orderId, items }: ExistingItemsFormProps) => {
         />
       </StackedFocusModal.Body>
       <StackedFocusModal.Footer>
-        <div className="flex items-center gap-x-2 justify-end">
+        <div className="flex items-center justify-end gap-x-2">
           <StackedFocusModal.Close asChild>
             <Button size="small" variant="secondary" type="button">
               Cancel
@@ -1120,9 +1120,9 @@ const CustomItemForm = ({ orderId, currencyCode }: CustomItemFormProps) => {
                           <Form.Label>Quantity</Form.Label>
                           <Form.Hint>Enter the quantity of the item</Form.Hint>
                         </div>
-                        <div className="flex-1 w-full">
+                        <div className="w-full flex-1">
                           <Form.Control>
-                            <div className="flex-1 w-full">
+                            <div className="w-full flex-1">
                               <NumberInput {...field} className="w-full" />
                             </div>
                           </Form.Control>
@@ -1136,7 +1136,7 @@ const CustomItemForm = ({ orderId, currencyCode }: CustomItemFormProps) => {
             </div>
           </StackedFocusModal.Body>
           <StackedFocusModal.Footer>
-            <div className="flex items-center gap-x-2 justify-end">
+            <div className="flex items-center justify-end gap-x-2">
               <StackedFocusModal.Close asChild>
                 <Button size="small" variant="secondary" type="button">
                   Cancel

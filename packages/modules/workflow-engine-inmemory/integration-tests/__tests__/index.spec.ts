@@ -63,11 +63,11 @@ import { createScheduled } from "../__fixtures__/workflow_scheduled"
 
 jest.setTimeout(60000)
 
-const failTrap = (done) => {
+const failTrap = (done, name) => {
   setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
-      `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually.`
+      `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
   }, 5000)
@@ -216,7 +216,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               })
             })
 
-          failTrap(done)
+          failTrap(
+            done,
+            "should cancel an ongoing execution with async unfinished yet step"
+          )
         })
 
         it("should cancel a complete execution with a sync workflow running as async", async () => {
@@ -676,7 +679,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             })
           })
 
-        failTrap(done)
+        failTrap(
+          done,
+          "should subscribe to a async workflow and receive the response when it finishes"
+        )
       })
 
       describe("Testing basic workflow", function () {
@@ -883,7 +889,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           expect(onFinish).toHaveBeenCalledTimes(0)
-          failTrap(done)
+          failTrap(
+            done,
+            "should subscribe to a async workflow and receive the response when it finishes"
+          )
         })
 
         it("should cancel and revert a completed workflow", async () => {
@@ -956,7 +965,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: true,
           })
 
-          failTrap(done)
+          failTrap(
+            done,
+            "should not run conditional steps if condition is false"
+          )
         })
 
         it("should not run conditional steps if condition is false", (done) => {
@@ -978,7 +990,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: true,
           })
 
-          failTrap(done)
+          failTrap(
+            done,
+            "should not run conditional steps if condition is false"
+          )
         })
       })
 
@@ -1127,7 +1142,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             },
           })
 
-          failTrap(done)
+          failTrap(
+            done,
+            "should display error when multple async steps are running in parallel"
+          )
         })
       })
 
