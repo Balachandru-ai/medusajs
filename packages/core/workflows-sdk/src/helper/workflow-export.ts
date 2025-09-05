@@ -45,9 +45,6 @@ function getCachedLoadedModules(): LoadedModule[] {
   return cachedLoadedModules
 }
 
-// Cache for workflow runners to avoid repeated creation
-const workflowRunnerCache = new Map<string, any>()
-
 function createContextualWorkflowRunner<
   TData = unknown,
   TResult = unknown,
@@ -410,33 +407,24 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     action: "run" | "registerStepSuccess" | "registerStepFailure" | "cancel",
     container?: LoadedModule[] | MedusaContainer
   ) => {
-    const containerKey = container ? "with-container" : "default"
-    const cacheKey = `${workflowId}_${action}_${containerKey}`
+    const contextualRunner = createContextualWorkflowRunner<
+      TData,
+      TResult,
+      TDataOverride,
+      TResultOverride
+    >({
+      workflowId,
+      defaultResult,
+      options,
+      container,
+    })
 
-    if (!workflowRunnerCache.has(cacheKey)) {
-      const contextualRunner = createContextualWorkflowRunner<
-        TData,
-        TResult,
-        TDataOverride,
-        TResultOverride
-      >({
-        workflowId,
-        defaultResult,
-        options,
-        container,
-      })
-
-      const boundMethod = contextualRunner[action] as ExportedWorkflow<
-        TData,
-        TResult,
-        TDataOverride,
-        TResultOverride
-      >[TAction]
-
-      workflowRunnerCache.set(cacheKey, boundMethod)
-    }
-
-    return workflowRunnerCache.get(cacheKey)
+    return contextualRunner[action] as ExportedWorkflow<
+      TData,
+      TResult,
+      TDataOverride,
+      TResultOverride
+    >[TAction]
   }
 
   exportedWorkflow.run = async <
