@@ -33,6 +33,27 @@ import {
   WorkflowResult,
 } from "./type"
 
+// Cache for loaded modules to avoid repeated filesystem traversal
+let cachedLoadedModules: LoadedModule[] | null = null
+
+function getCachedLoadedModules(): LoadedModule[] {
+  if (!cachedLoadedModules) {
+    cachedLoadedModules = MedusaModule.getLoadedModules().map(
+      (mod) => Object.values(mod)[0]
+    )
+  }
+  return cachedLoadedModules
+}
+
+// Cache for workflow runners to avoid repeated creation
+const workflowRunnerCache = new Map<string, any>()
+
+// Clear cache when needed (e.g., during module reloading)
+export function clearModuleCache() {
+  cachedLoadedModules = null
+  workflowRunnerCache.clear()
+}
+
 function createContextualWorkflowRunner<
   TData = unknown,
   TResult = unknown,
@@ -89,9 +110,7 @@ function createContextualWorkflowRunner<
       const container_ = flow.container as MedusaContainer
 
       if (!container_ || !isPresent(container_?.registrations)) {
-        executionContainer = MedusaModule.getLoadedModules().map(
-          (mod) => Object.values(mod)[0]
-        )
+        executionContainer = getCachedLoadedModules()
       }
     }
 
@@ -201,8 +220,10 @@ function createContextualWorkflowRunner<
       __type: MedusaContextType as Context["__type"],
     }
 
-    context.transactionId ??= "auto-" + ulid()
-    context.eventGroupId ??= ulid()
+    const uniqId = ulid()
+
+    context.transactionId ??= "auto-" + uniqId
+    context.eventGroupId ??= uniqId
 
     return await originalExecution(
       originalRun,
@@ -395,24 +416,35 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     action: "run" | "registerStepSuccess" | "registerStepFailure" | "cancel",
     container?: LoadedModule[] | MedusaContainer
   ) => {
-    const contextualRunner = createContextualWorkflowRunner<
-      TData,
-      TResult,
-      TDataOverride,
-      TResultOverride
-    >({
-      workflowId,
-      defaultResult,
-      options,
-      container,
-    })
+    // Create cache key based on workflow ID, action, and container presence
+    const containerKey = container ? "with-container" : "default"
+    const cacheKey = `${workflowId}_${action}_${containerKey}`
 
-    return contextualRunner[action] as ExportedWorkflow<
-      TData,
-      TResult,
-      TDataOverride,
-      TResultOverride
-    >[TAction]
+    if (!workflowRunnerCache.has(cacheKey)) {
+      const contextualRunner = createContextualWorkflowRunner<
+        TData,
+        TResult,
+        TDataOverride,
+        TResultOverride
+      >({
+        workflowId,
+        defaultResult,
+        options,
+        container,
+      })
+
+      // Cache the bound method
+      const boundMethod = contextualRunner[action] as ExportedWorkflow<
+        TData,
+        TResult,
+        TDataOverride,
+        TResultOverride
+      >[TAction]
+
+      workflowRunnerCache.set(cacheKey, boundMethod)
+    }
+
+    return workflowRunnerCache.get(cacheKey)
   }
 
   exportedWorkflow.run = async <
