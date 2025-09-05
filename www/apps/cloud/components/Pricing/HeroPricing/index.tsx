@@ -4,6 +4,7 @@ import { HeroPricingFields } from "../../../utils/types"
 import { H3, Button } from "docs-ui"
 import clsx from "clsx"
 import slugify from "slugify"
+import Link from "next/link"
 
 interface HeroPricingProps {
   data: HeroPricingFields
@@ -130,17 +131,23 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
           >
             <div className="w-full">
               {option.buttons.map((button) => (
-                <Button
+                <Link
                   key={button._key}
-                  variant={
-                    button.variant === "primary" || button.variant === "dark"
-                      ? "primary"
-                      : "secondary"
-                  }
-                  className="w-full txt-compact-xsmall-plus"
+                  href={`https://medusajs.com${button.link.path}`}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  {button.link.label}
-                </Button>
+                  <Button
+                    variant={
+                      button.variant === "primary" || button.variant === "dark"
+                        ? "primary"
+                        : "secondary"
+                    }
+                    className="w-full txt-compact-xsmall-plus"
+                  >
+                    {button.link.label}
+                  </Button>
+                </Link>
               ))}
             </div>
           </div>
