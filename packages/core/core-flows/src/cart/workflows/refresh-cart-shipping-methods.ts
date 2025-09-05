@@ -62,6 +62,10 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
       )
     })
 
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
     const fetchCart = when("fetch-cart", { input }, ({ input }) => {
       return shouldExecute
     }).then(() => {
@@ -80,7 +84,7 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
           "shipping_methods.data",
           "total",
         ],
-        variables: { id: input.cart_id },
+        variables: { id: cartId },
         throw_if_key_not_found: true,
         list: false,
       }).config({ name: "get-cart" })

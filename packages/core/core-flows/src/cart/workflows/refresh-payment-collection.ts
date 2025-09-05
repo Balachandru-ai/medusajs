@@ -65,6 +65,10 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       )
     })
 
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return shouldExecute
     }).then(() => {
@@ -82,7 +86,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
           "payment_collection.currency_code",
           "payment_collection.payment_sessions.id",
         ],
-        variables: { id: input.cart_id },
+        variables: { id: cartId },
         throw_if_key_not_found: true,
         list: false,
       })
