@@ -33,7 +33,7 @@ import {
   WorkflowResult,
 } from "./type"
 
-// Cache for loaded modules to avoid repeated filesystem traversal
+// Cache for loaded modules to avoid repeated traversal
 let cachedLoadedModules: LoadedModule[] | null = null
 
 function getCachedLoadedModules(): LoadedModule[] {
@@ -47,12 +47,6 @@ function getCachedLoadedModules(): LoadedModule[] {
 
 // Cache for workflow runners to avoid repeated creation
 const workflowRunnerCache = new Map<string, any>()
-
-// Clear cache when needed (e.g., during module reloading)
-export function clearModuleCache() {
-  cachedLoadedModules = null
-  workflowRunnerCache.clear()
-}
 
 function createContextualWorkflowRunner<
   TData = unknown,
@@ -416,7 +410,6 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     action: "run" | "registerStepSuccess" | "registerStepFailure" | "cancel",
     container?: LoadedModule[] | MedusaContainer
   ) => {
-    // Create cache key based on workflow ID, action, and container presence
     const containerKey = container ? "with-container" : "default"
     const cacheKey = `${workflowId}_${action}_${containerKey}`
 
@@ -433,7 +426,6 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
         container,
       })
 
-      // Cache the bound method
       const boundMethod = contextualRunner[action] as ExportedWorkflow<
         TData,
         TResult,
