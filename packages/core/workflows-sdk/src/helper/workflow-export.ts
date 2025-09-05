@@ -461,14 +461,11 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   > => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowRunOptions<
-      TDataOverride extends undefined ? TData : TDataOverride
-    >
 
     return await buildRunnerFn<"run", TDataOverride, TResultOverride>(
       "run",
       container
-    )(inputArgs)
+    )(args)
   }
 
   exportedWorkflow.registerStepSuccess = async <
@@ -485,9 +482,6 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   > => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowRegisterStepSuccessOptions<
-      TDataOverride extends undefined ? TData : TDataOverride
-    >
 
     return await buildRunnerFn<
       "registerStepSuccess",
@@ -496,7 +490,7 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     >(
       "registerStepSuccess",
       container
-    )(inputArgs)
+    )(args)
   }
 
   exportedWorkflow.registerStepFailure = async <
@@ -513,9 +507,6 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   > => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowRegisterStepFailureOptions<
-      TDataOverride extends undefined ? TData : TDataOverride
-    >
 
     return await buildRunnerFn<
       "registerStepFailure",
@@ -524,7 +515,7 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     >(
       "registerStepFailure",
       container
-    )(inputArgs)
+    )(args)
   }
 
   exportedWorkflow.cancel = async (
@@ -532,12 +523,11 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   ): Promise<WorkflowResult> => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowCancelOptions
 
     return await buildRunnerFn<"cancel", unknown, unknown>(
       "cancel",
       container
-    )(inputArgs)
+    )(args)
   }
 
   MedusaWorkflow.registerWorkflow(workflowId, exportedWorkflow)
