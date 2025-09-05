@@ -118,7 +118,7 @@ export async function resolveValue(input, transactionContext) {
 
   let result!: any
 
-  if (input_.__type) {
+  if (input_?.__type) {
     result = resolveProperty(input_, transactionContext)
     if (result instanceof Promise) {
       result = await result
