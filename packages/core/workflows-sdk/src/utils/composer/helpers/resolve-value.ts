@@ -86,7 +86,10 @@ export async function resolveValue(input, transactionContext) {
         promises.push({ promise: result, keyIndex: i })
       } else {
         // Synchronous result - assign immediately
-        parentRef[key] = typeof result !== "object" ? result : deepCopy(result)
+        parentRef[key] =
+          result == null || typeof result !== "object"
+            ? result
+            : deepCopy(result)
 
         if (typeof parentRef[key] === "object" && parentRef[key] != null) {
           parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
@@ -100,7 +103,10 @@ export async function resolveValue(input, transactionContext) {
 
       for (let i = 0; i < promises.length; i++) {
         const key = keys[promises[i].keyIndex]
-        parentRef[key] = deepCopy(resolvedPromises[i])
+        parentRef[key] =
+          resolvedPromises[i] == null || typeof resolvedPromises[i] !== "object"
+            ? resolvedPromises[i]
+            : deepCopy(resolvedPromises[i])
 
         if (typeof parentRef[key] === "object" && parentRef[key] != null) {
           parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
