@@ -93,7 +93,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
     })
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
-      return input.cart ?? fetchCart
+      return fetchCart ?? input.cart
     })
 
     const validate = createHook("validate", {
@@ -104,11 +104,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
     when(
       "should-update-payment-collection",
       { cart, shouldExecute },
-      ({ cart }) => {
-        if (!shouldExecute) {
-          return false
-        }
-
+      ({ cart, shouldExecute }) => {
         const valueIsEqual = MathBN.eq(
           cart.payment_collection?.raw_amount ?? -1,
           cart.raw_total
@@ -118,7 +114,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
           return cart.payment_collection.currency_code !== cart.currency_code
         }
 
-        return true
+        return shouldExecute
       }
     ).then(() => {
       const deletePaymentSessionInput = transform(
