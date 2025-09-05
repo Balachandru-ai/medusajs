@@ -62,14 +62,14 @@ import { Redis } from "ioredis"
 
 jest.setTimeout(300000)
 
-const failTrap = (done, name) => {
-  setTimeoutSync(() => {
+const failTrap = (done, name, timeout = 5000) => {
+  return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
       `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
-  }, 5000)
+  }, timeout)
 }
 
 function times(num) {
@@ -240,12 +240,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                         TransactionState.REVERTED
                       )
                       done()
+                      clearTimeout(timeout)
                     }
                   },
                 })
               })
 
-            failTrap(
+            const timeout = failTrap(
               done,
               "should cancel an ongoing execution with async unfinished yet step"
             )
@@ -443,11 +444,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                 expect(step1InvokeMockManualRetry).toHaveBeenCalledTimes(1)
                 expect(step2InvokeMockManualRetry).toHaveBeenCalledTimes(2)
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(
+          const timeout = failTrap(
             done,
             "should manually retry a step that is taking too long to finish"
           )
@@ -472,11 +474,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                 expect(step1CompensateMockAutoRetries).toHaveBeenCalledTimes(1)
                 expect(step2CompensateMockAutoRetries).toHaveBeenCalledTimes(1)
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(
+          const timeout = failTrap(
             done,
             "should retry steps X times automatically when maxRetries is set"
           )
@@ -961,11 +964,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(done, "workflow_async_background")
+          const timeout = failTrap(done, "workflow_async_background")
         })
 
         it("should subscribe to a async workflow and receive the response when it finishes", (done) => {
@@ -988,13 +992,14 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               if (event.eventType === "onFinish") {
                 onFinish()
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
           expect(onFinish).toHaveBeenCalledTimes(0)
 
-          failTrap(done, "workflow_async_background")
+          const timeout = failTrap(done, "workflow_async_background")
         })
 
         it("should not skip step if condition is true", function (done) {
@@ -1014,11 +1019,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(done, "wf-when")
+          const timeout = failTrap(done, "wf-when")
         })
 
         it("should cancel an async sub workflow when compensating", (done) => {
@@ -1052,11 +1058,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                 })
 
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(done, "workflow_async_background_fail")
+          const timeout = failTrap(done, "workflow_async_background_fail")
         })
 
         it("should cancel and revert a completed workflow", async () => {

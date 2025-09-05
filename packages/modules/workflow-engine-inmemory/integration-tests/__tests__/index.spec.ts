@@ -63,14 +63,14 @@ import { createScheduled } from "../__fixtures__/workflow_scheduled"
 
 jest.setTimeout(60000)
 
-const failTrap = (done, name) => {
-  setTimeoutSync(() => {
+const failTrap = (done, name, timeout = 5000) => {
+  return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
       `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
-  }, 5000)
+  }, timeout)
 }
 
 function times(num) {
@@ -211,12 +211,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                       TransactionState.REVERTED
                     )
                     done()
+                    clearTimeout(timeout)
                   }
                 },
               })
             })
 
-          failTrap(
+          const timeout = failTrap(
             done,
             "should cancel an ongoing execution with async unfinished yet step"
           )
@@ -405,11 +406,15 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               expect(step1InvokeMockManualRetry).toHaveBeenCalledTimes(1)
               expect(step2InvokeMockManualRetry).toHaveBeenCalledTimes(2)
               done()
+              clearTimeout(timeout)
             }
           },
         })
 
-        failTrap(done)
+        const timeout = failTrap(
+          done,
+          "should manually retry a step that is taking too long to finish"
+        )
       })
 
       it("should retry steps X times automatically when maxRetries is set", (done) => {
@@ -431,11 +436,15 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               expect(step1CompensateMockAutoRetries).toHaveBeenCalledTimes(1)
               expect(step2CompensateMockAutoRetries).toHaveBeenCalledTimes(1)
               done()
+              clearTimeout(timeout)
             }
           },
         })
 
-        failTrap(done)
+        const timeout = failTrap(
+          done,
+          "should retry steps X times automatically when maxRetries is set"
+        )
       })
 
       it("should not retry steps X times automatically when maxRetries is set and autoRetry is false", async () => {
@@ -674,12 +683,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                     { obj: "return from 3" },
                   ])
                   done()
+                  clearTimeout(timeout)
                 }
               },
             })
           })
 
-        failTrap(
+        const timeout = failTrap(
           done,
           "should subscribe to a async workflow and receive the response when it finishes"
         )
@@ -868,6 +878,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           const onFinish = jest.fn(() => {
             done()
+            clearTimeout(timeout)
           })
 
           void workflowOrcModule.subscribe({
@@ -889,7 +900,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           expect(onFinish).toHaveBeenCalledTimes(0)
-          failTrap(
+          const timeout = failTrap(
             done,
             "should subscribe to a async workflow and receive the response when it finishes"
           )
@@ -951,9 +962,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             workflowId: "workflow_conditional_step",
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
-                done()
                 expect(conditionalStep2Invoke).toHaveBeenCalledTimes(2)
                 expect(conditionalStep3Invoke).toHaveBeenCalledTimes(1)
+                done()
+                clearTimeout(timeout)
               }
             },
           })
@@ -965,7 +977,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: true,
           })
 
-          failTrap(
+          const timeout = failTrap(
             done,
             "should not run conditional steps if condition is false"
           )
@@ -976,9 +988,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             workflowId: "workflow_conditional_step",
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
-                done()
                 expect(conditionalStep2Invoke).toHaveBeenCalledTimes(1)
                 expect(conditionalStep3Invoke).toHaveBeenCalledTimes(0)
+                done()
+                clearTimeout(timeout)
               }
             },
           })
@@ -990,7 +1003,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: true,
           })
 
-          failTrap(
+          const timeout = failTrap(
             done,
             "should not run conditional steps if condition is false"
           )
@@ -1126,7 +1139,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             workflowId: "workflow_parallel_async",
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
-                done()
                 expect(event.errors).toEqual(
                   expect.arrayContaining([
                     expect.objectContaining({
@@ -1138,11 +1150,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                     }),
                   ])
                 )
+                done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(
+          const timeout = failTrap(
             done,
             "should display error when multple async steps are running in parallel"
           )
