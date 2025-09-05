@@ -15,10 +15,10 @@ export default async function PricingPage() {
   const featureTableData = data.find((item) => item._type === "featureTable")
 
   // Ensure both data pieces are present
-  if (!featureTableData?.featureTableFields) {
-    return notFound()
-  }
-  if (!heroPricingData?.heroPricingFields) {
+  if (
+    !featureTableData?.featureTableFields ||
+    !heroPricingData?.heroPricingFields
+  ) {
     return notFound()
   }
 
