@@ -12,6 +12,7 @@ export interface AcquireLockStepInput {
   ttl?: number // in seconds
   ownerId?: string
   provider?: string
+  skipOnSubWorkflow?: boolean
 }
 
 export const acquireLockStepId = "acquire-lock-step"
@@ -26,7 +27,10 @@ export const acquireLockStepId = "acquire-lock-step"
  */
 export const acquireLockStep = createStep(
   acquireLockStepId,
-  async (data: AcquireLockStepInput, { container }) => {
+  async (
+    data: AcquireLockStepInput,
+    { container, parentStepIdempotencyKey }
+  ) => {
     const keys = Array.isArray(data.key)
       ? data.key
       : isDefined(data.key)
@@ -35,6 +39,11 @@ export const acquireLockStep = createStep(
 
     if (!keys.length) {
       return new StepResponse(void 0)
+    }
+
+    const isSubWorkflow = !!parentStepIdempotencyKey
+    if (isSubWorkflow && data.skipOnSubWorkflow) {
+      return StepResponse.skip() as any
     }
 
     const locking = container.resolve(Modules.LOCKING)
@@ -65,7 +74,7 @@ export const acquireLockStep = createStep(
       provider: data.provider,
     })
   },
-  async (data, { container }) => {
+  async (data: any, { container }) => {
     if (!data?.keys?.length) {
       return
     }
