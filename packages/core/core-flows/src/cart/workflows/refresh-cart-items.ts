@@ -273,16 +273,8 @@ export const refreshCartItemsWorkflow = createWorkflow(
       }
     )
 
-    when(
-      "refresh-shipping-methods-if-needed",
-      { refetchedCart },
-      ({ refetchedCart }) => {
-        return !!refetchedCart.shipping_methods?.length
-      }
-    ).then(() => {
-      refreshCartShippingMethodsWorkflow.runAsStep({
-        input: refreshCartInput,
-      })
+    refreshCartShippingMethodsWorkflow.runAsStep({
+      input: refreshCartInput,
     })
 
     when("force-refresh-update-tax-lines", { input }, ({ input }) => {

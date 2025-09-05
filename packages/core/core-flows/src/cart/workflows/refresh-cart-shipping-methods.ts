@@ -55,8 +55,15 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
+    const shouldExecute = transform({ input }, ({ input }) => {
+      return (
+        !!input.cart_id ||
+        (!!input.cart && !!input.cart.shipping_methods?.length)
+      )
+    })
+
     const fetchCart = when("fetch-cart", { input }, ({ input }) => {
-      return !input.cart
+      return shouldExecute
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "cart",

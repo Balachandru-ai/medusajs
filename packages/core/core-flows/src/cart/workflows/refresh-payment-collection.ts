@@ -60,11 +60,13 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
   },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
     const shouldExecute = transform({ input }, ({ input }) => {
-      return !!input.cart_id || (input.cart && !!input.cart.payment_collection)
+      return (
+        !!input.cart_id || (!!input.cart && !!input.cart.payment_collection)
+      )
     })
 
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
-      return !input.cart && shouldExecute
+      return shouldExecute
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "cart",
