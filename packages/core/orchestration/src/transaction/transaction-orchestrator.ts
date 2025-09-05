@@ -33,6 +33,7 @@ import {
   PermanentStepFailureError,
   SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   SkipStepResponse,
   TransactionStepTimeoutError,
   TransactionTimeoutError,
@@ -117,7 +118,8 @@ export class TransactionOrchestrator extends EventEmitter {
   private static isExpectedError(error: Error): boolean {
     return (
       SkipCancelledExecutionError.isSkipCancelledExecutionError(error) ||
-      SkipExecutionError.isSkipExecutionError(error)
+      SkipExecutionError.isSkipExecutionError(error) ||
+      SkipStepAlreadyFinishedError.isSkipStepAlreadyFinishedError(error)
     )
   }
 
@@ -417,6 +419,7 @@ export class TransactionOrchestrator extends EventEmitter {
           }
         } else if (stepDef.retryRescheduledAt) {
           // The step is not configured for awaiting retry but is manually force to retry
+          stepDef.retryRescheduledAt = null
           nextSteps.push(stepDef)
         }
 
@@ -585,29 +588,18 @@ export class TransactionOrchestrator extends EventEmitter {
     if (!step.retryRescheduledAt) {
       step.hasScheduledRetry = true
       step.retryRescheduledAt = Date.now()
-
-      await transaction.scheduleRetry(step, 0)
     }
 
     transaction.getFlow().hasWaitingSteps = true
 
     try {
       await transaction.saveCheckpoint()
+      await transaction.scheduleRetry(step, 0)
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
       }
     }
-
-    const cleaningUp: Promise<unknown>[] = []
-    if (step.hasRetryScheduled()) {
-      cleaningUp.push(transaction.clearRetry(step))
-    }
-    if (step.hasTimeout()) {
-      cleaningUp.push(transaction.clearStepTimeout(step))
-    }
-
-    await promiseAll(cleaningUp)
   }
 
   private static async skipStep({
