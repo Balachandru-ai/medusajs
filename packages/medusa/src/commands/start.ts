@@ -146,7 +146,9 @@ async function start(args: {
 }) {
   const { port = 9000, host, directory, types } = args
 
-  const container = await initializeContainer(directory)
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   async function internalStart(generateTypes: boolean) {
