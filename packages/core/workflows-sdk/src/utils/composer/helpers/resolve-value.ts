@@ -3,17 +3,10 @@ import {
   OrchestrationUtils,
   parseStringifyIfNecessary,
   promiseAll,
+  isObject
 } from "@medusajs/utils"
 
 function resolveProperty(property, transactionContext) {
-  if (property == null || typeof property !== "object") {
-    return property
-  }
-
-  if (!property.__type) {
-    return property
-  }
-
   const { invoke: invokeRes } = transactionContext
 
   let res
@@ -40,8 +33,6 @@ function resolveProperty(property, transactionContext) {
     property.__type === OrchestrationUtils.SymbolWorkflowStepResponse
   ) {
     res = property.output
-  } else {
-    res = property
   }
 
   return res
@@ -51,7 +42,7 @@ function resolveProperty(property, transactionContext) {
  * @internal
  */
 export async function resolveValue(input, transactionContext) {
-  if (input == null || typeof input !== "object") {
+  if (!isObject(input)) {
     return input
   }
 
@@ -70,7 +61,7 @@ export async function resolveValue(input, transactionContext) {
       return resolvedItems
     }
 
-    if (typeof inputTOUnwrap !== "object") {
+    if (!isObject(inputTOUnwrap)) {
       return inputTOUnwrap
     }
 
@@ -80,6 +71,12 @@ export async function resolveValue(input, transactionContext) {
     // First pass: resolve properties and collect promises with their indices
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
+
+      if (!("__type" in inputTOUnwrap[key]) {
+        parentRef[key] = inputTOUnwrap[key]
+        continue
+      }
+
       const result = resolveProperty(inputTOUnwrap[key], transactionContext)
 
       if (result instanceof Promise) {
@@ -87,11 +84,11 @@ export async function resolveValue(input, transactionContext) {
       } else {
         // Synchronous result - assign immediately
         parentRef[key] =
-          result == null || typeof result !== "object"
+          !isObject(result)
             ? result
             : deepCopy(result)
 
-        if (typeof parentRef[key] === "object" && parentRef[key] != null) {
+        if (isObject(parentRef[key])) {
           parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
         }
       }
@@ -104,11 +101,11 @@ export async function resolveValue(input, transactionContext) {
       for (let i = 0; i < promises.length; i++) {
         const key = keys[promises[i].keyIndex]
         parentRef[key] =
-          resolvedPromises[i] == null || typeof resolvedPromises[i] !== "object"
+          !isObject(resolvedPromises[i])
             ? resolvedPromises[i]
             : deepCopy(resolvedPromises[i])
 
-        if (typeof parentRef[key] === "object" && parentRef[key] != null) {
+        if (isObject(parentRef[key])) {
           parentRef[key] = await unwrapInput(parentRef[key], parentRef[key])
         }
       }
