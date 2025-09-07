@@ -4,6 +4,7 @@ import {
   parseStringifyIfNecessary,
   promiseAll,
 } from "@medusajs/utils"
+import * as util from "node:util"
 
 type InputPrimitive = string | Symbol
 type InputObject = object & { __type?: string | Symbol; output?: any }
@@ -80,6 +81,10 @@ async function unwrapInput({
 
   if (typeof inputTOUnwrap !== "object") {
     return inputTOUnwrap
+  }
+
+  if (util.types.isProxy(inputTOUnwrap)) {
+    inputTOUnwrap = resolveProperty(inputTOUnwrap, transactionContext)
   }
 
   const keys = Object.keys(inputTOUnwrap)
