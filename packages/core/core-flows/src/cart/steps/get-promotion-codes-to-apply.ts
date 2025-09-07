@@ -85,16 +85,7 @@ export const getPromotionCodesToApply = createStep(
       })
     })
 
-    const promotionCodesToApply: Set<string> = new Set(
-      adjustmentCodes.length
-        ? (
-            await promotionService.listPromotions(
-              { code: adjustmentCodes },
-              { select: ["code"] }
-            )
-          ).map((p) => p.code!)
-        : []
-    )
+    const promotionCodesToApply: Set<string> = new Set(adjustmentCodes)
 
     if (action === PromotionActions.REMOVE) {
       promo_codes.forEach((code) => promotionCodesToApply.delete(code))
