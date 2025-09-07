@@ -9,8 +9,7 @@ export function proxify<T>(obj: WorkflowData<any>): T {
       }
 
       const transformer = transform({ target }, function (data) {
-        target[prop] = data.target?.[prop]
-        return target[prop]
+        return data.target?.[prop]
       })
 
       return transformer
