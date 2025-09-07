@@ -321,7 +321,7 @@ export const createCartWorkflow = createWorkflow(
     parallelize(
       refreshPaymentCollectionForCartWorkflow.runAsStep({
         input: {
-          cart_id: cart.id,
+          cart: cart,
         },
       }),
       emitEventStep({

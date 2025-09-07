@@ -12,7 +12,7 @@ const link =
         },
         {
           linkable: BrandModule.linkable.brand.id,
-          filterable: ["id", "name"],
+          filterable: ["id", "name", "status"],
           isList: false,
         }
       )
