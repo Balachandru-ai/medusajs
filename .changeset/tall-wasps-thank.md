@@ -2,4 +2,4 @@
 "@medusajs/dashboard": minor
 ---
 
-add missing translations to spanish file
+fix(dashboard): add missing translations to spanish file
