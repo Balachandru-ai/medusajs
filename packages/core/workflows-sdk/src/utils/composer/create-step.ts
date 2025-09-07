@@ -114,7 +114,11 @@ function createAndConfigureHandler<
   stepName: string,
   config: TransactionStepsDefinition,
   input: TStepInput | undefined,
-  invokeFn: InvokeFn<TInvokeInput, TInvokeResultOutput, TInvokeResultCompensateInput>,
+  invokeFn: InvokeFn<
+    TInvokeInput,
+    TInvokeResultOutput,
+    TInvokeResultCompensateInput
+  >,
   compensateFn?: CompensateFn<TInvokeResultCompensateInput>
 ) {
   const handler = createStepHandler.bind(context)({
@@ -125,7 +129,7 @@ function createAndConfigureHandler<
   })
 
   wrapAsyncHandler(config, handler)
-  
+
   return handler
 }
 
@@ -347,7 +351,10 @@ export function wrapConditionalStep(
 ) {
   const originalInvoke = handle.invoke
   handle.invoke = async (stepArguments: WorkflowStepHandlerArguments) => {
-    const args = await resolveValue(input, stepArguments)
+    let args = resolveValue(input, stepArguments)
+    if (args instanceof Promise) {
+      args = await args
+    }
 
     const canContinue = await condition(args, stepArguments)
 

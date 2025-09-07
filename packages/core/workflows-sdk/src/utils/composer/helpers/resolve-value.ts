@@ -44,7 +44,7 @@ function resolveProperty(property, transactionContext) {
   return res
 }
 
-async function unwrapInput({
+function unwrapInput({
   inputTOUnwrap,
   parentRef,
   transactionContext,
@@ -52,7 +52,7 @@ async function unwrapInput({
   inputTOUnwrap: InputObject
   parentRef: any
   transactionContext: any
-}) {
+}): any {
   if (inputTOUnwrap == null) {
     return inputTOUnwrap
   }
@@ -60,31 +60,51 @@ async function unwrapInput({
   if (Array.isArray(inputTOUnwrap)) {
     const promises: { promise: Promise<any>; index: number }[] = []
     const resolvedItems: any[] = new Array(inputTOUnwrap.length)
+
     for (let i = 0; i < inputTOUnwrap.length; i++) {
       const item = inputTOUnwrap[i]
       if (item == null || typeof item !== "object") {
         resolvedItems[i] = item
       } else {
-        promises.push({
-          promise: resolveValue(item, transactionContext),
-          index: i,
-        })
+        const resolved = resolveValue(item, transactionContext)
+        if (resolved instanceof Promise) {
+          promises.push({ promise: resolved, index: i })
+        } else {
+          resolvedItems[i] = resolved
+        }
       }
     }
 
-    const resolvedPromises = await promiseAll(promises.map((p) => p.promise))
-    for (let i = 0; i < promises.length; i++) {
-      resolvedItems[promises[i].index] = resolvedPromises[i]
+    if (promises.length > 0) {
+      return promiseAll(promises.map((p) => p.promise)).then(
+        (resolvedPromises) => {
+          for (let i = 0; i < promises.length; i++) {
+            resolvedItems[promises[i].index] = resolvedPromises[i]
+          }
+          return resolvedItems
+        }
+      )
     }
 
     return resolvedItems
   }
 
   if (util.types.isProxy(inputTOUnwrap)) {
-    inputTOUnwrap = resolveProperty(inputTOUnwrap, transactionContext)
-    if (inputTOUnwrap instanceof Promise) {
-      inputTOUnwrap = await inputTOUnwrap
+    const resolved = resolveProperty(inputTOUnwrap, transactionContext)
+    if (resolved instanceof Promise) {
+      return resolved.then((r) => {
+        inputTOUnwrap = r
+        if (!isObject(inputTOUnwrap)) {
+          return inputTOUnwrap
+        }
+        return unwrapInput({
+          inputTOUnwrap,
+          parentRef: {},
+          transactionContext,
+        })
+      })
     }
+    inputTOUnwrap = resolved
   }
 
   if (!isObject(inputTOUnwrap)) {
@@ -110,45 +130,62 @@ async function unwrapInput({
       parentRef[key] = result
 
       if (result != null && typeof result === "object") {
-        parentRef[key] = await unwrapInput({
+        const unwrapped = unwrapInput({
           inputTOUnwrap: result,
           parentRef: parentRef[key] || {},
           transactionContext,
         })
+        if (unwrapped instanceof Promise) {
+          promises.push({
+            promise: unwrapped.then((r) => ({ key, value: r })),
+            keyIndex: i,
+          })
+        } else {
+          parentRef[key] = unwrapped
+        }
       }
     }
   }
 
   if (promises.length > 0) {
-    const resolvedPromises = await promiseAll(promises.map((p) => p.promise))
+    return promiseAll(promises.map((p) => p.promise)).then(
+      (resolvedPromises) => {
+        for (let i = 0; i < promises.length; i++) {
+          const resolved = resolvedPromises[i]
+          if (resolved && typeof resolved === "object" && "key" in resolved) {
+            parentRef[resolved.key] = resolved.value
+          } else {
+            const key = keys[promises[i].keyIndex]
+            parentRef[key] = resolved
 
-    for (let i = 0; i < promises.length; i++) {
-      const key = keys[promises[i].keyIndex]
-      parentRef[key] = resolvedPromises[i]
-
-      if (
-        resolvedPromises[i] != null &&
-        typeof resolvedPromises[i] === "object"
-      ) {
-        parentRef[key] = await unwrapInput({
-          inputTOUnwrap: resolvedPromises[i],
-          parentRef: parentRef[key] || {},
-          transactionContext,
-        })
+            if (resolved != null && typeof resolved === "object") {
+              const unwrapped = unwrapInput({
+                inputTOUnwrap: resolved,
+                parentRef: parentRef[key] || {},
+                transactionContext,
+              })
+              if (unwrapped instanceof Promise) {
+                return unwrapped.then((r) => {
+                  parentRef[key] = r
+                  return parentRef
+                })
+              }
+              parentRef[key] = unwrapped
+            }
+          }
+        }
+        return parentRef
       }
-    }
+    )
   }
 
   return parentRef
 }
 
-/**
- * @internal
- */
-export async function resolveValue(
+export function resolveValue(
   input: InputPrimitive | InputObject | unknown | undefined,
   transactionContext
-) {
+): Promise<any> | any {
   if (input == null || typeof input !== "object") {
     return input
   }
@@ -160,20 +197,23 @@ export async function resolveValue(
       : input
   )
 
-  let result!: any
+  let result: any
 
   if (input_?.__type) {
     result = resolveProperty(input_, transactionContext)
     if (result instanceof Promise) {
-      result = await result
+      return result.then((r) => parseStringifyIfNecessary(r))
     }
+    return parseStringifyIfNecessary(result)
   } else {
-    result = await unwrapInput({
+    result = unwrapInput({
       inputTOUnwrap: input_,
       parentRef: {},
       transactionContext,
     })
+    if (result instanceof Promise) {
+      return result.then((r) => parseStringifyIfNecessary(r))
+    }
+    return parseStringifyIfNecessary(result)
   }
-
-  return parseStringifyIfNecessary(result)
 }

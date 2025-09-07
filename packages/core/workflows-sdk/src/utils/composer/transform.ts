@@ -181,7 +181,10 @@ export function transform(
       }
     }
 
-    const stepValue = await resolveValue(values, transactionContext)
+    let stepValue = resolveValue(values, transactionContext)
+    if (stepValue instanceof Promise) {
+      stepValue = await stepValue
+    }
 
     let finalResult
     for (let i = 0; i < functions.length; i++) {
