@@ -72,7 +72,7 @@ export async function resolveValue(input, transactionContext) {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i]
 
-      if (!("__type" in inputTOUnwrap[key]) {
+      if (!("__type" in inputTOUnwrap[key])) {
         parentRef[key] = inputTOUnwrap[key]
         continue
       }
