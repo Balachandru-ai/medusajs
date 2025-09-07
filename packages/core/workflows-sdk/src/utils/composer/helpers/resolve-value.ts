@@ -1,5 +1,6 @@
 import {
   deepCopy,
+  isObject,
   OrchestrationUtils,
   parseStringifyIfNecessary,
   promiseAll,
@@ -79,12 +80,12 @@ async function unwrapInput({
     return resolvedItems
   }
 
-  if (typeof inputTOUnwrap !== "object") {
-    return inputTOUnwrap
-  }
-
   if (util.types.isProxy(inputTOUnwrap)) {
     inputTOUnwrap = resolveProperty(inputTOUnwrap, transactionContext)
+  }
+
+  if (!isObject(inputTOUnwrap)) {
+    return inputTOUnwrap
   }
 
   const keys = Object.keys(inputTOUnwrap)
@@ -105,7 +106,7 @@ async function unwrapInput({
     } else {
       parentRef[key] = result
 
-      if (parentRef[key] != null && typeof parentRef[key] === "object") {
+      if (isObject(parentRef[key])) {
         parentRef[key] = await unwrapInput({
           inputTOUnwrap: parentRef[key],
           parentRef: parentRef[key],
@@ -122,7 +123,7 @@ async function unwrapInput({
       const key = keys[promises[i].keyIndex]
       parentRef[key] = resolvedPromises[i]
 
-      if (parentRef[key] != null && typeof parentRef[key] === "object") {
+      if (isObject(parentRef[key])) {
         parentRef[key] = await unwrapInput({
           inputTOUnwrap: parentRef[key],
           parentRef: parentRef[key],
