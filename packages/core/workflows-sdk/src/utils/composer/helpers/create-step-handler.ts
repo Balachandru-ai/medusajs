@@ -82,7 +82,10 @@ export function createStepHandler<
 
       let argInput = {}
       if (input) {
-        argInput = await resolveValue(input, stepArguments)
+        argInput = resolveValue(input, stepArguments)
+        if (argInput instanceof Promise) {
+          argInput = await argInput
+        }
       }
 
       const stepResponse: StepResponse<any, any> = await invokeFn.apply(this, [
