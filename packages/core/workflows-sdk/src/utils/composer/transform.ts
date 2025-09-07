@@ -1,12 +1,11 @@
-import { resolveValue } from "./helpers"
-import { StepExecutionContext, WorkflowData } from "./type"
-import { proxify } from "./helpers/proxy"
-import { OrchestrationUtils } from "@medusajs/utils"
-import { ulid } from "ulid"
 import {
   TransactionContext,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
+import { OrchestrationUtils } from "@medusajs/utils"
+import { resolveValue } from "./helpers"
+import { proxify } from "./helpers/proxy"
+import { StepExecutionContext, WorkflowData } from "./type"
 
 type Func1<T extends object | WorkflowData, U> = (
   input: T extends WorkflowData<infer U>
@@ -163,7 +162,7 @@ export function transform(
   values: any | any[],
   ...functions: Function[]
 ): unknown {
-  const uniqId = ulid()
+  const uniqId = Math.random().toString(36).substring(2, 20)
 
   const ret = {
     __id: uniqId,
