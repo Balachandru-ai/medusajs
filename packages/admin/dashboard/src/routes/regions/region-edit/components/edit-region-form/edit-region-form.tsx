@@ -14,6 +14,7 @@ import { KeyboundForm } from "../../../../../components/utilities/keybound-form/
 import { useUpdateRegion } from "../../../../../hooks/api/regions.tsx"
 import { CurrencyInfo } from "../../../../../lib/data/currencies.ts"
 import { formatProvider } from "../../../../../lib/format-provider.ts"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 type EditRegionFormProps = {
   region: HttpTypes.AdminRegion
@@ -42,7 +43,7 @@ export const EditRegionForm = ({
     (preference) =>
       preference.attribute === "region_id" && preference.value === region.id
   )
-
+  const direction = useDocumentDirection()
   const form = useForm<zod.infer<typeof EditRegionSchema>>({
     defaultValues: {
       name: region.name,
@@ -107,12 +108,7 @@ export const EditRegionForm = ({
                       <Form.Label>{t("fields.currency")}</Form.Label>
                       <Form.Control>
                         <Select
-                          dir={
-                            document.documentElement.getAttribute("dir") as
-                              | "rtl"
-                              | "ltr"
-                              | undefined
-                          }
+                          dir={ direction}
                           onValueChange={onChange}
                           {...field}
                         >

@@ -7,6 +7,7 @@ import { Control } from "react-hook-form"
 import { AddressSchema } from "../../../lib/schemas"
 import { Form } from "../../common/form"
 import { CountrySelect } from "../../inputs/country-select"
+import { useDocumentDirection } from "../../../hooks/use-document-direction"
 
 type AddressFieldValues = z.infer<typeof AddressSchema>
 
@@ -22,7 +23,7 @@ export const AddressForm = ({
   layout,
 }: AddressFormProps) => {
   const { t } = useTranslation()
-
+  const direction = useDocumentDirection()
   const style = clx("gap-4", {
     "flex flex-col": layout === "stack",
     "grid grid-cols-2": layout === "grid",
@@ -183,12 +184,7 @@ export const AddressForm = ({
                   <Form.Control>
                     {countries ? (
                       <Select
-                        dir={
-                          document.documentElement.getAttribute("dir") as
-                            | "rtl"
-                            | "ltr"
-                            | undefined
-                        }
+                        dir={direction}
                         {...field}
                         onValueChange={onChange}
                       >

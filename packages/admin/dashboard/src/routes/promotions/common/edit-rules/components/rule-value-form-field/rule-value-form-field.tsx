@@ -59,7 +59,7 @@ export const RuleValueFormField = ({
   const attribute = attributes?.find(
     (attr) => attr.value === fieldRule.attribute
   )
-
+  const direction = useDocumentDirection()
   const { store, isLoading: isStoreLoading } = useStore()
 
   const comboboxData = useComboboxData({

@@ -37,6 +37,7 @@ import { formatProvider } from "../../../../../lib/format-provider"
 import { useCountries } from "../../../common/hooks/use-countries"
 import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
 import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 type CreateRegionFormProps = {
   currencies: CurrencyInfo[]
@@ -64,7 +65,7 @@ export const CreateRegionForm = ({
   const { setIsOpen } = useStackedModal()
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const { handleSuccess } = useRouteModal()
-
+  const direction = useDocumentDirection()
   const form = useForm<zod.infer<typeof CreateRegionSchema>>({
     defaultValues: {
       name: "",
@@ -227,12 +228,7 @@ export const CreateRegionForm = ({
                           <Form.Label>{t("fields.currency")}</Form.Label>
                           <Form.Control>
                             <Select
-                              dir={
-                                document.documentElement.getAttribute("dir") as
-                                  | "rtl"
-                                  | "ltr"
-                                  | undefined
-                              }
+                              dir={ direction}
                               {...field}
                               onValueChange={onChange}
                             >

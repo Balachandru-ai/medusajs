@@ -23,6 +23,7 @@ import type {
   PricingCreateSchemaType,
   PricingCustomerGroupsArrayType,
 } from "./schema"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 type PriceListDetailsFormProps = {
   form: UseFormReturn<PricingCreateSchemaType>
@@ -30,7 +31,7 @@ type PriceListDetailsFormProps = {
 
 export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
   const { t } = useTranslation()
-
+  const direction = useDocumentDirection()
   const { fields, remove, append } = useFieldArray({
     control: form.control,
     name: "rules.customer_group_id",
@@ -78,12 +79,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                   </div>
                   <Form.Control>
                     <RadioGroup
-                      dir={
-                        document.documentElement.getAttribute("dir") as
-                          | "rtl"
-                          | "ltr"
-                          | undefined
-                      }
+                      dir={direction}
                       onValueChange={onChange}
                       {...rest}
                       className="grid grid-cols-1 gap-4 md:grid-cols-2"
@@ -140,12 +136,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                     </Form.Label>
                     <Form.Control>
                       <Select
-                        dir={
-                          document.documentElement.getAttribute("dir") as
-                            | "rtl"
-                            | "ltr"
-                            | undefined
-                        }
+                        dir={direction}
                         {...field}
                         onValueChange={onChange}
                       >

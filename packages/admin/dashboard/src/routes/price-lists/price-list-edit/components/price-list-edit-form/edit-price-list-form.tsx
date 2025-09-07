@@ -16,6 +16,7 @@ import { Form } from "../../../../../components/common/form"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdatePriceList } from "../../../../../hooks/api/price-lists"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 import { PriceListStatus, PriceListType } from "../../../common/constants"
 
 type PriceListEditFormProps = {
@@ -32,7 +33,7 @@ const PriceListEditSchema = z.object({
 export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
-
+  const direction = useDocumentDirection()
   const form = useForm<z.infer<typeof PriceListEditSchema>>({
     defaultValues: {
       type: priceList.type as PriceListType,
@@ -81,12 +82,7 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                   </div>
                   <Form.Control>
                     <RadioGroup
-                      dir={
-                        document.documentElement.getAttribute("dir") as
-                          | "rtl"
-                          | "ltr"
-                          | undefined
-                      }
+                      dir={direction}
                       {...field}
                       onValueChange={onChange}
                     >
@@ -140,12 +136,7 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                     </Form.Label>
                     <Form.Control>
                       <Select
-                        dir={
-                          document.documentElement.getAttribute("dir") as
-                            | "rtl"
-                            | "ltr"
-                            | undefined
-                        }
+                          dir={direction}
                         {...field}
                         onValueChange={onChange}
                       >

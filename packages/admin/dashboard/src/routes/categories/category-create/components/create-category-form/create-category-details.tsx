@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../components/common/form"
 import { HandleInput } from "../../../../../components/inputs/handle-input"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 import { CreateCategorySchema } from "./schema"
 
 type CreateCategoryDetailsProps = {
@@ -12,7 +13,7 @@ type CreateCategoryDetailsProps = {
 
 export const CreateCategoryDetails = ({ form }: CreateCategoryDetailsProps) => {
   const { t } = useTranslation()
-
+  const direction = useDocumentDirection()
   return (
     <div className="flex flex-col items-center p-16">
       <div className="flex w-full max-w-[720px] flex-col gap-y-8">
@@ -81,12 +82,7 @@ export const CreateCategoryDetails = ({ form }: CreateCategoryDetailsProps) => {
                   <Form.Label>{t("categories.fields.status.label")}</Form.Label>
                   <Form.Control>
                     <Select
-                      dir={
-                        document.documentElement.getAttribute("dir") as
-                          | "rtl"
-                          | "ltr"
-                          | undefined
-                      }
+                      dir={direction}
                       {...field}
                       onValueChange={onChange}
                     >
@@ -119,12 +115,7 @@ export const CreateCategoryDetails = ({ form }: CreateCategoryDetailsProps) => {
                   </Form.Label>
                   <Form.Control>
                     <Select
-                      dir={
-                        document.documentElement.getAttribute("dir") as
-                          | "rtl"
-                          | "ltr"
-                          | undefined
-                      }
+                      dir={direction}
                       {...field}
                       onValueChange={onChange}
                     >

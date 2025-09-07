@@ -29,10 +29,12 @@ import { useLogout, useMe } from "../../../hooks/api"
 import { queryClient } from "../../../lib/query-client"
 import { useGlobalShortcuts } from "../../../providers/keybind-provider/hooks"
 import { useTheme } from "../../../providers/theme-provider"
+import { useDocumentDirection } from "../../../hooks/use-document-direction"
 
 export const UserMenu = () => {
   const { t } = useTranslation()
   const location = useLocation()
+  const direction = useDocumentDirection()
 
   const [openMenu, setOpenMenu] = useState(false)
   const [openModal, setOpenModal] = useState(false)
@@ -44,16 +46,7 @@ export const UserMenu = () => {
 
   return (
     <div>
-      <DropdownMenu
-        dir={
-          document.documentElement.getAttribute("dir") as
-            | "rtl"
-            | "ltr"
-            | undefined
-        }
-        open={openMenu}
-        onOpenChange={setOpenMenu}
-      >
+      <DropdownMenu dir={direction} open={openMenu} onOpenChange={setOpenMenu}>
         <UserBadge />
         <DropdownMenu.Content className="min-w-[var(--radix-dropdown-menu-trigger-width)] max-w-[var(--radix-dropdown-menu-trigger-width)]">
           <UserItem />
