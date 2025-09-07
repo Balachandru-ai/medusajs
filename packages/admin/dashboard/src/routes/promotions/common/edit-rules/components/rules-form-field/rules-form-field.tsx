@@ -282,11 +282,7 @@ export const RulesFormField = ({
                           <Form.Control>
                             {!disabled ? (
                               <Select
-                                dir={
-                                  document.documentElement.getAttribute(
-                                    "dir"
-                                  ) as "rtl" | "ltr" | undefined
-                                }
+                                dir= {direction}
                                 {...fieldProps}
                                 disabled={!fieldRule.attribute}
                                 onValueChange={onChange}
