@@ -8,7 +8,9 @@ export const metadata = {
 
 # {metadata.title}
 
-This method restores one or more records of the data model that were [soft-deleted](../soft-delete/page.mdx).
+This method of a module's service restores one or more records of a data model that were [soft-deleted](../soft-delete/page.mdx).
+
+The method's name is of the format `restoreDataModel`, where `DataModel` is the plural pascal-case name of the data model.
 
 ## Restore One Record
 
@@ -18,7 +20,7 @@ const restoredPosts = await postModuleService.restorePosts("123")
 
 ### Parameters
 
-To restore one record, pass its ID as a parameter of the method.
+To restore one record, pass its ID as a parameter to the method.
 
 ### Returns
 
@@ -26,9 +28,9 @@ The method returns an object, whose keys are of the format `{camel_case_data_mod
 
 For example, the returned object of the above example is:
 
-```ts
-restoredPosts = {
-  post_id: ["123"],
+```json
+{
+  "post_id": ["123"],
 }
 ```
 
@@ -45,7 +47,7 @@ const restoredPosts = await postModuleService.restorePosts([
 
 ### Parameters
 
-To restore multiple records, pass an array of IDs as a parameter of the method.
+To restore multiple records, pass an array of IDs as a parameter to the method.
 
 ### Returns
 
@@ -53,9 +55,9 @@ The method returns an object, whose keys are of the format `{camel_case_data_mod
 
 For example, the returned object of the above example is:
 
-```ts
-restoredPosts = {
-  post_id: [
+```json
+{
+  "post_id": [
     "123",
     "321",
   ],
@@ -74,11 +76,11 @@ const restoredPosts = await postModuleService.restorePosts({
 
 ### Parameters
 
-To restore records matching a set of filters, pass an object of fitlers as a parameter of the method.
+To restore records matching a set of filters, pass an object of filters as a parameter to the method.
 
 <Note>
 
-Learn more about accepted filters in [this documentation](../../tips/filtering/page.mdx).
+Refer to the [Filtering](../../tips/filtering/page.mdx) reference for more information on accepted filters and examples.
 
 </Note>
 
@@ -88,9 +90,9 @@ The method returns an object, whose keys are of the format `{camel_case_data_mod
 
 For example, the returned object of the above example is:
 
-```ts
-restoredPosts = {
-  post_id: [
+```json
+{
+  "post_id": [
     "123",
   ],
 }

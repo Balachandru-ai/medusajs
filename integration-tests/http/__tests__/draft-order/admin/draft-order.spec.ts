@@ -1,10 +1,7 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { HttpTypes } from "@medusajs/types"
 import { ModuleRegistrationName } from "@medusajs/utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../../helpers/create-admin-user"
+import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 
 jest.setTimeout(300000)

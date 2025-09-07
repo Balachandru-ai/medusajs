@@ -35,7 +35,7 @@ The fields that are most commonly used are:
         `subtotal`
       </Table.Cell>
       <Table.Cell>
-        The cart's subtotal excluding taxes and shipping, and including discounts.
+        The cart's subtotal excluding taxes, and including total of items, shipping, and discounts.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -117,7 +117,7 @@ export default function CartTotals() {
       {cart && (
         <ul>
           <li>
-            <span>Subtotal (excl. shipping & taxes)</span>
+            <span>Subtotal (excl. taxes)</span>
             <span>{formatPrice(cart.subtotal ?? 0)}</span>
           </li>
           <li>

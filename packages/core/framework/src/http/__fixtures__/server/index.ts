@@ -3,17 +3,16 @@ import {
   ModulesDefinition,
   registerMedusaModule,
 } from "@medusajs/modules-sdk"
+import { MedusaContainer } from "@medusajs/types"
 import { ContainerRegistrationKeys, generateJwtToken } from "@medusajs/utils"
 import { asValue } from "awilix"
 import express from "express"
 import querystring from "querystring"
 import supertest from "supertest"
-
-import { MedusaContainer } from "@medusajs/types"
 import { configManager } from "../../../config"
 import { container } from "../../../container"
 import { featureFlagsLoader } from "../../../feature-flags"
-import { logger } from "../../../logger"
+import { logger as defaultLogger } from "../../../logger"
 import { ApiLoader } from "../../router"
 import { MedusaRequest } from "../../types"
 import { config } from "../mocks"
@@ -35,12 +34,12 @@ export const createServer = async (rootDir) => {
 
   const moduleResolutions = {}
   Object.entries(ModulesDefinition).forEach(([moduleKey, module]) => {
-    moduleResolutions[moduleKey] = registerMedusaModule(
+    moduleResolutions[moduleKey] = registerMedusaModule({
       moduleKey,
-      module.defaultModuleDeclaration,
-      undefined,
-      module
-    )[moduleKey]
+      moduleDeclaration: module.defaultModuleDeclaration,
+      moduleExports: undefined,
+      definition: module,
+    })[moduleKey]
   })
 
   configManager.loadConfig({
@@ -66,11 +65,8 @@ export const createServer = async (rootDir) => {
 
   container.register(ContainerRegistrationKeys.PG_CONNECTION, asValue({}))
   container.register("configModule", asValue(config))
+  container.register(ContainerRegistrationKeys.LOGGER, asValue(defaultLogger))
   container.register({
-    logger: asValue({
-      error: () => {},
-      info: () => {},
-    }),
     manager: asValue({}),
   })
 
@@ -88,7 +84,7 @@ export const createServer = async (rootDir) => {
   })
 
   await featureFlagsLoader()
-  await moduleLoader({ container, moduleResolutions, logger })
+  await moduleLoader({ container, moduleResolutions, logger: defaultLogger })
 
   app.use((req, res, next) => {
     ;(req as MedusaRequest).scope = container.createScope() as MedusaContainer
@@ -98,6 +94,7 @@ export const createServer = async (rootDir) => {
   await new ApiLoader({
     app,
     sourceDir: rootDir,
+    container,
   }).load()
 
   const superRequest = supertest(app)

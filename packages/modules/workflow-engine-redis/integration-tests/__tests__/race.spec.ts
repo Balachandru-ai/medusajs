@@ -15,11 +15,11 @@ import "../__fixtures__"
 
 jest.setTimeout(300000)
 
-const failTrap = (done) => {
+const failTrap = (done, name) => {
   setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
-      "Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually."
+      `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
   }, 5000)
@@ -38,7 +38,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
     describe("Testing race condition of the workflow during retry", () => {
       it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
-        const transactionId = "transaction_id"
+        const transactionId = "transaction_id" + ulid()
         const workflowId = "workflow-1" + ulid()
         const subWorkflowId = "sub-" + workflowId
 
@@ -118,12 +118,15 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(result).toBe("result from step 0")
           })
 
-        failTrap(done)
+        failTrap(
+          done,
+          "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
+        )
       })
 
       it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
-        const transactionId = "transaction_id"
-        const workflowId = "RACE_workflow-1"
+        const transactionId = "transaction_id" + ulid()
+        const workflowId = "RACE_workflow-1" + ulid()
 
         const step0InvokeMock = jest.fn()
         const step0CompensateMock = jest.fn()
@@ -214,7 +217,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(result).toBe("result from step 0")
           })
 
-        failTrap(done)
+        failTrap(
+          done,
+          "should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution"
+        )
       })
     })
   },

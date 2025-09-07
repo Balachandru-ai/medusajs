@@ -7,7 +7,7 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { createAuthenticatedCustomer } from "../../../helpers/create-authenticated-customer"
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 jest.setTimeout(50000)
 

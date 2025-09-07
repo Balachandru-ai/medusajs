@@ -163,7 +163,7 @@ An order has various fields for the order totals, which you can check out in the
         `subtotal`
       </Table.Cell>
       <Table.Cell>
-        The order's subtotal excluding taxes and shipping, and including discounts.
+        The order's subtotal excluding taxes, and including total of items, shipping, and discounts.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -214,7 +214,7 @@ return (
           <span>Order Totals</span>
           <ul>
             <li>
-              <span>Subtotal (excl. shipping & taxes)</span>
+              <span>Subtotal (excl. taxes)</span>
               <span>{formatPrice(order.subtotal ?? 0)}</span>
             </li>
             <li>

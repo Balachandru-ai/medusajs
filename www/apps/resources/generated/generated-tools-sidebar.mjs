@@ -663,6 +663,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/shippingOptionType",
+                  "title": "shippingOptionType",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/shippingProfile",
                   "title": "shippingProfile",
                   "description": "",
@@ -833,6 +842,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "ref",
                   "title": "Implement Pre-Orders",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Product Builder",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder",
                   "children": []
                 },
                 {

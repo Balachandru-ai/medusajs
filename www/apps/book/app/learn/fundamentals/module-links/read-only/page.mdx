@@ -376,42 +376,82 @@ In this case, the relation would always be one-to-many, even if only one post is
 
 ## Example: Read-Only Module Link for Virtual Data Models
 
-Read-only module links are most useful when working with data models that aren't stored in your Medusa database. For example, data that is stored in a third-party system. In those cases, you can define a read-only module link between a data model in Medusa and the data model in the external system, facilitating the retrieval of the linked data.
+Read-only module links are most useful when working with data models that aren't stored in your Medusa database. For example, data that is stored in a third-party system.
+
+In those cases, you can define a read-only module link between a data model in Medusa and the data model in the external system, facilitating the retrieval of the linked data.
 
 To define the read-only module link to a virtual data model, you must:
 
-1. Create a `list` method in the custom module's service. This method retrieves the linked records filtered by the ID(s) of the first data model.
+1. Define the read-only module link from the Medusa data model to the virtual data model.
+2. Create a `list` method in the custom module's service. This method retrieves the linked records filtered by the ID(s) of the Medusa data model.
     - You can also create a `listAndCount` method to retrieve the related records with pagination.
-2. Define the read-only module link from the first data model to the virtual data model.
-3. Use Query to retrieve the first data model and its linked records from the virtual data model.
+3. Use Query to retrieve the Medusa data model and its linked records from the virtual data model.
 
-For example, consider you have a third-party Content-Management System (CMS) that you're integrating with Medusa, and you want to retrieve the posts in the CMS associated with a product in Medusa.
+For example, consider you have a CMS Module that integrates a third-party Content-Management System (CMS) with Medusa, and you want to retrieve the posts in the CMS associated with a product in Medusa. The next steps showcase how to implement this.
 
-To do that, first, create a CMS Module having the following service:
+### a. Define Read-Only Module Link
 
-<Note>
+Start by defining a read-only module link from the `Product` data model in Medusa to the external `post` data model in the CMS:
 
-Refer to the [Modules chapter](../../modules/page.mdx) to learn how to create a module and its service.
+export const linkHighlights = [
+  ["8", "field", "The field to filter by."],
+  ["13", "alias", "The alias to use when querying the linked records."],
+  ["14", "primaryKey", "The primary key of the linked records. It's also used as the filter name."]
+]
 
-</Note>
+```ts title="src/links/product-cms.ts" highlights={linkHighlights}
+import { defineLink } from "@medusajs/framework/utils"
+import ProductModule from "@medusajs/medusa/product"
+import { CMS_MODULE } from "../modules/cms"
 
-```ts title="src/modules/cms/service.ts"
+export default defineLink(
+  {
+    linkable: ProductModule.linkable.product,
+    field: "id",
+  },
+  {
+    linkable: {
+      serviceName: CMS_MODULE,
+      alias: "cms_post",
+      primaryKey: "product_id",
+    },
+  },
+  {
+    readOnly: true,
+  }
+)
+```
+
+To define the read-only module link, you must pass to `defineLink`:
+
+1. An object with the linkable configuration of the data model in Medusa, and the fields that will be passed as a filter to the CMS service.
+    - For example, if you want to filter by product title instead, you can pass `title` instead of `id`.
+2. An object with the linkable configuration of the virtual data model in the CMS. This object must have the following properties:
+    - `serviceName`: The name of the service, which is the CMS Module's name. Medusa uses this name to resolve the module's service from the [Medusa container](../../medusa-container/page.mdx).
+    - `alias`: The alias to use when querying the linked records. You'll see how that works in a bit.
+    - `primaryKey`: The field in the CMS data model that holds the ID of a product.
+3. The third parameter: an object with the `readOnly` property set to `true`.
+
+### b. Add List Methods to CMS Module Service
+
+Next, add the following methods to the CMS Module's service:
+
+export const serviceHighlights = [
+  ["4", "client", "An SDK to interact with the CMS API."],
+  ["9", "product_id", "The field to filter by. It must match the `primary_key` in the link configuration."],
+  ["32", "product_id", "The field to filter by. It must match the `primary_key` in the link configuration."]
+]
+
+```ts title="src/modules/cms/service.ts" highlights={serviceHighlights}
 import { FindConfig } from "@medusajs/framework/types"
-
-type CmsModuleOptions = {
-  apiKey: string
-}
 
 export default class CmsModuleService {
   private client
-
-  constructor({}, options: CmsModuleOptions) {
-    this.client = new Client(options)
-  }
+  // ...
 
   async list(
     filter: {
-      id: string | string[]
+      product_id: string | string[]
     }
   ) {
     return this.client.getPosts(filter)
@@ -434,7 +474,7 @@ export default class CmsModuleService {
   // To retrieve with pagination
   async listAndCount(
     filter: {
-      id: string | string[]
+      product_id: string | string[]
     },
     config?: FindConfig<any> | undefined 
   ) {
@@ -463,56 +503,32 @@ export default class CmsModuleService {
 }
 ```
 
-The above service initializes a client, assuming your CMS has an SDK that allows you to retrieve posts.
+To retrieve the linked records, you must implement a `list` method in the CMS Module's service.
 
-The service must have a `list` method to be part of the read-only module link. This method accepts the ID(s) of the products to retrieve their associated posts. The posts must include the product's ID in a field, such as `product_id`.
+The `list` method accepts an object of filters holding the ID(s) of the products to retrieve their associated posts. The name of the filter property must match the `primary_key` defined in the link configuration, which is `product_id` in this case.
+
+The returned posts must include the product's ID in a field with the same name as the `primary_key` option in the link configurations, which is `product_id` in this case.
 
 You can also create a `listAndCount` method to retrieve the posts with pagination. This method is called if you pass [pagination parameters to Query](../query/page.mdx#apply-pagination).
 
-Next, define a read-only module link from the Product Module to the CMS Module:
-
-```ts title="src/links/product-cms.ts"
-import { defineLink } from "@medusajs/framework/utils"
-import ProductModule from "@medusajs/medusa/product"
-import { CMS_MODULE } from "../modules/cms"
-
-export default defineLink(
-  {
-    linkable: ProductModule.linkable.product,
-    field: "id",
-  },
-  {
-    linkable: {
-      serviceName: CMS_MODULE,
-      alias: "cms_post",
-      primaryKey: "product_id",
-    },
-  },
-  {
-    readOnly: true,
-  }
-)
-```
-
-To define the read-only module link, you must pass to `defineLink`:
-
-1. The first parameter: an object with the linkable configuration of the data model in Medusa, and the fields that will be passed as a filter to the CMS service. For example, if you want to filter by product title instead, you can pass `title` instead of `id`.
-2. The second parameter: an object with the linkable configuration of the virtual data model in the CMS. This object must have the following properties:
-   - `serviceName`: The name of the service, which is the CMS Module's name. Medusa uses this name to resolve the module's service from the [Medusa container](../../medusa-container/page.mdx).
-   - `alias`: The alias to use when querying the linked records. You'll see how that works in a bit.
-   - `primaryKey`: The field in the CMS data model that holds the ID of a product.
-3. The third parameter: an object with the `readOnly` property set to `true`.
+### c. Query Linked Records
 
 Now, you can use Query to retrieve a product and its linked post from the CMS:
 
-```ts
+export const queryHighlights = [
+  ["3", `"cms_post"`, "The `alias` of the virtual data model in the link configuration."]
+]
+
+```ts highlights={queryHighlights}
 const { data } = await query.graph({
   entity: "product",
   fields: ["id", "cms_post.*"],
 })
 ```
 
-In the above example, each product that has a CMS post with the `product_id` field set to the product's ID will be retrieved:
+In the above example, you pass `cms_post.*` in the fields, which is the `alias` of the virtual data model in the [link configuration](#a-define-read-only-module-link).
+
+Each product will have a `cms_post` field that holds the posts whose `product_id` matches the product's ID. For example:
 
 ```json title="Example Data"
 [

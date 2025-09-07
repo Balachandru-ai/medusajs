@@ -219,19 +219,17 @@ export function MedusaService<
           data = [],
           sharedContext: Context = {}
         ): Promise<T | T[]> {
-          const serviceData = Array.isArray(data) ? data : [data]
           const service = this.__container__[serviceRegistrationName]
-          const models = await service.create(serviceData, sharedContext)
-          const response = Array.isArray(data) ? models : models[0]
+          const models = await service.create(data, sharedContext)
 
           klassPrototype.aggregatedEvents.bind(this)({
             action: CommonEvents.CREATED,
             object: camelToSnakeCase(modelName).toLowerCase(),
-            data: response,
+            data: models,
             context: sharedContext,
           })
 
-          return await this.baseRepository_.serialize<T | T[]>(response)
+          return await this.baseRepository_.serialize<T | T[]>(models)
         }
 
         applyMethod(methodImplementation, 1)
@@ -243,9 +241,8 @@ export function MedusaService<
           data = [],
           sharedContext: Context = {}
         ): Promise<T | T[]> {
-          const serviceData = Array.isArray(data) ? data : [data]
           const service = this.__container__[serviceRegistrationName]
-          const response = await service.update(serviceData, sharedContext)
+          const response = await service.update(data, sharedContext)
 
           klassPrototype.aggregatedEvents.bind(this)({
             action: CommonEvents.UPDATED,

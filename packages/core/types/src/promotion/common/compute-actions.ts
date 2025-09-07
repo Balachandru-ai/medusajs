@@ -199,6 +199,13 @@ export interface ComputeActionItemLine extends Record<string, unknown> {
    * The adjustments applied before on the line item.
    */
   adjustments?: ComputeActionAdjustmentLine[]
+
+  /**
+   * The product ID of the line item. Our default promotion rules rely on the product ID to apply the promotion.
+   */
+  product?: {
+    id: string
+  }
 }
 
 /**

@@ -1,6 +1,7 @@
 import {
   CartDTO,
   CreatePaymentCollectionForCartWorkflowInputDTO,
+  PaymentCollectionDTO,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import {
@@ -9,6 +10,7 @@ import {
   parallelize,
   transform,
   WorkflowData,
+  WorkflowResponse
 } from "@medusajs/framework/workflows-sdk"
 import { createRemoteLinkStep } from "../../common/steps/create-remote-links"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
@@ -79,10 +81,13 @@ export const createPaymentCollectionForCartWorkflowId =
  * Create payment collection for cart.
  */
 export const createPaymentCollectionForCartWorkflow = createWorkflow(
-  createPaymentCollectionForCartWorkflowId,
+  {
+    name: createPaymentCollectionForCartWorkflowId,
+    idempotent: false,
+  },
   (
     input: WorkflowData<CreatePaymentCollectionForCartWorkflowInputDTO>
-  ): WorkflowData<void> => {
+  ): WorkflowResponse<PaymentCollectionDTO> => {
     const cart = useRemoteQueryStep({
       entry_point: "cart",
       fields: [
@@ -127,5 +132,7 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
     createRemoteLinkStep(cartPaymentLink).config({
       name: "cart-payment-collection-link",
     })
+
+    return new WorkflowResponse(created[0])
   }
 )
