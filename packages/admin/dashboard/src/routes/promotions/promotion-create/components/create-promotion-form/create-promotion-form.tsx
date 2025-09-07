@@ -651,8 +651,7 @@ export const CreatePromotionForm = () => {
                             </Form.Label>
                             <Form.Control>
                               <RadioGroup
-                                dir={ direction
-                                }
+                                dir={direction}
                                 className="flex gap-y-3"
                                 {...field}
                                 onValueChange={field.onChange}
@@ -705,7 +704,7 @@ export const CreatePromotionForm = () => {
                               </Form.Label>
                               <Form.Control>
                                 <RadioGroup
-                                  dir={ direction}
+                                  dir={direction}
                                 className="flex gap-y-3"
                                   {...field}
                                   onValueChange={field.onChange}
@@ -896,7 +895,7 @@ export const CreatePromotionForm = () => {
 
                               <Form.Control>
                                 <RadioGroup
-                                  dir={ direction}
+                                  dir={direction}
                                   className="flex gap-y-3"
                                   {...field}
                                   onValueChange={field.onChange}

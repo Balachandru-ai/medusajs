@@ -103,7 +103,7 @@ export const EditReservationForm = ({
                   <Form.Label>{t("inventory.reservation.location")}</Form.Label>
                   <Form.Control>
                     <Select
-                      dir={ direction}
+                      dir={direction}
                       value={value}
                       onValueChange={(v) => {
                         onChange(v)

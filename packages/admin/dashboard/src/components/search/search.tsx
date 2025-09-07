@@ -54,7 +54,7 @@ export const Search = () => {
   const location = useLocation()
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const direction = useDocumentDirection()
+
 
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -369,7 +369,7 @@ const CommandInput = forwardRef<
   ) => {
     const { t } = useTranslation()
     const innerRef = useRef<HTMLInputElement>(null)
-
+    const direction = useDocumentDirection()
     useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
       ref,
       () => innerRef.current

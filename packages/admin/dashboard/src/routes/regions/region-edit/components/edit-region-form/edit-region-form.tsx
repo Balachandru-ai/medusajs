@@ -108,7 +108,7 @@ export const EditRegionForm = ({
                       <Form.Label>{t("fields.currency")}</Form.Label>
                       <Form.Control>
                         <Select
-                          dir={ direction}
+                          dir={direction}
                           onValueChange={onChange}
                           {...field}
                         >
