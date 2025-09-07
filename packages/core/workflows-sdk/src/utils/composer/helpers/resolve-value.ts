@@ -82,6 +82,9 @@ async function unwrapInput({
 
   if (util.types.isProxy(inputTOUnwrap)) {
     inputTOUnwrap = resolveProperty(inputTOUnwrap, transactionContext)
+    if (inputTOUnwrap instanceof Promise) {
+      inputTOUnwrap = await inputTOUnwrap
+    }
   }
 
   if (!isObject(inputTOUnwrap)) {
@@ -106,10 +109,10 @@ async function unwrapInput({
     } else {
       parentRef[key] = result
 
-      if (isObject(parentRef[key])) {
+      if (result != null && typeof result === "object") {
         parentRef[key] = await unwrapInput({
-          inputTOUnwrap: parentRef[key],
-          parentRef: parentRef[key],
+          inputTOUnwrap: result,
+          parentRef: parentRef[key] || {},
           transactionContext,
         })
       }
@@ -123,10 +126,13 @@ async function unwrapInput({
       const key = keys[promises[i].keyIndex]
       parentRef[key] = resolvedPromises[i]
 
-      if (isObject(parentRef[key])) {
+      if (
+        resolvedPromises[i] != null &&
+        typeof resolvedPromises[i] === "object"
+      ) {
         parentRef[key] = await unwrapInput({
-          inputTOUnwrap: parentRef[key],
-          parentRef: parentRef[key],
+          inputTOUnwrap: resolvedPromises[i],
+          parentRef: parentRef[key] || {},
           transactionContext,
         })
       }
