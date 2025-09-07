@@ -1,7 +1,7 @@
 import { XMarkMini } from "@medusajs/icons"
 import { PromotionDTO } from "@medusajs/types"
 import { Badge, Button, Heading, IconButton, Select, Text } from "@medusajs/ui"
-import { forwardRef, Fragment, useEffect } from "react"
+import { forwardRef, Fragment, useEffect, useRef } from "react"
 import {
   ControllerRenderProps,
   useFieldArray,
@@ -41,6 +41,8 @@ export const RulesFormField = ({
   promotion,
   formType = "create",
 }: RulesFormFieldType) => {
+  const initialRulesSet = useRef(false)
+
   const { t } = useTranslation()
   const formData = form.getValues()
   const { attributes } = usePromotionRuleAttributes(
@@ -95,7 +97,11 @@ export const RulesFormField = ({
       return
     }
 
-    if (!fields.length || formType === "edit") {
+    /**
+     * This effect sets rules after mount but since it is resued in cerate and edit prevent this hook from recreating rules
+     * when fields are intentionally set to empty (e.g. "Clear all" is pressed).
+     */
+    if (!fields.length && formType === "edit" && initialRulesSet.current) {
       return
     }
 
@@ -124,6 +130,8 @@ export const RulesFormField = ({
 
       replace(generateRuleAttributes(rulesToAppend) as any)
     }
+
+    initialRulesSet.current = true
   }, [
     promotionType,
     isLoading,

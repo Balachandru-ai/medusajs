@@ -9,7 +9,6 @@ import { KeyboundForm } from "../../../../../../components/utilities/keybound-fo
 import { RuleTypeValues } from "../../edit-rules"
 import { RulesFormField } from "../rules-form-field"
 import { EditRules, EditRulesType } from "./form-schema"
-import { generateRuleAttributes } from "./utils"
 
 type EditPromotionFormProps = {
   promotion: PromotionDTO
@@ -30,7 +29,7 @@ export const EditRulesForm = ({
 
   const form = useForm<EditRulesType>({
     defaultValues: {
-      rules: generateRuleAttributes(promotion.rules as any),
+      rules: [],
       type: promotion.type,
       application_method: {
         target_type: promotion.application_method?.target_type,
