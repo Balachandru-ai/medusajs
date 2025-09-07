@@ -20,6 +20,10 @@ export interface AdminGetPromotionsParams
    */
   code?: string | string[] | OperatorMap<string>
   /**
+   * Filter by promotion ID.
+   */
+  id?: string[] | string | OperatorMap<string>
+  /**
    * Filter by campaign ID to retrieve promotions by campaign.
    */
   campaign_id?: string | string[]
@@ -51,7 +55,9 @@ export interface AdminGetPromotionsParams
   /**
    * Filter by the promotion's application method type.
    */
-  application_method_type?: ApplicationMethodTypeValues | ApplicationMethodTypeValues[]
+  application_method_type?:
+    | ApplicationMethodTypeValues
+    | ApplicationMethodTypeValues[]
   /**
    * An array of filters to apply on the entity, where each item in the array is joined with an "and" condition.
    */
