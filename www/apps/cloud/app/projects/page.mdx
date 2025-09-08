@@ -34,9 +34,11 @@ To create a project:
 1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
 2. Click on the **Create Project** button in your organization's dashboard.
 
-In the project-creation page, you can either [create from a starter](#create-from-a-starter) or [create from an existing application](#create-from-an-existing-application).
+In the project-creation page, you can either [create from a starter](#1-create-from-a-starter) or [create from an existing application](#2-create-from-an-existing-application).
 
-### Create from a Starter
+---
+
+### 1. Create from a Starter
 
 Medusa provides you with the following starters that you can use to quickly set up your ecommerce application:
 
@@ -45,16 +47,19 @@ Medusa provides you with the following starters that you can use to quickly set 
 
 To create a project from either of these starters:
 
-1. Click the **Clone** button of the starter.
-2. In the Repository step, authenticate with your GitHub account if you haven't already.
-3. Choose a GitHub organization to clone the starter into in the "Organization" field.
+1. Click on the **Browse Starters** button at the top right.
+2. Click the **Clone** button of the starter you want to use.
+3. In the Repository step, authenticate with your GitHub account if you haven't already.
+4. Choose a GitHub organization to clone the starter into in the "Organization" field.
     - If you don't see your organization, you can click the **Configure accessible organizations** link to manage accessible organizations in GitHub.
-4. In the "Repository name" field, enter a name for your new repository.
-5. Once you're done, click the **Continue** button.
+5. In the "Repository name" field, enter a name for your new repository.
+6. Once you're done, click the **Continue** button.
 
 The repository will be cloned and you'll move forward to the [Configure step](#configure-project).
 
-### Create from an Existing Application
+---
+
+### 2. Create from an Existing Application
 
 If you already have a Medusa application, you can create a project from it.
 
@@ -77,13 +82,14 @@ So, make sure to remove any of these modules from your `medusa-config.ts` file, 
 
 To create a project from an existing Medusa application:
 
-1. Click on the **Import Repository** button at the top right.
-2. In the Repository step, authenticate with your GitHub account if you haven't already.
-3. Under the Repository section, choose the repository to create the project from.
+1. In the GitHub section, authenticate with your GitHub account if you haven't already.
+2. Under the Repository section, choose the repository to create the project from.
     - If you don't see your repository, you can click the **Configure repositories** link to manage the GitHub repositories that Medusa can access.
-4. Once you're done, click the **Continue** button.
+3. Once you're done, click the **Continue** button.
 
 You'll move forward to the [Configure step](#configure-project).
+
+---
 
 ### Configure Project
 
@@ -95,13 +101,15 @@ After selecting the repository, you'll move on to the project configuration step
 3. You can expand the "Build details" section to optionally change its configurations:
     - **Region**: Select a [region](#available-regions-in-cloud) to deploy the project. For better performance, choose a region that's closer to your target users. The region can't be changed later.
     - **Project root directory**: If your project is in a monorepo, specify the path to the Medusa project in the repository. Otherwise, leave it empty.
-    - **Admin email and password**: You can change the email and password for the admin user created for the project. These are the credentials you'll use to access the Medusa Admin.
 4. You can expand the "Environment variables" section to optionally add environment variables:
     - Enter the key and value for each environment variable you want to add.
     - Mark the variable as "Sensitive" to hide its value in the UI.
     - To add more variables, click the "Add another" button.
     - You can also add and change environment variables later in the project's environment settings.
-5. Once you're done configuring the project, click the "Create" button.
+5. You can expand the "Initial user" section to optionally set up the credentials of the initial admin user for the Medusa Admin:
+    - **Email**: The email of the initial admin user.
+    - **Password**: The password of the initial admin user.
+6. Once you're done configuring the project, click the "Create" button.
 
 After creating the project, it will take a few minutes to create the necessary resources for it and deploy it. You'll be redirected to the organization dashboard, where you can see the project in the list of projects.
 
