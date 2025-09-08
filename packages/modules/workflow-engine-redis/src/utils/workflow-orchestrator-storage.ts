@@ -36,6 +36,24 @@ enum JobType {
 const ONE_HOUR_IN_MS = 1000 * 60 * 60
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
+const invokingStatesSet = new Set([
+  TransactionStepState.INVOKING,
+  TransactionStepState.NOT_STARTED,
+])
+
+const compensatingStatesSet = new Set([
+  TransactionStepState.COMPENSATING,
+  TransactionStepState.NOT_STARTED,
+])
+
+function isInvokingState(step: TransactionStep) {
+  return invokingStatesSet.has(step.invoke?.state)
+}
+
+function isCompensatingState(step: TransactionStep) {
+  return compensatingStatesSet.has(step.compensate?.state)
+}
+
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
@@ -100,6 +118,7 @@ export class RedisDistributedTransactionStorage
     await this.worker?.close()
     await this.jobWorker?.close()
 
+    // Clean up repeatable jobs
     const repeatableJobs = (await this.cleanerQueue_?.getRepeatableJobs()) ?? []
     for (const job of repeatableJobs) {
       if (job.id === REPEATABLE_CLEARER_JOB_ID) {
@@ -780,38 +799,48 @@ export class RedisDistributedTransactionStorage
       )
     }
 
-    // Predefined states for quick lookup
-    const invokingStates = [
-      TransactionStepState.INVOKING,
-      TransactionStepState.NOT_STARTED,
-    ]
+    let currentFlowLastInvokingStepIndex = -1
+    for (let i = 0; i < currentFlowSteps.length; i++) {
+      if (isInvokingState(currentFlowSteps[i])) {
+        currentFlowLastInvokingStepIndex = i
+        break
+      }
+    }
 
-    const compensatingStates = [
-      TransactionStepState.COMPENSATING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const isInvokingState = (step: TransactionStep) =>
-      invokingStates.includes(step.invoke?.state)
-
-    const isCompensatingState = (step: TransactionStep) =>
-      compensatingStates.includes(step.compensate?.state)
-
-    const currentFlowLastInvokingStepIndex =
-      currentFlowSteps.findIndex(isInvokingState)
-
-    const latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
+    let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
       ? 1 // There is no other execution, so the current execution is the latest
-      : latestUpdatedFlowSteps.findIndex(isInvokingState)
+      : -1
 
-    const reversedCurrentFlowSteps = [...currentFlowSteps].reverse()
-    const currentFlowLastCompensatingStepIndex =
-      reversedCurrentFlowSteps.findIndex(isCompensatingState)
+    if (latestUpdatedFlow.steps) {
+      for (let i = 0; i < latestUpdatedFlowSteps.length; i++) {
+        if (isInvokingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastInvokingStepIndex = i
+          break
+        }
+      }
+    }
 
-    const reversedLatestUpdatedFlowSteps = [...latestUpdatedFlowSteps].reverse()
-    const latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
-      ? -1
-      : reversedLatestUpdatedFlowSteps.findIndex(isCompensatingState)
+    let currentFlowLastCompensatingStepIndex = -1
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (isCompensatingState(currentFlowSteps[i])) {
+        currentFlowLastCompensatingStepIndex = currentFlowSteps.length - 1 - i
+        break
+      }
+    }
+
+    let latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
+      ? -1 // There is no other execution, so the current execution is the latest
+      : -1
+
+    if (latestUpdatedFlow.steps) {
+      for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+        if (isCompensatingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastCompensatingStepIndex =
+            latestUpdatedFlowSteps.length - 1 - i
+          break
+        }
+      }
+    }
 
     const isLatestExecutionFinishedIndex = -1
     const invokeShouldBeSkipped =
