@@ -14,14 +14,14 @@ import "../__fixtures__"
 
 jest.setTimeout(300000)
 
-const failTrap = (done, name) => {
-  setTimeoutSync(() => {
+const failTrap = (done, name, timeout = 5000) => {
+  return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
       `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
-  }, 5000)
+  }, timeout)
 }
 
 moduleIntegrationTestRunner<IWorkflowEngineService>({
@@ -87,7 +87,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(1)
               expect(step2InvokeMock).toHaveBeenCalledTimes(1)
               expect(transformMock).toHaveBeenCalledTimes(1)
-              setTimeoutSync(done, 500)
+              done()
+              clearTimeout(timeout)
             }
           },
         })
@@ -99,7 +100,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
           .catch((e) => e)
 
-        failTrap(
+        const timeout = failTrap(
           done,
           "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
         )
@@ -179,7 +180,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               expect(step1CompensateMock).toHaveBeenCalledTimes(1)
               expect(step2InvokeMock).toHaveBeenCalledTimes(0)
               expect(transformMock).toHaveBeenCalledTimes(0)
-              setTimeoutSync(done, 500)
+              done()
+              clearTimeout(timeout)
             }
           },
         })
@@ -193,7 +195,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
           .catch((e) => e)
 
-        failTrap(
+        const timeout = failTrap(
           done,
           "should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution"
         )

@@ -3,6 +3,7 @@ import {
   DAL,
   FilterableWorkflowExecutionProps,
   FindConfig,
+  IdempotencyKeyParts,
   InferEntityType,
   InternalModuleDeclaration,
   ModulesSdkTypes,
@@ -267,6 +268,29 @@ export class WorkflowsModuleService<
       stepResponse,
       options: options_,
     } as any)
+  }
+
+  @InjectSharedContext()
+  async retryStep(
+    {
+      idempotencyKey,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      options?: Record<string, any>
+    },
+    @MedusaContext() context: Context = {}
+  ) {
+    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+
+    const { manager, transactionManager, ...restContext } = context
+
+    options_.context ??= restContext
+
+    return await this.workflowOrchestratorService_.retryStep({
+      idempotencyKey,
+      options: options_,
+    })
   }
 
   @InjectSharedContext()

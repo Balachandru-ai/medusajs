@@ -5,6 +5,7 @@ import {
   SchedulerOptions,
   SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -392,6 +393,53 @@ export class InMemoryDistributedTransactionStorage
       throw new SkipExecutionError("Already finished by another execution")
     }
 
+    let currentFlowLatestExecutedStep: TransactionStep | undefined
+    const currentFlowSteps = Object.values(currentFlow.steps || {})
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (currentFlowSteps[i].lastAttempt) {
+        currentFlowLatestExecutedStep = currentFlowSteps[i]
+        break
+      }
+    }
+
+    let latestUpdatedFlowLatestExecutedStep: TransactionStep | undefined
+    const latestUpdatedFlowSteps = Object.values(latestUpdatedFlow.steps || {})
+    for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+      if (latestUpdatedFlowSteps[i].lastAttempt) {
+        latestUpdatedFlowLatestExecutedStep = latestUpdatedFlowSteps[i]
+        break
+      }
+    }
+
+    /**
+     * The current flow and the latest updated flow have the same latest executed step.
+     */
+    const isSameLatestExecutedStep =
+      currentFlowLatestExecutedStep &&
+      latestUpdatedFlowLatestExecutedStep &&
+      currentFlowLatestExecutedStep?.id ===
+        latestUpdatedFlowLatestExecutedStep?.id
+
+    /**
+     * The current flow's latest executed step has a last attempt ahead of the latest updated
+     * flow's latest executed step. Therefor it is fine, otherwise another execution has already
+     * finished the step.
+     */
+    const isCurrentLatestExecutedStepLastAttemptAhead =
+      currentFlowLatestExecutedStep?.lastAttempt &&
+      latestUpdatedFlowLatestExecutedStep?.lastAttempt &&
+      currentFlowLatestExecutedStep.lastAttempt >=
+        latestUpdatedFlowLatestExecutedStep.lastAttempt
+
+    if (
+      isSameLatestExecutedStep &&
+      !isCurrentLatestExecutedStepLastAttemptAhead
+    ) {
+      throw new SkipStepAlreadyFinishedError(
+        "Step already in execution ahead of the current one"
+      )
+    }
+
     // First ensure that the latest execution was not cancelled, otherwise we skip the execution
     const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
     const currentTransactionCancelledAt = currentFlow.cancelledAt
@@ -404,13 +452,6 @@ export class InMemoryDistributedTransactionStorage
         "Workflow execution has been cancelled during the execution"
       )
     }
-
-    const currentFlowSteps = Object.values(currentFlow.steps || {})
-    const latestUpdatedFlowSteps = latestUpdatedFlow.steps
-      ? Object.values(
-          latestUpdatedFlow.steps as Record<string, TransactionStep>
-        )
-      : []
 
     // Predefined states for quick lookup
     const invokingStates = [
