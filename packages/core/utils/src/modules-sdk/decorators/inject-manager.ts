@@ -52,7 +52,8 @@ export function InjectManager(managerProperty?: string): MethodDecorator {
       }
 
       copiedContext.manager =
-        originalContext.manager ?? resourceWithManager.getFreshManager()
+        originalContext.manager ??
+        resourceWithManager.getActiveManager(originalContext)
 
       if (originalContext?.transactionManager) {
         copiedContext.transactionManager = originalContext?.transactionManager
