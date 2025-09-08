@@ -46,6 +46,7 @@ interface TestRunnerConfig {
   dbName?: string
   medusaConfigFile?: string
   disableAutoTeardown?: boolean
+  disableAutoTeardown?: boolean
   schema?: string
   debug?: boolean
   inApp?: boolean
@@ -294,7 +295,7 @@ class MedusaTestRunner {
     try {
       await waitWorkflowExecutions(this.globalContainer as MedusaContainer)
 
-      if (!this.disableAutoTeardown) {
+      if (!this?.disableAutoTeardown) {
         // Perform automatic teardown
         await this.dbUtils.teardown({ schema: this.schema })
       }
