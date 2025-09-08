@@ -658,7 +658,7 @@
     "name": "shipment.created",
     "parentName": "FulfillmentWorkflowEvents",
     "propertyName": "SHIPMENT_CREATED",
-    "payload": "```ts\n{\n  id, // the ID of the shipment\n  no_notification, // (boolean) whether to notify the customer\n}\n```",
+    "payload": "```ts\n{\n  id, // the ID of the fulfillment\n  no_notification, // (boolean) whether to notify the customer\n}\n```",
     "description": "Emitted when a shipment is created for an order.",
     "workflows": [
       "createOrderShipmentWorkflow"
@@ -674,6 +674,42 @@
     "workflows": [
       "markOrderFulfillmentAsDeliveredWorkflow"
     ],
+    "deprecated": false
+  },
+  {
+    "name": "shipping-option-type.updated",
+    "parentName": "ShippingOptionTypeWorkflowEvents",
+    "propertyName": "UPDATED",
+    "payload": "```ts\n[{\n  id, // The ID of the shipping option type\n}]\n```",
+    "description": "Emitted when shipping option types are updated.",
+    "workflows": [
+      "updateShippingOptionTypesWorkflow"
+    ],
+    "since": "2.10.0",
+    "deprecated": false
+  },
+  {
+    "name": "shipping-option-type.created",
+    "parentName": "ShippingOptionTypeWorkflowEvents",
+    "propertyName": "CREATED",
+    "payload": "```ts\n[{\n  id, // The ID of the shipping option type\n}]\n```",
+    "description": "Emitted when shipping option types are created.",
+    "workflows": [
+      "createShippingOptionTypesWorkflow"
+    ],
+    "since": "2.10.0",
+    "deprecated": false
+  },
+  {
+    "name": "shipping-option-type.deleted",
+    "parentName": "ShippingOptionTypeWorkflowEvents",
+    "propertyName": "DELETED",
+    "payload": "```ts\n[{\n  id, // The ID of the shipping option type\n}]\n```",
+    "description": "Emitted when shipping option types are deleted.",
+    "workflows": [
+      "deleteShippingOptionTypesWorkflow"
+    ],
+    "since": "2.10.0",
     "deprecated": false
   },
   {

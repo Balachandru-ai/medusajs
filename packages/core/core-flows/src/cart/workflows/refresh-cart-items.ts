@@ -128,7 +128,10 @@ export const refreshCartItemsWorkflowId = "refresh-cart-items"
  *
  */
 export const refreshCartItemsWorkflow = createWorkflow(
-  refreshCartItemsWorkflowId,
+  {
+    name: refreshCartItemsWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
     const setPricingContext = createHook(
       "setPricingContext",
@@ -260,25 +263,15 @@ export const refreshCartItemsWorkflow = createWorkflow(
       list: false,
     }).config({ name: "refetch–cart" })
 
-    const refreshCartInput = transform(
-      { refetchedCart, input },
-      ({ refetchedCart, input }) => {
-        return {
-          cart: !input.force_refresh ? refetchedCart : undefined,
-          cart_id: !!input.force_refresh ? input.cart_id : undefined,
-        }
-      }
-    )
-
     refreshCartShippingMethodsWorkflow.runAsStep({
-      input: refreshCartInput,
+      input: { cart: refetchedCart },
     })
 
     when("force-refresh-update-tax-lines", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       updateTaxLinesWorkflow.runAsStep({
-        input: refreshCartInput,
+        input: { cart_id: input.cart_id },
       })
     })
 
@@ -328,7 +321,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
 
     refreshPaymentCollectionForCartWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+      input: { cart: refetchedCart },
     })
 
     return new WorkflowResponse(refetchedCart, {

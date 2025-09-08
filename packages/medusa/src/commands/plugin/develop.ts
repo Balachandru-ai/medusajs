@@ -1,8 +1,8 @@
-import path from "path"
+import { Compiler } from "@medusajs/framework/build-tools"
+import { logger } from "@medusajs/framework/logger"
 import * as swcCore from "@swc/core"
 import { execFile } from "child_process"
-import { logger } from "@medusajs/framework/logger"
-import { Compiler } from "@medusajs/framework/build-tools"
+import path from "path"
 
 export default async function developPlugin({
   directory,

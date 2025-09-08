@@ -4615,17 +4615,30 @@ After that, you use the [addToCartWorkflow](/references/medusa-workflows/addToCa
 Next, you need to add the complementary and addon product variants to the cart. Replace the `TODO` with the following:
 
 export const addProductBuilderToCartWorkflowHighlights3 = [
-  ["3", "items_to_add", "Complementary and addon items to add to the cart."],
-  ["4", "main_item_update", "Update main product line item metadata."],
-  ["30", "main_product_line_item_id", "Store the ID of the main item in the `metadata`."],
-  ["37", "main_product_line_item_id", "Store the ID of the main item in the `metadata`."],
-  ["38", "is_addon", "Set `is_addon` flag for addon products."],
-  ["48", "cart_line_item_id", "Store the line item's ID in the cart for later reference."],
-  ["63", "addToCartWorkflow", "Add complementary and addon products to the cart."],
-  ["72", "updateLineItemInCartWorkflow", "Update main product line item metadata with its cart line item ID."]
+  ["2", "cartWithMainProduct", "Refetch the cart with the main product added."],
+  ["15", "items_to_add", "Complementary and addon items to add to the cart."],
+  ["16", "main_item_update", "Update main product line item metadata."],
+  ["42", "main_product_line_item_id", "Store the ID of the main item in the `metadata`."],
+  ["49", "main_product_line_item_id", "Store the ID of the main item in the `metadata`."],
+  ["50", "is_addon", "Set `is_addon` flag for addon products."],
+  ["60", "cart_line_item_id", "Store the line item's ID in the cart for later reference."],
+  ["75", "addToCartWorkflow", "Add complementary and addon products to the cart."],
+  ["84", "updateLineItemInCartWorkflow", "Update main product line item metadata with its cart line item ID."]
 ]
 
 ```ts title="src/workflows/add-product-builder-to-cart.ts" highlights={addProductBuilderToCartWorkflowHighlights3}
+// Step 4: Get cart after main product is added
+const { data: cartWithMainProduct } = useQueryGraphStep({
+  entity: "cart",
+  fields: ["*", "items.*"],
+  filters: {
+    id: input.cart_id,
+  },
+  options: {
+    throwIfKeyNotFound: true,
+  },
+})
+
 // Step 5: Add complementary and addon products
 const {
   items_to_add: moreItemsToAdd,

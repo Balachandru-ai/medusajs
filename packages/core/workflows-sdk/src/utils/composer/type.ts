@@ -193,6 +193,11 @@ export interface StepExecutionContext {
   transactionId?: string
 
   /**
+   * A string indicating the ID of the current run.
+   */
+  runId?: string
+
+  /**
    * Get access to the result returned by a named step. Returns undefined
    * when step is not found or when nothing was returned.
    *
@@ -263,7 +268,11 @@ export type ReturnWorkflow<TData, TResult, THooks extends any[]> = {
     container?: LoadedModule[] | MedusaContainer
   ): Omit<
     LocalWorkflow,
-    "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+    | "run"
+    | "registerStepSuccess"
+    | "registerStepFailure"
+    | "cancel"
+    | "retryStep"
   > &
     ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride>
 } & {

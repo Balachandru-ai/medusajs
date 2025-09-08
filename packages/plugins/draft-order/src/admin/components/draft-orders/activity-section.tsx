@@ -26,7 +26,7 @@ export const ActivitySection = ({ order, changes }: ActivitySectionProps) => {
   )
 
   return (
-    <Container className="p-0 overflow-hidden">
+    <Container className="overflow-hidden p-0">
       <div className="px-6 py-4">
         <Heading>Activity</Heading>
       </div>
@@ -83,9 +83,9 @@ const CollapsibleActivityItemList = ({
       {!open && (
         <div className="grid grid-cols-[20px_1fr] items-start gap-2">
           <div className="flex size-full flex-col items-center">
-            <div className="border-ui-border-strong w-px flex-1 bg-[linear-gradient(var(--border-strong)_33%,rgba(255,255,255,0)_0%)] bg-[length:1px_3px] bg-right bg-repeat-y bg-clip-content" />
+            <div className="border-ui-border-strong w-px flex-1 bg-[linear-gradient(var(--border-strong)_33%,rgba(255,255,255,0)_0%)] bg-[length:1px_3px] bg-clip-content bg-right bg-repeat-y" />
           </div>
-          <Collapsible.Trigger className="text-left p-0 m-0 pb-4 text-ui-fg-muted hover:text-ui-fg-base focus:text-ui-fg-base outline-none transition-colors">
+          <Collapsible.Trigger className="text-ui-fg-muted hover:text-ui-fg-base focus:text-ui-fg-base m-0 p-0 pb-4 text-left outline-none transition-colors">
             <Text size="small" leading="compact" weight="plus">
               {`Show ${items.length} more ${
                 items.length === 1 ? "activity" : "activities"
@@ -130,22 +130,22 @@ const ActivityItem = ({ item, isFirst = false }: ActivityItemProps) => {
 
   return (
     <div
-      className={clx("grid grid-cols-[20px_1fr] items-start gap-x-2 w-full")}
+      className={clx("grid w-full grid-cols-[20px_1fr] items-start gap-x-2")}
     >
-      <div className="flex flex-col items-center gap-0.5 h-full">
-        <div className="size-5 flex items-center justify-center">
-          <div className="size-2.5 rounded-full shadow-borders-base flex items-center justify-center">
-            <div className="size-1.5 rounded-full bg-ui-tag-neutral-icon" />
+      <div className="flex h-full flex-col items-center gap-0.5">
+        <div className="flex size-5 items-center justify-center">
+          <div className="shadow-borders-base flex size-2.5 items-center justify-center rounded-full">
+            <div className="bg-ui-tag-neutral-icon size-1.5 rounded-full" />
           </div>
         </div>
         {!isFirst && (
           <div className="flex flex-1 items-center justify-center">
-            <div className="h-full w-px bg-ui-border-base" />
+            <div className="bg-ui-border-base h-full w-px" />
           </div>
         )}
       </div>
       <div className={clx("flex flex-col", !isFirst && "pb-4")}>
-        <div className="flex items-center gap-x-2 justify-between">
+        <div className="flex items-center justify-between gap-x-2">
           <Text size="small" weight="plus" leading="compact">
             {item.label}
           </Text>
@@ -159,10 +159,10 @@ const ActivityItem = ({ item, isFirst = false }: ActivityItemProps) => {
         </div>
         {item.content && renderContent(item.content)}
         {item.userId && (
-          <div className="pt-2 text-ui-fg-muted">
+          <div className="text-ui-fg-muted pt-2">
             {isUserLoaded ? (
               <Link to={`/settings/users/${user.id}`} className="w-fit">
-                <div className="flex items-center gap-x-1.5 w-fit">
+                <div className="flex w-fit items-center gap-x-1.5">
                   <Text size="small">By</Text>
                   <Avatar
                     size="2xsmall"
@@ -179,8 +179,8 @@ const ActivityItem = ({ item, isFirst = false }: ActivityItemProps) => {
             ) : (
               <div className="flex items-center gap-x-1.5">
                 <Text size="small">By</Text>
-                <Skeleton className="rounded-full w-5 h-5" />
-                <Skeleton className="w-[75px] h-4" />
+                <Skeleton className="h-5 w-5 rounded-full" />
+                <Skeleton className="h-4 w-[75px]" />
               </div>
             )}
           </div>
@@ -215,7 +215,14 @@ function getEditActivityItems(
     promotionsRemoved: 0,
   }
 
-  for (const action of change.actions) {
+  const orderedActions = change.actions.sort((a, b) => {
+    return a.ordering - b.ordering
+  })
+
+  const addedPromotionMap = new Map<string, true>()
+  const removedPromotionMap = new Map<string, true>()
+
+  for (const action of orderedActions) {
     if (!action.details) {
       continue
     }
@@ -234,13 +241,22 @@ function getEditActivityItems(
       case "SHIPPING_REMOVE":
         counts.shippingMethodsRemoved += 1
         break
-      case "PROMOTION_ADD":
-        counts.promotionsAdded += 1
+      case "PROMOTION_ADD": {
+        addedPromotionMap.set(action.reference_id!, true)
         break
-      case "PROMOTION_REMOVE":
-        counts.promotionsRemoved += 1
+      }
+      case "PROMOTION_REMOVE": {
+        if (addedPromotionMap.has(action.reference_id!)) {
+          addedPromotionMap.delete(action.reference_id!)
+        } else {
+          removedPromotionMap.set(action.reference_id!, true)
+        }
         break
+      }
     }
+
+    counts.promotionsAdded = addedPromotionMap.size
+    counts.promotionsRemoved = removedPromotionMap.size
   }
 
   const createActivityItem = (

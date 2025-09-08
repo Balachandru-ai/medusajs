@@ -666,16 +666,17 @@ describe("RemoteJoiner", () => {
       ],
       [
         {
-          service: "user",
-          fieds: ["name", "id"],
-        },
-      ],
-      [
-        {
           service: "variantService",
           fieds: ["id", "product_id"],
         },
       ],
+      [
+        {
+          service: "user",
+          fieds: ["name", "id"],
+        },
+      ],
+
       [
         {
           service: "product",
