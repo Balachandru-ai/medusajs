@@ -1,15 +1,15 @@
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { createRegionsWorkflow } from "@medusajs/core-flows"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { MedusaContainer, RegionDTO } from "@medusajs/types"
-import { createAdminUser } from "../../../../helpers/create-admin-user"
 import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/utils"
+import { createAdminUser } from "../../../../helpers/create-admin-user"
 
 jest.setTimeout(200000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = {
   headers: { "x-medusa-access-token": "test_token" },
 }

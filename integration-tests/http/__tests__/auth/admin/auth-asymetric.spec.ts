@@ -1,12 +1,12 @@
 import { generateResetPasswordTokenWorkflow } from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { ContainerRegistrationKeys } from "@medusajs/utils"
 import jwt from "jsonwebtoken"
+import path from "path"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
-import path from "path"
-import { ContainerRegistrationKeys } from "@medusajs/utils"
 
 jest.setTimeout(100000)
 

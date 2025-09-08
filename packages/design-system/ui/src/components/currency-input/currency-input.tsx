@@ -54,7 +54,18 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
        * The currency code to show in the input.
        */
       code,
+      /**
+       * Whether the input is disabled.
+       * 
+       * @keep
+       * @defaultValue false
+       */
       disabled,
+      /**
+       * A function that is triggered when the input is invalid.
+       * 
+       * @keep
+       */
       onInvalid,
       className,
       ...props

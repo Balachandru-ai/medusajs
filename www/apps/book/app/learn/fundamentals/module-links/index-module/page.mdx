@@ -18,7 +18,7 @@ The Index Module is a tool to perform highly performant queries across modules, 
 
 While modules share the same database by default, Medusa [isolates modules](../../modules/isolation/page.mdx) to allow using external data sources or different database types.
 
-So, when you retrieve data across modules using Query, Medusa aggregates the data coming from diffeent modules to create the end result. This approach limits your ability to filter data by linked modules. For example, you can't filter products (created in the Product Module) by their brand (created in the Brand Module).
+So, when you retrieve data across modules using Query, Medusa aggregates the data coming from different modules to create the end result. This approach limits your ability to filter data by linked modules. For example, you can't filter products (created in the Product Module) by their brand (created in the Brand Module).
 
 The Index Module solves this problem by ingesting data into a central data store on application startup. The data store has a relational structure that enables efficiently filtering data ingested from different modules (and their data stores). So, when you retrieve data with the Index Module, you're retrieving it from the Index' data store, not the original data source.
 
@@ -399,7 +399,7 @@ const {
 
 This will return all products whose brand name starts with `Acme`.
 
-### Use Request Query Configuations
+### Use Request Query Configurations
 
 API routes using the `graph` method can configure default [query configurations](../query/page.mdx#request-query-configurations), such as which fields to retrieve, while also allowing clients to override them using query parameters.
 

@@ -24,7 +24,10 @@ type ProvidersProps = {
 
 const Providers = ({ children }: ProvidersProps) => {
   return (
-    <AnalyticsProvider writeKey={process.env.NEXT_PUBLIC_SEGMENT_API_KEY}>
+    <AnalyticsProvider
+      segmentWriteKey={process.env.NEXT_PUBLIC_SEGMENT_API_KEY}
+      reoDevKey={process.env.NEXT_PUBLIC_REO_DEV_CLIENT_ID}
+    >
       <SiteConfigProvider config={config}>
         <MobileProvider>
           <ColorModeProvider>

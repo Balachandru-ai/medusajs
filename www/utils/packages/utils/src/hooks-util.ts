@@ -41,15 +41,11 @@ export function getHookChildren(
 }
 
 export function cleanUpHookInput(
-  parameters: ParameterReflection[],
-  debug = false
+  parameters: ParameterReflection[]
 ): (ParameterReflection | DeclarationReflection)[] {
   const hasInvokeParameter = parameters.some(
     (parameter) => parameter.name === "invoke"
   )
-  if (debug) {
-    console.log(parameters, hasInvokeParameter)
-  }
   if (hasInvokeParameter) {
     return getHookInputFromInvoke(parameters)
   }

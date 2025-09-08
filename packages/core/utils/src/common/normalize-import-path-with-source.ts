@@ -5,7 +5,8 @@ import { join } from "path"
  * @param path
  */
 export function normalizeImportPathWithSource(
-  path: string | undefined
+  path: string | undefined,
+  cwd: string = process.cwd()
 ): string {
   let normalizePath = path
 
@@ -19,7 +20,7 @@ export function normalizeImportPathWithSource(
      * "./src" directory inside it.
      */
     let sourceDir = normalizePath.startsWith("./src") ? "./" : "./src"
-    normalizePath = join(process.cwd(), sourceDir, normalizePath)
+    normalizePath = join(cwd, sourceDir, normalizePath)
   }
 
   return normalizePath ?? ""

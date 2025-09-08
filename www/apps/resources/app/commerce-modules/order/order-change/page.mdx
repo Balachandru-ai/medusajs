@@ -6,30 +6,31 @@ export const metadata = {
 
 # {metadata.title}
 
-In this document, you'll learn about the Order Change data model and possible actions in it.
+
+In this document, you'll learn what an order change is and the related concepts.
 
 ## OrderChange Data Model
 
-The [OrderChange data model](/references/order/models/OrderChange) represents any kind of change to an order, such as a return, exchange, or edit.
+The [OrderChange data model](/references/order/models/OrderChange) represents any kind of change to an order, such as a [return](../return/page.mdx), [exchange](../exchange/page.mdx), or [edit](../edit/page.mdx). Each of these is essentially an order change that is confirmed to apply changes to the original order.
 
-Its `change_type` property indicates what the order change is created for:
+The `OrderChange` model's `change_type` property indicates the purpose of the order change:
 
-1. `edit`: The order change is making edits to the order, as explained in [this guide](../edit/page.mdx).
-2. `exchange`: The order change is associated with an exchange, which you can learn about in [this guide](../exchange/page.mdx).
-3. `claim`: The order change is associated with a claim, which you can learn about in [this guide](../claim/page.mdx).
-4. `return_request` or `return_receive`: The order change is associated with a return, which you can learn about in [this guide](../return/page.mdx).
+1. `edit`: The order change is making edits to the order, as explained in the [Order Edit](../edit/page.mdx) guide.
+2. `exchange`: The order change is associated with an exchange, which you can learn about in the [Order Exchange](../exchange/page.mdx) guide.
+3. `claim`: The order change is associated with a claim, which you can learn about in the [Order Claim](../claim/page.mdx) guide.
+4. `return_request` or `return_receive`: The order change is associated with a return, which you can learn about in the [Order Return](../return/page.mdx) guide.
 
-Once the order change is confirmed, its changes are applied on the order.
+Once the order change is confirmed, its changes are applied to the order.
 
 ---
 
 ## Order Change Actions
 
-The actions to perform on the original order by a change, such as adding an item, are represented by the [OrderChangeAction data model](/references/order/models/OrderChangeAction).
+The actions performed on the original order by an order change, such as adding an item, are represented by the [OrderChangeAction data model](/references/order/models/OrderChangeAction).
 
-The `OrderChangeAction` has an `action` property that indicates the type of action to perform on the order, and a `details` property that holds more details related to the action.
+The `OrderChangeAction` has an `action` property that indicates the type of action to perform on the order, and a `details` property that holds additional information related to the action.
 
-The following table lists the possible `action` values that Medusa uses and what `details` they carry.
+The following table lists the possible `action` values that Medusa uses and the corresponding `details` they carry.
 
 <Table>
   <Table.Header>
@@ -48,7 +49,7 @@ The following table lists the possible `action` values that Medusa uses and what
       </Table.Cell>
       <Table.Cell>
       
-      Add an item to the order.
+      Add an item to the order. The item is only added after the change is confirmed.
 
       </Table.Cell>
       <Table.Cell>
@@ -69,8 +70,8 @@ The following table lists the possible `action` values that Medusa uses and what
 
       </Table.Cell>
       <Table.Cell>
-      
-      Update an item in the order.
+
+      Update an item in an order change. It's only applied to the order after the change is confirmed.
 
       </Table.Cell>
       <Table.Cell>
@@ -80,6 +81,26 @@ The following table lists the possible `action` values that Medusa uses and what
       - `reference_id`: the ID of the item.
       - `quantity`: The item's quantity.
       - `unit_price`: The item's unit price.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `ITEM_REMOVE`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Remove an item from an order change. This can happen when a claim or an exchange is canceled.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      `details` is an object having the following properties:
+
+      - `reference_id`: the ID of the item.
+      - `quantity`: The quantity to remove.
 
       </Table.Cell>
     </Table.Row>
@@ -100,7 +121,6 @@ The following table lists the possible `action` values that Medusa uses and what
 
       - `reference_id`: the ID of the item.
       - `quantity`: The quantity to be returned.
-      - `reason_id`: The ID of the return reason.
       - `metadata`: The item's metadata.
 
       </Table.Cell>
@@ -148,17 +168,20 @@ The following table lists the possible `action` values that Medusa uses and what
     <Table.Row>
       <Table.Cell>
       
-      `SHIPPING_ADD`
+      `CANCEL_RETURN_ITEM`
 
       </Table.Cell>
       <Table.Cell>
       
-      Add a shipping method for new or returned items.
+      Cancel the return of an item. This can happen when a return is canceled.
 
       </Table.Cell>
       <Table.Cell>
       
-      No details added. The ID to the shipping method is added in the `reference_id` property of the action.
+      `details` is an object having the following properties:
+
+      - `reference_id`: the ID of the item.
+      - `quantity`: The quantity to cancel.
 
       </Table.Cell>
     </Table.Row>
@@ -170,12 +193,92 @@ The following table lists the possible `action` values that Medusa uses and what
       </Table.Cell>
       <Table.Cell>
       
-      Add a shipping method for new or returned items.
+      Add a shipping method to an order change. It's only added to the order after the change is confirmed.
 
       </Table.Cell>
       <Table.Cell>
       
       No details added. The ID to the shipping method is added in the `reference_id` property of the action.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `SHIPPING_REMOVE`
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      Remove a shipping method from an order change. This can happen when a claim or an exchange is canceled.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      No details added. The ID to the shipping method is added in the `reference_id` property of the action.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `SHIP_ITEM`
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      Mark an item's quantity as shipped.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      `details` is an object having the following properties:
+
+      - `reference_id`: the ID of the item.
+      - `quantity`: The quantity to mark as shipped.
+      - `metadata`: The item's metadata.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `FULFILL_ITEM`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Fulfill an item's quantity as part of a change.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      `details` is an object having the following properties:
+
+      - `reference_id`: the ID of the item.
+      - `quantity`: The quantity to fulfill.
+      - `metadata`: The item's metadata.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `DELIVER_ITEM`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Mark an item's quantity as delivered.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      `details` is an object having the following properties:
+
+      - `reference_id`: the ID of the item.
+      - `quantity`: The quantity to mark as delivered.
+      - `metadata`: The item's metadata.
 
       </Table.Cell>
     </Table.Row>
@@ -187,7 +290,7 @@ The following table lists the possible `action` values that Medusa uses and what
       </Table.Cell>
       <Table.Cell>
       
-      Remove an item's quantity as part of the claim, without adding the quantity back to the item variant's inventory.
+      Remove an item's quantity from an order change, without adding the quantity back to the item variant's inventory. The quantity isn't removed from the order until the change is confirmed.
 
       </Table.Cell>
       <Table.Cell>
@@ -196,7 +299,78 @@ The following table lists the possible `action` values that Medusa uses and what
 
       - `reference_id`: the ID of the item.
       - `quantity`: The quantity to write off.
-      - `reason`: The claim reason.
+      - `metadata`: The item's metadata.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `REINSTATE_ITEM`
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      Reinstate an item's quantity in an order change that was previously written off. The quantity is added back to the item variant's inventory when the change is confirmed.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      `details` is an object having the following properties:
+
+      - `reference_id`: the ID of the item.
+      - `quantity`: The quantity to reinstate.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `TRANSFER_CUSTOMER`
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      Transfer an order to another customer. The order is not removed from the original customer until the change is confirmed.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      No details added. The ID to the new customer is added in the `reference_id` property of the action.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `UPDATE_ORDER_PROPERTIES`
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      Update the properties of an order, such as customer information or shipping address. The properties are not updated on the original order until the change is confirmed.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      `details` is an object that has the properties to update. The properties are the same as the ones in the [Order data model](/references/order/models/Order).
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `CREDIT_LINE_ADD`
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      Add a credit line to an order. The credit line is not added to the original order until the change is confirmed.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+      No details added. The ID to the associated payment is added in the `reference_id` property of the action.
 
       </Table.Cell>
     </Table.Row>

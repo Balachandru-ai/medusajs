@@ -36,7 +36,10 @@ const TagsOperationDescriptionSectionEvents = ({
           <span>
             The following events are emitted by the workflow used in this API
             route. You can listen to and handle these events using a{" "}
-            <Link href="https://docs.medusajs.com/learn/fundamentals/events-and-subscribers">
+            <Link
+              href="https://docs.medusajs.com/learn/fundamentals/events-and-subscribers"
+              variant="content"
+            >
               Subscriber
             </Link>
           </span>

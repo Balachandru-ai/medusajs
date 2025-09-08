@@ -1,4 +1,4 @@
-import { updateCartWorkflow } from "@medusajs/core-flows"
+import { updateCartWorkflowId } from "@medusajs/core-flows"
 import {
   AdditionalData,
   HttpTypes,
@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/types"
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { Modules } from "@medusajs/framework/utils"
 import { refetchCart } from "../helpers"
 
 export const GET = async (
@@ -27,13 +28,14 @@ export const POST = async (
     cart: HttpTypes.StoreCart
   }>
 ) => {
-  const workflow = updateCartWorkflow(req.scope)
+  const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
 
-  await workflow.run({
+  await we.run(updateCartWorkflowId, {
     input: {
       ...req.validatedBody,
       id: req.params.id,
     },
+    transactionId: "cart-update-" + req.params.id,
   })
 
   const cart = await refetchCart(

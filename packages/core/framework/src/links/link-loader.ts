@@ -1,8 +1,9 @@
+import { Logger } from "@medusajs/types"
 import { dynamicImport, promiseAll, readDirRecursive } from "@medusajs/utils"
 import { Dirent } from "fs"
 import { access } from "fs/promises"
 import { join } from "path"
-import { logger } from "../logger"
+import { logger as defaultLogger } from "../logger"
 
 export class LinkLoader {
   /**
@@ -23,8 +24,11 @@ export class LinkLoader {
     /^_[^/\\]*(\.[^/\\]+)?$/,
   ]
 
-  constructor(sourceDir: string | string[]) {
+  #logger: Logger
+
+  constructor(sourceDir: string | string[], logger?: Logger) {
     this.#sourceDir = sourceDir
+    this.#logger = logger ?? defaultLogger
   }
 
   /**
@@ -40,7 +44,7 @@ export class LinkLoader {
       try {
         await access(sourcePath)
       } catch {
-        logger.info(`No link to load from ${sourcePath}. skipped.`)
+        this.#logger.info(`No link to load from ${sourcePath}. skipped.`)
         return
       }
 
@@ -52,7 +56,7 @@ export class LinkLoader {
           )
         })
 
-        logger.debug(`Registering links from ${sourcePath}.`)
+        this.#logger.debug(`Registering links from ${sourcePath}.`)
 
         return await promiseAll(
           fileEntries.map(async (entry: Dirent) => {
@@ -65,6 +69,6 @@ export class LinkLoader {
 
     await promiseAll(promises)
 
-    logger.debug(`Links registered.`)
+    this.#logger.debug(`Links registered.`)
   }
 }
