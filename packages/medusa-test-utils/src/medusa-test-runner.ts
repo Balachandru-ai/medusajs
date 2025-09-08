@@ -46,7 +46,6 @@ interface TestRunnerConfig {
   dbName?: string
   medusaConfigFile?: string
   disableAutoTeardown?: boolean
-  disableAutoTeardown?: boolean
   schema?: string
   debug?: boolean
   inApp?: boolean
