@@ -45,7 +45,7 @@ interface TestRunnerConfig {
   env?: Record<string, any>
   dbName?: string
   medusaConfigFile?: string
-  autoTeardown?: boolean
+  disableAutoTeardown?: boolean
   schema?: string
   debug?: boolean
   inApp?: boolean
@@ -59,7 +59,7 @@ class MedusaTestRunner {
   private dbName: string
   private schema: string
   private modulesConfigPath: string
-  private autoTeardown: boolean
+  private disableAutoTeardown: boolean
   private cwd: string
   private env: Record<string, any>
   private debug: boolean
@@ -94,8 +94,7 @@ class MedusaTestRunner {
     this.env = config.env ?? {}
     this.debug = config.debug ?? false
     this.inApp = config.inApp ?? false
-    this.autoTeardown =
-      typeof config.autoTeardown === "boolean" ? config.autoTeardown : true
+    this.disableAutoTeardown = config.disableAutoTeardown ?? false
 
     this.dbUtils = dbTestUtilFactory()
     this.dbConfig = {
@@ -295,7 +294,7 @@ class MedusaTestRunner {
     try {
       await waitWorkflowExecutions(this.globalContainer as MedusaContainer)
 
-      if (this.autoTeardown) {
+      if (!this.disableAutoTeardown) {
         // Perform automatic teardown
         await this.dbUtils.teardown({ schema: this.schema })
       }
