@@ -1,5 +1,9 @@
 import { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, dynamicImport, isFileSkipped, } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  dynamicImport,
+  isFileSkipped,
+} from "@medusajs/framework/utils"
 import express from "express"
 import { existsSync } from "fs"
 import path from "path"
@@ -43,7 +47,7 @@ export default async function exec({ file, args }: Options) {
     const { container } = await loaders({
       directory,
       expressApp: app,
-      skipLoadingEntryPoints: true,
+      skipLoadingEntryPoints: process.env.NODE_ENV !== "test",
     })
 
     const scriptParams: ExecArgs = {
