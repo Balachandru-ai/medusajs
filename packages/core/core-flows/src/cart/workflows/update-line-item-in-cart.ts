@@ -16,6 +16,7 @@ import {
 import {
   createHook,
   createWorkflow,
+  parallelize,
   transform,
   when,
   WorkflowData,
@@ -24,6 +25,7 @@ import {
 import { useQueryGraphStep } from "../../common"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { updateLineItemsStepWithSelector } from "../../line-item/steps"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { validateCartStep } from "../steps/validate-cart"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
 import {
@@ -111,6 +113,13 @@ export const updateLineItemInCartWorkflow = createWorkflow(
   (
     input: WorkflowData<UpdateLineItemInCartWorkflowInputDTO & AdditionalData>
   ) => {
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const { data: cart } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.cart_id },
@@ -257,10 +266,16 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       input: { cart_id: input.cart_id },
     })
 
-    emitEventStep({
-      eventName: CartWorkflowEvents.UPDATED,
-      data: { id: input.cart_id },
-    })
+    parallelize(
+      emitEventStep({
+        eventName: CartWorkflowEvents.UPDATED,
+        data: { id: input.cart_id },
+      }),
+      releaseLockStep({
+        key: input.cart_id,
+        skipOnSubWorkflow: true,
+      })
+    )
 
     return new WorkflowResponse(void 0, {
       hooks: [validate, setPricingContext] as const,

@@ -293,37 +293,24 @@ export class WorkflowsModuleService<
     })
   }
 
-  @InjectSharedContext()
-  async subscribe(
-    args: {
-      workflowId: string
-      transactionId?: string
-      subscriber: Function
-      subscriberId?: string
-    },
-    @MedusaContext() context: Context = {}
-  ) {
+  async subscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriber: Function
+    subscriberId?: string
+  }) {
     return this.workflowOrchestratorService_.subscribe(args as any)
   }
 
-  @InjectSharedContext()
-  async unsubscribe(
-    args: {
-      workflowId: string
-      transactionId?: string
-      subscriberOrId: string | Function
-    },
-    @MedusaContext() context: Context = {}
-  ) {
+  async unsubscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriberOrId: string | Function
+  }) {
     return this.workflowOrchestratorService_.unsubscribe(args as any)
   }
 
-  @InjectSharedContext()
-  async cancel(
-    workflowId: string,
-    options: WorkflowOrchestratorCancelOptions,
-    @MedusaContext() context: Context = {}
-  ) {
+  async cancel(workflowId: string, options: WorkflowOrchestratorCancelOptions) {
     return await this.workflowOrchestratorService_.cancel(workflowId, options)
   }
 }
