@@ -53,20 +53,6 @@
  *             type: string
  *             title: item_id
  *             description: The item id's details.
- *   - name: order_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: order_id
- *           description: The order's order id.
- *         - type: array
- *           description: The order's order id.
- *           items:
- *             type: string
- *             title: order_id
- *             description: The order id's details.
  *   - name: version
  *     in: query
  *     required: false

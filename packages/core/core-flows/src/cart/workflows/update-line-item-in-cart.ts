@@ -1,16 +1,22 @@
 import {
   AdditionalData,
+  CartDTO,
+  CustomerDTO,
+  RegionDTO,
   UpdateLineItemInCartWorkflowInputDTO,
 } from "@medusajs/framework/types"
 import {
   CartWorkflowEvents,
   deduplicate,
+  filterObjectByKeys,
   isDefined,
   MedusaError,
+  QueryContext,
 } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
+  parallelize,
   transform,
   when,
   WorkflowData,
@@ -18,8 +24,8 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import { updateLineItemsStepWithSelector } from "../../line-item/steps"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { validateCartStep } from "../steps/validate-cart"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
 import {
@@ -32,6 +38,13 @@ import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
 const cartFields = cartFieldsForPricingContext.concat(["items.*"])
+const variantFields = productVariantsFields.concat(["calculated_price.*"])
+
+interface CartQueryDTO extends Omit<CartDTO, "items"> {
+  items: NonNullable<CartDTO["items"]>
+  customer: CustomerDTO
+  region: RegionDTO
+}
 
 export const updateLineItemInCartWorkflowId = "update-line-item-in-cart"
 /**
@@ -93,31 +106,44 @@ export const updateLineItemInCartWorkflowId = "update-line-item-in-cart"
  * :::
  */
 export const updateLineItemInCartWorkflow = createWorkflow(
-  updateLineItemInCartWorkflowId,
+  {
+    name: updateLineItemInCartWorkflowId,
+    idempotent: false,
+  },
   (
     input: WorkflowData<UpdateLineItemInCartWorkflowInputDTO & AdditionalData>
   ) => {
-    const cartQuery = useQueryGraphStep({
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
+    const { data: cart } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.cart_id },
       fields: cartFields,
-      options: { throwIfKeyNotFound: true },
+      options: { throwIfKeyNotFound: true, isList: false },
     }).config({ name: "get-cart" })
 
-    const cart = transform({ cartQuery }, ({ cartQuery }) => cartQuery.data[0])
-    const item = transform({ cart, input }, ({ cart, input }) => {
-      return cart.items.find((i) => i.id === input.item_id)
-    })
+    const { item, variantIds } = transform(
+      { cart, input },
+      (data: {
+        cart: CartQueryDTO
+        input: UpdateLineItemInCartWorkflowInputDTO & AdditionalData
+      }) => {
+        const item = data.cart.items.find((i) => i.id === data.input.item_id)!
+        const variantIds = [item?.variant_id].filter(Boolean)
+        return { item, variantIds }
+      }
+    )
 
     validateCartStep({ cart })
 
     const validate = createHook("validate", {
       input,
       cart,
-    })
-
-    const variantIds = transform({ item }, ({ item }) => {
-      return [item.variant_id].filter(Boolean)
     })
 
     const setPricingContext = createHook(
@@ -134,40 +160,55 @@ export const updateLineItemInCartWorkflow = createWorkflow(
     )
 
     const setPricingContextResult = setPricingContext.getResult()
+
     const pricingContext = transform(
-      { cart, setPricingContextResult },
-      (data) => {
+      { cart, item, update: input.update, setPricingContextResult },
+      (data): Record<string, any> => {
         return {
-          ...data.cart,
+          ...filterObjectByKeys(data.cart, cartFieldsForPricingContext),
           ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
+          quantity: data.update.quantity ?? data.item.quantity,
           currency_code: data.cart.currency_code,
-          region_id: data.cart.region_id,
-          region: data.cart.region,
-          customer_id: data.cart.customer_id,
-          customer: data.cart.customer,
+          region_id: data.cart.region_id!,
+          region: data.cart.region!,
+          customer_id: data.cart.customer_id!,
+          customer: data.cart.customer!,
         }
       }
     )
 
-    const variants = when({ variantIds }, ({ variantIds }) => {
-      return !!variantIds.length
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "variants",
+    const variants = when(
+      "should-fetch-variants",
+      { variantIds },
+      ({ variantIds }) => {
+        return !!variantIds.length
+      }
+    ).then(() => {
+      const calculatedPriceQueryContext = transform(
+        { pricingContext },
+        ({ pricingContext }) => {
+          return QueryContext(pricingContext)
+        }
+      )
+
+      const { data: variants } = useQueryGraphStep({
+        entity: "variants",
         fields: deduplicate([
-          ...productVariantsFields,
+          ...variantFields,
           ...requiredVariantFieldsForInventoryConfirmation,
         ]),
-        variables: {
+        filters: {
           id: variantIds,
-          calculated_price: {
-            context: pricingContext,
-          },
+        },
+        context: {
+          calculated_price: calculatedPriceQueryContext,
         },
       }).config({ name: "fetch-variants" })
-    })
 
-    validateVariantPricesStep({ variants })
+      validateVariantPricesStep({ variants })
+
+      return variants
+    })
 
     const items = transform({ input, item }, (data) => {
       return [
@@ -225,10 +266,16 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       input: { cart_id: input.cart_id },
     })
 
-    emitEventStep({
-      eventName: CartWorkflowEvents.UPDATED,
-      data: { id: input.cart_id },
-    })
+    parallelize(
+      emitEventStep({
+        eventName: CartWorkflowEvents.UPDATED,
+        data: { id: input.cart_id },
+      }),
+      releaseLockStep({
+        key: input.cart_id,
+        skipOnSubWorkflow: true,
+      })
+    )
 
     return new WorkflowResponse(void 0, {
       hooks: [validate, setPricingContext] as const,

@@ -21,7 +21,11 @@ import {
   prepareConfirmInventoryInput,
   requiredOrderFieldsForInventoryConfirmation,
 } from "../../../cart/utils/prepare-confirm-inventory-input"
-import { emitEventStep, useRemoteQueryStep } from "../../../common"
+import {
+  emitEventStep,
+  useQueryGraphStep,
+  useRemoteQueryStep,
+} from "../../../common"
 import { deleteReservationsByLineItemsStep } from "../../../reservation"
 import { previewOrderChangeStep } from "../../steps"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
@@ -30,6 +34,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrUpdateOrderPaymentCollectionWorkflow } from "../create-or-update-order-payment-collection"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
  * The data to validate that a requested order edit can be confirmed.
@@ -118,26 +123,21 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
   function (
     input: ConfirmOrderEditRequestWorkflowInput
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: [
-        "id",
-        "version",
-        "canceled_at",
-        "items.id",
-        "items.title",
-        "items.variant_title",
-        "items.variant_sku",
-        "items.variant_barcode",
-        "shipping_address.*",
-      ],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "order-query" })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
+    })
+
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
       fields: [
         "id",
         "status",
@@ -150,14 +150,18 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
         "actions.reference_id",
         "actions.internal_note",
       ],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     confirmOrderEditRequestValidationStep({
       order,

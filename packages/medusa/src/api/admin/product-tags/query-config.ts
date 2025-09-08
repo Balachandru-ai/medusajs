@@ -3,6 +3,7 @@ export const defaultAdminProductTagFields = [
   "value",
   "created_at",
   "updated_at",
+  "metadata",
 ]
 
 export const retrieveProductTagTransformQueryConfig = {

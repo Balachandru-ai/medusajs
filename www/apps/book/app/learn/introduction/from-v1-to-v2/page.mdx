@@ -1893,6 +1893,14 @@ In Medusa v2, the price selection process is now implemented in the [Pricing Mod
 
 If your use case is complex and these rules are not enough, you can create a new [module](../../fundamentals/modules/page.mdx) with the necessary logic, then use that module in your custom workflows.
 
+## Prices are Stored in Base Units
+
+In Medusa v1, prices were stored in the smallest currency unit. For example, a price of $10.00 was stored as `1000` (cents).
+
+In Medusa v2, prices are stored in the base unit. For example, a price of $10.00 is stored as `10` (dollars).
+
+Learn more in the [Pricing Concepts](!resources!/commerce-modules/pricing/concepts) guide.
+
 ### Gift Card Features
 
 Medusa v1 has gift card features out-of-the-box.

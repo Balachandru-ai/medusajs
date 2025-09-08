@@ -99,7 +99,7 @@ medusaIntegrationTestRunner({
             `/admin/shipping-option-types`,
             {
               label: "Test",
-              code: 'test',
+              code: "test",
             },
             adminHeaders
           )
@@ -1025,7 +1025,7 @@ medusaIntegrationTestRunner({
           const updateResponse = await api.post(
             `/admin/shipping-options/${shippingOptionId}`,
             {
-              name: "Updated shipping option"
+              name: "Updated shipping option",
             },
             adminHeaders
           )
@@ -1034,7 +1034,7 @@ medusaIntegrationTestRunner({
           expect(updateResponse.data.shipping_option).toEqual(
             expect.objectContaining({
               id: expect.any(String),
-              name: "Updated shipping option"
+              name: "Updated shipping option",
             })
           )
         })
@@ -1129,7 +1129,7 @@ medusaIntegrationTestRunner({
               description: "Test description",
               code: "test-code",
             },
-            type_id: "test_type_id"
+            type_id: "test_type_id",
           }
 
           const error = await api
@@ -1141,7 +1141,9 @@ medusaIntegrationTestRunner({
             .catch((e) => e)
 
           expect(error.response.status).toEqual(400)
-          expect(error.response.data.message).toEqual("Invalid request: Only one of 'type' or 'type_id' can be provided")
+          expect(error.response.data.message).toEqual(
+            "Invalid request: Only one of 'type' or 'type_id' can be provided"
+          )
         })
       })
 

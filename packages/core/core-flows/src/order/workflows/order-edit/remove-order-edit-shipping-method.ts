@@ -13,7 +13,7 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useQueryGraphStep } from "../../../common"
 import { deleteOrderShippingMethods } from "../../steps"
 import { deleteOrderChangeActionsStep } from "../../steps/delete-order-change-actions"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
@@ -30,21 +30,24 @@ export type RemoveOrderEditShippingMethodValidationStepInput = {
   /**
    * The details of the shipping method to be removed.
    */
-  input: Pick<OrderWorkflow.DeleteOrderEditShippingMethodWorkflowInput, "order_id" | "action_id">
+  input: Pick<
+    OrderWorkflow.DeleteOrderEditShippingMethodWorkflowInput,
+    "order_id" | "action_id"
+  >
 }
 
 /**
  * This step validates that a shipping method can be removed from an order edit.
  * If the order change is not active, the shipping method isn't in the exchange,
  * or the action doesn't add a shipping method, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = removeOrderEditShippingMethodValidationStep({
  *   orderChange: {
@@ -84,12 +87,12 @@ export const removeOrderEditShippingMethodValidationStep = createStep(
 export const removeOrderEditShippingMethodWorkflowId =
   "remove-order-edit-shipping-method"
 /**
- * This workflow removes a shipping method of an order edit. It's used by the 
+ * This workflow removes a shipping method of an order edit. It's used by the
  * [Remove Shipping Method Admin API Route](https://docs.medusajs.com/api/admin#order-edits_deleteordereditsidshippingmethodaction_id).
- * 
- * You can use this workflow within your customizations or your own custom workflows, allowing you to remove a 
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to remove a
  * shipping method from an order edit in your custom flows.
- * 
+ *
  * @example
  * const { result } = await removeOrderEditShippingMethodWorkflow(container)
  * .run({
@@ -98,9 +101,9 @@ export const removeOrderEditShippingMethodWorkflowId =
  *     action_id: "orchact_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove a shipping method from an order edit.
  */
 export const removeOrderEditShippingMethodWorkflow = createWorkflow(
@@ -108,17 +111,21 @@ export const removeOrderEditShippingMethodWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.DeleteOrderEditShippingMethodWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
       fields: ["id", "status", "version", "actions.*"],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     removeOrderEditShippingMethodValidationStep({
       orderChange,

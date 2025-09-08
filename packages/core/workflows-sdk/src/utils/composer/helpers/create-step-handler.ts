@@ -38,6 +38,7 @@ function buildStepContext({
     parentStepIdempotencyKey: flowMetadata?.parentStepIdempotencyKey as string,
     preventReleaseEvents: flowMetadata?.preventReleaseEvents ?? false,
     transactionId: stepArguments.context!.transactionId,
+    runId: flow.runId,
     context: stepArguments.context!,
     " stepDefinition": stepDefinition,
     " getStepResult"(
@@ -79,14 +80,28 @@ export function createStepHandler<
         stepArguments,
       })
 
-      const argInput = input ? await resolveValue(input, stepArguments) : {}
+      let argInput = {}
+      if (input) {
+        argInput = resolveValue(input, stepArguments)
+        if (argInput instanceof Promise) {
+          argInput = await argInput
+        }
+      }
+
       const stepResponse: StepResponse<any, any> = await invokeFn.apply(this, [
         argInput,
         executionContext,
       ])
 
+      if (!stepResponse || typeof stepResponse !== "object") {
+        return {
+          __type: OrchestrationUtils.SymbolWorkflowWorkflowData,
+          output: stepResponse,
+        }
+      }
+
       const stepResponseJSON =
-        stepResponse?.__type === OrchestrationUtils.SymbolWorkflowStepResponse
+        stepResponse.__type === OrchestrationUtils.SymbolWorkflowStepResponse
           ? stepResponse.toJSON()
           : stepResponse
 
@@ -103,13 +118,24 @@ export function createStepHandler<
           })
 
           const stepOutput = (stepArguments.invoke[stepName] as any)?.output
+
+          if (!stepOutput) {
+            const output = await compensateFn.apply(this, [
+              stepOutput,
+              executionContext,
+            ])
+            return { output }
+          }
+
           const invokeResult =
-            stepOutput?.__type === OrchestrationUtils.SymbolWorkflowStepResponse
+            stepOutput.__type === OrchestrationUtils.SymbolWorkflowStepResponse
               ? stepOutput.compensateInput
               : stepOutput
 
-          const args = [invokeResult, executionContext]
-          const output = await compensateFn.apply(this, args)
+          const output = await compensateFn.apply(this, [
+            invokeResult,
+            executionContext,
+          ])
           return {
             output,
           }

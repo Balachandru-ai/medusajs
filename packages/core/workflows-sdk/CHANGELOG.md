@@ -1,5 +1,33 @@
 # @medusajs/workflows-sdk
 
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/modules-sdk@2.10.1
+  - @medusajs/orchestration@2.10.1
+  - @medusajs/types@2.10.1
+  - @medusajs/utils@2.10.1
+
+## 2.10.0
+
+### Minor Changes
+
+- [#13236](https://github.com/medusajs/medusa/pull/13236) [`9412669e654c994e2dbee9cf61c18004d79f6475`](https://github.com/medusajs/medusa/commit/9412669e654c994e2dbee9cf61c18004d79f6475) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(core-flows): idempotent cart operations and nested workflow deletion lifecycle fix
+
+### Patch Changes
+
+- [#13283](https://github.com/medusajs/medusa/pull/13283) [`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat: define file config and improved feature flag support
+
+- [#13319](https://github.com/medusajs/medusa/pull/13319) [`ff152e7ace60232c02932bbd06a759e555a823d4`](https://github.com/medusajs/medusa/commit/ff152e7ace60232c02932bbd06a759e555a823d4) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Use the step definition max retries on set step failure
+
+- Updated dependencies [[`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0), [`2f594291ad8d227b499b80a5bfe66f5963d42d6a`](https://github.com/medusajs/medusa/commit/2f594291ad8d227b499b80a5bfe66f5963d42d6a), [`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`3cc512ef39b6d64b1fe04c1bcdb2e23fa03526f6`](https://github.com/medusajs/medusa/commit/3cc512ef39b6d64b1fe04c1bcdb2e23fa03526f6), [`cbaa40374480a6254d9e568c3003517308be0a44`](https://github.com/medusajs/medusa/commit/cbaa40374480a6254d9e568c3003517308be0a44), [`67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad`](https://github.com/medusajs/medusa/commit/67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad), [`9412669e654c994e2dbee9cf61c18004d79f6475`](https://github.com/medusajs/medusa/commit/9412669e654c994e2dbee9cf61c18004d79f6475), [`cbfe646ce14d8436adbaa72cda95d38e6cdcd908`](https://github.com/medusajs/medusa/commit/cbfe646ce14d8436adbaa72cda95d38e6cdcd908), [`f764b3a36471a0ad9e9e05f125183464680e3a2d`](https://github.com/medusajs/medusa/commit/f764b3a36471a0ad9e9e05f125183464680e3a2d), [`fc4925327334c540c0125a91e81794c3c1f340e7`](https://github.com/medusajs/medusa/commit/fc4925327334c540c0125a91e81794c3c1f340e7), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b), [`34c3c14e0a1491ab80473605018b97981544167d`](https://github.com/medusajs/medusa/commit/34c3c14e0a1491ab80473605018b97981544167d), [`ff152e7ace60232c02932bbd06a759e555a823d4`](https://github.com/medusajs/medusa/commit/ff152e7ace60232c02932bbd06a759e555a823d4), [`492e0189573ffad4977a3559d71f39bf94d8b45d`](https://github.com/medusajs/medusa/commit/492e0189573ffad4977a3559d71f39bf94d8b45d), [`6264a6262b0220c70ad35c0d56a93a39218ccb80`](https://github.com/medusajs/medusa/commit/6264a6262b0220c70ad35c0d56a93a39218ccb80), [`fd4e79142880f1b2da63a38adef8c647da9c48e4`](https://github.com/medusajs/medusa/commit/fd4e79142880f1b2da63a38adef8c647da9c48e4)]:
+  - @medusajs/types@2.10.0
+  - @medusajs/modules-sdk@2.10.0
+  - @medusajs/utils@2.10.0
+  - @medusajs/orchestration@2.10.0
+
 ## 2.9.0
 
 ### Patch Changes

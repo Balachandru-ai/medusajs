@@ -19,6 +19,7 @@ import {
   FulfillmentSetType,
   ShippingOptionPriceType,
 } from "../../../common/constants"
+import { formatProvider } from "../../../../../lib/format-provider"
 
 type EditShippingOptionFormProps = {
   locationId: string
@@ -32,6 +33,7 @@ const EditShippingOptionSchema = zod.object({
   enabled_in_store: zod.boolean().optional(),
   shipping_profile_id: zod.string(),
   shipping_option_type_id: zod.string(),
+  provider_id: zod.string().optional(), // just for UI purposes
 })
 
 export const EditShippingOptionForm = ({
@@ -72,6 +74,7 @@ export const EditShippingOptionForm = ({
       enabled_in_store: isOptionEnabledInStore(shippingOption),
       shipping_profile_id: shippingOption.shipping_profile_id,
       shipping_option_type_id: shippingOption.type.id,
+      provider_id: shippingOption.provider_id,
     },
     resolver: zodResolver(EditShippingOptionSchema),
   })
@@ -235,6 +238,36 @@ export const EditShippingOptionForm = ({
                               shippingOptionTypes.onSearchValueChange
                             }
                             disabled={shippingOptionTypes.disabled}
+                          />
+                        </Form.Control>
+                        <Form.ErrorMessage />
+                      </Form.Item>
+                    )
+                  }}
+                />
+
+                <Form.Field
+                  control={form.control}
+                  name="provider_id"
+                  disabled={true}
+                  render={({ field }) => {
+                    return (
+                      <Form.Item>
+                        <Form.Label>
+                          {t("stockLocations.shippingOptions.fields.provider")}
+                        </Form.Label>
+                        <Form.Control>
+                          <Combobox
+                            value={shippingOption.provider_id}
+                            disabled={true}
+                            options={[
+                              {
+                                label: `${formatProvider(
+                                  shippingOption.provider_id
+                                )} (${shippingOption?.data?.id || "N/A"})`, // FO is stored in so.data and only guaranteed proeprty is `id`
+                                value: shippingOption.provider_id,
+                              },
+                            ]}
                           />
                         </Form.Control>
                         <Form.ErrorMessage />

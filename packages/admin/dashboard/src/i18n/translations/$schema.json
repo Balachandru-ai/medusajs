@@ -3987,6 +3987,9 @@
             },
             "taxTotal": {
               "type": "string"
+            },
+            "totalAfterDiscount": {
+              "type": "string"
             }
           },
           "required": [
@@ -4002,7 +4005,8 @@
             "itemSubtotal",
             "shippingSubtotal",
             "discountSubtotal",
-            "taxTotal"
+            "taxTotal",
+            "totalAfterDiscount"
           ],
           "additionalProperties": false
         },
@@ -5934,9 +5938,22 @@
               },
               "required": ["label", "description"],
               "additionalProperties": false
+            },
+            "shippingOptionTypes": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "description"],
+              "additionalProperties": false
             }
           },
-          "required": ["header", "shippingProfiles"],
+          "required": ["header", "shippingProfiles", "shippingOptionTypes"],
           "additionalProperties": false
         },
         "salesChannels": {
@@ -7075,6 +7092,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -7082,7 +7102,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -7119,6 +7140,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -7126,7 +7150,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -7147,6 +7172,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -7154,7 +7182,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -7504,14 +7533,47 @@
                 "target-rules": {
                   "type": "object",
                   "properties": {
-                    "title": {
-                      "type": "string"
+                    "order": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
                     },
-                    "description": {
-                      "type": "string"
+                    "shipping_methods": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
+                    },
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
                     }
                   },
-                  "required": ["title", "description"],
+                  "required": ["order", "shipping_methods", "items"],
                   "additionalProperties": false
                 },
                 "buy-rules": {
@@ -7935,9 +7997,12 @@
               "properties": {
                 "title": {
                   "type": "string"
+                },
+                "invalid": {
+                  "type": "string"
                 }
               },
-              "required": ["title"],
+              "required": ["title", "invalid"],
               "additionalProperties": false
             },
             "value_type": {
@@ -10760,6 +10825,12 @@
         },
         "loading": {
           "type": "string"
+        },
+        "selectValue": {
+          "type": "string"
+        },
+        "selectValues": {
+          "type": "string"
         }
       },
       "required": [
@@ -10772,7 +10843,9 @@
         "from",
         "to",
         "beaware",
-        "loading"
+        "loading",
+        "selectValue",
+        "selectValues"
       ],
       "additionalProperties": false
     },
@@ -10852,6 +10925,12 @@
           "type": "string"
         },
         "configurations": {
+          "type": "string"
+        },
+        "enabledInStore": {
+          "type": "string"
+        },
+        "isReturn": {
           "type": "string"
         },
         "conditions": {
@@ -10957,6 +11036,9 @@
           "type": "string"
         },
         "countries": {
+          "type": "string"
+        },
+        "serviceZone": {
           "type": "string"
         },
         "paymentProviders": {
@@ -11283,6 +11365,8 @@
         "categories",
         "shippingMethod",
         "configurations",
+        "enabledInStore",
+        "isReturn",
         "conditions",
         "category",
         "collection",
@@ -11318,6 +11402,7 @@
         "minutes",
         "totalRedemptions",
         "countries",
+        "serviceZone",
         "paymentProviders",
         "refundReason",
         "fulfillmentProviders",
