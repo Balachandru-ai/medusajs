@@ -94,7 +94,7 @@ class MedusaTestRunner {
     this.env = config.env ?? {}
     this.debug = config.debug ?? false
     this.inApp = config.inApp ?? false
-    this.disableAutoTeardown = config.disableAutoTeardown ?? false
+    this.disableAutoTeardown = config?.disableAutoTeardown ?? false
 
     this.dbUtils = dbTestUtilFactory()
     this.dbConfig = {
