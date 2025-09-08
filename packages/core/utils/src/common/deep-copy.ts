@@ -33,12 +33,12 @@ export function deepCopy<
     return copy
   }
 
+  if (util.types.isProxy(obj)) {
+    return obj as unknown as TOutput
+  }
+
   // Handle objects
   if (isObject(obj)) {
-    if (util.types.isProxy(obj)) {
-      return obj as unknown as TOutput
-    }
-
     copy = {} as TOutput
     cache.set(obj, copy) // Add to cache before recursing
 
