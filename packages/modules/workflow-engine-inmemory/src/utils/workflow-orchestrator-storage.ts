@@ -132,19 +132,16 @@ export class InMemoryDistributedTransactionStorage
   async onApplicationShutdown() {
     clearInterval(this.clearTimeout_)
 
-    // Clean up all pending timers
     for (const timer of this.pendingTimers) {
       clearTimeout(timer)
     }
     this.pendingTimers.clear()
 
-    // Clean up retry timers
     for (const timer of this.retries.values()) {
       clearTimeout(timer)
     }
     this.retries.clear()
 
-    // Clean up timeout timers
     for (const timer of this.timeouts.values()) {
       clearTimeout(timer)
     }
@@ -468,7 +465,6 @@ export class InMemoryDistributedTransactionStorage
         )
       : []
 
-    // Optimize step index finding - avoid array reversal by using reverse iteration
     let currentFlowLastInvokingStepIndex = -1
     for (let i = 0; i < currentFlowSteps.length; i++) {
       if (isInvokingState(currentFlowSteps[i])) {
@@ -490,7 +486,6 @@ export class InMemoryDistributedTransactionStorage
       }
     }
 
-    // Find compensating steps from the end without array reversal
     let currentFlowLastCompensatingStepIndex = -1
     for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
       if (isCompensatingState(currentFlowSteps[i])) {
@@ -565,7 +560,6 @@ export class InMemoryDistributedTransactionStorage
     const { modelId: workflowId, transactionId } = transaction
     const key = `${workflowId}:${transactionId}:${step.id}`
 
-    // Clear existing retry if present
     const existingTimer = this.retries.get(key)
     if (existingTimer) {
       clearTimeout(existingTimer)
@@ -613,7 +607,6 @@ export class InMemoryDistributedTransactionStorage
     const { modelId: workflowId, transactionId } = transaction
     const key = `${workflowId}:${transactionId}`
 
-    // Clear existing timeout if present
     const existingTimer = this.timeouts.get(key)
     if (existingTimer) {
       clearTimeout(existingTimer)
@@ -661,7 +654,6 @@ export class InMemoryDistributedTransactionStorage
     const { modelId: workflowId, transactionId } = transaction
     const key = `${workflowId}:${transactionId}:${step.id}`
 
-    // Clear existing timeout if present
     const existingTimer = this.timeouts.get(key)
     if (existingTimer) {
       clearTimeout(existingTimer)
@@ -780,7 +772,6 @@ export class InMemoryDistributedTransactionStorage
         throwOnError: false,
       })
 
-      // Schedule the next execution
       const timer = this.createManagedTimer(() => {
         this.jobHandler(jobId)
       }, nextExecution)

@@ -641,7 +641,6 @@ export class WorkflowOrchestratorService {
         tasks.push(notifySubscribersAsync(transactionSubscribers))
       }
 
-      // Clean up transaction subscribers on finish
       if (eventType === "onFinish") {
         subscribers.delete(transactionId)
       }

@@ -758,7 +758,6 @@ export class RedisDistributedTransactionStorage
         )
       : []
 
-    // Optimize step index finding - avoid array reversal by using reverse iteration
     let currentFlowLastInvokingStepIndex = -1
     for (let i = 0; i < currentFlowSteps.length; i++) {
       if (isInvokingState(currentFlowSteps[i])) {
@@ -780,7 +779,6 @@ export class RedisDistributedTransactionStorage
       }
     }
 
-    // Find compensating steps from the end without array reversal
     let currentFlowLastCompensatingStepIndex = -1
     for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
       if (isCompensatingState(currentFlowSteps[i])) {
