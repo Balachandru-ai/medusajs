@@ -364,8 +364,9 @@ export const CreatePromotionForm = () => {
   return (
     <RouteFocusModal.Form form={form}>
       <KeyboundForm className="flex h-full flex-col" onSubmit={handleSubmit}>
-         <ProgressTabs
-        dir={direction}value={tab}
+        <ProgressTabs
+          dir={direction}
+          value={tab}
           onValueChange={(tab) => handleTabChange(tab as Tab)}
           className="flex h-full flex-col overflow-hidden"
         >
