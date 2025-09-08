@@ -98,7 +98,7 @@ export const RulesFormField = ({
     }
 
     /**
-     * This effect sets rules after mount but since it is resued in cerate and edit prevent this hook from recreating rules
+     * This effect sets rules after mount but since it is reused in create and edit flows, prevent this hook from recreating rules
      * when fields are intentionally set to empty (e.g. "Clear all" is pressed).
      */
     if (!fields.length && formType === "edit" && initialRulesSet.current) {
