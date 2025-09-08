@@ -57,7 +57,7 @@ medusaIntegrationTestRunner({
     })
 
     afterAll(() => {
-      // process.env.ENABLE_INDEX_MODULE = "false"
+      process.env.ENABLE_INDEX_MODULE = "false"
     })
 
     beforeEach(async () => {

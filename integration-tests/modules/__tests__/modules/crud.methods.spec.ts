@@ -13,7 +13,7 @@ medusaIntegrationTestRunner({
     })
 
     afterAll(() => {
-      // process.env.ENABLE_INDEX_MODULE = "false"
+      process.env.ENABLE_INDEX_MODULE = "false"
     })
 
     describe("auto-generated CRUD methods", () => {

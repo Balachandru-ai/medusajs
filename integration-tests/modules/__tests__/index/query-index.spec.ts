@@ -2,9 +2,17 @@ import CustomerModule from "@medusajs/customer"
 import ProductModule from "@medusajs/product"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { RemoteQueryFunction } from "@medusajs/types"
-import { ContainerRegistrationKeys, defaultCurrencies, defineLink, Modules, } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  defaultCurrencies,
+  defineLink,
+  Modules,
+} from "@medusajs/utils"
 import { setTimeout } from "timers/promises"
-import { adminHeaders, createAdminUser, } from "../../../helpers/create-admin-user"
+import {
+  adminHeaders,
+  createAdminUser,
+} from "../../../helpers/create-admin-user"
 import { fetchAndRetry } from "../../../helpers/retry"
 
 jest.setTimeout(120000)
@@ -110,7 +118,7 @@ medusaIntegrationTestRunner({
     })
 
     afterAll(() => {
-      // process.env.ENABLE_INDEX_MODULE = "false"
+      process.env.ENABLE_INDEX_MODULE = "false"
     })
 
     describe("Index engine - Query.index", () => {

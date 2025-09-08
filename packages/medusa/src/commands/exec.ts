@@ -1,9 +1,5 @@
 import { ExecArgs } from "@medusajs/framework/types"
-import {
-  ContainerRegistrationKeys,
-  dynamicImport,
-  isFileSkipped,
-} from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, dynamicImport, isFileSkipped, } from "@medusajs/framework/utils"
 import express from "express"
 import { existsSync } from "fs"
 import path from "path"
