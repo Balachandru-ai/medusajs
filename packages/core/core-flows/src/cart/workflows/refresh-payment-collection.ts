@@ -9,6 +9,7 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updatePaymentCollectionStep } from "../../payment-collection"
 import { deletePaymentSessionsWorkflow } from "../../payment-collection/workflows/delete-payment-sessions"
 
@@ -96,6 +97,13 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       return fetchCart ?? input.cart
     })
 
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const validate = createHook("validate", {
       input,
       cart,
@@ -149,6 +157,11 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
         }),
         updatePaymentCollectionStep(updatePaymentCollectionInput)
       )
+    })
+
+    releaseLockStep({
+      key: cart.id,
+      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(void 0, {
