@@ -43,7 +43,7 @@ export default async function exec({ file, args }: Options) {
     const { container } = await loaders({
       directory,
       expressApp: app,
-      skipLoadingEntryPoints: false,
+      skipLoadingEntryPoints: true,
     })
 
     const scriptParams: ExecArgs = {
