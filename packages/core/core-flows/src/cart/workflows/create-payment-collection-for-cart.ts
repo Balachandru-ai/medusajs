@@ -1,6 +1,7 @@
 import {
   CartDTO,
   CreatePaymentCollectionForCartWorkflowInputDTO,
+  PaymentCollectionDTO,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import {
@@ -9,6 +10,7 @@ import {
   parallelize,
   transform,
   WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createRemoteLinkStep } from "../../common/steps/create-remote-links"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
@@ -86,7 +88,7 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
   },
   (
     input: WorkflowData<CreatePaymentCollectionForCartWorkflowInputDTO>
-  ): WorkflowData<void> => {
+  ): WorkflowResponse<PaymentCollectionDTO> => {
     acquireLockStep({
       key: input.cart_id,
       timeout: 2,
@@ -143,5 +145,7 @@ export const createPaymentCollectionForCartWorkflow = createWorkflow(
       key: input.cart_id,
       skipOnSubWorkflow: true,
     })
+
+    return new WorkflowResponse(created[0])
   }
 )
