@@ -799,6 +799,14 @@ export class RedisDistributedTransactionStorage
       )
     }
 
+    let currentFlowLastInvokingStepIndex = -1
+    for (let i = 0; i < currentFlowSteps.length; i++) {
+      if (isInvokingState(currentFlowSteps[i])) {
+        currentFlowLastInvokingStepIndex = i
+        break
+      }
+    }
+
     let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
       ? 1 // There is no other execution, so the current execution is the latest
       : -1
