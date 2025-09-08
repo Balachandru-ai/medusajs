@@ -55,6 +55,11 @@ type RegisterStepFailureOptions<T> = Omit<
   forcePermanentFailure?: boolean
 }
 
+type RetryStepOptions<T> = Omit<
+  WorkflowOrchestratorRunOptions<T>,
+  "transactionId" | "input" | "resultFrom"
+>
+
 type IdempotencyKeyParts = {
   workflowId: string
   transactionId: string
@@ -422,6 +427,73 @@ export class WorkflowOrchestratorService {
     const transaction = await flow.getRunningTransaction(transactionId, context)
 
     return transaction
+  }
+
+  async retryStep<T = unknown>({
+    idempotencyKey,
+    options,
+  }: {
+    idempotencyKey: string | IdempotencyKeyParts
+    options?: RetryStepOptions<T>
+  }) {
+    const {
+      context,
+      logOnError,
+      container,
+      events: eventHandlers,
+    } = options ?? {}
+
+    let { throwOnError } = options ?? {}
+    throwOnError ??= true
+
+    const [idempotencyKey_, { workflowId, transactionId }] =
+      this.buildIdempotencyKeyAndParts(idempotencyKey)
+
+    const exportedWorkflow: any = MedusaWorkflow.getWorkflow(workflowId)
+    if (!exportedWorkflow) {
+      throw new Error(`Workflow with id "${workflowId}" not found.`)
+    }
+
+    const events = this.buildWorkflowEvents({
+      customEventHandlers: eventHandlers,
+      transactionId,
+      workflowId,
+    })
+
+    const ret = await exportedWorkflow.retryStep({
+      idempotencyKey: idempotencyKey_,
+      context,
+      throwOnError: false,
+      logOnError,
+      events,
+      container: container ?? this.container_,
+    })
+
+    if (ret.transaction.hasFinished()) {
+      const { result, errors } = ret
+
+      this.notify({
+        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
+        eventType: "onFinish",
+        workflowId,
+        transactionId,
+        state: ret.transaction.getFlow().state as TransactionState,
+        result,
+        errors,
+      })
+
+      await this.triggerParentStep(ret.transaction, result)
+    }
+
+    if (throwOnError && (ret.thrownError || ret.errors?.length)) {
+      if (ret.thrownError) {
+        throw ret.thrownError
+      }
+
+      throw ret.errors[0].error
+    }
+
+    return ret
   }
 
   async setStepSuccess<T = unknown>({
