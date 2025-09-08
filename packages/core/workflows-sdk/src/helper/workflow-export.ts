@@ -28,6 +28,7 @@ import {
   FlowCancelOptions,
   FlowRegisterStepFailureOptions,
   FlowRegisterStepSuccessOptions,
+  FlowRetryStepOptions,
   FlowRunOptions,
   MainExportedWorkflow,
   WorkflowResult,
@@ -65,7 +66,7 @@ function createContextualWorkflowRunner<
   container?: LoadedModule[] | MedusaContainer
 }): Omit<
   LocalWorkflow,
-  "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+  "run" | "registerStepSuccess" | "registerStepFailure" | "cancel" | "retryStep"
 > &
   ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride> {
   const flow = new LocalWorkflow(workflowId, container!)
@@ -74,6 +75,7 @@ function createContextualWorkflowRunner<
   const originalRegisterStepSuccess = flow.registerStepSuccess.bind(flow)
   const originalRegisterStepFailure = flow.registerStepFailure.bind(flow)
   const originalCancel = flow.cancel.bind(flow)
+  const originalRetryStep = flow.retryStep.bind(flow)
 
   const originalExecution = async (
     method,
@@ -322,6 +324,46 @@ function createContextualWorkflowRunner<
   }
   flow.registerStepFailure = newRegisterStepFailure as any
 
+  const newRetryStep = async (
+    {
+      idempotencyKey,
+      context: outerContext,
+      throwOnError,
+      logOnError,
+      events,
+      container,
+    }: FlowRetryStepOptions = {
+      idempotencyKey: "",
+    }
+  ) => {
+    idempotencyKey ??= ""
+    throwOnError ??= true
+    logOnError ??= false
+
+    const [, transactionId] = idempotencyKey.split(":")
+    const context = {
+      ...outerContext,
+      transactionId,
+      __type: MedusaContextType as Context["__type"],
+    }
+
+    context.eventGroupId ??= ulid()
+
+    return await originalExecution(
+      originalRetryStep,
+      {
+        throwOnError,
+        container,
+        logOnError,
+      },
+      idempotencyKey,
+      undefined,
+      context,
+      events
+    )
+  }
+  flow.retryStep = newRetryStep as any
+
   const newCancel = async ({
     transaction,
     transactionId,
@@ -379,7 +421,11 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     container?: LoadedModule[] | MedusaContainer
   ): Omit<
     LocalWorkflow,
-    "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+    | "run"
+    | "registerStepSuccess"
+    | "registerStepFailure"
+    | "cancel"
+    | "retryStep"
   > &
     ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride> {
     return createContextualWorkflowRunner<
@@ -400,11 +446,17 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
       | "run"
       | "registerStepSuccess"
       | "registerStepFailure"
-      | "cancel",
+      | "cancel"
+      | "retryStep",
     TDataOverride,
     TResultOverride
   >(
-    action: "run" | "registerStepSuccess" | "registerStepFailure" | "cancel",
+    action:
+      | "run"
+      | "registerStepSuccess"
+      | "registerStepFailure"
+      | "cancel"
+      | "retryStep",
     container?: LoadedModule[] | MedusaContainer
   ) => {
     const contextualRunner = createContextualWorkflowRunner<
@@ -496,6 +548,22 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
       "registerStepFailure",
       container
     )(args)
+  }
+
+  exportedWorkflow.retryStep = async <
+    TDataOverride = undefined,
+    TResultOverride = undefined
+  >(
+    args?: FlowRetryStepOptions
+  ): Promise<WorkflowResult> => {
+    const container = args?.container
+    delete args?.container
+    const inputArgs = { ...args } as FlowRetryStepOptions
+
+    return await buildRunnerFn<"retryStep", TDataOverride, TResultOverride>(
+      "retryStep",
+      container
+    )(inputArgs)
   }
 
   exportedWorkflow.cancel = async (
