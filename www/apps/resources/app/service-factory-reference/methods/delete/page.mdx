@@ -8,7 +8,9 @@ export const metadata = {
 
 # {metadata.title}
 
-This method deletes one or more records.
+This method of a module's service deletes one or more records.
+
+The method's name is `deleteDataModel`, where `DataModel` is the plural pascal-case name of the data model.
 
 ## Delete One Record
 
@@ -16,7 +18,7 @@ This method deletes one or more records.
 await postModuleService.deletePosts("123")
 ```
 
-To delete one record, pass its ID as a parameter of the method.
+To delete one record, pass its ID as a parameter to the method.
 
 ---
 
@@ -29,7 +31,7 @@ await postModuleService.deletePosts([
 ])
 ```
 
-To delete multiple records, pass an array of IDs as a parameter of the method.
+To delete multiple records, pass an array of IDs as a parameter to the method.
 
 ---
 
@@ -41,10 +43,10 @@ await postModuleService.deletePosts({
 })
 ```
 
-To delete records matching a set of filters, pass an object of filters as a parameter.
+To delete records matching a set of filters, pass an object of filters as a parameter to the method.
 
 <Note>
 
-Learn more about accepted filters in [this documentation](../../tips/filtering/page.mdx).
+Refer to the [Filtering](../../tips/filtering/page.mdx) reference for more information on accepted filters and examples.
 
 </Note>

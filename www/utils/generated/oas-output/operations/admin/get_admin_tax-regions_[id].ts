@@ -46,6 +46,7 @@
  *     schema:
  *       type: object
  *       description: Filter by a tax region's metadata. Refer to the [Object Query Parameter](https://docs.medusajs.com/api/admin#object) section to learn how to filter by object fields.
+ *       title: metadata
  * security:
  *   - api_token: []
  *   - cookie_auth: []

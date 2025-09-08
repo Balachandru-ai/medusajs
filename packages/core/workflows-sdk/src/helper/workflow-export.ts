@@ -71,6 +71,14 @@ function createContextualWorkflowRunner<
       resultFrom,
       isCancel = false,
       container: executionContainer,
+      forcePermanentFailure,
+    }: {
+      throwOnError?: boolean
+      logOnError?: boolean
+      resultFrom?: string | Symbol
+      isCancel?: boolean
+      container?: LoadedModule[] | MedusaContainer
+      forcePermanentFailure?: boolean
     },
     transactionOrIdOrIdempotencyKey: DistributedTransactionType | string,
     input: unknown,
@@ -107,13 +115,15 @@ function createContextualWorkflowRunner<
 
     context.isCancelling = isCancel
 
-    const args = [
-      transactionOrIdOrIdempotencyKey,
-      input,
-      context,
-      events,
-      flowMetadata,
-    ]
+    const args = [transactionOrIdOrIdempotencyKey, input, context, events]
+
+    if (method === originalRegisterStepFailure) {
+      // Only available on registerStepFailure
+      args.push(forcePermanentFailure)
+    } else {
+      args.push(flowMetadata)
+    }
+
     const transaction = (await method.apply(
       method,
       args
@@ -161,7 +171,8 @@ function createContextualWorkflowRunner<
         })
       }
     } else {
-      result = transaction.getContext().invoke?.[resultFrom]
+      result =
+        resultFrom && transaction.getContext().invoke?.[resultFrom.toString()]
     }
 
     return {
@@ -263,6 +274,7 @@ function createContextualWorkflowRunner<
       resultFrom,
       events,
       container,
+      forcePermanentFailure,
     }: FlowRegisterStepFailureOptions = {
       idempotencyKey: "",
     }
@@ -288,6 +300,7 @@ function createContextualWorkflowRunner<
         resultFrom,
         container,
         logOnError,
+        forcePermanentFailure,
       },
       idempotencyKey,
       response,

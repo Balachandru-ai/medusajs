@@ -2,7 +2,6 @@ import {
   AdditionalData,
   OrderChangeActionDTO,
   OrderChangeDTO,
-  OrderDTO,
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
@@ -17,7 +16,8 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { pricingContextResult } from "../../../cart/utils/schemas"
+import { useQueryGraphStep, useRemoteQueryStep } from "../../../common"
 import {
   updateOrderChangeActionsStep,
   updateOrderShippingMethodsStep,
@@ -25,7 +25,7 @@ import {
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { throwIfOrderChangeIsNotActive } from "../../utils/order-validation"
 import { prepareShippingMethodUpdate } from "../../utils/prepare-shipping-method"
-import { pricingContextResult } from "../../../cart/utils/schemas"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
  * The data to validate that an order edit's shipping method can be updated.
@@ -119,11 +119,11 @@ export const updateOrderEditShippingMethodWorkflowId =
  * @summary
  *
  * Update a shipping method of an order edit.
- * 
+ *
  * @property hooks.setPricingContext - This hook is executed before the shipping method's option is retrieved. You can consume this hook to return any custom context useful for the prices retrieval of shipping method's option.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -131,13 +131,13 @@ export const updateOrderEditShippingMethodWorkflowId =
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { updateOrderEditShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * updateOrderEditShippingMethodWorkflow.hooks.setPricingContext((
  *   { order, order_change, additional_data }, { container }
  * ) => {
@@ -146,13 +146,13 @@ export const updateOrderEditShippingMethodWorkflowId =
  *   });
  * });
  * ```
- * 
+ *
  * The price of the shipping method's option will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const updateOrderEditShippingMethodWorkflow = createWorkflow(
@@ -162,25 +162,34 @@ export const updateOrderEditShippingMethodWorkflow = createWorkflow(
       OrderWorkflow.UpdateOrderEditShippingMethodWorkflowInput & AdditionalData
     >
   ) {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "order_claim",
-      fields: ["id", "currency_code"],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
+    }).config({ name: "order-query" })
+
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
     })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
       fields: ["id", "status", "version", "actions.*"],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     const setPricingContext = createHook(
       "setPricingContext",

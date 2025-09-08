@@ -861,6 +861,10 @@ export interface FilterableProductOptionValueProps
    * The values to filter product option values by.
    */
   value?: string | string[]
+  /**
+   * The Product Option IDs to filter product option values by.
+   */
+  option_id?: string | string[]
 }
 
 /**

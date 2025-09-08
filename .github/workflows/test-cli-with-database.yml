@@ -59,7 +59,7 @@ jobs:
       - name: Create Medusa project
         working-directory: ..
         run: |
-          medusa new cli-test --skip-db --v2 --branch ci-custom
+          medusa new cli-test --skip-db --skip-migrations --v2 --branch ci-custom
 
       - name: Enable Corepack
         run: corepack enable

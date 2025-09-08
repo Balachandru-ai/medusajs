@@ -1,3 +1,4 @@
+import { CustomDBMigrator } from "../../dal/mikro-orm/custom-db-migrator"
 import { defineMikroOrmCliConfig } from "../mikro-orm-cli-config-builder"
 
 const moduleName = "myTestService"
@@ -28,6 +29,7 @@ describe("defineMikroOrmCliConfig", () => {
         generator: expect.any(Function),
         snapshotName: ".snapshot-medusa-my-test",
       },
+      extensions: [CustomDBMigrator],
     })
   })
 
@@ -47,6 +49,7 @@ describe("defineMikroOrmCliConfig", () => {
         generator: expect.any(Function),
         snapshotName: ".snapshot-medusa-my-test",
       },
+      extensions: [CustomDBMigrator],
     })
   })
 })

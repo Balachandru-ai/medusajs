@@ -11,9 +11,7 @@ const { medusaIntegrationTestRunner } = require("@medusajs/test-utils")
 jest.setTimeout(50000)
 
 medusaIntegrationTestRunner({
-  env: {
-    MEDUSA_FF_MEDUSA_V2: true,
-  },
+  env: {},
   testSuite: ({ dbConnection, getContainer, api }) => {
     describe("GET /admin/customers", () => {
       let appContainer

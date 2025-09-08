@@ -82,16 +82,13 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   // This is useful in the event of a distributed transaction where you'd want to emit
   // events only once the transaction ends.
   private async groupOrEmitEvent<T = unknown>(eventData: Message<T>) {
-    const eventData_ = JSON.parse(JSON.stringify(eventData))
-    const { options, ...eventBody } = eventData_
+    const { options, ...eventBody } = eventData
     const eventGroupId = eventBody.metadata?.eventGroupId
 
     if (eventGroupId) {
-      await this.groupEvent(eventGroupId, eventData_)
+      await this.groupEvent(eventGroupId, eventData)
     } else {
-      const { options, ...eventBody } = eventData_
-
-      const options_ = options as { delay: number }
+      const options_ = eventData.options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
       delay(options_?.delay).then(() =>
@@ -130,8 +127,19 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
     await this.clearGroupedEvents(eventGroupId)
   }
 
-  async clearGroupedEvents(eventGroupId: string) {
-    this.groupedEventsMap_.delete(eventGroupId)
+  async clearGroupedEvents(
+    eventGroupId: string,
+    { eventNames }: { eventNames?: string[] } = {}
+  ) {
+    if (eventNames?.length) {
+      const groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
+      const eventsToKeep = groupedEvents.filter(
+        (event) => !eventNames!.includes(event.name)
+      )
+      this.groupedEventsMap_.set(eventGroupId, eventsToKeep)
+    } else {
+      this.groupedEventsMap_.delete(eventGroupId)
+    }
   }
 
   subscribe(

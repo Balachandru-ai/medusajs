@@ -1,10 +1,13 @@
 import { RemoteFetchDataCallback } from "@medusajs/orchestration"
 import {
+  ConfigModule,
   ExternalModuleDeclaration,
+  FlagSettings,
   IIndexService,
   ILinkMigrationsPlanner,
   InternalModuleDeclaration,
   LoadedModule,
+  Logger,
   MedusaContainer,
   ModuleBootstrapDeclaration,
   ModuleDefinition,
@@ -16,7 +19,9 @@ import {
 import {
   ContainerRegistrationKeys,
   createMedusaContainer,
+  discoverFeatureFlagsFromDir,
   dynamicImport,
+  FeatureFlag,
   GraphQLUtils,
   isObject,
   isSharedConnectionSymbol,
@@ -26,6 +31,7 @@ import {
   Modules,
   ModulesSdkUtils,
   promiseAll,
+  registerFeatureFlag,
 } from "@medusajs/utils"
 import { asValue } from "awilix"
 import { Link } from "./link"
@@ -79,6 +85,7 @@ export async function loadModules(args: {
   migrationOnly?: boolean
   loaderOnly?: boolean
   workerMode?: "shared" | "worker" | "server"
+  cwd?: string
 }) {
   const {
     modulesConfig,
@@ -87,6 +94,7 @@ export async function loadModules(args: {
     migrationOnly = false,
     loaderOnly = false,
     workerMode = "shared" as ModuleBootstrapOptions["workerMode"],
+    cwd,
   } = args
 
   const allModules = {} as any
@@ -155,6 +163,7 @@ export async function loadModules(args: {
     migrationOnly,
     loaderOnly,
     workerMode,
+    cwd,
   })) as LoadedModule[]
 
   if (loaderOnly) {
@@ -285,7 +294,7 @@ export type MedusaAppOptions = {
   sharedResourcesConfig?: SharedResources
   loadedModules?: LoadedModule[]
   servicesConfig?: ModuleJoinerConfig[]
-  modulesConfigPath?: string
+  medusaConfigPath?: string
   modulesConfigFileName?: string
   modulesConfig?: MedusaModuleConfig
   linkModules?: RegisterModuleJoinerConfig | RegisterModuleJoinerConfig[]
@@ -296,13 +305,14 @@ export type MedusaAppOptions = {
    * Forces the modules bootstrapper to only run the modules loaders and return prematurely
    */
   loaderOnly?: boolean
+  cwd?: string
 }
 
 async function MedusaApp_({
   sharedContainer,
   sharedResourcesConfig,
   servicesConfig,
-  modulesConfigPath,
+  medusaConfigPath,
   modulesConfigFileName,
   modulesConfig,
   linkModules,
@@ -311,10 +321,31 @@ async function MedusaApp_({
   migrationOnly = false,
   loaderOnly = false,
   workerMode = "shared",
+  cwd = process.cwd(),
 }: MedusaAppOptions & {
   migrationOnly?: boolean
 } = {}): Promise<MedusaAppOutput> {
   const sharedContainer_ = createMedusaContainer({}, sharedContainer)
+
+  const config = sharedContainer_.resolve(
+    ContainerRegistrationKeys.CONFIG_MODULE,
+    {
+      allowUnregistered: true,
+    }
+  ) as ConfigModule
+  const logger = sharedContainer_.resolve(ContainerRegistrationKeys.LOGGER, {
+    allowUnregistered: true,
+  }) as Logger
+
+  const discovered = await discoverFeatureFlagsFromDir(cwd)
+  for (const def of discovered) {
+    registerFeatureFlag({
+      flag: def as FlagSettings,
+      projectConfigFlags: config?.featureFlags ?? {},
+      router: FeatureFlag,
+      logger,
+    })
+  }
 
   const onApplicationShutdown = async () => {
     await promiseAll([
@@ -335,8 +366,7 @@ async function MedusaApp_({
     modulesConfig ??
     (
       await dynamicImport(
-        modulesConfigPath ??
-          process.cwd() + (modulesConfigFileName ?? "/modules-config")
+        medusaConfigPath ?? cwd + (modulesConfigFileName ?? "/modules-config")
       )
     ).default
 
@@ -391,6 +421,7 @@ async function MedusaApp_({
     migrationOnly,
     loaderOnly,
     workerMode,
+    cwd,
   })
 
   if (loaderOnly) {
@@ -512,6 +543,7 @@ async function MedusaApp_({
         container: sharedContainer,
         options: moduleResolution.options,
         moduleExports: moduleResolution.moduleExports as ModuleExports,
+        cwd,
       }
 
       if (action === "revert") {
