@@ -38,18 +38,38 @@ import {
   workflowNotIdempotentWithRetentionStep3Invoke,
 } from "../__fixtures__"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
+import {
+  step1InvokeMock as step1InvokeMockAutoRetries,
+  step2InvokeMock as step2InvokeMockAutoRetries,
+  step1CompensateMock as step1CompensateMockAutoRetries,
+  step2CompensateMock as step2CompensateMockAutoRetries,
+} from "../__fixtures__/workflow_1_auto_retries"
+import {
+  step1InvokeMock as step1InvokeMockAutoRetriesFalse,
+  step2InvokeMock as step2InvokeMockAutoRetriesFalse,
+  step1CompensateMock as step1CompensateMockAutoRetriesFalse,
+  step2CompensateMock as step2CompensateMockAutoRetriesFalse,
+} from "../__fixtures__/workflow_1_auto_retries_false"
+
+import {
+  step1InvokeMock as step1InvokeMockManualRetry,
+  step2InvokeMock as step2InvokeMockManualRetry,
+  step1CompensateMock as step1CompensateMockManualRetry,
+  step2CompensateMock as step2CompensateMockManualRetry,
+} from "../__fixtures__/workflow_1_manual_retry_step"
 import { TestDatabase } from "../utils"
+import { Redis } from "ioredis"
 
 jest.setTimeout(300000)
 
-const failTrap = (done, name) => {
-  setTimeoutSync(() => {
+const failTrap = (done, name, timeout = 5000) => {
+  return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
       `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
-  }, 5000)
+  }, timeout)
 }
 
 function times(num) {
@@ -94,6 +114,20 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       beforeEach(async () => {
         await TestDatabase.clearTables()
         jest.clearAllMocks()
+      })
+
+      afterAll(async () => {
+        // empty redis
+        const connection = new Redis("localhost:6379", {
+          lazyConnect: true,
+        })
+
+        await new Promise(async (resolve) => {
+          await connection.connect(resolve)
+        })
+
+        await connection.flushall()
+        await connection.disconnect()
       })
 
       let query: RemoteQueryFunction
@@ -152,7 +186,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
       describe("Testing basic workflow", function () {
         describe("Cancel transaction", function () {
           it("should cancel an ongoing execution with async unfinished yet step", (done) => {
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -206,12 +240,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                         TransactionState.REVERTED
                       )
                       done()
+                      clearTimeout(timeout)
                     }
                   },
                 })
               })
 
-            failTrap(
+            const timeout = failTrap(
               done,
               "should cancel an ongoing execution with async unfinished yet step"
             )
@@ -219,7 +254,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           it("should cancel a complete execution with a sync workflow running as async", async () => {
             const workflowId = "workflow-to-cancel-id" + ulid()
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -274,7 +309,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           it("should cancel an ongoing execution with a sync workflow running as async", async () => {
             const workflowId = "workflow-to-cancel-id" + ulid()
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -329,7 +364,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           it("should cancel an ongoing execution with sync steps only", async () => {
-            const transactionId = "transaction-to-cancel-id"
+            const transactionId = "transaction-to-cancel-id" + ulid()
             const step1 = createStep("step1", async () => {
               return new StepResponse("step1")
             })
@@ -378,8 +413,139 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
         })
 
+        it("should manually retry a step that is taking too long to finish", (done) => {
+          const transactionId = "transaction-manual-retry" + ulid()
+          const workflowId = "workflow_1_manual_retry_step"
+
+          void workflowOrcModule
+            .run(workflowId, {
+              input: {},
+              transactionId,
+            })
+            .then(() => {
+              expect(step1InvokeMockManualRetry).toHaveBeenCalledTimes(1)
+              expect(step2InvokeMockManualRetry).toHaveBeenCalledTimes(1)
+
+              void workflowOrcModule.retryStep({
+                idempotencyKey: {
+                  workflowId,
+                  transactionId,
+                  stepId: "step_2",
+                  action: "invoke",
+                },
+              })
+            })
+
+          workflowOrcModule.subscribe({
+            workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                expect(step1InvokeMockManualRetry).toHaveBeenCalledTimes(1)
+                expect(step2InvokeMockManualRetry).toHaveBeenCalledTimes(2)
+                done()
+                clearTimeout(timeout)
+              }
+            },
+          })
+
+          const timeout = failTrap(
+            done,
+            "should manually retry a step that is taking too long to finish"
+          )
+        })
+
+        it("should retry steps X times automatically when maxRetries is set", (done) => {
+          const transactionId = "transaction-auto-retries" + ulid()
+          const workflowId = "workflow_1_auto_retries"
+
+          void workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+          })
+
+          workflowOrcModule.subscribe({
+            workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                expect(step1InvokeMockAutoRetries).toHaveBeenCalledTimes(1)
+                expect(step2InvokeMockAutoRetries).toHaveBeenCalledTimes(3)
+                expect(step1CompensateMockAutoRetries).toHaveBeenCalledTimes(1)
+                expect(step2CompensateMockAutoRetries).toHaveBeenCalledTimes(1)
+                done()
+                clearTimeout(timeout)
+              }
+            },
+          })
+
+          const timeout = failTrap(
+            done,
+            "should retry steps X times automatically when maxRetries is set"
+          )
+        })
+
+        it("should not retry steps X times automatically when maxRetries is set and autoRetry is false", async () => {
+          const transactionId = "transaction-auto-retries" + ulid()
+          const workflowId = "workflow_1_auto_retries_false"
+
+          await workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+            throwOnError: false,
+          })
+
+          let lastExepectHaveBeenCalledTimes = 0
+
+          workflowOrcModule.subscribe({
+            workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                lastExepectHaveBeenCalledTimes = 1
+                expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+                expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(3)
+                expect(
+                  step1CompensateMockAutoRetriesFalse
+                ).toHaveBeenCalledTimes(1)
+                expect(
+                  step2CompensateMockAutoRetriesFalse
+                ).toHaveBeenCalledTimes(1)
+              }
+            },
+          })
+
+          expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+          expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+          expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+          expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+
+          await workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+            throwOnError: false,
+          })
+
+          await setTimeout(1000)
+
+          expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+          expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(2)
+          expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+          expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+
+          await workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+            throwOnError: false,
+          })
+
+          await setTimeout(1000)
+
+          expect(lastExepectHaveBeenCalledTimes).toEqual(1)
+        })
+
         it("should prevent executing twice the same workflow in perfect concurrency with the same transactionId and non idempotent and not async but retention time is set", async () => {
-          const transactionId = "concurrency_transaction_id"
+          const transactionId = "concurrency_transaction_id" + ulid()
           const workflowId = "concurrency_workflow_id" + ulid()
 
           const step1 = createStep("step1", async () => {
@@ -433,6 +599,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
           expect(executionsList).toHaveLength(1)
 
+          console.log(">>>>>>>>> setting step success")
           const { result } = await workflowOrcModule.setStepSuccess({
             idempotencyKey: {
               action: TransactionHandlerType.INVOKE,
@@ -443,6 +610,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             stepResponse: { uhuuuu: "yeaah!" },
           })
 
+          console.log(">>>>>>>>> setting step success done")
           ;({ data: executionsList } = await query.graph({
             entity: "workflow_executions",
             fields: ["id"],
@@ -457,12 +625,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should return a list of workflow executions and keep it saved when there is a retentionTime set", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_2", {
             input: {
               value: "123",
             },
             throwOnError: true,
-            transactionId: "transaction_1",
+            transactionId,
           })
 
           let { data: executionsList } = await query.graph({
@@ -477,7 +646,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               action: TransactionHandlerType.INVOKE,
               stepId: "new_step_name",
               workflowId: "workflow_2",
-              transactionId: "transaction_1",
+              transactionId,
             },
             stepResponse: { uhuuuu: "yeaah!" },
           })
@@ -490,11 +659,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should return a list of failed workflow executions and keep it saved when there is a retentionTime set", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_2", {
             input: {
               value: "123",
             },
-            transactionId: "transaction_1",
+            transactionId,
           })
 
           let { data: executionsList } = await query.graph({
@@ -509,7 +679,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               action: TransactionHandlerType.INVOKE,
               stepId: "new_step_name",
               workflowId: "workflow_2",
-              transactionId: "transaction_1",
+              transactionId,
             },
             stepResponse: { uhuuuu: "yeaah!" },
             options: {
@@ -702,11 +872,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should revert the entire transaction when a step timeout expires in a async step", async () => {
+          const transactionId = "transaction_1" + ulid()
           await workflowOrcModule.run("workflow_step_timeout_async", {
             input: {
               myInput: "123",
             },
-            transactionId: "transaction_1",
+            transactionId,
             throwOnError: false,
           })
 
@@ -718,7 +889,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               input: {
                 myInput: "123",
               },
-              transactionId: "transaction_1",
+              transactionId,
               throwOnError: false,
             }
           )) as Awaited<{
@@ -771,7 +942,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should complete an async workflow that returns a StepResponse", (done) => {
-          const transactionId = "transaction_1"
+          const transactionId = "transaction_1" + ulid()
           workflowOrcModule
             .run("workflow_async_background", {
               input: {
@@ -793,15 +964,16 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(done, "workflow_async_background")
+          const timeout = failTrap(done, "workflow_async_background")
         })
 
         it("should subscribe to a async workflow and receive the response when it finishes", (done) => {
-          const transactionId = "trx_123"
+          const transactionId = "trx_123" + ulid()
 
           const onFinish = jest.fn()
 
@@ -820,46 +992,49 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               if (event.eventType === "onFinish") {
                 onFinish()
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
           expect(onFinish).toHaveBeenCalledTimes(0)
 
-          failTrap(done, "workflow_async_background")
+          const timeout = failTrap(done, "workflow_async_background")
         })
 
         it("should not skip step if condition is true", function (done) {
+          const transactionId = "trx_123_when" + ulid()
           void workflowOrcModule.run("wf-when", {
             input: {
               callSubFlow: true,
             },
-            transactionId: "trx_123_when",
+            transactionId,
             throwOnError: true,
             logOnError: true,
           })
 
           void workflowOrcModule.subscribe({
             workflowId: "wf-when",
-            transactionId: "trx_123_when",
+            transactionId,
             subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(done, "wf-when")
+          const timeout = failTrap(done, "wf-when")
         })
 
         it("should cancel an async sub workflow when compensating", (done) => {
           const workflowId = "workflow_async_background_fail"
-
+          const transactionId = "trx_123_compensate_async_sub_workflow" + ulid()
           void workflowOrcModule.run(workflowId, {
             input: {
               callSubFlow: true,
             },
-            transactionId: "trx_123_compensate_async_sub_workflow",
+            transactionId,
             throwOnError: false,
             logOnError: false,
           })
@@ -883,11 +1058,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
                 })
 
                 done()
+                clearTimeout(timeout)
               }
             },
           })
 
-          failTrap(done, "workflow_async_background_fail")
+          const timeout = failTrap(done, "workflow_async_background_fail")
         })
 
         it("should cancel and revert a completed workflow", async () => {

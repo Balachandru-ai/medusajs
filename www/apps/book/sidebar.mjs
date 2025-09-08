@@ -648,6 +648,18 @@ export const sidebars = [
               },
             ],
           },
+          {
+            type: "link",
+            path: "/learn/debugging-and-testing/feature-flags",
+            title: "Feature Flags",
+            children: [
+              {
+                type: "link",
+                path: "/learn/debugging-and-testing/feature-flags/create",
+                title: "Create Feature Flag",
+              },
+            ],
+          },
         ],
       },
       {

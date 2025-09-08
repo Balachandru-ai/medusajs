@@ -1,7 +1,7 @@
 import {
   deepCopy,
-  isDefined,
   OrchestrationUtils,
+  parseStringifyIfNecessary,
   promiseAll,
 } from "@medusajs/utils"
 
@@ -83,8 +83,5 @@ export async function resolveValue(input, transactionContext) {
     ? await resolveProperty(copiedInput, transactionContext)
     : await unwrapInput(copiedInput, {})
 
-  const strResult = JSON.stringify(result) // Symbols return undefined
-  if (isDefined(strResult)) {
-    return JSON.parse(strResult)
-  }
+  return parseStringifyIfNecessary(result)
 }
