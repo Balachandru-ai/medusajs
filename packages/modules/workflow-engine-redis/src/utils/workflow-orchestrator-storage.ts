@@ -5,6 +5,7 @@ import {
   SchedulerOptions,
   SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -201,6 +202,68 @@ export class RedisDistributedTransactionStorage
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
+    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
+    const isFinished = [
+      TransactionState.DONE,
+      TransactionState.FAILED,
+      TransactionState.REVERTED,
+    ].includes(data.flow.state)
+
+    /**
+     * Bit of explanation:
+     *
+     * When a workflow run, it run all sync step in memory until it reaches a async step.
+     * In that case, it might handover to another process to continue the execution. Thats why
+     * we need to save the current state of the flow. Then from there, it will run again all
+     * sync steps until the next async step. an so on so forth.
+     *
+     * To summarize, we only trully need to save the data when we are reaching any steps that
+     * trigger a handover to a potential other process.
+     *
+     * This allows us to spare some resources and time by not over communicating with the external
+     * database when it is not really needed
+     */
+
+    const isFlowInvoking = data.flow.state === TransactionState.INVOKING
+
+    const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
+    let currentStep!: TransactionStep
+
+    const targetStates = isFlowInvoking
+      ? [
+          TransactionStepState.INVOKING,
+          TransactionStepState.DONE,
+          TransactionStepState.FAILED,
+        ]
+      : [TransactionStepState.COMPENSATING]
+
+    // Find the current step from the end
+    for (let i = stepsArray.length - 1; i >= 0; i--) {
+      const step = stepsArray[i]
+
+      if (step.id === "_root") {
+        break
+      }
+
+      const isTargetState = targetStates.includes(step.invoke?.state)
+
+      if (isTargetState) {
+        currentStep = step
+        break
+      }
+    }
+
+    const currentStepsIsAsync = currentStep
+      ? stepsArray.some(
+          (step) =>
+            step?.definition?.async === true && step.depth === currentStep.depth
+        )
+      : false
+
+    if (!(isNotStarted || isFinished) && !currentStepsIsAsync) {
+      return
+    }
+
     await this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
@@ -351,11 +414,13 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    await this.#preventRaceConditionExecutionIfNecessary({
-      data,
-      key,
-      options,
-    })
+    if (data.flow.hasAsyncSteps) {
+      await this.#preventRaceConditionExecutionIfNecessary({
+        data,
+        key,
+        options,
+      })
+    }
 
     if (hasFinished && retentionTime) {
       Object.assign(data, {
@@ -363,10 +428,10 @@ export class RedisDistributedTransactionStorage
       })
     }
 
-    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
-    const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
     // Only set if not exists
-    const shouldSetNX = isNotStarted && isManualTransactionId
+    const shouldSetNX =
+      data.flow.state === TransactionState.NOT_STARTED &&
+      !data.flow.transactionId.startsWith("auto-")
 
     // Prepare operations to be executed in batch or pipeline
     const data_ = {
@@ -655,6 +720,53 @@ export class RedisDistributedTransactionStorage
       throw new SkipExecutionError("Already finished by another execution")
     }
 
+    let currentFlowLatestExecutedStep: TransactionStep | undefined
+    const currentFlowSteps = Object.values(currentFlow.steps || {})
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (currentFlowSteps[i].lastAttempt) {
+        currentFlowLatestExecutedStep = currentFlowSteps[i]
+        break
+      }
+    }
+
+    let latestUpdatedFlowLatestExecutedStep: TransactionStep | undefined
+    const latestUpdatedFlowSteps = Object.values(latestUpdatedFlow.steps || {})
+    for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+      if (latestUpdatedFlowSteps[i].lastAttempt) {
+        latestUpdatedFlowLatestExecutedStep = latestUpdatedFlowSteps[i]
+        break
+      }
+    }
+
+    /**
+     * The current flow and the latest updated flow have the same latest executed step.
+     */
+    const isSameLatestExecutedStep =
+      currentFlowLatestExecutedStep &&
+      latestUpdatedFlowLatestExecutedStep &&
+      currentFlowLatestExecutedStep?.id ===
+        latestUpdatedFlowLatestExecutedStep?.id
+
+    /**
+     * The current flow's latest executed step has a last attempt ahead of the latest updated
+     * flow's latest executed step. Therefor it is fine, otherwise another execution has already
+     * finished the step.
+     */
+    const isCurrentLatestExecutedStepLastAttemptAhead =
+      currentFlowLatestExecutedStep?.lastAttempt &&
+      latestUpdatedFlowLatestExecutedStep?.lastAttempt &&
+      currentFlowLatestExecutedStep.lastAttempt >=
+        latestUpdatedFlowLatestExecutedStep.lastAttempt
+
+    if (
+      isSameLatestExecutedStep &&
+      !isCurrentLatestExecutedStepLastAttemptAhead
+    ) {
+      throw new SkipStepAlreadyFinishedError(
+        "Step already finished by another execution"
+      )
+    }
+
     // First ensure that the latest execution was not cancelled, otherwise we skip the execution
     const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
     const currentTransactionCancelledAt = currentFlow.cancelledAt
@@ -667,13 +779,6 @@ export class RedisDistributedTransactionStorage
         "Workflow execution has been cancelled during the execution"
       )
     }
-
-    const currentFlowSteps = Object.values(currentFlow.steps || {})
-    const latestUpdatedFlowSteps = latestUpdatedFlow.steps
-      ? Object.values(
-          latestUpdatedFlow.steps as Record<string, TransactionStep>
-        )
-      : []
 
     // Predefined states for quick lookup
     const invokingStates = [

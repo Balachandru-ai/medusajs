@@ -435,6 +435,33 @@ export class LocalWorkflow {
     }
   }
 
+  async retryStep(
+    idempotencyKey: string,
+    context?: Context,
+    subscribe?: DistributedTransactionEvents
+  ): Promise<DistributedTransactionType> {
+    this.medusaContext = context
+    const { handler, orchestrator } = this.workflow
+
+    const { cleanUpEventListeners } = this.registerEventCallbacks({
+      orchestrator,
+      idempotencyKey,
+      subscribe,
+    })
+
+    const transaction = await orchestrator.retryStep({
+      responseIdempotencyKey: idempotencyKey,
+      handler: handler(this.container_, context),
+      onLoad: this.onLoad.bind(this),
+    })
+
+    try {
+      return transaction
+    } finally {
+      cleanUpEventListeners()
+    }
+  }
+
   async registerStepSuccess(
     idempotencyKey: string,
     response?: unknown,
