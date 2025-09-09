@@ -294,6 +294,7 @@ export function defineHasManyRelationship(
   }
 
   OneToMany(options)(MikroORMEntity.prototype, relationship.name)
+  // MikroORMEntity.prototype[relationship.name] = new Collection(MikroORMEntity)
 }
 
 /**
@@ -466,6 +467,7 @@ export function defineBelongsToRelationship(
 
       ManyToOne({
         entity: relatedModelName,
+        defaultRaw: "", // This is a workaround since we are hacking mikro orm default behavior. The default value here is [Object object] which pass the check here and in turns is returned as a returning field -> @mikro-orm/knex/AbstractSqlDriver.js:462
         fieldName: foreignKeyName,
         persist: false,
         nullable: relationship.nullable,
@@ -741,6 +743,7 @@ export function defineManyToManyRelationship(
   const manytoManyOptions = {
     owner: isOwner,
     entity: relatedModelName,
+    defaultRaw: "", // This is a workaround since we are hacking mikro orm default behavior. The default value here is [Object object] which pass the check here and in turns is returned as a returning field -> @mikro-orm/knex/AbstractSqlDriver.js:462
     ...(pivotTableName
       ? {
           pivotTable: pgSchema

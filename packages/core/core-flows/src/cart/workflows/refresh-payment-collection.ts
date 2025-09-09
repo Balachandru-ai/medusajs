@@ -9,6 +9,7 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updatePaymentCollectionStep } from "../../payment-collection"
 import { deletePaymentSessionsWorkflow } from "../../payment-collection/workflows/delete-payment-sessions"
 
@@ -59,8 +60,18 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
+    const shouldExecute = transform({ input }, ({ input }) => {
+      return (
+        !!input.cart_id || (!!input.cart && !!input.cart.payment_collection)
+      )
+    })
+
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
     const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
-      return !input.cart
+      return shouldExecute
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "cart",
@@ -76,14 +87,21 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
           "payment_collection.currency_code",
           "payment_collection.payment_sessions.id",
         ],
-        variables: { id: input.cart_id },
+        variables: { id: cartId },
         throw_if_key_not_found: true,
         list: false,
       })
     })
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
-      return input.cart ?? fetchCart
+      return fetchCart ?? input.cart
+    })
+
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
     })
 
     const validate = createHook("validate", {
@@ -91,18 +109,22 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       cart,
     })
 
-    when("should-update-payment-collection", { cart }, ({ cart }) => {
-      const valueIsEqual = MathBN.eq(
-        cart.payment_collection?.raw_amount ?? -1,
-        cart.raw_total
-      )
+    when(
+      "should-update-payment-collection",
+      { cart, shouldExecute },
+      ({ cart, shouldExecute }) => {
+        const valueIsEqual = MathBN.eq(
+          cart.payment_collection?.raw_amount ?? -1,
+          cart.raw_total
+        )
 
-      if (valueIsEqual) {
-        return cart.payment_collection.currency_code !== cart.currency_code
+        if (valueIsEqual) {
+          return cart.payment_collection.currency_code !== cart.currency_code
+        }
+
+        return shouldExecute
       }
-
-      return true
-    }).then(() => {
+    ).then(() => {
       const deletePaymentSessionInput = transform(
         { paymentCollection: cart.payment_collection },
         (data) => {
@@ -135,6 +157,11 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
         }),
         updatePaymentCollectionStep(updatePaymentCollectionInput)
       )
+    })
+
+    releaseLockStep({
+      key: cart.id,
+      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(void 0, {

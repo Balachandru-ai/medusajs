@@ -33,6 +33,7 @@ import {
   PermanentStepFailureError,
   SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   SkipStepResponse,
   TransactionStepTimeoutError,
   TransactionTimeoutError,
@@ -117,7 +118,8 @@ export class TransactionOrchestrator extends EventEmitter {
   private static isExpectedError(error: Error): boolean {
     return (
       SkipCancelledExecutionError.isSkipCancelledExecutionError(error) ||
-      SkipExecutionError.isSkipExecutionError(error)
+      SkipExecutionError.isSkipExecutionError(error) ||
+      SkipStepAlreadyFinishedError.isSkipStepAlreadyFinishedError(error)
     )
   }
 
@@ -415,10 +417,24 @@ export class TransactionOrchestrator extends EventEmitter {
               stepDef.definition.retryIntervalAwaiting!
             )
           }
+        } else if (stepDef.retryRescheduledAt) {
+          // The step is not configured for awaiting retry but is manually force to retry
+          stepDef.retryRescheduledAt = null
+          nextSteps.push(stepDef)
         }
 
         continue
       } else if (curState.status === TransactionStepStatus.TEMPORARY_FAILURE) {
+        if (
+          !stepDef.temporaryFailedAt &&
+          stepDef.definition.autoRetry === false
+        ) {
+          stepDef.temporaryFailedAt = Date.now()
+          continue
+        }
+
+        stepDef.temporaryFailedAt = null
+
         currentSteps.push(stepDef)
 
         if (!stepDef.canRetry()) {
@@ -550,7 +566,11 @@ export class TransactionOrchestrator extends EventEmitter {
       cleaningUp.push(transaction.clearStepTimeout(step))
     }
 
-    await promiseAll(cleaningUp)
+    if (cleaningUp.length) {
+      setImmediate(async () => {
+        await promiseAll(cleaningUp)
+      })
+    }
 
     if (shouldEmit) {
       const eventName = step.isCompensating()
@@ -562,6 +582,27 @@ export class TransactionOrchestrator extends EventEmitter {
     return {
       stopExecution: !shouldEmit,
       transactionIsCancelling,
+    }
+  }
+
+  private static async retryStep(
+    transaction: DistributedTransactionType,
+    step: TransactionStep
+  ): Promise<void> {
+    if (!step.retryRescheduledAt) {
+      step.hasScheduledRetry = true
+      step.retryRescheduledAt = Date.now()
+    }
+
+    transaction.getFlow().hasWaitingSteps = true
+
+    try {
+      await transaction.saveCheckpoint()
+      await transaction.scheduleRetry(step, 0)
+    } catch (error) {
+      if (!TransactionOrchestrator.isExpectedError(error)) {
+        throw error
+      }
     }
   }
 
@@ -608,7 +649,11 @@ export class TransactionOrchestrator extends EventEmitter {
       cleaningUp.push(transaction.clearStepTimeout(step))
     }
 
-    await promiseAll(cleaningUp)
+    if (cleaningUp.length) {
+      setImmediate(async () => {
+        await promiseAll(cleaningUp)
+      })
+    }
 
     if (shouldEmit) {
       const eventName = DistributedTransactionEvent.STEP_SKIPPED
@@ -677,10 +722,13 @@ export class TransactionOrchestrator extends EventEmitter {
     stopExecution: boolean
     transactionIsCancelling?: boolean
   }> {
+    const result = {
+      stopExecution: false,
+      transactionIsCancelling: false,
+    }
+
     if (SkipExecutionError.isSkipExecutionError(error)) {
-      return {
-        stopExecution: false,
-      }
+      return result
     }
 
     step.failures++
@@ -773,10 +821,21 @@ export class TransactionOrchestrator extends EventEmitter {
       if (step.hasTimeout()) {
         cleaningUp.push(transaction.clearStepTimeout(step))
       }
+    } else {
+      const isAsync = step.isCompensating()
+        ? step.definition.compensateAsync
+        : step.definition.async
+
+      if (
+        step.getStates().status === TransactionStepStatus.TEMPORARY_FAILURE &&
+        step.definition.autoRetry === false &&
+        isAsync
+      ) {
+        step.temporaryFailedAt = Date.now()
+        result.stopExecution = true
+      }
     }
 
-    let transactionIsCancelling = false
-    let shouldEmit = true
     try {
       await transaction.saveCheckpoint()
     } catch (error) {
@@ -784,11 +843,11 @@ export class TransactionOrchestrator extends EventEmitter {
         throw error
       }
 
-      transactionIsCancelling =
+      result.transactionIsCancelling =
         SkipCancelledExecutionError.isSkipCancelledExecutionError(error)
 
       if (SkipExecutionError.isSkipExecutionError(error)) {
-        shouldEmit = false
+        result.stopExecution = true
       }
     }
 
@@ -796,9 +855,13 @@ export class TransactionOrchestrator extends EventEmitter {
       cleaningUp.push(transaction.clearRetry(step))
     }
 
-    await promiseAll(cleaningUp)
+    if (cleaningUp.length) {
+      setImmediate(async () => {
+        await promiseAll(cleaningUp)
+      })
+    }
 
-    if (shouldEmit) {
+    if (!result.stopExecution) {
       const eventName = step.isCompensating()
         ? DistributedTransactionEvent.COMPENSATE_STEP_FAILURE
         : DistributedTransactionEvent.STEP_FAILURE
@@ -806,8 +869,8 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     return {
-      stopExecution: !shouldEmit,
-      transactionIsCancelling,
+      stopExecution: result.stopExecution,
+      transactionIsCancelling: result.transactionIsCancelling,
     }
   }
 
@@ -1726,6 +1789,50 @@ export class TransactionOrchestrator extends EventEmitter {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
         `Cannot skip a step when status is ${step.getStates().status}`
+      )
+    }
+
+    return curTransaction
+  }
+
+  /**
+   * Manually force a step to retry even if it is still in awaiting status
+   * @param responseIdempotencyKey - The idempotency key for the step
+   * @param handler - The handler function to execute the step
+   * @param transaction - The current transaction. If not provided it will be loaded based on the responseIdempotencyKey
+   */
+  public async retryStep({
+    responseIdempotencyKey,
+    handler,
+    transaction,
+    onLoad,
+  }: {
+    responseIdempotencyKey: string
+    handler?: TransactionStepHandler
+    transaction?: DistributedTransactionType
+    onLoad?: (transaction: DistributedTransactionType) => Promise<void> | void
+  }): Promise<DistributedTransactionType> {
+    const [curTransaction, step] =
+      await TransactionOrchestrator.getTransactionAndStepFromIdempotencyKey(
+        responseIdempotencyKey,
+        handler,
+        transaction
+      )
+
+    if (onLoad) {
+      await onLoad(curTransaction)
+    }
+
+    if (step.getStates().status === TransactionStepStatus.WAITING) {
+      this.emit(DistributedTransactionEvent.RESUME, {
+        transaction: curTransaction,
+      })
+
+      await TransactionOrchestrator.retryStep(curTransaction, step)
+    } else {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        `Cannot retry step when status is ${step.getStates().status}`
       )
     }
 

@@ -4036,6 +4036,9 @@
             },
             "taxTotal": {
               "type": "string"
+            },
+            "totalAfterDiscount": {
+              "type": "string"
             }
           },
           "required": [
@@ -4051,7 +4054,8 @@
             "itemSubtotal",
             "shippingSubtotal",
             "discountSubtotal",
-            "taxTotal"
+            "taxTotal",
+            "totalAfterDiscount"
           ],
           "additionalProperties": false
         },
@@ -8042,9 +8046,12 @@
               "properties": {
                 "title": {
                   "type": "string"
+                },
+                "invalid": {
+                  "type": "string"
                 }
               },
-              "required": ["title"],
+              "required": ["title", "invalid"],
               "additionalProperties": false
             },
             "value_type": {

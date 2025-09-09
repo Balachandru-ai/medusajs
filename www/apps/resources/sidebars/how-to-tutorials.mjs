@@ -149,6 +149,13 @@ While tutorials show you a specific use case, they also help you understand how 
         description: "Learn how to migrate data from Magento to Medusa.",
       },
       {
+        type: "link",
+        title: "Meta Product Feed",
+        path: "/how-to-tutorials/tutorials/product-feed",
+        description:
+          "Learn how to implement a product feed for Meta (Facebook and Instagram) and Google using Medusa.",
+      },
+      {
         type: "ref",
         title: "Newsletter with Mailchimp",
         path: "/integrations/guides/mailchimp",

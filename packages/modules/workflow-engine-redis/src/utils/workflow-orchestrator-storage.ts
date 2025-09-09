@@ -5,6 +5,7 @@ import {
   SchedulerOptions,
   SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -34,6 +35,24 @@ enum JobType {
 
 const ONE_HOUR_IN_MS = 1000 * 60 * 60
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
+
+const invokingStatesSet = new Set([
+  TransactionStepState.INVOKING,
+  TransactionStepState.NOT_STARTED,
+])
+
+const compensatingStatesSet = new Set([
+  TransactionStepState.COMPENSATING,
+  TransactionStepState.NOT_STARTED,
+])
+
+function isInvokingState(step: TransactionStep) {
+  return invokingStatesSet.has(step.invoke?.state)
+}
+
+function isCompensatingState(step: TransactionStep) {
+  return compensatingStatesSet.has(step.compensate?.state)
+}
 
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
@@ -99,6 +118,7 @@ export class RedisDistributedTransactionStorage
     await this.worker?.close()
     await this.jobWorker?.close()
 
+    // Clean up repeatable jobs
     const repeatableJobs = (await this.cleanerQueue_?.getRepeatableJobs()) ?? []
     for (const job of repeatableJobs) {
       if (job.id === REPEATABLE_CLEARER_JOB_ID) {
@@ -413,11 +433,13 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    await this.#preventRaceConditionExecutionIfNecessary({
-      data,
-      key,
-      options,
-    })
+    if (data.flow.hasAsyncSteps) {
+      await this.#preventRaceConditionExecutionIfNecessary({
+        data,
+        key,
+        options,
+      })
+    }
 
     if (hasFinished && retentionTime) {
       Object.assign(data, {
@@ -717,6 +739,53 @@ export class RedisDistributedTransactionStorage
       throw new SkipExecutionError("Already finished by another execution")
     }
 
+    let currentFlowLatestExecutedStep: TransactionStep | undefined
+    const currentFlowSteps = Object.values(currentFlow.steps || {})
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (currentFlowSteps[i].lastAttempt) {
+        currentFlowLatestExecutedStep = currentFlowSteps[i]
+        break
+      }
+    }
+
+    let latestUpdatedFlowLatestExecutedStep: TransactionStep | undefined
+    const latestUpdatedFlowSteps = Object.values(latestUpdatedFlow.steps || {})
+    for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+      if (latestUpdatedFlowSteps[i].lastAttempt) {
+        latestUpdatedFlowLatestExecutedStep = latestUpdatedFlowSteps[i]
+        break
+      }
+    }
+
+    /**
+     * The current flow and the latest updated flow have the same latest executed step.
+     */
+    const isSameLatestExecutedStep =
+      currentFlowLatestExecutedStep &&
+      latestUpdatedFlowLatestExecutedStep &&
+      currentFlowLatestExecutedStep?.id ===
+        latestUpdatedFlowLatestExecutedStep?.id
+
+    /**
+     * The current flow's latest executed step has a last attempt ahead of the latest updated
+     * flow's latest executed step. Therefor it is fine, otherwise another execution has already
+     * finished the step.
+     */
+    const isCurrentLatestExecutedStepLastAttemptAhead =
+      currentFlowLatestExecutedStep?.lastAttempt &&
+      latestUpdatedFlowLatestExecutedStep?.lastAttempt &&
+      currentFlowLatestExecutedStep.lastAttempt >=
+        latestUpdatedFlowLatestExecutedStep.lastAttempt
+
+    if (
+      isSameLatestExecutedStep &&
+      !isCurrentLatestExecutedStepLastAttemptAhead
+    ) {
+      throw new SkipStepAlreadyFinishedError(
+        "Step already finished by another execution"
+      )
+    }
+
     // First ensure that the latest execution was not cancelled, otherwise we skip the execution
     const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
     const currentTransactionCancelledAt = currentFlow.cancelledAt
@@ -730,45 +799,48 @@ export class RedisDistributedTransactionStorage
       )
     }
 
-    const currentFlowSteps = Object.values(currentFlow.steps || {})
-    const latestUpdatedFlowSteps = latestUpdatedFlow.steps
-      ? Object.values(
-          latestUpdatedFlow.steps as Record<string, TransactionStep>
-        )
-      : []
+    let currentFlowLastInvokingStepIndex = -1
+    for (let i = 0; i < currentFlowSteps.length; i++) {
+      if (isInvokingState(currentFlowSteps[i])) {
+        currentFlowLastInvokingStepIndex = i
+        break
+      }
+    }
 
-    // Predefined states for quick lookup
-    const invokingStates = [
-      TransactionStepState.INVOKING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const compensatingStates = [
-      TransactionStepState.COMPENSATING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const isInvokingState = (step: TransactionStep) =>
-      invokingStates.includes(step.invoke?.state)
-
-    const isCompensatingState = (step: TransactionStep) =>
-      compensatingStates.includes(step.compensate?.state)
-
-    const currentFlowLastInvokingStepIndex =
-      currentFlowSteps.findIndex(isInvokingState)
-
-    const latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
+    let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
       ? 1 // There is no other execution, so the current execution is the latest
-      : latestUpdatedFlowSteps.findIndex(isInvokingState)
+      : -1
 
-    const reversedCurrentFlowSteps = [...currentFlowSteps].reverse()
-    const currentFlowLastCompensatingStepIndex =
-      reversedCurrentFlowSteps.findIndex(isCompensatingState)
+    if (latestUpdatedFlow.steps) {
+      for (let i = 0; i < latestUpdatedFlowSteps.length; i++) {
+        if (isInvokingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastInvokingStepIndex = i
+          break
+        }
+      }
+    }
 
-    const reversedLatestUpdatedFlowSteps = [...latestUpdatedFlowSteps].reverse()
-    const latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
-      ? -1
-      : reversedLatestUpdatedFlowSteps.findIndex(isCompensatingState)
+    let currentFlowLastCompensatingStepIndex = -1
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (isCompensatingState(currentFlowSteps[i])) {
+        currentFlowLastCompensatingStepIndex = currentFlowSteps.length - 1 - i
+        break
+      }
+    }
+
+    let latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
+      ? -1 // There is no other execution, so the current execution is the latest
+      : -1
+
+    if (latestUpdatedFlow.steps) {
+      for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+        if (isCompensatingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastCompensatingStepIndex =
+            latestUpdatedFlowSteps.length - 1 - i
+          break
+        }
+      }
+    }
 
     const isLatestExecutionFinishedIndex = -1
     const invokeShouldBeSkipped =

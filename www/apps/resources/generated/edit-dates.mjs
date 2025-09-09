@@ -55,8 +55,8 @@ export const generatedEditDates = {
   "app/commerce-modules/payment/page.mdx": "2025-04-17T08:48:11.702Z",
   "app/commerce-modules/pricing/_events/_events-table/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/pricing/_events/page.mdx": "2024-07-03T19:27:13+03:00",
-  "app/commerce-modules/pricing/concepts/page.mdx": "2025-09-01T15:15:07.227Z",
-  "app/commerce-modules/pricing/price-calculation/page.mdx": "2025-09-01T06:32:07.141Z",
+  "app/commerce-modules/pricing/concepts/page.mdx": "2025-09-05T07:49:40.703Z",
+  "app/commerce-modules/pricing/price-calculation/page.mdx": "2025-09-05T07:54:21.322Z",
   "app/commerce-modules/pricing/price-rules/page.mdx": "2025-06-10T15:56:43.648Z",
   "app/commerce-modules/pricing/tax-inclusive-pricing/page.mdx": "2025-06-27T15:43:35.193Z",
   "app/commerce-modules/pricing/page.mdx": "2025-05-20T07:51:40.710Z",
@@ -6567,9 +6567,10 @@ export const generatedEditDates = {
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-08-04T00:00:00.000Z",
   "app/how-to-tutorials/tutorials/product-builder/page.mdx": "2025-09-01T14:59:43.128Z",
-  "app/integrations/guides/payload/page.mdx": "2025-08-21T05:24:11.537Z",
+  "app/integrations/guides/payload/page.mdx": "2025-09-08T15:06:32.588Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z",
   "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-08-29T11:32:54.117Z",
-  "app/troubleshooting/pnpm/page.mdx": "2025-08-29T12:21:24.692Z"
+  "app/troubleshooting/pnpm/page.mdx": "2025-08-29T12:21:24.692Z",
+  "app/how-to-tutorials/tutorials/product-feed/page.mdx": "2025-09-01T13:19:59.335Z"
 }

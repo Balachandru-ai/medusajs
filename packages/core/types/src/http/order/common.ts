@@ -821,6 +821,10 @@ export interface BaseOrder {
    */
   item_tax_total: number
   /**
+   * The promotion total applied on the order's items.
+   */
+  item_discount_total: number
+  /**
    * The total of the order including taxes, excluding promotions.
    */
   original_total: number
@@ -837,7 +841,7 @@ export interface BaseOrder {
    */
   total: number
   /**
-   * The total of the order excluding taxes, including promotions.
+   * The total of the order excluding taxes and promotions.
    */
   subtotal: number
   /**
@@ -872,6 +876,10 @@ export interface BaseOrder {
    * The tax total applied on the order's shipping methods, including promotions.
    */
   shipping_tax_total: number
+  /**
+   * The promotion total applied on the order's shipping methods.
+   */
+  shipping_discount_total: number
   /**
    * The total of the order's shipping methods including taxes, excluding promotions.
    */
@@ -1070,6 +1078,11 @@ export interface BaseOrderChange {
  * The order change action details.
  */
 export interface BaseOrderChangeAction {
+  /**
+   * The ordering of the order change action
+   */
+  ordering: number
+
   /**
    * The ID of the order change action
    */
