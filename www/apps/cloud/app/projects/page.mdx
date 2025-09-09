@@ -34,11 +34,11 @@ To create a project:
 1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
 2. Click on the **Create Project** button in your organization's dashboard.
 
-In the project-creation page, you can either [create from a starter](#1-create-from-a-starter) or [create from an existing application](#2-create-from-an-existing-application).
+In the project-creation page, you can either [create from a starter](#1-create-project-from-a-starter) or [create from an existing application](#2-create-project-from-an-existing-application).
 
 ---
 
-### 1. Create from a Starter
+## 1. Create Project from a Starter
 
 Medusa provides you with the following starters that you can use to quickly set up your ecommerce application:
 
@@ -55,15 +55,15 @@ To create a project from either of these starters:
 5. In the "Repository name" field, enter a name for your new repository.
 6. Once you're done, click the **Continue** button.
 
-The repository will be cloned and you'll move forward to the [Configure step](#configure-project).
+The repository will be cloned and you'll move forward to the [Configure step](#configure-project-during-creation).
 
 ---
 
-### 2. Create from an Existing Application
+## 2. Create Project from an Existing Application
 
 If you already have a Medusa application, you can create a project from it.
 
-#### Prerequisite: Medusa Application Configurations
+### Prerequisite: Medusa Application Configurations
 
 Your existing Medusa application doesn't need specific configurations to be deployed to Cloud. Medusa will automatically:
 
@@ -78,7 +78,7 @@ Your existing Medusa application doesn't need specific configurations to be depl
 
 So, make sure to remove any of these modules from your `medusa-config.ts` file, unless you want to use custom options for them. In that case, you're expected to manually set up and manage those resources externally and configure them in your Medusa application.
 
-#### Creation Steps
+### Project Creation Steps
 
 To create a project from an existing Medusa application:
 
@@ -87,11 +87,11 @@ To create a project from an existing Medusa application:
     - If you don't see your repository, you can click the **Configure repositories** link to manage the GitHub repositories that Medusa can access.
 3. Once you're done, click the **Continue** button.
 
-You'll move forward to the [Configure step](#configure-project).
+You'll move forward to the [Configure step](#configure-project-during-creation).
 
 ---
 
-### Configure Project
+## Configure Project During Creation
 
 After selecting the repository, you'll move on to the project configuration step. You can set the following information:
 
@@ -127,14 +127,18 @@ Once the project is created and deployed, you'll receive a notification in the C
 
 ![The project status in the list of projects](https://res.cloudinary.com/dza7lstvk/image/upload/v1749743107/Cloud/CleanShot_2025-06-12_at_18.40.07_2x_asgpxm.png)
 
-### Troubleshooting Project Creation
+---
+
+## Troubleshooting Project Creation
 
 If you encounter any issues while creating a project:
 
 - [Check the build and runtime logs of the project's production deployment](../logs/page.mdx).
 - Contact support for help.
 
-### Subdomain Restrictions
+---
+
+## Subdomain Restrictions for Projects
 
 When you choose a subdomain for your project, it must be at least five characters long. It also can't be one of the following reserved subdomains:
 
@@ -146,7 +150,9 @@ When you choose a subdomain for your project, it must be at least five character
 - `development`
 - `proxy`
 
-### Available Regions in Cloud
+---
+
+## Available Regions for Projects in Cloud
 
 Medusa supports hosting your Medusa projects on Cloud in the following regions:
 

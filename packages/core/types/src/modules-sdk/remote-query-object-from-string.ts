@@ -74,7 +74,7 @@ export type RemoteQueryInput<TEntry extends string> =
         /**
          * Strategy will be send to the entry module called method
          */
-        strategy?: "joined" | "select-in" | "balanced"
+        strategy?: "joined" | "select-in"
       }
     : {
         /**
@@ -119,7 +119,7 @@ export type RemoteQueryInput<TEntry extends string> =
         /**
          * Strategy will be send to the entry module called method
          */
-        strategy?: "joined" | "select-in" | "balanced"
+        strategy?: "joined" | "select-in"
       }
 
 export type RemoteQueryGraph<TEntry extends string> = {

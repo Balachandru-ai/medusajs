@@ -16,7 +16,6 @@ describe("Internal Module Service Factory", () => {
     [modelRepositoryName]: {
       transaction: (task) => task(),
       getFreshManager: jest.fn().mockReturnThis(),
-      getActiveManager: jest.fn().mockReturnThis(),
       find: jest.fn(),
       findAndCount: jest.fn(),
       create: jest.fn(),
@@ -29,7 +28,6 @@ describe("Internal Module Service Factory", () => {
     [`composite${Model.name}Repository`]: {
       transaction: (task) => task(),
       getFreshManager: jest.fn().mockReturnThis(),
-      getActiveManager: jest.fn().mockReturnThis(),
       find: jest.fn(),
       findAndCount: jest.fn(),
       create: jest.fn(),
