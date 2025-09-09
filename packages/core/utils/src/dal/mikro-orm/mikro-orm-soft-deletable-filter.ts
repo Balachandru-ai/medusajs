@@ -1,5 +1,3 @@
-import { raw } from "@mikro-orm/core"
-
 export const SoftDeletableFilterKey = "softDeletable"
 
 // @ts-ignore
