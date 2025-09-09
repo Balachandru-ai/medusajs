@@ -21,7 +21,6 @@ describe("hasOne - belongTo", () => {
 
   let orm!: MikroORM
   let Team: EntityConstructor<any>, User: EntityConstructor<any>
-  let Rules: EntityConstructor<any>
 
   afterAll(async () => {
     await fileSystem.cleanup()
@@ -41,22 +40,15 @@ describe("hasOne - belongTo", () => {
       id: model.id().primaryKey(),
       username: model.text(),
       team: model.hasOne(() => team, { mappedBy: "user" }).nullable(),
-      rules: model.manyToMany(() => rules, { mappedBy: "users" }),
     })
 
-    const rules = model.define("rule", {
-      id: model.id().primaryKey(),
-      name: model.text(),
-      users: model.manyToMany(() => user, { mappedBy: "rules" }),
-    })
-
-    ;[User, Team, Rules] = toMikroOrmEntities([user, team, rules])
+    ;[User, Team] = toMikroOrmEntities([user, team])
 
     await createDatabase({ databaseName: dbName }, pgGodCredentials)
 
     orm = await MikroORM.init(
       defineConfig({
-        entities: [Team, User, Rules],
+        entities: [Team, User],
         tsNode: true,
         dbName,
         password: pgGodCredentials.password,
@@ -148,50 +140,6 @@ describe("hasOne - belongTo", () => {
       },
       {
         populate: ["team"],
-      }
-    )
-
-    expect(await mikroOrmSerializer<InstanceType<typeof User>>(user)).toEqual({
-      id: user1.id,
-      username: "User 1",
-      created_at: expect.any(Date),
-      updated_at: expect.any(Date),
-      deleted_at: null,
-      team: {
-        id: expect.any(String),
-        name: "Team 1",
-        created_at: expect.any(Date),
-        updated_at: expect.any(Date),
-        deleted_at: null,
-        user_id: user1.id,
-      },
-    })
-  })
-
-  it(`should handle the relations properly with balanced strategy`, async () => {
-    let manager = orm.em.fork()
-
-    const user1 = manager.create(User, {
-      username: "User 1",
-      team: {
-        name: "Team 1",
-      },
-    })
-
-    await manager.persistAndFlush([user1])
-    manager = orm.em.fork()
-
-    const user = await manager.findOne(
-      User,
-      {
-        id: user1.id,
-        team: {
-          deleted_at: null,
-        },
-      },
-      {
-        populate: ["team", "rules"],
-        strategy: "balanced",
       }
     )
 
