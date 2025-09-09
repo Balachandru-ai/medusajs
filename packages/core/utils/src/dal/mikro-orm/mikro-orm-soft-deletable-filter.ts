@@ -7,10 +7,7 @@ interface FilterArguments {
 
 export const mikroOrmSoftDeletableFilterOptions = {
   name: SoftDeletableFilterKey,
-  cond: (...args: any[]) => {
-    // @ts-ignore
-    const [args_, type, em, options, entityName] = args
-    const { withDeleted } = args_ ?? {}
+  cond: ({ withDeleted }: FilterArguments = {}) => {
     if (withDeleted) {
       return {}
     }

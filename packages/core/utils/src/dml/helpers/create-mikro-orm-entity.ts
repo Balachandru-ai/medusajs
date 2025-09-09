@@ -8,7 +8,10 @@ import type {
 } from "@medusajs/types"
 import { Entity, Filter, MetadataStorage } from "@mikro-orm/core"
 
-import { mikroOrmFreeTextSearchFilterOptionsFactory } from "../../dal"
+import {
+  mikroOrmFreeTextSearchFilterOptionsFactory,
+  mikroOrmSoftDeletableFilterOptions,
+} from "../../dal"
 import { DmlEntity } from "../entity"
 import { DuplicateIdPropertyError } from "../errors"
 import { IdProperty } from "../properties/id"
@@ -115,7 +118,7 @@ function createMikrORMEntity() {
     )
 
     Entity({ tableName })(
-      MikroORMEntity //Filter(mikroOrmSoftDeletableFilterOptions)()
+      Filter(mikroOrmSoftDeletableFilterOptions)(MikroORMEntity)
     ) as any
 
     const entityMetadata =
