@@ -140,11 +140,26 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
-  listActivePromotions(
+  async listActivePromotions(
     filters?: FilterablePromotionProps,
     config?: FindConfig<PromotionDTO>,
     sharedContext?: Context
   ): Promise<PromotionDTO[]> {
+    const activePromotions = await this.listActivePromotions_(
+      filters,
+      config,
+      sharedContext
+    )
+
+    return this.baseRepository_.serialize<PromotionDTO[]>(activePromotions)
+  }
+
+  @InjectManager()
+  protected async listActivePromotions_(
+    filters?: FilterablePromotionProps,
+    config?: FindConfig<PromotionDTO>,
+    @MedusaContext() sharedContext?: Context
+  ): Promise<InferEntityType<typeof Promotion>[]> {
     // Ensure we share the same now date across all filters
     const now = new Date()
     const activeFilters = {
@@ -171,7 +186,11 @@ export default class PromotionModuleService
       ],
     }
 
-    return this.listPromotions(activeFilters, config, sharedContext)
+    return await this.promotionService_.list(
+      activeFilters,
+      config,
+      sharedContext
+    )
   }
 
   @InjectTransactionManager()
@@ -187,7 +206,7 @@ export default class PromotionModuleService
     const campaignBudgetMap = new Map<string, UpdateCampaignBudgetDTO>()
     const promotionCodeUsageMap = new Map<string, boolean>()
 
-    const existingPromotions = await this.listActivePromotions(
+    const existingPromotions = await this.listActivePromotions_(
       { code: promotionCodes },
       { relations: ["campaign", "campaign.budget"] },
       sharedContext
@@ -202,9 +221,10 @@ export default class PromotionModuleService
       }
     }
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      existingPromotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(existingPromotions.map((promotion) => [promotion.code!, promotion]))
 
     for (let computedAction of computedActions) {
       const promotion = existingPromotionsMap.get(computedAction.code)
@@ -296,7 +316,7 @@ export default class PromotionModuleService
     const promotionCodeUsageMap = new Map<string, boolean>()
     const campaignBudgetMap = new Map<string, UpdateCampaignBudgetDTO>()
 
-    const existingPromotions = await this.listActivePromotions(
+    const existingPromotions = await this.listActivePromotions_(
       {
         code: computedActions
           .map((computedAction) => computedAction.code)
@@ -315,9 +335,10 @@ export default class PromotionModuleService
       }
     }
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      existingPromotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(existingPromotions.map((promotion) => [promotion.code!, promotion]))
 
     for (let computedAction of computedActions) {
       const promotion = existingPromotionsMap.get(computedAction.code)

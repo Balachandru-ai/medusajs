@@ -12,7 +12,11 @@ import {
   Logger,
   MedusaContainer,
 } from "@medusajs/framework/types"
-import { isString, TransactionState } from "@medusajs/framework/utils"
+import {
+  isString,
+  promiseAll,
+  TransactionState,
+} from "@medusajs/framework/utils"
 import {
   FlowCancelOptions,
   FlowRunOptions,
@@ -21,7 +25,6 @@ import {
   ReturnWorkflow,
 } from "@medusajs/framework/workflows-sdk"
 import Redis from "ioredis"
-import { setTimeout } from "timers"
 import { ulid } from "ulid"
 import type { RedisDistributedTransactionStorage } from "../utils"
 
@@ -112,7 +115,6 @@ export class WorkflowOrchestratorService {
   protected redisSubscriber: Redis
   protected container_: MedusaContainer
   private subscribers: Subscribers = new Map()
-  private activeStepsCount: number = 0
 
   readonly #logger: Logger
 
@@ -149,10 +151,16 @@ export class WorkflowOrchestratorService {
     this.redisDistributedTransactionStorage_ =
       redisDistributedTransactionStorage
 
-    this.redisSubscriber.on("message", async (_, message) => {
-      const { instanceId, data } = JSON.parse(message)
+    this.redisSubscriber.on("message", async (channel, message) => {
+      const workflowId = channel.split(":")[1]
+      if (!this.subscribers.has(workflowId)) return
 
-      await this.notify(data, false, instanceId)
+      try {
+        const { instanceId, data } = JSON.parse(message)
+        await this.notify(data, false, instanceId)
+      } catch (error) {
+        this.#logger.error(`Failed to process Redis message: ${error}`)
+      }
     })
   }
 
@@ -163,10 +171,6 @@ export class WorkflowOrchestratorService {
   async onApplicationPrepareShutdown() {
     // eslint-disable-next-line max-len
     await this.redisDistributedTransactionStorage_.onApplicationPrepareShutdown()
-
-    while (this.activeStepsCount > 0) {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    }
   }
 
   async onApplicationStart() {
@@ -745,70 +749,67 @@ export class WorkflowOrchestratorService {
       return
     }
 
-    const {
-      isFlowAsync,
-      eventType,
-      workflowId,
-      transactionId,
-      errors,
-      result,
-      step,
-      response,
-      state,
-    } = options
+    const { workflowId, isFlowAsync } = options
 
+    // Non-blocking Redis publishing
     if (publish && isFlowAsync) {
-      const channel = this.getChannelName(options.workflowId)
-      const message = JSON.stringify({
-        instanceId: this.instanceId,
-        data: options,
+      setImmediate(async () => {
+        try {
+          const channel = this.getChannelName(workflowId)
+          const message = JSON.stringify({
+            instanceId: this.instanceId,
+            data: options,
+          })
+          await this.redisPublisher.publish(channel, message)
+        } catch (error) {
+          this.#logger.error(`Failed to publish to Redis: ${error}`)
+        }
       })
-      await this.redisPublisher.publish(channel, message)
     }
 
+    // Process subscribers asynchronously
+    setImmediate(() => this.processSubscriberNotifications(options))
+  }
+
+  private async processSubscriberNotifications(options: NotifyOptions) {
+    const { workflowId, transactionId, eventType } = options
     const subscribers: TransactionSubscribers =
       this.subscribers.get(workflowId) ?? new Map()
 
-    const notifySubscribers = (handlers: SubscriberHandler[]) => {
-      handlers.forEach((handler) => {
-        const args = {
-          eventType,
-          workflowId,
-          transactionId,
-          isFlowAsync,
-          step,
-          response,
-          result,
-          errors,
-          state,
-        }
-        const isPromise = "then" in handler
-        if (isPromise) {
-          ;(handler(args) as unknown as Promise<any>).catch((e) => {
-            this.#logger.error(e)
-          })
-        } else {
-          try {
-            handler(args)
-          } catch (e) {
-            this.#logger.error(e)
+    const notifySubscribersAsync = async (handlers: SubscriberHandler[]) => {
+      const promises = handlers.map(async (handler) => {
+        try {
+          const result = handler(options) as void | Promise<any>
+          if (result && typeof result === "object" && "then" in result) {
+            await (result as Promise<any>)
           }
+        } catch (error) {
+          this.#logger.error(`Subscriber error: ${error}`)
         }
       })
+
+      await promiseAll(promises)
     }
+
+    const tasks: Promise<void>[] = []
 
     if (transactionId) {
       const transactionSubscribers = subscribers.get(transactionId) ?? []
-      notifySubscribers(transactionSubscribers)
+      if (transactionSubscribers.length > 0) {
+        tasks.push(notifySubscribersAsync(transactionSubscribers))
+      }
 
-      // removes transaction id subscribers on finish
       if (eventType === "onFinish") {
         subscribers.delete(transactionId)
       }
     }
 
     const workflowSubscribers = subscribers.get(AnySubscriber) ?? []
-    notifySubscribers(workflowSubscribers)
+    if (workflowSubscribers.length > 0) {
+      tasks.push(notifySubscribersAsync(workflowSubscribers))
+    }
+
+    await promiseAll(tasks)
   }
 
   private getChannelName(workflowId: string): string {
@@ -890,8 +891,6 @@ export class WorkflowOrchestratorService {
 
       onStepBegin: async ({ step, transaction }) => {
         customEventHandlers?.onStepBegin?.({ step, transaction })
-        this.activeStepsCount++
-
         await notify({
           eventType: "onStepBegin",
           step,
@@ -911,8 +910,6 @@ export class WorkflowOrchestratorService {
           response,
           isFlowAsync: transaction.getFlow().hasAsyncSteps,
         })
-
-        this.activeStepsCount--
       },
       onStepFailure: async ({ step, transaction }) => {
         const stepName = step.definition.action!
@@ -927,8 +924,6 @@ export class WorkflowOrchestratorService {
           errors,
           isFlowAsync: transaction.getFlow().hasAsyncSteps,
         })
-
-        this.activeStepsCount--
       },
       onStepAwaiting: async ({ step, transaction }) => {
         customEventHandlers?.onStepAwaiting?.({ step, transaction })
@@ -938,8 +933,6 @@ export class WorkflowOrchestratorService {
           step,
           isFlowAsync: transaction.getFlow().hasAsyncSteps,
         })
-
-        this.activeStepsCount--
       },
 
       onCompensateStepSuccess: async ({ step, transaction }) => {

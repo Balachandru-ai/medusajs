@@ -55,7 +55,7 @@ export interface OptionsQuery<T> {
   /**
    * Load strategy (e.g for mikro orm it accept select-in or joined)
    */
-  strategy?: "select-in" | "joined" | (string & {})
+  strategy?: "select-in" | "joined" | "balanced" | (string & {})
 }
 
 /**
