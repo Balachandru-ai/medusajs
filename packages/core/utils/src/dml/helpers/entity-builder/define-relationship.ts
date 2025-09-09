@@ -163,6 +163,7 @@ export function defineHasOneRelationship(
     entity: relatedModelName,
     ...(relationship.nullable ? { nullable: relationship.nullable } : {}),
     ...(mappedBy ? { mappedBy } : {}),
+    owner: false,
     deleteRule: shouldRemoveRelated ? "cascade" : undefined,
   } as OneToOneOptions<any, any>
 
@@ -509,9 +510,6 @@ export function defineBelongsToRelationship(
       mappedBy: mappedBy,
       fieldName: foreignKeyName,
       owner: true,
-      /**
-       * If we decide to support non soft deletable then this should be true and the unique index id should be removed
-       */
       unique: false,
       // orphanRemoval: true,
     }

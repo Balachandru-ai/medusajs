@@ -1,6 +1,7 @@
 import {
   BigNumberInput,
   CampaignBudgetExceededAction,
+  InferEntityType,
   PromotionDTO,
 } from "@medusajs/framework/types"
 import {
@@ -8,9 +9,10 @@ import {
   ComputedActions,
   MathBN,
 } from "@medusajs/framework/utils"
+import { Promotion } from "@models"
 
 export function computeActionForBudgetExceeded(
-  promotion: PromotionDTO,
+  promotion: PromotionDTO | InferEntityType<typeof Promotion>,
   amount: BigNumberInput
 ): CampaignBudgetExceededAction | void {
   const campaignBudget = promotion.campaign?.budget

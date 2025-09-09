@@ -465,10 +465,12 @@ export default class PromotionModuleService
           $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
         }
 
-    const promotions = await this.listActivePromotions(
+    const promotions = await this.listActivePromotions_(
       queryFilter,
       {
-        take: null,
+        options: {
+          strategy: "balanced",
+        },
         order: { application_method: { value: "DESC" } },
         relations: [
           "application_method",
@@ -485,12 +487,18 @@ export default class PromotionModuleService
       sharedContext
     )
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      promotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(promotions.map((promotion) => [promotion.code!, promotion]))
 
-    const automaticPromotions = promotions.filter((p) => p.is_automatic)
-    const automaticPromotionCodes = automaticPromotions.map((p) => p.code!)
+    const automaticPromotionCodes: string[] = []
+
+    for (const promotion of promotions) {
+      if (promotion.is_automatic) {
+        automaticPromotionCodes.push(promotion.code!)
+      }
+    }
 
     for (const [code, adjustments] of codeAdjustmentMap.entries()) {
       for (const adjustment of adjustments.items) {
@@ -510,11 +518,14 @@ export default class PromotionModuleService
       }
     }
 
+    const promotionCodeSet = new Set<string>(promotionCodes)
+    const automaticPromotionCodeSet = new Set<string>(automaticPromotionCodes)
+
     const sortedPromotionsToApply = promotions
       .filter(
         (p) =>
-          promotionCodes.includes(p.code!) ||
-          automaticPromotionCodes.includes(p.code!)
+          promotionCodeSet.has(p.code!) ||
+          automaticPromotionCodeSet.has(p.code!)
       )
       .sort(ComputeActionUtils.sortByBuyGetType)
 
@@ -529,14 +540,14 @@ export default class PromotionModuleService
 
     for (const promotionToApply of sortedPromotionsToApply) {
       const promotion = existingPromotionsMap.get(promotionToApply.code!)!
+      if (!promotion.application_method) {
+        continue
+      }
+
       const {
         application_method: applicationMethod,
         rules: promotionRules = [],
       } = promotion
-
-      if (!applicationMethod) {
-        continue
-      }
 
       const isCurrencyCodeValid =
         !isPresent(applicationMethod.currency_code) ||
