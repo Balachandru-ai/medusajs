@@ -11758,6 +11758,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Meta Product Feed",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Implement Personalized Products",
               "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example",
               "children": []
