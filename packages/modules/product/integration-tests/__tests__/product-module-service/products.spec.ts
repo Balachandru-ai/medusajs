@@ -864,7 +864,12 @@ moduleIntegrationTestRunner<IProductModuleService>({
           await service.upsertProducts([updateData])
 
           const product = await service.retrieveProduct(productTwo.id, {
-            relations: ["*"],
+            relations: [
+              "options",
+              "options.values",
+              "variants",
+              "variants.options",
+            ],
           })
 
           expect(product.options).toHaveLength(1)
