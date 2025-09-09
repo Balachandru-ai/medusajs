@@ -19,6 +19,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useQueryGraphStep } from "../../common"
 import { deleteLineItemsStep } from "../../line-item"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import {
   findOrCreateCustomerStep,
   findSalesChannelStep,
@@ -83,6 +84,13 @@ export const updateCartWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
+    acquireLockStep({
+      key: input.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const { data: cartToUpdate } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.id },
@@ -307,6 +315,11 @@ export const updateCartWorkflow = createWorkflow(
     const cartUpdated = createHook("cartUpdated", {
       cart,
       additional_data: input.additional_data,
+    })
+
+    releaseLockStep({
+      key: input.id,
+      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(void 0, {

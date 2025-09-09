@@ -91,7 +91,7 @@ class DistributedTransaction extends EventEmitter {
    *
    * @private
    */
-  #temporaryStorage = new Map<string, unknown>()
+  #temporaryStorage = new WeakMap<{ key: string }, unknown>()
 
   public static setStorage(storage: IDistributedTransactionStorage) {
     this.keyValueStore = storage
@@ -312,15 +312,15 @@ class DistributedTransaction extends EventEmitter {
   }
 
   public setTemporaryData(key: string, value: unknown) {
-    this.#temporaryStorage.set(key, value)
+    this.#temporaryStorage.set({ key }, value)
   }
 
   public getTemporaryData(key: string) {
-    return this.#temporaryStorage.get(key)
+    return this.#temporaryStorage.get({ key })
   }
 
   public hasTemporaryData(key: string) {
-    return this.#temporaryStorage.has(key)
+    return this.#temporaryStorage.has({ key })
   }
 
   /**

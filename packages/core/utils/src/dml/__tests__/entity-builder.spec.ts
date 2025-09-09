@@ -162,7 +162,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -306,7 +306,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -441,7 +441,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -555,7 +555,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -701,7 +701,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -858,7 +858,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         created_at: {
@@ -3916,6 +3916,7 @@ describe("Entity builder", () => {
           type: "string",
         },
         group: {
+          defaultRaw: "",
           entity: "Group",
           fieldName: "group_id",
           name: "group",
@@ -4536,6 +4537,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         user: {
+          defaultRaw: "",
           entity: "User",
           fieldName: "user_id",
           name: "user",
@@ -5147,6 +5149,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         user: {
+          defaultRaw: "",
           name: "user",
           kind: "m:1",
           entity: "User",
@@ -5336,6 +5339,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         user: {
+          defaultRaw: "",
           name: "user",
           kind: "m:1",
           fieldName: "user_id",
@@ -5884,6 +5888,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         parent: {
+          defaultRaw: "",
           name: "parent",
           fieldName: "parent_id",
           kind: "m:1",
@@ -6135,6 +6140,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -6204,6 +6210,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           inversedBy: "teams",
@@ -6316,6 +6323,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -6385,6 +6393,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "User",
@@ -6611,6 +6620,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -6680,6 +6690,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "User",
@@ -6792,6 +6803,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -6861,6 +6873,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "User",
@@ -6991,6 +7004,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -6999,6 +7013,7 @@ describe("Entity builder", () => {
           mappedBy: "users",
         },
         activeTeams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "activeTeams",
           entity: "Team",
@@ -7068,6 +7083,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "User",
@@ -7076,6 +7092,7 @@ describe("Entity builder", () => {
           inversedBy: "teams",
         },
         activeTeamsUsers: {
+          defaultRaw: "",
           kind: "m:n",
           name: "activeTeamsUsers",
           entity: "User",
@@ -7191,6 +7208,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -7261,6 +7279,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "User",
@@ -7349,6 +7368,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "TeamSquad",
@@ -7418,6 +7438,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "RandomUser",
@@ -7533,6 +7554,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",
@@ -7602,6 +7624,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           owner: false,
@@ -7811,6 +7834,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         users: {
+          defaultRaw: "",
           kind: "m:n",
           name: "users",
           entity: "User",
@@ -7880,6 +7904,7 @@ describe("Entity builder", () => {
           setter: false,
         },
         teams: {
+          defaultRaw: "",
           kind: "m:n",
           name: "teams",
           entity: "Team",

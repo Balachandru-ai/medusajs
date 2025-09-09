@@ -9,6 +9,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { removeShippingMethodFromCartStep } from "../steps"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
@@ -96,6 +97,13 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
       return fetchCart ?? input.cart
+    })
+
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
     })
 
     const listShippingOptionsInput = transform({ cart }, ({ cart }) =>
@@ -193,6 +201,11 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
         }),
         updateShippingMethodsStep(shippingMethodsData.shippingMethodsToUpdate)
       )
+
+      releaseLockStep({
+        key: cart.id,
+        skipOnSubWorkflow: true,
+      })
     })
 
     return new WorkflowResponse(void 0, {
