@@ -7,7 +7,6 @@ const baseRepoMock = {
   serialize: jest.fn().mockImplementation((item) => item),
   transaction: (task) => task("transactionManager"),
   getFreshManager: jest.fn().mockReturnThis(),
-  getActiveManager: jest.fn().mockReturnThis(),
 }
 
 const defaultContext = {

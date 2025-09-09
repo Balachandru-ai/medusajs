@@ -12,7 +12,7 @@ export async function createCampaigns(
   campaignsData?: CreateCampaignDTO[]
 ): Promise<Campaign[]> {
   if (!campaignsData) {
-    const cp = structuredClone(defaultCampaignsData)
+    const cp = JSON.parse(JSON.stringify(defaultCampaignsData))
 
     const starts_at = new Date(TODAY)
     starts_at.setDate(starts_at.getDate() - 1)

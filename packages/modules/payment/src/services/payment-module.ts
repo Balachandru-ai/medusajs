@@ -267,7 +267,7 @@ export default class PaymentModuleService
     )
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
   async updatePaymentCollections_(
     data: UpdatePaymentCollectionDTO[],
     @MedusaContext() sharedContext?: Context

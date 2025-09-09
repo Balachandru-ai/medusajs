@@ -885,8 +885,7 @@ export default class PricingModuleService
               return {
                 attribute,
                 operator: customRule.operator,
-                // TODO: we throw above if value is not a number, but the model expect the value to be a string
-                value: customRule.value.toString(),
+                value: customRule.value,
               }
             })
           }
