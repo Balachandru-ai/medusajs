@@ -8,6 +8,7 @@ import type {
 } from "@medusajs/types"
 import { Entity, Filter, MetadataStorage } from "@mikro-orm/core"
 
+import { mikroOrmFreeTextSearchFilterOptionsFactory } from "../../dal"
 import { DmlEntity } from "../entity"
 import { DuplicateIdPropertyError } from "../errors"
 import { IdProperty } from "../properties/id"
@@ -17,10 +18,6 @@ import { defineRelationship } from "./entity-builder/define-relationship"
 import { parseEntityName } from "./entity-builder/parse-entity-name"
 import { applyChecks } from "./mikro-orm/apply-checks"
 import { applyEntityIndexes, applyIndexes } from "./mikro-orm/apply-indexes"
-import {
-  mikroOrmFreeTextSearchFilterOptionsFactory,
-  mikroOrmSoftDeletableFilterOptions,
-} from "../../dal"
 
 /**
  * Factory function to create the mikro orm entity builder. The return
@@ -118,7 +115,7 @@ function createMikrORMEntity() {
     )
 
     Entity({ tableName })(
-      Filter(mikroOrmSoftDeletableFilterOptions)(MikroORMEntity)
+      MikroORMEntity //Filter(mikroOrmSoftDeletableFilterOptions)()
     ) as any
 
     const entityMetadata =

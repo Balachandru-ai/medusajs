@@ -16,15 +16,9 @@ export const mikroOrmSoftDeletableFilterOptions = {
     if (withDeleted) {
       return {}
     }
-    return Object.values(options.populate || {}).some(
-      (p: any) => p.strategy !== "joined"
-    )
-      ? {}
-      : {
-          [raw((alias) => {
-            return `${alias}.deleted_at`
-          })]: null,
-        }
+    return {
+      deleted_at: null,
+    }
   },
   default: true,
   args: false,

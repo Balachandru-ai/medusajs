@@ -163,7 +163,6 @@ export function defineHasOneRelationship(
     entity: relatedModelName,
     ...(relationship.nullable ? { nullable: relationship.nullable } : {}),
     ...(mappedBy ? { mappedBy } : {}),
-    owner: false,
     deleteRule: shouldRemoveRelated ? "cascade" : undefined,
   } as OneToOneOptions<any, any>
 

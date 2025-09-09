@@ -468,9 +468,6 @@ export default class PromotionModuleService
     const promotions = await this.listActivePromotions_(
       queryFilter,
       {
-        options: {
-          strategy: "balanced",
-        },
         order: { application_method: { value: "DESC" } },
         relations: [
           "application_method",
