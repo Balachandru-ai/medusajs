@@ -18,6 +18,7 @@ import {
   CampaignBudgetType,
   ComputedActions,
   deduplicate,
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isDefined,
