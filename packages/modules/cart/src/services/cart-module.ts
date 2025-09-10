@@ -13,6 +13,7 @@ import {
   createRawPropertiesFromBigNumber,
   decorateCartTotals,
   deduplicate,
+  EmitEvents,
   generateEntityId,
   InjectManager,
   InjectTransactionManager,
@@ -269,6 +270,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createCarts(
     data: CartTypes.CreateCartDTO[] | CartTypes.CreateCartDTO,
@@ -340,6 +342,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateCarts(
     dataOrIdOrSelector:
@@ -425,6 +428,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartLineItemDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async addLineItems(
     cartIdOrData:
       | string
@@ -504,6 +508,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartLineItemDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateLineItems(
     lineItemIdOrDataOrSelector:
@@ -606,6 +611,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartAddressDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createAddresses(
     data: CartTypes.CreateAddressDTO[] | CartTypes.CreateAddressDTO,
@@ -645,6 +651,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartAddressDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateAddresses(
     data: CartTypes.UpdateAddressDTO[] | CartTypes.UpdateAddressDTO,
@@ -685,6 +692,7 @@ export default class CartModuleService
   ): Promise<CartTypes.CartShippingMethodDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async addShippingMethods(
     cartIdOrData:
       | string
@@ -763,6 +771,7 @@ export default class CartModuleService
   ): Promise<CartTypes.LineItemAdjustmentDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async addLineItemAdjustments(
     cartIdOrData:
       | string
@@ -827,6 +836,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async upsertLineItemTaxLines(
     taxLines: (
       | CartTypes.CreateLineItemTaxLineDTO
@@ -861,6 +871,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async upsertLineItemAdjustments(
     adjustments: (
       | CartTypes.CreateLineItemAdjustmentDTO
@@ -895,6 +906,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async upsertShippingMethodTaxLines(
     taxLines: (
       | CartTypes.CreateShippingMethodTaxLineDTO
@@ -929,6 +941,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async upsertShippingMethodAdjustments(
     adjustments: (
       | CartTypes.CreateShippingMethodAdjustmentDTO
@@ -963,6 +976,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async setLineItemAdjustments(
     cartId: string,
     adjustments: (
@@ -1036,6 +1050,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async setShippingMethodAdjustments(
     cartId: string,
     adjustments: (
@@ -1122,6 +1137,7 @@ export default class CartModuleService
   ): Promise<CartTypes.ShippingMethodAdjustmentDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async addShippingMethodAdjustments(
     cartIdOrData:
       | string
@@ -1212,6 +1228,7 @@ export default class CartModuleService
   ): Promise<CartTypes.LineItemTaxLineDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async addLineItemTaxLines(
     cartIdOrData:
       | string
@@ -1275,6 +1292,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async setLineItemTaxLines(
     cartId: string,
     taxLines: (
@@ -1357,6 +1375,7 @@ export default class CartModuleService
   ): Promise<CartTypes.ShippingMethodTaxLineDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async addShippingMethodTaxLines(
     cartIdOrData:
       | string
@@ -1422,6 +1441,7 @@ export default class CartModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async setShippingMethodTaxLines(
     cartId: string,
     taxLines: (

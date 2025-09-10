@@ -452,9 +452,7 @@ export class ProductCategoryRepository extends DALUtils.MikroOrmBaseTreeReposito
         }
         let productCategory = await manager.findOne<
           InferEntityType<typeof ProductCategory>
-        >(ProductCategory.name, {
-          id: categoryData.id,
-        })
+        >(ProductCategory.name, categoryData.id!)
 
         if (!productCategory) {
           throw new MedusaError(
