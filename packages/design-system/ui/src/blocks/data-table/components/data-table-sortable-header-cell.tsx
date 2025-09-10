@@ -39,7 +39,6 @@ export const DataTableSortableHeaderCell = React.forwardRef<
     transition,
     opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 50 : undefined,
-    backgroundColor: "white",
     position: 'relative' as const,
   }
 
@@ -58,7 +57,7 @@ export const DataTableSortableHeaderCell = React.forwardRef<
     <Table.HeaderCell
       ref={combineRefs}
       style={style}
-      className={clx(className, "group/header-cell relative")}
+      className={clx(className, "group/header-cell relative bg-ui-bg-base")}
       {...attributes}
       {...listeners}
       {...props}

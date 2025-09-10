@@ -551,11 +551,10 @@ export const generateEntityColumns = (
         semantic_type: "computed",
         context: "display",
         computed: {
-          type: columnConfig.render_type || columnConfig.computation_type, // Support both for backwards compat
+          type: columnConfig.render_type,
           required_fields: columnConfig.required_fields,
           optional_fields: columnConfig.optional_fields || [],
         },
-        render_type: columnConfig.render_type || columnConfig.computation_type,
         default_order: defaultOrder,
         category,
       })
