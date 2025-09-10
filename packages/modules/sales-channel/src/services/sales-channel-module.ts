@@ -68,7 +68,7 @@ export default class SalesChannelModuleService
   ): Promise<SalesChannelDTO>
 
   @InjectManager()
-
+  @EmitEvents()
   // @ts-expect-error
   async createSalesChannels(
     data: CreateSalesChannelDTO | CreateSalesChannelDTO[],
