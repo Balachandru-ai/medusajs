@@ -90,7 +90,7 @@ export function generateEntity(
         type: "date",
         nullable: true,
       },
-    },
+    } as any,
     filters: {
       [SoftDeletableFilterKey]: mikroOrmSoftDeletableFilterOptions,
     },
