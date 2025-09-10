@@ -3,13 +3,14 @@ import {
   Context,
   FindConfig,
   IDmlEntity,
+  InferEntityForModuleService,
+  InferEntityType,
   Pluralize,
   Prettify,
   RestoreReturn,
   SoftDeleteReturn,
-  InferEntityType,
-  InferEntityForModuleService,
 } from "@medusajs/types"
+import { EventArgs } from "@mikro-orm/core"
 import { DmlEntity } from "../../dml"
 
 export type BaseMethods =
@@ -318,4 +319,22 @@ export type MedusaServiceReturnType<ModelsConfig extends Record<string, any>> =
       data: { id: any } | { id: any }[]
       context: Context
     }): void
+
+    /**
+     * this method is meant to react to any event the orm might emit
+     * when an entity is being mutated (created, updated, deleted).
+     * The default implementation will handle all event to be emitted as part
+     * of the message aggregator from the context.
+     *
+     * If you want to handle the event differently, you can override this method.
+     *
+     * @param event - The event type
+     * @param args - The event arguments
+     * @param context - The context
+     */
+    interceptEntityMutationEvents(
+      event: "afterCreate" | "afterUpdate" | "afterUpsert" | "afterDelete",
+      args: EventArgs<any>,
+      context: Context
+    ): void
   }

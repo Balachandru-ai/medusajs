@@ -13,6 +13,7 @@ import {
   UpsertSalesChannelDTO,
 } from "@medusajs/framework/types"
 import {
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isString,
@@ -67,6 +68,7 @@ export default class SalesChannelModuleService
   ): Promise<SalesChannelDTO>
 
   @InjectManager()
+
   // @ts-expect-error
   async createSalesChannels(
     data: CreateSalesChannelDTO | CreateSalesChannelDTO[],
@@ -77,10 +79,7 @@ export default class SalesChannelModuleService
     const result = await this.createSalesChannels_(input, sharedContext)
 
     return await this.baseRepository_.serialize<SalesChannelDTO[]>(
-      Array.isArray(data) ? result : result[0],
-      {
-        populate: true,
-      }
+      Array.isArray(data) ? result : result[0]
     )
   }
 
@@ -106,6 +105,7 @@ export default class SalesChannelModuleService
   ): Promise<SalesChannelDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateSalesChannels(
     idOrSelector: string | FilterableSalesChannelProps,
@@ -134,10 +134,7 @@ export default class SalesChannelModuleService
     )
 
     return await this.baseRepository_.serialize<SalesChannelDTO[]>(
-      Array.isArray(data) ? result : result[0],
-      {
-        populate: true,
-      }
+      Array.isArray(data) ? result : result[0]
     )
   }
 
@@ -157,11 +154,25 @@ export default class SalesChannelModuleService
     data: UpsertSalesChannelDTO,
     sharedContext?: Context
   ): Promise<SalesChannelDTO>
+  @InjectManager()
+  @EmitEvents()
   @InjectTransactionManager()
   async upsertSalesChannels(
     data: UpsertSalesChannelDTO | UpsertSalesChannelDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<SalesChannelDTO | SalesChannelDTO[]> {
+    const result = await this.upsertSalesChannels_(data, sharedContext)
+
+    return await this.baseRepository_.serialize<
+      SalesChannelDTO[] | SalesChannelDTO
+    >(Array.isArray(data) ? result : result[0])
+  }
+
+  @InjectTransactionManager()
+  protected async upsertSalesChannels_(
+    data: UpsertSalesChannelDTO | UpsertSalesChannelDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof SalesChannel>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (channel): channel is UpdateSalesChannelDTO => !!channel.id
@@ -180,8 +191,7 @@ export default class SalesChannelModuleService
     }
 
     const result = (await promiseAll(operations)).flat()
-    return await this.baseRepository_.serialize<
-      SalesChannelDTO[] | SalesChannelDTO
-    >(Array.isArray(data) ? result : result[0])
+
+    return result
   }
 }
