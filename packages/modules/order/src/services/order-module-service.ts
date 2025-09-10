@@ -3755,7 +3755,7 @@ export default class OrderModuleService
     isRemoved: boolean,
     @MedusaContext() sharedContext: Context = {}
   ) {
-    const summaries: any = await super.listOrderSummaries(
+    const summaries: any = await this.orderSummaryService_.list(
       {
         order_id: transactionData.map((trx) => trx.order_id),
         version: transactionData[0].version,
