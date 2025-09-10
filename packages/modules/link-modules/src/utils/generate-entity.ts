@@ -115,13 +115,13 @@ export function generateEntity(
           hashTableName,
         expression:
           "CREATE INDEX IF NOT EXISTS " +
-          "IDX_" +
+          '"IDX_' +
           primary.foreignKey.split(",").join("_") +
           "_" +
           hashTableName +
-          " ON " +
+          '" ON "' +
           compressName(tableName) +
-          " (" +
+          '" ("' +
           primary.foreignKey.split(",").join(",") +
           ") WHERE deleted_at IS NULL",
       },
@@ -130,15 +130,15 @@ export function generateEntity(
         name: "IDX_" + foreign.foreignKey + "_" + hashTableName,
         expression:
           "CREATE INDEX IF NOT EXISTS " +
-          "IDX_" +
+          '"IDX_' +
           foreign.foreignKey +
           "_" +
           hashTableName +
-          " ON " +
+          '" ON "' +
           compressName(tableName) +
-          " (" +
+          '" ("' +
           foreign.foreignKey +
-          ") WHERE deleted_at IS NULL",
+          '") WHERE deleted_at IS NULL',
       },
       {
         properties: ["deleted_at"],
