@@ -1566,7 +1566,7 @@ export default class PromotionModuleService
   @EmitEvents()
   async addPromotionsToCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    sharedContext?: Context
+    @MedusaContext() sharedContext?: Context
   ): Promise<{ ids: string[] }> {
     const ids = await this.addPromotionsToCampaign_(data, sharedContext)
 
@@ -1634,7 +1634,7 @@ export default class PromotionModuleService
   @EmitEvents()
   async removePromotionsFromCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    sharedContext?: Context
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<{ ids: string[] }> {
     const ids = await this.removePromotionsFromCampaign_(data, sharedContext)
 
