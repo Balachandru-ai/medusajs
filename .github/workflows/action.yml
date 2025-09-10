@@ -205,7 +205,7 @@ jobs:
     name: Module Integration Tests - Shard ${{ matrix.shard_index }}
     strategy:
       matrix:
-        shard_index: [1, 2, 3]
+        shard_index: [1, 2]
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
