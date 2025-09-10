@@ -15,6 +15,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   arrayDifference,
+  EmitEvents,
   getDuplicates,
   InjectManager,
   InjectTransactionManager,
@@ -78,6 +79,7 @@ export default class RegionModuleService
   ): Promise<RegionDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createRegions(
     data: CreateRegionDTO | CreateRegionDTO[],
@@ -132,6 +134,7 @@ export default class RegionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async softDeleteRegions(
     ids: string | object | string[] | object[],
@@ -160,11 +163,24 @@ export default class RegionModuleService
     sharedContext?: Context
   ): Promise<RegionDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async upsertRegions(
     data: UpsertRegionDTO | UpsertRegionDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<RegionDTO | RegionDTO[]> {
+    const result = await this.upsertRegions_(data, sharedContext)
+
+    return await this.baseRepository_.serialize<RegionDTO[] | RegionDTO>(
+      Array.isArray(data) ? result : result[0]
+    )
+  }
+
+  @InjectTransactionManager()
+  protected async upsertRegions_(
+    data: UpsertRegionDTO | UpsertRegionDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof Region>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (region): region is UpdateRegionInput => !!region.id
@@ -183,9 +199,8 @@ export default class RegionModuleService
     }
 
     const result = (await promiseAll(operations)).flat()
-    return await this.baseRepository_.serialize<RegionDTO[] | RegionDTO>(
-      Array.isArray(data) ? result : result[0]
-    )
+
+    return result
   }
 
   // @ts-expect-error
@@ -202,6 +217,7 @@ export default class RegionModuleService
   ): Promise<RegionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateRegions(
     idOrSelector: string | FilterableRegionProps,
