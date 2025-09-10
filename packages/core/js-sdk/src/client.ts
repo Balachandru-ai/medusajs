@@ -250,7 +250,10 @@ export class Client {
           const params = Object.fromEntries(
             normalizedInput.searchParams.entries()
           )
-          const stringifiedQuery = stringify({ ...params, ...init.query })
+          const query = { ...params, ...init.query }
+          // qs.stringify turns null values into empty strings
+          const nullEscapedQuery = JSON.parse(JSON.stringify(query, (_, value) => (value === null ? "null" : value)))
+          const stringifiedQuery = stringify(nullEscapedQuery)
           normalizedInput.search = stringifiedQuery
         }
       }
