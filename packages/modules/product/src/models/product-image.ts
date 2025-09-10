@@ -33,6 +33,12 @@ const ProductImage = model
       unique: false,
       where: "deleted_at IS NULL",
     },
+    {
+      name: "IDX_product_image_rank_product_id",
+      on: ["rank", "product_id"],
+      unique: false,
+      where: "deleted_at IS NULL",
+    },
   ])
 
 export default ProductImage

@@ -17,6 +17,9 @@ export class Migration20250910154539 extends Migration {
     this.addSql(
       `CREATE INDEX IF NOT EXISTS "IDX_product_image_url_rank_product_id" ON "image" (url, rank, product_id) WHERE deleted_at IS NULL;`
     )
+    this.addSql(
+      `CREATE INDEX IF NOT EXISTS "IDX_product_image_rank_product_id" ON "image" (rank, product_id) WHERE deleted_at IS NULL;`
+    )
   }
 
   override async down(): Promise<void> {
@@ -28,5 +31,6 @@ export class Migration20250910154539 extends Migration {
     this.addSql(
       `alter table if exists "image" drop constraint if exists "image_pkey";`
     )
+    this.addSql(`drop index if exists "IDX_product_image_rank_product_id";`)
   }
 }
