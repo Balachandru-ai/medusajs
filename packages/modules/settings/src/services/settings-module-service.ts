@@ -7,6 +7,7 @@ import {
   SettingsTypes,
 } from "@medusajs/framework/types"
 import {
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   MedusaContext,
@@ -50,7 +51,8 @@ export default class SettingsModuleService
     this.userPreferenceService_ = userPreferenceService
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createViewConfigurations(
     data:
@@ -97,10 +99,14 @@ export default class SettingsModuleService
       dataArray,
       sharedContext
     )
-    return isArrayInput ? result : result[0]
+
+    return await this.baseRepository_.serialize<
+      SettingsTypes.ViewConfigurationDTO[] | SettingsTypes.ViewConfigurationDTO
+    >(isArrayInput ? result : result[0])
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateViewConfigurations(
     idOrSelector: string | SettingsTypes.FilterableViewConfigurationProps,
@@ -109,6 +115,25 @@ export default class SettingsModuleService
   ): Promise<
     SettingsTypes.ViewConfigurationDTO | SettingsTypes.ViewConfigurationDTO[]
   > {
+    const updated = await this.updateViewConfigurations_(
+      idOrSelector,
+      data,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      SettingsTypes.ViewConfigurationDTO[] | SettingsTypes.ViewConfigurationDTO
+    >(updated)
+
+    return typeof idOrSelector === "string" ? serialized[0] : serialized
+  }
+
+  @InjectTransactionManager()
+  protected async updateViewConfigurations_(
+    idOrSelector: string | SettingsTypes.FilterableViewConfigurationProps,
+    data: SettingsTypes.UpdateViewConfigurationDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ViewConfiguration>[]> {
     let selector: SettingsTypes.FilterableViewConfigurationProps = {}
 
     if (typeof idOrSelector === "string") {
@@ -164,11 +189,7 @@ export default class SettingsModuleService
           sharedContext
         )
 
-      const serialized = await this.baseRepository_.serialize<
-        SettingsTypes.ViewConfigurationDTO[]
-      >(updatedEntities, { populate: true })
-
-      return typeof idOrSelector === "string" ? serialized[0] : serialized
+      return updatedEntities
     }
 
     // For non-configuration updates, use the standard update method
@@ -177,11 +198,7 @@ export default class SettingsModuleService
       sharedContext
     )
 
-    const serialized = await this.baseRepository_.serialize<
-      SettingsTypes.ViewConfigurationDTO[]
-    >(updated, { populate: true })
-
-    return typeof idOrSelector === "string" ? serialized[0] : serialized
+    return updated as unknown as InferEntityType<typeof ViewConfiguration>[]
   }
 
   @InjectManager()
@@ -201,12 +218,12 @@ export default class SettingsModuleService
     }
 
     return await this.baseRepository_.serialize<SettingsTypes.UserPreferenceDTO>(
-      prefs[0],
-      { populate: true }
+      prefs[0]
     )
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async setUserPreference(
     userId: string,
     key: string,
@@ -236,8 +253,7 @@ export default class SettingsModuleService
     }
 
     return await this.baseRepository_.serialize<SettingsTypes.UserPreferenceDTO>(
-      result,
-      { populate: true }
+      result
     )
   }
 
@@ -297,7 +313,8 @@ export default class SettingsModuleService
     return systemDefaults.length > 0 ? systemDefaults[0] : null
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async setActiveViewConfiguration(
     entity: string,
     userId: string,
@@ -347,7 +364,8 @@ export default class SettingsModuleService
     return systemDefaults.length > 0 ? systemDefaults[0] : null
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async clearActiveViewConfiguration(
     entity: string,
     userId: string,
