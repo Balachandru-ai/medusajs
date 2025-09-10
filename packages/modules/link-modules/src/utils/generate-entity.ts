@@ -123,7 +123,7 @@ export function generateEntity(
           compressName(tableName) +
           '" ("' +
           primary.foreignKey.split(",").join(",") +
-          ") WHERE deleted_at IS NULL",
+          '") WHERE deleted_at IS NULL',
       },
       {
         properties: foreign.foreignKey as any,
