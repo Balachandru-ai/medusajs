@@ -29,15 +29,8 @@ import {
   IRegionModuleService,
   ISalesChannelModuleService,
   IStockLocationService,
-  PricingContext,
 } from "@medusajs/types"
-import {
-  ContainerRegistrationKeys,
-  Modules,
-  PriceListStatus,
-  PriceListType,
-  RuleOperator,
-} from "@medusajs/utils"
+import { ContainerRegistrationKeys, Modules, PriceListStatus, PriceListType, RuleOperator, } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -72,6 +65,7 @@ medusaIntegrationTestRunner({
       let defaultRegion
       let customer, storeHeadersWithCustomer
       let setPricingContextHook: any
+      let setShippingOptionsContextHook: any
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -111,6 +105,14 @@ medusaIntegrationTestRunner({
           (input) => {
             if (setPricingContextHook) {
               return setPricingContextHook(input)
+            }
+          },
+          () => {}
+        )
+        listShippingOptionsForCartWorkflow.hooks.setShippingOptionsContext(
+          (input) => {
+            if (setShippingOptionsContextHook) {
+              return setShippingOptionsContextHook(input)
             }
           },
           () => {}
@@ -4166,6 +4168,76 @@ medusaIntegrationTestRunner({
                 id: shippingOption.id,
               }),
             ])
+          })
+        })
+
+        describe("setShippingOptionsContext hook", () => {
+          it.only("should use context provided by the hook", async () => {
+            const shippingOption = (
+              await api.post(
+                `/admin/shipping-options`,
+                {
+                  name: "Test shipping option",
+                  service_zone_id: fulfillmentSet.service_zones[0].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: "manual_test-provider",
+                  price_type: "flat",
+                  type: {
+                    label: "Test type",
+                    description: "Test description",
+                    code: "test-code",
+                  },
+                  prices: [
+                    {
+                      amount: 3000,
+                      currency_code: "usd",
+                    },
+                  ],
+                  rules: [
+                    {
+                      operator: RuleOperator.EQ,
+                      attribute: "is_return",
+                      value: "false",
+                    },
+                    {
+                      operator: RuleOperator.EQ,
+                      attribute: "enabled_in_store",
+                      value: "true",
+                    },
+                    {
+                      operator: RuleOperator.EQ,
+                      attribute: "customer_status",
+                      value: "vip",
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+            ).data.shipping_option
+
+            cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
+              .cart
+
+            setShippingOptionsContextHook = function () {
+              return new StepResponse({
+                customer_status: "vip",
+              })
+            }
+
+            const { result: result1 } = await listShippingOptionsForCartWorkflow(
+              appContainer
+            ).run({ input: { cart_id: cart.id } })
+
+            expect(result1).toHaveLength(1)
+            expect(result1[0].name).toEqual(shippingOption.name)
+
+            setShippingOptionsContextHook = undefined
+
+            const { result: result2 } = await listShippingOptionsForCartWorkflow(
+              appContainer
+            ).run({ input: { cart_id: cart.id } })
+
+            expect(result2).toHaveLength(0)
           })
         })
       })
