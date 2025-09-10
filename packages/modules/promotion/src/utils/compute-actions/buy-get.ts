@@ -1,6 +1,7 @@
 import {
   BigNumberInput,
   ComputeActionItemLine,
+  InferEntityType,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import {
@@ -12,6 +13,7 @@ import {
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
+import { Promotion } from "@models"
 
 export type EligibleItem = {
   item_id: string
@@ -23,7 +25,7 @@ function sortByPrice(a: ComputeActionItemLine, b: ComputeActionItemLine) {
 }
 
 function isValidPromotionContext(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   itemsContext: ComputeActionItemLine[]
 ): boolean {
   if (!itemsContext) {
@@ -52,7 +54,7 @@ function isValidPromotionContext(
 }
 
 function normalizePromotionApplicationConfiguration(
-  promotion: PromotionTypes.PromotionDTO
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>
 ) {
   const minimumBuyQuantity = MathBN.convert(
     promotion.application_method?.buy_rules_min_quantity ?? 0
@@ -275,7 +277,7 @@ function applyPromotionToTargetItems(
   targetItems: EligibleItem[],
   itemIdPromotionAmountMap: Map<string, BigNumberInput>,
   methodIdPromoValueMap: Map<string, BigNumberInput>,
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   itemsMap: Map<string, ComputeActionItemLine>,
   applicationConfig: PromotionConfig
 ): {
@@ -456,7 +458,7 @@ function filterItemsByPromotionRules(
 }
 
 export function getComputedActionsForBuyGet(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   itemsContext: ComputeActionItemLine[],
   methodIdPromoValueMap: Map<string, BigNumberInput>,
   eligibleBuyItemMap: Map<string, EligibleItem[]>,
