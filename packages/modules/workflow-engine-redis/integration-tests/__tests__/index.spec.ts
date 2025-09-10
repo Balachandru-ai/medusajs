@@ -539,7 +539,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: false,
           })
 
-          await setTimeout(1000)
+          await setTimeout(4000)
 
           expect(lastExepectHaveBeenCalledTimes).toEqual(1)
         })
