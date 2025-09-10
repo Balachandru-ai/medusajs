@@ -354,6 +354,7 @@ export function MedusaService<
       this.__container__ = container
       this.baseRepository_ = container.baseRepository
 
+      const joinerConfig = this.__joinerConfig?.()
       /**
        * Create a global subscriber to listen to all the entities mutations
        * and forward them to the module service interceptEntityMutationEvents
@@ -363,25 +364,30 @@ export function MedusaService<
        * such that it can attach it accordingly and forward the events to the module service.
        */
 
-      const globalSubscriber = createMedusaMikroOrmEventSubscriber(
-        ["__medusa_entities_subscriber__"],
-        this
-      )
+      if (joinerConfig?.serviceName !== "index") {
+        let globalSubscriber!: ReturnType<
+          typeof createMedusaMikroOrmEventSubscriber
+        >
 
-      Object.keys(container)
-        .filter((key) => {
-          return key.endsWith("Service")
-        })
-        .forEach((key: string) => {
-          try {
-            const service = container[key]
-            if (isMedusaInternalService(service)) {
-              service.setEventSubscriber(globalSubscriber)
+        Object.keys(container)
+          .filter((key) => {
+            return key.endsWith("Service")
+          })
+          .forEach((key: string) => {
+            globalSubscriber ??= createMedusaMikroOrmEventSubscriber(
+              ["__medusa_entities_subscriber__"],
+              this
+            )
+            try {
+              const service = container[key]
+              if (isMedusaInternalService(service)) {
+                service.setEventSubscriber(globalSubscriber)
+              }
+            } catch (error) {
+              // Prevent circular issue which in that case would represent ourselves so we can skip
             }
-          } catch (error) {
-            // Prevent circular issue which in that case would represent ourselves so we can skip
-          }
-        })
+          })
+      }
 
       const hasEventBusModuleService = Object.keys(this.__container__).find(
         (key) => key === Modules.EVENT_BUS
@@ -392,9 +398,7 @@ export function MedusaService<
         : undefined
 
       this[MedusaServiceModelNameToLinkableKeysMapSymbol] =
-        buildModelsNameToLinkableKeysMap(
-          this.__joinerConfig?.()?.linkableKeys ?? {}
-        )
+        buildModelsNameToLinkableKeysMap(joinerConfig?.linkableKeys ?? {})
     }
 
     /**
