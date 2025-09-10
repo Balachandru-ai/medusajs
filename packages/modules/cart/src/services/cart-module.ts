@@ -582,7 +582,11 @@ export default class CartModuleService
   ): Promise<InferEntityType<typeof LineItem>[]> {
     let toUpdate: UpdateLineItemDTO[] = []
     for (const { selector, data } of updates) {
-      const items = await this.listLineItems({ ...selector }, {}, sharedContext)
+      const items = await this.lineItemService_.list(
+        { ...selector },
+        {},
+        sharedContext
+      )
 
       items.forEach((item) => {
         toUpdate.push({
@@ -1007,7 +1011,7 @@ export default class CartModuleService
       sharedContext
     )
 
-    const existingAdjustments = await this.listLineItemAdjustments(
+    const existingAdjustments = await this.lineItemAdjustmentService_.list(
       { item: { cart_id: cart.id } },
       { select: ["id"] },
       sharedContext
@@ -1019,14 +1023,16 @@ export default class CartModuleService
         .filter(Boolean)
     )
 
-    const toDelete: CartTypes.LineItemAdjustmentDTO[] = []
+    const toDelete: InferEntityType<typeof LineItemAdjustment>[] = []
 
     // From the existing adjustments, find the ones that are not passed in adjustments
-    existingAdjustments.forEach((adj: CartTypes.LineItemAdjustmentDTO) => {
-      if (!adjustmentsSet.has(adj.id)) {
-        toDelete.push(adj)
+    existingAdjustments.forEach(
+      (adj: InferEntityType<typeof LineItemAdjustment>) => {
+        if (!adjustmentsSet.has(adj.id)) {
+          toDelete.push(adj)
+        }
       }
-    })
+    )
 
     if (toDelete.length) {
       await this.lineItemAdjustmentService_.softDelete(
@@ -1079,11 +1085,12 @@ export default class CartModuleService
       sharedContext
     )
 
-    const existingAdjustments = await this.listShippingMethodAdjustments(
-      { shipping_method: { cart_id: cart.id } },
-      { select: ["id"] },
-      sharedContext
-    )
+    const existingAdjustments =
+      await this.shippingMethodAdjustmentService_.list(
+        { shipping_method: { cart_id: cart.id } },
+        { select: ["id"] },
+        sharedContext
+      )
 
     const adjustmentsSet = new Set(
       adjustments
@@ -1091,11 +1098,11 @@ export default class CartModuleService
         .filter(Boolean)
     )
 
-    const toDelete: CartTypes.ShippingMethodAdjustmentDTO[] = []
+    const toDelete: InferEntityType<typeof ShippingMethodAdjustment>[] = []
 
     // From the existing adjustments, find the ones that are not passed in adjustments
     existingAdjustments.forEach(
-      (adj: CartTypes.ShippingMethodAdjustmentDTO) => {
+      (adj: InferEntityType<typeof ShippingMethodAdjustment>) => {
         if (!adjustmentsSet.has(adj.id)) {
           toDelete.push(adj)
         }
