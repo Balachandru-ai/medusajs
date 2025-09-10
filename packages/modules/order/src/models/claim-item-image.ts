@@ -24,7 +24,7 @@ const _OrderClaimItemImage = model
       name: "IDX_order_claim_item_image_claim_item_id",
       on: ["claim_item_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
   ])
 

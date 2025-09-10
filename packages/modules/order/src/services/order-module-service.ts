@@ -444,6 +444,16 @@ export default class OrderModuleService
     config?: FindConfig<any> | undefined,
     @MedusaContext() sharedContext?: Context | undefined
   ): Promise<OrderTypes.OrderDTO[]> {
+    const orders = await this.listOrders_(filters, config, sharedContext)
+
+    return this.baseRepository_.serialize<OrderTypes.OrderDTO[]>(orders)
+  }
+
+  protected async listOrders_(
+    filters?: any,
+    config?: FindConfig<any> | undefined,
+    @MedusaContext() sharedContext?: Context | undefined
+  ): Promise<OrderTypes.OrderDTO[]> {
     config ??= {}
     const includeTotals = this.shouldIncludeTotals(config)
 
@@ -1032,7 +1042,7 @@ export default class OrderModuleService
         : [orderIdOrData]
 
       const allOrderIds = data.map((dt) => dt.order_id)
-      const order = await this.listOrders(
+      const order = await this.listOrders_(
         { id: allOrderIds },
         { select: ["id", "version"] },
         sharedContext
@@ -1217,7 +1227,7 @@ export default class OrderModuleService
     let toUpdate: UpdateOrderLineItemDTO[] = []
     const detailsToUpdate: UpdateOrderItemWithSelectorDTO[] = []
     for (const { selector, data } of updates) {
-      const items = await this.listOrderLineItems(
+      const items = await this.orderLineItemService_.list(
         { ...selector },
         {},
         sharedContext
@@ -1323,7 +1333,7 @@ export default class OrderModuleService
   ): Promise<InferEntityType<typeof OrderItem>[]> {
     let toUpdate: UpdateOrderItemDTO[] = []
     for (const { selector, data } of updates) {
-      const details = await this.listOrderItems(
+      const details = await this.orderItemService_.list(
         { ...selector },
         {},
         sharedContext
@@ -1380,7 +1390,7 @@ export default class OrderModuleService
         : [orderIdOrData]
 
       const allOrderIds = data.map((dt) => dt.order_id)
-      const order = await this.listOrders(
+      const order = await this.listOrders_(
         { id: allOrderIds },
         { select: ["id", "version"] },
         sharedContext
@@ -2238,7 +2248,7 @@ export default class OrderModuleService
     const orderIds: string[] = []
     const dataMap: Record<string, object> = {}
 
-    const orderChanges = await this.listOrderChanges(
+    const orderChanges = await this.orderChangeService_.list(
       {
         order_id: dataArr.map((data) => data.order_id),
         status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
@@ -2247,9 +2257,10 @@ export default class OrderModuleService
       sharedContext
     )
 
-    const orderChangesMap = new Map<string, OrderTypes.OrderChangeDTO>(
-      orderChanges.map((item) => [item.order_id, item])
-    )
+    const orderChangesMap = new Map<
+      string,
+      InferEntityType<typeof OrderChange>
+    >(orderChanges.map((item) => [item.order_id, item]))
 
     for (const change of dataArr) {
       orderIds.push(change.order_id)
@@ -2370,7 +2381,7 @@ export default class OrderModuleService
     }
 
     if (Object.keys(addedItems).length > 0) {
-      const addedItemDetails = await this.listOrderLineItems(
+      const addedItemDetails = await this.orderLineItemService_.list(
         { id: Object.keys(addedItems) },
         {
           relations: ["adjustments", "tax_lines"],
@@ -2412,7 +2423,7 @@ export default class OrderModuleService
     }
 
     if (Object.keys(addedShippingMethods).length > 0) {
-      const addedShippingDetails = await this.listOrderShippingMethods(
+      const addedShippingDetails = await this.orderShippingMethodService_.list(
         { id: Object.keys(addedShippingMethods) },
         {
           relations: ["adjustments", "tax_lines"],
@@ -3180,7 +3191,7 @@ export default class OrderModuleService
       }
     }
 
-    let orders = await this.listOrders(
+    let orders = await this.listOrders_(
       { id: deduplicate(ordersIds) },
       {
         select: ["id", "version", "items.detail", "summary", "total"],
@@ -3477,7 +3488,7 @@ export default class OrderModuleService
     @MedusaContext() sharedContext?: Context
   ): Promise<OrderTypes.OrderDTO | OrderTypes.OrderDTO[]> {
     const orderIds = Array.isArray(orderId) ? orderId : [orderId]
-    const orders = await this.listOrders(
+    const orders = await this.listOrders_(
       {
         id: orderIds,
       },
@@ -3537,7 +3548,7 @@ export default class OrderModuleService
     @MedusaContext() sharedContext?: Context
   ): Promise<OrderTypes.OrderDTO | OrderTypes.OrderDTO[]> {
     const orderIds = Array.isArray(orderId) ? orderId : [orderId]
-    const orders = await this.listOrders(
+    const orders = await this.listOrders_(
       {
         id: orderIds,
       },
@@ -3589,7 +3600,7 @@ export default class OrderModuleService
     @MedusaContext() sharedContext?: Context
   ): Promise<OrderTypes.OrderDTO | OrderTypes.OrderDTO[]> {
     const orderIds = Array.isArray(orderId) ? orderId : [orderId]
-    const orders = await this.listOrders(
+    const orders = await this.listOrders_(
       {
         id: orderIds,
       },
