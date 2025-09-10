@@ -9,7 +9,7 @@ import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
 
-jest.setTimeout(3000000)
+jest.setTimeout(30000)
 
 moduleIntegrationTestRunner({
   moduleName: Modules.PROMOTION,
@@ -1690,41 +1690,7 @@ moduleIntegrationTestRunner({
             ])
           })
 
-          it.only("should compute the correct item amendments when there are multiple promotions to apply", async () => {
-            await service.createPromotions(
-              new Array(1).fill(0).map((_, index) => {
-                return {
-                  code: `PROMOTION_TEST_${index + 3}`,
-                  is_automatic: true,
-                  type: "standard",
-                  status: "active",
-                  application_method: {
-                    max_quantity: 1,
-                    type: "percentage",
-                    target_type: "items",
-                    allocation: "each",
-                    target_rules: [
-                      {
-                        description: null,
-                        attribute: "items.variant.id",
-                        operator: "in",
-                        values: ["variant_01JP9R7APV2XT8JHECA01BAKD4"],
-                      },
-                    ],
-                    buy_rules: [],
-                    value: 100,
-                  },
-                  rules: [
-                    {
-                      attribute: "customer.id",
-                      operator: "eq",
-                      values: ["cus_01JPP54HP7HEE1HCRKG6J1H6A0"],
-                    },
-                  ],
-                }
-              })
-            )
-
+          it("should compute the correct item amendments when there are multiple promotions to apply", async () => {
             await createDefaultPromotion(service, {
               rules: [
                 {
@@ -1772,7 +1738,6 @@ moduleIntegrationTestRunner({
               } as any,
             })
 
-            const now = performance.now()
             const result = await service.computeActions(
               ["PROMOTION_TEST", "PROMOTION_TEST_2"],
               {
@@ -1808,8 +1773,6 @@ moduleIntegrationTestRunner({
                 ],
               }
             )
-            const end = performance.now()
-            console.log(`>>>>>> Time taken: ${end - now} milliseconds`)
 
             expect(JSON.parse(JSON.stringify(result))).toEqual([
               {

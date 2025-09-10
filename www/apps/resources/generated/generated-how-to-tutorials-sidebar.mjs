@@ -526,6 +526,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Meta Product Feed",
+          "path": "/how-to-tutorials/tutorials/product-feed",
+          "description": "Learn how to implement a product feed for Meta (Facebook and Instagram) and Google using Medusa.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Newsletter with Mailchimp",
           "path": "/integrations/guides/mailchimp",

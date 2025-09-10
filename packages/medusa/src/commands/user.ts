@@ -23,6 +23,7 @@ export default async function ({
     const { container } = await loaders({
       directory,
       expressApp: app,
+      skipLoadingEntryPoints: true,
     })
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 

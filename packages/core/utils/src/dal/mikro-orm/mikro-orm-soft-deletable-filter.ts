@@ -1,6 +1,5 @@
 export const SoftDeletableFilterKey = "softDeletable"
 
-// @ts-ignore
 interface FilterArguments {
   withDeleted?: boolean
 }

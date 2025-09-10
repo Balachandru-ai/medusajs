@@ -91,7 +91,7 @@ async function populateData(api: any) {
   )
   const products = response.data.created
 
-  await setTimeout(4000)
+  await setTimeout(10000)
 
   return products
 }

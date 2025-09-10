@@ -36,7 +36,7 @@ export function toRemoteQuery<const TEntity extends string>(
     pagination?: Partial<RemoteQueryInput<TEntity>["pagination"]>
     context?: Record<string, any>
     withDeleted?: boolean
-    strategy?: "joined" | "select-in" | "balanced"
+    strategy?: "joined" | "select-in"
   },
   entitiesMap: Map<string, any>
 ): RemoteQueryGraph<TEntity> {

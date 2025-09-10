@@ -56,6 +56,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
   },
   {
+    "title": "Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
     "title": "Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },

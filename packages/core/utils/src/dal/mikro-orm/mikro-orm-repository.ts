@@ -64,9 +64,11 @@ export class MikroOrmBase {
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    this.manager_.global = true // this prevent mikro orm from synchronising the transaction manager entity map back to the manager. Also, it will save us from always forking the manager for each transaction while the transacation manager will fork it again for transaction purpose
+    const freshManager = this.getFreshManager
+      ? this.getFreshManager()
+      : this.manager_
 
-    return await transactionWrapper(this.manager_, task, options).catch(
+    return await transactionWrapper(freshManager, task, options).catch(
       dbErrorMapper
     )
   }
@@ -465,7 +467,11 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       if (!("strategy" in findOptions_.options)) {
         if (findOptions_.options.limit != null || findOptions_.options.offset) {
           Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.BALANCED,
+            strategy: LoadStrategy.SELECT_IN,
+          })
+        } else {
+          Object.assign(findOptions_.options, {
+            strategy: LoadStrategy.JOINED,
           })
         }
       }

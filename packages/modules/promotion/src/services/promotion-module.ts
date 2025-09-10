@@ -18,7 +18,6 @@ import {
   CampaignBudgetType,
   ComputedActions,
   deduplicate,
-  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -654,9 +653,7 @@ export default class PromotionModuleService
       sharedContext
     )
 
-    return await this.baseRepository_.serialize<
-      PromotionTypes.PromotionDTO | PromotionTypes.PromotionDTO[]
-    >(Array.isArray(data) ? promotions : promotions[0])
+    return Array.isArray(data) ? promotions : promotions[0]
   }
 
   @InjectTransactionManager()
@@ -915,7 +912,6 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
-  @EmitEvents()
   // @ts-expect-error
   async updatePromotions(
     data:
@@ -1075,9 +1071,18 @@ export default class PromotionModuleService
       sharedContext
     )
 
+    const existingPromotionRuleIds: string[] = []
+    const promotionRulesMap: Map<string, PromotionTypes.PromotionRuleDTO> =
+      new Map()
+
+    for (const promotionRule of promotionRules) {
+      existingPromotionRuleIds.push(promotionRule.id)
+      promotionRulesMap.set(promotionRule.id, promotionRule)
+    }
+
     const invalidRuleId = arrayDifference(
       deduplicate(promotionRuleIds),
-      promotionRules.map((pr) => pr.id)
+      existingPromotionRuleIds
     )
 
     if (invalidRuleId.length) {
@@ -1086,10 +1091,6 @@ export default class PromotionModuleService
         `Promotion rules with id - ${invalidRuleId.join(", ")} not found`
       )
     }
-
-    const promotionRulesMap = new Map<string, PromotionTypes.PromotionRuleDTO>(
-      promotionRules.map((pr) => [pr.id, pr])
-    )
 
     const rulesToUpdate: PromotionTypes.UpdatePromotionRuleDTO[] = []
     const ruleValueIdsToDelete: string[] = []
@@ -1126,7 +1127,6 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
-  @EmitEvents()
   async addPromotionRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1248,8 +1248,6 @@ export default class PromotionModuleService
 
     validatePromotionRuleAttributes(rulesData)
 
-    const promotionRuleValuesDataToCreate: CreatePromotionRuleValueDTO[] = []
-
     for (const ruleData of rulesData) {
       const { values, ...rest } = ruleData
       const promotionRuleData: CreatePromotionRuleDTO = {
@@ -1270,13 +1268,11 @@ export default class PromotionModuleService
         promotion_rule: createdPromotionRule,
       }))
 
-      promotionRuleValuesDataToCreate.push(...promotionRuleValuesData)
+      await this.promotionRuleValueService_.create(
+        promotionRuleValuesData,
+        sharedContext
+      )
     }
-
-    await this.promotionRuleValueService_.create(
-      promotionRuleValuesDataToCreate,
-      sharedContext
-    )
 
     return createdPromotionRules
   }
@@ -1589,7 +1585,7 @@ export default class PromotionModuleService
   @InjectManager()
   async addPromotionsToCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    @MedusaContext() sharedContext: Context = {}
+    sharedContext?: Context
   ): Promise<{ ids: string[] }> {
     const ids = await this.addPromotionsToCampaign_(data, sharedContext)
 
@@ -1656,7 +1652,7 @@ export default class PromotionModuleService
   @InjectManager()
   async removePromotionsFromCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    @MedusaContext() sharedContext: Context = {}
+    sharedContext?: Context
   ): Promise<{ ids: string[] }> {
     const ids = await this.removePromotionsFromCampaign_(data, sharedContext)
 
