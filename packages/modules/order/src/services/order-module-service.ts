@@ -2578,7 +2578,7 @@ export default class OrderModuleService
     }
 
     if (Object.keys(addedItems).length > 0) {
-      const addedItemDetails = await this.orderLineItemService_.list(
+      const addedItemDetails = await this.listOrderLineItems(
         { id: Object.keys(addedItems) },
         {
           relations: ["adjustments", "tax_lines"],
@@ -2620,7 +2620,7 @@ export default class OrderModuleService
     }
 
     if (Object.keys(addedShippingMethods).length > 0) {
-      const addedShippingDetails = await this.orderShippingMethodService_.list(
+      const addedShippingDetails = await this.listOrderShippingMethods(
         { id: Object.keys(addedShippingMethods) },
         {
           relations: ["adjustments", "tax_lines"],
@@ -3755,7 +3755,7 @@ export default class OrderModuleService
     isRemoved: boolean,
     @MedusaContext() sharedContext: Context = {}
   ) {
-    const summaries: any = await this.orderSummaryService_.list(
+    const summaries: any = await this.listOrderSummaries(
       {
         order_id: transactionData.map((trx) => trx.order_id),
         version: transactionData[0].version,

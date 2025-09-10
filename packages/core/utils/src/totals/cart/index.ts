@@ -130,10 +130,7 @@ export function decorateCartTotals(
       itemsOriginalTaxTotal,
       itemOriginalTaxTotal
     )
-    itemsDiscountTotal = MathBN.add(
-      itemsDiscountTotal,
-      itemDiscountTotal
-    )
+    itemsDiscountTotal = MathBN.add(itemsDiscountTotal, itemDiscountTotal)
 
     for (const key of Object.values(optionalFields)) {
       if (key in itemTotals) {
