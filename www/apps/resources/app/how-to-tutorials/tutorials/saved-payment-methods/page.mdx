@@ -575,9 +575,9 @@ const StripeSavedPaymentMethodsContainer = ({
     SavedPaymentMethod[]
   >([])
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    string | undefined
+    string | null
   >(
-    paymentSession?.data?.payment_method_id as string | undefined
+    paymentSession?.data?.payment_method as string | null
   )
 
   useEffect(() => {
@@ -723,7 +723,7 @@ Then, add a new state variable that keeps track of whether the customer is using
 
 ```ts title="src/modules/checkout/components/payment-container/index.tsx" badgeLabel="Storefront" badgeColor="blue"
 const [isUsingSavedPaymentMethod, setIsUsingSavedPaymentMethod] = useState(
-  paymentSession?.data?.payment_method_id !== undefined
+  paymentSession?.data?.payment_method !== null
 )
 ```
 
@@ -867,7 +867,7 @@ So, you need to update the `confirmCardPayment` usage to support passing the ID 
 In `src/modules/checkout/components/payment-button/index.tsx`, find the `handlePayment` method and update its first `if` condition:
 
 ```ts title="src/modules/checkout/components/payment-button/index.tsx" badgeLabel="Storefront" badgeColor="blue"
-if (!stripe || !elements || (!card && !session?.data.payment_method_id) || !cart) {
+if (!stripe || !elements || (!card && !session?.data.payment_method) || !cart) {
   setSubmitting(false)
   return
 }
@@ -884,7 +884,7 @@ export const confirmPaymentHighlights = [
 ```ts title="src/modules/checkout/components/payment-button/index.tsx" badgeLabel="Storefront" badgeColor="blue" highlights={confirmPaymentHighlights}
 await stripe
 .confirmCardPayment(session?.data.client_secret as string, {
-  payment_method: session?.data.payment_method_id as string || {
+  payment_method: session?.data.payment_method as string || {
     card: card!,
     billing_details: {
       name:

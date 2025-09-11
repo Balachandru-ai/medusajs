@@ -81,6 +81,12 @@ const Product = model
       unique: false,
       where: "deleted_at IS NULL",
     },
+    {
+      name: "IDX_product_status",
+      on: ["status"],
+      unique: false,
+      where: "deleted_at IS NULL",
+    },
   ])
 
 export default Product
