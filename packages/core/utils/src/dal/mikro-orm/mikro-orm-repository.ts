@@ -64,11 +64,8 @@ export class MikroOrmBase {
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    const freshManager = this.getFreshManager
-      ? this.getFreshManager()
-      : this.manager_
-
-    return await transactionWrapper(freshManager, task, options).catch(
+    this.manager_.global = true
+    return await transactionWrapper(this.manager_, task, options).catch(
       dbErrorMapper
     )
   }
