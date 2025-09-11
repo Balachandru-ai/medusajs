@@ -11,11 +11,11 @@ export const metadata = {
 
 # {metadata.title}
 
-Commands starting with `db:` perform actions on the database.
+Commands in the Medusa CLI starting with `db:` perform actions on the database.
 
 ## db\:setup
 
-Creates a database for the Medusa application with the specified name, if it doesn't exit. Then, it runs migrations and syncs links.
+Creates a database for the Medusa application with the specified name, if it doesn't exist. Then, it runs migrations and syncs links.
 
 It also updates your `.env` file with the database name.
 
@@ -158,7 +158,7 @@ Use this command if you're setting up a Medusa project or database manually.
 
 ## db\:create
 
-Creates a database for the Medusa application with the specified name, if it doesn't exit.
+Creates a database for the Medusa application with the specified name, if it doesn't exist.
 
 It also updates your `.env` file with the database name.
 
@@ -260,7 +260,7 @@ npx medusa db:generate <module_names...>
       </Table.Cell>
       <Table.Cell>
 
-      The name of one or more module (separated by spaces) to generate migrations for. For example, `helloModuleService`.
+      The name of one or more modules (separated by spaces) to generate migrations for. For example, `brand`.
       
       </Table.Cell>
       <Table.Cell>
@@ -397,7 +397,7 @@ Use this command if you've updated the Medusa packages, or you've created custom
 
 ## db\:rollback
 
-Revert the last migrations ran on one or more modules.
+Revert the last migrations run on one or more modules.
 
 ```bash
 npx medusa db:rollback <module_names...>
@@ -422,7 +422,7 @@ npx medusa db:rollback <module_names...>
       </Table.Cell>
       <Table.Cell>
 
-      The name of one or more module (separated by spaces) to rollback their migrations for. For example, `helloModuleService`.
+      The name of one or more modules (separated by spaces) to rollback their migrations for. For example, `brand`.
       
       </Table.Cell>
       <Table.Cell>
