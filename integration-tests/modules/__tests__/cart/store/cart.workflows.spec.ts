@@ -4172,7 +4172,7 @@ medusaIntegrationTestRunner({
         })
 
         describe("setShippingOptionsContext hook", () => {
-          it.only("should use context provided by the hook", async () => {
+          it("should use context provided by the hook", async () => {
             const shippingOption = (
               await api.post(
                 `/admin/shipping-options`,
