@@ -144,7 +144,7 @@ const FeatureSections: React.FC<FeatureSectionsProps> = ({
             <div>
               <H3
                 id={slugify(section.header.subtitle, { lower: true })}
-                className="my-0"
+                className="!my-0"
               >
                 {section.header.subtitle}
               </H3>

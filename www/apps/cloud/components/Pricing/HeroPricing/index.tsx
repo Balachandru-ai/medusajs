@@ -36,7 +36,7 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
                   <div className="flex flex-col items-start justify-start w-full">
                     <div className="flex flex-col justify-end w-full">
                       <H3
-                        className="!mb-0"
+                        className="!mb-0 txt-xlarge"
                         id={slugify(option.title, {
                           lower: true,
                         })}
@@ -45,7 +45,7 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
                       </H3>
                     </div>
                     <div className="flex flex-col justify-end w-full">
-                      <p className="txt-medium-plus text-medusa-fg-subtle">
+                      <p className="txt-xlarge text-medusa-fg-subtle">
                         {option.subtitle}
                       </p>
                     </div>
@@ -78,7 +78,7 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
           >
             <div className="w-full flex items-start">
               {option.description && (
-                <p className="text-medusa-fg-base txt-medium-plus text-balance">
+                <p className="text-medusa-fg-base txt-small-plus text-balance">
                   {option.description}
                 </p>
               )}
