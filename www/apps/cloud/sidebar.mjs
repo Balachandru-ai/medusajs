@@ -16,6 +16,11 @@ export const sidebar = [
           },
           {
             type: "link",
+            path: "/sign-up",
+            title: "Sign Up",
+          },
+          {
+            type: "link",
             path: "/faq",
             title: "FAQ",
           },
