@@ -9,6 +9,9 @@ import { H2, Hr, Loading } from "docs-ui"
 import { cache, Suspense } from "react"
 
 export default async function PricingPage() {
+  if (process.env.NEXT_PUBLIC_ENV === "CI") {
+    return <div>Pricing page is not available in the CI environment.</div>
+  }
   const data = await loadPricingData()
 
   const heroPricingData = data.find((item) => item._type === "heroPricing")
