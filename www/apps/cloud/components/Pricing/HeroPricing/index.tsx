@@ -16,7 +16,7 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
   }
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full rounded shadow-elevation-card-rest dark:shadow-elevation-card-rest-dark">
       {/* Header Row */}
       <div className="flex items-start justify-start">
         {/* Main content area */}
@@ -25,10 +25,11 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
             <React.Fragment key={option._key}>
               <div
                 className={clsx(
-                  `flex-1 min-w-0 px-1 py-1`,
-                  index === 1 ? "bg-medusa-bg-base" : "bg-medusa-bg-subtle",
+                  `flex-1 min-w-0 p-1`,
                   index !== data.options.length - 1 &&
-                    "border-solid border-r border-medusa-border-base"
+                    "border-solid border-r border-medusa-border-base",
+                  index === data.options.length - 1 &&
+                    "bg-medusa-bg-subtle rounded-tr"
                 )}
               >
                 <div className="flex flex-col w-full">
@@ -69,10 +70,10 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
           <div
             key={`description-${option._key}`}
             className={clsx(
-              `px-1 py-1 flex items-start`,
-              index === 1 ? "bg-medusa-bg-base" : "bg-medusa-bg-subtle",
+              `p-1 flex items-start border-b border-medusa-border-base`,
               index !== data.options.length - 1 &&
-                "border-solid border-r border-medusa-border-base"
+                "border-solid border-r border-medusa-border-base",
+              index === data.options.length - 1 && "bg-medusa-bg-subtle"
             )}
           >
             <div className="w-full flex items-start">
@@ -90,10 +91,10 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
           <div
             key={`features-${option._key}`}
             className={clsx(
-              `px-1 py-1 flex flex-col gap-0.75`,
-              index === 1 ? "bg-medusa-bg-base" : "bg-medusa-bg-subtle",
+              `p-1 flex flex-col gap-0.75`,
               index !== data.options.length - 1 &&
-                "border-solid border-r border-medusa-border-base"
+                "border-solid border-r border-medusa-border-base",
+              index === data.options.length - 1 && "bg-medusa-bg-subtle"
             )}
           >
             {option.pre_features && (
@@ -123,10 +124,11 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
           <div
             key={`buttons-${option._key}`}
             className={clsx(
-              `px-1 py-1`,
-              index === 1 ? "bg-medusa-bg-base" : "bg-medusa-bg-subtle",
+              `p-1`,
               index !== data.options.length - 1 &&
-                "border-solid border-r border-medusa-border-base"
+                "border-solid border-r border-medusa-border-base",
+              index === data.options.length - 1 &&
+                "bg-medusa-bg-subtle rounded-br"
             )}
           >
             <div className="w-full">

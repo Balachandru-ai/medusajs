@@ -5,7 +5,7 @@ import { PricingQueryResult } from "../../utils/types"
 import HeroPricing from "../../components/Pricing/HeroPricing"
 import { notFound } from "next/navigation"
 import FeatureSections from "../../components/Pricing/FeatureSections"
-import { H2, Loading } from "docs-ui"
+import { H2, Hr, Loading } from "docs-ui"
 import { cache, Suspense } from "react"
 
 export default async function PricingPage() {
@@ -26,6 +26,7 @@ export default async function PricingPage() {
     <Suspense fallback={<Loading />}>
       <H2 id="cloud-plans">Cloud Plans</H2>
       <HeroPricing data={heroPricingData.heroPricingFields} />
+      <Hr />
       <H2 id="plans-features">Plans Features</H2>
       <FeatureSections
         featureSections={featureTableData.featureTableFields.featureSections}
