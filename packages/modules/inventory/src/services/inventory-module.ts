@@ -731,7 +731,7 @@ export default class InventoryModuleService
     const reservations: InventoryTypes.ReservationItemDTO[] =
       await this.reservationItemService_.list({ id: ids }, {}, context)
 
-    await this.softDeleteReservationItems_(ids, config, context)
+    await super.softDeleteReservationItems(ids, config, context)
 
     await this.adjustInventoryLevelsForReservationsDeletion(
       reservations,
