@@ -788,6 +788,10 @@ export const filesMap = [
     "pathname": "/how-to-tutorials/tutorials/product-builder"
   },
   {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/product-feed/page.mdx",
+    "pathname": "/how-to-tutorials/tutorials/product-feed"
+  },
+  {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/product-reviews/page.mdx",
     "pathname": "/how-to-tutorials/tutorials/product-reviews"
   },

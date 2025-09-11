@@ -268,7 +268,11 @@ export type ReturnWorkflow<TData, TResult, THooks extends any[]> = {
     container?: LoadedModule[] | MedusaContainer
   ): Omit<
     LocalWorkflow,
-    "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+    | "run"
+    | "registerStepSuccess"
+    | "registerStepFailure"
+    | "cancel"
+    | "retryStep"
   > &
     ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride>
 } & {

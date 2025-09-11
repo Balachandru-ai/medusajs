@@ -8,6 +8,7 @@ export interface ReleaseLockStepInput {
   key: string | string[]
   ownerId?: string
   provider?: string
+  skipOnSubWorkflow?: boolean
 }
 
 export const releaseLockStepId = "release-lock-step"
@@ -21,7 +22,10 @@ export const releaseLockStepId = "release-lock-step"
  */
 export const releaseLockStep = createStep(
   releaseLockStepId,
-  async (data: ReleaseLockStepInput, { container }) => {
+  async (
+    data: ReleaseLockStepInput,
+    { container, parentStepIdempotencyKey }
+  ) => {
     const keys = Array.isArray(data.key)
       ? data.key
       : isDefined(data.key)
@@ -32,9 +36,15 @@ export const releaseLockStep = createStep(
       return new StepResponse(true)
     }
 
+    const isSubWorkflow = !!parentStepIdempotencyKey
+    if (isSubWorkflow && data.skipOnSubWorkflow) {
+      return StepResponse.skip() as any
+    }
+
+    const ownerId = data.ownerId
     const locking = container.resolve(Modules.LOCKING)
     const released = await locking.release(keys, {
-      ownerId: data.ownerId,
+      ownerId,
       provider: data.provider,
     })
 

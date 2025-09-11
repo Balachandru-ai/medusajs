@@ -6,7 +6,7 @@ import { isDefined } from "./is-defined"
  * @returns
  */
 export function parseStringifyIfNecessary(result: unknown) {
-  if (typeof result !== "object") {
+  if (typeof result == null || typeof result !== "object") {
     return result
   }
 

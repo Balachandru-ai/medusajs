@@ -1190,6 +1190,33 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_image_url\" ON \"image\" (url) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_image_rank",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_image_rank\" ON \"image\" (rank) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_image_url_rank_product_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_image_url_rank_product_id\" ON \"image\" (url, rank, product_id) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_image_rank_product_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_image_rank_product_id\" ON \"image\" (rank, product_id) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "image_pkey",
           "columnNames": [
             "id"

@@ -14,6 +14,7 @@ import {
 import { AdditionalData, CartDTO } from "@medusajs/types"
 import { useQueryGraphStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { getVariantPriceSetsStep, updateLineItemsStep } from "../steps"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
 import {
@@ -133,6 +134,13 @@ export const refreshCartItemsWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const setPricingContext = createHook(
       "setPricingContext",
       {
@@ -263,25 +271,15 @@ export const refreshCartItemsWorkflow = createWorkflow(
       list: false,
     }).config({ name: "refetch–cart" })
 
-    const refreshCartInput = transform(
-      { refetchedCart, input },
-      ({ refetchedCart, input }) => {
-        return {
-          cart: !input.force_refresh ? refetchedCart : undefined,
-          cart_id: !!input.force_refresh ? input.cart_id : undefined,
-        }
-      }
-    )
-
     refreshCartShippingMethodsWorkflow.runAsStep({
-      input: refreshCartInput,
+      input: { cart: refetchedCart },
     })
 
     when("force-refresh-update-tax-lines", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       updateTaxLinesWorkflow.runAsStep({
-        input: refreshCartInput,
+        input: { cart_id: input.cart_id },
       })
     })
 
@@ -331,7 +329,12 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
 
     refreshPaymentCollectionForCartWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+      input: { cart: refetchedCart },
+    })
+
+    releaseLockStep({
+      key: input.cart_id,
+      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(refetchedCart, {
