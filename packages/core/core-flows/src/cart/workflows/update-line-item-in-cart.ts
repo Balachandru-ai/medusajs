@@ -137,7 +137,7 @@ export const updateLineItemInCartWorkflow = createWorkflow(
         if (!item) {
           throw new MedusaError(
             MedusaError.Types.NOT_FOUND,
-            `Line item with id: ${req.params.line_id} was not found`
+            `Line item with id: ${data.input.item_id.params.line_id} was not found`
           )
         }
 
