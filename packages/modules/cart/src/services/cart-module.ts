@@ -460,7 +460,7 @@ export default class CartModuleService
     items: CartTypes.CreateLineItemDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof LineItem>[]> {
-    const cart = await this.retrieveCart(
+    const cart = await this.cartService_.retrieve(
       cartId,
       { select: ["id"] },
       sharedContext
@@ -731,7 +731,7 @@ export default class CartModuleService
     data: CartTypes.CreateShippingMethodForSingleCartDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ShippingMethod>[]> {
-    const cart = await this.retrieveCart(
+    const cart = await this.cartService_.retrieve(
       cartId,
       { select: ["id"] },
       sharedContext
@@ -802,7 +802,7 @@ export default class CartModuleService
   ): Promise<InferEntityType<typeof LineItemAdjustment>[]> {
     let addedAdjustments: InferEntityType<typeof LineItemAdjustment>[] = []
     if (isString(cartIdOrData)) {
-      const cart = await this.retrieveCart(
+      const cart = await this.cartService_.retrieve(
         cartIdOrData,
         { select: ["id"], relations: ["items"] },
         sharedContext
@@ -1005,7 +1005,7 @@ export default class CartModuleService
     )[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof LineItemAdjustment>[]> {
-    const cart = await this.retrieveCart(
+    const cart = await this.cartService_.retrieve(
       cartId,
       { select: ["id"], relations: ["items.adjustments"] },
       sharedContext
@@ -1079,7 +1079,7 @@ export default class CartModuleService
     )[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ShippingMethodAdjustment>[]> {
-    const cart = await this.retrieveCart(
+    const cart = await this.cartService_.retrieve(
       cartId,
       { select: ["id"], relations: ["shipping_methods.adjustments"] },
       sharedContext
@@ -1176,7 +1176,7 @@ export default class CartModuleService
     let addedAdjustments: InferEntityType<typeof ShippingMethodAdjustment>[] =
       []
     if (isString(cartIdOrData)) {
-      const cart = await this.retrieveCart(
+      const cart = await this.cartService_.retrieve(
         cartIdOrData,
         { select: ["id"], relations: ["shipping_methods"] },
         sharedContext
@@ -1267,7 +1267,18 @@ export default class CartModuleService
     let addedTaxLines: InferEntityType<typeof LineItemTaxLine>[]
     if (isString(cartIdOrData)) {
       // existence check
-      await this.retrieveCart(cartIdOrData, { select: ["id"] }, sharedContext)
+      const cart = await this.cartService_.retrieve(
+        cartIdOrData,
+        { select: ["id"] },
+        sharedContext
+      )
+
+      if (!cart) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Cart with id ${cartIdOrData} does not exist`
+        )
+      }
 
       const lines = Array.isArray(taxLines) ? taxLines : [taxLines]
 
@@ -1416,7 +1427,18 @@ export default class CartModuleService
     let addedTaxLines: InferEntityType<typeof ShippingMethodTaxLine>[]
     if (isString(cartIdOrData)) {
       // existence check
-      await this.retrieveCart(cartIdOrData, { select: ["id"] }, sharedContext)
+      const cart = await this.cartService_.retrieve(
+        cartIdOrData,
+        { select: ["id"] },
+        sharedContext
+      )
+
+      if (!cart) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Cart with id ${cartIdOrData} does not exist`
+        )
+      }
 
       const lines = Array.isArray(taxLines) ? taxLines : [taxLines]
 
