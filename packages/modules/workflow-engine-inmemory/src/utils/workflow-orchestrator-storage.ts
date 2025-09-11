@@ -69,6 +69,24 @@ function parseNextExecution(
   return result
 }
 
+const invokingStatesSet = new Set([
+  TransactionStepState.INVOKING,
+  TransactionStepState.NOT_STARTED,
+])
+
+const compensatingStatesSet = new Set([
+  TransactionStepState.COMPENSATING,
+  TransactionStepState.NOT_STARTED,
+])
+
+function isInvokingState(step: TransactionStep) {
+  return invokingStatesSet.has(step.invoke?.state)
+}
+
+function isCompensatingState(step: TransactionStep) {
+  return compensatingStatesSet.has(step.compensate?.state)
+}
+
 export class InMemoryDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
@@ -87,8 +105,9 @@ export class InMemoryDistributedTransactionStorage
       config: SchedulerOptions
     }
   > = new Map()
-  private retries: Map<string, unknown> = new Map()
-  private timeouts: Map<string, unknown> = new Map()
+  private retries: Map<string, NodeJS.Timeout> = new Map()
+  private timeouts: Map<string, NodeJS.Timeout> = new Map()
+  private pendingTimers: Set<NodeJS.Timeout> = new Set()
 
   private clearTimeout_: NodeJS.Timeout
 
@@ -113,10 +132,44 @@ export class InMemoryDistributedTransactionStorage
 
   async onApplicationShutdown() {
     clearInterval(this.clearTimeout_)
+
+    for (const timer of this.pendingTimers) {
+      clearTimeout(timer)
+    }
+    this.pendingTimers.clear()
+
+    for (const timer of this.retries.values()) {
+      clearTimeout(timer)
+    }
+    this.retries.clear()
+
+    for (const timer of this.timeouts.values()) {
+      clearTimeout(timer)
+    }
+    this.timeouts.clear()
+
+    // Clean up scheduled job timers
+    for (const job of this.scheduled.values()) {
+      clearTimeout(job.timer)
+    }
+    this.scheduled.clear()
   }
 
   setWorkflowOrchestratorService(workflowOrchestratorService) {
     this.workflowOrchestratorService_ = workflowOrchestratorService
+  }
+
+  private createManagedTimer(
+    callback: () => void,
+    delay: number
+  ): NodeJS.Timeout {
+    const timer = setTimeout(() => {
+      this.pendingTimers.delete(timer)
+      callback()
+    }, delay)
+
+    this.pendingTimers.add(timer)
+    return timer
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
@@ -453,38 +506,43 @@ export class InMemoryDistributedTransactionStorage
       )
     }
 
-    // Predefined states for quick lookup
-    const invokingStates = [
-      TransactionStepState.INVOKING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const compensatingStates = [
-      TransactionStepState.COMPENSATING,
-      TransactionStepState.NOT_STARTED,
-    ]
-
-    const isInvokingState = (step: TransactionStep) =>
-      invokingStates.includes(step.invoke?.state)
-
-    const isCompensatingState = (step: TransactionStep) =>
-      compensatingStates.includes(step.compensate?.state)
-
     const currentFlowLastInvokingStepIndex =
       currentFlowSteps.findIndex(isInvokingState)
 
-    const latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
+    let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
       ? 1 // There is no other execution, so the current execution is the latest
-      : latestUpdatedFlowSteps.findIndex(isInvokingState)
+      : -1
 
-    const reversedCurrentFlowSteps = [...currentFlowSteps].reverse()
-    const currentFlowLastCompensatingStepIndex =
-      reversedCurrentFlowSteps.findIndex(isCompensatingState)
+    if (latestUpdatedFlow.steps) {
+      for (let i = 0; i < latestUpdatedFlowSteps.length; i++) {
+        if (isInvokingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastInvokingStepIndex = i
+          break
+        }
+      }
+    }
 
-    const reversedLatestUpdatedFlowSteps = [...latestUpdatedFlowSteps].reverse()
-    const latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
+    let currentFlowLastCompensatingStepIndex = -1
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (isCompensatingState(currentFlowSteps[i])) {
+        currentFlowLastCompensatingStepIndex = currentFlowSteps.length - 1 - i
+        break
+      }
+    }
+
+    let latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
       ? -1 // There is no other execution, so the current execution is the latest
-      : reversedLatestUpdatedFlowSteps.findIndex(isCompensatingState)
+      : -1
+
+    if (latestUpdatedFlow.steps) {
+      for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+        if (isCompensatingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastCompensatingStepIndex =
+            latestUpdatedFlowSteps.length - 1 - i
+          break
+        }
+      }
+    }
 
     const isLatestExecutionFinishedIndex = -1
     const invokeShouldBeSkipped =
@@ -536,8 +594,16 @@ export class InMemoryDistributedTransactionStorage
     interval: number
   ): Promise<void> {
     const { modelId: workflowId, transactionId } = transaction
+    const key = `${workflowId}:${transactionId}:${step.id}`
 
-    const inter = setTimeout(async () => {
+    const existingTimer = this.retries.get(key)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+      this.pendingTimers.delete(existingTimer)
+    }
+
+    const timer = this.createManagedTimer(async () => {
+      this.retries.delete(key)
       const context = transaction.getFlow().metadata ?? {}
       await this.workflowOrchestratorService_.run(workflowId, {
         transactionId,
@@ -551,8 +617,7 @@ export class InMemoryDistributedTransactionStorage
       })
     }, interval * 1e3)
 
-    const key = `${workflowId}:${transactionId}:${step.id}`
-    this.retries.set(key, inter)
+    this.retries.set(key, timer)
   }
 
   async clearRetry(
@@ -562,9 +627,10 @@ export class InMemoryDistributedTransactionStorage
     const { modelId: workflowId, transactionId } = transaction
 
     const key = `${workflowId}:${transactionId}:${step.id}`
-    const inter = this.retries.get(key)
-    if (inter) {
-      clearTimeout(inter as NodeJS.Timeout)
+    const timer = this.retries.get(key)
+    if (timer) {
+      clearTimeout(timer)
+      this.pendingTimers.delete(timer)
       this.retries.delete(key)
     }
   }
@@ -575,8 +641,16 @@ export class InMemoryDistributedTransactionStorage
     interval: number
   ): Promise<void> {
     const { modelId: workflowId, transactionId } = transaction
+    const key = `${workflowId}:${transactionId}`
 
-    const inter = setTimeout(async () => {
+    const existingTimer = this.timeouts.get(key)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+      this.pendingTimers.delete(existingTimer)
+    }
+
+    const timer = this.createManagedTimer(async () => {
+      this.timeouts.delete(key)
       const context = transaction.getFlow().metadata ?? {}
       await this.workflowOrchestratorService_.run(workflowId, {
         transactionId,
@@ -590,8 +664,7 @@ export class InMemoryDistributedTransactionStorage
       })
     }, interval * 1e3)
 
-    const key = `${workflowId}:${transactionId}`
-    this.timeouts.set(key, inter)
+    this.timeouts.set(key, timer)
   }
 
   async clearTransactionTimeout(
@@ -600,9 +673,10 @@ export class InMemoryDistributedTransactionStorage
     const { modelId: workflowId, transactionId } = transaction
 
     const key = `${workflowId}:${transactionId}`
-    const inter = this.timeouts.get(key)
-    if (inter) {
-      clearTimeout(inter as NodeJS.Timeout)
+    const timer = this.timeouts.get(key)
+    if (timer) {
+      clearTimeout(timer)
+      this.pendingTimers.delete(timer)
       this.timeouts.delete(key)
     }
   }
@@ -614,8 +688,16 @@ export class InMemoryDistributedTransactionStorage
     interval: number
   ): Promise<void> {
     const { modelId: workflowId, transactionId } = transaction
+    const key = `${workflowId}:${transactionId}:${step.id}`
 
-    const inter = setTimeout(async () => {
+    const existingTimer = this.timeouts.get(key)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+      this.pendingTimers.delete(existingTimer)
+    }
+
+    const timer = this.createManagedTimer(async () => {
+      this.timeouts.delete(key)
       const context = transaction.getFlow().metadata ?? {}
       await this.workflowOrchestratorService_.run(workflowId, {
         transactionId,
@@ -629,8 +711,7 @@ export class InMemoryDistributedTransactionStorage
       })
     }, interval * 1e3)
 
-    const key = `${workflowId}:${transactionId}:${step.id}`
-    this.timeouts.set(key, inter)
+    this.timeouts.set(key, timer)
   }
 
   async clearStepTimeout(
@@ -640,9 +721,10 @@ export class InMemoryDistributedTransactionStorage
     const { modelId: workflowId, transactionId } = transaction
 
     const key = `${workflowId}:${transactionId}:${step.id}`
-    const inter = this.timeouts.get(key)
-    if (inter) {
-      clearTimeout(inter as NodeJS.Timeout)
+    const timer = this.timeouts.get(key)
+    if (timer) {
+      clearTimeout(timer)
+      this.pendingTimers.delete(timer)
       this.timeouts.delete(key)
     }
   }
@@ -726,11 +808,8 @@ export class InMemoryDistributedTransactionStorage
         throwOnError: false,
       })
 
-      // Only schedule the next job execution after the current one completes successfully
-      const timer = setTimeout(async () => {
-        setImmediate(() => {
-          this.jobHandler(jobId)
-        })
+      const timer = this.createManagedTimer(() => {
+        this.jobHandler(jobId)
       }, nextExecution)
 
       // Prevent timer from keeping the process alive

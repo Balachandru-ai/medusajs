@@ -38,4 +38,21 @@ export const WorkflowExecution = model
       on: ["run_id"],
       where: "deleted_at IS NULL",
     },
+    {
+      on: ["workflow_id", "transaction_id"],
+      where: "deleted_at IS NULL",
+    },
+    {
+      on: ["state", "updated_at"],
+      where: "deleted_at IS NULL",
+    },
+    {
+      on: ["retention_time", "updated_at", "state"],
+      where: "deleted_at IS NULL AND retention_time IS NOT NULL",
+    },
+    {
+      on: ["updated_at", "retention_time"],
+      where:
+        "deleted_at IS NULL AND retention_time IS NOT NULL AND state IN ('done', 'failed', 'reverted')",
+    },
   ])

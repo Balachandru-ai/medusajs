@@ -21,7 +21,7 @@ const _OrderSummary = model
       name: "IDX_order_summary_order_id_version",
       on: ["order_id", "version"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_summary_deleted_at",
