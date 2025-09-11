@@ -327,6 +327,8 @@ export const listShippingOptionsForCartWithPricingWorkflow = createWorkflow(
       }
     )
 
-    return new WorkflowResponse(shippingOptionsWithPrice)
+    return new WorkflowResponse(shippingOptionsWithPrice, {
+      hooks: [setShippingOptionsContext] as const,
+    })
   }
 )
