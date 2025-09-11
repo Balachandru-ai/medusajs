@@ -6236,7 +6236,7 @@ export const generatedEditDates = {
   "references/events/events.Region/page.mdx": "2025-05-20T07:51:40.897Z",
   "references/events/events.Sales_Channel/page.mdx": "2025-05-20T07:51:40.897Z",
   "references/events/events.User/page.mdx": "2025-05-20T07:51:40.897Z",
-  "app/how-to-tutorials/tutorials/saved-payment-methods/page.mdx": "2025-05-20T07:51:40.714Z",
+  "app/how-to-tutorials/tutorials/saved-payment-methods/page.mdx": "2025-09-11T13:03:49.152Z",
   "references/core_flows/Cart/Workflows_Cart/functions/core_flows.Cart.Workflows_Cart.refundPaymentAndRecreatePaymentSessionWorkflow/page.mdx": "2025-08-14T12:59:35.141Z",
   "references/core_flows/Cart/Workflows_Cart/variables/core_flows.Cart.Workflows_Cart.refundPaymentAndRecreatePaymentSessionWorkflowId/page.mdx": "2025-05-20T07:51:40.757Z",
   "references/core_flows/Draft_Order/Workflows_Draft_Order/variables/core_flows.Draft_Order.Workflows_Draft_Order.convertDraftOrderWorkflowId/page.mdx": "2025-05-20T07:51:40.768Z",
