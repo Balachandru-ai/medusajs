@@ -13,7 +13,7 @@ import { updateShippingOptionTypesStep } from "../steps"
 /**
  * The data to update one or more shipping option types, along with custom data that's passed to the workflow's hooks.
  */
-type UpdateShippingOptionTypesWorkflowInput = {
+export type UpdateShippingOptionTypesWorkflowInput = {
   /**
    * The filters to select the shipping option types to update.
    */
@@ -27,22 +27,24 @@ type UpdateShippingOptionTypesWorkflowInput = {
 export const updateShippingOptionTypesWorkflowId = "update-shipping-option-types"
 /**
  * This workflow updates one or more shipping option types. It's used by the
- * [Update Shipping Option Type Admin API Route](TODO HERE).
+ * [Update Shipping Option Type Admin API Route](https://docs.medusajs.com/api/admin#shipping-option-types_postshippingoptiontypesid).
  * 
  * This workflow has a hook that allows you to perform custom actions on the updated shipping option types. For example, you can pass under `additional_data` custom data that
  * allows you to update custom data models linked to the shipping option types.
  * 
  * You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around shipping option type updates.
  * 
+ * @since 2.10.0
+ * 
  * @example
  * const { result } = await updateShippingOptionTypesWorkflow(container)
  * .run({
  *   input: {
  *     selector: {
- *       id: "ptyp_123"
+ *       id: "sotype_123"
  *     },
  *     update: {
- *       value: "clothing"
+ *       label: "Standard"
  *     },
  *     additional_data: {
  *       erp_id: "123"

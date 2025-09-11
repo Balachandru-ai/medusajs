@@ -25,10 +25,12 @@ export async function readDirRecursive(
   dir: string,
   options?: {
     ignoreMissing?: boolean
+    maxDepth?: number
   }
 ): Promise<Dirent[]> {
   let allEntries: Dirent[] = []
-  const readRecursive = async (dir: string) => {
+  const readRecursive = async (dir: string, depth: number = 1) => {
+    const maxDepth = options?.maxDepth ?? Infinity
     try {
       const entries = await readdir(dir, { withFileTypes: true })
       for (const entry of entries) {
@@ -38,14 +40,15 @@ export async function readDirRecursive(
         })
         allEntries.push(entry)
 
-        if (entry.isDirectory()) {
-          await readRecursive(fullPath)
+        if (entry.isDirectory() && depth < maxDepth) {
+          await readRecursive(fullPath, depth + 1)
         }
       }
     } catch (error) {
       if (options?.ignoreMissing && error.code === "ENOENT") {
         return
       }
+
       throw error
     }
   }

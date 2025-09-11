@@ -6,30 +6,45 @@ import {
   ProductTypes,
 } from "@medusajs/framework/types"
 import {
+  createMedusaMikroOrmEventSubscriber,
   FreeTextSearchFilterKeyPrefix,
   InjectManager,
   InjectTransactionManager,
   isDefined,
   MedusaContext,
   MedusaError,
+  MedusaInternalService,
+  MedusaService,
   ModulesSdkUtils,
+  registerInternalServiceEventSubscriber,
 } from "@medusajs/framework/utils"
+import { EntityManager, EventType } from "@mikro-orm/core"
 import { ProductCategory } from "@models"
 import { ProductCategoryRepository } from "@repositories"
 import { UpdateCategoryInput } from "@types"
 
 type InjectedDependencies = {
   productCategoryRepository: DAL.TreeRepositoryService
+  productModuleService: ReturnType<typeof MedusaService>
 }
-export default class ProductCategoryService {
-  protected readonly productCategoryRepository_: DAL.TreeRepositoryService
 
-  constructor({ productCategoryRepository }: InjectedDependencies) {
-    this.productCategoryRepository_ = productCategoryRepository
+export default class ProductCategoryService extends MedusaInternalService<
+  InjectedDependencies,
+  typeof ProductCategory
+>(ProductCategory) {
+  protected readonly productCategoryRepository_: DAL.TreeRepositoryService
+  protected readonly container: InjectedDependencies
+
+  constructor(container: InjectedDependencies) {
+    // @ts-expect-error
+    super(...arguments)
+    this.container = container
+    this.productCategoryRepository_ = container.productCategoryRepository
   }
 
   // TODO: Add support for object filter
   @InjectManager("productCategoryRepository_")
+  // @ts-expect-error
   async retrieve(
     productCategoryId: string,
     config: FindConfig<ProductTypes.ProductCategoryDTO> = {},
@@ -150,6 +165,7 @@ export default class ProductCategoryService {
   }
 
   @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
   async update(
     data: UpdateCategoryInput[],
     @MedusaContext() sharedContext: Context = {}
@@ -160,14 +176,45 @@ export default class ProductCategoryService {
   }
 
   @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
   async delete(
     ids: string[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<string[]> {
-    return await this.productCategoryRepository_.delete(ids, sharedContext)
+    const subscriber = createMedusaMikroOrmEventSubscriber(
+      [ProductCategory.name],
+      this.container["productModuleService"]
+    )
+
+    registerInternalServiceEventSubscriber(sharedContext, subscriber)
+
+    const deletedIds = await this.productCategoryRepository_.delete(
+      ids,
+      sharedContext
+    )
+
+    // Delete are handled a bit differently since we are going to the DB directly, therefore
+    // just like upsert with replace, we need to dispatch the events manually.
+    if (deletedIds.length) {
+      const manager = (sharedContext.transactionManager ??
+        sharedContext.manager) as EntityManager
+      const eventManager = manager.getEventManager()
+
+      deletedIds.forEach((id) => {
+        eventManager.dispatchEvent(EventType.afterDelete, {
+          entity: { id },
+          meta: {
+            className: ProductCategory.name,
+          } as Parameters<typeof eventManager.dispatchEvent>[2],
+        })
+      })
+    }
+
+    return deletedIds
   }
 
   @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
   async softDelete(
     ids: string[],
     @MedusaContext() sharedContext?: Context
@@ -178,6 +225,7 @@ export default class ProductCategoryService {
   }
 
   @InjectTransactionManager("productCategoryRepository_")
+  // @ts-expect-error
   async restore(
     ids: string[],
     @MedusaContext() sharedContext?: Context

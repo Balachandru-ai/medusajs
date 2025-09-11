@@ -58,6 +58,7 @@ export type MigrationOptions = {
   container?: MedusaContainer
   options?: Record<string, any>
   moduleExports?: ModuleExports
+  cwd?: string
 }
 
 export type ModuleBootstrapOptions = {
@@ -80,6 +81,7 @@ export type ModuleBootstrapOptions = {
    */
   loaderOnly?: boolean
   workerMode?: "shared" | "worker" | "server"
+  cwd?: string
 }
 
 export type LinkModuleBootstrapOptions = {
@@ -87,6 +89,7 @@ export type LinkModuleBootstrapOptions = {
   declaration?: InternalModuleDeclaration
   moduleExports?: ModuleExports
   injectedDependencies?: Record<string, any>
+  cwd?: string
 }
 
 export type RegisterModuleJoinerConfig =
@@ -289,10 +292,12 @@ class MedusaModule {
       migrationOnly,
       loaderOnly,
       workerMode,
+      cwd,
     }: {
       migrationOnly?: boolean
       loaderOnly?: boolean
       workerMode?: ModuleBootstrapOptions["workerMode"]
+      cwd?: string
     }
   ): Promise<
     {
@@ -303,6 +308,7 @@ class MedusaModule {
       migrationOnly,
       loaderOnly,
       workerMode,
+      cwd,
     })
   }
 
@@ -330,6 +336,7 @@ class MedusaModule {
     migrationOnly,
     loaderOnly,
     workerMode,
+    cwd,
   }: ModuleBootstrapOptions): Promise<{
     [key: string]: T
   }> {
@@ -349,6 +356,7 @@ class MedusaModule {
         migrationOnly,
         loaderOnly,
         workerMode,
+        cwd,
       }
     )
 
@@ -369,16 +377,18 @@ class MedusaModule {
   protected static async bootstrap_<T>(
     modulesOptions: Omit<
       ModuleBootstrapOptions,
-      "migrationOnly" | "loaderOnly" | "workerMode"
+      "migrationOnly" | "loaderOnly" | "workerMode" | "cwd"
     >[],
     {
       migrationOnly,
       loaderOnly,
       workerMode,
+      cwd = process.cwd(),
     }: {
       migrationOnly?: boolean
       loaderOnly?: boolean
       workerMode?: "shared" | "worker" | "server"
+      cwd?: string
     }
   ): Promise<
     {
@@ -464,12 +474,13 @@ class MedusaModule {
           }
         }
 
-        const moduleResolutions = registerMedusaModule(
+        const moduleResolutions = registerMedusaModule({
           moduleKey,
-          modDeclaration!,
+          moduleDeclaration: modDeclaration!,
           moduleExports,
-          moduleDefinition
-        )
+          definition: moduleDefinition,
+          cwd,
+        })
 
         const logger_ =
           container.resolve(ContainerRegistrationKeys.LOGGER, {
@@ -617,6 +628,7 @@ class MedusaModule {
     declaration,
     moduleExports,
     injectedDependencies,
+    cwd,
   }: LinkModuleBootstrapOptions): Promise<{
     [key: string]: unknown
   }> {
@@ -672,7 +684,8 @@ class MedusaModule {
     const moduleResolutions = registerMedusaLinkModule(
       moduleDefinition,
       modDeclaration as InternalModuleDeclaration,
-      moduleExports
+      moduleExports,
+      cwd
     )
 
     const logger_ =
@@ -749,11 +762,16 @@ class MedusaModule {
     moduleExports,
     moduleKey,
     modulePath,
+    cwd,
   }: MigrationOptions): Promise<void> {
-    const moduleResolutions = registerMedusaModule(moduleKey, {
-      scope: MODULE_SCOPE.INTERNAL,
-      resolve: modulePath,
-      options,
+    const moduleResolutions = registerMedusaModule({
+      moduleKey,
+      moduleDeclaration: {
+        scope: MODULE_SCOPE.INTERNAL,
+        resolve: modulePath,
+        options,
+      },
+      cwd,
     })
 
     const logger_ =
@@ -765,6 +783,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { generateMigration } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
@@ -785,11 +804,16 @@ class MedusaModule {
     moduleExports,
     moduleKey,
     modulePath,
+    cwd,
   }: MigrationOptions): Promise<void> {
-    const moduleResolutions = registerMedusaModule(moduleKey, {
-      scope: MODULE_SCOPE.INTERNAL,
-      resolve: modulePath,
-      options,
+    const moduleResolutions = registerMedusaModule({
+      moduleKey,
+      moduleDeclaration: {
+        scope: MODULE_SCOPE.INTERNAL,
+        resolve: modulePath,
+        options,
+      },
+      cwd,
     })
 
     const logger_ =
@@ -801,6 +825,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { runMigrations } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
@@ -821,11 +846,16 @@ class MedusaModule {
     moduleExports,
     moduleKey,
     modulePath,
+    cwd,
   }: MigrationOptions): Promise<void> {
-    const moduleResolutions = registerMedusaModule(moduleKey, {
-      scope: MODULE_SCOPE.INTERNAL,
-      resolve: modulePath,
-      options,
+    const moduleResolutions = registerMedusaModule({
+      moduleKey,
+      moduleDeclaration: {
+        scope: MODULE_SCOPE.INTERNAL,
+        resolve: modulePath,
+        options,
+      },
+      cwd,
     })
 
     const logger_ =
@@ -837,6 +867,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { revertMigration } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )

@@ -482,6 +482,11 @@ export const sidebars = [
                 path: "/learn/fundamentals/scheduled-jobs/execution-number",
                 title: "Execution Number",
               },
+              {
+                type: "link",
+                path: "/learn/fundamentals/scheduled-jobs/interval",
+                title: "Set Interval",
+              },
             ],
           },
           {
@@ -635,6 +640,25 @@ export const sidebars = [
             type: "link",
             path: "/learn/debugging-and-testing/logging",
             title: "Logging",
+            children: [
+              {
+                type: "link",
+                path: "/learn/debugging-and-testing/logging/custom-logger",
+                title: "Override Logger",
+              },
+            ],
+          },
+          {
+            type: "link",
+            path: "/learn/debugging-and-testing/feature-flags",
+            title: "Feature Flags",
+            children: [
+              {
+                type: "link",
+                path: "/learn/debugging-and-testing/feature-flags/create",
+                title: "Create Feature Flag",
+              },
+            ],
           },
         ],
       },

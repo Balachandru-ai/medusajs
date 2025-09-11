@@ -99,6 +99,22 @@ export class SkipExecutionError extends Error {
   }
 }
 
+export class SkipStepAlreadyFinishedError extends Error {
+  static isSkipStepAlreadyFinishedError(
+    error: Error
+  ): error is SkipStepAlreadyFinishedError {
+    return (
+      error instanceof SkipStepAlreadyFinishedError ||
+      error?.name === "SkipStepAlreadyFinishedError"
+    )
+  }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipStepAlreadyFinishedError"
+  }
+}
+
 export class SkipCancelledExecutionError extends Error {
   static isSkipCancelledExecutionError(
     error: Error

@@ -117,7 +117,11 @@ const TagsOperationDescriptionSection = ({
       {operation.externalDocs && (
         <>
           Related guide:{" "}
-          <Link href={operation.externalDocs.url} target="_blank">
+          <Link
+            href={operation.externalDocs.url}
+            target="_blank"
+            variant="content"
+          >
             {operation.externalDocs.description || "Read More"}
           </Link>
         </>

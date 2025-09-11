@@ -1,12 +1,11 @@
-import { resolveValue } from "./helpers"
-import { StepExecutionContext, WorkflowData } from "./type"
-import { proxify } from "./helpers/proxy"
-import { OrchestrationUtils } from "@medusajs/utils"
-import { ulid } from "ulid"
 import {
   TransactionContext,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
+import { OrchestrationUtils } from "@medusajs/utils"
+import { resolveValue } from "./helpers"
+import { proxify } from "./helpers/proxy"
+import { StepExecutionContext, WorkflowData } from "./type"
 
 type Func1<T extends object | WorkflowData, U> = (
   input: T extends WorkflowData<infer U>
@@ -163,11 +162,12 @@ export function transform(
   values: any | any[],
   ...functions: Function[]
 ): unknown {
-  const uniqId = ulid()
+  const uniqId = Math.random().toString(36).substring(2, 20)
 
   const ret = {
     __id: uniqId,
     __type: OrchestrationUtils.SymbolWorkflowStepTransformer,
+    __temporary_storage_key: null as { key: string } | null,
   }
 
   const returnFn = async function (
@@ -176,13 +176,23 @@ export function transform(
   ): Promise<any> {
     if ("transaction" in transactionContext) {
       const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
+      ret.__temporary_storage_key ??= { key: temporaryDataKey }
 
-      if (transactionContext.transaction.hasTemporaryData(temporaryDataKey)) {
-        return transactionContext.transaction.getTemporaryData(temporaryDataKey)
+      if (
+        transactionContext.transaction.hasTemporaryData(
+          ret.__temporary_storage_key
+        )
+      ) {
+        return transactionContext.transaction.getTemporaryData(
+          ret.__temporary_storage_key
+        )
       }
     }
 
-    const stepValue = await resolveValue(values, transactionContext)
+    let stepValue = resolveValue(values, transactionContext)
+    if (stepValue instanceof Promise) {
+      stepValue = await stepValue
+    }
 
     let finalResult
     for (let i = 0; i < functions.length; i++) {
@@ -193,7 +203,10 @@ export function transform(
     }
 
     if ("transaction" in transactionContext) {
-      const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
+      const temporaryDataKey = ret.__temporary_storage_key!
+      if (!temporaryDataKey) {
+        return finalResult
+      }
 
       transactionContext.transaction.setTemporaryData(
         temporaryDataKey,

@@ -52,6 +52,14 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
   },
   {
+    "title": "Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
+    "title": "Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
     "title": "Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },
@@ -70,6 +78,10 @@ export const tutorial = [
   {
     "title": "Integrate Mailchimp",
     "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
+  },
+  {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
   },
   {
     "title": "Integrate Segment",

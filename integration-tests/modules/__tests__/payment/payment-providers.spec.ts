@@ -6,7 +6,7 @@ import {
 
 jest.setTimeout(50000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,

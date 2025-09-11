@@ -77,8 +77,8 @@ To edit a promotion's general details:
 4. In the side window that opens:
     - You can change the promotion's status to either **Draft**, **Active**, or **Inactive**. Inactive is useful if the promotion was originally active but you want to expire it.
     - You can edit the promotion's method (whether it's applied manually or automatically) and code.
-    - You can change how the amount is discounted, either by a fixed amount or a percentage. You can also change the discounted amount.
-    - You can change how the promotion is applied, either on every applicable item or across all items in the cart.
+    - Based on the promotion's type, you can change how the amount is discounted, either by a fixed amount or a percentage. You can also change the discounted amount.
+    - Based on the promotion's type, you can change how the promotion is applied, either on every applicable item or across all items in the cart.
         - For example, if your promotion discounts an amount from applicable products in a cart, choosing **Each** applies the discount on each applicable product, whereas **Across** applies the discount across all applicable products.
 5. Once you're done, click the Save button.
 
@@ -102,12 +102,11 @@ To edit who can use the promotion:
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the B2B group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the B2B customer group.
 5. Once you're done, click the Save button.
 
@@ -184,6 +183,34 @@ To edit the "Buy X" part of the promotion:
 5. Once you're done, click the Save button.
 
 ![Edit Buy X Promotion Condition form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739952429/User%20Guide/Screenshot_2025-02-19_at_10.06.59_AM_raqa9m.png)
+
+---
+
+## Edit the Shipping Methods the Promotion Applies To
+
+<Note>
+
+Free shipping promotions were added in [Medusa v2.10.0](https://github.com/medusajs/medusa/releases/tag/v2.10.0).
+
+</Note>
+
+For "Free Shipping" promotions, you can edit the required conditions for the promotion to be applicable on a cart's shipping methods.
+
+To edit the shipping methods the promotion applies to:
+
+1. Go to the promotion's details page.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the "What shipping methods will the promotion be applied to?" section.
+3. Choose Edit from the dropdown.
+4. In the side window, you can edit the required conditions for the promotion to be applicable on a cart's shipping methods. You can also add new conditions by clicking the "Add condition" button. For each condition:
+    - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
+        - **Shipping Option Type**: The promotion applies / doesn't apply to shipping methods whose underlying shipping option is of the specified type(s).
+    - Select the operator of the condition:
+        - **In**: The value of the shipping method in the cart must belong to the specified values.
+        - **Not In**: The value of the shipping method in the cart must not belong to the specified values.
+    - Select the value of the attribute.
+5. Once you're done, click the Save button.
+
+![Edit shipping methods condition form](https://res.cloudinary.com/dza7lstvk/image/upload/v1756370174/User%20Guide/CleanShot_2025-08-28_at_11.35.57_2x_fjvmwe.png)
 
 ---
 

@@ -1,10 +1,10 @@
+import { isPresent } from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
   StepResponse,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { isPresent } from "@medusajs/framework/utils"
 
 const step_1 = createStep(
   "step_1",
@@ -54,6 +54,7 @@ createWorkflow(
   {
     name: "workflow_sync",
     idempotent: true,
+    retentionTime: 20,
   },
   function (input) {
     step_1(input)

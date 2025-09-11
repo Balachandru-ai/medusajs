@@ -4,13 +4,9 @@ import { getFileSlugSync } from "docs-utils"
 
 type Options = {
   basePath: string
-  testFileName?: boolean
 }
 
-export function retrieveMdxPages({
-  basePath,
-  testFileName = true,
-}: Options): string[] {
+export function retrieveMdxPages({ basePath }: Options): string[] {
   function retrieveMdxFilesInPath(dir: string): string[] {
     const urls = []
     const files = readdirSync(dir, {
@@ -24,24 +20,15 @@ export function retrieveMdxPages({
           urls.push(...retrieveMdxFilesInPath(filePath))
         }
         continue
-      } else if (
-        (testFileName && file.name !== "page.mdx") ||
-        (!testFileName && !file.name.endsWith(".mdx"))
-      ) {
+      } else if (file.name !== "page.mdx") {
         continue
       }
 
       const slug = getFileSlugSync(filePath)
 
-      let url = slug || filePath.replace(basePath, "")
-
-      if (testFileName || file.name === "index.mdx") {
-        url = url.replace(file.name, "")
-      } else {
-        url = url.replace(".mdx", "")
-      }
-
-      url = url.replace(/\/$/, "")
+      const url = (slug || filePath.replace(basePath, ""))
+        .replace(file.name, "")
+        .replace(/\/$/, "")
 
       urls.push(url)
     }

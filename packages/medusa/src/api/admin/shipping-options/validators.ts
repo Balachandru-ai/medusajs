@@ -10,6 +10,7 @@ import {
   createOperatorMap,
   createSelectParams,
 } from "../../utils/validators"
+import { isDefined } from "@medusajs/utils"
 
 export type AdminGetShippingOptionParamsType = z.infer<
   typeof AdminGetShippingOptionParams
@@ -127,9 +128,6 @@ export const AdminUpdateShippingOptionPriceWithRegion = z
   })
   .strict()
 
-export type AdminCreateShippingOptionType = z.infer<
-  typeof AdminCreateShippingOption
->
 export const AdminCreateShippingOption = z
   .object({
     name: z.string(),
@@ -138,13 +136,19 @@ export const AdminCreateShippingOption = z
     data: z.record(z.unknown()).optional(),
     price_type: z.nativeEnum(ShippingOptionPriceTypeEnum),
     provider_id: z.string(),
-    type: AdminCreateShippingOptionTypeObject,
+    type: AdminCreateShippingOptionTypeObject.optional(),
+    type_id: z.string().optional(),
     prices: AdminCreateShippingOptionPriceWithCurrency.or(
       AdminCreateShippingOptionPriceWithRegion
     ).array(),
     rules: AdminCreateShippingOptionRule.array().optional(),
   })
   .strict()
+  .refine((data) => isDefined(data.type_id) !== isDefined(data.type), {
+    message:
+      "Exactly one of 'type' or 'type_id' must be provided, but not both",
+    path: ["type_id", "type"],
+  })
 
 export type AdminUpdateShippingOptionType = z.infer<
   typeof AdminUpdateShippingOption
@@ -157,6 +161,7 @@ export const AdminUpdateShippingOption = z
     provider_id: z.string().optional(),
     shipping_profile_id: z.string().optional(),
     type: AdminCreateShippingOptionTypeObject.optional(),
+    type_id: z.string().optional(),
     prices: AdminUpdateShippingOptionPriceWithCurrency.or(
       AdminUpdateShippingOptionPriceWithRegion
     )
@@ -167,3 +172,19 @@ export const AdminUpdateShippingOption = z
       .optional(),
   })
   .strict()
+  .refine(
+    (data) => {
+      const hasType = isDefined(data.type)
+      const hasTypeId = isDefined(data.type_id)
+
+      if (!hasType && !hasTypeId) {
+        return true
+      }
+
+      return hasType !== hasTypeId
+    },
+    {
+      message: "Only one of 'type' or 'type_id' can be provided",
+      path: ["type_id", "type"],
+    }
+  )

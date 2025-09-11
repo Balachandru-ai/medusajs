@@ -24,6 +24,10 @@
  *     description: The associated inventory item's ID.
  *   inventory:
  *     $ref: "#/components/schemas/AdminInventoryItem"
+ *   required_quantity:
+ *     type: number
+ *     title: required_quantity
+ *     description: The inventory item's required quantity.
  * 
 */
 

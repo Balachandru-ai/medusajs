@@ -7,6 +7,13 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createViewConfigurationWorkflow } from "@medusajs/core-flows"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminGetViewConfigurationsParams>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationListResponse>
@@ -33,6 +40,13 @@ export const GET = async (
   })
 }
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminCreateViewConfigurationType>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationResponse>

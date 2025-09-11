@@ -32,10 +32,11 @@ In the first step of creating a promotion, you need to specify the type of the p
 3. **Percentage off product**: Discount a percentage off the amount of products matching custom and dynamic conditions.
 4. **Percentage off order**: Discount a percentage off an order's total.
 5. **Buy X Get Y**: When the customer buys X quantity of a product, they get Y quantity for free. For example, buy 3 shirts get 1 for free.
+6. **Free Shipping**: Offer free shipping on orders that meet certain conditions.
 
 Once you've selected the type, click on the Continue button.
 
-![Create Promotion Form First Step](https://res.cloudinary.com/dza7lstvk/image/upload/v1739894084/User%20Guide/Screenshot_2025-02-18_at_5.54.25_PM_irp2ax.png)
+![Create Promotion Form First Step](https://res.cloudinary.com/dza7lstvk/image/upload/v1756368023/User%20Guide/CleanShot_2025-08-28_at_11.00.07_2x_nptdyk.png)
 
 ---
 
@@ -63,12 +64,11 @@ If you chose the "Amount off Products" promotion type in the first section, fill
             - **Sales Channel**: The customer must be / must not be placing the order from the specified sales channels.
         - Select the operator of the condition:
             - **In**: The customer's value for the chosen attribute must belong to the specified values.
-            - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
             - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
             - Set the Attribute to Customer Group.
-            - Set the Operator to In or Equals.
+            - Set the Operator to In.
             - Set the Value to the VIP customer group.
 
 ![Who can use this section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898104/User%20Guide/Screenshot_2025-02-18_at_7.01.14_PM_wvskll.png)
@@ -84,12 +84,11 @@ If you chose the "Amount off Products" promotion type in the first section, fill
         - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
     - Select the operator of the condition:
         - **In**: The value of the item in the cart must belong to the specified values.
-        - **Equals**: The value of the item in the cart must equal the specified values.
         - **Not In**: The value of the item in the cart must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to apply the promotion on products in the "Shirts" category:
         - Set the Attribute to Product Category.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the Shirts product category.
 9. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
@@ -115,12 +114,11 @@ If you chose the "Amount off Order" promotion type in the first section, fill ou
             - **Sales Channel**: The customer must be / must not be placing the order from the specified sales channels.
         - Select the operator of the condition:
             - **In**: The customer's value for the chosen attribute must belong to the specified values.
-            - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
             - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
             - Set the Attribute to Customer Group.
-            - Set the Operator to In or Equals.
+            - Set the Operator to In.
             - Set the Value to the VIP customer group.
 
 ![Who can use this code form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898239/User%20Guide/Screenshot_2025-02-18_at_7.03.46_PM_iawubi.png)
@@ -147,12 +145,11 @@ If you chose the "Percentage off Product" promotion type in the first section, f
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the VIP customer group.
 
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898340/User%20Guide/Screenshot_2025-02-18_at_7.05.27_PM_yircnf.png)
@@ -168,12 +165,11 @@ If you chose the "Percentage off Product" promotion type in the first section, f
         - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
     - Select the operator of the condition:
         - **In**: The value of the item in the cart must belong to the specified values.
-        - **Equals**: The value of the item in the cart must equal the specified values.
         - **Not In**: The value of the item in the cart must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to apply the promotion on products in the "Shirts" category:
         - Set the Attribute to Product Category.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the Shirts product category.
 9. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
@@ -198,12 +194,11 @@ If you chose the "Percentage off Order" promotion type in the first section, fil
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the VIP customer group.
 
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898478/User%20Guide/Screenshot_2025-02-18_at_7.07.46_PM_eriyxm.png)
@@ -219,7 +214,7 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
     - **Promotion code**: The customer must enter the promotion's code during checkout for the promotion to apply.
     - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
 2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
-3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `50OFF`.
+3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `BUY3GET1`.
 4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Customer Group**: The customer must belong / not belong to the specified customer group(s).
@@ -229,12 +224,11 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the VIP customer group.
 
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898542/User%20Guide/Screenshot_2025-02-18_at_7.08.45_PM_nh5iw4.png)
@@ -250,16 +244,12 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
             - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
         - Select the operator of the condition:
             - **In**: The value of the item in the cart must belong to the specified values.
-            - **Equals**: The value of the item in the cart must equal the specified values.
             - **Not In**: The value of the item in the cart must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you don't want the promotion to apply to products in the "Shirt" category:
             - Set the Attribute to Product Category.
             - Set the Operator to "Not In".
             - Set the Value to the "Shirt" category.
-
-![What needs to be in cart to unlock promotion section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898589/User%20Guide/Screenshot_2025-02-18_at_7.09.31_PM_xzj8ro.png)
-
 6. In the "What items will the promotion be applied to?" section, you'll specify the Buy Y part (for example, "get 1 free shirt"):
     - You must set the quantity of items that the customer gets out of the promotion. For example, for the "Buy 3 shirts get 1 for free", you set the quantity to one.
     - You must set the products tht the customer gets out of the promotion for free.
@@ -271,7 +261,6 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
             - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
         - Select the operator of the condition:
             - **In**: The value of the item in the cart must belong to the specified values.
-            - **Equals**: The value of the item in the cart must equal the specified values.
             - **Not In**: The value of the item in the cart must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you don't want the promotion to offer products in the "Shirt" category:
@@ -280,7 +269,50 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
             - Set the Value to the "Shirt" category.
 7. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
-![What items will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898642/User%20Guide/Screenshot_2025-02-18_at_7.10.28_PM_rl3dkp.png)
+### f. Free Shipping
+
+<Note>
+
+Free shipping promotions were added in [Medusa v2.10.0](https://github.com/medusajs/medusa/releases/tag/v2.10.0).
+
+</Note>
+
+If you chose the "Free Shipping" promotion type in the first section, fill out the following in the Details step:
+
+1. For the Method, choose how you want the promotion to be applied:
+    - **Promotion code**: The customer must enter the promotion's code during checkout for the promotion to apply.
+    - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
+2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
+3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `FREESHIPPING`.
+4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
+    - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
+        - **Customer Group**: The customer must belong / not belong to the specified customer group(s).
+        - **Region**: The customer's region must belong / not belong to the specified region(s).
+        - **Country**: The customer's country, which is determined through their shipping address, must belong / not belong to the specified countries.
+        - **Sales Channel**: The customer must / must not be placing the order from the specified sales channels.
+        - **Currency Code**: The currency code that the customer must / must not be placing the order in.
+    - Select the operator of the condition:
+        - **In**: The customer's value for the chosen attribute must belong to the specified values.
+        - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
+    - Select the value of the attribute.
+    - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
+        - Set the Attribute to Customer Group.
+        - Set the Operator to In or Equals.
+        - Set the Value to the VIP customer group.
+5. In the "What shipping methods will the promotion be applied to?" section, you'll specify the required conditions related to the cart's shipping method. To add a condition, click on the "Add condition" button. For each condition:
+    - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
+        - **Shipping Option Type**: The promotion applies / doesn't apply to shipping methods whose underlying shipping option is of the specified type(s).
+    - Select the operator of the condition:
+        - **In**: The value of the shipping method in the cart must belong to the specified values.
+        - **Not In**: The value of the shipping method in the cart must not belong to the specified values.
+    - Select the value of the attribute.
+    - For example, if you want to apply the promotion on shipping methods in the "Express" shipping option type:
+        - Set the Attribute to Shipping Option Type.
+        - Set the Operator to In.
+        - Set the Value to the "Express" shipping option type.
+6. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+
+![What shipping methods will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1756368838/User%20Guide/CleanShot_2025-08-28_at_11.13.29_2x_rdcivr.png)
 
 ---
 
@@ -306,10 +338,8 @@ If you selected a new campaign, you need to fill out the following to create a c
 4. Under the campaign budget, you can add limits that automatically expires the campaign, which means promotions in that campaign can't be used anymore.
     - For Type, you can choose to set the budget either based on:
         - **Usage**: How many times the promotions in the campaign can be used. Once the number of times exceed the limit, the campaign and its promotions expire.
-        - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is disabled if you select the "Buy X Get Y" promotion type.
+        - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is disabled if you select the "Buy X Get Y" or "Free Shipping" promotion types.
     - In the Limit field, enter the budget limit based on the chosen type.
 5. Once you're done, click on the Save button.
-
-![Create campaign form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739897668/User%20Guide/Screenshot_2025-02-18_at_6.53.46_PM_gfhp9l.png)
 
 You can now [manage the promotion](../manage/page.mdx) you created.

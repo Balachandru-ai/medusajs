@@ -12,7 +12,7 @@ import {
   AdditionalData,
   ListShippingOptionsForCartWorkflowInput,
 } from "@medusajs/types"
-import { isDefined } from "@medusajs/framework/utils"
+import { filterObjectByKeys, isDefined } from "@medusajs/framework/utils"
 import { pricingContextResult } from "../utils/schemas"
 
 export const listShippingOptionsForCartWorkflowId =
@@ -43,11 +43,11 @@ export const listShippingOptionsForCartWorkflowId =
  * @summary
  *
  * List a cart's shipping options.
- * 
+ *
  * @property hooks.setPricingContext - This hook is executed before the shipping options are retrieved. You can consume this hook to return any custom context useful for the prices retrieval of shipping options.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -55,13 +55,13 @@ export const listShippingOptionsForCartWorkflowId =
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { listShippingOptionsForCartWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * listShippingOptionsForCartWorkflow.hooks.setPricingContext((
  *   { cart, fulfillmentSetIds, additional_data }, { container }
  * ) => {
@@ -70,13 +70,13 @@ export const listShippingOptionsForCartWorkflowId =
  *   });
  * });
  * ```
- * 
+ *
  * The shipping options' prices will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const listShippingOptionsForCartWorkflow = createWorkflow(
@@ -181,7 +181,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
 
           calculated_price: {
             context: {
-              ...cart,
+              ...filterObjectByKeys(cart, cartFieldsForPricingContext),
               ...(setPricingContextResult ? setPricingContextResult : {}),
               currency_code: cart.currency_code,
               region_id: cart.region_id,
