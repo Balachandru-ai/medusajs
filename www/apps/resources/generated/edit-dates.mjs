@@ -196,7 +196,7 @@ export const generatedEditDates = {
   "app/commerce-modules/auth/create-actor-type/page.mdx": "2025-05-20T07:51:40.707Z",
   "app/infrastructure-modules/page.mdx": "2025-05-21T13:01:59.821Z",
   "app/infrastructure-modules/workflow-engine/redis/page.mdx": "2025-06-24T08:50:10.115Z",
-  "app/infrastructure-modules/notification/sendgrid/page.mdx": "2025-05-20T07:51:40.715Z",
+  "app/infrastructure-modules/notification/sendgrid/page.mdx": "2025-09-10T12:12:04.142Z",
   "app/commerce-modules/api-key/concepts/page.mdx": "2025-08-01T15:40:51.530Z",
   "app/infrastructure-modules/workflow-engine/page.mdx": "2025-04-17T08:29:00.881Z",
   "app/infrastructure-modules/cache/page.mdx": "2025-04-17T08:29:00.741Z",
@@ -6559,7 +6559,7 @@ export const generatedEditDates = {
   "app/commerce-modules/promotion/promotion-taxes/page.mdx": "2025-06-27T15:44:46.638Z",
   "app/troubleshooting/payment/page.mdx": "2025-07-16T10:20:24.799Z",
   "app/recipes/personalized-products/example/page.mdx": "2025-07-22T08:53:58.182Z",
-  "app/how-to-tutorials/tutorials/preorder/page.mdx": "2025-08-13T12:09:06.154Z",
+  "app/how-to-tutorials/tutorials/preorder/page.mdx": "2025-09-09T14:02:55.378Z",
   "references/js_sdk/admin/Order/methods/js_sdk.admin.Order.archive/page.mdx": "2025-07-24T08:20:57.709Z",
   "references/js_sdk/admin/Order/methods/js_sdk.admin.Order.complete/page.mdx": "2025-07-24T08:20:57.714Z",
   "app/commerce-modules/cart/cart-totals/page.mdx": "2025-07-31T15:18:13.978Z",
@@ -6572,5 +6572,10 @@ export const generatedEditDates = {
   "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-08-29T11:32:54.117Z",
   "app/troubleshooting/pnpm/page.mdx": "2025-08-29T12:21:24.692Z",
-  "app/how-to-tutorials/tutorials/product-feed/page.mdx": "2025-09-01T13:19:59.335Z"
+  "app/how-to-tutorials/tutorials/product-feed/page.mdx": "2025-09-01T13:19:59.335Z",
+  "app/recipes/ticket-booking/examples/page.mdx": "2025-09-10T14:11:55.063Z",
+  "app/recipes/ticket-booking/examples/storefront/page.mdx": "2025-09-10T14:14:44.005Z",
+  "app/recipes/ticket-booking/example/page.mdx": "2025-09-10T15:13:15.604Z",
+  "app/recipes/ticket-booking/example/storefront/page.mdx": "2025-09-10T15:26:04.084Z",
+  "app/recipes/ticket-booking/page.mdx": "2025-09-11T06:53:21.071Z"
 }

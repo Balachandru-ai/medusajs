@@ -112,6 +112,10 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
   },
   {
+    "title": "Implement Ticket Booking",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
+  },
+  {
     "title": "Implement Express Checkout with Medusa",
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
   },
