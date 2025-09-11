@@ -12,6 +12,10 @@ export const fulfillment = [
     "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping"
   },
   {
+    "title": "Manage Shipping Option Types",
+    "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/shipping-option-types"
+  },
+  {
     "title": "Manage Shipping Profiles",
     "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/shipping-profiles"
   },
@@ -272,6 +276,30 @@ export const fulfillment = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/maybeRefreshShippingMethodsWorkflow"
   },
   {
+    "title": "createShippingOptionTypesStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/createShippingOptionTypesStep"
+  },
+  {
+    "title": "deleteShippingOptionTypesStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/deleteShippingOptionTypesStep"
+  },
+  {
+    "title": "updateShippingOptionTypesStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateShippingOptionTypesStep"
+  },
+  {
+    "title": "createShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "deleteShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "updateShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateShippingOptionTypesWorkflow"
+  },
+  {
     "title": "deleteShippingProfilesStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/deleteShippingProfilesStep"
   },
@@ -302,6 +330,10 @@ export const fulfillment = [
   {
     "title": "shippingOption",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOption"
+  },
+  {
+    "title": "shippingOptionType",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOptionType"
   },
   {
     "title": "shippingProfile",

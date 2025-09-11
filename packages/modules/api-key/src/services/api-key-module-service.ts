@@ -12,6 +12,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   ApiKeyType,
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isObject,
@@ -65,9 +66,18 @@ export class ApiKeyModuleService
     return joinerConfig
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async deleteApiKeys(
+    ids: string | string[],
+    @MedusaContext() sharedContext: Context = {}
+  ) {
+    return await this.deleteApiKeys_(ids, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async deleteApiKeys_(
     ids: string | string[],
     @MedusaContext() sharedContext: Context = {}
   ) {
@@ -111,6 +121,7 @@ export class ApiKeyModuleService
   ): Promise<ApiKeyTypes.ApiKeyDTO>
 
   @InjectManager()
+  @EmitEvents()
   //@ts-expect-error
   async createApiKeys(
     data: ApiKeyTypes.CreateApiKeyDTO | ApiKeyTypes.CreateApiKeyDTO[],
@@ -183,7 +194,18 @@ export class ApiKeyModuleService
   ): Promise<ApiKeyTypes.ApiKeyDTO>
 
   @InjectManager()
+  @EmitEvents()
   async upsertApiKeys(
+    data: ApiKeyTypes.UpsertApiKeyDTO | ApiKeyTypes.UpsertApiKeyDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<ApiKeyTypes.ApiKeyDTO | ApiKeyTypes.ApiKeyDTO[]> {
+    const result = await this.upsertApiKeys_(data, sharedContext)
+
+    return await this.baseRepository_.serialize<ApiKeyTypes.ApiKeyDTO[]>(result)
+  }
+
+  @InjectTransactionManager()
+  protected async upsertApiKeys_(
     data: ApiKeyTypes.UpsertApiKeyDTO | ApiKeyTypes.UpsertApiKeyDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ApiKeyTypes.ApiKeyDTO | ApiKeyTypes.ApiKeyDTO[]> {
@@ -205,9 +227,7 @@ export class ApiKeyModuleService
         )
         const serializedResponse = await this.baseRepository_.serialize<
           ApiKeyTypes.ApiKeyDTO[]
-        >(createdApiKeys, {
-          populate: true,
-        })
+        >(createdApiKeys)
 
         return serializedResponse.map(
           (key) =>
@@ -226,10 +246,7 @@ export class ApiKeyModuleService
 
     if (forUpdate.length) {
       const op = async () => {
-        const updateResp = await this.updateApiKeys_(forUpdate, sharedContext)
-        return await this.baseRepository_.serialize<ApiKeyTypes.ApiKeyDTO[]>(
-          updateResp
-        )
+        return await this.updateApiKeys_(forUpdate, sharedContext)
       }
 
       operations.push(op())
@@ -253,6 +270,7 @@ export class ApiKeyModuleService
   ): Promise<ApiKeyTypes.ApiKeyDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   //@ts-expect-error
   async updateApiKeys(
     idOrSelector: string | FilterableApiKeyProps,
@@ -368,7 +386,9 @@ export class ApiKeyModuleService
     data: ApiKeyTypes.RevokeApiKeyDTO,
     sharedContext?: Context
   ): Promise<ApiKeyTypes.ApiKeyDTO[]>
+
   @InjectManager()
+  @EmitEvents()
   async revoke(
     idOrSelector: string | FilterableApiKeyProps,
     data: ApiKeyTypes.RevokeApiKeyDTO,

@@ -149,6 +149,13 @@ While tutorials show you a specific use case, they also help you understand how 
         description: "Learn how to migrate data from Magento to Medusa.",
       },
       {
+        type: "link",
+        title: "Meta Product Feed",
+        path: "/how-to-tutorials/tutorials/product-feed",
+        description:
+          "Learn how to implement a product feed for Meta (Facebook and Instagram) and Google using Medusa.",
+      },
+      {
         type: "ref",
         title: "Newsletter with Mailchimp",
         path: "/integrations/guides/mailchimp",
@@ -175,6 +182,13 @@ While tutorials show you a specific use case, they also help you understand how 
         path: "/how-to-tutorials/tutorials/preorder",
         description:
           "Learn how to implement pre-order functionality for products in your Medusa store.",
+      },
+      {
+        type: "link",
+        title: "Product Builder",
+        path: "/how-to-tutorials/tutorials/product-builder",
+        description:
+          "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
       },
       {
         type: "link",

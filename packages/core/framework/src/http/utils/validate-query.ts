@@ -82,7 +82,12 @@ export function validateAndTransformQuery<TEntity extends BaseEntity>(
       const validated = await zodValidator(zodSchema, query)
 
       const cnf = queryConfig.isList
-        ? prepareListQuery(validated, { ...queryConfig, allowed, restricted })
+        ? prepareListQuery(validated, {
+            ...queryConfig,
+            allowed,
+            restricted,
+            isList: true,
+          })
         : prepareRetrieveQuery(validated, {
             ...queryConfig,
             allowed,

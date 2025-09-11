@@ -103,6 +103,7 @@ export type FormattingOptionType = {
   workflowDiagramComponent?: string
   isEventsReference?: boolean
   sortMembers?: boolean
+  internalType?: string
 }
 
 export type AllowedProjectDocumentsOption = {

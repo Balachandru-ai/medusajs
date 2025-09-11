@@ -91,7 +91,7 @@ async function populateData(api: any) {
   )
   const products = response.data.created
 
-  await setTimeout(4000)
+  await setTimeout(10000)
 
   return products
 }
@@ -513,6 +513,49 @@ medusaIntegrationTestRunner({
 
         expect(resultset.data.length).toEqual(1)
         expect(resultset.data[0].origin_country).toEqual("USA")
+      })
+
+      it("should use query.index to filter enum field", async () => {
+        const products = await populateData(api)
+
+        const brandModule = appContainer.resolve("brand")
+        const link = appContainer.resolve(ContainerRegistrationKeys.LINK)
+        const brand = await brandModule.createBrands({
+          name: "Medusa Brand",
+        })
+
+        await link.create({
+          [Modules.PRODUCT]: {
+            product_id: products.find((p) => p.title === "Extra product").id,
+          },
+          brand: {
+            brand_id: brand.id,
+          },
+        })
+
+        const query = appContainer.resolve(
+          ContainerRegistrationKeys.QUERY
+        ) as RemoteQueryFunction
+
+        const resultset = await fetchAndRetry(
+          async () =>
+            await query.index({
+              entity: "product",
+              fields: ["id"],
+              filters: {
+                status: "published",
+                brand: {
+                  status: "active",
+                },
+              },
+            }),
+          ({ data }) => data.length > 0,
+          {
+            retries: 3,
+            waitSeconds: 3,
+          }
+        )
+        expect(resultset.data.length).toEqual(1)
       })
     })
   },

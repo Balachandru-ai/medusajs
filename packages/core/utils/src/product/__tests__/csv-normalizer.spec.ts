@@ -1101,6 +1101,40 @@ describe("CSV processor", () => {
     `)
   })
 
+  describe("Variant Metadata column", () => {
+    it("should process variant metadata as JSON correctly", () => {
+      const csvRow = {
+        "Product Handle": "test-product",
+        "Variant Title": "Test Variant",
+        "Variant Metadata": '{ "key": "value", "number": 123 }',
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      expect(result.toCreate["test-product"].variants[0].metadata).toEqual({
+        key: "value",
+        number: 123,
+      })
+    })
+
+    it("should throw an error for invalid JSON in variant metadata", () => {
+      const csvRow = {
+        "Product Handle": "test-product",
+        "Variant Title": "Test Variant",
+        "Variant Metadata": 'invalid json',
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+
+      expect(() => processor.proccess()).toThrow(
+        'Row 1: Invalid value provided for "variant metadata". Expected a valid JSON string, received "invalid json"'
+      )
+    })
+  })
+
   describe("System-generated columns", () => {
     it("should ignore product timestamp columns during import", () => {
       const csvRow: Record<string, string | boolean | number> = {

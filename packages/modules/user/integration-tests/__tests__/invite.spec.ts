@@ -172,17 +172,20 @@ moduleIntegrationTestRunner<IUserModuleService>({
             },
           ])
 
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
+          // 2 events: 1 invite updated, 1 invite token generated
+          const events = eventBusSpy.mock.calls[0][0]
+          expect(events).toHaveLength(2)
+          expect(events).toEqual(
+            expect.arrayContaining([
               expect.objectContaining({
                 data: { id: "1" },
                 name: UserEvents.INVITE_UPDATED,
               }),
-            ],
-            {
-              internal: true,
-            }
+              expect.objectContaining({
+                data: { id: "1" },
+                name: UserEvents.INVITE_TOKEN_GENERATED,
+              }),
+            ])
           )
         })
       })
@@ -190,21 +193,25 @@ moduleIntegrationTestRunner<IUserModuleService>({
       describe("resendInvite", () => {
         it("should emit token generated event for invites", async () => {
           await service.createInvites(defaultInviteData)
+
           const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
+          eventBusSpy.mockClear()
 
           await service.refreshInviteTokens(["1"])
 
-          expect(eventBusSpy).toHaveBeenCalledTimes(2)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
+          const events = eventBusSpy.mock.calls[0][0]
+          expect(events).toHaveLength(2)
+          expect(events).toEqual(
+            expect.arrayContaining([
               expect.objectContaining({
+                name: UserEvents.INVITE_UPDATED,
                 data: { id: "1" },
-                name: UserEvents.INVITE_TOKEN_GENERATED,
               }),
-            ],
-            {
-              internal: true,
-            }
+              expect.objectContaining({
+                name: UserEvents.INVITE_TOKEN_GENERATED,
+                data: { id: "1" },
+              }),
+            ])
           )
         })
       })
@@ -251,21 +258,25 @@ moduleIntegrationTestRunner<IUserModuleService>({
           const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
           await service.createInvites(defaultInviteData)
 
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
+          // 4 events: 2 invites created, 2 invite token generated
+          const events = eventBusSpy.mock.calls[0][0]
+          expect(events).toHaveLength(3)
+
+          expect(events).toEqual(
+            expect.arrayContaining([
               expect.objectContaining({
-                data: { id: ["1", "2"] },
+                data: { id: "1" },
+                name: UserEvents.INVITE_CREATED,
+              }),
+              expect.objectContaining({
+                data: { id: "2" },
                 name: UserEvents.INVITE_CREATED,
               }),
               expect.objectContaining({
                 data: { id: ["1", "2"] },
                 name: UserEvents.INVITE_TOKEN_GENERATED,
               }),
-            ],
-            {
-              internal: true,
-            }
+            ])
           )
         })
       })

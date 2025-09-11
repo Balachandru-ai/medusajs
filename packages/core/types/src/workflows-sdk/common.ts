@@ -19,4 +19,6 @@ export interface FilterableWorkflowExecutionProps
   workflow_id?: string | string[] | OperatorMap<string>
   transaction_id?: string | string[] | OperatorMap<string>
   state?: string | string[] | OperatorMap<string>
+  created_at?: string | OperatorMap<string>
+  updated_at?: string | OperatorMap<string>
 }

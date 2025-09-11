@@ -4,6 +4,7 @@ import {
   Modules,
   PriceListStatus,
   PriceListType,
+  ProductStatus,
   PromotionRuleOperator,
   PromotionStatus,
   PromotionType,
@@ -19,7 +20,7 @@ import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
 
 const shippingAddressData = {
@@ -186,6 +187,100 @@ medusaIntegrationTestRunner({
                   adjustments: [],
                 }),
               ]),
+            })
+          )
+        })
+
+        it("should successfully create a cart with a line item with quantity and calculate prices based on the correct quantity", async () => {
+          const productData = {
+            title: "Medusa T-Shirt based quantity",
+            handle: "t-shirt-with-quantity-prices",
+            status: ProductStatus.PUBLISHED,
+            options: [
+              {
+                title: "Size",
+                values: ["S"],
+              },
+            ],
+            variants: [
+              {
+                title: "S",
+                sku: "SHIRT-S-BLACK-w-quantity-prices",
+                options: {
+                  Size: "S",
+                },
+                manage_inventory: false,
+                prices: [
+                  {
+                    amount: 1500,
+                    currency_code: "usd",
+                    min_quantity: 1,
+                    max_quantity: 4,
+                  },
+                  {
+                    amount: 1000,
+                    currency_code: "usd",
+                    min_quantity: 5,
+                    max_quantity: 10,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const newProduct = await api.post(
+            `/admin/products`,
+            productData,
+            adminHeaders
+          )
+
+          const variantId = newProduct.data.product.variants[0].id
+
+          const newCart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+                items: [{ variant_id: variantId, quantity: 6 }],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(newCart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 5714.285714285715,
+              item_tax_total: 285.7142857142857,
+              item_total: 6000,
+              items: [
+                expect.objectContaining({
+                  quantity: 6,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1000,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              original_item_subtotal: 5714.285714285715,
+              original_item_tax_total: 285.7142857142857,
+              original_item_total: 6000,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 285.7142857142857,
+              original_total: 6000,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 5714.285714285715,
+              tax_total: 285.7142857142857,
+              total: 6000,
             })
           )
         })
@@ -438,6 +533,473 @@ medusaIntegrationTestRunner({
                   ]),
                 }),
               ]),
+            })
+          )
+        })
+
+        it("should add item to cart and calculate prices based on item quantity", async () => {
+          const productData = {
+            title: "Medusa T-Shirt based quantity",
+            handle: "t-shirt-with-quantity-prices",
+            status: ProductStatus.PUBLISHED,
+            options: [
+              {
+                title: "Size",
+                values: ["S"],
+              },
+            ],
+            variants: [
+              {
+                title: "S",
+                sku: "SHIRT-S-BLACK-w-quantity-prices",
+                options: {
+                  Size: "S",
+                },
+                manage_inventory: false,
+                prices: [
+                  {
+                    amount: 1500,
+                    currency_code: "usd",
+                    min_quantity: 1,
+                    max_quantity: 4,
+                  },
+                  {
+                    amount: 1000,
+                    currency_code: "usd",
+                    min_quantity: 5,
+                    max_quantity: 10,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const newProduct = await api.post(
+            `/admin/products`,
+            productData,
+            adminHeaders
+          )
+
+          const variantId = newProduct.data.product.variants[0].id
+
+          const newCart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Add item to cart with quantity 1
+           * in order to have the price calculated based on the price rule
+           * with min_quantity 1 and max_quantity 4
+           */
+
+          let response = await api.post(
+            `/store/carts/${newCart.id}/line-items`,
+            {
+              variant_id: variantId,
+              quantity: 1,
+            },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              billing_address: null,
+              completed_at: null,
+              created_at: expect.any(String),
+              credit_line_subtotal: 0,
+              credit_line_tax_total: 0,
+              credit_line_total: 0,
+              credit_lines: [],
+              currency_code: "usd",
+              customer_id: null,
+              discount_subtotal: 0,
+              discount_tax_total: 0,
+              discount_total: 0,
+              email: null,
+              id: newCart.id,
+              item_subtotal: 1428.5714285714287,
+              item_tax_total: 71.42857142857143,
+              item_total: 1500,
+              items: [
+                expect.objectContaining({
+                  compare_at_unit_price: null,
+                  created_at: expect.any(String),
+                  id: expect.any(String),
+                  is_tax_inclusive: true,
+                  metadata: {},
+                  product: expect.objectContaining({
+                    categories: [],
+                    collection_id: null,
+                    id: expect.any(String),
+                    tags: [],
+                    type_id: null,
+                  }),
+                  product_collection: null,
+                  product_description: null,
+                  product_handle: "t-shirt-with-quantity-prices",
+                  product_id: expect.any(String),
+                  product_subtitle: null,
+                  product_title: "Medusa T-Shirt based quantity",
+                  product_type: null,
+                  product_type_id: null,
+                  quantity: 1,
+                  requires_shipping: false,
+                  tax_lines: [
+                    {
+                      code: "CADEFAULT",
+                      description: "CA Default Rate",
+                      id: expect.any(String),
+                      provider_id: "system",
+                      rate: 5,
+                    },
+                  ],
+                  thumbnail: null,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1500,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              metadata: null,
+              original_item_subtotal: 1428.5714285714287,
+              original_item_tax_total: 71.42857142857143,
+              original_item_total: 1500,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 71.42857142857143,
+              original_total: 1500,
+              region: expect.objectContaining({
+                automatic_taxes: true,
+                countries: expect.any(Array),
+                currency_code: "usd",
+                id: expect.any(String),
+                name: "US",
+              }),
+              region_id: expect.any(String),
+              sales_channel_id: expect.any(String),
+              shipping_address: expect.objectContaining({
+                address_1: "test address 1",
+                address_2: "test address 2",
+                city: "SF",
+                company: null,
+                country_code: "US",
+                first_name: null,
+                id: expect.any(String),
+                last_name: null,
+                phone: null,
+                postal_code: "94016",
+                province: "CA",
+              }),
+              shipping_address_id: expect.any(String),
+              shipping_methods: [],
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 1428.5714285714287,
+              tax_total: 71.42857142857143,
+              total: 1500,
+              updated_at: expect.any(String),
+            })
+          )
+
+          /**
+           * Add item to cart with quantity 5
+           * in order to have the price calculated based on the price rule
+           * with min_quantity 5 and max_quantity 10
+           */
+
+          response = await api.post(
+            `/store/carts/${newCart.id}/line-items`,
+            {
+              variant_id: variantId,
+              quantity: 5,
+            },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              billing_address: null,
+              completed_at: null,
+              created_at: expect.any(String),
+              credit_line_subtotal: 0,
+              credit_line_tax_total: 0,
+              credit_line_total: 0,
+              credit_lines: [],
+              currency_code: "usd",
+              customer_id: null,
+              discount_subtotal: 0,
+              discount_tax_total: 0,
+              discount_total: 0,
+              email: null,
+              id: newCart.id,
+              item_subtotal: 5714.285714285715,
+              item_tax_total: 285.7142857142857,
+              item_total: 6000,
+              items: [
+                expect.objectContaining({
+                  adjustments: [],
+                  compare_at_unit_price: null,
+                  created_at: expect.any(String),
+                  id: expect.any(String),
+                  is_tax_inclusive: true,
+                  metadata: {},
+                  product: {
+                    categories: [],
+                    collection_id: null,
+                    id: expect.any(String),
+                    tags: [],
+                    type_id: null,
+                  },
+                  product_collection: null,
+                  product_description: null,
+                  product_handle: "t-shirt-with-quantity-prices",
+                  product_id: expect.any(String),
+                  product_subtitle: null,
+                  product_title: "Medusa T-Shirt based quantity",
+                  product_type: null,
+                  product_type_id: null,
+                  quantity: 6,
+                  requires_shipping: false,
+                  tax_lines: [
+                    {
+                      code: "CADEFAULT",
+                      description: "CA Default Rate",
+                      id: expect.any(String),
+                      provider_id: "system",
+                      rate: 5,
+                    },
+                  ],
+                  thumbnail: null,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1000,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              metadata: null,
+              original_item_subtotal: 5714.285714285715,
+              original_item_tax_total: 285.7142857142857,
+              original_item_total: 6000,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 285.7142857142857,
+              original_total: 6000,
+              promotions: [],
+              region: {
+                automatic_taxes: true,
+                countries: expect.any(Array),
+                currency_code: "usd",
+                id: expect.any(String),
+                name: "US",
+              },
+              region_id: expect.any(String),
+              sales_channel_id: expect.any(String),
+              shipping_address: {
+                address_1: "test address 1",
+                address_2: "test address 2",
+                city: "SF",
+                company: null,
+                country_code: "US",
+                first_name: null,
+                id: expect.any(String),
+                last_name: null,
+                phone: null,
+                postal_code: "94016",
+                province: "CA",
+              },
+              shipping_address_id: expect.any(String),
+              shipping_methods: [],
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 5714.285714285715,
+              tax_total: 285.7142857142857,
+              total: 6000,
+              updated_at: expect.any(String),
+            })
+          )
+        })
+
+        it("should update a cart line item quantity and calculate prices based the new item quantity", async () => {
+          const productData = {
+            title: "Medusa T-Shirt based quantity",
+            handle: "t-shirt-with-quantity-prices",
+            status: ProductStatus.PUBLISHED,
+            options: [
+              {
+                title: "Size",
+                values: ["S"],
+              },
+            ],
+            variants: [
+              {
+                title: "S",
+                sku: "SHIRT-S-BLACK-w-quantity-prices",
+                options: {
+                  Size: "S",
+                },
+                manage_inventory: false,
+                prices: [
+                  {
+                    amount: 1500,
+                    currency_code: "usd",
+                    min_quantity: 1,
+                    max_quantity: 4,
+                  },
+                  {
+                    amount: 1000,
+                    currency_code: "usd",
+                    min_quantity: 5,
+                    max_quantity: 10,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const newProduct = await api.post(
+            `/admin/products`,
+            productData,
+            adminHeaders
+          )
+
+          const variantId = newProduct.data.product.variants[0].id
+
+          const newCart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          /**
+           * Add item to cart with quantity 1
+           * in order to have the price calculated based on the price rule
+           * with min_quantity 1 and max_quantity 4
+           */
+
+          let response = await api.post(
+            `/store/carts/${newCart.id}/line-items`,
+            {
+              variant_id: variantId,
+              quantity: 1,
+            },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 1428.5714285714287,
+              item_tax_total: 71.42857142857143,
+              item_total: 1500,
+              items: [
+                expect.objectContaining({
+                  quantity: 1,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1500,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              original_item_subtotal: 1428.5714285714287,
+              original_item_tax_total: 71.42857142857143,
+              original_item_total: 1500,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 71.42857142857143,
+              original_total: 1500,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 1428.5714285714287,
+              tax_total: 71.42857142857143,
+              total: 1500,
+            })
+          )
+
+          /**
+           * update item quantity to 5
+           * in order to have the price calculated based on the price rule
+           * with min_quantity 5 and max_quantity 10
+           */
+
+          const itemId = response.data.cart.items[0].id
+          response = await api
+            .post(
+              `/store/carts/${newCart.id}/line-items/${itemId}`,
+              {
+                quantity: 6,
+              },
+              storeHeaders
+            )
+            .catch((e) => {
+              console.log(e.response.data)
+              throw e
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 5714.285714285715,
+              item_tax_total: 285.7142857142857,
+              item_total: 6000,
+              items: [
+                expect.objectContaining({
+                  quantity: 6,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1000,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              original_item_subtotal: 5714.285714285715,
+              original_item_tax_total: 285.7142857142857,
+              original_item_total: 6000,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 285.7142857142857,
+              original_total: 6000,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 5714.285714285715,
+              tax_total: 285.7142857142857,
+              total: 6000,
             })
           )
         })

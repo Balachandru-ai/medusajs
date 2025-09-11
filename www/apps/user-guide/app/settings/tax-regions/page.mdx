@@ -20,9 +20,9 @@ In this guide, you'll learn what tax regions are and how to manage them.
 
 ## What is a Tax Region?
 
-A Tax Region represents a geographical area where you have to apply specific tax rates. For example, if you operate in the United States and Canada, you might have different tax rates for each country, and even in different states or provinces of each country.
+A Tax Region represents a geographical area where you must apply specific tax rates. For example, if you operate in the United States and Canada, you might have different tax rates for each country, and even in different states or provinces within each country.
 
-In this case, you can create a tax region for each country you operate in and set up [sublevel tax regions](#sublevel-tax-regions) for each state or province in the country.
+In this case, you can create a tax region for each country you operate in and set up [sublevel tax regions](#sublevel-tax-regions) for each state or province within the country.
 
 Each tax region has its own tax rate, and you can override the default tax rate in a region for specific products or product types.
 
@@ -58,7 +58,7 @@ To view the details of a tax region:
 1. Go to Settings → Tax Regions.
 2. Click on a tax region from the list.
 
-This opens the tax region's details page where you can also manage the tax region.
+This opens the tax region's details page, where you can also manage the tax region.
 
 ![Tax region details](https://res.cloudinary.com/dza7lstvk/image/upload/v1746796437/User%20Guide/Screenshot_2025-05-09_at_4.13.06_PM_m23ili.png)
 
@@ -80,10 +80,10 @@ To edit a tax region:
 
 ## Edit Default Tax Rate
 
-To edit the default tax rate of the region:
+To edit the default tax rate of a region:
 
 1. Go to the tax region's details page.
-2. In the first section, you'll find details of the default tax rate, including its tax rate and code. Click on the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at its right.
+2. In the first section, you'll find details of the default tax rate, including its tax rate and code. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at its right.
 
 ![The icon to click on](https://res.cloudinary.com/dza7lstvk/image/upload/v1739974452/User%20Guide/Screenshot_2025-02-19_at_4.13.51_PM_zclvnp.png)
 
@@ -97,7 +97,7 @@ To edit the default tax rate of the region:
 
 ## Manage Tax Rate Overrides
 
-You can override the default tax rate of a region for specific products or product types. This is useful when you have different tax rates for certain products or product types in a region.
+You can override the default tax rate of a region for specific products, product types, or shipping options. This is useful if you have different tax rates for certain products or shipping options in a region.
 
 You can override tax rates for tax regions and [sublevel tax regions](#sublevel-tax-regions).
 
@@ -110,9 +110,9 @@ To create a tax rate override for a product or product type in a tax region:
 3. In the form that opens:
     - Enter the tax override's name, rate, and code in their respective fields.
     - If the override should be combined with the default tax rate, enable the "Combinable" toggle.
-    - Under the "Targets" section, you can select which products or product types this override applies to. You can add a target by clicking "Add target". For each target:
-        - Choose the target type (Product or Product Type).
-        - Choose the product or product types that the override applies to, based on the target type you chose.
+    - Under the "Targets" section, you can select the target of this override. You can add a target by clicking "Add target". For each target:
+        - Choose the target type (Product, Product Type, or Shipping Option).
+        - Choose the product, product type, or shipping option that the override applies to, based on the target type you chose.
 4. Once you're done, click the Save button.
 
 ![Create tax rate override form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739974979/User%20Guide/Screenshot_2025-02-19_at_4.22.43_PM_jup0sn.png)
@@ -148,11 +148,11 @@ To delete a tax rate override:
 
 ## Sublevel Tax Regions
 
-Tax regions for some countries like the United States have a States, Province, or Cantons section in the tax region details page. Here, you can add sublevel regions for the country.
+Tax regions for some countries, like the United States, have a States, Province, or Cantons section in the tax region details page. Here, you can add sublevel regions for the country.
 
 ![Sublevel regions section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739975474/User%20Guide/Screenshot_2025-02-19_at_4.30.57_PM_ogjlp2.png)
 
-You can also enable it for other countries that don't show this section by default. For those countries, you'll find a note at the top of the page where you can enable the sublevel regions.
+You can also enable it for other countries that don't show this section by default. For those countries, you'll find a note at the top of the page where you can enable sublevel regions.
 
 ![Enable sublevel regions alert](https://res.cloudinary.com/dza7lstvk/image/upload/v1739971332/User%20Guide/Screenshot_2025-02-19_at_3.21.51_PM_mbm8lr.png)
 
@@ -168,7 +168,7 @@ To create a sublevel tax region in a tax region:
     - If the country supports a sublevel by default, you'll find an input to select a state, province, or canton.
     - If the country doesn't support a sublevel by default, you'll find an input to enter the lower-case [ISO 3166-2 code](https://en.wikipedia.org/wiki/ISO_3166-2) of the sublevel.
     - Under the "Default tax rate" section, you can optionally enter a name, tax rate, and tax code in their respective fields.
-    - If the tax region's rates should be combined with the parent's rates, enable the "Combinable" toggle.
+    - If the sublevel tax region's rates should be combined with the parent's rates, enable the "Combinable" toggle.
 4. Once you're done, click the Save button.
 
 ![Create sublevel region form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739971762/User%20Guide/Screenshot_2025-02-19_at_3.29.09_PM_cpwi4e.png)
@@ -180,7 +180,7 @@ To view the details of a sublevel tax region:
 1. Go to the tax region's details page.
 2. Under the "Sublevels" section or its equivalent, click on a sublevel tax region.
 
-This opens the sublevel tax region's details page where you can also manage the sublevel tax region.
+This opens the sublevel tax region's details page, where you can also manage the sublevel tax region.
 
 ![Sublevel tax region details page](https://res.cloudinary.com/dza7lstvk/image/upload/v1739974129/User%20Guide/Screenshot_2025-02-19_at_4.08.33_PM_i2v219.png)
 

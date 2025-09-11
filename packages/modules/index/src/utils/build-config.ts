@@ -1180,11 +1180,13 @@ function buildSchemaFromFilterableLinks(
       return
     }
 
-    const isEnum =
-      fieldRef.type?.astNode?.kind === GraphQLUtils.Kind.ENUM_TYPE_DEFINITION
-    const fieldType = isEnum ? "String" : fieldRef.type.toString()
+    const fieldType = fieldRef.type.toString()
     const isArray = fieldType.startsWith("[")
-    const currentType = fieldType.replace(/\[|\]|\!/g, "")
+    let currentType = fieldType.replace(/\[|\]|\!/g, "")
+    const isEnum = currentType.endsWith("Enum")
+    if (isEnum) {
+      currentType = "String"
+    }
 
     return isArray ? `[${currentType}]` : currentType
   }

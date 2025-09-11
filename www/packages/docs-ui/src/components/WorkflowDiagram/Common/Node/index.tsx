@@ -108,7 +108,7 @@ export const WorkflowDiagramStepNode = ({ step }: WorkflowDiagramNodeProps) => {
       ref={ref}
     >
       <Link
-        href={step.link || `#${step.name}`}
+        href={step.link || `#${step.name.toLowerCase()}`}
         className="focus-visible:shadow-borders-focus transition-fg rounded-docs_sm outline-none"
       >
         <div

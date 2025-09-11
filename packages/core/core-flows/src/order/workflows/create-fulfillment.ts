@@ -296,7 +296,8 @@ function prepareInventoryUpdate({
 
     if (!reservations?.length) {
       if (item.variant?.manage_inventory) {
-        throw new Error(
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
           `No stock reservation found for item ${item.id} - ${item.title} (${item.variant_title})`
         )
       }

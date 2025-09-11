@@ -1,5 +1,6 @@
 import { BaseFilterable, OperatorMap } from "../../../dal"
 import {
+  ApplicationMethodTargetTypeValues,
   ApplicationMethodTypeValues,
   PromotionTypeValues,
 } from "../../../promotion"
@@ -18,6 +19,10 @@ export interface AdminGetPromotionsParams
    * Filter by promotion code.
    */
   code?: string | string[] | OperatorMap<string>
+  /**
+   * Filter by promotion ID.
+   */
+  id?: string[] | string | OperatorMap<string>
   /**
    * Filter by campaign ID to retrieve promotions by campaign.
    */
@@ -50,7 +55,9 @@ export interface AdminGetPromotionsParams
   /**
    * Filter by the promotion's application method type.
    */
-  application_method_type?: ApplicationMethodTypeValues | ApplicationMethodTypeValues[]
+  application_method_type?:
+    | ApplicationMethodTypeValues
+    | ApplicationMethodTypeValues[]
   /**
    * An array of filters to apply on the entity, where each item in the array is joined with an "and" condition.
    */
@@ -62,12 +69,28 @@ export interface AdminGetPromotionsParams
 }
 
 export interface AdminGetPromotionRuleParams {
+  /**
+   * The type of promotion to retrieve the attributes for.
+   */
   promotion_type?: PromotionTypeValues
+  /**
+   * The type of application method to retrieve the attributes for.
+   */
   application_method_type?: ApplicationMethodTypeValues
+  /**
+   * The type of application method to retrieve the attributes for.
+   */
+  application_method_target_type?: ApplicationMethodTargetTypeValues
 }
 
 export interface AdminGetPromotionRuleTypeParams extends SelectParams {
+  /**
+   * The type of promotion to retrieve the attributes for.
+   */
   promotion_type?: PromotionTypeValues
+  /**
+   * The type of application method to retrieve the attributes for.
+   */
   application_method_type?: ApplicationMethodTypeValues
 }
 
@@ -80,4 +103,5 @@ export interface AdminGetPromotionsRuleValueParams extends FindParams {
    * Filter by rule value.
    */
   value?: string | string[]
+  application_method_target_type?: ApplicationMethodTargetTypeValues
 }

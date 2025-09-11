@@ -1,12 +1,15 @@
-import { Event, IEventBusModuleService, Subscriber } from "@medusajs/types"
-import { kebabCase, Modules } from "@medusajs/utils"
+import {
+  Event,
+  IEventBusModuleService,
+  MedusaContainer,
+  Subscriber,
+} from "@medusajs/types"
+import { isFileSkipped, kebabCase, Modules } from "@medusajs/utils"
 import { parse } from "path"
-
 import { configManager } from "../config"
 import { container } from "../container"
-import { logger } from "../logger"
-import { SubscriberArgs, SubscriberConfig } from "./types"
 import { ResourceLoader } from "../utils/resource-loader"
+import { SubscriberArgs, SubscriberConfig } from "./types"
 
 type SubscriberHandler<T> = (args: SubscriberArgs<T>) => Promise<void>
 
@@ -32,9 +35,10 @@ export class SubscriberLoader extends ResourceLoader {
 
   constructor(
     sourceDir: string | string[],
-    options: Record<string, unknown> = {}
+    options: Record<string, unknown> = {},
+    container: MedusaContainer
   ) {
-    super(sourceDir)
+    super(sourceDir, container)
     this.#pluginOptions = options
   }
 
@@ -42,9 +46,13 @@ export class SubscriberLoader extends ResourceLoader {
     path: string,
     fileExports: Record<string, unknown>
   ) {
+    if (isFileSkipped(fileExports)) {
+      return
+    }
+
     const isValid = this.validateSubscriber(fileExports, path)
 
-    logger.debug(`Registering subscribers from ${path}.`)
+    this.logger.debug(`Registering subscribers from ${path}.`)
 
     if (!isValid) {
       return
@@ -69,7 +77,7 @@ export class SubscriberLoader extends ResourceLoader {
       /**
        * If the handler is not a function, we can't use it
        */
-      logger.warn(`The subscriber in ${path} is not a function. skipped.`)
+      this.logger.warn(`The subscriber in ${path} is not a function. skipped.`)
       return false
     }
 
@@ -79,7 +87,9 @@ export class SubscriberLoader extends ResourceLoader {
       /**
        * If the subscriber is missing a config, we can't use it
        */
-      logger.warn(`The subscriber in ${path} is missing a config. skipped.`)
+      this.logger.warn(
+        `The subscriber in ${path} is missing a config. skipped.`
+      )
       return false
     }
 
@@ -93,7 +103,7 @@ export class SubscriberLoader extends ResourceLoader {
           `The subscriber in ${path} is missing an event in the config.`
         )
       } else {
-        logger.warn(
+        this.logger.warn(
           `The subscriber in ${path} is missing an event in the config. skipped.`
         )
       }
@@ -107,7 +117,7 @@ export class SubscriberLoader extends ResourceLoader {
       /**
        * If the subscribers event is not a string or an array of strings, we can't use it
        */
-      logger.warn(
+      this.logger.warn(
         `The subscriber in ${path} has an invalid event config. The event must be a string or an array of strings. skipped.`
       )
       return false
@@ -193,7 +203,7 @@ export class SubscriberLoader extends ResourceLoader {
       })
     }
 
-    logger.debug(`Subscribers registered.`)
+    this.logger.debug(`Subscribers registered.`)
 
     /**
      * Return the file paths of the registered subscribers, to prevent the

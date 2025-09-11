@@ -253,17 +253,22 @@ moduleIntegrationTestRunner<IUserModuleService>({
           const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
           await service.createUsers(defaultUserData)
 
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
+          // 2 events: 2 user created
+          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(2)
+
+          const events = eventBusSpy.mock.calls[0][0]
+          expect(events).toHaveLength(2)
+          expect(events).toEqual(
+            expect.arrayContaining([
               expect.objectContaining({
-                data: { id: ["1", "2"] },
+                data: { id: "1" },
                 name: UserEvents.USER_CREATED,
               }),
-            ],
-            {
-              internal: true,
-            }
+              expect.objectContaining({
+                data: { id: "2" },
+                name: UserEvents.USER_CREATED,
+              }),
+            ])
           )
         })
       })

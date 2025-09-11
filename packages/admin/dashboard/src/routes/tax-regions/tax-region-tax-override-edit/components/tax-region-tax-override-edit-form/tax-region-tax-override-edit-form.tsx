@@ -3,6 +3,7 @@ import { MagnifyingGlass } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import {
   Button,
+  clx,
   Divider,
   Heading,
   Hint,
@@ -10,7 +11,6 @@ import {
   Label,
   Select,
   Text,
-  clx,
   toast,
 } from "@medusajs/ui"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
@@ -37,6 +37,8 @@ import {
 } from "../../../common/schemas"
 import { createTaxRulePayload } from "../../../common/utils"
 import { InitialRuleValues } from "../../types"
+
+export const DISPLAY_OVERRIDE_ITEMS_LIMIT = 10
 
 type TaxRegionTaxOverrideEditFormProps = {
   taxRate: HttpTypes.AdminTaxRate
@@ -272,7 +274,7 @@ export const TaxRegionTaxOverrideEditForm = ({
   }
 
   const getFieldHandler = (type: TaxRateRuleReferenceType) => {
-    const { fields, remove, append } = getControls(type)
+    const { fields, remove, prepend } = getControls(type)
     const modalId = getStackedModalId(type)
 
     return (references: TaxRateRuleReference[]) => {
@@ -296,7 +298,7 @@ export const TaxRegionTaxOverrideEditForm = ({
         }
       }
 
-      append(fieldsToAdd)
+      prepend(fieldsToAdd) // to display newer items first
       setIsOpen(modalId, false)
     }
   }
@@ -412,6 +414,7 @@ export const TaxRegionTaxOverrideEditForm = ({
                       <PercentageInput
                         {...field}
                         value={value?.value}
+                        decimalsLimit={4}
                         onValueChange={(value, _name, values) =>
                           onChange({
                             value: value,
@@ -588,17 +591,33 @@ export const TaxRegionTaxOverrideEditForm = ({
                                 <div className="flex flex-col gap-y-1.5">
                                   <Divider variant="dashed" />
                                   <div className="flex flex-col gap-y-1.5 px-1.5">
-                                    {fields.map((field, index) => {
-                                      return (
-                                        <TargetItem
-                                          key={field.id}
-                                          index={index}
-                                          label={field.label}
-                                          onRemove={remove}
-                                        />
-                                      )
-                                    })}
+                                    {fields
+                                      .slice(0, DISPLAY_OVERRIDE_ITEMS_LIMIT)
+                                      .map((field, index) => {
+                                        return (
+                                          <TargetItem
+                                            key={field.id}
+                                            index={index}
+                                            label={field.label}
+                                            value={field.value}
+                                            onRemove={remove}
+                                          />
+                                        )
+                                      })}
                                   </div>
+                                  {fields.length >
+                                    DISPLAY_OVERRIDE_ITEMS_LIMIT && (
+                                    <div className="flex flex-col gap-y-1.5 px-1.5">
+                                      {/* <Divider variant="dashed" /> */}
+                                      <div className="text-ui-fg-muted txt-small flex flex-col gap-y-1.5 px-1.5">
+                                        {t("general.plusCountMore", {
+                                          count:
+                                            fields.length -
+                                            DISPLAY_OVERRIDE_ITEMS_LIMIT,
+                                        })}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               ) : null}
                             </div>

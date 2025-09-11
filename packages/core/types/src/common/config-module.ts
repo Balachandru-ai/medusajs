@@ -1,13 +1,14 @@
+import type { Secret, SignOptions, VerifyOptions } from "jsonwebtoken"
 import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
 } from "../modules-sdk"
-import type { SignOptions, Secret, VerifyOptions } from "jsonwebtoken"
 
 import type { RedisOptions } from "ioredis"
 import { ConnectionOptions } from "node:tls"
 // @ts-ignore
 import type { InlineConfig } from "vite"
+import type { Logger } from "../logger"
 
 /**
  * @interface
@@ -919,7 +920,7 @@ export type ProjectConfigOptions = {
  */
 export type ConfigModule = {
   /**
-   * This property holds essential configurations related to the Medusa application, such as database and CORS configurations.
+   * This property holds essential configurations related to the Medusa application, such as database, CORS configurations and Logger.
    */
   projectConfig: ProjectConfigOptions
 
@@ -1027,7 +1028,7 @@ export type ConfigModule = {
    *
    * The `featureFlags`'s value is an object. Its properties are the names of the feature flags, and their value is a boolean indicating whether the feature flag is enabled.
    *
-   * You can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/loaders/feature-flags).
+   * You can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/feature-flags).
    *
    * @example
    * ```ts title="medusa-config.ts"
@@ -1047,6 +1048,11 @@ export type ConfigModule = {
    * :::
    */
   featureFlags: Record<string, boolean | string | Record<string, boolean>>
+
+  /**
+   * The Logger instance to be used by the application.
+   */
+  logger?: Logger
 }
 
 type InternalModuleDeclarationOverride = InternalModuleDeclaration & {

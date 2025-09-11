@@ -1,5 +1,5 @@
-import { PriceListStatus, PriceListType } from "@medusajs/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { PriceListStatus, PriceListType } from "@medusajs/utils"
 import {
   createAdminUser,
   generatePublishableKey,
@@ -15,9 +15,7 @@ const adminHeaders = {
   },
 }
 
-const env = {
-  MEDUSA_FF_MEDUSA_V2: true,
-}
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
