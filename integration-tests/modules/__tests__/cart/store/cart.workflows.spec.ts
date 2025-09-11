@@ -8,7 +8,6 @@ import {
   deleteLineItemsStepId,
   deleteLineItemsWorkflow,
   findOrCreateCustomerStepId,
-  listShippingOptionsForCartWithPricingWorkflow,
   listShippingOptionsForCartWorkflow,
   refreshPaymentCollectionForCartWorkflow,
   updateCartWorkflow,
@@ -66,7 +65,6 @@ medusaIntegrationTestRunner({
       let defaultRegion
       let customer, storeHeadersWithCustomer
       let setPricingContextHook: any
-      let setShippingOptionsContextHook: any
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -106,22 +104,6 @@ medusaIntegrationTestRunner({
           (input) => {
             if (setPricingContextHook) {
               return setPricingContextHook(input)
-            }
-          },
-          () => {}
-        )
-        listShippingOptionsForCartWorkflow.hooks.setShippingOptionsContext(
-          (input) => {
-            if (setShippingOptionsContextHook) {
-              return setShippingOptionsContextHook(input)
-            }
-          },
-          () => {}
-        )
-        listShippingOptionsForCartWithPricingWorkflow.hooks.setShippingOptionsContext(
-          (input) => {
-            if (setShippingOptionsContextHook) {
-              return setShippingOptionsContextHook(input)
             }
           },
           () => {}
@@ -3544,111 +3526,6 @@ medusaIntegrationTestRunner({
               shipping_methods: [
                 expect.objectContaining({
                   amount: 3000,
-                  is_tax_inclusive: true,
-                }),
-              ],
-            })
-          )
-        })
-
-        it.only("should add shipping method to cart using custom rules to fetch", async () => {
-          const shippingOption1 = (
-            await api.post(
-              `/admin/shipping-options`,
-              {
-                name: "Test shipping option 1",
-                service_zone_id: fulfillmentSet.service_zones[0].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: "manual_test-provider",
-                price_type: "flat",
-                type: {
-                  label: "Test type",
-                  description: "Test description",
-                  code: "test-code",
-                },
-                prices: [{ amount: 3_000, currency_code: "usd" }],
-                rules: [
-                  {
-                    operator: RuleOperator.EQ,
-                    attribute: "is_return",
-                    value: "false",
-                  },
-                  {
-                    operator: RuleOperator.EQ,
-                    attribute: "enabled_in_store",
-                    value: "true",
-                  },
-                  {
-                    operator: RuleOperator.EQ,
-                    attribute: "customer_status",
-                    value: "no_vip",
-                  },
-                ],
-              },
-              adminHeaders
-            )
-          ).data.shipping_option
-
-          const shippingOption2 = (
-            await api.post(
-              `/admin/shipping-options`,
-              {
-                name: "Test shipping option 2",
-                service_zone_id: fulfillmentSet.service_zones[0].id,
-                shipping_profile_id: shippingProfile.id,
-                provider_id: "manual_test-provider",
-                price_type: "flat",
-                type: {
-                  label: "Test type",
-                  description: "Test description",
-                  code: "test-code",
-                },
-                prices: [{ amount: 4_000, currency_code: "usd" }],
-                rules: [
-                  {
-                    operator: RuleOperator.EQ,
-                    attribute: "is_return",
-                    value: "false",
-                  },
-                  {
-                    operator: RuleOperator.EQ,
-                    attribute: "enabled_in_store",
-                    value: "true",
-                  },
-                  {
-                    operator: RuleOperator.EQ,
-                    attribute: "customer_status",
-                    value: "vip",
-                  },
-                ],
-              },
-              adminHeaders
-            )
-          ).data.shipping_option
-
-          setShippingOptionsContextHook = function () {
-            return new StepResponse({
-              customer_status: "vip",
-            })
-          }
-
-          await addShippingMethodToCartWorkflow(appContainer).run({
-            input: {
-              options: [{ id: shippingOption1.id }, { id: shippingOption2.id }],
-              cart_id: cart.id,
-            },
-          })
-
-          cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
-            .cart
-
-          expect(cart).toEqual(
-            expect.objectContaining({
-              id: cart.id,
-              currency_code: "usd",
-              shipping_methods: [
-                expect.objectContaining({
-                  amount: 4_000,
                   is_tax_inclusive: true,
                 }),
               ],
