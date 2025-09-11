@@ -526,7 +526,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: false,
           })
 
-          await setTimeout(1000)
+          await setTimeout(4000)
 
           expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
           expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(2)

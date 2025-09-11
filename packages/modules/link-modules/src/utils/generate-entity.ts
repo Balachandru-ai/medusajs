@@ -90,7 +90,7 @@ export function generateEntity(
         type: "date",
         nullable: true,
       },
-    },
+    } as any,
     filters: {
       [SoftDeletableFilterKey]: mikroOrmSoftDeletableFilterOptions,
     },
@@ -107,16 +107,38 @@ export function generateEntity(
         name: "IDX_id_" + hashTableName,
       },
       {
-        properties: primary.foreignKey.split(","),
+        properties: primary.foreignKey.split(",") as any,
         name:
           "IDX_" +
           primary.foreignKey.split(",").join("_") +
           "_" +
           hashTableName,
+        expression:
+          "CREATE INDEX IF NOT EXISTS " +
+          '"IDX_' +
+          primary.foreignKey.split(",").join("_") +
+          "_" +
+          hashTableName +
+          '" ON "' +
+          compressName(tableName) +
+          '" ("' +
+          primary.foreignKey.split(",").join(",") +
+          '") WHERE deleted_at IS NULL',
       },
       {
-        properties: foreign.foreignKey,
+        properties: foreign.foreignKey as any,
         name: "IDX_" + foreign.foreignKey + "_" + hashTableName,
+        expression:
+          "CREATE INDEX IF NOT EXISTS " +
+          '"IDX_' +
+          foreign.foreignKey +
+          "_" +
+          hashTableName +
+          '" ON "' +
+          compressName(tableName) +
+          '" ("' +
+          foreign.foreignKey +
+          '") WHERE deleted_at IS NULL',
       },
       {
         properties: ["deleted_at"],
