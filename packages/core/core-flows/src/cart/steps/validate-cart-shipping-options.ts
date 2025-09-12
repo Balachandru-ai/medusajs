@@ -13,11 +13,11 @@ export interface ValidateCartShippingOptionsStepInput {
   /**
    * The cart to validate shipping options for.
    */
-  cart: CartDTO
+  cart?: CartDTO
   /**
    * The context to validate the shipping options.
    */
-  shippingOptionsContext: {
+  shippingOptionsContext?: {
     /**
      * Validate whether the shipping options are enabled in the store.
      */
@@ -31,6 +31,11 @@ export interface ValidateCartShippingOptionsStepInput {
    * The IDs of the shipping options to validate.
    */
   option_ids: string[]
+  /**
+   * Pre-fetched shipping options. If provided, validation will be done against these
+   * instead of querying the database.
+   */
+  shippingOptions?: Array<{ id: string }>
 }
 
 export const validateCartShippingOptionsStepId =
@@ -51,32 +56,48 @@ export const validateCartShippingOptionsStepId =
 export const validateCartShippingOptionsStep = createStep(
   validateCartShippingOptionsStepId,
   async (data: ValidateCartShippingOptionsStepInput, { container }) => {
-    const { option_ids: optionIds = [], cart, shippingOptionsContext } = data
+    const { option_ids: optionIds = [], cart, shippingOptionsContext, shippingOptions } = data
 
     if (!optionIds.length) {
       return new StepResponse(void 0)
     }
 
-    const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
-      Modules.FULFILLMENT
-    )
+    let validShippingOptionIds: string[]
 
-    const validShippingOptions =
-      await fulfillmentModule.listShippingOptionsForContext(
-        {
-          id: optionIds,
-          context: shippingOptionsContext,
-          address: {
-            country_code: cart.shipping_address?.country_code,
-            province_code: cart.shipping_address?.province,
-            city: cart.shipping_address?.city,
-            postal_expression: cart.shipping_address?.postal_code,
-          },
-        },
-        { relations: ["rules"] }
+    if (shippingOptions) {
+      // Use pre-fetched shipping options
+      validShippingOptionIds = shippingOptions.map((o) => o.id)
+    } else {
+      // Legacy behavior: query the database
+      if (!cart || !shippingOptionsContext) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `cart and shippingOptionsContext are required when shippingOptions are not provided.`
+        )
+      }
+
+      const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
+        Modules.FULFILLMENT
       )
 
-    const validShippingOptionIds = validShippingOptions.map((o) => o.id)
+      const validShippingOptions =
+        await fulfillmentModule.listShippingOptionsForContext(
+          {
+            id: optionIds,
+            context: shippingOptionsContext,
+            address: {
+              country_code: cart.shipping_address?.country_code,
+              province_code: cart.shipping_address?.province,
+              city: cart.shipping_address?.city,
+              postal_expression: cart.shipping_address?.postal_code,
+            },
+          },
+          { relations: ["rules"] }
+        )
+
+      validShippingOptionIds = validShippingOptions.map((o) => o.id)
+    }
+
     const invalidOptionIds = arrayDifference(optionIds, validShippingOptionIds)
 
     if (invalidOptionIds.length) {

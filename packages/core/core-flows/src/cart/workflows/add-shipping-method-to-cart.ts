@@ -101,12 +101,6 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
       return (data.input.options ?? []).map((i) => i.id)
     })
 
-    validateCartShippingOptionsStep({
-      option_ids: optionIds,
-      cart,
-      shippingOptionsContext: { is_return: "false", enabled_in_store: "true" },
-    })
-
     const shippingOptions =
       listShippingOptionsForCartWithPricingWorkflow.runAsStep({
         input: {
@@ -116,6 +110,11 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
           additional_data: input.additional_data,
         },
       })
+
+    validateCartShippingOptionsStep({
+      option_ids: optionIds,
+      shippingOptions,
+    })
 
     validateCartShippingOptionsPriceStep({ shippingOptions })
 
