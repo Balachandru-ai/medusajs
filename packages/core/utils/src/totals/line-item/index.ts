@@ -111,22 +111,21 @@ function getLineItemTotals(
   item: GetItemTotalInput,
   context: GetLineItemsTotalsContext
 ) {
+  const itemDetail = item.detail!
+  const totalReturnedQuantity = MathBN.sum(
+    itemDetail?.return_requested_quantity ?? 0,
+    itemDetail?.return_received_quantity ?? 0,
+    itemDetail?.return_dismissed_quantity ?? 0
+  )
+  const currentQuantity = MathBN.sub(item.quantity, totalReturnedQuantity)
+
   const isTaxInclusive = item.is_tax_inclusive ?? context.includeTax
   const sumTax = MathBN.sum(
     ...((item.tax_lines ?? []).map((taxLine) => taxLine.rate) ?? [])
   )
 
   const sumTaxRate = MathBN.div(sumTax, 100)
-  const totalReturnedQuantity = MathBN.sum(
-    item.detail?.return_requested_quantity ?? 0,
-    item.detail?.return_received_quantity ?? 0,
-    item.detail?.return_dismissed_quantity ?? 0
-  )
-
-  const totalItemPrice = MathBN.mult(
-    item.unit_price,
-    MathBN.sub(item.quantity, totalReturnedQuantity)
-  )
+  const totalItemPrice = MathBN.mult(item.unit_price, currentQuantity)
 
   /*
     If the price is inclusive of tax, we need to remove the taxed amount from the subtotal
