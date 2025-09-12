@@ -2,4 +2,4 @@
 "@medusajs/js-sdk": patch
 ---
 
-fix(js-sdk): escape null values before query qs.stringify
+fix(js-sdk): skip null values in query qs.stringify
