@@ -637,6 +637,12 @@ export const currencies: Record<string, CurrencyInfo> = {
     symbol_native: "T$",
     decimal_digits: 2,
   },
+  TJS: {
+    code: "TJS",
+    name: "Tajikistani Somoni",
+    symbol_native: "с.",
+    decimal_digits: 2,
+  },
   TRY: {
     code: "TRY",
     name: "Turkish Lira",

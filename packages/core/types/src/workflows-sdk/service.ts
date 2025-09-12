@@ -106,6 +106,17 @@ export interface IWorkflowEngineService extends IModuleService {
     sharedContext?: Context
   )
 
+  retryStep(
+    {
+      idempotencyKey,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      options?: Record<string, any>
+    },
+    sharedContext?: Context
+  )
+
   subscribe(
     args: {
       workflowId: string

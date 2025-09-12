@@ -18,7 +18,7 @@ const OrderCreditLine_ = model
       name: "IDX_order_credit_line_order_id",
       on: ["order_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_credit_line_deleted_at",

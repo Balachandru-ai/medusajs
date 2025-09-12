@@ -250,7 +250,7 @@ export class Client {
           const params = Object.fromEntries(
             normalizedInput.searchParams.entries()
           )
-          const stringifiedQuery = stringify({ ...params, ...init.query })
+          const stringifiedQuery = stringify({ ...params, ...init.query }, { skipNulls: true })
           normalizedInput.search = stringifiedQuery
         }
       }

@@ -36,7 +36,10 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCampaigns } from "../../../../../hooks/api/campaigns"
 import { useCreatePromotion } from "../../../../../hooks/api/promotions"
-import { getCurrencySymbol } from "../../../../../lib/data/currencies"
+import {
+  currencies,
+  getCurrencySymbol,
+} from "../../../../../lib/data/currencies"
 import { DEFAULT_CAMPAIGN_VALUES } from "../../../../campaigns/common/constants"
 import { RulesFormField } from "../../../common/edit-rules/components/rules-form-field"
 import { AddCampaignPromotionFields } from "../../../promotion-add-campaign/components/add-campaign-promotion-form"
@@ -142,6 +145,7 @@ export const CreatePromotionForm = () => {
           application_method: {
             ...applicationMethodData,
             ...applicationMethodRuleData,
+            value: parseFloat(applicationMethodData.value as string) as number,
             target_rules: buildRulesData(targetRulesData),
             buy_rules: buildRulesData(buyRulesData),
           },
@@ -288,6 +292,7 @@ export const CreatePromotionForm = () => {
   })
 
   const isTypeStandard = watchType === "standard"
+  const isTypeBuyGet = watchType === "buyget"
 
   const targetType = useWatch({
     control: form.control,
@@ -678,66 +683,71 @@ export const CreatePromotionForm = () => {
 
                   <RulesFormField form={form} ruleType={"rules"} />
 
-                  <Divider />
-
                   {!currentTemplate?.hiddenFields?.includes(
                     "application_method.type"
                   ) && (
-                    <Form.Field
-                      control={form.control}
-                      name="application_method.type"
-                      render={({ field }) => {
-                        return (
-                          <Form.Item>
-                            <Form.Label>
-                              {t("promotions.fields.value_type")}
-                            </Form.Label>
-                            <Form.Control>
-                              <RadioGroup
-                                className="flex gap-y-3"
-                                {...field}
-                                onValueChange={field.onChange}
-                              >
-                                <RadioGroup.ChoiceBox
-                                  value={"fixed"}
-                                  label={t(
-                                    "promotions.form.value_type.fixed.title"
-                                  )}
-                                  description={t(
-                                    "promotions.form.value_type.fixed.description"
-                                  )}
-                                  className={clx("basis-1/2")}
-                                />
+                    <>
+                      <Divider />
+                      <Form.Field
+                        control={form.control}
+                        name="application_method.type"
+                        render={({ field }) => {
+                          return (
+                            <Form.Item>
+                              <Form.Label>
+                                {t("promotions.fields.value_type")}
+                              </Form.Label>
+                              <Form.Control>
+                                <RadioGroup
+                                  className="flex gap-y-3"
+                                  {...field}
+                                  onValueChange={field.onChange}
+                                >
+                                  <RadioGroup.ChoiceBox
+                                    value={"fixed"}
+                                    label={t(
+                                      "promotions.form.value_type.fixed.title"
+                                    )}
+                                    description={t(
+                                      "promotions.form.value_type.fixed.description"
+                                    )}
+                                    className={clx("basis-1/2")}
+                                  />
 
-                                <RadioGroup.ChoiceBox
-                                  value={"percentage"}
-                                  label={t(
-                                    "promotions.form.value_type.percentage.title"
-                                  )}
-                                  description={t(
-                                    "promotions.form.value_type.percentage.description"
-                                  )}
-                                  className={clx("basis-1/2")}
-                                />
-                              </RadioGroup>
-                            </Form.Control>
-                            <Form.ErrorMessage />
-                          </Form.Item>
-                        )
-                      }}
-                    />
+                                  <RadioGroup.ChoiceBox
+                                    value={"percentage"}
+                                    label={t(
+                                      "promotions.form.value_type.percentage.title"
+                                    )}
+                                    description={t(
+                                      "promotions.form.value_type.percentage.description"
+                                    )}
+                                    className={clx("basis-1/2")}
+                                  />
+                                </RadioGroup>
+                              </Form.Control>
+                              <Form.ErrorMessage />
+                            </Form.Item>
+                          )
+                        }}
+                      />
+                    </>
                   )}
 
-                  <div className="flex gap-x-2 gap-y-4">
-                    {!currentTemplate?.hiddenFields?.includes(
-                      "application_method.value"
-                    ) && (
+                  {!currentTemplate?.hiddenFields?.includes(
+                    "application_method.value"
+                  ) && (
+                    <>
+                      <Divider />
                       <Form.Field
                         control={form.control}
                         name="application_method.value"
                         render={({ field: { onChange, value, ...field } }) => {
                           const currencyCode =
                             form.getValues().application_method.currency_code
+
+                          const currencyInfo =
+                            currencies[currencyCode?.toUpperCase() || "USD"]
 
                           return (
                             <Form.Item className="basis-1/2">
@@ -756,10 +766,16 @@ export const CreatePromotionForm = () => {
                                   <CurrencyInput
                                     {...field}
                                     min={0}
-                                    onValueChange={(value) => {
-                                      onChange(value ? parseInt(value) : "")
-                                    }}
                                     code={currencyCode || "USD"}
+                                    onValueChange={(_value, _name, values) =>
+                                      onChange(values?.value)
+                                    }
+                                    decimalScale={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
+                                    decimalsLimit={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
                                     symbol={
                                       currencyCode
                                         ? getCurrencySymbol(currencyCode)
@@ -780,7 +796,7 @@ export const CreatePromotionForm = () => {
                                       onChange(
                                         e.target.value === ""
                                           ? null
-                                          : parseInt(e.target.value)
+                                          : parseFloat(e.target.value)
                                       )
                                     }}
                                   />
@@ -806,9 +822,17 @@ export const CreatePromotionForm = () => {
                           )
                         }}
                       />
-                    )}
+                    </>
+                  )}
 
-                    {isTypeStandard && watchAllocation === "each" && (
+                  {((isTypeStandard && watchAllocation === "each") ||
+                    isTypeBuyGet) && (
+                    <>
+                      {isTypeBuyGet && (
+                        <>
+                          <Divider />
+                        </>
+                      )}
                       <Form.Field
                         control={form.control}
                         name="application_method.max_quantity"
@@ -846,8 +870,8 @@ export const CreatePromotionForm = () => {
                           )
                         }}
                       />
-                    )}
-                  </div>
+                    </>
+                  )}
 
                   {isTypeStandard &&
                     !currentTemplate?.hiddenFields?.includes(
@@ -901,6 +925,7 @@ export const CreatePromotionForm = () => {
 
                   {!isTypeStandard && (
                     <>
+                      <Divider />
                       <RulesFormField
                         form={form}
                         ruleType={"buy-rules"}

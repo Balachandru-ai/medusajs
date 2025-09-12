@@ -4,7 +4,10 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
+import {
+  ChangeActionType,
+  OrderChangeStatus
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -12,7 +15,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useQueryGraphStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,
@@ -21,6 +24,7 @@ import {
 import { addOrderLineItemsWorkflow } from "../add-line-items"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
  * The data to validate that new items can be added to an order edit.
@@ -39,14 +43,14 @@ export type OrderEditAddNewItemValidationStepInput = {
 /**
  * This step validates that new items can be added to an order edit.
  * If the order is canceled or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = orderEditAddNewItemValidationStep({
  *   order: {
@@ -74,10 +78,10 @@ export const orderEditAddNewItemWorkflowId = "order-edit-add-new-item"
 /**
  * This workflow adds new items to an order edit. It's used by the
  * [Add Items to Order Edit Admin API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsiditems).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to add new items to an order edit
  * in your custom flows.
- * 
+ *
  * @example
  * const { result } = await orderEditAddNewItemWorkflow(container)
  * .run({
@@ -91,9 +95,9 @@ export const orderEditAddNewItemWorkflowId = "order-edit-add-new-item"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Add new items to an order edit.
  */
 export const orderEditAddNewItemWorkflow = createWorkflow(
@@ -101,25 +105,34 @@ export const orderEditAddNewItemWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.OrderEditAddNewItemWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: ["id", "status", "canceled_at", "items.*"],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "order-query" })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
-      fields: ["id", "status"],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
+    })
+
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
+      fields: ["id", "status", "version", "actions.*"],
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     orderEditAddNewItemValidationStep({
       order,

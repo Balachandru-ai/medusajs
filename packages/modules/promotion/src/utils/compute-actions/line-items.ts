@@ -1,19 +1,21 @@
 import {
   ApplicationMethodAllocationValues,
   BigNumberInput,
+  InferEntityType,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
+  ApplicationMethodTargetType as TargetType,
+  calculateAdjustmentAmountFromPromotion,
   ComputedActions,
   MathBN,
   MedusaError,
-  ApplicationMethodTargetType as TargetType,
-  calculateAdjustmentAmountFromPromotion,
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
+import { Promotion } from "@models"
 
 function validateContext(
   contextKey: string,
@@ -28,7 +30,7 @@ function validateContext(
 }
 
 export function getComputedActionsForItems(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
   appliedPromotionsMap: Map<string, number>,
   allocationOverride?: ApplicationMethodAllocationValues
@@ -43,34 +45,9 @@ export function getComputedActionsForItems(
   )
 }
 
-export function getComputedActionsForShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
-  shippingMethods: PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
-  appliedPromotionsMap: Map<string, number>
-): PromotionTypes.ComputeActions[] {
-  validateContext("shipping_methods", shippingMethods)
-
-  return applyPromotionToItems(promotion, shippingMethods, appliedPromotionsMap)
-}
-
-export function getComputedActionsForOrder(
-  promotion: PromotionTypes.PromotionDTO,
-  itemApplicationContext: PromotionTypes.ComputeActionContext,
-  methodIdPromoValueMap: Map<string, number>
-): PromotionTypes.ComputeActions[] {
-  return getComputedActionsForItems(
-    promotion,
-    itemApplicationContext[TargetType.ITEMS],
-    methodIdPromoValueMap,
-    ApplicationMethodAllocation.ACROSS
-  )
-}
-
 function applyPromotionToItems(
-  promotion: PromotionTypes.PromotionDTO,
-  items:
-    | PromotionTypes.ComputeActionContext[TargetType.ITEMS]
-    | PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
+  items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
   appliedPromotionsMap: Map<string, BigNumberInput>,
   allocationOverride?: ApplicationMethodAllocationValues
 ): PromotionTypes.ComputeActions[] {
@@ -95,13 +72,10 @@ function applyPromotionToItems(
     return computedActions
   }
 
-  const isTargetShippingMethod = target === TargetType.SHIPPING_METHODS
   const isTargetLineItems = target === TargetType.ITEMS
   const isTargetOrder = target === TargetType.ORDER
   const promotionValue = applicationMethod?.value ?? 0
-  const maxQuantity = isTargetShippingMethod
-    ? 1
-    : applicationMethod?.max_quantity!
+  const maxQuantity = applicationMethod?.max_quantity!
 
   let lineItemsAmount = MathBN.convert(0)
   if (allocation === ApplicationMethodAllocation.ACROSS) {
@@ -130,10 +104,6 @@ function applyPromotionToItems(
       )
     ) {
       continue
-    }
-
-    if (isTargetShippingMethod) {
-      item.quantity = 1
     }
 
     const appliedPromoValue = appliedPromotionsMap.get(item.id) ?? 0
@@ -175,13 +145,6 @@ function applyPromotionToItems(
         code: promotion.code!,
         is_tax_inclusive: promotion.is_tax_inclusive,
       })
-    } else if (isTargetShippingMethod) {
-      computedActions.push({
-        action: ComputedActions.ADD_SHIPPING_METHOD_ADJUSTMENT,
-        shipping_method_id: item.id,
-        amount,
-        code: promotion.code!,
-      })
     }
   }
 
@@ -192,7 +155,7 @@ function getValidItemsForPromotion(
   items:
     | PromotionTypes.ComputeActionContext[TargetType.ITEMS]
     | PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
-  promotion: PromotionTypes.PromotionDTO
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>
 ) {
   if (!items?.length || !promotion?.application_method) {
     return []

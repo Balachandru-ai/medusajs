@@ -1,3 +1,6 @@
+import { logger } from "@medusajs/framework/logger"
+import { CustomDBMigrator } from "@medusajs/framework/utils"
+
 import {
   defineConfig,
   MikroORM,
@@ -5,28 +8,30 @@ import {
   SqlEntityManager,
 } from "@mikro-orm/postgresql"
 import { createDatabase, dropDatabase } from "pg-god"
-import { logger } from "@medusajs/framework/logger"
 import { execOrTimeout } from "./medusa-test-runner-utils"
 
 const DB_HOST = process.env.DB_HOST ?? "localhost"
 const DB_USERNAME = process.env.DB_USERNAME ?? ""
 const DB_PASSWORD = process.env.DB_PASSWORD ?? ""
+const DB_PORT = process.env.DB_PORT ?? "5432"
 
 const pgGodCredentials = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
   host: DB_HOST,
+  port: parseInt(DB_PORT),
 }
 
 export function getDatabaseURL(dbName?: string): string {
   const DB_HOST = process.env.DB_HOST ?? "localhost"
   const DB_USERNAME = process.env.DB_USERNAME ?? "postgres"
   const DB_PASSWORD = process.env.DB_PASSWORD ?? ""
+  const DB_PORT = process.env.DB_PORT ?? "5432"
   const DB_NAME = dbName ?? process.env.DB_TEMP_NAME
 
   return `postgres://${DB_USERNAME}${
     DB_PASSWORD ? `:${DB_PASSWORD}` : ""
-  }@${DB_HOST}/${DB_NAME}`
+  }@${DB_HOST}:${DB_PORT}/${DB_NAME}`
 }
 
 export function getMikroOrmConfig({
@@ -54,6 +59,7 @@ export function getMikroOrmConfig({
       pathTs: pathToMigrations,
       silent: true,
     },
+    extensions: [CustomDBMigrator],
   })
 }
 

@@ -27,13 +27,16 @@ medusaIntegrationTestRunner({
     let location
     let locationTwo
     let productExtra
+    let container
+    let region
+    let salesChannel
     const shippingProviderId = "manual_test-provider"
 
     beforeEach(async () => {
-      const container = getContainer()
+      container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
 
-      const region = (
+      region = (
         await api.post(
           "/admin/regions",
           {
@@ -80,7 +83,7 @@ medusaIntegrationTestRunner({
         )
       ).data.tax_rate
 
-      const salesChannel = (
+      salesChannel = (
         await api.post(
           "/admin/sales-channels",
           {

@@ -9,6 +9,13 @@ import {
 import { generateEntityColumns } from "./helpers"
 import { ENTITY_MAPPINGS } from "./entity-mappings"
 
+/**
+ * @ignore
+ * 
+ * @privateRemarks
+ * Remove the `ignore` tag once the feature is ready. Otherwise,
+ * it will be generated in the documentation.
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminViewsEntityColumnsResponse>

@@ -98,11 +98,11 @@ The API reference's content is split into two types:
 
 ### Medusa UI Documentation
 
-The content of the Medusa UI documentation are located under the `www/apps/ui/src/content/docs` directory. They are MDX files.
+The content of the Medusa UI documentation are located under the `www/apps/ui/app` directory. They are MDX files.
 
-The UI documentation also shows code examples, which are under the `www/apps/ui/src/examples` directory.
+The UI documentation also shows code examples, which are under the `www/apps/ui/specs/examples` directory.
 
-The UI component props are generated from the source code and placed into the `www/apps/ui/src/specs` directory. To contribute to these props and their comments, check the comments in the source code under the `packages/design-system/ui` directory.
+The UI component props are generated from the source code and placed into the `www/apps/ui/specs/components` directory. To contribute to these props and their comments, check the comments in the source code under the `packages/design-system/ui` directory.
 
 ---
 
@@ -195,7 +195,7 @@ cd www/vale
 # to lint content for the API reference
 ./run-vale.sh api-reference/markdown error
 # to lint content for the Medusa UI documentation
-./run-vale.sh ui/src/content/docs error
+./run-vale.sh ui/app error
 # to lint content for the user guide
 ./run-vale.sh user-guide/app error
 ```

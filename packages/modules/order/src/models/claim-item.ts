@@ -32,13 +32,13 @@ const _OrderClaimItem = model
       name: "IDX_order_claim_item_claim_id",
       on: ["claim_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_claim_item_item_id",
       on: ["item_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_claim_item_deleted_at",

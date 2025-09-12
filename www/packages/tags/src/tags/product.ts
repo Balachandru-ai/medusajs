@@ -80,12 +80,24 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
   },
   {
+    "title": "Implement Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
+    "title": "Implement Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
     "title": "Implement Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },
   {
     "title": "Localization with Contentful",
     "path": "https://docs.medusajs.com/resources/integrations/guides/contentful"
+  },
+  {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
   },
   {
     "title": "Build Wishlist Plugin",
@@ -98,6 +110,10 @@ export const product = [
   {
     "title": "Implement Personalized Products",
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
+  },
+  {
+    "title": "Implement Ticket Booking",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
   },
   {
     "title": "Implement Express Checkout with Medusa",
