@@ -1,10 +1,7 @@
 import { FulfillmentWorkflow } from "@medusajs/framework/types"
-import {
-  MedusaError,
-  Modules,
-  ShippingOptionPriceType,
-} from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { MedusaError, Modules, ShippingOptionPriceType, } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { CreateShippingOptionDTO } from "@medusajs/types"
 
 /**
  * The data to validate shipping option prices.
@@ -22,9 +19,9 @@ export const validateShippingOptionPricesStepId =
  *
  * For flat rate prices, it validates that regions exist for the shipping option prices.
  * For calculated prices, it validates with the fulfillment provider if the price can be calculated.
- * 
+ *
  * If not valid, the step throws an error.
- * 
+ *
  * @example
  * const data = validateShippingOptionPricesStep([
  *   {
@@ -96,7 +93,7 @@ export const validateShippingOptionPricesStep = createStep(
 
     const validation =
       await fulfillmentModuleService.validateShippingOptionsForPriceCalculation(
-        calculatedOptions as FulfillmentWorkflow.CreateShippingOptionsWorkflowInput[]
+        calculatedOptions as CreateShippingOptionDTO[]
       )
 
     if (validation.some((v) => !v)) {

@@ -7,7 +7,7 @@ import {
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../../common"
-import { refundPaymentsWorkflow } from "../../../payment"
+import { refundPaymentsWorkflow } from "../../../payment/workflows/refund-payments"
 
 export const refundCapturedPaymentsWorkflowId =
   "refund-captured-payments-workflow"
@@ -20,6 +20,7 @@ export const refundCapturedPaymentsWorkflow = createWorkflow(
     input: WorkflowData<{
       order_id: string
       created_by?: string
+      note?: string
     }>
   ) => {
     const orderQuery = useQueryGraphStep({
@@ -74,6 +75,7 @@ export const refundCapturedPaymentsWorkflow = createWorkflow(
               payment_id: payment.id,
               created_by: input.created_by,
               amount: amountToRefund,
+              note: input.note,
             }
           })
           .filter((payment) => MathBN.gt(payment.amount, 0))

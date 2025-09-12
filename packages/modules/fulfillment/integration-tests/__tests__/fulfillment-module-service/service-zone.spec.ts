@@ -371,7 +371,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
 
             expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(4)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
-              [
+              expect.arrayContaining([
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.GEO_ZONE_DELETED,
                   action: "deleted",
@@ -396,7 +396,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   object: "geo_zone",
                   data: { id: usGeoZone.id },
                 }),
-              ],
+              ]),
               {
                 internal: true,
               }

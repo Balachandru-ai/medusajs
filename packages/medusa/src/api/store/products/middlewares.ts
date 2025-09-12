@@ -1,7 +1,4 @@
-import {
-  featureFlagRouter,
-  validateAndTransformQuery,
-} from "@medusajs/framework"
+import { validateAndTransformQuery } from "@medusajs/framework"
 import {
   applyDefaultFilters,
   applyParamsAsFilters,
@@ -10,7 +7,12 @@ import {
   maybeApplyLinkFilter,
   MiddlewareRoute,
 } from "@medusajs/framework/http"
-import { isPresent, ProductStatus } from "@medusajs/framework/utils"
+import {
+  FeatureFlag,
+  isPresent,
+  ProductStatus,
+} from "@medusajs/framework/utils"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import {
   filterByValidSalesChannels,
   normalizeDataForContext,
@@ -19,7 +21,6 @@ import {
 } from "../../utils/middlewares"
 import * as QueryConfig from "./query-config"
 import { StoreGetProductsParams } from "./validators"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
 
 export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
@@ -35,7 +36,14 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
       ),
       filterByValidSalesChannels(),
       (req, res, next) => {
-        if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+        const canUseIndex = !(
+          isPresent(req.filterableFields.tags) ||
+          isPresent(req.filterableFields.categories)
+        )
+        if (
+          FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key) &&
+          canUseIndex
+        ) {
           return next()
         }
 
@@ -85,13 +93,6 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
       }),
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
-        categories: (_filters, fields: string[]) => {
-          if (!fields.some((field) => field.startsWith("categories"))) {
-            return
-          }
-
-          return { is_internal: false, is_active: true }
-        },
       }),
       normalizeDataForContext(),
       setPricingContext(),

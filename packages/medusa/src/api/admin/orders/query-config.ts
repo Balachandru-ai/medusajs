@@ -32,7 +32,11 @@ export const defaultAdminRetrieveOrderFields = [
   "original_shipping_tax_total",
   "original_shipping_subtotal",
   "original_shipping_total",
+  "credit_line_total",
+  "credit_line_subtotal",
+  "credit_line_tax_total",
   "*items",
+  "*credit_lines",
   "*items.tax_lines",
   "*items.adjustments",
   "*items.variant",
@@ -102,6 +106,11 @@ export const retrieveOrderChangesTransformQueryConfig = {
 
 export const listOrderItemsQueryConfig = {
   defaults: defaultAdminOrderItemsFields,
+  defaultLimit: 100,
+  isList: true,
+}
+
+export const listShippingOptionsQueryConfig = {
   defaultLimit: 100,
   isList: true,
 }

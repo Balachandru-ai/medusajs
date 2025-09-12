@@ -3,6 +3,7 @@ import {
   createShippingProfilesStep,
   useQueryGraphStep,
 } from "@medusajs/core-flows"
+import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { ExecArgs } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import {
@@ -73,6 +74,13 @@ const assignProductsToShippingProfileWorkflow = createWorkflow(
 export default async function assignProductsToShippingProfile({
   container,
 }: ExecArgs) {
+  if (
+    !MedusaModule.isInstalled(Modules.FULFILLMENT) ||
+    !MedusaModule.isInstalled(Modules.PRODUCT)
+  ) {
+    return
+  }
+
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   logger.info("Assigning products to shipping profile")

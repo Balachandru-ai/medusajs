@@ -1,3 +1,7 @@
+---
+generate_toc: true
+---
+
 import { ChildDocs } from "docs-ui"
 
 export const metadata = {
@@ -6,4 +10,10 @@ export const metadata = {
 
 # {metadata.title}
 
-<ChildDocs />
+<Note>
+
+The following troubleshooting guides are intended for technical users. If you're not a technical user, refer your technical team to this documentation.
+
+</Note>
+
+<ChildDocs hideItems={["Overview"]} defaultItemsPerRow={2} />

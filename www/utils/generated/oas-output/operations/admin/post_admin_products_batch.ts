@@ -27,6 +27,47 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminBatchProductRequest"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.batch({
+ *         create: [
+ *           {
+ *             title: "Shirt",
+ *             options: [{
+ *               title: "Default",
+ *               values: ["Default Option"]
+ *             }],
+ *             variants: [
+ *               {
+ *                 title: "Default",
+ *                 options: {
+ *                   Default: "Default Option"
+ *                 },
+ *                 prices: []
+ *               }
+ *             ]
+ *           }
+ *         ],
+ *         update: [{
+ *           id: "prod_123",
+ *           title: "Pants"
+ *         }],
+ *         delete: ["prod_321"]
+ *       })
+ *       .then(({ created, updated, deleted }) => {
+ *         console.log(created, updated, deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -59,6 +100,43 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: batchProductsWorkflow
+ * x-events:
+ *   - name: product-variant.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product variant
+ *       }]
+ *       ```
+ *     description: Emitted when product variants are created.
+ *     deprecated: false
+ *   - name: product.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product
+ *       }]
+ *       ```
+ *     description: Emitted when products are updated.
+ *     deprecated: false
+ *   - name: product.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product
+ *       }]
+ *       ```
+ *     description: Emitted when products are created.
+ *     deprecated: false
+ *   - name: product.deleted
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product
+ *       }]
+ *       ```
+ *     description: Emitted when products are deleted.
+ *     deprecated: false
  * 
 */
 

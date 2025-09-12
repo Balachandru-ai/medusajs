@@ -23,6 +23,14 @@ It holds fields retrieved from the third-party provider, such as:
 
 A payment provider that supports saving payment methods for customers would create the equivalent of an account holder in the third-party provider. Then, whenever a payment method is saved, it would be saved under the account holder in the third-party provider.
 
+### Relation between Account Holder and Customer
+
+The Medusa application creates a link between the [Customer](/references/customer/models/Customer) data model of the [Customer Module](../../customer/page.mdx) and the `AccountHolder` data model of the Payment Module.
+
+This link indicates that a customer can have more than one account holder, each representing saved payment methods in different payment providers.
+
+Learn more about this link in the [Link to Other Modules](../links-to-other-modules/page.mdx) guide.
+
 ---
 
 ## Save Payment Methods

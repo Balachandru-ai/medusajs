@@ -57,6 +57,11 @@ post:
                 title: remove
                 description: A fulfillment provider's ID.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_stock-locations_{id}_fulfillment-providers/post.js
     - lang: Shell
       label: cURL
       source:
@@ -84,3 +89,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: batchLinksWorkflow
+  x-events: []

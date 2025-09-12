@@ -13,11 +13,11 @@ import { MainNavMobileSubMenu } from "./SubMenu"
 export type SelectedMenu = {
   title: string
   menu: MenuItem[]
-}
+}[]
 
 export const MainNavMobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>()
+  const [selectedMenus, setSelectedMenus] = useState<SelectedMenu>([])
   const ref = useRef(null)
 
   return (
@@ -40,7 +40,11 @@ export const MainNavMobileMenu = () => {
       >
         <SwitchTransition>
           <CSSTransition
-            key={!selectedMenu ? "main" : "sub"}
+            key={
+              !selectedMenus.length
+                ? "main"
+                : selectedMenus[selectedMenus.length - 1].title
+            }
             classNames={{
               enter: "animate-fadeInLeft animate-fast",
               exit: "animate-fadeOutRight animate-fast",
@@ -48,11 +52,14 @@ export const MainNavMobileMenu = () => {
             nodeRef={ref}
             timeout={250}
           >
-            <div ref={ref} className="w-full px-docs_1.5">
-              {!selectedMenu && (
-                <MainNavMobileMainMenu setSelectedMenu={setSelectedMenu} />
+            <div
+              ref={ref}
+              className="w-full px-docs_1.5 h-3/4 flex flex-col justify-center"
+            >
+              {selectedMenus.length === 0 && (
+                <MainNavMobileMainMenu setSelectedMenus={setSelectedMenus} />
               )}
-              {selectedMenu && (
+              {selectedMenus.length > 0 && (
                 <>
                   <div
                     className={clsx(
@@ -61,12 +68,21 @@ export const MainNavMobileMenu = () => {
                       "cursor-pointer"
                     )}
                     tabIndex={-1}
-                    onClick={() => setSelectedMenu(undefined)}
+                    onClick={() =>
+                      setSelectedMenus((prev) => {
+                        const temp = [...prev]
+                        temp.pop()
+                        return temp
+                      })
+                    }
                   >
                     <ArrowUturnLeft />
                     <span className="text-h1">Back</span>
                   </div>
-                  <MainNavMobileSubMenu {...selectedMenu} />
+                  <MainNavMobileSubMenu
+                    {...selectedMenus[selectedMenus.length - 1]}
+                    setSelectedMenus={setSelectedMenus}
+                  />
                 </>
               )}
             </div>

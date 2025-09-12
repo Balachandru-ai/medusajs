@@ -91,3 +91,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteTaxRateRulesWorkflow
+  x-events: []

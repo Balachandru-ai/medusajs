@@ -15,11 +15,9 @@ import {
 import {
   arrayDifference,
   BigNumber,
-  CommonEvents,
   EmitEvents,
   InjectManager,
   InjectTransactionManager,
-  InventoryEvents,
   isDefined,
   isString,
   MathBN,
@@ -125,7 +123,7 @@ export default class InventoryModuleService
       { location_id: string; inventory_item_id: string }[]
     ]
 
-    const inventoryLevels = await this.listInventoryLevels(
+    const inventoryLevels = await this.inventoryLevelService_.list(
       {
         $or: [
           { id: idData.filter(({ id }) => !!id).map((e) => e.id) },
@@ -247,22 +245,9 @@ export default class InventoryModuleService
     const toCreate = Array.isArray(input) ? input : [input]
     const created = await this.createReservationItems_(toCreate, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      created.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
-
     const serializedReservations = await this.baseRepository_.serialize<
       InventoryTypes.ReservationItemDTO[] | InventoryTypes.ReservationItemDTO
-    >(created, {
-      populate: true,
-    })
+    >(created)
 
     return Array.isArray(input)
       ? serializedReservations
@@ -349,22 +334,9 @@ export default class InventoryModuleService
     )
     const result = await this.createInventoryItems_(toCreate, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      result.map((inventoryItem) => ({
-        eventName: InventoryEvents.INVENTORY_ITEM_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "inventory-item",
-        context,
-        data: { id: inventoryItem.id },
-      }))
-    )
-
     const serializedItems = await this.baseRepository_.serialize<
       InventoryTypes.InventoryItemDTO | InventoryTypes.InventoryItemDTO[]
-    >(result, {
-      populate: true,
-    })
+    >(result)
 
     return Array.isArray(input) ? serializedItems : serializedItems[0]
   }
@@ -374,7 +346,7 @@ export default class InventoryModuleService
     input: InventoryTypes.CreateInventoryItemInput[],
     @MedusaContext() context: Context = {}
   ): Promise<InventoryTypes.InventoryItemDTO[]> {
-    return await this.inventoryItemService_.create(input)
+    return await this.inventoryItemService_.create(input, context)
   }
 
   // @ts-ignore
@@ -405,22 +377,9 @@ export default class InventoryModuleService
 
     const created = await this.createInventoryLevels_(toCreate, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      created.map((inventoryLevel) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "inventory-level",
-        context,
-        data: { id: inventoryLevel.id },
-      }))
-    )
-
     const serialized = await this.baseRepository_.serialize<
       InventoryTypes.InventoryLevelDTO[] | InventoryTypes.InventoryLevelDTO
-    >(created, {
-      populate: true,
-    })
+    >(created)
 
     return Array.isArray(input) ? serialized : serialized[0]
   }
@@ -461,22 +420,9 @@ export default class InventoryModuleService
 
     const result = await this.updateInventoryItems_(updates, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      result.map((inventoryItem) => ({
-        eventName: InventoryEvents.INVENTORY_ITEM_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "inventory-item",
-        context,
-        data: { id: inventoryItem.id },
-      }))
-    )
-
     const serializedItems = await this.baseRepository_.serialize<
       InventoryTypes.InventoryItemDTO | InventoryTypes.InventoryItemDTO[]
-    >(result, {
-      populate: true,
-    })
+    >(result)
 
     return Array.isArray(input) ? serializedItems : serializedItems[0]
   }
@@ -491,7 +437,7 @@ export default class InventoryModuleService
     return await this.inventoryItemService_.update(input, context)
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async deleteInventoryItemLevelByLocationId(
     locationId: string | string[],
@@ -500,17 +446,6 @@ export default class InventoryModuleService
     const result = await this.inventoryLevelService_.softDelete(
       { location_id: locationId },
       context
-    )
-
-    context.messageAggregator?.saveRawMessageData(
-      result[0].map((inventoryLevel) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_DELETED,
-        source: this.constructor.name,
-        action: CommonEvents.DELETED,
-        object: "inventory-level",
-        context,
-        data: { id: inventoryLevel.id },
-      }))
     )
 
     return result
@@ -523,6 +458,7 @@ export default class InventoryModuleService
    * @param context
    */
   @InjectTransactionManager()
+  @EmitEvents()
   async deleteInventoryLevel(
     inventoryItemId: string,
     locationId: string,
@@ -533,15 +469,6 @@ export default class InventoryModuleService
       { take: 1 },
       context
     )
-
-    context.messageAggregator?.saveRawMessageData({
-      eventName: InventoryEvents.INVENTORY_LEVEL_DELETED,
-      source: this.constructor.name,
-      action: CommonEvents.DELETED,
-      object: "inventory-level",
-      context,
-      data: { id: inventoryLevel.id },
-    })
 
     if (!inventoryLevel) {
       return
@@ -578,22 +505,9 @@ export default class InventoryModuleService
 
     const levels = await this.updateInventoryLevels_(input, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      levels.map((inventoryLevel) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "inventory-level",
-        context,
-        data: { id: inventoryLevel.id },
-      }))
-    )
-
     const updatedLevels = await this.baseRepository_.serialize<
       InventoryTypes.InventoryLevelDTO | InventoryTypes.InventoryLevelDTO[]
-    >(levels, {
-      populate: true,
-    })
+    >(levels)
 
     return Array.isArray(updates) ? updatedLevels : updatedLevels[0]
   }
@@ -661,22 +575,9 @@ export default class InventoryModuleService
     const update = Array.isArray(input) ? input : [input]
     const result = await this.updateReservationItems_(update, context)
 
-    context.messageAggregator?.saveRawMessageData(
-      result.map((reservationItem) => ({
-        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
-
     const serialized = await this.baseRepository_.serialize<
       InventoryTypes.ReservationItemDTO | InventoryTypes.ReservationItemDTO[]
-    >(result, {
-      populate: true,
-    })
+    >(result)
 
     return Array.isArray(input) ? serialized : serialized[0]
   }
@@ -687,7 +588,7 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof ReservationItem>[]> {
     const ids = input.map((u) => u.id)
-    const reservationItems = await this.listReservationItems(
+    const reservationItems = await this.reservationItemService_.list(
       { id: ids },
       {},
       context
@@ -810,33 +711,47 @@ export default class InventoryModuleService
     return result
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async softDeleteReservationItems(
     ids: string | string[],
     config?: SoftDeleteReturn<string>,
     @MedusaContext() context: Context = {}
   ): Promise<void> {
-    const reservations: InventoryTypes.ReservationItemDTO[] =
-      await super.listReservationItems({ id: ids }, {}, context)
+    return await this.softDeleteReservationItems_(ids, config, context)
+  }
 
-    const result = await super.softDeleteReservationItems(
-      { id: ids },
-      config,
-      context
-    )
+  @InjectTransactionManager()
+  protected async softDeleteReservationItems_(
+    ids: string | string[],
+    config?: SoftDeleteReturn<string>,
+    @MedusaContext() context: Context = {}
+  ): Promise<void> {
+    const reservations: InventoryTypes.ReservationItemDTO[] =
+      await this.reservationItemService_.list({ id: ids }, {}, context)
+
+    await super.softDeleteReservationItems(ids, config, context)
 
     await this.adjustInventoryLevelsForReservationsDeletion(
       reservations,
       context
     )
+  }
 
-    result
+  @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async restoreReservationItems(
+    ids: string | string[],
+    config?: RestoreReturn<string>,
+    @MedusaContext() context: Context = {}
+  ): Promise<void> {
+    return await this.restoreReservationItems_(ids, config, context)
   }
 
   @InjectTransactionManager()
-  // @ts-expect-error
-  async restoreReservationItems(
+  protected async restoreReservationItems_(
     ids: string | string[],
     config?: RestoreReturn<string>,
     @MedusaContext() context: Context = {}
@@ -852,29 +767,30 @@ export default class InventoryModuleService
     )
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async deleteReservationItemByLocationId(
     locationId: string | string[],
     @MedusaContext() context: Context = {}
   ): Promise<void> {
+    return await this.deleteReservationItemByLocationId_(locationId, context)
+  }
+
+  @InjectTransactionManager()
+  protected async deleteReservationItemByLocationId_(
+    locationId: string | string[],
+    @MedusaContext() context: Context = {}
+  ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await this.listReservationItems({ location_id: locationId }, {}, context)
+      await this.reservationItemService_.list(
+        { location_id: locationId },
+        {},
+        context
+      )
 
     await this.reservationItemService_.softDelete(
       { location_id: locationId },
       context
-    )
-
-    context.messageAggregator?.saveRawMessageData(
-      reservations.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_DELETED,
-        source: this.constructor.name,
-        action: CommonEvents.DELETED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
     )
 
     await this.adjustInventoryLevelsForReservationsDeletion(
@@ -889,14 +805,26 @@ export default class InventoryModuleService
    * @param context
    */
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async deleteReservationItemsByLineItem(
     lineItemId: string | string[],
     @MedusaContext() context: Context = {}
   ): Promise<void> {
+    return await this.deleteReservationItemsByLineItem_(lineItemId, context)
+  }
+
+  @InjectTransactionManager()
+  protected async deleteReservationItemsByLineItem_(
+    lineItemId: string | string[],
+    @MedusaContext() context: Context = {}
+  ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await this.listReservationItems({ line_item_id: lineItemId }, {}, context)
+      await this.reservationItemService_.list(
+        { line_item_id: lineItemId },
+        {},
+        context
+      )
 
     await this.reservationItemService_.softDelete(
       { line_item_id: lineItemId },
@@ -907,17 +835,6 @@ export default class InventoryModuleService
       reservations,
       context
     )
-
-    context.messageAggregator?.saveRawMessageData(
-      reservations.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_DELETED,
-        source: this.constructor.name,
-        action: CommonEvents.DELETED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
-    )
   }
 
   /**
@@ -926,14 +843,26 @@ export default class InventoryModuleService
    * @param context
    */
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async restoreReservationItemsByLineItem(
     lineItemId: string | string[],
     @MedusaContext() context: Context = {}
   ): Promise<void> {
+    return await this.restoreReservationItemsByLineItem_(lineItemId, context)
+  }
+
+  @InjectTransactionManager()
+  protected async restoreReservationItemsByLineItem_(
+    lineItemId: string | string[],
+    @MedusaContext() context: Context = {}
+  ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await this.listReservationItems({ line_item_id: lineItemId }, {}, context)
+      await this.reservationItemService_.list(
+        { line_item_id: lineItemId },
+        {},
+        context
+      )
 
     await this.reservationItemService_.restore(
       { line_item_id: lineItemId },
@@ -943,17 +872,6 @@ export default class InventoryModuleService
     await this.adjustInventoryLevelsForReservationsRestore(
       reservations,
       context
-    )
-
-    context.messageAggregator?.saveRawMessageData(
-      reservations.map((reservationItem) => ({
-        eventName: InventoryEvents.RESERVATION_ITEM_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "reservation-item",
-        context,
-        data: { id: reservationItem.id },
-      }))
     )
   }
 
@@ -1014,22 +932,10 @@ export default class InventoryModuleService
         context
       )
       results.push(result)
-
-      context.messageAggregator?.saveRawMessageData({
-        eventName: InventoryEvents.INVENTORY_LEVEL_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "inventory-level",
-        context,
-        data: { id: result.id },
-      })
     }
 
     return await this.baseRepository_.serialize<InventoryTypes.InventoryLevelDTO>(
-      Array.isArray(inventoryItemIdOrData) ? results : results[0],
-      {
-        populate: true,
-      }
+      Array.isArray(inventoryItemIdOrData) ? results : results[0]
     )
   }
 
@@ -1040,11 +946,18 @@ export default class InventoryModuleService
     adjustment: BigNumberInput,
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof InventoryLevel>> {
-    const inventoryLevel = await this.retrieveInventoryLevelByItemAndLocation(
-      inventoryItemId,
-      locationId,
+    const [inventoryLevel] = await this.inventoryLevelService_.list(
+      { inventory_item_id: inventoryItemId, location_id: locationId },
+      {},
       context
     )
+
+    if (!inventoryLevel) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Inventory level for item ${inventoryItemId} and location ${locationId} not found`
+      )
+    }
 
     const result = await this.inventoryLevelService_.update(
       {
@@ -1057,7 +970,7 @@ export default class InventoryModuleService
       context
     )
 
-    return result[0]
+    return result
   }
 
   @InjectManager()

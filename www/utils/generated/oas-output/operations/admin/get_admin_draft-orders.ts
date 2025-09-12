@@ -922,48 +922,6 @@
  *         type: string
  *         title: sales_channel_id
  *         description: A sales channel's ID.
- *   - name: fulfillment_status
- *     in: query
- *     description: Filter by the fulfillment status of the draft order.
- *     required: false
- *     schema:
- *       type: array
- *       description: Filter by the fulfillment status of the draft order.
- *       items:
- *         type: string
- *         title: fulfillment_status
- *         description: The fulfillment status's details.
- *         enum:
- *           - canceled
- *           - not_fulfilled
- *           - partially_fulfilled
- *           - fulfilled
- *           - partially_shipped
- *           - shipped
- *           - partially_delivered
- *           - delivered
- *   - name: payment_status
- *     in: query
- *     description: Filter by the payment status of the draft order.
- *     required: false
- *     schema:
- *       type: array
- *       description: Filter by the payment status of the draft order.
- *       items:
- *         type: string
- *         title: payment_status
- *         description: The payment status's details.
- *         enum:
- *           - canceled
- *           - not_paid
- *           - awaiting
- *           - authorized
- *           - partially_authorized
- *           - captured
- *           - partially_captured
- *           - partially_refunded
- *           - refunded
- *           - requires_action
  *   - name: region_id
  *     in: query
  *     description: Filter by region IDs to retrieve their associated draft orders.
@@ -1463,11 +1421,36 @@
  *             type: string
  *             title: customer_id
  *             description: The customer id's details.
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.draftOrder.list()
+ *       .then(({ draft_orders, count, limit, offset }) => {
+ *         console.log(draft_orders)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -1495,6 +1478,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: getOrdersListWorkflow
+ * x-events: []
  * 
 */
 

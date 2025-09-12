@@ -247,29 +247,29 @@ const columns = [
       const actions = [
         [
           {
-          label: "Edit",
-          onClick: () => {},
-          icon: <PencilSquare />,
-        },
-        {
-          label: "Edit",
-          onClick: () => {},
-          icon: <PencilSquare />,
-        },
-        {
-          label: "Edit",
-          onClick: () => {},
-          icon: <PencilSquare />,
-        },
-      ],
-      [
-        {
-          label: "Delete",
-          onClick: () => {},
-          icon: <Trash />,
-        },
-      ],
-    ]
+            label: "Edit",
+            onClick: () => { },
+            icon: <PencilSquare />,
+          },
+          {
+            label: "Edit",
+            onClick: () => { },
+            icon: <PencilSquare />,
+          },
+          {
+            label: "Edit",
+            onClick: () => { },
+            icon: <PencilSquare />,
+          },
+        ],
+        [
+          {
+            label: "Delete",
+            onClick: () => { },
+            icon: <Trash />,
+          },
+        ],
+      ]
 
       return actions
     },
@@ -385,6 +385,13 @@ const KitchenSinkDemo = () => {
     },
   })
 
+  const handleFilteringChange = (
+    state: DataTableFilteringState,
+  ) => {
+    console.log("Filtering changed:", state)
+    setFiltering(state)
+  }
+
   const [pagination, setPagination] = React.useState<DataTablePaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -414,11 +421,12 @@ const KitchenSinkDemo = () => {
     },
     filtering: {
       state: filtering,
-      onFilteringChange: setFiltering,
+      onFilteringChange: handleFilteringChange,
     },
     rowSelection: {
       state: rowSelection,
       onRowSelectionChange: setRowSelection,
+      enableRowSelection: (row) => Number(row.original.id) > 4,
     },
     sorting: {
       state: sorting,

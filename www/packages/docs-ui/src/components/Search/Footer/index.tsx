@@ -8,13 +8,16 @@ export const SearchFooter = () => {
       className={clsx(
         "py-docs_0.75 hidden md:flex items-center justify-end px-docs_1",
         "border-medusa-border-base border-t",
-        "bg-medusa-bg-field"
+        "bg-medusa-bg-field z-10"
       )}
     >
       <div className="flex items-center gap-docs_0.75">
         <div className="flex items-center gap-docs_0.5">
           <span
-            className={clsx("text-medusa-fg-subtle", "text-compact-x-small")}
+            className={clsx(
+              "text-medusa-fg-subtle",
+              "text-compact-x-small-plus"
+            )}
           >
             Navigation
           </span>
@@ -40,7 +43,10 @@ export const SearchFooter = () => {
         <div className={clsx("h-docs_0.75 w-px bg-medusa-border-strong")}></div>
         <div className="flex items-center gap-docs_0.5">
           <span
-            className={clsx("text-medusa-fg-subtle", "text-compact-x-small")}
+            className={clsx(
+              "text-medusa-fg-subtle",
+              "text-compact-x-small-plus"
+            )}
           >
             Open Result
           </span>

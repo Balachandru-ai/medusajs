@@ -3,6 +3,7 @@ import {
   createFindParams,
   createOperatorMap,
   createSelectParams,
+  WithAdditionalData,
 } from "../../utils/validators"
 import { applyAndAndOrOperators } from "../../utils/common-validators"
 
@@ -39,9 +40,10 @@ export const AdminGetTaxRegionsParams = createFindParams({
   .merge(AdminGetTaxRegionsParamsFields)
   .merge(applyAndAndOrOperators(AdminGetTaxRegionsParamsFields))
 
-export type AdminCreateTaxRegionType = z.infer<typeof AdminCreateTaxRegion>
-export const AdminCreateTaxRegion = z.object({
+export type AdminCreateTaxRegionType = z.infer<typeof CreateTaxRegion>
+export const CreateTaxRegion = z.object({
   country_code: z.string(),
+  provider_id: z.string().nullish(),
   province_code: z.string().nullish(),
   parent_id: z.string().nullish(),
   default_tax_rate: z
@@ -56,8 +58,19 @@ export const AdminCreateTaxRegion = z.object({
   metadata: z.record(z.unknown()).nullish(),
 })
 
+export const AdminCreateTaxRegion = WithAdditionalData(
+  CreateTaxRegion,
+  (schema) => {
+    return schema.refine((data) => data.parent_id || data.provider_id, {
+      path: ["provider_id"],
+      message: "Provider is required when creating a non-province tax region.",
+    })
+  }
+)
+
 export type AdminUpdateTaxRegionType = z.infer<typeof AdminUpdateTaxRegion>
 export const AdminUpdateTaxRegion = z.object({
   province_code: z.string().nullish(),
+  provider_id: z.string().optional(),
   metadata: z.record(z.unknown()).nullish(),
 })

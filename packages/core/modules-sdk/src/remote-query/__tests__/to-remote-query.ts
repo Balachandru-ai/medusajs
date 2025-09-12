@@ -40,6 +40,28 @@ describe("toRemoteQuery", () => {
     })
   })
 
+  it("should transform a query with strategy", () => {
+    const format = toRemoteQuery(
+      {
+        entity: "product",
+        fields: ["id", "handle", "description"],
+        strategy: "select-in",
+      },
+      entitiesMap
+    )
+
+    expect(format).toEqual({
+      product: {
+        __fields: ["id", "handle", "description"],
+        __args: {
+          options: {
+            strategy: "select-in",
+          },
+        },
+      },
+    })
+  })
+
   it("should transform a query with pagination", () => {
     const format = toRemoteQuery(
       {

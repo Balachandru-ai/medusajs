@@ -1,37 +1,37 @@
 "use client"
 
-import type { Area } from "@/types/openapi"
-import { capitalize, usePrevious, useSearch } from "docs-ui"
+import type { OpenAPI } from "types"
+import { capitalize, usePrevious, useSidebar } from "docs-ui"
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { usePathname } from "next/navigation"
 
 type AreaContextType = {
-  area: Area
-  prevArea: Area | undefined
+  area: OpenAPI.Area
+  prevArea: OpenAPI.Area | undefined
   displayedArea: string
-  setArea: (value: Area) => void
+  setArea: (value: OpenAPI.Area) => void
 }
 
 const AreaContext = createContext<AreaContextType | null>(null)
 
 type AreaProviderProps = {
-  area: Area
+  area: OpenAPI.Area
   children: React.ReactNode
 }
 
 const AreaProvider = ({ area: passedArea, children }: AreaProviderProps) => {
-  const [area, setArea] = useState<Area>(passedArea)
+  const [area, setArea] = useState<OpenAPI.Area>(passedArea)
   const prevArea = usePrevious(area)
-  const { defaultFilters, setDefaultFilters } = useSearch()
+  const { setActivePath } = useSidebar()
+  const pathname = usePathname()
 
   const displayedArea = useMemo(() => {
     return capitalize(area)
   }, [area])
 
   useEffect(() => {
-    if (!defaultFilters.includes(`${area}-v2`)) {
-      setDefaultFilters([`${area}-v2`])
-    }
-  }, [area, defaultFilters, setDefaultFilters])
+    setActivePath(null)
+  }, [pathname])
 
   return (
     <AreaContext.Provider

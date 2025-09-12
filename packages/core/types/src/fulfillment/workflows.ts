@@ -47,15 +47,15 @@ export type ListShippingOptionsForCartWithPricingWorkflowInput = {
    * Specify the shipping options to retrieve their details and prices.
    * If not provided, all applicable shipping options are retrieved.
    */
-  options?: { 
+  options?: {
     /**
      * The shipping option's ID.
      */
-    id: string; 
+    id: string
     /**
      * Custom data relevant for the fulfillment provider that processes this shipping option.
      * It can be data relevant to calculate the shipping option's price.
-     * 
+     *
      * Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property).
      */
     data?: Record<string, unknown>
@@ -63,13 +63,13 @@ export type ListShippingOptionsForCartWithPricingWorkflowInput = {
   /**
    * Whether to retrieve return shipping options.
    * By default, non-return shipping options are retrieved.
-   * 
+   *
    * @defaultValue false
    */
   is_return?: boolean
   /**
    * Whether to retrieve the shipping option's enabled in the store, which is the default.
-   * 
+   *
    * @defaultValue true
    */
   enabled_in_store?: boolean
@@ -124,7 +124,7 @@ export type ListShippingOptionsForCartWithPricingWorkflowOutput = {
   /**
    * Custom additional data related to the shipping option, useful for the fulfillment provider
    * to process the shipping option and calculate its price.
-   * 
+   *
    * Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property).
    */
   data: Record<string, unknown>
@@ -132,7 +132,14 @@ export type ListShippingOptionsForCartWithPricingWorkflowOutput = {
   /**
    * The shipping option's type.
    */
-  type: Omit<ShippingOptionTypeDTO, "shipping_option_id" | "shipping_option" | "created_at" | "updated_at" | "deleted_at">
+  type: Omit<
+    ShippingOptionTypeDTO,
+    | "shipping_option_id"
+    | "shipping_option"
+    | "created_at"
+    | "updated_at"
+    | "deleted_at"
+  >
 
   /**
    * The associated fulfillment provider details.
@@ -155,8 +162,8 @@ export type ListShippingOptionsForCartWithPricingWorkflowOutput = {
   rules: {
     /**
      * The name of a property or table that the rule applies to.
-     * 
-     * @example 
+     *
+     * @example
      * customer_group
      */
     attribute: string
@@ -168,8 +175,8 @@ export type ListShippingOptionsForCartWithPricingWorkflowOutput = {
 
     /**
      * The operator of the rule.
-     * 
-     * @example 
+     *
+     * @example
      * in
      */
     operator: string
@@ -232,14 +239,35 @@ export type ListShippingOptionsForCartWorkflowInput = {
   /**
    * Whether to retrieve return shipping options.
    * By default, non-return shipping options are retrieved.
-   * 
+   *
    * @defaultValue false
    */
   is_return?: boolean
   /**
    * Whether to retrieve the shipping option's enabled in the store, which is the default.
-   * 
+   *
    * @defaultValue true
+   */
+  enabled_in_store?: boolean
+}
+
+/**
+ * The context for retrieving the shipping options.
+ */
+export type ListShippingOptionsForOrderWorkflowInput = {
+  /**
+   * The order's ID.
+   */
+  order_id: string
+  /**
+   * Whether to retrieve return shipping options.
+   * By default, non-return shipping options are retrieved.
+   *
+   * @defaultValue false
+   */
+  is_return?: boolean
+  /**
+   * Whether to retrieve the shipping option's enabled in the store, which is the default.
    */
   enabled_in_store?: boolean
 }

@@ -40,6 +40,11 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones_{zone_id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -111,140 +116,13 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The service zone's details.
-          properties:
-            name:
-              type: string
-              title: name
-              description: The service zone's name.
-            geo_zones:
-              type: array
-              description: The service zone's associated geo zones.
-              items:
-                oneOf:
-                  - type: object
-                    description: A country geo zone.
-                    required:
-                      - type
-                      - metadata
-                      - country_code
-                    properties:
-                      type:
-                        type: string
-                        title: type
-                        description: The geo zone's type.
-                        default: country
-                      metadata:
-                        type: object
-                        description: The geo zone's metadata.
-                      country_code:
-                        type: string
-                        title: country_code
-                        description: The geo zone's country code.
-                      id:
-                        type: string
-                        title: id
-                        description: The ID of an existing geo zone.
-                  - type: object
-                    description: A province geo zone.
-                    required:
-                      - type
-                      - metadata
-                      - country_code
-                      - province_code
-                    properties:
-                      type:
-                        type: string
-                        title: type
-                        description: The geo zone's type.
-                        default: province
-                      metadata:
-                        type: object
-                        description: The geo zone's metadata.
-                      country_code:
-                        type: string
-                        title: country_code
-                        description: The geo zone's country code.
-                      province_code:
-                        type: string
-                        title: province_code
-                        description: The geo zone's province code.
-                      id:
-                        type: string
-                        title: id
-                        description: The ID of an existing geo zone.
-                  - type: object
-                    description: A city geo zone
-                    required:
-                      - type
-                      - metadata
-                      - city
-                      - country_code
-                      - province_code
-                    properties:
-                      type:
-                        type: string
-                        title: type
-                        description: The geo zone's type.
-                        default: city
-                      metadata:
-                        type: object
-                        description: The geo zone's metadata.
-                      city:
-                        type: string
-                        title: city
-                        description: The geo zone's city.
-                      country_code:
-                        type: string
-                        title: country_code
-                        description: The geo zone's country code.
-                      province_code:
-                        type: string
-                        title: province_code
-                        description: The geo zone's province code.
-                      id:
-                        type: string
-                        title: id
-                        description: The ID of an existing geo zone.
-                  - type: object
-                    description: A ZIP geo zone.
-                    required:
-                      - type
-                      - metadata
-                      - city
-                      - country_code
-                      - province_code
-                      - postal_expression
-                    properties:
-                      type:
-                        type: string
-                        title: type
-                        description: The geo zone's type.
-                        default: zip
-                      metadata:
-                        type: object
-                        description: The geo zone's metadata.
-                      city:
-                        type: string
-                        title: city
-                        description: The geo zone's city.
-                      country_code:
-                        type: string
-                        title: country_code
-                        description: The geo zone's country code.
-                      province_code:
-                        type: string
-                        title: province_code
-                        description: The geo zone's province code.
-                      postal_expression:
-                        type: object
-                        description: The geo zone's postal expression or ZIP code.
-                      id:
-                        type: string
-                        title: id
-                        description: The ID of an existing geo zone.
+          $ref: ../components/schemas/AdminUpdateFulfillmentSetServiceZones.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones_{zone_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -272,6 +150,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateServiceZonesWorkflow
+  x-events: []
 delete:
   operationId: DeleteFulfillmentSetsIdServiceZonesZone_id
   summary: Remove a Service Zone from Fulfillment Set
@@ -296,6 +175,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_fulfillment-sets_{id}_service-zones_{zone_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -323,3 +207,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteServiceZonesWorkflow
+  x-events: []

@@ -117,7 +117,9 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.SHIPPING_PROFILE_CREATED,
                     action: "created",
                     object: "shipping_profile",
-                    data: { id: createdShippingProfiles[i].id },
+                    data: {
+                      id: createdShippingProfiles[i].id,
+                    },
                   }),
                 ]),
                 {

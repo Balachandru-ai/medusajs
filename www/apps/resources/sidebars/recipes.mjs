@@ -1,5 +1,13 @@
-/** @type {import('types').RawSidebarItem[]} */
+/** @type {import('types').Sidebar.SidebarItem[]} */
 export const recipesSidebar = [
+  {
+    type: "link",
+    path: "/recipes",
+    title: "Overview",
+  },
+  {
+    type: "separator",
+  },
   {
     type: "link",
     path: "/recipes/marketplace",
@@ -43,8 +51,39 @@ export const recipesSidebar = [
   },
   {
     type: "link",
+    path: "/recipes/erp",
+    title: "Integrate ERP",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/erp/odoo",
+        title: "Example: Odoo Integration",
+      },
+    ],
+  },
+  {
+    type: "link",
     path: "/recipes/b2b",
     title: "B2B",
+    children: [
+      {
+        type: "link",
+        path: "/examples/guides/quote-management",
+        title: "Example: Quote Management",
+      },
+    ],
+  },
+  {
+    type: "link",
+    path: "/recipes/bundled-products",
+    title: "Bundled Products",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/bundled-products/examples/standard",
+        title: "Example",
+      },
+    ],
   },
   {
     type: "link",
@@ -60,13 +99,37 @@ export const recipesSidebar = [
   },
   {
     type: "link",
-    path: "/recipes/ecommerce",
-    title: "Ecommerce",
+    path: "/recipes/personalized-products",
+    title: "Personalized Products",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/personalized-products/example",
+        title: "Example",
+      },
+    ],
   },
   {
     type: "link",
-    path: "/recipes/integrate-ecommerce-stack",
-    title: "Integrate Ecommerce Stack",
+    path: "/recipes/ticket-booking",
+    title: "Ticket Booking",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/ticket-booking/example",
+        title: "Example",
+      },
+      {
+        type: "link",
+        path: "/recipes/ticket-booking/example/storefront",
+        title: "Storefront Customizations",
+      },
+    ],
+  },
+  {
+    type: "link",
+    path: "/recipes/ecommerce",
+    title: "Ecommerce",
   },
   {
     type: "link",
@@ -82,11 +145,6 @@ export const recipesSidebar = [
     type: "link",
     path: "/recipes/oms",
     title: "OMS",
-  },
-  {
-    type: "link",
-    path: "/recipes/personalized-products",
-    title: "Personalized Products",
   },
   {
     type: "link",

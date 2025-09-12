@@ -31,43 +31,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The propeties to update in the region.
- *         properties:
- *           name:
- *             type: string
- *             title: name
- *             description: The region's name.
- *           currency_code:
- *             type: string
- *             title: currency_code
- *             description: The region's currency code.
- *           countries:
- *             type: array
- *             description: The region's countries.
- *             items:
- *               type: string
- *               title: countries
- *               description: A country code.
- *           automatic_taxes:
- *             type: boolean
- *             title: automatic_taxes
- *             description: Whether taxes are calculated automatically for carts in the region.
- *           payment_providers:
- *             type: array
- *             description: The payment providers enabled in the region.
- *             items:
- *               type: string
- *               title: payment_providers
- *               description: A payment provider's ID.
- *           metadata:
- *             type: object
- *             description: The region's metadata. Can hold custom key-value pairs.
- *           is_tax_inclusive:
- *             type: boolean
- *             title: is_tax_inclusive
- *             description: Whether the prices in the region are tax inclusive.
+ *         $ref: "#/components/schemas/AdminUpdateRegion"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.region.update("region_123", {
+ *         name: "United States",
+ *       })
+ *       .then(({ region }) => {
+ *         console.log(region)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -99,6 +83,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateRegionsWorkflow
+ * x-events:
+ *   - name: region.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the region
+ *       }]
+ *       ```
+ *     description: Emitted when regions are updated.
+ *     deprecated: false
  * 
 */
 

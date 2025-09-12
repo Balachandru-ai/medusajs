@@ -26,13 +26,15 @@
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *       fields. without prefix it will replace the entire default fields.
+ *       fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom
+ *       Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *     required: false
  *     schema:
  *       type: string
  *       title: fields
  *       description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *         fields. without prefix it will replace the entire default fields.
+ *         fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom
+ *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * security:
@@ -42,65 +44,34 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the address.
- *         properties:
- *           first_name:
- *             type: string
- *             title: first_name
- *             description: The customer's first name.
- *           last_name:
- *             type: string
- *             title: last_name
- *             description: The customer's last name.
- *           phone:
- *             type: string
- *             title: phone
- *             description: The customer's phone.
- *           company:
- *             type: string
- *             title: company
- *             description: The address's company.
- *           address_1:
- *             type: string
- *             title: address_1
- *             description: The address's first line.
- *           address_2:
- *             type: string
- *             title: address_2
- *             description: The address's second line.
- *           city:
- *             type: string
- *             title: city
- *             description: The address's city.
- *           country_code:
- *             type: string
- *             title: country_code
- *             description: The address's country code.
- *           province:
- *             type: string
- *             title: province
- *             description: The address's province.
- *           postal_code:
- *             type: string
- *             title: postal_code
- *             description: The address's postal code.
- *           address_name:
- *             type: string
- *             title: address_name
- *             description: The address's name.
- *           is_default_shipping:
- *             type: boolean
- *             title: is_default_shipping
- *             description: Whether the address is used by default for shipping during checkout.
- *           is_default_billing:
- *             type: boolean
- *             title: is_default_billing
- *             description: Whether the address is used by default for billing during checkout.
- *           metadata:
- *             type: object
- *             description: Holds custom key-value pairs.
+ *         $ref: "#/components/schemas/StoreUpdateCustomerAddress"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.customer.updateAddress(
+ *         "caddr_123",
+ *         {
+ *           country_code: "us"
+ *         }
+ *       )
+ *       .then(({ customer }) => {
+ *         console.log(customer)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -133,6 +104,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCustomerAddressesWorkflow
+ * x-events: []
  * 
 */
 

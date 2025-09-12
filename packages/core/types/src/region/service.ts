@@ -185,6 +185,13 @@ export interface IRegionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const region = await regionModuleService.retrieveRegion("reg_123", {
@@ -217,6 +224,13 @@ export interface IRegionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the regions:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const regions = await regionModuleService.listRegions(
@@ -270,6 +284,13 @@ export interface IRegionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the regions:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [regions, count] =
@@ -323,6 +344,13 @@ export interface IRegionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const country = await regionModuleService.retrieveCountry(
@@ -358,6 +386,13 @@ export interface IRegionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the countries:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const countries = await regionModuleService.listCountries(
@@ -411,6 +446,13 @@ export interface IRegionModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the countries:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [countries, count] =

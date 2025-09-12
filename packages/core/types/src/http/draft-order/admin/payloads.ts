@@ -52,6 +52,10 @@ export interface AdminCreateDraftOrder {
    */
   customer_id?: string | null
   /**
+   * The ID of the sales channel to associate the draft order with.
+   */
+  sales_channel_id: string
+  /**
    * The ID of the region to associate the draft order with.
    */
   region_id: string
@@ -97,6 +101,14 @@ export interface AdminUpdateDraftOrder {
    */
   email?: string
   /**
+   * The ID of the customer to associate the draft order with.
+   */
+  customer_id?: string
+  /**
+   * The ID of the sales channel to associate the draft order with.
+   */
+  sales_channel_id?: string
+  /**
    * The draft order's shipping address.
    */
   shipping_address?: OrderAddress
@@ -108,4 +120,144 @@ export interface AdminUpdateDraftOrder {
    * The draft order's metadata.
    */
   metadata?: Record<string, unknown> | null
+}
+
+export interface AdminUpdateDraftOrderItem {
+  /**
+   * The item's quantity.
+   */
+  quantity: number
+  /**
+   * The item's unit price.
+   */
+  unit_price?: number | null
+  /**
+   * The item's compare at unit price.
+   */
+  compare_at_unit_price?: number | null
+  /**
+   * The item's internal note.
+   */
+  internal_note?: string | null
+  /**
+   * The item's metadata.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminAddDraftOrderItem {
+  /**
+   * The item's variant ID.
+   *
+   * Either variant_id or title must be provided.
+   */
+  variant_id?: string
+  /**
+   * The item's title.
+   *
+   * Either variant_id or title must be provided.
+   */
+  title?: string
+  /**
+   * The item's quantity.
+   */
+  quantity: number
+  /**
+   * The item's unit price.
+   */
+  unit_price?: number | null
+  /**
+   * The item's compare at unit price.
+   */
+  compare_at_unit_price?: number | null
+  /**
+   * The item's internal note.
+   */
+  internal_note?: string | null
+  /**
+   * The item's metadata.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminAddDraftOrderItems {
+  /**
+   * The items to add to the draft order.
+   */
+  items: AdminAddDraftOrderItem[]
+}
+
+export interface AdminAddDraftOrderPromotions {
+  /**
+   * The promotion codes to apply to the draft order.
+   */
+  promo_codes: string[]
+}
+
+export interface AdminRemoveDraftOrderPromotions {
+  /**
+   * The promotion codes to remove from the draft order.
+   */
+  promo_codes: string[]
+}
+
+export interface AdminAddDraftOrderShippingMethod {
+  /**
+   * ID of the shipping option to associate with the shipping method.
+   */
+  shipping_option_id: string
+  /**
+   * Custom amount for the shipping method.
+   */
+  custom_amount?: number
+  /**
+   * Description of the shipping method.
+   */
+  description?: string
+  /**
+   * Internal note for the shipping method.
+   */
+  internal_note?: string
+  /**
+   * Metadata for the shipping method.
+   */
+  metadata?: Record<string, unknown>
+}
+
+export interface AdminUpdateDraftOrderActionShippingMethod {
+  /**
+   * ID of the shipping option to associate with the shipping method.
+   */
+  shipping_option_id: string
+  /**
+   * Custom amount for the shipping method.
+   */
+  custom_amount?: number | null
+  /**
+   * Description of the shipping method.
+   */
+  description?: string | null
+  /**
+   * Internal note for the shipping method.
+   */
+  internal_note?: string | null
+  /**
+   * Metadata for the shipping method.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminUpdateDraftOrderShippingMethod {
+  /**
+   * ID of the shipping option to associate with the shipping method.
+   */
+  shipping_option_id?: string
+  /**
+   * Custom amount for the shipping method.
+   */
+  custom_amount?: number
+  /**
+   * Internal note for the shipping method.
+   */
+  internal_note?: string | null
 }

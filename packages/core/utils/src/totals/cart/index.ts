@@ -4,8 +4,8 @@ import { calculateCreditLinesTotal } from "../credit-lines"
 import { GetItemTotalInput, getLineItemsTotals } from "../line-item"
 import { MathBN } from "../math"
 import {
-  GetShippingMethodTotalInput,
   getShippingMethodsTotals,
+  GetShippingMethodTotalInput,
 } from "../shipping-method"
 import { transformPropertiesToBigNumber } from "../transform-properties-to-bignumber"
 
@@ -22,7 +22,7 @@ export interface DecorateCartLikeInputDTO {
     unit_price: BigNumberInput
     is_tax_inclusive?: boolean
     quantity: BigNumberInput
-    adjustments?: { amount: BigNumberInput }[]
+    adjustments?: { amount: BigNumberInput; is_tax_inclusive?: boolean }[]
     tax_lines?: {
       rate: BigNumberInput
     }[]
@@ -86,23 +86,19 @@ export function decorateCartTotals(
 
   let itemsSubtotal = MathBN.convert(0)
   let itemsTotal = MathBN.convert(0)
-
   let itemsOriginalTotal = MathBN.convert(0)
   let itemsOriginalSubtotal = MathBN.convert(0)
-
   let itemsTaxTotal = MathBN.convert(0)
-
   let itemsOriginalTaxTotal = MathBN.convert(0)
+  let itemsDiscountTotal = MathBN.convert(0)
 
   let shippingSubtotal = MathBN.convert(0)
   let shippingTotal = MathBN.convert(0)
-
   let shippingOriginalTotal = MathBN.convert(0)
   let shippingOriginalSubtotal = MathBN.convert(0)
-
   let shippingTaxTotal = MathBN.convert(0)
-
   let shippingOriginalTaxTotal = MathBN.convert(0)
+  let shippingDiscountTotal = MathBN.convert(0)
 
   const cartItems = items.map((item, index) => {
     const itemTotals = Object.assign(item, itemsTotals[item.id ?? index] ?? {})
@@ -128,15 +124,13 @@ export function decorateCartTotals(
     itemsTotal = MathBN.add(itemsTotal, itemTotal)
     itemsOriginalTotal = MathBN.add(itemsOriginalTotal, itemOriginalTotal)
     itemsOriginalSubtotal = MathBN.add(itemsOriginalSubtotal, itemSubtotal)
-
     itemsSubtotal = MathBN.add(itemsSubtotal, itemSubtotal)
-
     itemsTaxTotal = MathBN.add(itemsTaxTotal, itemTaxTotal)
-
     itemsOriginalTaxTotal = MathBN.add(
       itemsOriginalTaxTotal,
       itemOriginalTaxTotal
     )
+    itemsDiscountTotal = MathBN.add(itemsDiscountTotal, itemDiscountTotal)
 
     for (const key of Object.values(optionalFields)) {
       if (key in itemTotals) {
@@ -156,46 +150,43 @@ export function decorateCartTotals(
 
     subtotal = MathBN.add(subtotal, shippingMethodTotals.subtotal)
 
-    shippingSubtotal = MathBN.add(
-      shippingSubtotal,
-      shippingMethodTotals.subtotal
-    )
-
-    shippingTotal = MathBN.add(shippingTotal, shippingMethodTotals.total)
-
-    shippingOriginalTotal = MathBN.add(
-      shippingOriginalTotal,
-      shippingMethodTotals.original_total
-    )
-
-    shippingOriginalSubtotal = MathBN.add(
-      shippingOriginalSubtotal,
-      shippingMethodTotals.subtotal
-    )
-
-    shippingTaxTotal = MathBN.add(
-      shippingTaxTotal,
-      shippingMethodTotals.tax_total
-    )
-
-    shippingOriginalTaxTotal = MathBN.add(
-      shippingOriginalTaxTotal,
-      shippingMethodTotals.original_tax_total
-    )
-
     discountTotal = MathBN.add(
       discountTotal,
       shippingMethodTotals.discount_total
     )
-
     discountSubtotal = MathBN.add(
       discountSubtotal,
       shippingMethodTotals.discount_subtotal
     )
-
     discountTaxTotal = MathBN.add(
       discountTaxTotal,
       shippingMethodTotals.discount_tax_total
+    )
+
+    shippingSubtotal = MathBN.add(
+      shippingSubtotal,
+      shippingMethodTotals.subtotal
+    )
+    shippingTotal = MathBN.add(shippingTotal, shippingMethodTotals.total)
+    shippingOriginalTotal = MathBN.add(
+      shippingOriginalTotal,
+      shippingMethodTotals.original_total
+    )
+    shippingOriginalSubtotal = MathBN.add(
+      shippingOriginalSubtotal,
+      shippingMethodTotals.subtotal
+    )
+    shippingTaxTotal = MathBN.add(
+      shippingTaxTotal,
+      shippingMethodTotals.tax_total
+    )
+    shippingOriginalTaxTotal = MathBN.add(
+      shippingOriginalTaxTotal,
+      shippingMethodTotals.original_tax_total
+    )
+    shippingDiscountTotal = MathBN.add(
+      shippingDiscountTotal,
+      shippingMethodTotals.discount_total
     )
 
     return shippingMethodTotals
@@ -207,8 +198,6 @@ export function decorateCartTotals(
       includesTax: false,
       taxRate: creditLinesSumTaxRate,
     })
-
-  subtotal = MathBN.sub(subtotal, creditLinesSubtotal)
 
   const taxTotal = MathBN.add(itemsTaxTotal, shippingTaxTotal)
 
@@ -222,7 +211,7 @@ export function decorateCartTotals(
 
   // TODO: subtract (cart.gift_card_total + cart.gift_card_tax_total)
   const tempTotal = MathBN.add(subtotal, taxTotal)
-  const total = MathBN.sub(tempTotal, discountSubtotal)
+  const total = MathBN.sub(tempTotal, discountSubtotal, creditLinesTotal)
 
   const cart = cartLike as any
 
@@ -234,9 +223,9 @@ export function decorateCartTotals(
   cart.discount_subtotal = new BigNumber(discountSubtotal)
   cart.discount_tax_total = new BigNumber(discountTaxTotal)
 
-  cart.credit_lines_total = new BigNumber(creditLinesTotal)
-  cart.credit_lines_subtotal = new BigNumber(creditLinesSubtotal)
-  cart.credit_lines_tax_total = new BigNumber(creditLinesTaxTotal)
+  cart.credit_line_total = new BigNumber(creditLinesTotal)
+  cart.credit_line_subtotal = new BigNumber(creditLinesSubtotal)
+  cart.credit_line_tax_total = new BigNumber(creditLinesTaxTotal)
 
   // cart.gift_card_total = giftCardTotal.total || 0
   // cart.gift_card_tax_total = giftCardTotal.tax_total || 0
@@ -252,6 +241,7 @@ export function decorateCartTotals(
     cart.item_total = new BigNumber(itemsTotal)
     cart.item_subtotal = new BigNumber(itemsSubtotal)
     cart.item_tax_total = new BigNumber(itemsTaxTotal)
+    cart.item_discount_total = new BigNumber(itemsDiscountTotal)
 
     cart.original_item_total = new BigNumber(itemsOriginalTotal)
     cart.original_item_subtotal = new BigNumber(itemsOriginalSubtotal)
@@ -267,6 +257,7 @@ export function decorateCartTotals(
     cart.shipping_total = new BigNumber(shippingTotal)
     cart.shipping_subtotal = new BigNumber(shippingSubtotal)
     cart.shipping_tax_total = new BigNumber(shippingTaxTotal)
+    cart.shipping_discount_total = new BigNumber(shippingDiscountTotal)
 
     cart.original_shipping_tax_total = new BigNumber(shippingOriginalTaxTotal)
     cart.original_shipping_subtotal = new BigNumber(shippingOriginalSubtotal)

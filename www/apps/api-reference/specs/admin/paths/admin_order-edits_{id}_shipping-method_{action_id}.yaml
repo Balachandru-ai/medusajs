@@ -62,6 +62,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateOrderEditShippingMethodWorkflow
+  x-events: []
 delete:
   operationId: DeleteOrderEditsIdShippingMethodAction_id
   summary: Remove Shipping Method from Order Edit
@@ -120,3 +121,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: removeOrderEditShippingMethodWorkflow
+  x-events: []

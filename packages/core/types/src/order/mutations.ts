@@ -1,12 +1,12 @@
-import { BigNumberInput, BigNumberValue } from "../totals"
+import { BigNumberInput } from "../totals"
 import {
   ChangeActionType,
   OrderClaimDTO,
-  OrderCreditLineDTO,
   OrderExchangeDTO,
   OrderItemDTO,
   OrderLineItemDTO,
   OrderReturnReasonDTO,
+  OrderStatus,
   OrderTransactionDTO,
   ReturnDTO,
 } from "./common"
@@ -34,52 +34,52 @@ export interface UpsertOrderAddressDTO {
   /**
    * The company name.
    */
-  company?: string
+  company?: string | null
 
   /**
    * The first name of the customer.
    */
-  first_name?: string
+  first_name?: string | null
 
   /**
    * The last name of the customer.
    */
-  last_name?: string
+  last_name?: string | null
 
   /**
    * The address 1 of the address.
    */
-  address_1?: string
+  address_1?: string | null
 
   /**
    * The address 2 of the address.
    */
-  address_2?: string
+  address_2?: string | null
 
   /**
    * The city of the address.
    */
-  city?: string
+  city?: string | null
 
   /**
    * The country code of the address.
    */
-  country_code?: string
+  country_code?: string | null
 
   /**
-   * The province of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province of the address.
    */
-  province?: string
+  province?: string | null
 
   /**
    * The postal code of the address.
    */
-  postal_code?: string
+  postal_code?: string | null
 
   /**
    * The phone of the address.
    */
-  phone?: string
+  phone?: string | null
 
   /**
    * Holds custom data in key-value pairs.
@@ -159,6 +159,11 @@ export interface CreateOrderDTO {
   billing_address?: CreateOrderAddressDTO | UpdateOrderAddressDTO
 
   /**
+   * The credit lines of the order.
+   */
+  credit_lines?: CreateOrderCreditLineDTO[]
+
+  /**
    * Whether the customer should receive notifications about
    * order updates.
    */
@@ -173,11 +178,6 @@ export interface CreateOrderDTO {
    * The shipping methods of the order.
    */
   shipping_methods?: Omit<CreateOrderShippingMethodDTO, "order_id">[]
-
-  /**
-   * The credit lines of the order.
-   */
-  credit_lines?: OrderCreditLineDTO[]
 
   /**
    * The transactions of the order.
@@ -223,6 +223,16 @@ export interface UpdateOrderDTO {
    * The associated sales channel's ID.
    */
   sales_channel_id?: string
+
+  /**
+   * The status of the order.
+   */
+  status?: OrderStatus
+
+  /**
+   * Whether the order is a draft order.
+   */
+  is_draft_order?: boolean
 
   /**
    * The items of the order.
@@ -286,6 +296,11 @@ export interface CreateOrderAdjustmentDTO {
    * The associated provider's ID.
    */
   provider_id?: string
+
+  /**
+   * Whether the adjustment is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
 }
 
 /**
@@ -2282,17 +2297,17 @@ export interface CreateOrderCreditLineDTO {
   /**
    * The amount of the credit line.
    */
-  amount: BigNumberValue
+  amount: BigNumberInput
 
   /**
    * The reference model name that the credit line is generated from
    */
-  reference: string | null
+  reference?: string | null
 
   /**
    * The reference model id that the credit line is generated from
    */
-  reference_id: string | null
+  reference_id?: string | null
 
   /**
    * The metadata of the order detail

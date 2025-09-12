@@ -10,6 +10,7 @@ export type LinkProps = Partial<NextLinkProps> &
     children?: React.ReactNode
     className?: string
     withIcon?: boolean
+    variant?: "default" | "content"
   }
 
 export const Link = ({
@@ -17,6 +18,7 @@ export const Link = ({
   children,
   className,
   withIcon = false,
+  variant = "default",
   ...rest
 }: LinkProps) => {
   if (href?.replace(/#.*$/, "").endsWith("page.mdx")) {
@@ -27,7 +29,12 @@ export const Link = ({
       href={href || ""}
       {...rest}
       className={clsx(
-        "text-medusa-fg-interactive hover:text-medusa-fg-interactive-hover",
+        variant === "default" &&
+          "text-medusa-fg-interactive hover:text-medusa-fg-interactive-hover",
+        variant === "content" && [
+          "underline decoration-medusa-fg-muted hover:decoration-medusa-fg-interactive",
+          "decoration-[1.5px] font-medium transition-[text-decoration-color]",
+        ],
         withIcon && "flex gap-0.25 items-center group",
         className
       )}

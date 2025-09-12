@@ -7,6 +7,8 @@ import * as QueryConfig from "./query-config"
 import {
   AdminCancelOrderTransferRequest,
   AdminCompleteOrder,
+  AdminCreateOrderCreditLines,
+  AdminGetOrderShippingOptionList,
   AdminGetOrdersOrderItemsParams,
   AdminGetOrdersOrderParams,
   AdminGetOrdersParams,
@@ -63,6 +65,16 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
   },
   {
     method: ["GET"],
+    matcher: "/admin/orders/:id/shipping-options",
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetOrderShippingOptionList,
+        QueryConfig.listShippingOptionsQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["GET"],
     matcher: "/admin/orders/:id/changes",
     middlewares: [
       validateAndTransformQuery(
@@ -113,7 +125,17 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
       ),
     ],
   },
-
+  {
+    method: ["POST"],
+    matcher: "/admin/orders/:id/credit-lines",
+    middlewares: [
+      validateAndTransformBody(AdminCreateOrderCreditLines),
+      validateAndTransformQuery(
+        AdminGetOrdersOrderParams,
+        QueryConfig.retrieveTransformQueryConfig
+      ),
+    ],
+  },
   {
     method: ["POST"],
     matcher: "/admin/orders/:id/fulfillments",

@@ -1,4 +1,5 @@
 import {
+  CreateOrderCreditLineDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
@@ -29,6 +30,7 @@ export async function applyChangesToOrder(
   }
 ) {
   const itemsToUpsert: InferEntityType<typeof OrderItem>[] = []
+  const creditLinesToCreate: CreateOrderCreditLineDTO[] = []
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
   const summariesToUpsert: any[] = []
@@ -96,6 +98,22 @@ export async function applyChangesToOrder(
       itemsToUpsert.push(itemToUpsert)
     }
 
+    const creditLines = (calculated.order.credit_lines ?? []).filter(
+      (creditLine) => !("id" in creditLine)
+    )
+
+    for (const creditLine of creditLines) {
+      const creditLineToCreate = {
+        order_id: order.id,
+        amount: creditLine.amount,
+        reference: creditLine.reference,
+        reference_id: creditLine.reference_id,
+        metadata: creditLine.metadata,
+      }
+
+      creditLinesToCreate.push(creditLineToCreate)
+    }
+
     if (version > order.version) {
       for (const shippingMethod of calculated.order.shipping_methods ?? []) {
         const shippingMethod_ = shippingMethod as any
@@ -144,14 +162,17 @@ export async function applyChangesToOrder(
     }
 
     const orderSummary = order.summary
-    summariesToUpsert.push({
+    const upsertSummary = {
       id: orderSummary?.version === version ? orderSummary.id : undefined,
       order_id: order.id,
       version,
       totals: calculated.getSummaryFromOrder(
         calculated.order as unknown as OrderDTO
       ),
-    })
+    }
+
+    createRawPropertiesFromBigNumber(upsertSummary)
+    summariesToUpsert.push(upsertSummary)
 
     if (Object.keys(orderAttributes).length > 0) {
       orderToUpdate.push({
@@ -169,6 +190,7 @@ export async function applyChangesToOrder(
 
   return {
     itemsToUpsert,
+    creditLinesToCreate,
     shippingMethodsToUpsert,
     summariesToUpsert,
     orderToUpdate,

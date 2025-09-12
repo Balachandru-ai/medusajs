@@ -1,16 +1,15 @@
+import { createCollectionsWorkflow } from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-
-import { createCollectionsWorkflow } from "@medusajs/core-flows"
+import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import { AdminCreateCollectionType } from "./validators"
 import { refetchCollection } from "./helpers"
-import { HttpTypes } from "@medusajs/framework/types"
+import { AdminCreateCollectionType } from "./validators"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminCollectionListParams>,
@@ -38,17 +37,13 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateCollectionType>,
+  req: AuthenticatedMedusaRequest<AdminCreateCollectionType & AdditionalData>,
   res: MedusaResponse<HttpTypes.AdminCollectionResponse>
 ) => {
-  const input = [
-    {
-      ...req.validatedBody,
-    },
-  ]
+  const { additional_data, ...rest } = req.validatedBody
 
   const { result } = await createCollectionsWorkflow(req.scope).run({
-    input: { collections: input },
+    input: { collections: [rest], additional_data },
   })
 
   const collection = await refetchCollection(

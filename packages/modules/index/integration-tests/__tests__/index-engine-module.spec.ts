@@ -141,6 +141,7 @@ const beforeAll_ = async () => {
     ;(index as any).eventBusModuleService_ = eventBusMock
 
     await globalApp.onApplicationStart()
+    await setTimeout(3000)
     ;(index as any).storageProvider_.query_ = queryMock
 
     return globalApp
@@ -196,6 +197,8 @@ describe("IndexModuleService", function () {
     await dbUtils.shutdown(dbName)
   })
 
+  afterEach(afterEach_)
+
   describe("on created or attached events", function () {
     let manager
 
@@ -222,7 +225,7 @@ describe("IndexModuleService", function () {
         },
       },
       {
-        name: "PriceSet.created",
+        name: "pricing.price-set.created",
         data: {
           id: priceSetId,
         },
@@ -247,7 +250,6 @@ describe("IndexModuleService", function () {
     ]
 
     beforeEach(async () => {
-      await setTimeout(1000)
       await beforeEach_(eventDataToEmit)
 
       manager = (medusaApp.sharedContainer!.resolve(Modules.INDEX) as any)
@@ -392,7 +394,7 @@ describe("IndexModuleService", function () {
         },
       },
       {
-        name: "PriceSet.created",
+        name: "pricing.price-set.created",
         data: {
           id: priceSetId,
         },
@@ -689,7 +691,7 @@ describe("IndexModuleService", function () {
         },
       },
       {
-        name: "PriceSet.created",
+        name: "pricing.price-set.created",
         data: {
           id: priceSetId,
         },
@@ -760,8 +762,6 @@ describe("IndexModuleService", function () {
 
       await eventBusMock.emit(deleteEventDataToEmit)
     })
-
-    afterEach(afterEach_)
 
     it("should consume all deleted events and delete the index entries", async () => {
       const indexEntries = await manager.find(toMikroORMEntity(IndexData), {})

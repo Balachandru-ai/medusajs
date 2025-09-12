@@ -2,7 +2,8 @@
  * @oas [post] /admin/draft-orders/{id}
  * operationId: PostDraftOrdersId
  * summary: Update a Draft Order
- * description: Update a draft order's details.
+ * description: Update a draft order's details. This doesn't include updating the draft order's items, shipping methods, or promotions. To update those, you need to create an edit that you can later
+ *   request or confirm.
  * x-authenticated: true
  * parameters:
  *   - name: id
@@ -35,6 +36,25 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminUpdateDraftOrder"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.draftOrder.update("order_123", {
+ *         email: "test@test.com",
+ *       })
+ *       .then(({ draft_order }) => {
+ *         console.log(draft_order)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -61,7 +81,19 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-workflow: updateOrderWorkflow
+ * x-workflow: updateDraftOrderWorkflow
+ * x-events:
+ *   - name: order.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the order
+ *       }
+ *       ```
+ *     description: |-
+ *       Emitted when the details of an order or draft order is updated. This
+ *       doesn't include updates made by an edit.
+ *     deprecated: false
  * 
 */
 

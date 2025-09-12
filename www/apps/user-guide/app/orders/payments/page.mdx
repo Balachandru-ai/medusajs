@@ -1,6 +1,13 @@
 ---
 sidebar_position: 2
-sidebar_label: Manage Payments
+sidebar_label: "Manage Order Payments"
+tags:
+    - user guide
+    - order
+    - payment
+products:
+  - order
+  - payment
 ---
 
 import { 
@@ -69,7 +76,7 @@ Capturing an order's payment triggers its processing with the chosen payment pro
 
 <Note>
 
-If you're unsure whether your payment provider is configured to automatically capture payments, please contact your technical team.
+If you're unsure whether your payment provider is configured to automatically capture payments, please contact your technical team to debug the [integrated payment service](!resources!/commerce-modules/payment/payment-provider).
 
 </Note>
 
@@ -84,22 +91,9 @@ To capture an order’s payment:
 
 ---
 
-## Handling Outstanding Amounts
-
-After making changes to an order, such as [editing its items](../edit/page.mdx) or [creating an exchange](../exchanges/page.mdx), there may be outstanding amounts (to be captured from the customer or returned) that are in the Summary section.
-
-![Outstanding amount in Summary](https://res.cloudinary.com/dza7lstvk/image/upload/v1739801684/User%20Guide/Screenshot_2025-02-17_at_4.14.05_PM_qmw7gr.png)
-
-If the outstanding amount is negative, it means you owe the customer a [refund](#refund-payment).
-
-Otherwise, a positive outstanding amount means there are additional payments required from the customer. You can handle it by either:
-
-1. [Mark the order as paid manually](#mark-outstanding-amount-as-paid);
-2. Or [copy a payment link](#copy-payment-link-for-additional-payment).
-
 ## Refund Payment
 
-If you've made changes to an order, such as return or exchange items, you can refund a previously-captured payment if there's an outstanding amount.
+If you've made changes to an order, such as return or exchange items, that resulted in a negative outstanding amount, you can refund a previously-captured payment.
 
 Refunding the payment triggers its processing with the chosen payment provider, such as Stripe.
 
@@ -109,7 +103,7 @@ Refunding payments is irreversible.
 
 </Note>
 
-To refund an order’s outstanding amount:
+To refund an order’s negative outstanding amount:
 
 1. Open the order's details page.
 2. Scroll to the Payment section.
@@ -124,6 +118,21 @@ To refund an order’s outstanding amount:
 Once the payment is refunded, the customer will receive a notification about the refund and you can view the refund as part of the order's activity.
 
 ![Refund Payment Form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739550855/User%20Guide/Screenshot_2025-02-14_at_6.34.01_PM_l9evmh.png)
+
+---
+
+## Handling Positive Outstanding Amounts
+
+An order may have a positive outstanding amount either after making changes to it, or if it was created as a [draft order](../draft-orders/page.mdx).
+
+A positive outstanding amount indicates that the customer needs to pay an additional amount to complete the order.
+
+![Outstanding amount in Summary](https://res.cloudinary.com/dza7lstvk/image/upload/v1739801684/User%20Guide/Screenshot_2025-02-17_at_4.14.05_PM_qmw7gr.png)
+
+You can handle it by either:
+
+1. [Marking the order as paid manually](#mark-outstanding-amount-as-paid);
+2. Or [copying a payment link](#copy-payment-link-for-additional-payment).
 
 ### Mark Outstanding Amount as Paid
 
@@ -148,6 +157,6 @@ The link is then copied and you can share it with the customer to authorize the 
 
 <Note title="Tip">
 
-If the payment link doesn't start with a domain or has a domain that doesn't match your storefront, refer your technical team to [this guide](!resources!/references/medusa-config#storefronturl) to set up the storefront domain.
+If the payment link doesn't start with a domain or has a domain that doesn't match your storefront, refer your technical team to [this guide](!docs!/learn/configurations/medusa-config#storefronturl) to set up the storefront domain.
 
 </Note>

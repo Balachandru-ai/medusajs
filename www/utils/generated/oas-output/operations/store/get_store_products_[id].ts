@@ -55,12 +55,16 @@
  *       description: The country code the product is being viewed from. This is required if you're retrieving product variant prices with taxes.
  *   - name: province
  *     in: query
- *     description: The province the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+ *     description: The lower-case ISO 3166-2 province code the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
  *     required: false
  *     schema:
  *       type: string
  *       title: province
- *       description: The province the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+ *       description: The lower-case ISO 3166-2 province code the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+ *       example: us-ca
+ *       externalDocs:
+ *         url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *         description: Learn more about ISO 3166-2
  *   - name: cart_id
  *     in: query
  *     description: The ID of the customer's cart. If set, the cart's region and shipping address's country code and province are used instead of the `region_id`, `country_code`, and `province` properties.
@@ -100,6 +104,27 @@
  *       externalDocs:
  *         url: "#pagination"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.product.retrieve("prod_123")
+ *       .then(({ product }) => {
+ *         console.log(product)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

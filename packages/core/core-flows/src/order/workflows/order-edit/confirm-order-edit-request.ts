@@ -8,6 +8,7 @@ import {
   ChangeActionType,
   MathBN,
   OrderChangeStatus,
+  OrderEditWorkflowEvents,
 } from "@medusajs/framework/utils"
 import {
   WorkflowResponse,
@@ -16,8 +17,15 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { reserveInventoryStep } from "../../../cart/steps/reserve-inventory"
-import { prepareConfirmInventoryInput } from "../../../cart/utils/prepare-confirm-inventory-input"
-import { useRemoteQueryStep } from "../../../common"
+import {
+  prepareConfirmInventoryInput,
+  requiredOrderFieldsForInventoryConfirmation,
+} from "../../../cart/utils/prepare-confirm-inventory-input"
+import {
+  emitEventStep,
+  useQueryGraphStep,
+  useRemoteQueryStep,
+} from "../../../common"
 import { deleteReservationsByLineItemsStep } from "../../../reservation"
 import { previewOrderChangeStep } from "../../steps"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
@@ -26,6 +34,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrUpdateOrderPaymentCollectionWorkflow } from "../create-or-update-order-payment-collection"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
  * The data to validate that a requested order edit can be confirmed.
@@ -114,26 +123,21 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
   function (
     input: ConfirmOrderEditRequestWorkflowInput
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: [
-        "id",
-        "version",
-        "canceled_at",
-        "items.id",
-        "items.title",
-        "items.variant_title",
-        "items.variant_sku",
-        "items.variant_barcode",
-        "shipping_address.*",
-      ],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "order-query" })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
+    })
+
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
       fields: [
         "id",
         "status",
@@ -146,14 +150,18 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
         "actions.reference_id",
         "actions.internal_note",
       ],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     confirmOrderEditRequestValidationStep({
       order,
@@ -170,45 +178,27 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
 
     const orderItems = useRemoteQueryStep({
       entry_point: "order",
-      fields: [
-        "id",
-        "version",
-        "canceled_at",
-        "sales_channel_id",
-        "items.*",
-        "items.variant.manage_inventory",
-        "items.variant.allow_backorder",
-        "items.variant.inventory_items.inventory_item_id",
-        "items.variant.inventory_items.required_quantity",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.id",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.name",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
-        "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
-      ],
+      fields: requiredOrderFieldsForInventoryConfirmation,
       variables: { id: input.order_id },
       list: false,
       throw_if_key_not_found: true,
     }).config({ name: "order-items-query" })
 
-    const lineItemIds = transform(
-      { orderItems, previousOrderItems: order.items },
-
-      (data) => {
-        const previousItemIds = (data.previousOrderItems || []).map(
-          ({ id }) => id
-        ) // items that have been removed with the change
-        const newItemIds = data.orderItems.items.map(({ id }) => id)
-        return [...new Set([...previousItemIds, ...newItemIds])]
-      }
-    )
-
-    deleteReservationsByLineItemsStep(lineItemIds)
-
-    const { variants, items } = transform(
-      { orderItems, orderPreview },
-      ({ orderItems, orderPreview }) => {
+    const { variants, items, toRemoveReservationLineItemIds } = transform(
+      { orderItems, previousOrderItems: order.items, orderPreview },
+      ({ orderItems, previousOrderItems, orderPreview }) => {
         const allItems: any[] = []
         const allVariants: any[] = []
+
+        const previousItemIds = (previousOrderItems || []).map(({ id }) => id)
+        const currentItemIds = orderItems.items.map(({ id }) => id)
+
+        const removedItemIds = previousItemIds.filter(
+          (id) => !currentItemIds.includes(id)
+        )
+
+        const updatedItemIds: string[] = []
+
         orderItems.items.forEach((ordItem) => {
           const itemAction = orderPreview.items?.find(
             (item) =>
@@ -235,16 +225,12 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
             (a) => a.action === ChangeActionType.ITEM_UPDATE
           )
 
-          const quantity: BigNumberInput =
-            itemAction.raw_quantity ?? itemAction.quantity
-
-          const newQuantity = updateAction
-            ? MathBN.sub(quantity, ordItem.raw_quantity)
-            : quantity
-
-          if (MathBN.lte(newQuantity, 0)) {
-            return
+          if (updateAction) {
+            updatedItemIds.push(ordItem.id)
           }
+
+          const newQuantity: BigNumberInput =
+            itemAction.raw_quantity ?? itemAction.quantity
 
           const reservationQuantity = MathBN.sub(
             newQuantity,
@@ -264,6 +250,10 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
         return {
           variants: allVariants,
           items: allItems,
+          toRemoveReservationLineItemIds: [
+            ...removedItemIds,
+            ...updatedItemIds,
+          ],
         }
       }
     )
@@ -279,12 +269,28 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
       prepareConfirmInventoryInput
     )
 
+    deleteReservationsByLineItemsStep(toRemoveReservationLineItemIds)
     reserveInventoryStep(formatedInventoryItems)
 
     createOrUpdateOrderPaymentCollectionWorkflow.runAsStep({
       input: {
         order_id: order.id,
       },
+    })
+
+    const eventData = transform(
+      { order, orderChange },
+      ({ order, orderChange }) => {
+        return {
+          order_id: order.id,
+          actions: orderChange.actions,
+        }
+      }
+    )
+
+    emitEventStep({
+      eventName: OrderEditWorkflowEvents.CONFIRMED,
+      data: eventData,
     })
 
     return new WorkflowResponse(orderPreview)

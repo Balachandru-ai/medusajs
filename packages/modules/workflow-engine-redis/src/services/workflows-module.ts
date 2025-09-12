@@ -1,13 +1,19 @@
 import {
   Context,
   DAL,
+  FilterableWorkflowExecutionProps,
+  FindConfig,
+  IdempotencyKeyParts,
   InferEntityType,
   InternalModuleDeclaration,
   ModulesSdkTypes,
+  WorkflowExecutionDTO,
   WorkflowsSdkTypes,
 } from "@medusajs/framework/types"
 import {
+  InjectManager,
   InjectSharedContext,
+  isDefined,
   MedusaContext,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
@@ -17,7 +23,10 @@ import type {
 } from "@medusajs/framework/workflows-sdk"
 import { SqlEntityManager } from "@mikro-orm/postgresql"
 import { WorkflowExecution } from "@models"
-import { WorkflowOrchestratorService } from "@services"
+import {
+  WorkflowOrchestratorCancelOptions,
+  WorkflowOrchestratorService,
+} from "@services"
 
 type InjectedDependencies = {
   manager: SqlEntityManager
@@ -39,7 +48,6 @@ export class WorkflowsModuleService<
   protected workflowOrchestratorService_: WorkflowOrchestratorService
   protected redisDisconnectHandler_: () => Promise<void>
   protected manager_: SqlEntityManager
-  private clearTimeout_: NodeJS.Timeout
 
   constructor(
     {
@@ -62,22 +70,78 @@ export class WorkflowsModuleService<
   }
 
   __hooks = {
-    onApplicationShutdown: async () => {
-      await this.workflowOrchestratorService_.onApplicationShutdown()
-      await this.redisDisconnectHandler_()
-      clearInterval(this.clearTimeout_)
+    onApplicationStart: async () => {
+      await this.workflowOrchestratorService_.onApplicationStart()
     },
     onApplicationPrepareShutdown: async () => {
       await this.workflowOrchestratorService_.onApplicationPrepareShutdown()
     },
-    onApplicationStart: async () => {
-      await this.workflowOrchestratorService_.onApplicationStart()
-
-      await this.clearExpiredExecutions()
-      this.clearTimeout_ = setInterval(async () => {
-        await this.clearExpiredExecutions()
-      }, 1000 * 60 * 60)
+    onApplicationShutdown: async () => {
+      await this.workflowOrchestratorService_.onApplicationShutdown()
+      await this.redisDisconnectHandler_()
     },
+  }
+
+  static prepareFilters<T>(filters: T & { q?: string }) {
+    const filters_ = { ...filters } // shallow copy
+    if (filters_?.q) {
+      const q = filters_.q
+      delete filters_.q
+
+      const textSearch = { $ilike: `%${q}%` }
+      const textSearchFilters = {
+        $or: [
+          {
+            transaction_id: textSearch,
+          },
+          {
+            workflow_id: textSearch,
+          },
+          {
+            state: textSearch,
+          },
+          {
+            execution: {
+              runId: textSearch,
+            },
+          },
+        ],
+      }
+
+      if (!Object.keys(filters_).length) {
+        return textSearchFilters
+      } else {
+        return { $and: [filters, textSearchFilters] }
+      }
+    }
+
+    return filters
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listWorkflowExecutions(
+    filters: FilterableWorkflowExecutionProps = {},
+    config?: FindConfig<WorkflowExecutionDTO>,
+    @MedusaContext() sharedContext?: Context
+  ) {
+    const filters_ = WorkflowsModuleService.prepareFilters(filters)
+    return await super.listWorkflowExecutions(filters_, config, sharedContext)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listAndCountWorkflowExecutions(
+    filters: FilterableWorkflowExecutionProps = {},
+    config?: FindConfig<WorkflowExecutionDTO>,
+    @MedusaContext() sharedContext?: Context
+  ) {
+    const filters_ = WorkflowsModuleService.prepareFilters(filters)
+    return await super.listAndCountWorkflowExecutions(
+      filters_,
+      config,
+      sharedContext
+    )
   }
 
   @InjectSharedContext()
@@ -90,11 +154,51 @@ export class WorkflowsModuleService<
     > = {},
     @MedusaContext() context: Context = {}
   ) {
+    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+
+    const {
+      manager,
+      transactionManager,
+      preventReleaseEvents,
+      transactionId,
+      parentStepIdempotencyKey,
+      ...restContext
+    } = context
+
+    let localPreventReleaseEvents = false
+
+    if (isDefined(options_.context?.preventReleaseEvents)) {
+      localPreventReleaseEvents = options_.context!.preventReleaseEvents!
+    } else {
+      if (
+        isDefined(context.eventGroupId) &&
+        isDefined(options_.context?.eventGroupId) &&
+        context.eventGroupId === options_.context?.eventGroupId
+      ) {
+        localPreventReleaseEvents = true
+      }
+    }
+
+    let eventGroupId
+
+    if (options_.context?.eventGroupId) {
+      eventGroupId = options_.context.eventGroupId
+    } else if (localPreventReleaseEvents && context.eventGroupId) {
+      eventGroupId = context.eventGroupId
+    }
+
+    options_.context = {
+      ...(restContext ?? {}),
+      ...(options_.context ?? {}),
+      eventGroupId,
+      preventReleaseEvents: localPreventReleaseEvents,
+    }
+
     const ret = await this.workflowOrchestratorService_.run<
       TWorkflow extends ReturnWorkflow<any, any, any>
         ? UnwrapWorkflowInputDataType<TWorkflow>
         : unknown
-    >(workflowIdOrWorkflow, options, context)
+    >(workflowIdOrWorkflow, options_)
 
     return ret as any
   }
@@ -125,14 +229,17 @@ export class WorkflowsModuleService<
     },
     @MedusaContext() context: Context = {}
   ) {
-    return await this.workflowOrchestratorService_.setStepSuccess(
-      {
-        idempotencyKey,
-        stepResponse,
-        options,
-      } as any,
-      context
-    )
+    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+
+    const { manager, transactionManager, ...restContext } = context
+
+    options_.context ??= restContext
+
+    return await this.workflowOrchestratorService_.setStepSuccess({
+      idempotencyKey,
+      stepResponse,
+      options: options_,
+    } as any)
   }
 
   @InjectSharedContext()
@@ -144,50 +251,66 @@ export class WorkflowsModuleService<
     }: {
       idempotencyKey: string | object
       stepResponse: unknown
+      options?: Record<string, any> & {
+        forcePermanentFailure?: boolean
+      }
+    },
+    @MedusaContext() context: Context = {}
+  ) {
+    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+
+    const { manager, transactionManager, ...restContext } = context
+
+    options_.context ??= restContext
+
+    return await this.workflowOrchestratorService_.setStepFailure({
+      idempotencyKey,
+      stepResponse,
+      options: options_,
+    } as any)
+  }
+
+  @InjectSharedContext()
+  async retryStep(
+    {
+      idempotencyKey,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
       options?: Record<string, any>
     },
     @MedusaContext() context: Context = {}
   ) {
-    return await this.workflowOrchestratorService_.setStepFailure(
-      {
-        idempotencyKey,
-        stepResponse,
-        options,
-      } as any,
-      context
-    )
+    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+
+    const { manager, transactionManager, ...restContext } = context
+
+    options_.context ??= restContext
+
+    return await this.workflowOrchestratorService_.retryStep({
+      idempotencyKey,
+      options: options_,
+    })
   }
 
-  @InjectSharedContext()
-  async subscribe(
-    args: {
-      workflowId: string
-      transactionId?: string
-      subscriber: Function
-      subscriberId?: string
-    },
-    @MedusaContext() context: Context = {}
-  ) {
-    return this.workflowOrchestratorService_.subscribe(args as any, context)
+  async subscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriber: Function
+    subscriberId?: string
+  }) {
+    return this.workflowOrchestratorService_.subscribe(args as any)
   }
 
-  @InjectSharedContext()
-  async unsubscribe(
-    args: {
-      workflowId: string
-      transactionId?: string
-      subscriberOrId: string | Function
-    },
-    @MedusaContext() context: Context = {}
-  ) {
-    return this.workflowOrchestratorService_.unsubscribe(args as any, context)
+  async unsubscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriberOrId: string | Function
+  }) {
+    return this.workflowOrchestratorService_.unsubscribe(args as any)
   }
 
-  private async clearExpiredExecutions() {
-    return this.manager_.execute(`
-      DELETE FROM workflow_execution
-      WHERE retention_time IS NOT NULL AND
-      updated_at <= (CURRENT_TIMESTAMP - INTERVAL '1 second' * retention_time);
-    `)
+  async cancel(workflowId: string, options: WorkflowOrchestratorCancelOptions) {
+    return await this.workflowOrchestratorService_.cancel(workflowId, options)
   }
 }

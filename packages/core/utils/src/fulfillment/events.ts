@@ -29,6 +29,12 @@ const eventBaseNames: [
 
 export const FulfillmentEvents = {
   ...buildEventNamesFromEntityName(eventBaseNames, Modules.FULFILLMENT),
+  /**
+   * @deprecated use `FulfillmentWorkflowEvents.SHIPMENT_CREATED` instead
+   */
   SHIPMENT_CREATED: "shipment.created",
+  /**
+   * @deprecated use `FulfillmentWorkflowEvents.DELIVERY_CREATED` instead
+   */
   DELIVERY_CREATED: "delivery.created",
 }

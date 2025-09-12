@@ -26,7 +26,7 @@ If the action you're performing is integral to the main flow of the core commerc
 
 ### List of Emitted Events
 
-Find a list of all emitted events in [this reference](!resources!/events-reference).
+Find a list of all emitted events in [this reference](!resources!/references/events).
 
 ---
 
@@ -34,7 +34,7 @@ Find a list of all emitted events in [this reference](!resources!/events-referen
 
 You create a subscriber in a TypeScript or JavaScript file under the `src/subscribers` directory. The file exports the function to execute and the subscriber's configuration that indicate what event(s) it listens to.
 
-For example, create the file `src/subscribers/order-placed.ts` with the following content:
+For example, create the file `src/subscribers/product-created.ts` with the following content:
 
 ![Example of subscriber file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732866244/Medusa%20Book/subscriber-dir-overview_pusyeu.jpg)
 
@@ -85,7 +85,7 @@ To test the subscriber, start the Medusa application:
 npm run dev
 ```
 
-Then, try placing an order either using Medusa's API routes or the [Next.js Storefront](../../storefront-development/nextjs-starter/page.mdx). You'll see the following message in the terminal:
+Then, try placing an order either using Medusa's API routes or the [Next.js Starter Storefront](!resources!/nextjs-starter). You'll see the following message in the terminal:
 
 ```bash
 info:    Processing order.placed which has 1 subscribers
@@ -98,11 +98,11 @@ The first message indicates that the `order.placed` event was emitted, and the s
 
 ## Event Module
 
-The subscription and emitting of events is handled by an Event Module, an architectural module that implements the pub/sub functionalities of Medusa's event system.
+The subscription and emitting of events is handled by an Event Module, an Infrastructure Module that implements the pub/sub functionalities of Medusa's event system.
 
 Medusa provides two Event Modules out of the box:
 
-- [Local Event Module](!resources!/architectural-modules/event/local), used by default. It's useful for development, as you don't need additional setup to use it.
-- [Redis Event Module](!resources!/architectural-modules/event/redis), which is useful in production. It uses [Redis](https://redis.io/) to implement Medusa's pub/sub events system.
+- [Local Event Module](!resources!/infrastructure-modules/event/local), used by default. It's useful for development, as you don't need additional setup to use it.
+- [Redis Event Module](!resources!/infrastructure-modules/event/redis), which is useful in production. It uses [Redis](https://redis.io/) to implement Medusa's pub/sub events system.
 
-Medusa's [architecture](../../introduction/architecture/page.mdx) also allows you to build a custom Event Module that uses a different service or logic to implement the pub/sub system. Learn how to build an Event Module in [this guide](!resources!/architectural-modules/event/create).
+Medusa's [architecture](../../introduction/architecture/page.mdx) also allows you to build a custom Event Module that uses a different service or logic to implement the pub/sub system. Learn how to build an Event Module in [this guide](!resources!/infrastructure-modules/event/create).

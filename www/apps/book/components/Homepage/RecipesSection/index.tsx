@@ -1,9 +1,11 @@
 import clsx from "clsx"
 import {
+  BundledProductIcon,
   CalendarRefreshIcon,
   Card,
   CardProps,
   ChefHatIcon,
+  ErpIcon,
   IconHeadline,
   ImageBinaryIcon,
   Link,
@@ -16,9 +18,23 @@ const HomepageRecipesSection = () => {
     {
       type: "large",
       title: "Marketplace",
-      text: "Build a marketplace with multiple vendors",
+      text: "Build a marketplace with multiple vendors.",
       href: "https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors",
       icon: ShopIcon,
+    },
+    {
+      type: "large",
+      title: "ERP",
+      text: "Integrate an ERP system to manage custom product prices, purchase rules, syncing orders, and more.",
+      href: "https://docs.medusajs.com/resources/recipes/erp",
+      icon: ErpIcon,
+    },
+    {
+      type: "large",
+      title: "Bundled Products",
+      text: "Sell products as bundles with Admin and storefront customizations.",
+      href: "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard",
+      icon: BundledProductIcon,
     },
     {
       type: "large",
@@ -30,7 +46,7 @@ const HomepageRecipesSection = () => {
     {
       type: "large",
       title: "Restaurant-Delivery",
-      text: "Build a restaurant marketplace inspired by UberEats, with real-time delivery handling",
+      text: "Build a restaurant marketplace inspired by UberEats, with real-time delivery handling.",
       href: "https://docs.medusajs.com/resources/recipes/marketplace/examples/restaurant-delivery",
       icon: ChefHatIcon,
     },

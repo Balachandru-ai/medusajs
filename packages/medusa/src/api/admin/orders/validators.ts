@@ -34,6 +34,12 @@ export type AdminGetOrdersOrderItemsParamsType = z.infer<
   typeof AdminGetOrdersOrderParams
 >
 
+export const AdminGetOrderShippingOptionList = z.object({})
+
+export type AdminGetOrderShippingOptionListType = z.infer<
+  typeof AdminGetOrderShippingOptionList
+>
+
 /**
  * Parameters used to filter and configure the pagination of the retrieved order.
  */
@@ -71,7 +77,7 @@ export type AdminOrderCreateFulfillmentType = z.infer<
   typeof OrderCreateFulfillment
 >
 export const OrderCreateFulfillment = z.object({
-  items: z.array(Item),
+  items: z.array(Item).min(1),
   location_id: z.string().nullish(),
   shipping_option_id: z.string().optional(),
   no_notification: z.boolean().optional(),
@@ -142,5 +148,15 @@ export const AdminUpdateOrder = z.object({
   email: z.string().optional(),
   shipping_address: AddressPayload.optional(),
   billing_address: AddressPayload.optional(),
+  metadata: z.record(z.unknown()).nullish(),
+})
+
+export type AdminCreateOrderCreditLinesType = z.infer<
+  typeof AdminCreateOrderCreditLines
+>
+export const AdminCreateOrderCreditLines = z.object({
+  amount: z.number(),
+  reference: z.string(),
+  reference_id: z.string(),
   metadata: z.record(z.unknown()).nullish(),
 })

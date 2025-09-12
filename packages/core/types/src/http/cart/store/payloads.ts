@@ -1,6 +1,8 @@
 export interface StoreCreateCart {
   /**
    * The ID of the region that the cart is created in.
+   * If not provided, the default region of the store is used.
+   * If the store doesn't have a default region, an error is thrown.
    */
   region_id?: string
   /**
@@ -158,7 +160,7 @@ export interface StoreAddAddress {
   country_code?: string
 
   /**
-   * The province/state of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province/state of the address.
    */
   province?: string
 

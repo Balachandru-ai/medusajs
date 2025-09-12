@@ -8,6 +8,7 @@ import {
   StoreTypes,
 } from "@medusajs/framework/types"
 import {
+  EmitEvents,
   getDuplicates,
   InjectManager,
   InjectTransactionManager,
@@ -59,7 +60,9 @@ export default class StoreModuleService
     data: StoreTypes.CreateStoreDTO,
     sharedContext?: Context
   ): Promise<StoreTypes.StoreDTO>
+
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createStores(
     data: StoreTypes.CreateStoreDTO | StoreTypes.CreateStoreDTO[],
@@ -99,11 +102,25 @@ export default class StoreModuleService
     data: StoreTypes.UpsertStoreDTO,
     sharedContext?: Context
   ): Promise<StoreTypes.StoreDTO>
-  @InjectTransactionManager()
+
+  @InjectManager()
+  @EmitEvents()
   async upsertStores(
     data: StoreTypes.UpsertStoreDTO | StoreTypes.UpsertStoreDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<StoreTypes.StoreDTO | StoreTypes.StoreDTO[]> {
+    const result = await this.upsertStores_(data, sharedContext)
+
+    return await this.baseRepository_.serialize<
+      StoreTypes.StoreDTO[] | StoreTypes.StoreDTO
+    >(Array.isArray(data) ? result : result[0])
+  }
+
+  @InjectTransactionManager()
+  protected async upsertStores_(
+    data: StoreTypes.UpsertStoreDTO | StoreTypes.UpsertStoreDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof Store>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (store): store is UpdateStoreInput => !!store.id
@@ -122,9 +139,8 @@ export default class StoreModuleService
     }
 
     const result = (await promiseAll(operations)).flat()
-    return await this.baseRepository_.serialize<
-      StoreTypes.StoreDTO[] | StoreTypes.StoreDTO
-    >(Array.isArray(data) ? result : result[0])
+
+    return result
   }
 
   // @ts-expect-error
@@ -139,7 +155,9 @@ export default class StoreModuleService
     data: StoreTypes.UpdateStoreDTO,
     sharedContext?: Context
   ): Promise<StoreTypes.StoreDTO[]>
+
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateStores(
     idOrSelector: string | StoreTypes.FilterableStoreProps,

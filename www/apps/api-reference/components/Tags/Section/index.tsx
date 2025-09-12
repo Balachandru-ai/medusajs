@@ -1,6 +1,5 @@
 "use client"
 
-import getSectionId from "@/utils/get-section-id"
 import { InView } from "react-intersection-observer"
 import { useEffect, useMemo, useState } from "react"
 import {
@@ -22,15 +21,17 @@ import SectionDivider from "../../Section/Divider"
 import clsx from "clsx"
 import { Feedback, Loading, Link } from "docs-ui"
 import { usePathname, useRouter } from "next/navigation"
-import { PathsObject, SchemaObject, TagObject } from "@/types/openapi"
+import { OpenAPI } from "types"
 import TagSectionSchema from "./Schema"
 import checkElementInViewport from "../../../utils/check-element-in-viewport"
 import TagPaths from "../Paths"
 import useSWR from "swr"
 import basePathUrl from "../../../utils/base-path-url"
+import { getSectionId } from "docs-utils"
+import { RoutesSummary } from "./RoutesSummary"
 
 export type TagSectionProps = {
-  tag: TagObject
+  tag: OpenAPI.TagObject
 } & React.HTMLAttributes<HTMLDivElement>
 
 const Section = dynamic<SectionProps>(
@@ -62,7 +63,7 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
     return isElmWindow(scrollableElement) ? document.body : scrollableElement
   }, [scrollableElement, isBrowser])
   const { data: schemaData } = useSWR<{
-    schema: SchemaObject
+    schema: OpenAPI.SchemaObject
   }>(
     loadData && tag["x-associatedSchema"]
       ? basePathUrl(
@@ -75,7 +76,7 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
     }
   )
   const { data: pathsData } = useSWR<{
-    paths: PathsObject
+    paths: OpenAPI.PathsObject
   }>(
     loadData ? basePathUrl(`/tag?tagName=${slugTagName}&area=${area}`) : null,
     swrFetcher,
@@ -85,23 +86,24 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
   )
 
   useEffect(() => {
-    if (!isBrowser) {
+    if (!isBrowser || !activePath || !activePath.includes(slugTagName)) {
       return
     }
 
-    if (activePath && activePath.includes(slugTagName)) {
-      const tagName = activePath.split("_")
-      if (tagName.length === 1 && tagName[0] === slugTagName) {
-        const elm = document.getElementById(tagName[0])
-        if (elm && !checkElementInViewport(elm, 0)) {
-          scrollToTop(
-            elm.offsetTop + (elm.offsetParent as HTMLElement)?.offsetTop,
-            0
-          )
-        }
-      } else if (tagName.length > 1 && tagName[0] === slugTagName) {
-        setLoadData(true)
+    const tagName = activePath.split("_")
+    if (tagName[0] !== slugTagName) {
+      return
+    }
+    if (tagName.length === 1) {
+      const elm = document.getElementById(tagName[0])
+      if (elm && !checkElementInViewport(elm, 0)) {
+        scrollToTop(
+          elm.offsetTop + (elm.offsetParent as HTMLElement)?.offsetTop,
+          0
+        )
       }
+    } else if (tagName.length > 1) {
+      setLoadData(true)
     }
   }, [slugTagName, activePath, isBrowser])
 
@@ -151,7 +153,11 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
               {tag.externalDocs && (
                 <p className="mt-1">
                   <span className="text-medium-plus">Related guide:</span>{" "}
-                  <Link href={tag.externalDocs.url} target="_blank">
+                  <Link
+                    href={tag.externalDocs.url}
+                    target="_blank"
+                    variant="content"
+                  >
                     {tag.externalDocs.description || "Read More"}
                   </Link>
                 </p>
@@ -168,7 +174,9 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
               />
             </div>
           }
-          codeContent={<></>}
+          codeContent={
+            <RoutesSummary tagName={tag.name} paths={pathsData?.paths || {}} />
+          }
         />
       </SectionContainer>
       {schemaData && (

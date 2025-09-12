@@ -10,6 +10,8 @@ const ORDER_INJECTION_ZONES = [
 const CUSTOMER_INJECTION_ZONES = [
   "customer.details.before",
   "customer.details.after",
+  "customer.details.side.before",
+  "customer.details.side.after",
   "customer.list.before",
   "customer.list.after",
 ] as const
@@ -51,6 +53,13 @@ const PRODUCT_CATEGORY_INJECTION_ZONES = [
   "product_category.details.side.after",
   "product_category.list.before",
   "product_category.list.after",
+] as const
+
+const SHIPPING_OPTION_TYPE_INJECTION_ZONES = [
+  "shipping_option_type.details.before",
+  "shipping_option_type.details.after",
+  "shipping_option_type.list.before",
+  "shipping_option_type.list.after",
 ] as const
 
 const PRODUCT_TYPE_INJECTION_ZONES = [
@@ -132,6 +141,8 @@ const LOCATION_INJECTION_ZONES = [
   "location.details.side.after",
   "location.list.before",
   "location.list.after",
+  "location.list.side.before",
+  "location.list.side.after",
 ] as const
 
 const LOGIN_INJECTION_ZONES = ["login.before", "login.after"] as const
@@ -200,6 +211,7 @@ export const INJECTION_ZONES = [
   ...PRODUCT_COLLECTION_INJECTION_ZONES,
   ...PRODUCT_CATEGORY_INJECTION_ZONES,
   ...PRODUCT_TYPE_INJECTION_ZONES,
+  ...SHIPPING_OPTION_TYPE_INJECTION_ZONES,
   ...PRODUCT_TAG_INJECTION_ZONES,
   ...PRICE_LIST_INJECTION_ZONES,
   ...PROMOTION_INJECTION_ZONES,

@@ -1,19 +1,14 @@
-import { Event, IEventBusModuleService, Subscriber } from "@medusajs/types"
 import {
-  dynamicImport,
-  kebabCase,
-  Modules,
-  promiseAll,
-  readDirRecursive,
-  resolveExports,
-} from "@medusajs/utils"
-import { access } from "fs/promises"
-import { join, parse } from "path"
-
-import { Dirent } from "fs"
+  Event,
+  IEventBusModuleService,
+  MedusaContainer,
+  Subscriber,
+} from "@medusajs/types"
+import { isFileSkipped, kebabCase, Modules } from "@medusajs/utils"
+import { parse } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
-import { logger } from "../logger"
+import { ResourceLoader } from "../utils/resource-loader"
 import { SubscriberArgs, SubscriberConfig } from "./types"
 
 type SubscriberHandler<T> = (args: SubscriberArgs<T>) => Promise<void>
@@ -23,30 +18,14 @@ type SubscriberModule<T> = {
   handler: SubscriberHandler<T>
 }
 
-export class SubscriberLoader {
+export class SubscriberLoader extends ResourceLoader {
+  protected resourceName = "subscriber"
+
   /**
    * The options of the plugin from which the subscribers are being loaded
    * @private
    */
   #pluginOptions: Record<string, unknown>
-
-  /**
-   * The base directory from which to scan for the subscribers
-   * @private
-   */
-  #sourceDir: string | string[]
-
-  /**
-   * The list of file names to exclude from the subscriber scan
-   * @private
-   */
-  #excludes: RegExp[] = [
-    /index\.js/,
-    /index\.ts/,
-    /\.DS_Store/,
-    /(\.ts\.map|\.js\.map|\.d\.ts|\.md)/,
-    /^_[^/\\]*(\.[^/\\]+)?$/,
-  ]
 
   /**
    * Map of subscribers descriptors to consume in the loader
@@ -56,10 +35,33 @@ export class SubscriberLoader {
 
   constructor(
     sourceDir: string | string[],
-    options: Record<string, unknown> = {}
+    options: Record<string, unknown> = {},
+    container: MedusaContainer
   ) {
-    this.#sourceDir = sourceDir
+    super(sourceDir, container)
     this.#pluginOptions = options
+  }
+
+  protected async onFileLoaded(
+    path: string,
+    fileExports: Record<string, unknown>
+  ) {
+    if (isFileSkipped(fileExports)) {
+      return
+    }
+
+    const isValid = this.validateSubscriber(fileExports, path)
+
+    this.logger.debug(`Registering subscribers from ${path}.`)
+
+    if (!isValid) {
+      return
+    }
+
+    this.#subscriberDescriptors.set(path, {
+      config: fileExports.config,
+      handler: fileExports.default,
+    })
   }
 
   private validateSubscriber(
@@ -75,7 +77,7 @@ export class SubscriberLoader {
       /**
        * If the handler is not a function, we can't use it
        */
-      logger.warn(`The subscriber in ${path} is not a function. skipped.`)
+      this.logger.warn(`The subscriber in ${path} is not a function. skipped.`)
       return false
     }
 
@@ -85,7 +87,9 @@ export class SubscriberLoader {
       /**
        * If the subscriber is missing a config, we can't use it
        */
-      logger.warn(`The subscriber in ${path} is missing a config. skipped.`)
+      this.logger.warn(
+        `The subscriber in ${path} is missing a config. skipped.`
+      )
       return false
     }
 
@@ -99,7 +103,7 @@ export class SubscriberLoader {
           `The subscriber in ${path} is missing an event in the config.`
         )
       } else {
-        logger.warn(
+        this.logger.warn(
           `The subscriber in ${path} is missing an event in the config. skipped.`
         )
       }
@@ -113,49 +117,13 @@ export class SubscriberLoader {
       /**
        * If the subscribers event is not a string or an array of strings, we can't use it
        */
-      logger.warn(
+      this.logger.warn(
         `The subscriber in ${path} has an invalid event config. The event must be a string or an array of strings. skipped.`
       )
       return false
     }
 
     return true
-  }
-
-  private async createDescriptor(absolutePath: string) {
-    return await dynamicImport(absolutePath).then((module_) => {
-      module_ = resolveExports(module_)
-      const isValid = this.validateSubscriber(module_, absolutePath)
-
-      if (!isValid) {
-        return
-      }
-
-      this.#subscriberDescriptors.set(absolutePath, {
-        config: module_.config,
-        handler: module_.default,
-      })
-    })
-  }
-
-  private async createMap(dirPath: string) {
-    const promises = await readDirRecursive(dirPath).then(async (entries) => {
-      const fileEntries = entries.filter((entry) => {
-        return (
-          !entry.isDirectory() &&
-          !this.#excludes.some((exclude) => exclude.test(entry.name))
-        )
-      })
-
-      logger.debug(`Registering subscribers from ${dirPath}.`)
-
-      return fileEntries.flatMap(async (entry: Dirent) => {
-        const fullPath = join(entry.path, entry.name)
-        return await this.createDescriptor(fullPath)
-      })
-    })
-
-    await promiseAll(promises)
   }
 
   private inferIdentifier<T>(
@@ -222,21 +190,7 @@ export class SubscriberLoader {
   }
 
   async load() {
-    const normalizeSourcePaths = Array.isArray(this.#sourceDir)
-      ? this.#sourceDir
-      : [this.#sourceDir]
-    const promises = normalizeSourcePaths.map(async (sourcePath) => {
-      try {
-        await access(sourcePath)
-      } catch {
-        logger.info(`No subscribers to load from ${sourcePath}. skipped.`)
-        return
-      }
-
-      return await this.createMap(sourcePath)
-    })
-
-    await promiseAll(promises)
+    await super.discoverResources()
 
     for (const [
       fileName,
@@ -249,7 +203,7 @@ export class SubscriberLoader {
       })
     }
 
-    logger.debug(`Subscribers registered.`)
+    this.logger.debug(`Subscribers registered.`)
 
     /**
      * Return the file paths of the registered subscribers, to prevent the

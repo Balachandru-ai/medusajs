@@ -23,6 +23,11 @@ export interface AdjustmentLineDTO {
   amount: BigNumberValue
 
   /**
+   * Whether the adjustment is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The raw amount to adjust the original amount with.
    */
   raw_amount: BigNumberRawValue
@@ -260,7 +265,7 @@ export interface CartAddressDTO {
   country_code?: string
 
   /**
-   * The province/state of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province/state of the address.
    */
   province?: string
 
@@ -659,6 +664,11 @@ export interface CartLineItemDTO extends CartLineItemTotalsDTO {
   is_discountable: boolean
 
   /**
+   * Whether the line item is a gift card.
+   */
+  is_giftcard: boolean
+
+  /**
    * Whether the line item price is tax inclusive.
    */
   is_tax_inclusive: boolean
@@ -1033,6 +1043,16 @@ export interface CartDTO {
    * The raw original shipping tax total of the cart.
    */
   raw_original_shipping_tax_total: BigNumberRawValue
+
+  /**
+   * The raw credit lines total of the cart.
+   */
+  raw_credit_line_total: BigNumberRawValue
+
+  /**
+   * The credit lines total of the cart.
+   */
+  credit_line_total: BigNumberValue
 }
 
 /**

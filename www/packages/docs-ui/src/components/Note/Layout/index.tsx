@@ -10,7 +10,14 @@ type StringInfo = {
 
 type NoteLayoutProps = NoteProps
 
-export const NoteLayout = ({ type, title, children }: NoteLayoutProps) => {
+const PUNCTIONATIONS = [".", ":", ";", ",", "!", "?"]
+
+export const NoteLayout = ({
+  type,
+  title,
+  children,
+  forceMultiline = false,
+}: NoteLayoutProps) => {
   const getStringInfoFromChildren = (nodes: React.ReactNode): StringInfo => {
     let allStringChildren = true
     const stringChildren: string[] = []
@@ -63,6 +70,13 @@ export const NoteLayout = ({ type, title, children }: NoteLayoutProps) => {
     }
   }
   const { allStringChildren, stringChildren } = useMemo(() => {
+    if (forceMultiline) {
+      return {
+        allStringChildren: false,
+        stringChildren: "",
+      }
+    }
+
     const { allStringChildren, stringChildren } =
       getStringInfoFromChildren(children)
 
@@ -70,7 +84,13 @@ export const NoteLayout = ({ type, title, children }: NoteLayoutProps) => {
       allStringChildren,
       stringChildren: stringChildren.join(""),
     }
-  }, [children])
+  }, [children, forceMultiline])
+
+  const showColon = useMemo(() => {
+    const lastChar = title?.charAt(title.length - 1) || ""
+
+    return !PUNCTIONATIONS.includes(lastChar)
+  }, [title])
 
   return (
     <div
@@ -95,7 +115,8 @@ export const NoteLayout = ({ type, title, children }: NoteLayoutProps) => {
       <div className="flex-1">
         <div className="text-small text-medusa-fg-subtle [&_ol]:!mb-0 [&_ul]:!mb-0">
           <span className={clsx("text-small-plus text-medusa-fg-base")}>
-            {title}:&nbsp;
+            {title}
+            {showColon ? ":" : ""}&nbsp;
           </span>
           {allStringChildren && (
             <MarkdownContent

@@ -34,6 +34,10 @@ post:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_claims_{id}_request/post.js
     - lang: Shell
       label: cURL
       source:
@@ -60,6 +64,17 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: confirmClaimRequestWorkflow
+  x-events:
+    - name: order.claim_created
+      payload: |-
+        ```ts
+        {
+          order_id, // The ID of the order
+          claim_id, // The ID of the claim
+        }
+        ```
+      description: Emitted when a claim is created for an order.
+      deprecated: false
 delete:
   operationId: DeleteClaimsIdRequest
   summary: Cancel Claim Request
@@ -77,6 +92,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_claims_{id}_request/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -103,3 +122,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelBeginOrderClaimWorkflow
+  x-events: []

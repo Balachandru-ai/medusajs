@@ -31,10 +31,7 @@ import {
 } from "../../common"
 import { toMikroORMEntity } from "../../dml"
 import { buildQuery } from "../../modules-sdk/build-query"
-import {
-  getSoftDeletedCascadedEntitiesIdsMappedBy,
-  transactionWrapper,
-} from "../utils"
+import { transactionWrapper } from "../utils"
 import { dbErrorMapper } from "./db-error-mapper"
 import { mikroOrmSerializer } from "./mikro-orm-serializer"
 import { mikroOrmUpdateDeletedAtRecursively } from "./utils"
@@ -67,11 +64,8 @@ export class MikroOrmBase {
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    const freshManager = this.getFreshManager
-      ? this.getFreshManager()
-      : this.manager_
-
-    return await transactionWrapper(freshManager, task, options).catch(
+    this.manager_.global = true
+    return await transactionWrapper(this.manager_, task, options).catch(
       dbErrorMapper
     )
   }
@@ -215,17 +209,13 @@ export class MikroOrmBaseRepository<const T extends object = object>
     const date = new Date()
 
     const manager = this.getActiveManager<SqlEntityManager>(sharedContext)
-    await mikroOrmUpdateDeletedAtRecursively<T>(
+    const softDeletedEntitiesMap = await mikroOrmUpdateDeletedAtRecursively<T>(
       manager,
       entities as any[],
       date
     )
 
-    const softDeletedEntitiesMap = getSoftDeletedCascadedEntitiesIdsMappedBy({
-      entities,
-    })
-
-    return [entities, softDeletedEntitiesMap]
+    return [entities, Object.fromEntries(softDeletedEntitiesMap)]
   }
 
   async restore(
@@ -239,14 +229,13 @@ export class MikroOrmBaseRepository<const T extends object = object>
     const entities = await this.find(query, sharedContext)
 
     const manager = this.getActiveManager<SqlEntityManager>(sharedContext)
-    await mikroOrmUpdateDeletedAtRecursively(manager, entities as any[], null)
+    const softDeletedEntitiesMap = await mikroOrmUpdateDeletedAtRecursively(
+      manager,
+      entities as any[],
+      null
+    )
 
-    const softDeletedEntitiesMap = getSoftDeletedCascadedEntitiesIdsMappedBy({
-      entities,
-      restored: true,
-    })
-
-    return [entities, softDeletedEntitiesMap]
+    return [entities, Object.fromEntries(softDeletedEntitiesMap)]
   }
 }
 
@@ -398,38 +387,41 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         descriptor,
       ] of collectionsToRemoveAllFrom) {
         await promiseAll(
-          data.map(async ({ entity }) => {
+          data.flatMap(async ({ entity }) => {
             if (!descriptor.mappedBy) {
               return await entity[collectionToRemoveAllFrom].init()
             }
 
+            const promises: Promise<any>[] = []
             await entity[collectionToRemoveAllFrom].init()
             const items = entity[collectionToRemoveAllFrom]
 
             for (const item of items) {
-              await item[descriptor.mappedBy!].init()
+              promises.push(item[descriptor.mappedBy!].init())
             }
+
+            return promises
           })
         )
       }
     }
 
     async update(
-      data: { entity; update }[],
+      data: { entity: any; update: any }[],
       context?: Context
     ): Promise<InferRepositoryReturnType<T>[]> {
       const manager = this.getActiveManager<EntityManager>(context)
 
       await this.initManyToManyToDetachAllItemsIfNeeded(data, context)
 
-      data.map((_, index) => {
-        manager.assign(data[index].entity, data[index].update, {
+      data.forEach(({ entity, update }) => {
+        manager.assign(entity, update, {
           mergeObjectProperties: true,
         })
-        manager.persist(data[index].entity)
+        manager.persist(entity)
       })
 
-      return data.map((d) => d.entity)
+      return data.map((d) => d.entity) as InferRepositoryReturnType<T>[]
     }
 
     async delete(
@@ -803,15 +795,20 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
           }
         })
 
-        const qb = manager.qb(relation.pivotEntity)
-        await qb.insert(pivotData).onConflict().ignore().execute()
-
-        await manager.nativeDelete(relation.pivotEntity, {
-          [parentPivotColumn]: (data as any).id,
-          [currentPivotColumn]: {
-            $nin: pivotData.map((d) => d[currentPivotColumn]),
-          },
-        })
+        await promiseAll([
+          manager
+            .qb(relation.pivotEntity)
+            .insert(pivotData)
+            .onConflict()
+            .ignore()
+            .execute(),
+          manager.nativeDelete(relation.pivotEntity, {
+            [parentPivotColumn]: (data as any).id,
+            [currentPivotColumn]: {
+              $nin: pivotData.map((d) => d[currentPivotColumn]),
+            },
+          }),
+        ])
 
         return { entities: normalizedData, performedActions }
       }
@@ -826,27 +823,23 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
           joinColumnsConstraints[joinColumn] = data[referencedColumnName]
         })
 
-        const toDeleteEntities = await manager.find<any, any, "id">(
-          relation.type,
-          {
-            ...joinColumnsConstraints,
-            id: { $nin: normalizedData.map((d: any) => d.id) },
-          },
-          {
-            fields: ["id"],
-          }
+        const deletedRelations = await (
+          manager.getTransactionContext() ?? manager.getKnex()
         )
-        const toDeleteIds = toDeleteEntities.map((d: any) => d.id)
+          .queryBuilder()
+          .from(relation.targetMeta!.collection)
+          .delete()
+          .where(joinColumnsConstraints)
+          .whereNotIn(
+            "id",
+            normalizedData.map((d: any) => d.id)
+          )
+          .returning("id")
 
-        await manager.nativeDelete(relation.type, {
-          ...joinColumnsConstraints,
-          id: { $in: toDeleteIds },
-        })
-
-        if (toDeleteEntities.length) {
+        if (deletedRelations.length) {
           performedActions.deleted[relation.type] ??= []
           performedActions.deleted[relation.type].push(
-            ...toDeleteEntities.map((d) => ({ id: d.id }))
+            ...deletedRelations.map((row) => ({ id: row.id }))
           )
         }
 
@@ -970,38 +963,64 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         deleted: {},
       }
 
-      await promiseAll(
-        entries.map(async (data) => {
-          const existingEntity = existingEntitiesMap.get(data.id)
-          orderedEntities.push(data)
-          if (existingEntity) {
-            if (skipUpdate) {
-              return
-            }
-            await manager.nativeUpdate(entityName, { id: data.id }, data)
-            performedActions.updated[entityName] ??= []
-            performedActions.updated[entityName].push({ id: data.id })
-          } else {
-            const qb = manager.qb(entityName)
-            if (skipUpdate) {
-              const res = await qb
-                .insert(data)
-                .onConflict()
-                .ignore()
-                .execute("all", true)
-              if (res) {
-                performedActions.created[entityName] ??= []
-                performedActions.created[entityName].push({ id: data.id })
-              }
-            } else {
-              await manager.insert(entityName, data)
-              performedActions.created[entityName] ??= []
-              performedActions.created[entityName].push({ id: data.id })
-              // await manager.insert(entityName, data)
-            }
+      const promises: Promise<any>[] = []
+      const toInsert: any[] = []
+      const toUpdate: any[] = []
+
+      entries.forEach((data) => {
+        const existingEntity = existingEntitiesMap.get(data.id)
+        orderedEntities.push(data)
+        if (existingEntity) {
+          if (skipUpdate) {
+            return
           }
-        })
-      )
+
+          toUpdate.push(data)
+        } else {
+          toInsert.push(data)
+        }
+      })
+
+      if (toInsert.length > 0) {
+        let insertQb = manager.qb(entityName).insert(toInsert).returning("id")
+
+        if (skipUpdate) {
+          insertQb = insertQb.onConflict().ignore()
+        }
+
+        promises.push(
+          insertQb.execute("all", true).then((res: { id: string }[]) => {
+            performedActions.created[entityName] ??= []
+            performedActions.created[entityName].push(
+              ...res.map((data) => ({ id: data.id }))
+            )
+          })
+        )
+      }
+
+      if (toUpdate.length > 0) {
+        promises.push(
+          manager
+            .getDriver()
+            .nativeUpdateMany(
+              entityName,
+              toUpdate.map((d) => ({ id: d.id })),
+              toUpdate,
+              { ctx: manager.getTransactionContext() }
+            )
+            .then((res) => {
+              const updatedRows = res.rows ?? []
+              const updatedRowsMap = new Map(updatedRows.map((d) => [d.id, d]))
+
+              performedActions.updated[entityName] = toUpdate
+                .map((d) => updatedRowsMap.get(d.id))
+                .filter((row) => row !== undefined)
+                .map((d) => ({ id: d.id }))
+            })
+        )
+      }
+
+      await promiseAll(promises)
 
       return { orderedEntities, performedActions }
     }

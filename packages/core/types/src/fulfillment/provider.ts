@@ -80,6 +80,7 @@ export interface IFulfillmentProvider {
   /**
    *
    * Return a unique identifier to retrieve the fulfillment plugin provider
+   * @ignore
    */
   getIdentifier(): string
   /**

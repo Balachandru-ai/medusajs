@@ -1,17 +1,16 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef } from "react"
 import { InstantSearch, SearchBox } from "react-instantsearch"
 import clsx from "clsx"
 import { SearchEmptyQueryBoundary } from "./EmptyQueryBoundary"
 import { SearchSuggestions, type SearchSuggestionType } from "./Suggestions"
 import { AlgoliaProps, useSearch } from "@/providers"
-import { checkArraySameElms } from "@/utils"
 import { SearchHitsWrapper } from "./Hits"
-import { Button, SelectBadge, SpinnerLoading } from "@/components"
-import { XMark } from "@medusajs/icons"
+import { SpinnerLoading } from "@/components"
 import { useSearchNavigation, type OptionType } from "@/hooks"
 import { SearchFooter } from "./Footer"
+import { SearchFilters } from "./Filters"
 
 export type SearchProps = {
   algolia: AlgoliaProps
@@ -26,21 +25,12 @@ export const Search = ({
   suggestions,
   isLoading = false,
   checkInternalPattern,
-  filterOptions = [],
 }: SearchProps) => {
-  const { isOpen, setIsOpen, defaultFilters, searchClient, modalRef } =
-    useSearch()
-  const [filters, setFilters] = useState<string[]>(defaultFilters)
+  const { isOpen, searchClient, modalRef } = useSearch()
   const searchBoxRef = useRef<HTMLFormElement>(null)
 
   const focusSearchInput = () =>
     searchBoxRef.current?.querySelector("input")?.focus()
-
-  useEffect(() => {
-    if (!checkArraySameElms(defaultFilters, filters)) {
-      setFilters(defaultFilters)
-    }
-  }, [defaultFilters])
 
   useEffect(() => {
     if (isOpen && searchBoxRef.current) {
@@ -70,30 +60,6 @@ export const Search = ({
 
   return (
     <div className="h-full flex flex-col">
-      {filterOptions.length && (
-        <SelectBadge
-          multiple
-          options={filterOptions}
-          value={filters}
-          setSelected={(value) =>
-            setFilters(Array.isArray(value) ? [...value] : [value])
-          }
-          addSelected={(value) => setFilters((prev) => [...prev, value])}
-          removeSelected={(value) =>
-            setFilters((prev) => prev.filter((v) => v !== value))
-          }
-          showClearButton={false}
-          placeholder="Filters"
-          handleAddAll={(isAllSelected: boolean) => {
-            if (isAllSelected) {
-              setFilters(defaultFilters)
-            } else {
-              setFilters(filterOptions.map((option) => option.value))
-            }
-          }}
-          className="px-docs_1 pt-docs_1 bg-medusa-bg-base z-10"
-        />
-      )}
       {/* @ts-expect-error React v19 doesn't see this type as a React element */}
       <InstantSearch
         indexName={algolia.mainIndexName}
@@ -101,6 +67,7 @@ export const Search = ({
         future={{
           preserveSharedStateOnUnmount: true,
         }}
+        insights={true}
       >
         <div className={clsx("bg-medusa-bg-base flex z-[1]")}>
           {/* @ts-expect-error React v19 doesn't see this type as a React element */}
@@ -113,7 +80,7 @@ export const Search = ({
               ),
               form: clsx("h-full md:rounded-t-docs_xl bg-transparent"),
               input: clsx(
-                "w-full h-full px-docs_1 py-docs_0.75 text-medusa-fg-base",
+                "w-[calc(100%-40px)] h-full px-docs_1 py-docs_0.75 text-medusa-fg-base",
                 "placeholder:text-medusa-fg-muted bg-medusa-bg-base",
                 "md:rounded-t-docs_xl text-compact-large sm:text-compact-medium",
                 "appearance-none search-cancel:hidden border-0 active:outline-none focus:outline-none"
@@ -134,18 +101,18 @@ export const Search = ({
             loadingIconComponent={() => <SpinnerLoading />}
           />
         </div>
-        <div className="md:flex-initial h-[calc(100%-95px)] lg:max-h-[calc(100%-140px)] lg:min-h-[calc(100%-140px)]">
+        <div
+          className={clsx(
+            "md:flex-initial flex flex-col",
+            "h-[calc(100%-75px)] lg:max-h-[calc(100%-100px)] lg:min-h-[calc(100%-100px)]"
+          )}
+        >
+          <SearchFilters />
           <SearchEmptyQueryBoundary
             fallback={<SearchSuggestions suggestions={suggestions} />}
           >
             <SearchHitsWrapper
-              configureProps={{
-                // filters array has to be wrapped
-                // in another array for an OR condition
-                // to be applied between the items.
-                tagFilters: [filters],
-              }}
-              indices={algolia.indices}
+              configureProps={{}}
               checkInternalPattern={checkInternalPattern}
             />
           </SearchEmptyQueryBoundary>

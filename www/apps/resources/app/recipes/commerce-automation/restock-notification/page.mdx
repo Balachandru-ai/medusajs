@@ -1,3 +1,10 @@
+---
+products:
+  - product
+  - sales channel
+  - inventory
+---
+
 import { Card, Prerequisites, Details, WorkflowDiagram } from "docs-ui"
 import { Github } from "@medusajs/icons"
 
@@ -31,7 +38,7 @@ export const metadata = {
 
 In this guide, you'll learn how to notify customers when a variant is restocked in Medusa.
 
-When you install a Medusa application, you get a fully-fledged commerce platform with a framework for customization. The Medusa application's commerce features are built around [commerce modules](../../../commerce-modules/page.mdx) which are available out-of-the-box. These features include managing the inventory of product variants in different stock locations and sales channels.
+When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. The Medusa application's commerce features are built around [Commerce Modules](../../../commerce-modules/page.mdx) which are available out-of-the-box. These features include managing the inventory of product variants in different stock locations and sales channels.
 
 Customers browsing your store may be interested in a product that is currently out of stock. To keep the customer interested in your store and encourage them to purchase the product in the future, you can build customizations around Medusa's commerce features to subscribe customers to receive a notification when the product is restocked.
 
@@ -76,7 +83,7 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll first be asked for the project's name. You can also optionally choose to install the [Next.js starter storefront](../../../nextjs-starter/page.mdx).
+You'll first be asked for the project's name. You can also optionally choose to install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx).
 
 Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name. If you chose to install the Next.js starter, it'll be installed in a separate directory with the `{project-name}-storefront` name.
 
@@ -169,7 +176,7 @@ In the data model, you define the following properties:
 
 <Note>
 
-Learn more about data model [properties](!docs!/learn/fundamentals/data-models/property-types) and [relations](!docs!/learn/fundamentals/data-models/relationships).
+Learn more about data model [properties](!docs!/learn/fundamentals/data-models/properties) and [relations](!docs!/learn/fundamentals/data-models/relationships).
 
 </Note>
 
@@ -305,7 +312,7 @@ Learn more about module links in [this documentation](!docs!/learn/fundamentals/
 
 </Note>
 
-To create a link, create the file `src/links/restock-variant.ts` with the following content:
+To define a link, create the file `src/links/restock-variant.ts` with the following content:
 
 ![The directory structure of the Medusa Application after adding this link.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733225402/Medusa%20Resources/restock-dir-overview-7_dln3fw.jpg)
 
@@ -316,7 +323,7 @@ import ProductModule from "@medusajs/medusa/product"
 
 export default defineLink(
   {
-    ...RestockModule.linkable.restockSubscription.id,
+    linkable: RestockModule.linkable.restockSubscription.id,
     field: "variant_id",
   },
   ProductModule.linkable.productVariant,
@@ -329,7 +336,7 @@ export default defineLink(
 You define a link using `defineLink` from the Modules SDK. It accepts three parameters:
 
 1. The first data model part of the link, which is the Restock Module's `restockSubscription` data model. A module has a special `linkable` property that contain link configurations for its data models. You also specify the field that points to the product variant.
-1. The second data model part of the link, which is the Product Module's `productVariant` data model.
+2. The second data model part of the link, which is the Product Module's `productVariant` data model.
 3. An object of configurations for the module link. By default, Medusa creates a table in the database to represent the link you define. However, in this guide, you only want this link to retrieve the variants associated with a subscription. So, you enable `readOnly` telling Medusa not to create a table for this link.
 
 In the next steps, you'll see how this link allows you to retrieve product variants' details when retrieving restock subscriptions.
@@ -686,13 +693,13 @@ Next, replace the `TODO` with the following:
 
 export const subscriptionWorkflow2Highlights = [
   ["1", "validateVariantOutOfStockStep", "Validate that the variant is out of stock in the specified sales channel."],
-  ["7", "useQueryGraphStep", "Get the restock subscription to check if it already exists."],
-  ["17", "when", "Perform an action if the restock subscription doesn't exist."],
-  ["21", "createRestockSubscriptionStep", "Create the restock subscription if it doesn't exist."],
-  ["29", "when", "Perform an action if the restock subscription exists."],
-  ["33", "updateRestockSubscriptionStep", "Update the restock subscription if it exists."],
-  ["40", "useQueryGraphStep", "Retrieve the restock subscription again to return it."],
-  ["50", "WorkflowResponse", "Return the restock subscription."]
+  ["6", "useQueryGraphStep", "Get the restock subscription to check if it already exists."],
+  ["16", "when", "Perform an action if the restock subscription doesn't exist."],
+  ["20", "createRestockSubscriptionStep", "Create the restock subscription if it doesn't exist."],
+  ["28", "when", "Perform an action if the restock subscription exists."],
+  ["32", "updateRestockSubscriptionStep", "Update the restock subscription if it exists."],
+  ["38", "useQueryGraphStep", "Retrieve the restock subscription again to return it."],
+  ["48", "WorkflowResponse", "Return the restock subscription."]
 ]
 
 ```ts title="src/workflows/create-restock-subscription/index.ts" highlights={subscriptionWorkflow2Highlights}
@@ -701,7 +708,6 @@ validateVariantOutOfStockStep({
   sales_channel_id,
 })
 
-// @ts-ignore
 const { data: restockSubscriptions } = useQueryGraphStep({
   entity: "restock_subscription",
   fields: ["*"],
@@ -734,7 +740,6 @@ when({ restockSubscriptions }, ({ restockSubscriptions }) => {
   })
 })
 
-// @ts-ignore
 const { data: restockSubscription } = useQueryGraphStep({
   entity: "restock_subscription",
   fields: ["*"],
@@ -1088,9 +1093,9 @@ The `useQueryGraphStep` is from Medusa's workflows. So, you'll only implement th
 
 ### Optional Prerequisite: Notification Module Provider
 
-Within this workflow, you'll use Medusa's [Notification Module](../../../architectural-modules/notification/page.mdx) to send an email to the customer.
+Within this workflow, you'll use Medusa's [Notification Module](../../../infrastructure-modules/notification/page.mdx) to send an email to the customer.
 
-The module delegates the email sending to a module provider, such as [SendGrid](../../../architectural-modules/notification/sendgrid/page.mdx) or [Resend](../../../integrations/guides/resend/page.mdx). You can refer to their linked guides to set up either module providers.
+The module delegates the email sending to a module provider, such as [SendGrid](../../../infrastructure-modules/notification/sendgrid/page.mdx) or [Resend](../../../integrations/guides/resend/page.mdx). You can refer to their linked guides to set up either module providers.
 
 Alternatively, for development and debugging purposes, you can use the default Notification Module Provider that only logs a message in the terminal instead of sending an email. To do that, add the following to the `modules` array in `medusa-config.ts`:
 
@@ -1358,7 +1363,6 @@ export const sendRestockNotificationsWorkflow = createWorkflow(
       return filters
     })
 
-    // @ts-ignore
     const { data: restockedSubscriptionsWithEmails } = useQueryGraphStep({
       entity: "restock_subscription",
       fields: ["*", "product_variant.*"],
@@ -1490,5 +1494,3 @@ You've now implemented restock notifications in Medusa. You can also customize t
 If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 
 To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](../../../commerce-modules/page.mdx).
-
-For other general guides related to [deployment](../../../deployment/page.mdx), [storefront development](../../../storefront-development/page.mdx), [integrations](../../../integrations/page.mdx), and more, check out the [Development Resources](../../../page.mdx).

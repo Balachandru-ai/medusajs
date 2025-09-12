@@ -19,6 +19,7 @@ export type CodeBlockActionsProps = {
   onApiTesting?: React.Dispatch<React.SetStateAction<boolean>>
   noReport?: boolean
   noCopy?: boolean
+  noAskAi?: boolean
 }
 
 export const CodeBlockActions = ({
@@ -32,6 +33,7 @@ export const CodeBlockActions = ({
   onApiTesting,
   noReport = false,
   noCopy = false,
+  noAskAi = false,
 }: CodeBlockActionsProps) => {
   const iconClassName = [
     "text-medusa-contrast-fg-secondary",
@@ -64,9 +66,9 @@ export const CodeBlockActions = ({
       )}
       <div
         className={clsx(
-          "md:flex md:justify-end md:gap-docs_0.25 z-[11] relative",
+          "md:flex md:justify-end md:gap-docs_0.25 relative",
           !inHeader && [
-            "md:pr-docs_0.5",
+            "md:pr-docs_0.5 z-[11]",
             isCollapsed && "md:pt-docs_2.5",
             !isCollapsed && [
               isSingleLine && "md:pt-docs_0.25",
@@ -75,7 +77,9 @@ export const CodeBlockActions = ({
           ]
         )}
       >
-        <CodeBlockAskAiAction source={source} inHeader={inHeader} />
+        {!noAskAi && (
+          <CodeBlockAskAiAction source={source} inHeader={inHeader} />
+        )}
         {canShowApiTesting && (
           <Tooltip
             text="Test API"

@@ -1,12 +1,7 @@
+import { dynamicImport, isFileSkipped, readDirRecursive } from "@medusajs/utils"
 import { join, parse, sep } from "path"
-import { dynamicImport, readDirRecursive } from "@medusajs/utils"
 import { logger } from "../logger"
-import {
-  type RouteVerb,
-  HTTP_METHODS,
-  type ScannedRouteDescriptor,
-  type FileSystemRouteDescriptor,
-} from "./types"
+import { HTTP_METHODS, type RouteDescriptor, type RouteVerb } from "./types"
 
 /**
  * File name that is used to indicate that the file is a route file
@@ -43,21 +38,6 @@ const ADMIN_ROUTE_MATCH = /(\/admin$|\/admin\/)/
 const STORE_ROUTE_MATCH = /(\/store$|\/store\/)/
 const AUTH_ROUTE_MATCH = /(\/auth$|\/auth\/)/
 
-const log = ({
-  activityId,
-  message,
-}: {
-  activityId?: string
-  message: string
-}) => {
-  if (activityId) {
-    logger.progress(activityId, message)
-    return
-  }
-
-  logger.debug(message)
-}
-
 /**
  * Exposes to API to register routes manually or by scanning the filesystem from a
  * source directory.
@@ -69,19 +49,7 @@ export class RoutesLoader {
   /**
    * Routes collected manually or by scanning directories
    */
-  #routes: Record<
-    string,
-    Record<string, ScannedRouteDescriptor | FileSystemRouteDescriptor>
-  > = {}
-
-  /**
-   * An eventual activity id for information tracking
-   */
-  readonly #activityId?: string
-
-  constructor({ activityId }: { activityId?: string }) {
-    this.#activityId = activityId
-  }
+  #routes: Record<string, Record<string, RouteDescriptor>> = {}
 
   /**
    * Creates the route path from its relative file path.
@@ -96,10 +64,9 @@ export class RoutesLoader {
         if (segment.startsWith("[")) {
           segment = segment.replace(PARAM_SEGMENT_MATCHER, (_, group) => {
             if (params[group]) {
-              log({
-                activityId: this.#activityId,
-                message: `Duplicate parameters found in route ${relativePath} (${group})`,
-              })
+              logger.debug(
+                `Duplicate parameters found in route ${relativePath} (${group})`
+              )
 
               throw new Error(
                 `Duplicate parameters found in route ${relativePath} (${group}). Make sure that all parameters are unique.`
@@ -122,8 +89,12 @@ export class RoutesLoader {
   async #getRoutesForFile(
     routePath: string,
     absolutePath: string
-  ): Promise<ScannedRouteDescriptor[]> {
+  ): Promise<RouteDescriptor[]> {
     const routeExports = await dynamicImport(absolutePath)
+
+    if (isFileSkipped(routeExports)) {
+      return []
+    }
 
     /**
      * Find the route type based upon its prefix.
@@ -161,10 +132,9 @@ export class RoutesLoader {
         }
 
         if (!HTTP_METHODS.includes(key as RouteVerb)) {
-          log({
-            activityId: this.#activityId,
-            message: `Skipping handler ${key} in ${absolutePath}. Invalid HTTP method: ${key}.`,
-          })
+          logger.debug(
+            `Skipping handler ${key} in ${absolutePath}. Invalid HTTP method: ${key}.`
+          )
           return false
         }
 
@@ -172,14 +142,15 @@ export class RoutesLoader {
       })
       .map((key) => {
         return {
-          route: routePath,
+          isRoute: true,
+          matcher: routePath,
           method: key as RouteVerb,
           handler: routeExports[key],
           optedOutOfAuth: !shouldAuthenticate,
           shouldAppendAdminCors: shouldApplyCors && routeType === "admin",
           shouldAppendAuthCors: shouldApplyCors && routeType === "auth",
           shouldAppendStoreCors: shouldApplyCors && routeType === "store",
-        } satisfies ScannedRouteDescriptor
+        } satisfies RouteDescriptor
       })
   }
 
@@ -232,18 +203,16 @@ export class RoutesLoader {
   /**
    * Register a route
    */
-  registerRoute(route: ScannedRouteDescriptor | FileSystemRouteDescriptor) {
-    this.#routes[route.route] = this.#routes[route.route] ?? {}
-    const trackedRoute = this.#routes[route.route]
+  registerRoute(route: RouteDescriptor) {
+    this.#routes[route.matcher] = this.#routes[route.matcher] ?? {}
+    const trackedRoute = this.#routes[route.matcher]
     trackedRoute[route.method] = route
   }
 
   /**
    * Register one or more routes
    */
-  registerRoutes(
-    routes: (ScannedRouteDescriptor | FileSystemRouteDescriptor)[]
-  ) {
+  registerRoutes(routes: RouteDescriptor[]) {
     routes.forEach((route) => this.registerRoute(route))
   }
 
@@ -252,14 +221,16 @@ export class RoutesLoader {
    * manually.
    */
   getRoutes() {
-    return Object.keys(this.#routes).reduce<
-      (ScannedRouteDescriptor | FileSystemRouteDescriptor)[]
-    >((result, routePattern) => {
-      const methodsRoutes = this.#routes[routePattern]
-      Object.keys(methodsRoutes).forEach((method) => {
-        result.push(methodsRoutes[method])
-      })
-      return result
-    }, [])
+    return Object.keys(this.#routes).reduce<RouteDescriptor[]>(
+      (result, routePattern) => {
+        const methodsRoutes = this.#routes[routePattern]
+        Object.keys(methodsRoutes).forEach((method) => {
+          const route = methodsRoutes[method]
+          result.push(route)
+        })
+        return result
+      },
+      []
+    )
   }
 }

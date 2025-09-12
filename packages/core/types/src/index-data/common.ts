@@ -32,9 +32,20 @@ export type SchemaObjectEntityRepresentation = {
     targetProp: string
 
     /**
+     * The property the parent is assigned to in my side
+     */
+    inverseSideProp: string
+
+    /**
      * Are the data expected to be a list or not
      */
     isList?: boolean
+
+    /**
+     * Whether the entity is the inverse of the link (not the owner.):
+     * e.g: order -> cart, order is the owner, cart is the inverse
+     */
+    isInverse?: boolean
   }[]
 
   /**
@@ -69,6 +80,8 @@ export type SchemaPropertiesMap = {
   [key: string]: {
     shortCutOf?: string
     ref: SchemaObjectEntityRepresentation
+    isInverse?: boolean
+    isList?: boolean
   }
 }
 

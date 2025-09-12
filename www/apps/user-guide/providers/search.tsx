@@ -1,6 +1,6 @@
 "use client"
 
-import { SearchProvider as UiSearchProvider, searchFilters } from "docs-ui"
+import { SearchProvider as UiSearchProvider } from "docs-ui"
 import { config } from "../config"
 
 type SearchProviderProps = {
@@ -15,11 +15,18 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
         apiKey: process.env.NEXT_PUBLIC_ALGOLIA_API_KEY || "temp",
         mainIndexName:
           process.env.NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME || "temp",
-        indices: [
-          process.env.NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME || "temp",
-          process.env.NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME || "temp",
-        ],
       }}
+      indices={[
+        {
+          value: process.env.NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME || "temp",
+          title: "Docs",
+        },
+        {
+          value: process.env.NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME || "temp",
+          title: "Store & Admin API",
+        },
+      ]}
+      defaultIndex={process.env.NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME || "temp"}
       searchProps={{
         isLoading: false,
         suggestions: [
@@ -37,10 +44,7 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
           },
         ],
         checkInternalPattern: new RegExp(`^${config.baseUrl}/user-guide`),
-        filterOptions: searchFilters,
       }}
-      // TODO change later when we have a user guide filter
-      initialDefaultFilters={["guides"]}
     >
       {children}
     </UiSearchProvider>

@@ -1,7 +1,6 @@
 ---
 tags:
   - storefront
-  - js sdk
   - cart
   - product
   - payment
@@ -10,6 +9,14 @@ tags:
   - region
   - checkout
   - example
+products:
+  - cart
+  - product
+  - payment
+  - fulfillment
+  - order
+  - region
+  - sales channel
 ---
 
 import { Card, Prerequisites, Details } from "docs-ui"
@@ -56,7 +63,7 @@ In this guide, you'll learn how to:
 - Install and set up Medusa.
 - Create a custom express checkout storefront with Next.js.
 
-![Screenshot of the express checkout storefront](https://res.cloudinary.com/dza7lstvk/image/upload/v1739344861/Medusa%20Resources/Screenshot_2025-02-12_at_9.20.09_AM_ufqdi3.png)
+![Express checkout storefront interface showing a single-page checkout flow with product selection](https://res.cloudinary.com/dza7lstvk/image/upload/v1739344861/Medusa%20Resources/Screenshot_2025-02-12_at_9.20.09_AM_ufqdi3.png)
 
 You can follow this guide whether you're new to Medusa or an advanced Medusa developer.
 
@@ -92,7 +99,7 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js storefront, choose `N` for no. You'll create a custom storefront instead.
+You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js Starter Storefront, choose `N` for no. You'll create a custom storefront instead.
 
 Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name. Once the installation finishes successfully, the Medusa Admin dashboard will open in your browser at `http://localhost:9000/app` with a form to create a new user. Enter the user's credential and submit the form.
 
@@ -117,7 +124,7 @@ AUTH_CORS=http://localhost:5173,http://localhost:9000,http://localhost:3000
 
 You can add other origins as well if necessary.
 
-Learn more about CORS configurations in [this guide](/references/medusa-config#http-storeCors-1-1).
+Learn more about CORS configurations in [this guide](!docs!/learn/configurations/medusa-config#httpauthcors).
 
 ---
 
@@ -180,7 +187,7 @@ export default {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}", 
     "./components/**/*.{js,ts,jsx,tsx}",
-    "./providers/**/*.{js,ts,jsx,tsx}",
+    "@/providers/**/*.{js,ts,jsx,tsx}",
     medusaUI,
   ],
   darkMode: "class",
@@ -205,7 +212,7 @@ Aside from the SDK, you also install the `@medusajs/types` package, which provid
 
 Next, to use the SDK, you'll export a configured instance and re-use it across your application. So, create the file `lib/sdk.ts` with the following content:
 
-![Directory structure after creating SDK file](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815487/Medusa%20Resources/express-checkout-1_vrudhk.jpg)
+![Project directory structure showing the newly created 'lib' folder containing the 'sdk.ts' file, which exports a configured Medusa SDK instance for connecting to the backend API](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815487/Medusa%20Resources/express-checkout-1_vrudhk.jpg)
 
 export const sdkHighlights = [
   ["6", "NEXT_PUBLIC_MEDUSA_BACKEND_URL", "Set the backend URL from an environment variable."],
@@ -233,7 +240,7 @@ This file exports a configured instance of the Medusa SDK that you can use to se
 - `NEXT_PUBLIC_MEDUSA_BACKEND_URL`: The URL of the Medusa application server. By default, it's set to `http://localhost:9000`.
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`: The publishable API key of the Medusa application. You can find this key in the Medusa Admin dashboard under Settings -> Publishable API Keys.
 
-![Find the publishable API key by going to Settings -> Publishable API Key, then clicking the publishable API key to copy its token.](https://res.cloudinary.com/dza7lstvk/image/upload/v1735810830/Medusa%20Resources/Screenshot_2025-01-02_at_11.36.20_AM_gw7i7h.png)
+![Navigation path in Medusa Admin dashboard: Settings showing "Publishable API Key" option, with the publishable API key displayed and a copy button to retrieve the token for storefront configuration](https://res.cloudinary.com/dza7lstvk/image/upload/v1735810830/Medusa%20Resources/Screenshot_2025-01-02_at_11.36.20_AM_gw7i7h.png)
 
 ---
 
@@ -250,7 +257,7 @@ To easily access and manage these resources, you'll wrap your storefront with tw
 
 To create the region provider, create the file `providers/region.tsx` with the following content:
 
-![Directory structure after creating region provider file](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815539/Medusa%20Resources/express-checkout-2_htf5ke.jpg)
+![Project directory tree showing the newly created 'providers' folder containing the 'region.tsx' file, which implements React context for managing regional settings and currency selection across the storefront](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815539/Medusa%20Resources/express-checkout-2_htf5ke.jpg)
 
 export const regionProviderHighlights1 = [
   ["9", "region", "The region selected by the customer."],
@@ -331,7 +338,7 @@ import {
   // other imports...
   useEffect,
 } from "react"
-import { sdk } from "../lib/sdk"
+import { sdk } from "@/lib/sdk"
 ```
 
 And replace the `TODO` in the `RegionProvider` component with the following content:
@@ -532,7 +539,7 @@ import {
   // other imports...
   useEffect, 
 } from "react"
-import { sdk } from "../lib/sdk"
+import { sdk } from "@/lib/sdk"
 ```
 
 And replace the `TODO` in the `CartProvider` component with the following content:
@@ -747,6 +754,7 @@ return (
     updateCart,
     refreshCart,
     updateItemQuantity,
+    unsetCart,
   }}>
     {children}
   </CartContext.Provider>
@@ -803,7 +811,7 @@ export const secondColHighlights = [
 "use client"
 
 import { clx } from "@medusajs/ui"
-import { useRegion } from "../../providers/region"
+import { useRegion } from "@/providers/region"
 
 export const SecondCol = () => {
   const { region, regions, setRegion } = useRegion()
@@ -890,10 +898,10 @@ export const layoutHighlights = [
 ```tsx title="components/Layout/index.tsx" highlights={layoutHighlights}
 import { clx } from "@medusajs/ui"
 import { Inter, Roboto_Mono } from "next/font/google"
-import { RegionProvider } from "../providers/region"
+import { RegionProvider } from "@/providers/region"
 import "./globals.css"
 import { SecondCol } from "../components/SecondCol"
-import { CartProvider } from "../providers/cart"
+import { CartProvider } from "@/providers/cart"
 
 export const inter = Inter({
   subsets: ["latin"],
@@ -982,7 +990,7 @@ export const routerHighlights = [
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCart } from "../../providers/cart"
+import { useCart } from "@/providers/cart"
 import { useEffect, useMemo } from "react"
 
 type ActiveTab = "product" | "address" | "shipping" | "payment"
@@ -1180,8 +1188,8 @@ import {
   useState,
 } from "react"
 import { HttpTypes } from "@medusajs/types"
-import { useRegion } from "../../providers/region"
-import { useCart } from "../../providers/cart"
+import { useRegion } from "@/providers/region"
+import { useCart } from "@/providers/cart"
 import { useRouter } from "next/navigation"
 
 type ProductProps = {
@@ -1221,7 +1229,7 @@ The component defines the following variables:
 Next, you'll retrieve the product's details from the Medusa application. Start by adding the following imports to the top of the file:
 
 ```tsx title="components/Product/index.tsx"
-import { sdk } from "../../lib/sdk"
+import { sdk } from "@/lib/sdk"
 import { 
   // other imports...
   useEffect,
@@ -1649,8 +1657,8 @@ export const addressHighlights1 = [
 import { 
   useState,
 } from "react"
-import { useCart } from "../../providers/cart"
-import { useRegion } from "../../providers/region"
+import { useCart } from "@/providers/cart"
+import { useRegion } from "@/providers/region"
 import { useRouter } from "next/navigation"
 
 type AddressProps = {
@@ -1915,7 +1923,7 @@ This will show the address details step and expand its details if `activeTab` is
 
 ### Test it Out
 
-While both the Medusa application and the Next.js storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=address`, you should see the address form where you can input your address details.
+While both the Medusa application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=address`, you should see the address form where you can input your address details.
 
 ![Address step showing the address form and a continue button](https://res.cloudinary.com/dza7lstvk/image/upload/v1735831238/Medusa%20Resources/Screenshot_2025-01-02_at_5.20.22_PM_leqt17.png)
 
@@ -1947,7 +1955,7 @@ export const shippingHighlights1 = [
 import { 
   useState,
 } from "react"
-import { useCart } from "../../providers/cart"
+import { useCart } from "@/providers/cart"
 import { HttpTypes } from "@medusajs/types"
 import { useRouter } from "next/navigation"
 
@@ -1997,7 +2005,7 @@ import {
   // other imports...
   useEffect,
 } from "react"
-import { sdk } from "../../lib/sdk"
+import { sdk } from "@/lib/sdk"
 ```
 
 Then, replace the `TODO` in the `Shipping` component with the following:
@@ -2257,7 +2265,7 @@ This will show the shipping method selection step and expand its details if `act
 
 ### Test it Out
 
-While both the Medusa application and the Next.js storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=shipping`, you should see the Shipping step where you can choose a shipping method.
+While both the Medusa application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=shipping`, you should see the Shipping step where you can choose a shipping method.
 
 ![Shipping step showing the shipping options and a go to payment button](https://res.cloudinary.com/dza7lstvk/image/upload/v1735832462/Medusa%20Resources/Screenshot_2025-01-02_at_5.40.45_PM_jplcn3.png)
 
@@ -2289,7 +2297,7 @@ export const paymentHighlights1 = [
 import { 
   useState,
 } from "react"
-import { useCart } from "../../providers/cart"
+import { useCart } from "@/providers/cart"
 import { HttpTypes } from "@medusajs/types"
 import { useRouter } from "next/navigation"
 
@@ -2333,7 +2341,7 @@ import {
   // other imports...
   useEffect,
 } from "react"
-import { sdk } from "../../lib/sdk"
+import { sdk } from "@/lib/sdk"
 ```
 
 Then, replace the `TODO` in the `Payment` component with the following:
@@ -2651,7 +2659,7 @@ This will show the payment method selection step and expand its details if `acti
 
 ### Test it Out
 
-While both the Medusa application and the Next.js storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=payment`, you should see the Payment step where you can choose a payment method.
+While both the Medusa application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=payment`, you should see the Payment step where you can choose a payment method.
 
 ![Payment step showing the payment providers and a pay button](https://res.cloudinary.com/dza7lstvk/image/upload/v1735833736/Medusa%20Resources/Screenshot_2025-01-02_at_6.01.58_PM_usjlli.png)
 
@@ -2676,7 +2684,7 @@ export const confirmationHighlights = [
 
 ```tsx title="app/confirmation/[id]/page.tsx" highlights={confirmationHighlights}
 import { clx, Heading } from "@medusajs/ui"
-import { sdk } from "../../../lib/sdk"
+import { sdk } from "@/lib/sdk"
 
 type Params = {
   params: Promise<{ id: string }>
@@ -2720,7 +2728,7 @@ Then, you show the order's details, including the order number, order date, and 
 
 ### Test it Out
 
-While both the Medusa application and the Next.js storefront are running, either refresh the page you had open from the previous step, or restart the express checkout flow to place an order. You'll see the confirmation page showing the order's details.
+While both the Medusa application and the Next.js Starter Storefront are running, either refresh the page you had open from the previous step, or restart the express checkout flow to place an order. You'll see the confirmation page showing the order's details.
 
 ![Confirmation page showing the order's ID and date](https://res.cloudinary.com/dza7lstvk/image/upload/v1735834096/Medusa%20Resources/Screenshot_2025-01-02_at_6.07.38_PM_um4p0a.png)
 
@@ -2730,10 +2738,8 @@ While both the Medusa application and the Next.js storefront are running, either
 
 By following this guide, you now have an express checkout storefront built with Next.js that connects to a Medusa commerce application.
 
-You can add more features to your storefront or commerce application. For example, you can integrate a [Notification Module Provider](../../../architectural-modules/notification/page.mdx) to send the customer a confirmation email when they place their order.
+You can add more features to your storefront or commerce application. For example, you can integrate a [Notification Module Provider](../../../infrastructure-modules/notification/page.mdx) to send the customer a confirmation email when they place their order.
 
 If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 
 To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](../../../commerce-modules/page.mdx).
-
-For other general guides related to deployment, storefront development, integrations, and more, check out the [Development Resources](../../../page.mdx).

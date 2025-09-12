@@ -28,6 +28,22 @@ export const refetchProduct = async (
   return await refetchEntity("product", idOrFilter, scope, fields)
 }
 
+export const filterOutInternalProductCategories = (
+  products: HttpTypes.StoreProduct[]
+) => {
+  return products.forEach((product: HttpTypes.StoreProduct) => {
+    if (!product.categories) {
+      return
+    }
+
+    product.categories = product.categories.filter(
+      (category) =>
+        !(category as HttpTypes.StoreProductCategory & { is_internal: boolean })
+          .is_internal
+    )
+  })
+}
+
 export const wrapProductsWithTaxPrices = async <T>(
   req: RequestWithContext<T>,
   products: HttpTypes.StoreProduct[]
@@ -77,6 +93,19 @@ export const wrapProductsWithTaxPrices = async <T>(
 
       variant.calculated_price.calculated_amount_with_tax = priceWithTax
       variant.calculated_price.calculated_amount_without_tax = priceWithoutTax
+
+      const {
+        priceWithTax: originalPriceWithTax,
+        priceWithoutTax: originalPriceWithoutTax,
+      } = calculateAmountsWithTax({
+        taxLines: taxRatesForVariant,
+        amount: variant.calculated_price!.original_amount!,
+        includesTax: variant.calculated_price!.is_original_price_tax_inclusive!,
+      })
+
+      variant.calculated_price.original_amount_with_tax = originalPriceWithTax
+      variant.calculated_price.original_amount_without_tax =
+        originalPriceWithoutTax
     })
   })
 }

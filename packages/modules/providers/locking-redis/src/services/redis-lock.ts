@@ -115,12 +115,13 @@ export class RedisLockingProvider implements ILockingProvider {
       promises.push(this.getTimeout(timeoutSeconds, cancellationToken))
     }
 
+    const ONE_MINUTE = 60
     promises.push(
       this.acquire_(
         keys,
         {
           awaitQueue: true,
-          expire: args?.timeout ? timeoutSeconds : 0,
+          expire: args?.timeout ? timeoutSeconds : ONE_MINUTE,
         },
         cancellationToken
       )
@@ -258,7 +259,7 @@ export class RedisLockingProvider implements ILockingProvider {
           const currentOwner = currentOwners?.[idx]?.[1]
 
           if (currentOwner === ownerId) {
-            deletePipeline.del(key)
+            deletePipeline.unlink(key)
           }
         })
 

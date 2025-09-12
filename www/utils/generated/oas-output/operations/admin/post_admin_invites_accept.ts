@@ -6,28 +6,40 @@
  *   Accept an invite and create a new user.
  * 
  *   Since the user isn't created yet, the JWT token used in the authorization header is retrieved from the `/auth/user/emailpass/register` API route (or a provider other than `emailpass`). The user can then authenticate using the `/auth/user/emailpass` API route.
- * x-authenticated: false
+ * x-authenticated: true
  * requestBody:
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The details of the user to be created.
- *         properties:
- *           email:
- *             type: string
- *             title: email
- *             description: The user's email.
- *             format: email
- *           first_name:
- *             type: string
- *             title: first_name
- *             description: The user's first name.
- *           last_name:
- *             type: string
- *             title: last_name
- *             description: The user's last name.
+ *         $ref: "#/components/schemas/AdminInviteAccept"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       await sdk.auth.register("user", "emailpass", {
+ *         email: "user@gmail.com",
+ *         password: "supersecret"
+ *       })
+ * 
+ *       // all subsequent requests will use the token in the header
+ *       const { user } = await sdk.admin.invite.accept(
+ *         {
+ *           email: "user@gmail.com",
+ *           first_name: "John",
+ *           last_name: "Smith",
+ *           invite_token: "12345..."
+ *         },
+ *       )
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -76,6 +88,28 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: acceptInviteWorkflow
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
+ * x-events:
+ *   - name: user.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the user
+ *       }]
+ *       ```
+ *     description: Emitted when users are created.
+ *     deprecated: false
+ *   - name: invite.accepted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the invite
+ *       }
+ *       ```
+ *     description: Emitted when an invite is accepted.
+ *     deprecated: false
  * 
 */
 

@@ -22,6 +22,7 @@ const _OrderLineItem = model
     variant_title: model.text().nullable(),
     variant_option_values: model.json().nullable(),
     requires_shipping: model.boolean().default(true),
+    is_giftcard: model.boolean().default(false),
     is_discountable: model.boolean().default(true),
     is_tax_inclusive: model.boolean().default(false),
     compare_at_unit_price: model.bigNumber().nullable(),
@@ -55,19 +56,19 @@ const _OrderLineItem = model
       name: "IDX_order_line_item_product_id",
       on: ["product_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_line_item_product_type_id",
       on: ["product_type_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL AND product_type_id IS NOT NULL",
+      where: "deleted_at IS NULL AND product_type_id IS NOT NULL",
     },
     {
       name: "IDX_order_line_item_variant_id",
       on: ["variant_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
   ])
 

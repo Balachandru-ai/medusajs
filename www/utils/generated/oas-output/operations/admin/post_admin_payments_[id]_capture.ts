@@ -31,14 +31,25 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment's details.
- *         properties:
- *           amount:
- *             type: number
- *             title: amount
- *             description: The amount to capture.
+ *         $ref: "#/components/schemas/AdminCreatePaymentCapture"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.payment.capture("paycol_123", {})
+ *       .then(({ payment }) => {
+ *         console.log(payment)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -66,6 +77,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: capturePaymentWorkflow
+ * x-events:
+ *   - name: payment.captured
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // the ID of the payment
+ *       }
+ *       ```
+ *     description: Emitted when a payment is captured.
+ *     deprecated: false
  * 
 */
 

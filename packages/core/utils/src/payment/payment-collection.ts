@@ -29,6 +29,10 @@ export enum PaymentCollectionStatus {
    */
   FAILED = "failed",
   /**
+   * The payment collection is partially captured.
+   */
+  PARTIALLY_CAPTURED = "partially_captured",
+  /**
    * The payment collection is completed.
    */
   COMPLETED = "completed",

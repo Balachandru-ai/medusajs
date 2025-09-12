@@ -4,6 +4,7 @@ import {
   InferEntityType,
   InternalModuleDeclaration,
   ModulesSdkTypes,
+  ProjectConfigOptions,
   UserTypes,
 } from "@medusajs/framework/types"
 import {
@@ -11,17 +12,21 @@ import {
   CommonEvents,
   EmitEvents,
   generateEntityId,
+  generateJwtToken,
   InjectManager,
   InjectTransactionManager,
   MedusaContext,
   MedusaError,
   MedusaService,
+  moduleEventBuilderFactory,
+  Modules,
   UserEvents,
 } from "@medusajs/framework/utils"
-import jwt, { JwtPayload } from "jsonwebtoken"
+import jwt, { JwtPayload, SignOptions, VerifyOptions } from "jsonwebtoken"
 import crypto from "node:crypto"
 
 import { Invite, User } from "@models"
+import { getExpiresAt } from "../utils/utils"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -49,11 +54,18 @@ export default class UserModuleService
   protected readonly inviteService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof Invite>
   >
-  protected readonly config: { jwtSecret: string; expiresIn: number }
+  protected readonly config: {
+    jwtSecret: string
+    jwtPublicKey?: string
+    jwt_verify_options: ProjectConfigOptions["http"]["jwtVerifyOptions"]
+    jwtOptions: ProjectConfigOptions["http"]["jwtOptions"] & {
+      expiresIn: number
+    }
+  }
 
   constructor(
     { userService, inviteService, baseRepository }: InjectedDependencies,
-    protected readonly moduleDeclaration: InternalModuleDeclaration
+    moduleDeclaration: InternalModuleDeclaration
   ) {
     // @ts-ignore
     super(...arguments)
@@ -61,11 +73,18 @@ export default class UserModuleService
     this.baseRepository_ = baseRepository
     this.userService_ = userService
     this.inviteService_ = inviteService
+
     this.config = {
       jwtSecret: moduleDeclaration["jwt_secret"],
-      expiresIn:
-        parseInt(moduleDeclaration["valid_duration"]) ||
-        DEFAULT_VALID_INVITE_DURATION_SECONDS,
+      jwtPublicKey: moduleDeclaration["jwt_public_key"],
+      jwt_verify_options: moduleDeclaration["jwt_verify_options"],
+      jwtOptions: {
+        ...moduleDeclaration["jwt_options"],
+        expiresIn:
+          moduleDeclaration["valid_duration"] ??
+          moduleDeclaration["jwt_options"]?.expiresIn ??
+          DEFAULT_VALID_INVITE_DURATION_SECONDS,
+      },
     }
 
     if (!this.config.jwtSecret) {
@@ -76,13 +95,26 @@ export default class UserModuleService
     }
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
   async validateInviteToken(
     token: string,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<UserTypes.InviteDTO> {
-    const jwtSecret = this.moduleDeclaration["jwt_secret"]
-    const decoded: JwtPayload = jwt.verify(token, jwtSecret, { complete: true })
+    const options = {
+      ...(this.config.jwt_verify_options ?? this.config.jwtOptions),
+      complete: true,
+    } as VerifyOptions & SignOptions
+
+    if (!options.algorithms && options.algorithm) {
+      options.algorithms = [options.algorithm]
+      delete options.algorithm
+    }
+
+    const decoded = jwt.verify(
+      token,
+      this.config.jwtPublicKey ?? this.config.jwtSecret,
+      options
+    ) as JwtPayload
 
     const invite = await this.inviteService_.retrieve(
       decoded.payload.id,
@@ -97,9 +129,7 @@ export default class UserModuleService
       )
     }
 
-    return await this.baseRepository_.serialize<UserTypes.InviteDTO>(invite, {
-      populate: true,
-    })
+    return await this.baseRepository_.serialize<UserTypes.InviteDTO>(invite)
   }
 
   @InjectManager()
@@ -110,23 +140,21 @@ export default class UserModuleService
   ): Promise<UserTypes.InviteDTO[]> {
     const invites = await this.refreshInviteTokens_(inviteIds, sharedContext)
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      invites.map((invite) => ({
-        eventName: UserEvents.INVITE_TOKEN_GENERATED,
-        source: this.constructor.name,
-        action: "token_generated",
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
+    const serializedInvites = await this.baseRepository_.serialize<
+      UserTypes.InviteDTO[]
+    >(invites)
 
-    return await this.baseRepository_.serialize<UserTypes.InviteDTO[]>(
-      invites,
-      {
-        populate: true,
-      }
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_TOKEN_GENERATED,
+      source: Modules.USER,
+      action: CommonEvents.CREATED,
+      object: "invite",
+    })({
+      data: serializedInvites,
+      sharedContext,
+    })
+
+    return serializedInvites
   }
 
   @InjectTransactionManager()
@@ -154,10 +182,11 @@ export default class UserModuleService
       }
     }
 
+    const expiresAt = getExpiresAt(this.config.jwtOptions.expiresIn)
     const updates = invites.map((invite) => {
       return {
         id: invite.id,
-        expires_at: new Date(Date.now() + this.config.expiresIn * 1000),
+        expires_at: expiresAt,
         token: this.generateToken({ id: invite.id, email: invite.email }),
       }
     })
@@ -189,20 +218,7 @@ export default class UserModuleService
 
     const serializedUsers = await this.baseRepository_.serialize<
       UserTypes.UserDTO[] | UserTypes.UserDTO
-    >(users, {
-      populate: true,
-    })
-
-    sharedContext.messageAggregator?.saveRawMessageData(
-      users.map((user) => ({
-        eventName: UserEvents.USER_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "user",
-        context: sharedContext,
-        data: { id: user.id },
-      }))
-    )
+    >(users)
 
     return Array.isArray(data) ? serializedUsers : serializedUsers[0]
   }
@@ -231,20 +247,7 @@ export default class UserModuleService
 
     const serializedUsers = await this.baseRepository_.serialize<
       UserTypes.UserDTO[]
-    >(updatedUsers, {
-      populate: true,
-    })
-
-    sharedContext.messageAggregator?.saveRawMessageData(
-      updatedUsers.map((user) => ({
-        eventName: UserEvents.USER_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "user",
-        context: sharedContext,
-        data: { id: user.id },
-      }))
-    )
+    >(updatedUsers)
 
     return Array.isArray(data) ? serializedUsers : serializedUsers[0]
   }
@@ -273,31 +276,17 @@ export default class UserModuleService
 
     const serializedInvites = await this.baseRepository_.serialize<
       UserTypes.InviteDTO[] | UserTypes.InviteDTO
-    >(invites, {
-      populate: true,
+    >(invites)
+
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_TOKEN_GENERATED,
+      source: Modules.USER,
+      action: "token_generated",
+      object: "invite",
+    })({
+      data: serializedInvites,
+      sharedContext,
     })
-
-    sharedContext.messageAggregator?.saveRawMessageData(
-      invites.map((invite) => ({
-        eventName: UserEvents.INVITE_CREATED,
-        source: this.constructor.name,
-        action: CommonEvents.CREATED,
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
-
-    sharedContext.messageAggregator?.saveRawMessageData(
-      invites.map((invite) => ({
-        eventName: UserEvents.INVITE_TOKEN_GENERATED,
-        source: this.constructor.name,
-        action: "token_generated",
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
 
     return Array.isArray(data) ? serializedInvites : serializedInvites[0]
   }
@@ -320,12 +309,14 @@ export default class UserModuleService
       )
     }
 
+    const expiresAt = getExpiresAt(this.config.jwtOptions.expiresIn)
+
     const toCreate = data.map((invite) => {
       const id = generateEntityId((invite as { id?: string }).id, "invite")
       return {
         ...invite,
         id,
-        expires_at: new Date(Date.now() + this.config.expiresIn * 1000),
+        expires_at: expiresAt,
         token: this.generateToken({ id, email: invite.email }),
       }
     })
@@ -360,29 +351,31 @@ export default class UserModuleService
 
     const serializedInvites = await this.baseRepository_.serialize<
       UserTypes.InviteDTO[]
-    >(updatedInvites, {
-      populate: true,
-    })
+    >(updatedInvites)
 
-    sharedContext.messageAggregator?.saveRawMessageData(
-      serializedInvites.map((invite) => ({
-        eventName: UserEvents.INVITE_UPDATED,
-        source: this.constructor.name,
-        action: CommonEvents.UPDATED,
-        object: "invite",
-        context: sharedContext,
-        data: { id: invite.id },
-      }))
-    )
+    moduleEventBuilderFactory({
+      eventName: UserEvents.INVITE_TOKEN_GENERATED,
+      source: Modules.USER,
+      action: "token_generated",
+      object: "invite",
+    })({
+      data: serializedInvites,
+      sharedContext,
+    })
 
     return Array.isArray(data) ? serializedInvites : serializedInvites[0]
   }
 
   private generateToken(data: any): string {
-    const jwtSecret: string = this.moduleDeclaration["jwt_secret"]
-    return jwt.sign(data, jwtSecret, {
-      jwtid: crypto.randomUUID(),
-      expiresIn: this.config.expiresIn,
+    const jwtId = this.config.jwtOptions.jwtid ?? crypto.randomUUID()
+    const token = generateJwtToken(data, {
+      secret: this.config.jwtSecret,
+      jwtOptions: {
+        ...this.config.jwtOptions,
+        jwtid: jwtId,
+      },
     })
+
+    return token
   }
 }

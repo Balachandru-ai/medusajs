@@ -58,6 +58,7 @@ export type MigrationOptions = {
   container?: MedusaContainer
   options?: Record<string, any>
   moduleExports?: ModuleExports
+  cwd?: string
 }
 
 export type ModuleBootstrapOptions = {
@@ -80,6 +81,7 @@ export type ModuleBootstrapOptions = {
    */
   loaderOnly?: boolean
   workerMode?: "shared" | "worker" | "server"
+  cwd?: string
 }
 
 export type LinkModuleBootstrapOptions = {
@@ -87,6 +89,7 @@ export type LinkModuleBootstrapOptions = {
   declaration?: InternalModuleDeclaration
   moduleExports?: ModuleExports
   injectedDependencies?: Record<string, any>
+  cwd?: string
 }
 
 export type RegisterModuleJoinerConfig =
@@ -289,10 +292,12 @@ class MedusaModule {
       migrationOnly,
       loaderOnly,
       workerMode,
+      cwd,
     }: {
       migrationOnly?: boolean
       loaderOnly?: boolean
       workerMode?: ModuleBootstrapOptions["workerMode"]
+      cwd?: string
     }
   ): Promise<
     {
@@ -303,6 +308,7 @@ class MedusaModule {
       migrationOnly,
       loaderOnly,
       workerMode,
+      cwd,
     })
   }
 
@@ -330,6 +336,7 @@ class MedusaModule {
     migrationOnly,
     loaderOnly,
     workerMode,
+    cwd,
   }: ModuleBootstrapOptions): Promise<{
     [key: string]: T
   }> {
@@ -349,6 +356,7 @@ class MedusaModule {
         migrationOnly,
         loaderOnly,
         workerMode,
+        cwd,
       }
     )
 
@@ -369,16 +377,18 @@ class MedusaModule {
   protected static async bootstrap_<T>(
     modulesOptions: Omit<
       ModuleBootstrapOptions,
-      "migrationOnly" | "loaderOnly" | "workerMode"
+      "migrationOnly" | "loaderOnly" | "workerMode" | "cwd"
     >[],
     {
       migrationOnly,
       loaderOnly,
       workerMode,
+      cwd = process.cwd(),
     }: {
       migrationOnly?: boolean
       loaderOnly?: boolean
       workerMode?: "shared" | "worker" | "server"
+      cwd?: string
     }
   ): Promise<
     {
@@ -395,104 +405,110 @@ class MedusaModule {
 
     const services: { [Key: string]: any }[] = []
 
-    for (const moduleOptions of modulesOptions) {
-      const {
-        moduleKey,
-        defaultPath,
-        declaration,
-        moduleExports,
-        sharedContainer,
-        moduleDefinition,
-        injectedDependencies,
-      } = moduleOptions
+    await promiseAll(
+      modulesOptions.map(async (moduleOptions) => {
+        const {
+          moduleKey,
+          defaultPath,
+          declaration,
+          moduleExports,
+          sharedContainer,
+          moduleDefinition,
+          injectedDependencies,
+        } = moduleOptions
 
-      const hashKey = simpleHash(
-        stringifyCircular({ moduleKey, defaultPath, declaration })
-      )
+        const hashKey = simpleHash(
+          stringifyCircular({ moduleKey, defaultPath, declaration })
+        )
 
-      let finishLoading: any
-      let errorLoading: any
+        let finishLoading: any
+        let errorLoading: any
 
-      const loadingPromise = new Promise((resolve, reject) => {
-        finishLoading = resolve
-        errorLoading = reject
-      })
+        const loadingPromise = new Promise((resolve, reject) => {
+          finishLoading = resolve
+          errorLoading = reject
+        })
 
-      if (!loaderOnly && MedusaModule.instances_.has(hashKey)) {
-        services.push(MedusaModule.instances_.get(hashKey)!)
-        continue
-      }
+        if (!loaderOnly && MedusaModule.instances_.has(hashKey)) {
+          services.push(MedusaModule.instances_.get(hashKey)!)
+          return
+        }
 
-      if (!loaderOnly && MedusaModule.loading_.has(hashKey)) {
-        services.push(await MedusaModule.loading_.get(hashKey))
-        continue
-      }
+        if (!loaderOnly && MedusaModule.loading_.has(hashKey)) {
+          services.push(await MedusaModule.loading_.get(hashKey))
+          return
+        }
 
-      if (!loaderOnly) {
-        MedusaModule.loading_.set(hashKey, loadingPromise)
-      }
+        if (!loaderOnly) {
+          MedusaModule.loading_.set(hashKey, loadingPromise)
+        }
 
-      let modDeclaration =
-        declaration ??
-        ({} as InternalModuleDeclaration | ExternalModuleDeclaration)
+        let modDeclaration =
+          declaration ??
+          ({} as InternalModuleDeclaration | ExternalModuleDeclaration)
 
-      if (declaration?.scope !== MODULE_SCOPE.EXTERNAL) {
-        modDeclaration = {
-          scope: declaration?.scope || MODULE_SCOPE.INTERNAL,
-          resolve: defaultPath,
-          options: declaration?.options ?? declaration,
-          dependencies:
-            (declaration as InternalModuleDeclaration)?.dependencies ?? [],
-          alias: declaration?.alias,
-          main: declaration?.main,
-          worker_mode: workerMode,
-        } as InternalModuleDeclaration
-      }
+        if (declaration?.scope !== MODULE_SCOPE.EXTERNAL) {
+          modDeclaration = {
+            scope: declaration?.scope || MODULE_SCOPE.INTERNAL,
+            resolve: defaultPath,
+            options: declaration?.options ?? declaration,
+            dependencies:
+              (declaration as InternalModuleDeclaration)?.dependencies ?? [],
+            alias: declaration?.alias,
+            main: declaration?.main,
+            worker_mode: workerMode,
+          } as InternalModuleDeclaration
+        }
 
-      const container = sharedContainer ?? createMedusaContainer()
+        const container = sharedContainer ?? createMedusaContainer()
 
-      if (injectedDependencies) {
-        for (const service in injectedDependencies) {
-          container.register(service, asValue(injectedDependencies[service]))
-          if (!container.hasRegistration(service)) {
+        if (injectedDependencies) {
+          for (const service in injectedDependencies) {
             container.register(service, asValue(injectedDependencies[service]))
+            if (!container.hasRegistration(service)) {
+              container.register(
+                service,
+                asValue(injectedDependencies[service])
+              )
+            }
           }
         }
-      }
 
-      const moduleResolutions = registerMedusaModule(
-        moduleKey,
-        modDeclaration!,
-        moduleExports,
-        moduleDefinition
-      )
-
-      const logger_ =
-        container.resolve(ContainerRegistrationKeys.LOGGER, {
-          allowUnregistered: true,
-        }) ?? logger
-
-      try {
-        await moduleLoader({
-          container,
-          moduleResolutions,
-          logger: logger_,
-          migrationOnly,
-          loaderOnly,
+        const moduleResolutions = registerMedusaModule({
+          moduleKey,
+          moduleDeclaration: modDeclaration!,
+          moduleExports,
+          definition: moduleDefinition,
+          cwd,
         })
-      } catch (err) {
-        errorLoading(err)
-        throw err
-      }
 
-      loadedModules.push({
-        hashKey,
-        modDeclaration,
-        moduleResolutions,
-        container,
-        finishLoading,
+        const logger_ =
+          container.resolve(ContainerRegistrationKeys.LOGGER, {
+            allowUnregistered: true,
+          }) ?? logger
+
+        try {
+          await moduleLoader({
+            container,
+            moduleResolutions,
+            logger: logger_,
+            migrationOnly,
+            loaderOnly,
+          })
+        } catch (err) {
+          errorLoading(err)
+          throw err
+        }
+
+        loadedModules.push({
+          hashKey,
+          modDeclaration,
+          moduleResolutions,
+          container,
+          finishLoading,
+        })
       })
-    }
+    )
 
     if (loaderOnly) {
       loadedModules.forEach(({ finishLoading }) => finishLoading({}))
@@ -612,6 +628,7 @@ class MedusaModule {
     declaration,
     moduleExports,
     injectedDependencies,
+    cwd,
   }: LinkModuleBootstrapOptions): Promise<{
     [key: string]: unknown
   }> {
@@ -667,7 +684,8 @@ class MedusaModule {
     const moduleResolutions = registerMedusaLinkModule(
       moduleDefinition,
       modDeclaration as InternalModuleDeclaration,
-      moduleExports
+      moduleExports,
+      cwd
     )
 
     const logger_ =
@@ -744,11 +762,16 @@ class MedusaModule {
     moduleExports,
     moduleKey,
     modulePath,
+    cwd,
   }: MigrationOptions): Promise<void> {
-    const moduleResolutions = registerMedusaModule(moduleKey, {
-      scope: MODULE_SCOPE.INTERNAL,
-      resolve: modulePath,
-      options,
+    const moduleResolutions = registerMedusaModule({
+      moduleKey,
+      moduleDeclaration: {
+        scope: MODULE_SCOPE.INTERNAL,
+        resolve: modulePath,
+        options,
+      },
+      cwd,
     })
 
     const logger_ =
@@ -760,6 +783,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { generateMigration } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
@@ -780,11 +804,16 @@ class MedusaModule {
     moduleExports,
     moduleKey,
     modulePath,
+    cwd,
   }: MigrationOptions): Promise<void> {
-    const moduleResolutions = registerMedusaModule(moduleKey, {
-      scope: MODULE_SCOPE.INTERNAL,
-      resolve: modulePath,
-      options,
+    const moduleResolutions = registerMedusaModule({
+      moduleKey,
+      moduleDeclaration: {
+        scope: MODULE_SCOPE.INTERNAL,
+        resolve: modulePath,
+        options,
+      },
+      cwd,
     })
 
     const logger_ =
@@ -796,6 +825,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { runMigrations } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )
@@ -816,11 +846,16 @@ class MedusaModule {
     moduleExports,
     moduleKey,
     modulePath,
+    cwd,
   }: MigrationOptions): Promise<void> {
-    const moduleResolutions = registerMedusaModule(moduleKey, {
-      scope: MODULE_SCOPE.INTERNAL,
-      resolve: modulePath,
-      options,
+    const moduleResolutions = registerMedusaModule({
+      moduleKey,
+      moduleDeclaration: {
+        scope: MODULE_SCOPE.INTERNAL,
+        resolve: modulePath,
+        options,
+      },
+      cwd,
     })
 
     const logger_ =
@@ -832,6 +867,7 @@ class MedusaModule {
 
     for (const mod in moduleResolutions) {
       const { revertMigration } = await loadModuleMigrations(
+        container,
         moduleResolutions[mod],
         moduleExports
       )

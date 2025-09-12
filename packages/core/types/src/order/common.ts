@@ -21,12 +21,15 @@ export type ChangeActionType =
   | "RETURN_ITEM"
   | "SHIPPING_ADD"
   | "SHIPPING_REMOVE"
+  | "SHIPPING_UPDATE"
   | "SHIP_ITEM"
   | "WRITE_OFF_ITEM"
   | "REINSTATE_ITEM"
   | "TRANSFER_CUSTOMER"
   | "UPDATE_ORDER_PROPERTIES"
   | "CREDIT_LINE_ADD"
+  | "PROMOTION_ADD"
+  | "PROMOTION_REMOVE"
 
 export type OrderChangeStatus =
   | "confirmed"
@@ -327,7 +330,7 @@ export interface OrderAddressDTO {
   country_code?: string
 
   /**
-   * The province/state of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province/state of the address.
    */
   province?: string
 
@@ -790,6 +793,11 @@ export interface OrderLineItemDTO extends OrderLineItemTotalsDTO {
   is_discountable: boolean
 
   /**
+   * Indicates whether the line item is a gift card.
+   */
+  is_giftcard: boolean
+
+  /**
    * Indicates whether the line item price is tax inclusive.
    */
   is_tax_inclusive: boolean
@@ -1115,6 +1123,11 @@ export interface OrderDTO {
   summary?: OrderSummaryDTO
 
   /**
+   * Whether the order is a draft order.
+   */
+  is_draft_order?: boolean
+
+  /**
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
@@ -1133,6 +1146,11 @@ export interface OrderDTO {
    * When the order was updated.
    */
   updated_at: string | Date
+
+  /**
+   * When the order was deleted.
+   */
+  deleted_at?: string | Date
 
   /**
    * The original item total of the order.
@@ -1163,6 +1181,11 @@ export interface OrderDTO {
    * The item tax total of the order.
    */
   item_tax_total: BigNumberValue
+
+  /**
+   * The item discount total of the order.
+   */
+  item_discount_total: BigNumberValue
 
   /**
    * The original total of the order.
@@ -1210,6 +1233,11 @@ export interface OrderDTO {
   discount_tax_total: BigNumberValue
 
   /**
+   * The credit line total of the order.
+   */
+  credit_line_total: BigNumberValue
+
+  /**
    * The gift card total of the order.
    */
   gift_card_total: BigNumberValue
@@ -1233,6 +1261,11 @@ export interface OrderDTO {
    * The shipping tax total of the order.
    */
   shipping_tax_total: BigNumberValue
+
+  /**
+   * The shipping discount total of the order.
+   */
+  shipping_discount_total: BigNumberValue
 
   /**
    * The original shipping total of the order.
@@ -1346,6 +1379,13 @@ export interface OrderDTO {
    * @ignore
    */
   raw_discount_tax_total: BigNumberRawValue
+
+  /**
+   * The raw credit line total of the order.
+   *
+   * @ignore
+   */
+  raw_credit_line_total: BigNumberRawValue
 
   /**
    * The raw gift card total of the order.
@@ -1587,6 +1627,18 @@ export interface OrderReturnItemDTO {
    * @ignore
    */
   raw_received_quantity?: BigNumberRawValue
+
+  /**
+   * The damaged quantity of the return item.
+   */
+  damaged_quantity?: number
+
+  /**
+   * The raw damaged quantity of the return item.
+   *
+   * @ignore
+   */
+  raw_damaged_quantity?: BigNumberRawValue
 
   /**
    * Holds custom data in key-value pairs.
@@ -2446,11 +2498,6 @@ export interface FilterableOrderLineItemProps
   id?: string | string[]
 
   /**
-   * Filter line items by their associated order's ID.
-   */
-  order_id?: string | string[]
-
-  /**
    * Filter by line items' title.
    */
   title?: string
@@ -2506,11 +2553,6 @@ export interface FilterableOrderShippingMethodProps
    * The IDs to filter the shipping methods by.
    */
   id?: string | string[]
-
-  /**
-   * Filter the shipping methods by their associated order's ID.
-   */
-  order_id?: string | string[]
 
   /**
    * Filter shipping methods by their name.
@@ -2775,32 +2817,6 @@ export interface FilterableOrderTransactionProps
 }
 
 /**
- * The filters to apply on the retrieved order items.
- */
-export interface FilterableOrderItemProps
-  extends BaseFilterable<FilterableOrderItemProps> {
-  /**
-   * The IDs to filter the order items by.
-   */
-  id?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their associated order's ID.
-   */
-  order_id?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their version.
-   */
-  version?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their associated line item's ID.
-   */
-  item_id?: string | string[] | OperatorMap<string>
-}
-
-/**
  * The filters to apply on the retrieved return reasons.
  */
 export interface FilterableOrderReturnReasonProps
@@ -2970,7 +2986,12 @@ export interface OrderChangeReturn {
   /**
    * The list of shipping methods created or updated.
    */
-  shippingMethods: any[]
+  shipping_methods: any[]
+
+  /**
+   * The list of credit lines created or updated.
+   */
+  credit_lines: OrderCreditLineDTO[]
 }
 
 /**

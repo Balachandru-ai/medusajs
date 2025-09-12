@@ -4,12 +4,9 @@ import { Context } from "../shared-context"
 import { FilterableNotificationProps, NotificationDTO } from "./common"
 import { CreateNotificationDTO } from "./mutations"
 
-/**
- * The main service interface for the Notification Module.
- */
 export interface INotificationModuleService extends IModuleService {
   /**
-   * This method is used to send multiple notifications, and store the requests in the DB.
+   * This method is used to send multiple notifications and store them in the database.
    *
    * @param {CreateNotificationDTO[]} data - The notifications to be sent.
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
@@ -35,7 +32,7 @@ export interface INotificationModuleService extends IModuleService {
   ): Promise<NotificationDTO[]>
 
   /**
-   * This method is used to send a notification, and store the request in the DB.
+   * This method is used to send a notification, and store the request in the database.
    *
    * @param {CreateNotificationDTO} data - The notification to be sent.
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
@@ -72,6 +69,13 @@ export interface INotificationModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const notification = await notificationModuleService.retrieveNotification(
@@ -108,6 +112,13 @@ export interface INotificationModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the notifications:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const notifications = await notificationModuleService.listNotifications(
@@ -162,6 +173,13 @@ export interface INotificationModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the notifications:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [notifications, count] =

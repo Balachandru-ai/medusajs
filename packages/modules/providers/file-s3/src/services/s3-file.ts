@@ -1,6 +1,8 @@
 import {
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
+  ObjectCannedACL,
   PutObjectCommand,
   S3Client,
   S3ClientConfigType,
@@ -16,6 +18,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import path from "path"
+import { Readable } from "stream"
 import { ulid } from "ulid"
 
 type InjectedDependencies = {
@@ -35,6 +38,8 @@ interface S3FileServiceConfig {
   downloadFileDuration?: number
   additionalClientConfig?: Record<string, any>
 }
+
+const DEFAULT_UPLOAD_EXPIRATION_DURATION_SECONDS = 60 * 60
 
 export class S3FileService extends AbstractFileProviderService {
   static identifier = "s3"
@@ -148,14 +153,33 @@ export class S3FileService extends AbstractFileProviderService {
     }
   }
 
-  async delete(file: FileTypes.ProviderDeleteFileDTO): Promise<void> {
-    const command = new DeleteObjectCommand({
-      Bucket: this.config_.bucket,
-      Key: file.fileKey,
-    })
-
+  async delete(
+    files: FileTypes.ProviderDeleteFileDTO | FileTypes.ProviderDeleteFileDTO[]
+  ): Promise<void> {
     try {
-      await this.client_.send(command)
+      /**
+       * Bulk delete files
+       */
+      if (Array.isArray(files)) {
+        await this.client_.send(
+          new DeleteObjectsCommand({
+            Bucket: this.config_.bucket,
+            Delete: {
+              Objects: files.map((file) => ({
+                Key: file.fileKey,
+              })),
+              Quiet: true,
+            },
+          })
+        )
+      } else {
+        await this.client_.send(
+          new DeleteObjectCommand({
+            Bucket: this.config_.bucket,
+            Key: files.fileKey,
+          })
+        )
+      }
     } catch (e) {
       // TODO: Rethrow depending on the error (eg. a file not found error is fine, but a failed request should be rethrown)
       this.logger_.error(e)
@@ -174,5 +198,82 @@ export class S3FileService extends AbstractFileProviderService {
     return await getSignedUrl(this.client_, command, {
       expiresIn: this.config_.downloadFileDuration,
     })
+  }
+
+  // Note: Some providers (eg. AWS S3) allows IAM policies to further restrict what can be uploaded.
+  async getPresignedUploadUrl(
+    fileData: FileTypes.ProviderGetPresignedUploadUrlDTO
+  ): Promise<FileTypes.ProviderFileResultDTO> {
+    if (!fileData?.filename) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `No filename provided`
+      )
+    }
+
+    const fileKey = `${this.config_.prefix}${fileData.filename}`
+
+    let acl: ObjectCannedACL | undefined
+    if (fileData.access) {
+      acl = fileData.access === "public" ? "public-read" : "private"
+    }
+
+    // Using content-type, acl, etc. doesn't work with all providers, and some simply ignore it.
+    const command = new PutObjectCommand({
+      Bucket: this.config_.bucket,
+      ContentType: fileData.mimeType,
+      ACL: acl,
+      Key: fileKey,
+    })
+
+    const signedUrl = await getSignedUrl(this.client_, command, {
+      expiresIn:
+        fileData.expiresIn ?? DEFAULT_UPLOAD_EXPIRATION_DURATION_SECONDS,
+    })
+
+    return {
+      url: signedUrl,
+      key: fileKey,
+    }
+  }
+
+  async getDownloadStream(
+    file: FileTypes.ProviderGetFileDTO
+  ): Promise<Readable> {
+    if (!file?.fileKey) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `No fileKey provided`
+      )
+    }
+
+    const fileKey = file.fileKey
+    const response = await this.client_.send(
+      new GetObjectCommand({
+        Key: fileKey,
+        Bucket: this.config_.bucket,
+      })
+    )
+
+    return response.Body! as Readable
+  }
+
+  async getAsBuffer(file: FileTypes.ProviderGetFileDTO): Promise<Buffer> {
+    if (!file?.fileKey) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `No fileKey provided`
+      )
+    }
+
+    const fileKey = file.fileKey
+    const response = await this.client_.send(
+      new GetObjectCommand({
+        Key: fileKey,
+        Bucket: this.config_.bucket,
+      })
+    )
+
+    return Buffer.from(await response.Body!.transformToByteArray())
   }
 }

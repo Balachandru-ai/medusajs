@@ -8,7 +8,8 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
+import { useRemoteQueryStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { removeShippingMethodFromCartStep } from "../steps"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
@@ -16,11 +17,15 @@ import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-o
 /**
  * The details of the cart to refresh.
  */
-export type RefreshCartShippingMethodsWorkflowInput = { 
+export type RefreshCartShippingMethodsWorkflowInput = {
   /**
    * The cart's ID.
    */
-  cart_id: string
+  cart_id?: string
+  /**
+   * The Cart reference.
+   */
+  cart?: any
 }
 
 export const refreshCartShippingMethodsWorkflowId =
@@ -28,9 +33,9 @@ export const refreshCartShippingMethodsWorkflowId =
 /**
  * This workflow refreshes a cart's shipping methods, ensuring that their associated shipping options can still be used on the cart,
  * and retrieve their correct pricing after a cart update. This workflow is used by the {@link refreshCartItemsWorkflow}.
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to refresh the cart's shipping method after making updates to the cart.
- * 
+ *
  * @example
  * const { result } = await refreshCartShippingMethodsWorkflow(container)
  * .run({
@@ -38,36 +43,69 @@ export const refreshCartShippingMethodsWorkflowId =
  *     cart_id: "cart_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Refresh a cart's shipping methods after an update.
- * 
+ *
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const refreshCartShippingMethodsWorkflow = createWorkflow(
-  refreshCartShippingMethodsWorkflowId,
+  {
+    name: refreshCartShippingMethodsWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
-    const cartQuery = useQueryGraphStep({
-      entity: "cart",
-      filters: { id: input.cart_id },
-      fields: [
-        "id",
-        "sales_channel_id",
-        "currency_code",
-        "region_id",
-        "shipping_methods.*",
-        "shipping_address.city",
-        "shipping_address.country_code",
-        "shipping_address.province",
-        "shipping_methods.shipping_option_id",
-        "shipping_methods.data",
-        "total",
-      ],
-      options: { throwIfKeyNotFound: true },
-    }).config({ name: "get-cart" })
+    const shouldExecute = transform({ input }, ({ input }) => {
+      return (
+        !!input.cart_id ||
+        (!!input.cart && !!input.cart.shipping_methods?.length)
+      )
+    })
 
-    const cart = transform({ cartQuery }, ({ cartQuery }) => cartQuery.data[0])
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
+    const fetchCart = when(
+      "fetch-cart",
+      { shouldExecute },
+      ({ shouldExecute }) => {
+        return shouldExecute
+      }
+    ).then(() => {
+      return useRemoteQueryStep({
+        entry_point: "cart",
+        fields: [
+          "id",
+          "sales_channel_id",
+          "currency_code",
+          "region_id",
+          "shipping_methods.*",
+          "shipping_address.city",
+          "shipping_address.country_code",
+          "shipping_address.province",
+          "shipping_methods.shipping_option_id",
+          "shipping_methods.data",
+          "total",
+        ],
+        variables: { id: cartId },
+        throw_if_key_not_found: true,
+        list: false,
+      }).config({ name: "get-cart" })
+    })
+
+    const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
+      return fetchCart ?? input.cart
+    })
+
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const listShippingOptionsInput = transform({ cart }, ({ cart }) =>
       (cart.shipping_methods || [])
         .map((shippingMethod) => ({
@@ -82,9 +120,13 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
       cart,
     })
 
-    when({ listShippingOptionsInput }, ({ listShippingOptionsInput }) => {
-      return !!listShippingOptionsInput?.length
-    }).then(() => {
+    when(
+      "should-prepare-shipping-methods",
+      { listShippingOptionsInput },
+      ({ listShippingOptionsInput }) => {
+        return !!listShippingOptionsInput?.length
+      }
+    ).then(() => {
       const shippingOptions =
         listShippingOptionsForCartWithPricingWorkflow.runAsStep({
           input: {
@@ -159,6 +201,11 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
         }),
         updateShippingMethodsStep(shippingMethodsData.shippingMethodsToUpdate)
       )
+
+      releaseLockStep({
+        key: cart.id,
+        skipOnSubWorkflow: true,
+      })
     })
 
     return new WorkflowResponse(void 0, {

@@ -1,4 +1,5 @@
 import {
+  AdditionalData,
   BigNumberInput,
   OrderChangeDTO,
   OrderDTO,
@@ -7,10 +8,12 @@ import {
 import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   WorkflowResponse,
+  createHook,
   createStep,
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
+import { pricingContextResult } from "../../../cart/utils/schemas"
 import { useRemoteQueryStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps"
 import { createOrderShippingMethods } from "../../steps/create-order-shipping-methods"
@@ -110,12 +113,47 @@ export const createOrderEditShippingMethodWorkflowId =
  * @summary
  *
  * Create a shipping method for an order edit.
+ * 
+ * @property hooks.setPricingContext - This hook is executed before the shipping method is created. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
+ * 
+ * For example, assuming you have the following custom pricing rule:
+ * 
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ * 
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ * 
+ * ```ts
+ * import { createOrderEditShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ * 
+ * createOrderEditShippingMethodWorkflow.hooks.setPricingContext((
+ *   { order, shipping_option_id, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ * 
+ * The price of the shipping method's option will now be retrieved using the context you return.
+ * 
+ * :::note
+ * 
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ * 
+ * :::
  */
 export const createOrderEditShippingMethodWorkflow = createWorkflow(
   createOrderEditShippingMethodWorkflowId,
   function (
-    input: CreateOrderEditShippingMethodWorkflowInput
-  ): WorkflowResponse<OrderPreviewDTO> {
+    input: CreateOrderEditShippingMethodWorkflowInput & AdditionalData
+  ) {
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["id", "status", "currency_code", "canceled_at"],
@@ -123,6 +161,29 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
       list: false,
       throw_if_key_not_found: true,
     }).config({ name: "order-query" })
+
+    const setPricingContext = createHook(
+      "setPricingContext",
+      {
+        order,
+        shipping_option_id: input.shipping_option_id,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: pricingContextResult,
+      }
+    )
+    const setPricingContextResult = setPricingContext.getResult()
+
+    const pricingContext = transform(
+      { order, setPricingContextResult },
+      (data) => {
+        return {
+          ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
+          currency_code: data.order.currency_code,
+        }
+      }
+    )
 
     const shippingOptions = useRemoteQueryStep({
       entry_point: "shipping_option",
@@ -135,7 +196,7 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
       variables: {
         id: input.shipping_option_id,
         calculated_price: {
-          context: { currency_code: order.currency_code },
+          context: pricingContext,
         },
       },
     }).config({ name: "fetch-shipping-option" })
@@ -185,7 +246,6 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
         createdMethods,
         customPrice: input.custom_amount,
         orderChange,
-        input,
       },
       ({
         shippingOptions,
@@ -193,7 +253,6 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
         createdMethods,
         customPrice,
         orderChange,
-        input,
       }) => {
         const shippingOption = shippingOptions[0]
         const createdMethod = createdMethods[0]
@@ -215,6 +274,11 @@ export const createOrderEditShippingMethodWorkflow = createWorkflow(
       input: [orderChangeActionInput],
     })
 
-    return new WorkflowResponse(previewOrderChangeStep(order.id))
+    return new WorkflowResponse(
+      previewOrderChangeStep(order.id) as OrderPreviewDTO,
+      {
+        hooks: [setPricingContext] as const,
+      }
+    )
   }
 )

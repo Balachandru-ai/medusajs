@@ -8,7 +8,7 @@ import { Context, LoadedModule, MedusaContainer } from "@medusajs/types"
 
 type BaseFlowRunOptions = {
   context?: Context
-  resultFrom?: string | string[] | Symbol
+  resultFrom?: string | Symbol
   throwOnError?: boolean
   logOnError?: boolean
   events?: DistributedTransactionEvents
@@ -25,15 +25,25 @@ export type FlowRegisterStepSuccessOptions<TData = unknown> =
     response?: TData
   }
 
+export type FlowRetryStepOptions = Omit<BaseFlowRunOptions, "resultFrom"> & {
+  idempotencyKey: string
+}
+
 export type FlowRegisterStepFailureOptions<TData = unknown> =
   BaseFlowRunOptions & {
     idempotencyKey: string
     response?: TData
+    forcePermanentFailure?: boolean
   }
 
-export type FlowCancelOptions = BaseFlowRunOptions & {
+export type FlowCancelOptions = {
   transaction?: DistributedTransactionType
   transactionId?: string
+  context?: Context
+  throwOnError?: boolean
+  logOnError?: boolean
+  events?: DistributedTransactionEvents
+  container?: LoadedModule[] | MedusaContainer
 }
 
 /**
@@ -87,6 +97,7 @@ export type ExportedWorkflow<
       TResultOverride extends undefined ? TResult : TResultOverride
     >
   >
+  retryStep: (args?: FlowRetryStepOptions) => Promise<WorkflowResult>
   cancel: (args?: FlowCancelOptions) => Promise<WorkflowResult>
 }
 

@@ -12,13 +12,14 @@ const BellAlertDone = React.forwardRef<SVGSVGElement, IconProps>(
         {...props}
       >
         <g clipPath="url(#a)">
-          <circle cx={12.5} cy={2.5} r={2.5} fill="#60A5FA" />
+          <circle cx={12.5} cy={2.5} r={2.5} fill="#2563EB" />
           <circle
             cx={12.5}
             cy={2.5}
-            r={2}
+            r={2.25}
             stroke={color}
-            strokeOpacity={0.12}
+            strokeOpacity={0.24}
+            strokeWidth={0.5}
           />
           <path
             fill={color}

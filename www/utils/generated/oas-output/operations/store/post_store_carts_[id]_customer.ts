@@ -38,6 +38,27 @@
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       sdk.store.cart.transferCart("cart_123")
+ *       .then(({ cart }) => {
+ *         console.log(cart)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -65,6 +86,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: transferCartCustomerWorkflow
+ * x-events:
+ *   - name: cart.customer_transferred
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *         customer_id, // The ID of the customer
+ *       }
+ *       ```
+ *     description: Emitted when the customer in the cart is transferred.
+ *     deprecated: false
+ *     since: 2.8.0
  * 
 */
 

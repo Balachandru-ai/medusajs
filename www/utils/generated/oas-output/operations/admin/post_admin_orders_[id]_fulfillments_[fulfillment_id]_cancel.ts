@@ -53,6 +53,29 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The cancelation details.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.order.cancelFulfillment(
+ *         "order_123",
+ *         "ful_123",
+ *         {
+ *           no_notification: false
+ *         }
+ *       )
+ *       .then(({ order }) => {
+ *         console.log(order)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -80,6 +103,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: cancelOrderFulfillmentWorkflow
+ * x-events:
+ *   - name: order.fulfillment_canceled
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         fulfillment_id, // The ID of the fulfillment
+ *         no_notification, // (boolean) Whether to notify the customer
+ *       }
+ *       ```
+ *     description: Emitted when an order's fulfillment is canceled.
+ *     deprecated: false
  * 
 */
 

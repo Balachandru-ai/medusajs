@@ -26,8 +26,9 @@ export const POST = async (
   const token = generateJwtTokenForAuthIdentity(
     { authIdentity, actorType: req.auth_context.actor_type },
     {
-      secret: http.jwtSecret,
+      secret: http.jwtSecret!,
       expiresIn: http.jwtExpiresIn,
+      options: http.jwtOptions,
     }
   )
 

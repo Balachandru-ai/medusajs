@@ -4,10 +4,10 @@
  * description: The filfillment's details.
  * x-schemaName: AdminCreateFulfillment
  * required:
- *   - data
  *   - items
  *   - metadata
  *   - order_id
+ *   - data
  *   - location_id
  *   - provider_id
  *   - delivery_address
@@ -60,7 +60,11 @@
  *       province:
  *         type: string
  *         title: province
- *         description: The delivery address's province.
+ *         description: The delivery address's ISO 3166-2 province code. Must be lower-case.
+ *         example: us-ca
+ *         externalDocs:
+ *           url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *           description: Learn more about ISO 3166-2
  *       postal_code:
  *         type: string
  *         title: postal_code
@@ -68,6 +72,9 @@
  *       metadata:
  *         type: object
  *         description: The delivery address's metadata, used to store custom key-value pairs.
+ *         externalDocs:
+ *           url: https://docs.medusajs.com/api/admin#manage-metadata
+ *           description: Learn how to manage metadata
  *   items:
  *     type: array
  *     description: The items to fulfill.
@@ -164,6 +171,9 @@
  *   metadata:
  *     type: object
  *     description: The fulfillment's metadata, used to store custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  * 
 */
 

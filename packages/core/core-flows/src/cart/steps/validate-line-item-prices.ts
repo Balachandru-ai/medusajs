@@ -24,7 +24,7 @@ export const validateLineItemPricesStepId = "validate-line-item-prices"
 /**
  * This step validates the specified line item objects to ensure they have prices.
  * If an item doesn't have a price, the step throws an error.
- * 
+ *
  * @example
  * const data = validateLineItemPricesStep({
  *   items: [

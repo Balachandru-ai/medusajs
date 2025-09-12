@@ -26,13 +26,11 @@ export function retrieveMdxPages({ basePath }: Options): string[] {
 
       const slug = getFileSlugSync(filePath)
 
-      urls.push(
-        slug ||
-          filePath
-            .replace(basePath, "")
-            .replace(file.name, "")
-            .replace(/\/$/, "")
-      )
+      const url = (slug || filePath.replace(basePath, ""))
+        .replace(file.name, "")
+        .replace(/\/$/, "")
+
+      urls.push(url)
     }
 
     return urls

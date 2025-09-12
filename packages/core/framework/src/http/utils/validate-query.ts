@@ -77,18 +77,25 @@ export function validateAndTransformQuery<TEntity extends BaseEntity>(
       }
 
       delete req.allowed
-      const query = normalizeQuery(req)
+      const query = normalizeQuery(req) as Record<string, any>
 
       const validated = await zodValidator(zodSchema, query)
+
       const cnf = queryConfig.isList
-        ? prepareListQuery(validated, { ...queryConfig, allowed, restricted })
+        ? prepareListQuery(validated, {
+            ...queryConfig,
+            allowed,
+            restricted,
+            isList: true,
+          })
         : prepareRetrieveQuery(validated, {
             ...queryConfig,
             allowed,
             restricted,
           })
 
-      req.validatedQuery = validated
+      const { with_deleted, ...validatedQueryFilters } = validated
+      req.validatedQuery = validatedQueryFilters
       req.filterableFields = getFilterableFields(req.validatedQuery)
       req.queryConfig = cnf.remoteQueryConfig as any
       req.remoteQueryConfig = req.queryConfig

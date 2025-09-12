@@ -7,7 +7,7 @@ import type {
 } from "@mikro-orm/core"
 import { defineConfig } from "@mikro-orm/postgresql"
 import { kebabCase } from "../common"
-import { CustomTsMigrationGenerator } from "../dal"
+import { CustomDBMigrator, CustomTsMigrationGenerator } from "../dal"
 import { DmlEntity, toMikroOrmEntities } from "../dml"
 
 type Options = Partial<Omit<MikroORMOptions, "entities" | "entitiesTs">> & {
@@ -61,8 +61,10 @@ export function defineMikroOrmCliConfig(
     ...(options as any),
     entities: entities.filter(Boolean),
     migrations: {
+      snapshotName: `.snapshot-${databaseName}`,
       generator: CustomTsMigrationGenerator,
       ...options.migrations,
     },
+    extensions: [CustomDBMigrator],
   }) as ReturnedOptions
 }

@@ -21,7 +21,10 @@ type ProvidersProps = {
 
 const Providers = ({ children }: ProvidersProps) => {
   return (
-    <AnalyticsProvider writeKey={process.env.NEXT_PUBLIC_SEGMENT_API_KEY}>
+    <AnalyticsProvider
+      segmentWriteKey={process.env.NEXT_PUBLIC_SEGMENT_API_KEY}
+      reoDevKey={process.env.NEXT_PUBLIC_REO_DEV_CLIENT_ID}
+    >
       <SiteConfigProvider config={config}>
         <LearningPathProvider
           baseUrl={process.env.NEXT_PUBLIC_BASE_PATH || "/resources"}
@@ -33,16 +36,8 @@ const Providers = ({ children }: ProvidersProps) => {
                   <MainNavProvider>
                     <SearchProvider>
                       <AiAssistantProvider
-                        apiUrl={
-                          process.env.NEXT_PUBLIC_AI_ASSISTANT_URL || "temp"
-                        }
-                        websiteId={
-                          process.env.NEXT_PUBLIC_AI_WEBSITE_ID || "temp"
-                        }
-                        recaptchaSiteKey={
-                          process.env
-                            .NEXT_PUBLIC_AI_API_ASSISTANT_RECAPTCHA_SITE_KEY ||
-                          "temp"
+                        integrationId={
+                          process.env.NEXT_PUBLIC_INTEGRATION_ID || "temp"
                         }
                       >
                         <HooksLoader

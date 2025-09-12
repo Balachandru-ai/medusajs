@@ -1,7 +1,14 @@
 import { codegen } from "@graphql-codegen/core"
 import * as typescriptPlugin from "@graphql-codegen/typescript"
 import { ModuleJoinerConfig } from "@medusajs/types"
-import { type GraphQLSchema, parse, printSchema } from "graphql"
+import {
+  EnumTypeDefinitionNode,
+  EnumValueDefinitionNode,
+  type GraphQLSchema,
+  Kind,
+  parse,
+  printSchema,
+} from "graphql"
 import { FileSystem } from "../common"
 
 function buildEntryPointsTypeMap({
@@ -87,6 +94,35 @@ ${entryPoints
   }
 }
 
+const getEnumValues = (schema: GraphQLSchema) => {
+  const enumTypes = Object.values(schema.getTypeMap()).filter(
+    (type) => type.astNode?.kind === Kind.ENUM_TYPE_DEFINITION
+  )
+
+  const enumValues = {}
+  enumTypes.forEach((type) => {
+    const enumName = type.name
+    enumValues[enumName] = {}
+
+    const nodes = (type.astNode as EnumTypeDefinitionNode).values || []
+    nodes.forEach((node: EnumValueDefinitionNode) => {
+      const directive = node.directives?.find(
+        (d) => d.name.value === "enumValue"
+      )
+      if (directive) {
+        const valueArg = directive.arguments?.find(
+          (a) => a.name.value === "value"
+        )
+        if (valueArg && valueArg.value.kind === Kind.STRING) {
+          enumValues[enumName][node.name.value] = valueArg.value.value
+        }
+      }
+    })
+  })
+
+  return enumValues
+}
+
 // TODO: rename from gqlSchemaToTypes to grapthqlToTsTypes
 export async function gqlSchemaToTypes({
   schema,
@@ -118,9 +154,11 @@ export async function gqlSchemaToTypes({
     filename: "",
     schema: parse(printSchema(schema as any)),
     plugins: [
-      // Each plugin should be an object
       {
-        typescript: {}, // Here you can pass configuration to the plugin
+        typescript: {
+          enumValues: getEnumValues(schema),
+          enumsAsTypes: true,
+        },
       },
     ],
     pluginMap: {

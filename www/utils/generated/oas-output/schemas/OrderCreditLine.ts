@@ -7,6 +7,7 @@
  *   - id
  *   - order_id
  *   - order
+ *   - amount
  *   - reference
  *   - reference_id
  *   - metadata
@@ -34,6 +35,9 @@
  *   metadata:
  *     type: object
  *     description: The credit line's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -44,6 +48,10 @@
  *     format: date-time
  *     title: updated_at
  *     description: The date the credit line was updated.
+ *   amount:
+ *     type: number
+ *     title: amount
+ *     description: The credit line's amount.
  * 
 */
 

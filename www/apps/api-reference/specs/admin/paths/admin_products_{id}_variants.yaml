@@ -547,11 +547,65 @@ get:
         items:
           type: object
         title: $or
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
+    - name: ean
+      in: query
+      required: false
+      schema:
+        oneOf:
+          - type: string
+            title: ean
+            description: The product's ean.
+          - type: array
+            description: The product's ean.
+            items:
+              type: string
+              title: ean
+              description: The ean's details.
+    - name: upc
+      in: query
+      required: false
+      schema:
+        oneOf:
+          - type: string
+            title: upc
+            description: The product's upc.
+          - type: array
+            description: The product's upc.
+            items:
+              type: string
+              title: upc
+              description: The upc's details.
+    - name: barcode
+      in: query
+      required: false
+      schema:
+        oneOf:
+          - type: string
+            title: barcode
+            description: The product's barcode.
+          - type: array
+            description: The product's barcode.
+            items:
+              type: string
+              title: barcode
+              description: The barcode's details.
   security:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_{id}_variants/get.js
     - lang: Shell
       label: cURL
       source:
@@ -658,6 +712,10 @@ post:
                     `additional_data` parameter.
           description: The product variant's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_products_{id}_variants/post.js
     - lang: Shell
       label: cURL
       source:
@@ -684,3 +742,13 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createProductVariantsWorkflow
+  x-events:
+    - name: product-variant.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the product variant
+        }]
+        ```
+      description: Emitted when product variants are created.
+      deprecated: false

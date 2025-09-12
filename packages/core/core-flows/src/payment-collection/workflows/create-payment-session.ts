@@ -3,21 +3,21 @@ import {
   CustomerDTO,
   PaymentSessionDTO,
 } from "@medusajs/framework/types"
+import { isPresent, Modules } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createWorkflow,
   parallelize,
   transform,
   when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createRemoteLinkStep, useRemoteQueryStep } from "../../common"
 import {
-  createPaymentSessionStep,
   createPaymentAccountHolderStep,
+  createPaymentSessionStep,
 } from "../steps"
 import { deletePaymentSessionsWorkflow } from "./delete-payment-sessions"
-import { isPresent, Modules } from "@medusajs/framework/utils"
 
 /**
  * The data to create payment sessions.
@@ -82,14 +82,14 @@ export const createPaymentSessionsWorkflow = createWorkflow(
       list: false,
     }).config({ name: "get-payment-collection" })
 
-    const { paymentCustomer, accountHolder } = when(
+    const { paymentCustomer, accountHolder, existingAccountHolder } = when(
       "customer-id-exists",
       { input },
       (data) => {
         return !!data.input.customer_id
       }
     ).then(() => {
-      const customer: CustomerDTO & { account_holder: AccountHolderDTO } =
+      const customer: CustomerDTO & { account_holders: AccountHolderDTO[] } =
         useRemoteQueryStep({
           entry_point: "customer",
           fields: [
@@ -100,7 +100,7 @@ export const createPaymentSessionsWorkflow = createWorkflow(
             "last_name",
             "phone",
             "addresses.*",
-            "account_holder.*",
+            "account_holders.*",
             "metadata",
           ],
           variables: { id: input.customer_id },
@@ -116,27 +116,36 @@ export const createPaymentSessionsWorkflow = createWorkflow(
         }
       })
 
-      const accountHolderInput = {
-        provider_id: input.provider_id,
-        context: {
-          // The module is idempotent, so if there already is a linked account holder, the module will simply return it back.
-          account_holder: customer.account_holder,
-          customer: paymentCustomer,
-        },
-      }
+      const existingAccountHolder = transform({ customer, input }, (data) => {
+        return data.customer.account_holders.find(
+          (ac) => ac.provider_id === data.input.provider_id
+        )
+      })
+
+      const accountHolderInput = transform(
+        { existingAccountHolder, input, paymentCustomer },
+        (data) => {
+          return {
+            provider_id: data.input.provider_id,
+            context: {
+              // The module is idempotent, so if there already is a linked account holder, the module will simply return it back.
+              account_holder: data.existingAccountHolder,
+              customer: data.paymentCustomer,
+            },
+          }
+        }
+      )
 
       const accountHolder = createPaymentAccountHolderStep(accountHolderInput)
-      return { paymentCustomer, accountHolder }
+
+      return { paymentCustomer, accountHolder, existingAccountHolder }
     })
 
     when(
       "account-holder-created",
-      { paymentCustomer, accountHolder },
-      (data) => {
-        return (
-          !isPresent(data.paymentCustomer?.account_holder) &&
-          isPresent(data.accountHolder)
-        )
+      { paymentCustomer, accountHolder, input, existingAccountHolder },
+      ({ existingAccountHolder, accountHolder }) => {
+        return !isPresent(existingAccountHolder) && isPresent(accountHolder)
       }
     ).then(() => {
       createRemoteLinkStep([

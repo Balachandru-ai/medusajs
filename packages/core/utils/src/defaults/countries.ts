@@ -202,12 +202,6 @@ export const defaultCountries: Country[] = [
   { alpha2: "LT", name: "Lithuania", alpha3: "LTU", numeric: "440" },
   { alpha2: "LU", name: "Luxembourg", alpha3: "LUX", numeric: "442" },
   { alpha2: "MO", name: "Macao", alpha3: "MAC", numeric: "446" },
-  {
-    alpha2: "MK",
-    name: "Macedonia, the Former Yugoslav Republic of",
-    alpha3: "MKD",
-    numeric: "807",
-  },
   { alpha2: "MG", name: "Madagascar", alpha3: "MDG", numeric: "450" },
   { alpha2: "MW", name: "Malawi", alpha3: "MWI", numeric: "454" },
   { alpha2: "MY", name: "Malaysia", alpha3: "MYS", numeric: "458" },
@@ -245,6 +239,12 @@ export const defaultCountries: Country[] = [
   { alpha2: "NG", name: "Nigeria", alpha3: "NGA", numeric: "566" },
   { alpha2: "NU", name: "Niue", alpha3: "NIU", numeric: "570" },
   { alpha2: "NF", name: "Norfolk Island", alpha3: "NFK", numeric: "574" },
+  {
+    alpha2: "MK",
+    name: "North Macedonia",
+    alpha3: "MKD",
+    numeric: "807",
+  },
   {
     alpha2: "MP",
     name: "Northern Mariana Islands",

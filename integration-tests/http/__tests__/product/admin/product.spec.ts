@@ -449,7 +449,7 @@ medusaIntegrationTestRunner({
           // BREAKING: Comparison operators changed, so eg. `gt` became `$gt`
           const response = await api
             .get(
-              `/admin/products?deleted_at[$gt]=01-26-1990&q=test`,
+              `/admin/products?deleted_at[$gt]=01-26-1990&with_deleted=true&q=test`,
               adminHeaders
             )
             .catch((err) => {
@@ -519,7 +519,10 @@ medusaIntegrationTestRunner({
 
         it("returns a list of deleted products", async () => {
           const response = await api
-            .get(`/admin/products?deleted_at[$gt]=01-26-1990`, adminHeaders)
+            .get(
+              `/admin/products?deleted_at[$gt]=01-26-1990&with_deleted=true`,
+              adminHeaders
+            )
             .catch((err) => {
               console.log(err)
             })
@@ -948,6 +951,231 @@ medusaIntegrationTestRunner({
               id: newProduct.id,
             }),
           ])
+        })
+
+        it("returns a list of products filtered by variants[ean]", async () => {
+          const productWithEan = await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with EAN",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant",
+                  ean: "1234567890123",
+                  prices: [{ currency_code: "usd", amount: 100 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with different EAN",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant 2",
+                  ean: "9876543210987",
+                  prices: [{ currency_code: "usd", amount: 150 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          const response = await api
+            .get("/admin/products?variants[ean]=1234567890123", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(1)
+          expect(response.data.products).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithEan.data.product.id,
+                title: "Product with EAN",
+                variants: expect.arrayContaining([
+                  expect.objectContaining({
+                    ean: "1234567890123",
+                  }),
+                ]),
+              }),
+            ])
+          )
+        })
+
+        it("returns a list of products filtered by variants[upc]", async () => {
+          const productWithUpc = await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with UPC",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant",
+                  upc: "123456789012",
+                  prices: [{ currency_code: "usd", amount: 200 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with different UPC",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant 2",
+                  upc: "098765432109",
+                  prices: [{ currency_code: "usd", amount: 250 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          const response = await api
+            .get("/admin/products?variants[upc]=123456789012", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(1)
+          expect(response.data.products).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithUpc.data.product.id,
+                title: "Product with UPC",
+                variants: expect.arrayContaining([
+                  expect.objectContaining({
+                    upc: "123456789012",
+                  }),
+                ]),
+              }),
+            ])
+          )
+        })
+
+        it("returns a list of products filtered by variants[barcode]", async () => {
+          const productWithBarcode = await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with Barcode",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant",
+                  barcode: "1234567890",
+                  prices: [{ currency_code: "usd", amount: 300 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with different Barcode",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant 2",
+                  barcode: "0987654321",
+                  prices: [{ currency_code: "usd", amount: 350 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          const response = await api
+            .get("/admin/products?variants[barcode]=1234567890", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(1)
+          expect(response.data.products).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithBarcode.data.product.id,
+                title: "Product with Barcode",
+                variants: expect.arrayContaining([
+                  expect.objectContaining({
+                    barcode: "1234567890",
+                  }),
+                ]),
+              }),
+            ])
+          )
+        })
+
+        it("returns empty list when filtering by non-existent variants[ean]", async () => {
+          const response = await api
+            .get("/admin/products?variants[ean]=5555555555555", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(0)
+        })
+
+        it("returns empty list when filtering by non-existent variants[upc]", async () => {
+          const response = await api
+            .get("/admin/products?variants[upc]=555555555555", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(0)
+        })
+
+        it("returns empty list when filtering by non-existent variants[barcode]", async () => {
+          const response = await api
+            .get("/admin/products?variants[barcode]=5555555555", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(0)
         })
       })
 
@@ -1585,6 +1813,110 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("updates products relations and attributes", async () => {
+          const shortsCategory = (
+            await api.post(
+              "/admin/product-categories",
+              { name: "Shorts", is_internal: false, is_active: true },
+              adminHeaders
+            )
+          ).data.product_category
+
+          const pantsCategory = (
+            await api.post(
+              "/admin/product-categories",
+              { name: "Pants", is_internal: false, is_active: true },
+              adminHeaders
+            )
+          ).data.product_category
+
+          const payload = {
+            title: "Test an update",
+            weight: 100,
+            length: 100,
+            width: 100,
+            height: 100,
+            options: [{ title: "size", values: ["large", "small"] }],
+            variants: [
+              {
+                options: { size: "large" },
+                title: "New variant",
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 200,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const createdProduct = (
+            await api.post("/admin/products", payload, adminHeaders)
+          ).data.product
+
+          let updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}`,
+              { weight: 20, length: null },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(updatedProduct).toEqual(
+            expect.objectContaining({
+              weight: "20",
+              length: null,
+              width: "100",
+              height: "100",
+            })
+          )
+
+          updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}?fields=+categories.id`,
+              { categories: [{ id: pantsCategory.id }] },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(updatedProduct).toEqual(
+            expect.objectContaining({
+              weight: "20",
+              length: null,
+              width: "100",
+              height: "100",
+              categories: expect.arrayContaining([
+                expect.objectContaining({
+                  id: pantsCategory.id,
+                }),
+              ]),
+            })
+          )
+
+          updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}?fields=+categories.id`,
+              { weight: null, length: 20, width: 50 },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(updatedProduct).toEqual(
+            expect.objectContaining({
+              weight: null,
+              length: "20",
+              width: "50",
+              height: "100",
+              categories: expect.arrayContaining([
+                expect.objectContaining({
+                  id: pantsCategory.id,
+                }),
+              ]),
+            })
+          )
+        })
+
         it("updates a product (update prices, tags, update status, delete collection, delete type, replaces images)", async () => {
           const payload = {
             collection_id: null,
@@ -1912,7 +2244,7 @@ medusaIntegrationTestRunner({
 
           const payload = {
             metadata: {
-              "test-key": "",
+              "test-key": "", // item is deleted by setting to empty string
               "test-key-2": null,
             },
           }
@@ -1924,12 +2256,103 @@ medusaIntegrationTestRunner({
           )
 
           expect(response.status).toEqual(200)
-          expect(response.data.product.metadata).toEqual(
-            // BREAKING: Metadata updates are all-or-nothing in v2
-            {
-              "test-key": "",
-              "test-key-2": null,
-            }
+          expect(response.data.product.metadata).toEqual({
+            // "test-key" is deleted
+            "test-key-2": null, // updated
+            "test-key-3": "test-value-3", // preserved
+          })
+        })
+
+        it("should recreate a variant with the same sku after deletion", async () => {
+          const payload = {
+            title: "Test sku",
+            shipping_profile_id: shippingProfile.id,
+            variants: [
+              {
+                sku: "test-sku-should-persist",
+                manage_inventory: true,
+                title: "Recreate variant",
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 100,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const created = (
+            await api.post(
+              "/admin/products?fields=*variants.inventory_items.inventory",
+              getProductFixture(payload),
+              adminHeaders
+            )
+          ).data.product
+
+          const createdVariant = created.variants.find(
+            (v) => v.sku === "test-sku-should-persist"
+          )
+
+          const inventoryItem = createdVariant.inventory_items[0]
+
+          expect(created).toEqual(
+            expect.objectContaining({
+              variants: expect.arrayContaining([
+                expect.objectContaining({
+                  sku: "test-sku-should-persist",
+                  inventory_items: expect.arrayContaining([
+                    expect.objectContaining({
+                      inventory: expect.objectContaining({
+                        sku: "test-sku-should-persist",
+                      }),
+                    }),
+                  ]),
+                  title: "Recreate variant",
+                }),
+              ]),
+            })
+          )
+
+          await api.delete(
+            `/admin/products/${created.id}/variants/${createdVariant.id}`,
+            adminHeaders
+          )
+
+          const recreated = (
+            await api.post(
+              `/admin/products/${created.id}/variants?fields=+variants.inventory_items.inventory.sku`,
+              {
+                sku: "test-sku-should-persist",
+                manage_inventory: true,
+                title: "Recreate variant",
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 100,
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(recreated).toEqual(
+            expect.objectContaining({
+              variants: expect.arrayContaining([
+                expect.objectContaining({
+                  sku: "test-sku-should-persist",
+                  inventory_items: expect.arrayContaining([
+                    expect.objectContaining({
+                      inventory: expect.objectContaining({
+                        sku: "test-sku-should-persist",
+                      }),
+                    }),
+                  ]),
+                  title: "Recreate variant",
+                }),
+              ]),
+            })
           )
         })
 
@@ -3043,12 +3466,20 @@ medusaIntegrationTestRunner({
       describe("batch methods", () => {
         it("successfully creates, updates, and deletes products", async () => {
           const createPayload = getProductFixture({
+            weight: 100,
+            length: 200,
+            height: 300,
+            width: 400,
             title: "Test batch create",
             handle: "test-batch-create",
             shipping_profile_id: shippingProfile.id,
           })
 
           const updatePayload = {
+            weight: 101,
+            length: 201,
+            height: 301,
+            width: 401,
             id: publishedProduct.id,
             title: "Test batch update",
           }
@@ -3097,6 +3528,25 @@ medusaIntegrationTestRunner({
                 title: "Test batch update",
               }),
             ])
+          )
+        })
+
+        it("should successfully delete products", async () => {
+          const response = await api.post(
+            "/admin/products/batch",
+            { delete: [baseProduct.id] },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.created).toHaveLength(0)
+          expect(response.data.updated).toHaveLength(0)
+          expect(response.data.deleted.ids).toHaveLength(1)
+
+          expect(response.data.created).toEqual([])
+          expect(response.data.updated).toEqual([])
+          expect(response.data.deleted).toEqual(
+            expect.objectContaining({ ids: [baseProduct.id] })
           )
         })
 
@@ -3305,6 +3755,130 @@ medusaIntegrationTestRunner({
               id: publishedProduct.id,
             })
           )
+        })
+
+        // https://linear.app/medusajs/issue/SUP-1631/price-differences
+        it("should successfully handle successive updates on prices", async () => {
+          const response = await api.post(
+            "/admin/products/batch",
+            {
+              create: [
+                getProductFixture({
+                  title: "title1",
+                  variants: [
+                    {
+                      title: "variant1",
+                      prices: [{ currency_code: "usd", amount: 100 }],
+                    },
+                  ],
+                }),
+                getProductFixture({
+                  title: "title2",
+                  variants: [
+                    {
+                      title: "variant2",
+                      prices: [{ currency_code: "usd", amount: 200 }],
+                    },
+                  ],
+                }),
+                getProductFixture({
+                  title: "title3",
+                  variants: [
+                    {
+                      title: "variant3",
+                      prices: [{ currency_code: "usd", amount: 300 }],
+                    },
+                  ],
+                }),
+              ],
+              update: [],
+              delete: [baseProduct.id],
+            },
+            adminHeaders
+          )
+          const created = response.data.created
+          const created1 = created.find((p) => p.title === "title1")
+          const created2 = created.find((p) => p.title === "title2")
+          const created3 = created.find((p) => p.title === "title3")
+
+          // Update the first and third product price to shuffle their order in the DB
+          await api.post(
+            `/admin/products/batch`,
+            {
+              update: [
+                {
+                  id: created1.id,
+                  variants: [
+                    {
+                      id: created1.variants[0].id,
+                      prices: [{ currency_code: "usd", amount: 101 }],
+                    },
+                  ],
+                },
+                {
+                  id: created3.id,
+                  variants: [
+                    {
+                      id: created3.variants[0].id,
+                      prices: [{ currency_code: "usd", amount: 301 }],
+                    },
+                  ],
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          // Update all products now
+          await api.post(
+            `/admin/products/batch`,
+            {
+              update: [
+                {
+                  id: created1.id,
+                  variants: [
+                    {
+                      id: created1.variants[0].id,
+                      prices: [{ currency_code: "usd", amount: 102 }],
+                    },
+                  ],
+                },
+                {
+                  id: created2.id,
+                  variants: [
+                    {
+                      id: created2.variants[0].id,
+                      prices: [{ currency_code: "usd", amount: 202 }],
+                    },
+                  ],
+                },
+                {
+                  id: created3.id,
+                  variants: [
+                    {
+                      id: created3.variants[0].id,
+                      prices: [{ currency_code: "usd", amount: 302 }],
+                    },
+                  ],
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          // Get the first product
+          const product1 = (
+            await api.get(`/admin/products/${created1.id}`, adminHeaders)
+          ).data.product
+          const product2 = (
+            await api.get(`/admin/products/${created2.id}`, adminHeaders)
+          ).data.product
+          const product3 = (
+            await api.get(`/admin/products/${created3.id}`, adminHeaders)
+          ).data.product
+          expect(product1.variants[0].prices[0].amount).toEqual(102)
+          expect(product2.variants[0].prices[0].amount).toEqual(202)
+          expect(product3.variants[0].prices[0].amount).toEqual(302)
         })
       })
 

@@ -31,17 +31,27 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the product type.
- *         properties:
- *           value:
- *             type: string
- *             title: value
- *             description: The product type's value.
- *           metadata:
- *             type: object
- *             description: The product type's metadata. Can hold custom key-value pairs.
+ *         $ref: "#/components/schemas/AdminUpdateProductType"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.productType.update("ptyp_123", {
+ *         value: "Clothes"
+ *       })
+ *       .then(({ product_type }) => {
+ *         console.log(product_type)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -73,6 +83,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateProductTypesWorkflow
+ * x-events:
+ *   - name: product-type.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product type
+ *       }]
+ *       ```
+ *     description: Emitted when product types are updated.
+ *     deprecated: false
  * 
 */
 

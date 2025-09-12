@@ -88,7 +88,7 @@ const configs = bundles
                 }.js`,
               }),
           format,
-          sourcemap: true,
+          sourcemap: false,
           preserveModules,
           globals: {
             react: "react",

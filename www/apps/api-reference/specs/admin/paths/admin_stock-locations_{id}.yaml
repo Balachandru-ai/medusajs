@@ -35,6 +35,10 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_stock-locations_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -100,6 +104,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminUpdateStockLocation.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_stock-locations_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -126,6 +134,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateStockLocationsWorkflow
+  x-events: []
 delete:
   operationId: DeleteStockLocationsId
   summary: Delete a Stock Location
@@ -143,6 +152,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_stock-locations_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -169,3 +182,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteStockLocationsWorkflow
+  x-events: []

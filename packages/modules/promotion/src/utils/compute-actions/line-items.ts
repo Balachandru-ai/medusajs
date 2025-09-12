@@ -1,19 +1,21 @@
 import {
   ApplicationMethodAllocationValues,
   BigNumberInput,
+  InferEntityType,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
+  ApplicationMethodTargetType as TargetType,
+  calculateAdjustmentAmountFromPromotion,
   ComputedActions,
   MathBN,
   MedusaError,
-  ApplicationMethodTargetType as TargetType,
-  calculateAdjustmentAmountFromPromotion,
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
+import { Promotion } from "@models"
 
 function validateContext(
   contextKey: string,
@@ -28,7 +30,7 @@ function validateContext(
 }
 
 export function getComputedActionsForItems(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
   appliedPromotionsMap: Map<string, number>,
   allocationOverride?: ApplicationMethodAllocationValues
@@ -43,80 +45,80 @@ export function getComputedActionsForItems(
   )
 }
 
-export function getComputedActionsForShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
-  shippingMethods: PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
-  appliedPromotionsMap: Map<string, number>
-): PromotionTypes.ComputeActions[] {
-  validateContext("shipping_methods", shippingMethods)
-
-  return applyPromotionToItems(promotion, shippingMethods, appliedPromotionsMap)
-}
-
-export function getComputedActionsForOrder(
-  promotion: PromotionTypes.PromotionDTO,
-  itemApplicationContext: PromotionTypes.ComputeActionContext,
-  methodIdPromoValueMap: Map<string, number>
-): PromotionTypes.ComputeActions[] {
-  return getComputedActionsForItems(
-    promotion,
-    itemApplicationContext[TargetType.ITEMS],
-    methodIdPromoValueMap,
-    ApplicationMethodAllocation.ACROSS
-  )
-}
-
 function applyPromotionToItems(
-  promotion: PromotionTypes.PromotionDTO,
-  items:
-    | PromotionTypes.ComputeActionContext[TargetType.ITEMS]
-    | PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
+  items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
   appliedPromotionsMap: Map<string, BigNumberInput>,
   allocationOverride?: ApplicationMethodAllocationValues
 ): PromotionTypes.ComputeActions[] {
   const { application_method: applicationMethod } = promotion
+
+  if (!applicationMethod) {
+    return []
+  }
+
   const allocation = applicationMethod?.allocation! || allocationOverride
-  const computedActions: PromotionTypes.ComputeActions[] = []
-  const applicableItems = getValidItemsForPromotion(items, promotion)
   const target = applicationMethod?.target_type
 
-  const isTargetShippingMethod = target === TargetType.SHIPPING_METHODS
+  if (!items?.length || !target) {
+    return []
+  }
+
+  const computedActions: PromotionTypes.ComputeActions[] = []
+
+  const applicableItems = getValidItemsForPromotion(items, promotion)
+
+  if (!applicableItems.length) {
+    return computedActions
+  }
+
   const isTargetLineItems = target === TargetType.ITEMS
   const isTargetOrder = target === TargetType.ORDER
+  const promotionValue = applicationMethod?.value ?? 0
+  const maxQuantity = applicationMethod?.max_quantity!
 
-  let lineItemsTotal = MathBN.convert(0)
-
+  let lineItemsAmount = MathBN.convert(0)
   if (allocation === ApplicationMethodAllocation.ACROSS) {
-    lineItemsTotal = applicableItems.reduce(
+    lineItemsAmount = applicableItems.reduce(
       (acc, item) =>
         MathBN.sub(
-          MathBN.add(acc, item.subtotal),
+          MathBN.add(
+            acc,
+            promotion.is_tax_inclusive ? item.original_total : item.subtotal
+          ),
           appliedPromotionsMap.get(item.id) ?? 0
         ),
       MathBN.convert(0)
     )
+
+    if (MathBN.lte(lineItemsAmount, 0)) {
+      return computedActions
+    }
   }
 
-  for (const item of applicableItems!) {
-    const appliedPromoValue = appliedPromotionsMap.get(item.id) ?? 0
-    const maxQuantity = isTargetShippingMethod
-      ? 1
-      : applicationMethod?.max_quantity!
-
-    if (isTargetShippingMethod) {
-      item.quantity = 1
+  for (const item of applicableItems) {
+    if (
+      MathBN.lte(
+        promotion.is_tax_inclusive ? item.original_total : item.subtotal,
+        0
+      )
+    ) {
+      continue
     }
+
+    const appliedPromoValue = appliedPromotionsMap.get(item.id) ?? 0
 
     const amount = calculateAdjustmentAmountFromPromotion(
       item,
       {
-        value: applicationMethod?.value ?? 0,
+        value: promotionValue,
         applied_value: appliedPromoValue,
+        is_tax_inclusive: promotion.is_tax_inclusive,
         max_quantity: maxQuantity,
         type: applicationMethod?.type!,
         allocation,
       },
-      lineItemsTotal
+      lineItemsAmount
     )
 
     if (MathBN.lte(amount, 0)) {
@@ -130,7 +132,6 @@ function applyPromotionToItems(
 
     if (budgetExceededAction) {
       computedActions.push(budgetExceededAction)
-
       continue
     }
 
@@ -142,15 +143,7 @@ function applyPromotionToItems(
         item_id: item.id,
         amount,
         code: promotion.code!,
-      })
-    }
-
-    if (isTargetShippingMethod) {
-      computedActions.push({
-        action: ComputedActions.ADD_SHIPPING_METHOD_ADJUSTMENT,
-        shipping_method_id: item.id,
-        amount,
-        code: promotion.code!,
+        is_tax_inclusive: promotion.is_tax_inclusive,
       })
     }
   }
@@ -162,26 +155,49 @@ function getValidItemsForPromotion(
   items:
     | PromotionTypes.ComputeActionContext[TargetType.ITEMS]
     | PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
-  promotion: PromotionTypes.PromotionDTO
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>
 ) {
+  if (!items?.length || !promotion?.application_method) {
+    return []
+  }
+
   const isTargetShippingMethod =
     promotion.application_method?.target_type === TargetType.SHIPPING_METHODS
 
-  return (
-    items?.filter((item) => {
-      const isSubtotalPresent = "subtotal" in item
-      const isQuantityPresent = "quantity" in item
-      const isPromotionApplicableToItem = areRulesValidForContext(
-        promotion?.application_method?.target_rules!,
-        item,
-        ApplicationMethodTargetType.ITEMS
-      )
+  const targetRules = promotion.application_method?.target_rules ?? []
+  const hasTargetRules = targetRules.length > 0
 
-      return (
-        isPromotionApplicableToItem &&
-        (isQuantityPresent || isTargetShippingMethod) &&
-        isSubtotalPresent
-      )
-    }) || []
-  )
+  if (isTargetShippingMethod && !hasTargetRules) {
+    return items.filter(
+      (item) => item && "subtotal" in item && MathBN.gt(item.subtotal, 0)
+    )
+  }
+
+  return items.filter((item) => {
+    if (!item) {
+      return false
+    }
+
+    if ("is_discountable" in item && !item.is_discountable) {
+      return false
+    }
+
+    if (!("subtotal" in item) || MathBN.lte(item.subtotal, 0)) {
+      return false
+    }
+
+    if (!isTargetShippingMethod && !("quantity" in item)) {
+      return false
+    }
+
+    if (!hasTargetRules) {
+      return true
+    }
+
+    return areRulesValidForContext(
+      promotion?.application_method?.target_rules!,
+      item,
+      ApplicationMethodTargetType.ITEMS
+    )
+  })
 }

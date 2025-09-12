@@ -1,4 +1,16 @@
-import { CodeTabs, CodeTab } from "docs-ui"
+---
+products:
+  - customer
+  - cart
+  - fulfillment
+  - payment
+  - product
+  - promotion
+  - region
+  - sales channel
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
 
 export const metadata = {
   title: `Links between Order Module and Other Modules`,
@@ -6,7 +18,7 @@ export const metadata = {
 
 # {metadata.title}
 
-This document showcases the module links defined between the Order Module and other commerce modules.
+This document showcases the module links defined between the Order Module and other Commerce Modules.
 
 ## Summary
 
@@ -18,17 +30,180 @@ Read-only links are used to query data across modules, but the relations aren't 
 
 </Note>
 
-- [`Order` data model \<\> `Customer` data model of Customer Module](#customer-module). (Read-only).
-- [`Order` data model \<\> `Cart` data model of Cart Module](#cart-module).
-- [`Order` data model \<\> `Fulfillment` data model of Fulfillment Module](#fulfillment-module).
-- [`Return` data model \<\> `Fulfillment` data model of Fulfillment Module](#fulfillment-module).
-- [`Order` data model \<\> `PaymentCollection` data model of Payment Module](#payment-module).
-- [`OrderClaim` data model \<\> `PaymentCollection` data model of Payment Module](#payment-module).
-- [`OrderExchange` data model \<\> `PaymentCollection` data model of Payment Module](#payment-module).
-- [`Order` data model \<\> `Product` data model of Product Module](#product-module). (Read-only).
-- [`Order` data model \<\> `Promotion` data model of Promotion Module](#promotion-module).
-- [`Order` data model \<\> `Region` data model of Region Module](#region-module). (Read-only).
-- [`Order` data model \<\> `SalesChannel` data model of Sales Channel Module](#sales-channel-module). (Read-only).
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [Customer](/references/customer/models/Customer) in [Customer Module](../../customer/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#customer-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [Cart](/references/cart/models/Cart) in [Cart Module](../../cart/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#cart-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [Fulfillment](/references/fulfillment/models/Fulfillment) in [Fulfillment Module](../../fulfillment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#fulfillment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Return](/references/order/models/Return)
+      </Table.Cell>
+      <Table.Cell>
+        [Fulfillment](/references/fulfillment/models/Fulfillment) in [Fulfillment Module](../../fulfillment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#fulfillment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [PaymentCollection](/references/payment/models/PaymentCollection) in [Payment Module](../../payment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#payment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [OrderClaim](/references/order/models/OrderClaim)
+      </Table.Cell>
+      <Table.Cell>
+        [PaymentCollection](/references/payment/models/PaymentCollection) in [Payment Module](../../payment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#payment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [OrderExchange](/references/order/models/OrderExchange)
+      </Table.Cell>
+      <Table.Cell>
+        [PaymentCollection](/references/payment/models/PaymentCollection) in [Payment Module](../../payment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - one-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#payment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [OrderLineItem](/references/order/models/OrderLineItem)
+      </Table.Cell>
+      <Table.Cell>
+        [Product](/references/product/models/Product) in [Product Module](../../product/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#product-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [Promotion](/references/promotion/models/Promotion) in [Promotion Module](../../promotion/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#promotion-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [Region](/references/region/models/Region) in [Region Module](../../region/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#region-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order)
+      </Table.Cell>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel) in [Sales Channel Module](../../sales-channel/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#sales-channel-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
 
 ---
 
@@ -51,7 +226,7 @@ const { data: orders } = await query.graph({
   ],
 })
 
-// orders.customer
+// orders[0].customer
 ```
 
   </CodeTab>
@@ -69,7 +244,7 @@ const { data: orders } = useQueryGraphStep({
   ],
 })
 
-// orders.customer
+// orders[0].customer
 ```
 
   </CodeTab>
@@ -100,7 +275,7 @@ const { data: orders } = await query.graph({
   ],
 })
 
-// orders.cart
+// orders[0].cart
 ```
 
   </CodeTab>
@@ -118,7 +293,7 @@ const { data: orders } = useQueryGraphStep({
   ],
 })
 
-// orders.cart
+// orders[0].cart
 ```
 
   </CodeTab>
@@ -201,7 +376,7 @@ const { data: orders } = await query.graph({
   ],
 })
 
-// orders.fulfillments
+// orders[0].fulfillments
 ```
 
   </CodeTab>
@@ -219,7 +394,7 @@ const { data: orders } = useQueryGraphStep({
   ],
 })
 
-// orders.fulfillments
+// orders[0].fulfillments
 ```
 
   </CodeTab>
@@ -294,7 +469,7 @@ const { data: orders } = await query.graph({
   ],
 })
 
-// orders.payment_collections
+// orders[0].payment_collections
 ```
 
   </CodeTab>
@@ -312,7 +487,7 @@ const { data: orders } = useQueryGraphStep({
   ],
 })
 
-// orders.payment_collections
+// orders[0].payment_collections
 ```
 
   </CodeTab>
@@ -435,11 +610,11 @@ To retrieve the promotion applied on an order with [Query](!docs!/learn/fundamen
 const { data: orders } = await query.graph({
   entity: "order",
   fields: [
-    "promotion.*",
+    "promotions.*",
   ],
 })
 
-// orders.promotion
+// orders[0].promotions
 ```
 
   </CodeTab>
@@ -453,11 +628,11 @@ import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
 const { data: orders } = useQueryGraphStep({
   entity: "order",
   fields: [
-    "promotion.*",
+    "promotions.*",
   ],
 })
 
-// orders.promotion
+// orders[0].promotions
 ```
 
   </CodeTab>
@@ -528,7 +703,7 @@ const { data: orders } = await query.graph({
   ],
 })
 
-// orders.region
+// orders[0].region
 ```
 
   </CodeTab>
@@ -546,7 +721,7 @@ const { data: orders } = useQueryGraphStep({
   ],
 })
 
-// orders.region
+// orders[0].region
 ```
 
   </CodeTab>
@@ -573,7 +748,7 @@ const { data: orders } = await query.graph({
   ],
 })
 
-// orders.sales_channel
+// orders[0].sales_channel
 ```
 
   </CodeTab>
@@ -591,7 +766,7 @@ const { data: orders } = useQueryGraphStep({
   ],
 })
 
-// orders.sales_channel
+// orders[0].sales_channel
 ```
 
   </CodeTab>

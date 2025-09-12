@@ -296,6 +296,24 @@ export class RemoteQuery {
       }
     }
 
+    return this.executeFetchRequest({
+      expand,
+      keyField,
+      ids,
+      relationship,
+    })
+  }
+
+  private async executeFetchRequest(params: {
+    expand: RemoteExpandProperty
+    keyField: string
+    ids?: (unknown | unknown[])[]
+    relationship?: JoinerRelationship
+  }): Promise<{
+    data: unknown[] | { [path: string]: unknown }
+    path?: string
+  }> {
+    const { expand, keyField, ids, relationship } = params
     const serviceConfig = expand.serviceConfig
     const service = this.modulesMap.get(serviceConfig.serviceName)!
 
@@ -313,6 +331,7 @@ export class RemoteQuery {
       "sort",
       "order",
       "withDeleted",
+      "options",
     ]
     const availableOptionsAlias = new Map([
       ["limit", "take"],

@@ -116,7 +116,7 @@ export const declineOrderTransferRequestWorkflow = createWorkflow(
   ): WorkflowData<void> {
     const orderQuery = useQueryGraphStep({
       entity: "order",
-      fields: ["id", "version", "declineed_at"],
+      fields: ["id", "version", "declined_at"],
       filters: { id: input.order_id },
       options: { throwIfKeyNotFound: true },
     }).config({ name: "order-query" })

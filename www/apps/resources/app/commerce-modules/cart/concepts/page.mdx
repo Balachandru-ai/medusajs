@@ -4,13 +4,19 @@ export const metadata = {
 
 # {metadata.title}
 
-In this document, you’ll get an overview of the main concepts of a cart.
+In this document, you’ll learn about the main concepts related to carts in Medusa.
 
-## Shipping and Billing Addresses
+## Cart
 
-A cart has a shipping and billing address. Both of these addresses are represented by the [Address data model](/references/cart/models/Address).
+A cart is the selection of product variants that a customer intends to purchase. It is represented by the [Cart data model](/references/cart/models/Cart).
 
-![A diagram showcasing the relation between the Cart and Address data models](https://res.cloudinary.com/dza7lstvk/image/upload/v1711532392/Medusa%20Resources/cart-addresses_ls6qmv.jpg)
+A cart holds informations about:
+
+- The items the customer wants to buy.
+- The customer's shipping and billing addresses.
+- The shipping methods used to fulfill the items after purchase.
+- The payment method and information necessary to complete the purchase.
+    - These are stored and handled by the [Payment Module](../../payment/page.mdx).
 
 ---
 
@@ -18,13 +24,21 @@ A cart has a shipping and billing address. Both of these addresses are represent
 
 A line item, represented by the [LineItem](/references/cart/models/LineItem) data model, is a quantity of a product variant added to the cart. A cart has multiple line items.
 
-A line item stores some of the product variant’s properties, such as the `product_title` and `product_description`. It also stores data related to the item’s quantity and price.
-
 <Note>
 
 In the Medusa application, a product variant is implemented in the [Product Module](../../product/page.mdx).
 
 </Note>
+
+A line item stores some of the product variant’s properties, such as the `product_title` and `product_description`. It also stores data related to the item’s quantity and price.
+
+---
+
+## Shipping and Billing Addresses
+
+A cart has a shipping and billing address. Both of these addresses are represented by the [Address data model](/references/cart/models/Address).
+
+![A diagram showcasing the relation between the Cart and Address data models](https://res.cloudinary.com/dza7lstvk/image/upload/v1711532392/Medusa%20Resources/cart-addresses_ls6qmv.jpg)
 
 ---
 

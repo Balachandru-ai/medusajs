@@ -1,5 +1,6 @@
 import { IEventBusModuleService } from "@medusajs/types"
 import { CommonEvents, Modules } from "@medusajs/utils"
+import os from "os"
 import fs from "fs/promises"
 import {
   TestEventUtils,
@@ -11,38 +12,34 @@ import {
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
 import { getProductFixture } from "../../../../helpers/fixtures"
+import { csv2json } from "json-2-csv"
 
 jest.setTimeout(50000)
 
-const compareCSVs = async (filePath, expectedFilePath) => {
-  const asLocalPath = filePath.replace("http://localhost:9000", process.cwd())
-  let fileContent = await fs.readFile(asLocalPath, { encoding: "utf-8" })
-  let fixturesContent = await fs.readFile(expectedFilePath, {
-    encoding: "utf-8",
-  })
+const getCSVContents = async (filePath: string) => {
+  const asLocalPath = filePath.replace("http://localhost:9000", os.tmpdir())
+  const fileContent = await fs.readFile(asLocalPath, { encoding: "utf-8" })
   await fs.rm(path.dirname(asLocalPath), { recursive: true, force: true })
+  const csvRows = csv2json(fileContent)
 
-  // Normalize csv data to get rid of dynamic data
-  const idsToReplace = ["prod_", "pcol_", "variant_", "ptyp_", "pcat_"]
-  const dateRegex =
-    /(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})\.(\d{3})Z/g
-  idsToReplace.forEach((prefix) => {
-    fileContent = fileContent.replace(
-      new RegExp(`${prefix}\\w*\\d*`, "g"),
-      "<ID>"
-    )
-    fixturesContent = fixturesContent.replace(
-      new RegExp(`${prefix}\\w*\\d*`, "g"),
-      "<ID>"
-    )
-  })
-  fileContent = fileContent.replace(dateRegex, "<DATE>")
-  fixturesContent = fixturesContent.replace(dateRegex, "<DATE>")
+  return csvRows.reduce<any[]>((result, row) => {
+    const rowCopy = { ...row }
+    Object.keys(rowCopy).forEach((col) => {
+      if (
+        col.includes("Updated At") ||
+        col.includes("Created At") ||
+        col.includes("Deleted At")
+      ) {
+        rowCopy[col] = "<DateTime>"
+      }
+      if (col.includes("Id") || col.startsWith("Product Category ")) {
+        rowCopy[col] = "<ID>"
+      }
+    })
 
-  fixturesContent = fixturesContent.replace(/,Shipping Profile Id*/g, "")
-  fixturesContent = fixturesContent.replace(/,import-shipping-profile*/g, "")
-
-  expect(fileContent).toEqual(fixturesContent)
+    result.push(rowCopy)
+    return result
+  }, [])
 }
 
 medusaIntegrationTestRunner({
@@ -121,11 +118,19 @@ medusaIntegrationTestRunner({
       ).data.product_category
 
       baseTag1 = (
-        await api.post("/admin/product-tags", { value: "123" }, adminHeaders)
+        await api.post(
+          "/admin/product-tags",
+          { value: "tag-123" },
+          adminHeaders
+        )
       ).data.product_tag
 
       baseTag2 = (
-        await api.post("/admin/product-tags", { value: "456" }, adminHeaders)
+        await api.post(
+          "/admin/product-tags",
+          { value: "tag-456" },
+          adminHeaders
+        )
       ).data.product_tag
 
       newTag = (
@@ -252,9 +257,188 @@ medusaIntegrationTestRunner({
           })
         )
 
-        await compareCSVs(
-          notifications[0].data.file.url,
-          path.join(__dirname, "__fixtures__", "exported-products-comma.csv")
+        const exportedFileContents = await getCSVContents(
+          notifications[0].data.file.url
+        )
+
+        expect(exportedFileContents).toHaveLength(3)
+        expect(exportedFileContents).toEqual(
+          expect.arrayContaining([
+            {
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description\ntest line 2",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "base-product",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "draft",
+              "Product Subtitle": "",
+              "Product Tag 1": "tag-123",
+              "Product Tag 2": "tag-456",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Base product",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "large",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price DKK": 30,
+              "Variant Price EUR": 45,
+              "Variant Price USD": 100,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+            {
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description\ntest line 2",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "base-product",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "draft",
+              "Product Subtitle": "",
+              "Product Tag 1": "tag-123",
+              "Product Tag 2": "tag-456",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Base product",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "small",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price DKK": 50,
+              "Variant Price EUR": 65,
+              "Variant Price USD": 200,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant 2",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+            {
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "proposed-product",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "proposed",
+              "Product Subtitle": "",
+              "Product Tag 1": "new-tag",
+              "Product Tag 2": "",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Proposed product",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "large",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price DKK": 30,
+              "Variant Price EUR": 45,
+              "Variant Price USD": 100,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+          ])
         )
       })
 
@@ -278,9 +462,132 @@ medusaIntegrationTestRunner({
           await api.get("/admin/notifications", adminHeaders)
         ).data.notifications
 
-        await compareCSVs(
-          notifications[0].data.file.url,
-          path.join(__dirname, "__fixtures__", "product-with-categories.csv")
+        const exportedFileContents = await getCSVContents(
+          notifications[0].data.file.url
+        )
+
+        expect(exportedFileContents).toHaveLength(2)
+        expect(exportedFileContents).toEqual(
+          expect.arrayContaining([
+            {
+              "Product Category 1": expect.any(String),
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description\ntest line 2",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "base-product",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "draft",
+              "Product Subtitle": "",
+              "Product Tag 1": "tag-123",
+              "Product Tag 2": "tag-456",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Base product",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "large",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price DKK": 30,
+              "Variant Price EUR": 45,
+              "Variant Price USD": 100,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+            {
+              "Product Category 1": expect.any(String),
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description\ntest line 2",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "base-product",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "draft",
+              "Product Subtitle": "",
+              "Product Tag 1": "tag-123",
+              "Product Tag 2": "tag-456",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Base product",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "small",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price DKK": 50,
+              "Variant Price EUR": 65,
+              "Variant Price USD": 200,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant 2",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+          ])
         )
       })
 
@@ -338,9 +645,70 @@ medusaIntegrationTestRunner({
           await api.get("/admin/notifications", adminHeaders)
         ).data.notifications
 
-        await compareCSVs(
-          notifications[0].data.file.url,
-          path.join(__dirname, "__fixtures__", "prices-with-region.csv")
+        const exportedFileContents = await getCSVContents(
+          notifications[0].data.file.url
+        )
+        expect(exportedFileContents).toHaveLength(1)
+        expect(exportedFileContents).toEqual(
+          expect.arrayContaining([
+            {
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "product-with-prices",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "draft",
+              "Product Subtitle": "",
+              "Product Tag 1": "tag-123",
+              "Product Tag 2": "tag-456",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Product with prices",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "large",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price Test Region [USD]": 45,
+              "Variant Price USD": 100,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+          ])
         )
       })
 
@@ -367,9 +735,71 @@ medusaIntegrationTestRunner({
 
         expect(notifications.length).toBe(1)
 
-        await compareCSVs(
-          notifications[0].data.file.url,
-          path.join(__dirname, "__fixtures__", "filtered-products.csv")
+        const exportedFileContents = await getCSVContents(
+          notifications[0].data.file.url
+        )
+
+        expect(exportedFileContents).toHaveLength(1)
+        expect(exportedFileContents).toEqual(
+          expect.arrayContaining([
+            {
+              "Product Collection Id": expect.any(String),
+              "Product Created At": expect.any(String),
+              "Product Deleted At": expect.any(String),
+              "Product Description": "test-product-description",
+              "Product Discountable": true,
+              "Product External Id": expect.any(String),
+              "Product Handle": "proposed-product",
+              "Product Height": "",
+              "Product Hs Code": "",
+              "Product Id": expect.any(String),
+              "Product Image 1": "test-image.png",
+              "Product Image 2": "test-image-2.png",
+              "Product Is Giftcard": false,
+              "Product Length": "",
+              "Product Material": "",
+              "Product Mid Code": "",
+              "Product Origin Country": "",
+              "Product Status": "proposed",
+              "Product Subtitle": "",
+              "Product Tag 1": "new-tag",
+              "Product Thumbnail": "test-image.png",
+              "Product Title": "Proposed product",
+              "Product Type Id": expect.any(String),
+              "Product Updated At": expect.any(String),
+              "Product Weight": "",
+              "Product Width": "",
+              "Variant Allow Backorder": false,
+              "Variant Barcode": "",
+              "Variant Created At": expect.any(String),
+              "Variant Deleted At": expect.any(String),
+              "Variant Ean": "",
+              "Variant Height": "",
+              "Variant Hs Code": "",
+              "Variant Id": expect.any(String),
+              "Variant Length": "",
+              "Variant Manage Inventory": true,
+              "Variant Material": "",
+              "Variant Metadata": "",
+              "Variant Mid Code": "",
+              "Variant Option 1 Name": "size",
+              "Variant Option 1 Value": "large",
+              "Variant Option 2 Name": "color",
+              "Variant Option 2 Value": "green",
+              "Variant Origin Country": "",
+              "Variant Price DKK": 30,
+              "Variant Price EUR": 45,
+              "Variant Price USD": 100,
+              "Variant Product Id": expect.any(String),
+              "Variant Sku": "",
+              "Variant Title": "Test variant",
+              "Variant Upc": "",
+              "Variant Updated At": expect.any(String),
+              "Variant Variant Rank": 0,
+              "Variant Weight": "",
+              "Variant Width": "",
+            },
+          ])
         )
       })
     })

@@ -1,14 +1,11 @@
 import {
-  featureFlagRouter,
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
-import {
-  maybeApplyLinkFilter,
-  MiddlewareRoute,
-  unlessPath,
-} from "@medusajs/framework/http"
+import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
+import { FeatureFlag } from "@medusajs/framework/utils"
 import multer from "multer"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
@@ -29,6 +26,7 @@ import {
   AdminGetProductsParams,
   AdminGetProductVariantParams,
   AdminGetProductVariantsParams,
+  AdminImportProducts,
   AdminUpdateProduct,
   AdminUpdateProductOption,
   AdminUpdateProductVariant,
@@ -36,11 +34,7 @@ import {
   CreateProduct,
   CreateProductVariant,
 } from "./validators"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
 
-// TODO: For now we keep the files in memory, as that's how they get passed to the workflows
-// This will need revisiting once we are closer to prod-ready v2, since with workflows and potentially
-// services on other machines using streams is not as simple as it used to be.
 const upload = multer({ storage: multer.memoryStorage() })
 
 export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
@@ -53,7 +47,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductQueryConfig
       ),
       (req, res, next) => {
-        if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+        if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
           return next()
         }
 
@@ -110,6 +104,11 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
   },
   {
     method: ["POST"],
+    matcher: "/admin/products/imports",
+    middlewares: [validateAndTransformBody(AdminImportProducts)],
+  },
+  {
+    method: ["POST"],
     matcher: "/admin/products/import/:transaction_id/confirm",
     middlewares: [],
   },
@@ -117,12 +116,9 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["GET"],
     matcher: "/admin/products/:id",
     middlewares: [
-      unlessPath(
-        /.*\/products\/(batch|export|import)/,
-        validateAndTransformQuery(
-          AdminGetProductParams,
-          QueryConfig.retrieveProductQueryConfig
-        )
+      validateAndTransformQuery(
+        AdminGetProductParams,
+        QueryConfig.retrieveProductQueryConfig
       ),
     ],
   },
@@ -130,16 +126,10 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/admin/products/:id",
     middlewares: [
-      unlessPath(
-        /.*\/products\/(batch|export|import)/,
-        validateAndTransformBody(AdminUpdateProduct)
-      ),
-      unlessPath(
-        /.*\/products\/(batch|export|import)/,
-        validateAndTransformQuery(
-          AdminGetProductParams,
-          QueryConfig.retrieveProductQueryConfig
-        )
+      validateAndTransformBody(AdminUpdateProduct),
+      validateAndTransformQuery(
+        AdminGetProductParams,
+        QueryConfig.retrieveProductQueryConfig
       ),
     ],
   },
@@ -147,12 +137,9 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/products/:id",
     middlewares: [
-      unlessPath(
-        /.*\/products\/(batch|export|import)/,
-        validateAndTransformQuery(
-          AdminGetProductParams,
-          QueryConfig.retrieveProductQueryConfig
-        )
+      validateAndTransformQuery(
+        AdminGetProductParams,
+        QueryConfig.retrieveProductQueryConfig
       ),
     ],
   },
@@ -198,12 +185,9 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["GET"],
     matcher: "/admin/products/:id/variants/:variant_id",
     middlewares: [
-      unlessPath(
-        /.*\/variants\/batch/,
-        validateAndTransformQuery(
-          AdminGetProductVariantParams,
-          QueryConfig.retrieveVariantConfig
-        )
+      validateAndTransformQuery(
+        AdminGetProductVariantParams,
+        QueryConfig.retrieveVariantConfig
       ),
     ],
   },
@@ -211,16 +195,10 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/admin/products/:id/variants/:variant_id",
     middlewares: [
-      unlessPath(
-        /.*\/variants\/batch/,
-        validateAndTransformBody(AdminUpdateProductVariant)
-      ),
-      unlessPath(
-        /.*\/variants\/batch/,
-        validateAndTransformQuery(
-          AdminGetProductParams,
-          QueryConfig.retrieveProductQueryConfig
-        )
+      validateAndTransformBody(AdminUpdateProductVariant),
+      validateAndTransformQuery(
+        AdminGetProductParams,
+        QueryConfig.retrieveProductQueryConfig
       ),
     ],
   },
@@ -228,12 +206,9 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/products/:id/variants/:variant_id",
     middlewares: [
-      unlessPath(
-        /.*\/variants\/batch/,
-        validateAndTransformQuery(
-          AdminGetProductParams,
-          QueryConfig.retrieveProductQueryConfig
-        )
+      validateAndTransformQuery(
+        AdminGetProductParams,
+        QueryConfig.retrieveProductQueryConfig
       ),
     ],
   },

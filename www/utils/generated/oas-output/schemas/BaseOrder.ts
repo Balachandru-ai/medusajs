@@ -41,6 +41,7 @@
  *   - original_shipping_total
  *   - original_shipping_subtotal
  *   - original_shipping_tax_total
+ *   - credit_line_total
  * properties:
  *   payment_collections:
  *     type: array
@@ -135,6 +136,9 @@
  *   metadata:
  *     type: object
  *     description: The order's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -237,6 +241,10 @@
  *     type: string
  *     title: status
  *     description: The order's status.
+ *   credit_line_total:
+ *     type: number
+ *     title: credit_line_total
+ *     description: The order's credit line total.
  * 
 */
 

@@ -7,7 +7,6 @@ import {
   BigNumber,
   ChangeActionType,
   MathBN,
-  isDefined,
   isPresent,
   transformPropertiesToBigNumber,
 } from "@medusajs/framework/utils"
@@ -102,8 +101,8 @@ export class OrderChangeProcessing {
   }
 
   public processActions() {
-    let newCreditLineTotal = (this.order.credit_lines || [])
-      .filter((cl) => !isDefined(cl.id))
+    let newCreditLineTotal = (this.order.credit_lines ?? [])
+      .filter((cl) => !("id" in cl))
       .reduce(
         (acc, creditLine) => MathBN.add(acc, creditLine.amount),
         MathBN.convert(0)
@@ -247,16 +246,25 @@ export class OrderChangeProcessing {
       orderSummary.transaction_total
     )
 
-    // return requested becomes pending difference
+    // return total becomes pending difference
     for (const item of order.items ?? []) {
       const item_ = item as any
 
-      if (MathBN.gt(item_.return_requested_total, 0)) {
-        orderSummary.pending_difference = MathBN.sub(
-          orderSummary.pending_difference,
-          item_.return_requested_total
-        )
-      }
+      ;[
+        "return_requested_total",
+        "return_received_total",
+        // TODO: revisit this when we settle on which dismissed items need to be refunded
+        // "return_dismissed_total",
+      ].forEach((returnTotalKey) => {
+        const returnTotal = item_[returnTotalKey]
+
+        if (MathBN.gt(returnTotal, 0)) {
+          orderSummary.pending_difference = MathBN.sub(
+            orderSummary.pending_difference,
+            returnTotal
+          )
+        }
+      })
     }
     orderSummary.pending_difference = new BigNumber(
       orderSummary.pending_difference

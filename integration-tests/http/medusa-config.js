@@ -65,6 +65,7 @@ module.exports = defineConfig({
             options: {
               // This is the directory where we can reliably write in CI environments
               upload_dir: path.join(os.tmpdir(), "uploads"),
+              private_upload_dir: path.join(os.tmpdir(), "static"),
             },
           },
         ],

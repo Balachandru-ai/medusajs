@@ -1,5 +1,12 @@
+---
+products:
+  - product
+  - cart
+  - order
+---
+
 import { AcademicCapSolid, NextJs } from "@medusajs/icons"
-import { LearningPath } from "docs-ui"
+import { Card, CardList }  from "docs-ui"
 
 export const metadata = {
   title: `Personalized Products Recipe`,
@@ -9,11 +16,18 @@ export const metadata = {
 
 This recipe provides the general steps to build personalized products in Medusa.
 
+<Card
+  title="Personalized Products Example"
+  text="Find a complete example of personalized products in Medusa."
+  href="/recipes/personalized-products/example"
+  icon={AcademicCapSolid}
+/>
+
 ## Overview
 
 Personalized products are products that customers can customize based on their need. For example, they can upload an image to print on a shirt or provide a message to include in a letter.
 
-In Medusa, you create a custom module defining data models, implementing custom features, and creating relationships to other modules' data models.
+In Medusa, you can create a custom module defining data models related to personalization with the service to manage them. Then, you can link those data models to existing data models, such as products.
 
 You also have freedom in how you choose to implement the storefront, allowing you to build a unique experience around your products.
 
@@ -44,7 +58,7 @@ Two line items in the cart having different `metadata` attributes are not consid
 
 </Note>
 
-In more complex cases, you can create a custom module that stores and manages the personalization data models. You can also create a relationship between these data models and the `LineItem` data model.
+In more complex cases, you can create a custom module that stores and manages the personalization data models. You can also create a link between these data models and the `LineItem` data model.
 
 <CardList items={[
   {
@@ -54,34 +68,34 @@ In more complex cases, you can create a custom module that stores and manages th
     icon: AcademicCapSolid,
   },
   {
-    href: "!docs!/learn/fundamentals/modules#1-create-data-model",
-    title: "Create a Data Model",
-    text: "Learn how to create a data model.",
+    href: "!docs!/learn/fundamentals/module-links",
+    title: "Define Module Link",
+    text: "Define link between data models.",
     icon: AcademicCapSolid,
-  }
+  },
 ]} />
 
 ---
 
 ## Build a Custom Storefront
 
-Due to Medusa's modular architecture, there are no restrictions on the framework you use to build the storefront, or design and experience you provide customers. The storefront connects to the Medusa application using the Store API Routes.
+Medusa's modular architecture removes any restrictions on the your storefront's tech stack, design, and the experience you provide customers. The storefront connects to the Medusa application using the Store API Routes.
 
 You can build a unique experience around your products that focuses on the customer’s personalization capabilities.
 
-Medusa provides a Next.js Starter storefront with basic ecommerce functionalities that can be customized. You can also build your own storefront and use Medusa’s client libraries or Store API Routes to communicate with the Medusa application.
+Medusa provides a Next.js Starter Storefront with basic ecommerce functionalities that can be customized. You can also build your own storefront and use Medusa’s client libraries or Store API Routes to communicate with the Medusa application.
 
 <CardList itemsPerRow={2} items={[
   {
     href: "/nextjs-starter",
-    title: "Next.js Starter",
-    text: "Learn about the Next.js Starter and how to install it.",
+    title: "Next.js Starter Storefront",
+    text: "Learn how to install the Next.js Starter Storefront.",
     icon: NextJs,
   },
   {
     href: "/storefront-development",
     title: "Storefront Development",
-    text: "Find guides for your storefront development.",
+    text: "Find guides to build your own storefront.",
     icon: AcademicCapSolid,
   },
 ]} />
@@ -90,13 +104,20 @@ Medusa provides a Next.js Starter storefront with basic ecommerce functionalitie
 
 ## Pass Personalized Data to the Order
 
-If you store the personalized data using a custom module:
+If you store the personalized data using a custom module, you can:
 
-- Create a custom API Route that handles saving the personalization data.
+- Create a workflow that handles saving the personalization data.
+- Create a custom API Route that executes the workflow.
 - Call that API Route from the storefront after adding the item to the cart.
-- Listen to the `order.placed` event to attach the personalized data to the Order Module's `LineItem` data model.
+- Consume the `orderCreated` hook of the [completeCartWorkflow](/references/medusa-workflows/completeCartWorkflow) to attach the personalized data to the Order Module's `LineItem` data model.
 
 <CardList items={[
+  {
+    href: "!docs!/learn/fundamentals/workflows",
+    title: "Create a Workflow",
+    text: "Learn how to create a workflow.",
+    icon: AcademicCapSolid,
+  },
   {
     href: "!docs!/learn/fundamentals/api-routes",
     title: "Create API Route",
@@ -104,9 +125,9 @@ If you store the personalized data using a custom module:
     icon: AcademicCapSolid,
   },
   {
-    href: "!docs!/learn/fundamentals/events-and-subscribers",
-    title: "Create a Subscriber",
-    text: "Learn how to create a subscriber.",
+    href: "!docs!/learn/fundamentals/workflows/workflow-hooks",
+    title: "Consume a Hook",
+    text: "Learn how to create a hook.",
     icon: AcademicCapSolid,
   },
 ]} />
@@ -115,13 +136,23 @@ If you store the personalized data using a custom module:
 
 ## Fulfill Personalized Products in Orders
 
-To fulfill your personalized products with a third-party service or custom logic, create a fulfillment module provider.
+The Fulfillment Module handles all logic related to fulfilling orders. It also supports using fulfillment module providers that implement the logic of fulfilling orders with third-party services.
+
+To fulfill your personalized products with a third-party service or custom logic, you can create a fulfillment module provider.
 
 The Fulfillment Module registers your fulfillment module provider to use it to fulfill orders.
 
-<Card
-  href="/references/fulfillment/provider"
-  title="Create a Fulfillment Service"
-  text="Learn how to create a fulfillment provider in Medusa."
-  icon={AcademicCapSolid}
-/>
+<CardList items={[
+  {
+    href: "/commerce-modules/fulfillment",
+    title: "Fulfillment Module",
+    text: "Learn about the Fulfillment Module.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "/references/fulfillment/provider",
+    title: "Create Fulfillment Module Provider",
+    text: "Learn how to create a fulfillment module provider.",
+    icon: AcademicCapSolid,
+  },
+]} />

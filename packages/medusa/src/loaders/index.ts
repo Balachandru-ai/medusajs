@@ -5,7 +5,7 @@ import { featureFlagsLoader } from "@medusajs/framework/feature-flags"
 import { expressLoader } from "@medusajs/framework/http"
 import { JobLoader } from "@medusajs/framework/jobs"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { SubscriberLoader } from "@medusajs/framework/subscribers"
 import {
   ConfigModule,
@@ -15,9 +15,11 @@ import {
 } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
+  getResolvedPlugins,
   GraphQLSchema,
   mergePluginModules,
   promiseAll,
+  validateModuleName,
 } from "@medusajs/framework/utils"
 import { WorkflowLoader } from "@medusajs/framework/workflows"
 import { asValue } from "awilix"
@@ -27,11 +29,11 @@ import requestIp from "request-ip"
 import { v4 } from "uuid"
 import adminLoader from "./admin"
 import apiLoader from "./api"
-import { getResolvedPlugins } from "./helpers/resolve-plugins"
 
 type Options = {
   directory: string
   expressApp: Express
+  skipLoadingEntryPoints?: boolean
 }
 
 const isWorkerMode = (configModule) => {
@@ -45,7 +47,10 @@ const shouldLoadBackgroundProcessors = (configModule) => {
   )
 }
 
-async function subscribersLoader(plugins: PluginDetails[]) {
+async function subscribersLoader(
+  plugins: PluginDetails[],
+  container: MedusaContainer
+) {
   const pluginSubscribersSourcePaths = [
     /**
      * Load subscribers from the medusa/medusa package. Remove once the medusa core is converted to a plugin
@@ -53,11 +58,18 @@ async function subscribersLoader(plugins: PluginDetails[]) {
     join(__dirname, "../subscribers"),
   ].concat(plugins.map((plugin) => join(plugin.resolve, "subscribers")))
 
-  const subscriberLoader = new SubscriberLoader(pluginSubscribersSourcePaths)
+  const subscriberLoader = new SubscriberLoader(
+    pluginSubscribersSourcePaths,
+    undefined,
+    container
+  )
   await subscriberLoader.load()
 }
 
-async function jobsLoader(plugins: PluginDetails[]) {
+async function jobsLoader(
+  plugins: PluginDetails[],
+  container: MedusaContainer
+) {
   const pluginJobSourcePaths = [
     /**
      * Load jobs from the medusa/medusa package. Remove once the medusa core is converted to a plugin
@@ -65,7 +77,7 @@ async function jobsLoader(plugins: PluginDetails[]) {
     join(__dirname, "../jobs"),
   ].concat(plugins.map((plugin) => join(plugin.resolve, "jobs")))
 
-  const jobLoader = new JobLoader(pluginJobSourcePaths)
+  const jobLoader = new JobLoader(pluginJobSourcePaths, container)
   await jobLoader.load()
 }
 
@@ -80,18 +92,18 @@ async function loadEntrypoints(
   )
 
   if (shouldLoadBackgroundProcessors(configModule)) {
-    await subscribersLoader(plugins)
-    await jobsLoader(plugins)
+    await subscribersLoader(plugins, container)
+    await jobsLoader(plugins, container)
   }
 
   if (isWorkerMode(configModule)) {
     return async () => {}
   }
 
-  const { shutdown } = await expressLoader({
-    app: expressApp,
-  })
-
+  /**
+   * The scope and the ip address must be fetched before we execute any other
+   * middleware
+   */
   expressApp.use((req: Request, res: Response, next: NextFunction) => {
     req.scope = container.createScope() as MedusaContainer
     req.requestId = (req.headers["x-request-id"] as string) ?? v4()
@@ -107,6 +119,11 @@ async function loadEntrypoints(
     next()
   })
 
+  const { shutdown } = await expressLoader({
+    app: expressApp,
+    container,
+  })
+
   await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
   await apiLoader({
     container,
@@ -118,23 +135,34 @@ async function loadEntrypoints(
 }
 
 export async function initializeContainer(
-  rootDirectory: string
+  rootDirectory: string,
+  options?: {
+    skipDbConnection?: boolean
+  }
 ): Promise<MedusaContainer> {
-  await configLoader(rootDirectory, "medusa-config")
-  await featureFlagsLoader(join(__dirname, "feature-flags"))
+  // custom flags from medusa project
+  await featureFlagsLoader(rootDirectory)
+  const configDir = await configLoader(rootDirectory, "medusa-config")
+  // core flags
+  await featureFlagsLoader(join(__dirname, ".."))
 
+  const customLogger = configDir.logger ?? defaultLogger
   container.register({
-    [ContainerRegistrationKeys.LOGGER]: asValue(logger),
+    [ContainerRegistrationKeys.LOGGER]: asValue(customLogger),
     [ContainerRegistrationKeys.REMOTE_QUERY]: asValue(null),
   })
 
-  pgConnectionLoader()
+  if (!options?.skipDbConnection) {
+    await pgConnectionLoader()
+  }
+
   return container
 }
 
 export default async ({
   directory: rootDirectory,
   expressApp,
+  skipLoadingEntryPoints = false,
 }: Options): Promise<{
   container: MedusaContainer
   app: Express
@@ -146,14 +174,19 @@ export default async ({
   const configModule = container.resolve(
     ContainerRegistrationKeys.CONFIG_MODULE
   )
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   const plugins = await getResolvedPlugins(rootDirectory, configModule, true)
   mergePluginModules(configModule, plugins)
 
+  Object.keys(configModule.modules ?? {}).forEach((key) => {
+    validateModuleName(key)
+  })
+
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   const {
     onApplicationStart,
@@ -164,15 +197,12 @@ export default async ({
   } = await new MedusaAppLoader().load()
 
   const workflowsSourcePaths = plugins.map((p) => join(p.resolve, "workflows"))
-  const workflowLoader = new WorkflowLoader(workflowsSourcePaths)
+  const workflowLoader = new WorkflowLoader(workflowsSourcePaths, container)
   await workflowLoader.load()
 
-  const entrypointsShutdown = await loadEntrypoints(
-    plugins,
-    container,
-    expressApp,
-    rootDirectory
-  )
+  const entrypointsShutdown = skipLoadingEntryPoints
+    ? () => {}
+    : await loadEntrypoints(plugins, container, expressApp, rootDirectory)
 
   const { createDefaultsWorkflow } = await import("@medusajs/core-flows")
   await createDefaultsWorkflow(container).run()

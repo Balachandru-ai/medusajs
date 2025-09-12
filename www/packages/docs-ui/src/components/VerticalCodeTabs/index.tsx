@@ -82,6 +82,7 @@ export const VerticalCodeTabs = ({
               {...tabs[selectedTabIndex].code}
               noCopy={true}
               noReport={true}
+              noAskAi={true}
               forceNoTitle={true}
               wrapperClassName="h-full !rounded-docs_DEFAULT"
               className={clsx(

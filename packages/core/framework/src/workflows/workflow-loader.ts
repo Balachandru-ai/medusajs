@@ -1,30 +1,32 @@
-import { dynamicImport, promiseAll, readDirRecursive } from "@medusajs/utils"
-import { Dirent } from "fs"
-import { access } from "fs/promises"
-import { join } from "path"
+import { MedusaContainer } from "@medusajs/types"
+import { isFileSkipped } from "@medusajs/utils"
+import { MedusaWorkflow } from "@medusajs/workflows-sdk"
 import { logger } from "../logger"
+import { ResourceLoader } from "../utils/resource-loader"
 
-export class WorkflowLoader {
-  /**
-   * The directory from which to load the workflows
-   * @private
-   */
-  #sourceDir: string | string[]
+export class WorkflowLoader extends ResourceLoader {
+  protected resourceName = "workflow"
 
-  /**
-   * The list of file names to exclude from the subscriber scan
-   * @private
-   */
-  #excludes: RegExp[] = [
-    /index\.js/,
-    /index\.ts/,
-    /\.DS_Store/,
-    /(\.ts\.map|\.js\.map|\.d\.ts|\.md)/,
-    /^_[^/\\]*(\.[^/\\]+)?$/,
-  ]
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
+    super(sourceDir, container)
+  }
 
-  constructor(sourceDir: string | string[]) {
-    this.#sourceDir = sourceDir
+  protected async onFileLoaded(
+    path: string,
+    fileExports: Record<string, unknown>
+  ) {
+    if (isFileSkipped(fileExports)) {
+      const exportedFns = Object.keys(fileExports)
+      for (const exportedFn of exportedFns) {
+        const fn = fileExports[exportedFn] as any
+        if (fn?.getName?.()) {
+          MedusaWorkflow.unregisterWorkflow(fn.getName())
+        }
+      }
+      return
+    }
+
+    logger.debug(`Registering workflows from ${path}.`)
   }
 
   /**
@@ -32,39 +34,8 @@ export class WorkflowLoader {
    * therefore we only need to import them
    */
   async load() {
-    const normalizedSourcePath = Array.isArray(this.#sourceDir)
-      ? this.#sourceDir
-      : [this.#sourceDir]
+    await super.discoverResources()
 
-    const promises = normalizedSourcePath.map(async (sourcePath) => {
-      try {
-        await access(sourcePath)
-      } catch {
-        logger.info(`No workflow to load from ${sourcePath}. skipped.`)
-        return
-      }
-
-      return await readDirRecursive(sourcePath).then(async (entries) => {
-        const fileEntries = entries.filter((entry: Dirent) => {
-          return (
-            !entry.isDirectory() &&
-            !this.#excludes.some((exclude) => exclude.test(entry.name))
-          )
-        })
-
-        logger.debug(`Registering workflows from ${sourcePath}.`)
-
-        return await promiseAll(
-          fileEntries.map(async (entry: Dirent) => {
-            const fullPath = join(entry.path, entry.name)
-            return await dynamicImport(fullPath)
-          })
-        )
-      })
-    })
-
-    await promiseAll(promises)
-
-    logger.debug(`Workflows registered.`)
+    this.logger.debug(`Workflows registered.`)
   }
 }

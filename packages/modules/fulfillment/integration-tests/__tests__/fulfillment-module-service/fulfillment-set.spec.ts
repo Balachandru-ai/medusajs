@@ -218,7 +218,9 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.FULFILLMENT_SET_CREATED,
                     action: "created",
                     object: "fulfillment_set",
-                    data: { id: fulfillmentSets[i].id },
+                    data: {
+                      id: fulfillmentSets[i].id,
+                    },
                   }),
                 ]),
                 {
@@ -335,13 +337,17 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.FULFILLMENT_SET_CREATED,
                     action: "created",
                     object: "fulfillment_set",
-                    data: { id: fulfillmentSets[i].id },
+                    data: {
+                      id: fulfillmentSets[i].id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.SERVICE_ZONE_CREATED,
                     action: "created",
                     object: "service_zone",
-                    data: { id: fulfillmentSets[i].service_zones[0].id },
+                    data: {
+                      id: fulfillmentSets[i].service_zones[0].id,
+                    },
                   }),
                 ]),
                 {
@@ -505,13 +511,17 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.FULFILLMENT_SET_CREATED,
                     action: "created",
                     object: "fulfillment_set",
-                    data: { id: fulfillmentSets[i].id },
+                    data: {
+                      id: fulfillmentSets[i].id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.SERVICE_ZONE_CREATED,
                     action: "created",
                     object: "service_zone",
-                    data: { id: fulfillmentSets[i].service_zones[0].id },
+                    data: {
+                      id: fulfillmentSets[i].service_zones[0].id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.GEO_ZONE_CREATED,
@@ -729,7 +739,9 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.FULFILLMENT_SET_UPDATED,
                     action: "updated",
                     object: "fulfillment_set",
-                    data: { id: currentFullfillmentSet.id },
+                    data: {
+                      id: currentFullfillmentSet.id,
+                    },
                   }),
                 ]),
                 {
@@ -1097,13 +1109,17 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.FULFILLMENT_SET_UPDATED,
                     action: "updated",
                     object: "fulfillment_set",
-                    data: { id: expectedFulfillmentSet.id },
+                    data: {
+                      id: expectedFulfillmentSet.id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.SERVICE_ZONE_CREATED,
                     action: "created",
                     object: "service_zone",
-                    data: { id: expectedFulfillmentSet.service_zones[0].id },
+                    data: {
+                      id: expectedFulfillmentSet.service_zones[0].id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.GEO_ZONE_CREATED,
@@ -1118,7 +1134,9 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.SERVICE_ZONE_DELETED,
                     action: "deleted",
                     object: "service_zone",
-                    data: { id: originalFulfillmentSet.service_zones[0].id },
+                    data: {
+                      id: originalFulfillmentSet.service_zones[0].id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.GEO_ZONE_DELETED,
@@ -1259,13 +1277,17 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                     eventName: FulfillmentEvents.FULFILLMENT_SET_UPDATED,
                     action: "updated",
                     object: "fulfillment_set",
-                    data: { id: expectedFulfillmentSet.id },
+                    data: {
+                      id: expectedFulfillmentSet.id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.SERVICE_ZONE_CREATED,
                     action: "created",
                     object: "service_zone",
-                    data: { id: createdServiceZone.id },
+                    data: {
+                      id: createdServiceZone.id,
+                    },
                   }),
                   buildExpectedEventMessageShape({
                     eventName: FulfillmentEvents.GEO_ZONE_CREATED,

@@ -6,10 +6,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createShippingOptionsPriceSetsStep,
-  upsertShippingOptionsStep,
-} from "../steps"
+import { createShippingOptionsPriceSetsStep, upsertShippingOptionsStep, } from "../steps"
 import { setShippingOptionsPriceSetsStep } from "../steps/set-shipping-options-price-sets"
 import { validateFulfillmentProvidersStep } from "../steps/validate-fulfillment-providers"
 import { validateShippingOptionPricesStep } from "../steps/validate-shipping-option-prices"
@@ -30,6 +27,13 @@ export const createShippingOptionsWorkflowId =
  * 
  * @example
  * To calculate a shipping option with flat rate prices:
+ * 
+ * :::note
+ * 
+ * Learn more about adding rules to the shipping option's prices in the Pricing Module's 
+ * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
+ * 
+ * :::
  * 
  * ```ts
  * const { result } = await createShippingOptionsWorkflow(container)

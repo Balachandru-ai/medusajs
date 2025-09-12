@@ -53,20 +53,6 @@
  *             type: string
  *             title: item_id
  *             description: The item id's details.
- *   - name: order_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: order_id
- *           description: The order's order id.
- *         - type: array
- *           description: The order's order id.
- *           items:
- *             type: string
- *             title: order_id
- *             description: The order id's details.
  *   - name: version
  *     in: query
  *     required: false
@@ -116,6 +102,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.order.listLineItems("order_123")
+ *       .then(({ order_items }) => {
+ *         console.log(order_items)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

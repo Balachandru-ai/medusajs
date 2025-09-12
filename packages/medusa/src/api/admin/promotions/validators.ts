@@ -23,7 +23,12 @@ export const AdminGetPromotionParams = createSelectParams()
 
 export const AdminGetPromotionsParamsFields = z.object({
   q: z.string().optional(),
-  code: z.union([z.string(), z.array(z.string())]).optional(),
+  code: z
+    .union([z.string(), z.array(z.string()), createOperatorMap()])
+    .optional(),
+  id: z
+    .union([z.string(), z.array(z.string()), createOperatorMap()])
+    .optional(),
   campaign_id: z.union([z.string(), z.array(z.string())]).optional(),
   application_method: z
     .object({
@@ -52,6 +57,7 @@ export type AdminGetPromotionRuleParamsType = z.infer<
 export const AdminGetPromotionRuleParams = z.object({
   promotion_type: z.string().optional(),
   application_method_type: z.string().optional(),
+  application_method_target_type: z.string().optional(),
 })
 
 export type AdminGetPromotionRuleTypeParamsType = z.infer<
@@ -61,6 +67,7 @@ export const AdminGetPromotionRuleTypeParams = createSelectParams().merge(
   z.object({
     promotion_type: z.string().optional(),
     application_method_type: z.string().optional(),
+    application_method_target_type: z.string().optional(),
   })
 )
 
@@ -74,6 +81,7 @@ export const AdminGetPromotionsRuleValueParams = createFindParams({
   z.object({
     q: z.string().optional(),
     value: z.union([z.string(), z.array(z.string())]).optional(),
+    application_method_target_type: z.string().optional(),
   })
 )
 
@@ -161,6 +169,7 @@ export const CreatePromotion = z
     code: z.string(),
     is_automatic: z.boolean().optional(),
     type: z.nativeEnum(PromotionType),
+    is_tax_inclusive: z.boolean().optional(),
     status: z.nativeEnum(PromotionStatus).default(PromotionStatus.DRAFT),
     campaign_id: z.string().nullish(),
     campaign: CreateCampaign.optional(),
@@ -184,6 +193,7 @@ export const UpdatePromotion = z
   .object({
     code: z.string().optional(),
     is_automatic: z.boolean().optional(),
+    is_tax_inclusive: z.boolean().optional(),
     type: z.nativeEnum(PromotionType).optional(),
     status: z.nativeEnum(PromotionStatus).optional(),
     campaign_id: z.string().nullish(),

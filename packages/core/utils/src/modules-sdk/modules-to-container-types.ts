@@ -2,6 +2,7 @@ import { join } from "path"
 import { Modules } from "./definition"
 import type { LoadedModule } from "@medusajs/types"
 import { FileSystem } from "../common/file-system"
+import { toUnixSlash } from "../common/to-unix-slash"
 import { toCamelCase } from "../common/to-camel-case"
 import { upperCaseFirst } from "../common/upper-case-first"
 
@@ -56,7 +57,7 @@ const SERVICES_INTERFACES = {
  */
 function normalizeModuleResolvePath(modulePath: string) {
   return modulePath.startsWith("./") || modulePath.startsWith("../")
-    ? join("../", "../", modulePath)
+    ? toUnixSlash(join("../", "../", modulePath))
     : modulePath
 }
 

@@ -10,7 +10,7 @@ import {
   AbstractAuthModuleProvider,
   MedusaError,
 } from "@medusajs/framework/utils"
-import jwt, { JwtPayload } from "jsonwebtoken"
+import jwt, { type JwtPayload } from "jsonwebtoken"
 
 type InjectedDependencies = {
   logger: Logger

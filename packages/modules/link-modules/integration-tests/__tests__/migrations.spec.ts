@@ -73,9 +73,9 @@ moduleIntegrationTestRunner<ILinkModule>({
             "set names 'utf8';\n" +
             "\n" +
             'create table if not exists "user_user_car_car" ("user_id" varchar(255) not null, "car_id" varchar(255) not null, "id" varchar(255) not null, "created_at" timestamptz not null default CURRENT_TIMESTAMP, "updated_at" timestamptz not null default CURRENT_TIMESTAMP, "deleted_at" timestamptz null, constraint "user_user_car_car_pkey" primary key ("user_id", "car_id"));\n' +
-            'create index if not exists "IDX_car_id_-92128f74" on "user_user_car_car" ("car_id");\n' +
             'create index if not exists "IDX_id_-92128f74" on "user_user_car_car" ("id");\n' +
-            'create index if not exists "IDX_user_id_-92128f74" on "user_user_car_car" ("user_id");\n' +
+            'CREATE INDEX IF NOT EXISTS "IDX_user_id_-92128f74" ON "user_user_car_car" ("user_id") WHERE deleted_at IS NULL;\n' +
+            'CREATE INDEX IF NOT EXISTS "IDX_car_id_-92128f74" ON "user_user_car_car" ("car_id") WHERE deleted_at IS NULL;\n' +
             'create index if not exists "IDX_deleted_at_-92128f74" on "user_user_car_car" ("deleted_at");\n' +
             "\n",
         })
@@ -94,9 +94,9 @@ moduleIntegrationTestRunner<ILinkModule>({
             "set names 'utf8';\n" +
             "\n" +
             'create table if not exists "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("user_id" varchar(255) not null, "very_long_table_name_of_custom_module_id" varchar(255) not null, "id" varchar(255) not null, "created_at" timestamptz not null default CURRENT_TIMESTAMP, "updated_at" timestamptz not null default CURRENT_TIMESTAMP, "deleted_at" timestamptz null, constraint "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de_pkey" primary key ("user_id", "very_long_table_name_of_custom_module_id"));\n' +
-            'create index if not exists "IDX_very_long_table_name_of_custom_module_id_1776e67de" on "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("very_long_table_name_of_custom_module_id");\n' +
             'create index if not exists "IDX_id_1776e67de" on "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("id");\n' +
-            'create index if not exists "IDX_user_id_1776e67de" on "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("user_id");\n' +
+            'CREATE INDEX IF NOT EXISTS "IDX_user_id_1776e67de" ON "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("user_id") WHERE deleted_at IS NULL;\n' +
+            'CREATE INDEX IF NOT EXISTS "IDX_very_long_table_name_of_custom_module_id_1776e67de" ON "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("very_long_table_name_of_custom_module_id") WHERE deleted_at IS NULL;\n' +
             'create index if not exists "IDX_deleted_at_1776e67de" on "user_user_cust_very_long_tabl_name_of_cust_modu1776e67de" ("deleted_at");\n' +
             "\n",
         })

@@ -1,4 +1,4 @@
-import { NotificationContent } from "./common"
+import { Attachment, NotificationContent } from "./common"
 
 /**
  * @interface
@@ -12,7 +12,7 @@ export interface CreateNotificationDTO {
    */
   to: string
   /**
-   * The channel through which the notification is sent, such as 'email' or 'sms'
+   * The channel through which the notification is sent, such as `email` or `sms`.
    */
   channel: string
   /**
@@ -32,11 +32,12 @@ export interface CreateNotificationDTO {
    */
   trigger_type?: string | null
   /**
-   * The ID of the resource this notification is for, if applicable. Useful for displaying relevant information in the UI
+   * The ID of the resource this notification is for, if applicable. Useful for displaying relevant information in the UI.
+   * For example, the ID of the order if the notification is related to an order update.
    */
   resource_id?: string | null
   /**
-   * The type of the resource this notification is for, if applicable, eg. "order"
+   * The type of the resource this notification is for, if applicable. For example, `order` if it's related to an order update.
    */
   resource_type?: string | null
   /**
@@ -44,11 +45,15 @@ export interface CreateNotificationDTO {
    */
   receiver_id?: string | null
   /**
-   * The original notification, in case this is a retried notification.
+   * The original notification, in case this is a resent notification.
    */
   original_notification_id?: string | null
   /**
    * An idempotency key that ensures the same notification is not sent multiple times.
    */
   idempotency_key?: string | null
+  /**
+   * Optional attachments for the notification.
+   */
+  attachments?: Attachment[] | null
 }

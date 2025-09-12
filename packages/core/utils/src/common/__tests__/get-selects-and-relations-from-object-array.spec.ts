@@ -40,7 +40,7 @@ describe("getSelectsAndRelationsFromObjectArray", function () {
           },
         ],
         output: {
-          selects: [
+          selects: expect.arrayContaining([
             "attr_string",
             "attr_boolean",
             "attr_null",
@@ -55,16 +55,19 @@ describe("getSelectsAndRelationsFromObjectArray", function () {
             "attr_array.attr_object.attr_boolean",
             "attr_array.attr_object.attr_null",
             "attr_array.attr_object.attr_undefined",
-          ],
+            "required_attr",
+          ]),
           relations: ["attr_object", "attr_array", "attr_array.attr_object"],
         },
       },
     ]
 
     expectations.forEach((expectation) => {
-      expect(getSelectsAndRelationsFromObjectArray(expectation.input)).toEqual(
-        expectation.output
-      )
+      expect(
+        getSelectsAndRelationsFromObjectArray(expectation.input, {
+          requiredFields: ["required_attr"],
+        })
+      ).toEqual(expectation.output)
     })
   })
 })

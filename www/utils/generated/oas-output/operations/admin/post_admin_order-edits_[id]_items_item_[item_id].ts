@@ -3,7 +3,9 @@
  * operationId: PostOrderEditsIdItemsItemItem_id
  * summary: Update Order Item Quantity of Order Edit
  * x-sidebar-summary: Update Item Quantity
- * description: Update an existing order item's quantity of an order edit.
+ * description: |
+ *   Update an existing order item's quantity of an order edit.
+ *   You can also use this API route to remove an item from an order by setting its quantity to `0`.
  * x-authenticated: true
  * parameters:
  *   - name: id
@@ -28,6 +30,29 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminPostOrderEditsUpdateItemQuantityReqSchema"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.orderEdit.updateOriginalItem(
+ *         "ordch_123", 
+ *         "orli_123",
+ *         {
+ *           quantity: 1
+ *         }
+ *       )
+ *       .then(({ order_preview }) => {
+ *         console.log(order_preview)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -59,6 +84,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: orderEditUpdateItemQuantityWorkflow
+ * x-events: []
  * 
 */
 

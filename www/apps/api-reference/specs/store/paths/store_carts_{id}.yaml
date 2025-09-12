@@ -39,6 +39,10 @@ get:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_carts_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -125,6 +129,10 @@ post:
                     `additional_data` parameter.
           description: The properties to update in the cart item.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_carts_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -157,3 +165,24 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCartWorkflow
+  x-events:
+    - name: cart.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the cart
+        }
+        ```
+      description: Emitted when a cart's details are updated.
+      deprecated: false
+    - name: cart.region_updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the cart
+        }
+        ```
+      description: |-
+        Emitted when the cart's region is updated. This
+        event is emitted alongside the `cart.updated` event.
+      deprecated: false

@@ -1,6 +1,7 @@
 import {
   getOrderDetailWorkflow,
-  updateOrderWorkflow,
+  updateDraftOrderWorkflow,
+  deleteDraftOrdersWorkflow,
 } from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
@@ -36,7 +37,7 @@ export const POST = async (
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  await updateOrderWorkflow(req.scope).run({
+  await updateDraftOrderWorkflow(req.scope).run({
     input: {
       ...req.validatedBody,
       user_id: req.auth_context.actor_id,
@@ -53,4 +54,26 @@ export const POST = async (
   res
     .status(200)
     .json({ draft_order: result.data[0] as HttpTypes.AdminDraftOrder })
+}
+
+/**
+ * @since 2.8.4
+ */
+export const DELETE = async (
+  req: AuthenticatedMedusaRequest,
+  res: MedusaResponse
+) => {
+  const { id } = req.params
+
+  await deleteDraftOrdersWorkflow(req.scope).run({
+    input: {
+      order_ids: [id],
+    },
+  })
+
+  res.status(200).json({
+    id,
+    object: "draft-order",
+    deleted: true,
+  })
 }

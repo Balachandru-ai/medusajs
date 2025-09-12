@@ -3,13 +3,6 @@ import { deduplicate, isObject } from "../common"
 
 import { SoftDeletableFilterKey } from "../dal/mikro-orm/mikro-orm-soft-deletable-filter"
 
-// Following convention here is fine, we can make it configurable if needed.
-const DELETED_AT_FIELD_NAME = "deleted_at"
-
-type FilterFlags = {
-  withDeleted?: boolean
-}
-
 export function buildQuery<const T = any>(
   filters: Record<string, any> = {},
   config: FindConfig<InferRepositoryReturnType<T>> & {
@@ -17,8 +10,7 @@ export function buildQuery<const T = any>(
   } = {}
 ): Required<DAL.FindOptions<T>> {
   const where = {} as DAL.FilterQuery<T>
-  const filterFlags: FilterFlags = {}
-  buildWhere(filters, where, filterFlags)
+  buildWhere(filters, where)
 
   delete config.primaryKeyFields
 
@@ -41,7 +33,7 @@ export function buildQuery<const T = any>(
     >["options"]["orderBy"]
   }
 
-  if (config.withDeleted || filterFlags.withDeleted) {
+  if (config.withDeleted) {
     findOptions.filters ??= {}
     findOptions.filters[SoftDeletableFilterKey] = {
       withDeleted: true,
@@ -63,16 +55,8 @@ export function buildQuery<const T = any>(
   return { where, options: findOptions } as Required<DAL.FindOptions<T>>
 }
 
-function buildWhere(
-  filters: Record<string, any> = {},
-  where = {},
-  flags: FilterFlags = {}
-) {
+function buildWhere(filters: Record<string, any> = {}, where = {}) {
   for (let [prop, value] of Object.entries(filters)) {
-    if (prop === DELETED_AT_FIELD_NAME) {
-      flags.withDeleted = true
-    }
-
     if (["$or", "$and"].includes(prop)) {
       if (!Array.isArray(value)) {
         throw new Error(`Expected array for ${prop} but got ${value}`)
@@ -80,7 +64,7 @@ function buildWhere(
 
       where[prop] = value.map((val) => {
         const deepWhere = {}
-        buildWhere(val, deepWhere, flags)
+        buildWhere(val, deepWhere)
         return deepWhere
       })
       continue
@@ -93,7 +77,7 @@ function buildWhere(
 
     if (isObject(value)) {
       where[prop] = {}
-      buildWhere(value, where[prop], flags)
+      buildWhere(value, where[prop])
       continue
     }
 

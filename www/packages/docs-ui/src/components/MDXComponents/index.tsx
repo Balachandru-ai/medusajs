@@ -120,7 +120,11 @@ export const MDXComponents: MDXComponentsType = {
     const { key, ...rest } = props
     return <ZoomImg {...rest} />
   },
-  a: Link,
+  a: (props) => <Link {...props} variant="content" />,
+  // a: Link,
+  strong: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => {
+    return <strong className={clsx("txt-medium-plus", className)} {...props} />
+  },
 }
 
 export const Hr = MDXComponents["hr"] as () => React.JSX.Element

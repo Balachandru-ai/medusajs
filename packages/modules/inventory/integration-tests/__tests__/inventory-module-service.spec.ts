@@ -1,12 +1,25 @@
 import { IInventoryService, InventoryItemDTO } from "@medusajs/framework/types"
-import { BigNumber, Module, Modules } from "@medusajs/framework/utils"
-import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
+import {
+  BigNumber,
+  CommonEvents,
+  composeMessage,
+  InventoryEvents,
+  Module,
+  Modules,
+} from "@medusajs/framework/utils"
+import {
+  MockEventBusService,
+  moduleIntegrationTestRunner,
+} from "@medusajs/test-utils"
 import { InventoryModuleService } from "../../src/services"
 
 jest.setTimeout(100000)
 
 moduleIntegrationTestRunner<IInventoryService>({
   moduleName: Modules.INVENTORY,
+  injectedDependencies: {
+    [Modules.EVENT_BUS]: new MockEventBusService(),
+  },
   testSuite: ({ service }) => {
     describe("Inventory Module Service", () => {
       it(`should export the appropriate linkable configuration`, () => {
@@ -414,6 +427,8 @@ moduleIntegrationTestRunner<IInventoryService>({
         })
 
         it("should update a reservationItem", async () => {
+          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
+
           const update = {
             id: reservationItem.id,
             quantity: 1,
@@ -421,16 +436,70 @@ moduleIntegrationTestRunner<IInventoryService>({
 
           const updated = await service.updateReservationItems(update)
 
+          const inventoryLevel =
+            await service.retrieveInventoryLevelByItemAndLocation(
+              reservationItem.inventory_item_id,
+              "location-1"
+            )
+
           expect(updated).toEqual(expect.objectContaining(update))
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(2)
+          expect(eventBusSpy).toHaveBeenNthCalledWith(
+            1,
+            expect.arrayContaining([
+              composeMessage(InventoryEvents.RESERVATION_ITEM_UPDATED, {
+                data: { id: reservationItem.id },
+                object: "reservation_item",
+                source: Modules.INVENTORY,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(InventoryEvents.INVENTORY_LEVEL_UPDATED, {
+                data: { id: inventoryLevel.id },
+                object: "inventory_level",
+                source: Modules.INVENTORY,
+                action: CommonEvents.UPDATED,
+              }),
+            ]),
+            {
+              internal: true,
+            }
+          )
 
           const update2 = {
             id: reservationItem.id,
             quantity: 10,
           }
 
+          eventBusSpy.mockClear()
+
           const updated2 = await service.updateReservationItems(update2)
 
           expect(updated2).toEqual(expect.objectContaining(update2))
+
+          expect(eventBusSpy).toHaveBeenCalledTimes(1)
+          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(2)
+          expect(eventBusSpy).toHaveBeenNthCalledWith(
+            1,
+            expect.arrayContaining([
+              composeMessage(InventoryEvents.RESERVATION_ITEM_UPDATED, {
+                data: { id: reservationItem.id },
+                object: "reservation_item",
+                source: Modules.INVENTORY,
+                action: CommonEvents.UPDATED,
+              }),
+              composeMessage(InventoryEvents.INVENTORY_LEVEL_UPDATED, {
+                data: { id: inventoryLevel.id },
+                object: "inventory_level",
+                source: Modules.INVENTORY,
+                action: CommonEvents.UPDATED,
+              }),
+            ]),
+            {
+              internal: true,
+            }
+          )
         })
 
         it("should adjust reserved_quantity of inventory level after updates increasing reserved quantity", async () => {

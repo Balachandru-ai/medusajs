@@ -8,7 +8,11 @@ interface NewItem {
   /**
    * The ID of the variant to add to the order.
    */
-  variant_id: string
+  variant_id?: string
+  /**
+   * The title of the item to add to the order.
+   */
+  title?: string
   /**
    * The quantity of the item to add to the order.
    */
@@ -211,8 +215,8 @@ export interface UpdateClaimAddNewItemWorkflowInput {
   claim_id: string
   /**
    * The ID of the action associated with the item to update.
-   * Every item has an `actions` property, whose value is an array of actions. 
-   * You can find the action with the name `ITEM_ADD` using the item's `action` property, 
+   * Every item has an `actions` property, whose value is an array of actions.
+   * You can find the action with the name `ITEM_ADD` using the item's `action` property,
    * and use the value of the action's `id` property.
    */
   action_id: string
@@ -256,7 +260,7 @@ export interface OrderClaimItemWorkflowInput {
   /**
    * The items to add to the claim.
    */
-  items: (ExistingItem & { 
+  items: (ExistingItem & {
     /**
      * The reason for adding the item to the claim.
      */
@@ -274,8 +278,8 @@ export interface UpdateClaimItemWorkflowInput {
   claim_id: string
   /**
    * The ID of the action associated with the item to update.
-   * Every item has an `actions` property, whose value is an array of actions. 
-   * You can find the action with the name `WRITE_OFF_ITEM` using its `action` property, 
+   * Every item has an `actions` property, whose value is an array of actions.
+   * You can find the action with the name `WRITE_OFF_ITEM` using its `action` property,
    * and use the value of its `id` property.
    */
   action_id: string

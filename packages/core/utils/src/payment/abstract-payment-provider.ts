@@ -31,11 +31,12 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   protected readonly container: Record<string, unknown>
   /**
    * This method validates the options of the provider set in `medusa-config.ts`.
-   * Implementing this method is optional. It's useful if your provider requires custom validation.
+   * Implementing this method is optional, but it's useful to ensure that the required
+   * options are passed to the provider, or if you have any custom validation logic.
    *
    * If the options aren't valid, throw an error.
    *
-   * @param options - The provider's options.
+   * @param options - The provider's options passed in `medusa-config.ts`.
    *
    * @example
    * class MyPaymentProviderService extends AbstractPaymentProvider<Options> {
@@ -54,6 +55,8 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   /**
    * The constructor allows you to access resources from the [module's container](https://docs.medusajs.com/learn/fundamentals/modules/container)
    * using the first parameter, and the module's options using the second parameter.
+   * 
+   * If you're creating a client or establishing a connection with a third-party service, do it in the constructor.
    *
    * :::note
    *
@@ -61,7 +64,7 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *
    * :::
    *
-   * @param {Record<string, unknown>} cradle - The module's container cradle used to resolve resources.
+   * @param {Record<string, unknown>} cradle - The module's container used to resolve resources.
    * @param {Record<string, unknown>} config - The options passed to the Payment Module provider.
    * @typeParam TConfig - The type of the provider's options passed as a second parameter.
    *
@@ -152,13 +155,24 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   }
 
   /**
-   * This method is used to capture a payment. The payment is captured in one of the following scenarios:
-   *
-   * - The {@link authorizePayment} method returns the status `captured`, which automatically executed this method after authorization.
-   * - The merchant requests to capture the payment after its associated payment session was authorized.
-   * - A webhook event occurred that instructs the payment provider to capture the payment session. Learn more about handing webhook events in [this guide](https://docs.medusajs.com/resources/commerce-modules/payment/webhook-events).
-   *
-   * In this method, use the third-party provider to capture the payment.
+   * This method captures a payment using the third-party provider. In this method, use the third-party provider to capture the payment.
+   * 
+   * When an order is placed, the payment is authorized using the {@link authorizePayment} method. Then, the admin
+   * user can capture the payment, which triggers this method.
+   * 
+   * ![Diagram showcasing capture payment flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1747307414/Medusa%20Resources/Klarna_Payment_Graphic_2025_1_lii7bw.jpg)
+   * 
+   * This method can also be triggered by a webhook event if the {@link getWebhookActionAndData} method returns the action `captured`.
+   * 
+   * #### Understanding `data` property
+   * 
+   * The `data` property of the input parameter contains data that was previously stored in the Payment record's `data` property, which was
+   * returned by the {@link authorizePayment} method.
+   * 
+   * The `data` property returned by this method is then stored in the `Payment` record. You can store data relevant to later refund or process the payment.
+   * For example, you can store the ID of the payment in the third-party provider to reference it later.
+   * 
+   * ![Diagram showcasing data flow between methods](https://res.cloudinary.com/dza7lstvk/image/upload/v1747309870/Medusa%20Resources/capture-data_acgdhf.jpg)
    *
    * @param input - The input to capture the payment. The `data` field should contain the data from the payment provider. when the payment was created.
    * @returns The new data to store in the payment's `data` property. Throws in case of an error.
@@ -180,7 +194,12 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *
    *       // assuming you have a client that captures the payment
    *     const newData = await this.client.capturePayment(externalId)
-   *     return {data: newData}
+   *     return {
+   *       data: {
+   *         ...newData,
+   *         id: externalId,
+   *       }
+   *     }
    *   }
    *   // ...
    * }
@@ -190,13 +209,30 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<CapturePaymentOutput>
 
   /**
-   * This method authorizes a payment session. When authorized successfully, a payment is created by the Payment
-   * Module which can be later captured using the {@link capturePayment} method.
-   *
-   * Refer to [this guide](https://docs.medusajs.com/resources/commerce-modules/payment/payment-flow#3-authorize-payment-session)
-   * to learn more about how this fits into the payment flow and how to handle required actions.
-   *
-   * To automatically capture the payment after authorization, return the status `captured`.
+   * This method authorizes a payment session using the third-party payment provider.
+   * 
+   * During checkout, the customer may need to perform actions required by the payment provider,
+   * such as entering their card details or confirming the payment. Once that is done,
+   * the customer can place their order.
+   * 
+   * During cart-completion before placing the order, this method is used to authorize the cart's payment session with the 
+   * third-party payment provider. The payment can later be captured
+   * using the {@link capturePayment} method.
+   * 
+   * ![Diagram showcasing authorize payment flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1747307795/Medusa%20Resources/authorize-payment_qzpy6e.jpg)
+   * 
+   * When authorized successfully, a `Payment` is created by the Payment
+   * Module, and it's associated with the order.
+   * 
+   * #### Understanding `data` property
+   * 
+   * The `data` property of the method's parameter contains the `PaymentSession` record's `data` property, which was
+   * returned by the {@link initiatePayment} method.
+   * 
+   * The `data` property returned by this method is then stored in the created `Payment` record. You can store data relevant to later capture or process the payment.
+   * For example, you can store the ID of the payment in the third-party provider to reference it later.
+   * 
+   * ![Diagram showcasing data flow between methods](https://res.cloudinary.com/dza7lstvk/image/upload/v1747309278/Medusa%20Resources/authorize-data_erjg7r.jpg)
    *
    * @param input - The input to authorize the payment. The `data` field should contain the data from the payment provider. when the payment was created.
    * @returns The status of the authorization, along with the `data` field about the payment. Throws in case of an error.
@@ -235,7 +271,18 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<AuthorizePaymentOutput>
 
   /**
-   * This method cancels a payment.
+   * This method cancels a payment in the third-party payment provider. It's used when
+   * the admin user cancels an order. The order can only be canceled if the payment
+   * is not captured yet.
+   * 
+   * #### Understanding `data` property
+   * 
+   * The `data` property of the method's parameter contains the `Payment` record's `data` property, which was
+   * returned by the {@link authorizePayment} method.
+   * 
+   * The `data` property returned by this method is then stored in the `Payment` record. You can store data relevant for any further processing of the payment.
+   * 
+   * ![Diagram showcasing data flow between methods](https://res.cloudinary.com/dza7lstvk/image/upload/v1747310189/Medusa%20Resources/cancel-data_gzcgbc.jpg)
    *
    * @param input - The input to cancel the payment. The `data` field should contain the data from the payment provider. when the payment was created.
    * @returns The new data to store in the payment's `data` property, if any. Throws in case of an error.
@@ -269,8 +316,28 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<CancelPaymentOutput>
 
   /**
-   * This method is used when a payment session is created. It can be used to initiate the payment
-   * in the third-party session, before authorizing or capturing the payment later.
+   * This method initializes a payment session with the third-party payment provider.
+   * 
+   * When a customer chooses a payment method during checkout, this method is triggered to
+   * perform any initialization action with the third-party provider, such as creating a payment session.
+   * 
+   * ![Diagram showcasing initiate payment flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1747310624/Medusa%20Resources/initiate-payment_dpoa2g.jpg)
+   * 
+   * #### Understanding `data` property
+   * 
+   * The `data` property returned by this method will be stored in the created `PaymentSession` record. You can store data relevant to later authorize or process the payment.
+   * For example, you can store the ID of the payment session in the third-party provider to reference it later.
+   * 
+   * The `data` property is also available to storefronts, allowing you to store data necessary for the storefront to integrate
+   * the payment provider in the checkout flow. For example, you can store the client token to use with the payment provider's SDK.
+   * 
+   * :::note
+   * 
+   * This also means you shouldn't store sensitive data and tokens in the `data` property, as it's publicly accessible.
+   * 
+   * :::
+   * 
+   * ![Diagram showcasing data flow between methods](https://res.cloudinary.com/dza7lstvk/image/upload/v1747310699/Medusa%20Resources/initiate-data_ikc05t.jpg)
    *
    * @param input - The input to create the payment session.
    * @returns The new data to store in the payment's `data` property. Throws in case of an error.
@@ -301,7 +368,7 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *     )
    *
    *     return {
-   *       id: response.id
+   *       id: response.id,
    *       data: response,
    *     }
    *   }
@@ -314,9 +381,22 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<InitiatePaymentOutput>
 
   /**
-   * This method is used when a payment session is deleted, which can only happen if it isn't authorized, yet.
-   *
-   * Use this to delete or cancel the payment in the third-party service.
+   * This method deletes a payment session in the third-party payment provider.
+   * 
+   * When a customer chooses a payment method during checkout, then chooses a different one,
+   * this method is triggered to delete the previous payment session.
+   * 
+   * If your provider doesn't support deleting a payment session, you can just return an empty object or
+   * an object that contains the same received `data` property.
+   * 
+   * ![Diagram showcasing delete payment flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1747311084/Medusa%20Resources/delete-payment_smxsiq.jpg)
+   * 
+   * #### Understanding `data` property
+   * 
+   * The `data` property of the method's parameter contains the `PaymentSession` record's `data` property, which was
+   * returned by the {@link initiatePayment} method.
+   * 
+   * ![Diagram showcasing data flow between methods](https://res.cloudinary.com/dza7lstvk/image/upload/v1747311084/Medusa%20Resources/delete-data_xg65ck.jpg)
    *
    * @param input - The input to delete the payment session. The `data` field should contain the data from the payment provider. when the payment was created.
    * @returns The new data to store in the payment's `data` property, if any. Throws in case of an error.
@@ -339,8 +419,9 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *
    *     // assuming you have a client that cancels the payment
    *     await this.client.cancelPayment(externalId)
-   *     return {}
-   *   }
+   *     return {
+   *       data: input.data
+   *     }
    *   }
    *
    *   // ...
@@ -396,7 +477,25 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<GetPaymentStatusOutput>
 
   /**
-   * This method refunds an amount of a payment previously captured.
+   * This method refunds an amount using the third-party payment provider. This method
+   * is triggered when the admin user refunds a payment of an order.
+   * 
+   * #### Understanding `data` property
+   * 
+   * The `data` property of the method's parameter contains the `Payment` record's `data` property, which was
+   * returned by the {@link capturePayment} or {@link refundPayment} method.
+   * 
+   * The `data` property returned by this method is then stored in the `Payment` record. You can store data relevant to later refund or process the payment.
+   * For example, you can store the ID of the payment in the third-party provider to reference it later.
+   * 
+   * :::note
+   * 
+   * A payment may be refunded multiple times with different amounts. In this case, the `data` property
+   * of the input parameter contains the data from the last refund.
+   * 
+   * :::
+   * 
+   * ![Diagram showcasing data flow between methods](https://res.cloudinary.com/dza7lstvk/image/upload/v1747311296/Medusa%20Resources/refund-data_plcjl0.jpg)
    *
    * @param input - The input to refund the payment. The `data` field should contain the data from the payment provider. when the payment was created.
    * @returns The new data to store in the payment's `data` property, or an error object.
@@ -423,7 +522,9 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *         input.amount
    *       )
    *
-   *     return {data: newData}
+   *     return {
+   *       data: input.data,
+   *     }
    *   }
    *   // ...
    * }
@@ -433,7 +534,7 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<RefundPaymentOutput>
 
   /**
-   * Retrieves the payment's data from the third-party service.
+   * This method retrieves the payment's data from the third-party payment provider.
    *
    * @param input - The input to retrieve the payment. The `data` field should contain the data from the payment provider when the payment was created.
    * @returns The payment's data as found in the the payment provider.
@@ -465,7 +566,7 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<RetrievePaymentOutput>
 
   /**
-   * Update a payment in the third-party service that was previously initiated with the {@link initiatePayment} method.
+   * This method updates a payment in the third-party service that was previously initiated with the {@link initiatePayment} method.
    *
    * @param input - The input to update the payment. The `data` field should contain the data from the payment provider. when the payment was created.
    * @returns The new data to store in the payment's `data` property. Throws in case of an error.
@@ -486,6 +587,11 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *   ): Promise<UpdatePaymentOutput> {
    *     const { amount, currency_code, context } = input
    *     const externalId = input.data?.id
+   * 
+   *     // Validate context.customer
+   *     if (!context || !context.customer) {
+   *       throw new Error("Context must include a valid customer.");
+   *     }
    *
    *     // assuming you have a client that updates the payment
    *     const response = await this.client.update(
@@ -493,7 +599,7 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *         {
    *           amount,
    *           currency_code,
-   *           context.customer
+   *           customer: context.customer
    *         }
    *       )
    *
@@ -508,14 +614,16 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
   ): Promise<UpdatePaymentOutput>
 
   /**
-   * This method is executed when a webhook event is received from the third-party payment provider. Use it
-   * to process the action of the payment provider.
+   * This method is executed when a webhook event is received from the third-party payment provider. Medusa uses
+   * the data returned by this method to perform actions in the Medusa application, such as completing the associated cart
+   * if the payment was authorized successfully.
    *
-   * Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/payment/webhook-events)
+   * Learn more in the [Webhook Events](https://docs.medusajs.com/resources/commerce-modules/payment/webhook-events) documentation.
    *
    * @param data - The webhook event's data
    * @returns The webhook result. If the `action`'s value is `captured`, the payment is captured within Medusa as well.
-   * If the `action`'s value is `authorized`, the associated payment session is authorized within Medusa.
+   * If the `action`'s value is `authorized`, the associated payment session is authorized within Medusa and the associated cart
+   * will be completed to create an order.
    *
    * @example
    * // other imports...
@@ -546,6 +654,8 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *           return {
    *             action: "authorized",
    *             data: {
+   *               // assuming the session_id is stored in the metadata of the payment
+   *               // in the third-party provider
    *               session_id: (data.metadata as Record<string, any>).session_id,
    *               amount: new BigNumber(data.amount as number)
    *             }
@@ -554,19 +664,27 @@ export abstract class AbstractPaymentProvider<TConfig = Record<string, unknown>>
    *           return {
    *             action: "captured",
    *             data: {
+   *               // assuming the session_id is stored in the metadata of the payment
+   *               // in the third-party provider
    *               session_id: (data.metadata as Record<string, any>).session_id,
    *               amount: new BigNumber(data.amount as number)
    *             }
    *           }
    *         default:
    *           return {
-   *             action: "not_supported"
+   *             action: "not_supported",
+   *             data: {
+   *               session_id: "",
+   *               amount: new BigNumber(0)
+   *             }
    *           }
    *       }
    *     } catch (e) {
    *       return {
    *         action: "failed",
    *         data: {
+   *           // assuming the session_id is stored in the metadata of the payment
+   *           // in the third-party provider
    *           session_id: (data.metadata as Record<string, any>).session_id,
    *           amount: new BigNumber(data.amount as number)
    *         }
