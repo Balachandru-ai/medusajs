@@ -11,6 +11,7 @@ export const AdminGetCollectionParams = createSelectParams()
 
 export const AdminGetCollectionsParamsFields = z.object({
   q: z.string().optional(),
+  id: z.union([z.string(), z.array(z.string())]).optional(),
   title: z.union([z.string(), z.array(z.string())]).optional(),
   handle: z.union([z.string(), z.array(z.string())]).optional(),
   created_at: createOperatorMap().optional(),
