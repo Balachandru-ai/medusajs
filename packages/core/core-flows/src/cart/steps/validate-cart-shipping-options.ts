@@ -1,10 +1,6 @@
 import { CartDTO, IFulfillmentModuleService } from "@medusajs/framework/types"
-import {
-  MedusaError,
-  Modules,
-  arrayDifference,
-} from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { arrayDifference, MedusaError, Modules, } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The details of the cart and its shipping options context.
@@ -35,7 +31,7 @@ export interface ValidateCartShippingOptionsStepInput {
    * Pre-fetched shipping options. If provided, validation will be done against these
    * instead of querying the database.
    */
-  shippingOptions?: Array<{ id: string }>
+  shippingOptions?: { id: string }[]
 }
 
 export const validateCartShippingOptionsStepId =
