@@ -169,7 +169,11 @@ function getLineItemTotals(
     original_tax_total: new BigNumber(originalTaxTotal),
   }
 
-  if (isDefined(item.detail?.return_requested_quantity)) {
+  if (
+    isDefined(item.detail?.return_requested_quantity) ||
+    isDefined(item.detail?.return_received_quantity) ||
+    isDefined(item.detail?.return_dismissed_quantity)
+  ) {
     setRefundableTotal(item, discountsTotal, totals, context)
   }
 
