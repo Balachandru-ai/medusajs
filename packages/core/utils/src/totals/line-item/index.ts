@@ -117,7 +117,16 @@ function getLineItemTotals(
   )
 
   const sumTaxRate = MathBN.div(sumTax, 100)
-  const totalItemPrice = MathBN.mult(item.unit_price, item.quantity)
+  const totalReturnedQuantity = MathBN.sum(
+    item.detail?.return_requested_quantity ?? 0,
+    item.detail?.return_received_quantity ?? 0,
+    item.detail?.return_dismissed_quantity ?? 0
+  )
+
+  const totalItemPrice = MathBN.mult(
+    item.unit_price,
+    MathBN.sub(item.quantity, totalReturnedQuantity)
+  )
 
   /*
     If the price is inclusive of tax, we need to remove the taxed amount from the subtotal
