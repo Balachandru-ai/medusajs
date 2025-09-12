@@ -408,15 +408,12 @@ const Fulfillment = ({
           {fulfillment.labels && fulfillment.labels.length > 0 ? (
             <ul>
               {fulfillment.labels.map((tlink) => {
-                const hasTrackingUrl =
-                  tlink.tracking_url &&
-                  tlink.tracking_url.length > 0 &&
-                  tlink.tracking_url !== "#";
-                const hasLabelUrl =
-                  tlink.label_url &&
-                  tlink.label_url.length > 0 &&
-                  tlink.label_url !== "#";
-          
+                const isValidUrl = (url?: string) =>
+                  url && url.length > 0 && url !== "#"
+
+                const hasTrackingUrl = isValidUrl(tlink.tracking_url)
+                const hasLabelUrl = isValidUrl(tlink.label_url)
+
                 if (hasTrackingUrl || hasLabelUrl) {
                   return (
                     <li key={tlink.tracking_number}>
@@ -448,14 +445,14 @@ const Fulfillment = ({
                     </li>
                   )
                 }
-          
+
                 return (
                   <li key={tlink.tracking_number}>
                     <Text size="small" leading="compact">
                       {tlink.tracking_number}
                     </Text>
                   </li>
-                );
+                )
               })}
             </ul>
           ) : (
