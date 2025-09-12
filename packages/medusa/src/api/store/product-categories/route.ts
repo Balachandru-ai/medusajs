@@ -2,10 +2,7 @@ import {
   StoreProductCategoryListParams,
   StoreProductCategoryListResponse,
 } from "@medusajs/framework/types"
-import {
-  ContainerRegistrationKeys,
-  remoteQueryObjectFromString,
-} from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -15,23 +12,19 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<StoreProductCategoryListParams>,
   res: MedusaResponse<StoreProductCategoryListResponse>
 ) => {
-  const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const queryObject = remoteQueryObjectFromString({
-    entryPoint: "product_category",
-    variables: {
-      filters: req.filterableFields,
-      ...req.queryConfig.pagination,
-    },
+  const { data: product_categories, metadata } = await query.graph({
+    entity: "product_category",
     fields: req.queryConfig.fields,
+    filters: req.filterableFields,
+    pagination: req.queryConfig.pagination,
   })
-
-  const { rows: product_categories, metadata } = await remoteQuery(queryObject)
 
   res.json({
     product_categories,
-    count: metadata.count,
-    offset: metadata.skip,
-    limit: metadata.take,
+    count: metadata!.count,
+    offset: metadata!.skip,
+    limit: metadata!.take,
   })
 }

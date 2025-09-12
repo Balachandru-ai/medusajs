@@ -1,5 +1,22 @@
 # @medusajs/draft-order
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13376](https://github.com/medusajs/medusa/pull/13376) [`0000ed69982b95f4bff80fd6182347291d25f7b8`](https://github.com/medusajs/medusa/commit/0000ed69982b95f4bff80fd6182347291d25f7b8) Thanks [@fPolic](https://github.com/fPolic)! - fix(draft-order,medusa,types): draft order promotion UI polish
+
+- [#13360](https://github.com/medusajs/medusa/pull/13360) [`afe21741c43efb3ae233da82eba0227cbc74a6f8`](https://github.com/medusajs/medusa/commit/afe21741c43efb3ae233da82eba0227cbc74a6f8) Thanks [@SteelRazor47](https://github.com/SteelRazor47)! - fix(draft-order): use correct backend URL in sdk creation
+
+- Updated dependencies [[`115a1deb49b154dc18c5e406fd8fbd7ad412df97`](https://github.com/medusajs/medusa/commit/115a1deb49b154dc18c5e406fd8fbd7ad412df97), [`a0693727a04855f07c710207aaeac07699fc8ee9`](https://github.com/medusajs/medusa/commit/a0693727a04855f07c710207aaeac07699fc8ee9), [`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/cli@2.10.2
+  - @medusajs/test-utils@2.10.2
+  - @medusajs/framework@2.10.2
+  - @medusajs/js-sdk@2.10.2
+  - @medusajs/admin-sdk@2.10.2
+  - @medusajs/icons@2.10.2
+  - @medusajs/ui@4.0.22
+
 ## 2.10.1
 
 ### Patch Changes

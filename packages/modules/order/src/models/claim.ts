@@ -59,7 +59,7 @@ const _OrderClaim = model
       name: "IDX_order_claim_display_id",
       on: ["display_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_claim_deleted_at",
@@ -71,13 +71,13 @@ const _OrderClaim = model
       name: "IDX_order_claim_order_id",
       on: ["order_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_claim_return_id",
       on: ["return_id"],
       unique: false,
-      where: "return_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "return_id IS NOT NULL AND deleted_at IS NULL",
     },
   ])
 

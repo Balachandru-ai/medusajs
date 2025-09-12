@@ -13,6 +13,7 @@ This documentation provides a reference to the data models in the Cart Module
 
 ```mermaid
 erDiagram
+	Cart ||--|| Address : shipping_address
 	Cart ||--|| LineItem : items
 	Cart ||--|| CreditLine : credit_lines
 	Cart ||--|| ShippingMethod : shipping_methods

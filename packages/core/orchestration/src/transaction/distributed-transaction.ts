@@ -311,16 +311,16 @@ class DistributedTransaction extends EventEmitter {
     await DistributedTransaction.keyValueStore.clearStepTimeout(this, step)
   }
 
-  public setTemporaryData(key: string, value: unknown) {
-    this.#temporaryStorage.set({ key }, value)
+  public setTemporaryData(key: { key: string }, value: unknown) {
+    this.#temporaryStorage.set(key, value)
   }
 
-  public getTemporaryData(key: string) {
-    return this.#temporaryStorage.get({ key })
+  public getTemporaryData(key: { key: string }) {
+    return this.#temporaryStorage.get(key)
   }
 
-  public hasTemporaryData(key: string) {
-    return this.#temporaryStorage.has({ key })
+  public hasTemporaryData(key: { key: string }) {
+    return this.#temporaryStorage.has(key)
   }
 
   /**

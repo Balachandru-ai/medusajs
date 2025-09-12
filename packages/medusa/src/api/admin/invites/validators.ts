@@ -39,6 +39,7 @@ export type AdminCreateInviteType = z.infer<typeof AdminCreateInvite>
 export const AdminCreateInvite = z
   .object({
     email: z.string(),
+    metadata: z.record(z.unknown()).nullish(),
   })
   .strict()
 
