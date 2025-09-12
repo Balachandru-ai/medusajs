@@ -320,6 +320,8 @@ const Fulfillment = ({
     throw error
   }
 
+  const isValidUrl = (url?: string) => url && url.length > 0 && url !== "#"
+
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
@@ -408,9 +410,6 @@ const Fulfillment = ({
           {fulfillment.labels && fulfillment.labels.length > 0 ? (
             <ul>
               {fulfillment.labels.map((tlink) => {
-                const isValidUrl = (url?: string) =>
-                  url && url.length > 0 && url !== "#"
-
                 const hasTrackingUrl = isValidUrl(tlink.tracking_url)
                 const hasLabelUrl = isValidUrl(tlink.label_url)
 
