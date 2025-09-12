@@ -13039,6 +13039,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/product/retrieveProductOptionValue",
+                      "title": "retrieveProductOptionValue",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/product/retrieveProductTag",
                       "title": "retrieveProductTag",
                       "description": "",
