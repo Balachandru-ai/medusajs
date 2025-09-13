@@ -541,6 +541,7 @@ medusaIntegrationTestRunner({
           {},
           adminHeaders
         )
+        const returnId = result.data.exchange.return_id
 
         result = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
           .order
@@ -549,7 +550,6 @@ medusaIntegrationTestRunner({
         expect(result.total).toBe(112)
 
         // receive return
-        const returnId = result.data.exchange.return_id
         await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
         await api.post(
           `/admin/returns/${returnId}/receive-items`,
