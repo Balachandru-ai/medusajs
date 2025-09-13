@@ -235,7 +235,6 @@ function getLineItemTotals(
   for (const field in optionalFields) {
     const totalField = optionalFields[field]
 
-    // Pick the quantity correctly from the input path
     let target = field.includes(".")
       ? pickValueFromObject(field, item)
       : item[field]

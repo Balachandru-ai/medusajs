@@ -9,6 +9,7 @@ import {
 import {
   ChangeActionType,
   deepFlatMap,
+  isDefined,
   OrderChangeStatus,
 } from "@medusajs/framework/utils"
 import {
@@ -235,8 +236,17 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
           (item) => item.id === input.items[0].id
         ) as any
 
-        return item?.variant?.inventory_items?.[0]?.inventory
-          ?.location_levels?.[0]?.location_id
+        let locationId: string | undefined
+        deepFlatMap(
+          item,
+          "variant.inventory_items.inventory.location_levels",
+          ({ location_levels }) => {
+            if (!locationId && isDefined(location_levels?.location_id)) {
+              locationId = location_levels.location_id
+            }
+          }
+        )
+        return locationId
       }
     )
 

@@ -546,6 +546,34 @@ medusaIntegrationTestRunner({
           .order
 
         expect(orderBefore.total).toBe(61)
+        expect(result.total).toBe(112)
+
+        // receive return
+        const returnId = result.data.exchange.return_id
+        await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+        await api.post(
+          `/admin/returns/${returnId}/receive-items`,
+          {
+            items: [
+              {
+                id: item.id,
+                quantity: 2,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/returns/${returnId}/receive/confirm`,
+          {},
+          adminHeaders
+        )
+
+        result = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
+          .order
+
+        expect(orderBefore.total).toBe(61)
         expect(result.total).toBe(62) // +1 is from taxes of the new item
       })
 
