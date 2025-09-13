@@ -4,9 +4,11 @@ import { BigNumber } from "../big-number"
 import { MathBN } from "../math"
 
 export function calculateAdjustmentTotal({
+  item,
   adjustments,
   taxRate,
 }: {
+  item?: { quantity: BigNumberInput }
   adjustments: Pick<AdjustmentLineDTO, "amount" | "is_tax_inclusive">[]
   taxRate?: BigNumberInput
 }) {
@@ -40,9 +42,23 @@ export function calculateAdjustmentTotal({
     adj["total"] = new BigNumber(adjustmentsTotal)
   }
 
+  const quantity = item?.quantity || MathBN.convert(1)
+  const adjustmentPerItem = MathBN.eq(quantity, 0)
+    ? 0
+    : MathBN.div(adjustmentsTotal, quantity)
+  const adjustmentSubtotalPerItem = MathBN.eq(quantity, 0)
+    ? 0
+    : MathBN.div(adjustmentsSubtotal, quantity)
+  const adjustmentTaxTotalPerItem = MathBN.eq(quantity, 0)
+    ? 0
+    : MathBN.div(adjustmentsTaxTotal, quantity)
+
   return {
     adjustmentsTotal,
     adjustmentsSubtotal,
     adjustmentsTaxTotal,
+    adjustmentPerItem,
+    adjustmentSubtotalPerItem,
+    adjustmentTaxTotalPerItem,
   }
 }

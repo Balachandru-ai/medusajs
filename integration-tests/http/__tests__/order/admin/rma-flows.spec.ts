@@ -12,13 +12,14 @@ jest.setTimeout(300000)
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
     let order
-    let shippingProfile
+    let salesChannel
     let fulfillmentSet
     let location
     let item
     let returnShippingOption
     let outboundShippingOption
     const shippingProviderId = "manual_test-provider"
+    let product
 
     beforeEach(async () => {
       const container = getContainer()
@@ -34,15 +35,7 @@ medusaIntegrationTestRunner({
         )
       ).data.inventory_item
 
-      const seeders = await createOrderSeeder({
-        api,
-        container,
-        inventoryItemOverride,
-        withoutShipping: true,
-      })
-      order = seeders.order
-
-      shippingProfile = (
+      const shippingProfileOverride = (
         await api.post(
           `/admin/shipping-profiles`,
           { name: "Test", type: "default" },
@@ -50,51 +43,19 @@ medusaIntegrationTestRunner({
         )
       ).data.shipping_profile
 
-      location = (
-        await api.post(
-          `/admin/stock-locations`,
-          { name: "Test location" },
-          adminHeaders
-        )
-      ).data.stock_location
-
-      location = (
-        await api.post(
-          `/admin/stock-locations/${location.id}/fulfillment-sets?fields=*fulfillment_sets`,
-          { name: "Test", type: "test-type" },
-          adminHeaders
-        )
-      ).data.stock_location
-
-      fulfillmentSet = (
-        await api.post(
-          `/admin/fulfillment-sets/${location.fulfillment_sets[0].id}/service-zones`,
-          {
-            name: "Test",
-            geo_zones: [{ type: "country", country_code: "us" }],
-          },
-          adminHeaders
-        )
-      ).data.fulfillment_set
-
-      const inventoryItem = (
-        await api.get(`/admin/inventory-items?sku=test-variant`, adminHeaders)
-      ).data.inventory_items[0]
-
-      await api.post(
-        `/admin/inventory-items/${inventoryItem.id}/location-levels`,
-        {
-          location_id: location.id,
-          stocked_quantity: 10,
-        },
-        adminHeaders
-      )
-
-      await api.post(
-        `/admin/stock-locations/${location.id}/fulfillment-providers`,
-        { add: [shippingProviderId] },
-        adminHeaders
-      )
+      const seeders = await createOrderSeeder({
+        api,
+        container,
+        inventoryItemOverride,
+        shippingProfileOverride,
+        withoutShipping: true,
+      })
+      order = seeders.order
+      salesChannel = seeders.salesChannel
+      product = seeders.product
+      location = seeders.stockLocation
+      fulfillmentSet = seeders.fulfillmentSet
+      const shippingProfile = seeders.shippingProfile
 
       const shippingOptionPayload = {
         name: "Return shipping",
@@ -563,6 +524,12 @@ medusaIntegrationTestRunner({
         )
 
         await api.post(
+          `/admin/claims/${claimWithInboundAndOutbound.id}/inbound/shipping-method`,
+          { shipping_option_id: returnShippingOption.id },
+          adminHeaders
+        )
+
+        await api.post(
           `/admin/claims/${claimWithInboundAndOutbound.id}/outbound/items`,
           {
             items: [
@@ -586,15 +553,15 @@ medusaIntegrationTestRunner({
 
         expect(orderResult).toEqual(
           expect.objectContaining({
-            total: 439.9,
-            subtotal: 415,
-            tax_total: 24.9,
+            total: 455.8,
+            subtotal: 430,
+            tax_total: 25.8,
             summary: expect.objectContaining({
               paid_total: 212,
               refunded_total: 0,
               transaction_total: 212,
-              pending_difference: 15.9,
-              current_order_total: 439.9,
+              pending_difference: 31.8,
+              current_order_total: 455.8,
               original_order_total: 333.9,
             }),
           })
@@ -607,7 +574,7 @@ medusaIntegrationTestRunner({
         expect(pendingPaymentCollection).toEqual(
           expect.objectContaining({
             status: "not_paid",
-            amount: 15.9,
+            amount: 31.8,
           })
         )
 
@@ -621,39 +588,117 @@ medusaIntegrationTestRunner({
 
         expect(paymentCollection).toEqual(
           expect.objectContaining({
-            amount: 15.9,
+            amount: 31.8,
             status: "completed",
             payment_sessions: [
               expect.objectContaining({
                 status: "authorized",
-                amount: 15.9,
+                amount: 31.8,
               }),
             ],
             payments: [
               expect.objectContaining({
                 provider_id: "pp_system_default",
-                amount: 15.9,
+                amount: 31.8,
               }),
             ],
           })
         )
 
-        orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
-          .data.order
+        orderResult = (
+          await api.get(
+            `/admin/orders/${order.id}?fields=*returns,*returns.items`,
+            adminHeaders
+          )
+        ).data.order
 
         // Totals summary after payment has been marked as paid
         expect(orderResult).toEqual(
           expect.objectContaining({
-            total: 439.9,
-            subtotal: 415,
-            tax_total: 24.9,
+            total: 455.8,
+            subtotal: 430,
+            tax_total: 25.8,
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                refundable_total: 0,
+              }),
+              expect.objectContaining({
+                refundable_total: 0,
+              }),
+              expect.objectContaining({
+                refundable_total: 106,
+              }),
+              expect.objectContaining({
+                refundable_total: 106,
+              }),
+            ]),
             summary: expect.objectContaining({
-              paid_total: 227.9,
+              paid_total: 243.8,
               refunded_total: 0,
-              transaction_total: 227.9,
+              transaction_total: 243.8,
               pending_difference: 0,
-              current_order_total: 439.9,
+              current_order_total: 455.8,
               original_order_total: 333.9,
+            }),
+          })
+        )
+
+        // Return and receive items from claim inbounds
+        for (const returnOrder of orderResult.returns) {
+          const returnId = returnOrder.id
+          await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+
+          const lineItem = returnOrder.items[0].item
+          await api.post(
+            `/admin/returns/${returnId}/receive-items`,
+            {
+              items: [
+                {
+                  id: lineItem.id,
+                  quantity: returnOrder.items[0].quantity,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          await api.post(
+            `/admin/returns/${returnId}/receive/confirm`,
+            {},
+            adminHeaders
+          )
+        }
+
+        orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
+          .data.order
+
+        // Totals summary after returns have been received
+        expect(orderResult).toEqual(
+          expect.objectContaining({
+            total: 243.8,
+            subtotal: 230,
+            tax_total: 13.8,
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                refundable_total: 0,
+              }),
+              expect.objectContaining({
+                refundable_total: 0,
+              }),
+              expect.objectContaining({
+                refundable_total: 0,
+              }),
+              expect.objectContaining({
+                refundable_total: 0,
+              }),
+            ]),
+            summary: expect.objectContaining({
+              paid_total: 243.8,
+              refunded_total: 0,
+              transaction_total: 243.8,
+              pending_difference: -212,
+              current_order_total: 243.8,
+              original_order_total: 349.8,
             }),
           })
         )
