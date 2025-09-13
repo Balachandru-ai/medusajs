@@ -246,8 +246,7 @@ export const EditPromotionDetailsForm = ({
                         <Form.Control>
                           <RadioGroup
                             dir={direction}
-                        }
-                        className="flex-col gap-y-3"
+                            className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
                           >
@@ -342,8 +341,7 @@ export const EditPromotionDetailsForm = ({
                         <Form.Control>
                           <RadioGroup
                             dir={direction}
-                        }
-                        className="flex-col gap-y-3"
+                            className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
                           >
