@@ -1530,14 +1530,14 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/core_flows/Line_Item/Workflows_Line_Item/functions/core_flows.Line_Item.Workflows_Line_Item.deleteLineItemsWorkflow/page.mdx"
   },
   {
-    "origSlug": "/references/core_flows/Locking/functions/core_flows.Locking.acquireLockStep",
+    "origSlug": "/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep",
     "newSlug": "/references/medusa-workflows/steps/acquireLockStep",
-    "filePath": "/www/apps/resources/references/core_flows/Locking/functions/core_flows.Locking.acquireLockStep/page.mdx"
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep/page.mdx"
   },
   {
-    "origSlug": "/references/core_flows/Locking/functions/core_flows.Locking.releaseLockStep",
+    "origSlug": "/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep",
     "newSlug": "/references/medusa-workflows/steps/releaseLockStep",
-    "filePath": "/www/apps/resources/references/core_flows/Locking/functions/core_flows.Locking.releaseLockStep/page.mdx"
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep/page.mdx"
   },
   {
     "origSlug": "/references/core_flows/Notification/Steps_Notification/functions/core_flows.Notification.Steps_Notification.notifyOnFailureStep",
@@ -6725,6 +6725,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOption/page.mdx"
   },
   {
+    "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOptionValue",
+    "newSlug": "/references/product/retrieveProductOptionValue",
+    "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOptionValue/page.mdx"
+  },
+  {
     "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductTag",
     "newSlug": "/references/product/retrieveProductTag",
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductTag/page.mdx"
@@ -7595,6 +7600,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/user_models/variables/user_models.User/page.mdx"
   },
   {
+    "origSlug": "/references/workflows/functions/workflows.applyStep",
+    "newSlug": "/references/workflows/applyStep",
+    "filePath": "/www/apps/resources/references/workflows/functions/workflows.applyStep/page.mdx"
+  },
+  {
     "origSlug": "/references/workflows/functions/workflows.createHook",
     "newSlug": "/references/workflows/createHook",
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.createHook/page.mdx"
@@ -7613,6 +7623,11 @@ export const slugChanges = [
     "origSlug": "/references/workflows/functions/workflows.parallelize",
     "newSlug": "/references/workflows/parallelize",
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.parallelize/page.mdx"
+  },
+  {
+    "origSlug": "/references/workflows/functions/workflows.resolveValue",
+    "newSlug": "/references/workflows/resolveValue",
+    "filePath": "/www/apps/resources/references/workflows/functions/workflows.resolveValue/page.mdx"
   },
   {
     "origSlug": "/references/workflows/functions/workflows.transform",
