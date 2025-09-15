@@ -191,22 +191,17 @@ export default function CartItemTotals({
   }
 
   return (
-    <div>
-      {!cart && <span>Loading...</span>}
-      {cart && (
-        <ul>
-          {cart.items.map((item) => (
-            <li key={item.id}>
-              <span>{item.title}</span>
-              <span>{formatPrice(item.total!)}</span>
-              <span>(Subtotal: {formatPrice(item.subtotal!)})</span>
-              <span>(Discounts: {formatPrice(item.discount_total!)})</span>
-              <span>(Taxes: {formatPrice(item.tax_total!)})</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <ul>
+      {cart.items.map((item) => (
+        <li key={item.id}>
+          <span>{item.title}</span>
+          <span>{formatPrice(item.total!)}</span>
+          <span>(Subtotal: {formatPrice(item.subtotal!)})</span>
+          <span>(Discounts: {formatPrice(item.discount_total!)})</span>
+          <span>(Taxes: {formatPrice(item.tax_total!)})</span>
+        </li>
+      ))}
+    </ul>
   )
 }
 ```
@@ -259,22 +254,17 @@ export default function CartShippingMethodTotals({
   }
 
   return (
-    <div>
-      {!cart && <span>Loading...</span>}
-      {cart && (
-        <ul>
-          {cart.shipping_methods.map((method) => (
-            <li key={method.id}>
-              <span>{method.name}</span>
-              <span>{formatPrice(method.total!)}</span>
-              <span>(Subtotal: {formatPrice(method.subtotal!)})</span>
-              <span>(Discounts: {formatPrice(method.discount_total!)})</span>
-              <span>(Taxes: {formatPrice(method.tax_total!)})</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <ul>
+      {cart.shipping_methods.map((method) => (
+        <li key={method.id}>
+          <span>{method.name}</span>
+          <span>{formatPrice(method.total!)}</span>
+          <span>(Subtotal: {formatPrice(method.subtotal!)})</span>
+          <span>(Discounts: {formatPrice(method.discount_total!)})</span>
+          <span>(Taxes: {formatPrice(method.tax_total!)})</span>
+        </li>
+      ))}
+    </ul>
   )
 }
 ```
