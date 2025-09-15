@@ -266,7 +266,7 @@ medusaIntegrationTestRunner({
 
       fulfillmentSet = (
         await api.post(
-          `/admin/fulfillment-sets/${location.fulfillment_sets[0].id}/service-zones?fields=*location`,
+          `/admin/fulfillment-sets/${location.fulfillment_sets[0].id}/service-zones`,
           {
             name: "Test",
             geo_zones: [{ type: "country", country_code: "us" }],
