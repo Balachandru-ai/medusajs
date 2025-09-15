@@ -1530,6 +1530,16 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/core_flows/Line_Item/Workflows_Line_Item/functions/core_flows.Line_Item.Workflows_Line_Item.deleteLineItemsWorkflow/page.mdx"
   },
   {
+    "origSlug": "/references/core_flows/Locking/functions/core_flows.Locking.acquireLockStep",
+    "newSlug": "/references/medusa-workflows/steps/acquireLockStep",
+    "filePath": "/www/apps/resources/references/core_flows/Locking/functions/core_flows.Locking.acquireLockStep/page.mdx"
+  },
+  {
+    "origSlug": "/references/core_flows/Locking/functions/core_flows.Locking.releaseLockStep",
+    "newSlug": "/references/medusa-workflows/steps/releaseLockStep",
+    "filePath": "/www/apps/resources/references/core_flows/Locking/functions/core_flows.Locking.releaseLockStep/page.mdx"
+  },
+  {
     "origSlug": "/references/core_flows/Notification/Steps_Notification/functions/core_flows.Notification.Steps_Notification.notifyOnFailureStep",
     "newSlug": "/references/medusa-workflows/steps/notifyOnFailureStep",
     "filePath": "/www/apps/resources/references/core_flows/Notification/Steps_Notification/functions/core_flows.Notification.Steps_Notification.notifyOnFailureStep/page.mdx"
