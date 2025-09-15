@@ -52,6 +52,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to cancel the order transfer
  *       sdk.store.order.cancelTransfer(
  *         "order_123",
  *         {},
@@ -66,6 +67,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/orders/{id}/transfer/cancel' \
+ *       -H 'Authorization: Bearer {access_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Orders

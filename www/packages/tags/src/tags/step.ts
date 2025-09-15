@@ -432,6 +432,14 @@ export const step = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateLineItemsStepWithSelector"
   },
   {
+    "title": "acquireLockStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/acquireLockStep"
+  },
+  {
+    "title": "releaseLockStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/releaseLockStep"
+  },
+  {
     "title": "notifyOnFailureStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/notifyOnFailureStep"
   },
