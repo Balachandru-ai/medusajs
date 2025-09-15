@@ -4905,6 +4905,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.user/page.mdx"
   },
   {
+    "origSlug": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views",
+    "newSlug": "/references/js-sdk/admin/views",
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx"
+  },
+  {
     "origSlug": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.workflowExecution",
     "newSlug": "/references/js-sdk/admin/workflowExecution",
     "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.workflowExecution/page.mdx"
@@ -6715,6 +6720,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOption/page.mdx"
   },
   {
+    "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOptionValue",
+    "newSlug": "/references/product/retrieveProductOptionValue",
+    "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOptionValue/page.mdx"
+  },
+  {
     "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductTag",
     "newSlug": "/references/product/retrieveProductTag",
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductTag/page.mdx"
@@ -7585,6 +7595,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/user_models/variables/user_models.User/page.mdx"
   },
   {
+    "origSlug": "/references/workflows/functions/workflows.applyStep",
+    "newSlug": "/references/workflows/applyStep",
+    "filePath": "/www/apps/resources/references/workflows/functions/workflows.applyStep/page.mdx"
+  },
+  {
     "origSlug": "/references/workflows/functions/workflows.createHook",
     "newSlug": "/references/workflows/createHook",
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.createHook/page.mdx"
@@ -7603,6 +7618,11 @@ export const slugChanges = [
     "origSlug": "/references/workflows/functions/workflows.parallelize",
     "newSlug": "/references/workflows/parallelize",
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.parallelize/page.mdx"
+  },
+  {
+    "origSlug": "/references/workflows/functions/workflows.resolveValue",
+    "newSlug": "/references/workflows/resolveValue",
+    "filePath": "/www/apps/resources/references/workflows/functions/workflows.resolveValue/page.mdx"
   },
   {
     "origSlug": "/references/workflows/functions/workflows.transform",

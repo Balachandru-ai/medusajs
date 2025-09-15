@@ -1,15 +1,20 @@
 import { HttpTypes } from "@medusajs/types"
-import { DEFAULT_FIELDS, DEFAULT_PROPERTIES, DEFAULT_RELATIONS } from "../../../const"
+import { getEntityDefaultFields } from "./entity-defaults"
 
 /**
- * Calculates the required fields based on visible columns
+ * Calculates the required fields based on visible columns and entity defaults
  */
 export function calculateRequiredFields(
-  apiColumns: any[] | undefined,
+  entity: string,
+  apiColumns: HttpTypes.AdminViewColumn[] | undefined,
   visibleColumns: Record<string, boolean>
 ): string {
+  // Get entity-specific default fields
+  const defaults = getEntityDefaultFields(entity)
+  const defaultFields = defaults.formatted
+  
   if (!apiColumns?.length) {
-    return DEFAULT_FIELDS
+    return defaultFields
   }
 
   // Get all visible columns
@@ -27,8 +32,8 @@ export function calculateRequiredFields(
   visibleColumnObjects.forEach(column => {
     if (column.computed) {
       // For computed columns, add all required and optional fields
-      column.computed.required_fields?.forEach(field => requiredFieldsSet.add(field))
-      column.computed.optional_fields?.forEach(field => requiredFieldsSet.add(field))
+      column.computed.required_fields?.forEach((field: string) => requiredFieldsSet.add(field))
+      column.computed.optional_fields?.forEach((field: string) => requiredFieldsSet.add(field))
     } else if (!column.field.includes('.')) {
       // Direct field
       requiredFieldsSet.add(column.field)
@@ -46,7 +51,7 @@ export function calculateRequiredFields(
   // Check which relationship fields need to be added
   const additionalRelationshipFields = visibleRelationshipFields.filter(field => {
     const [relationName] = field.split('.')
-    const isAlreadyCovered = DEFAULT_RELATIONS.some(rel =>
+    const isAlreadyCovered = defaults.relations.some(rel =>
       rel === `*${relationName}` || rel === relationName
     )
     return !isAlreadyCovered
@@ -54,7 +59,7 @@ export function calculateRequiredFields(
 
   // Check which direct fields need to be added
   const additionalDirectFields = visibleDirectFields.filter(field => {
-    const isAlreadyIncluded = DEFAULT_PROPERTIES.includes(field)
+    const isAlreadyIncluded = defaults.properties.includes(field)
     return !isAlreadyIncluded
   })
 
@@ -63,8 +68,8 @@ export function calculateRequiredFields(
 
   // Combine default fields with additional needed fields
   if (additionalFields.length > 0) {
-    return `${DEFAULT_FIELDS},${additionalFields.join(',')}`
+    return `${defaultFields},${additionalFields.join(',')}`
   }
 
-  return DEFAULT_FIELDS
+  return defaultFields
 }

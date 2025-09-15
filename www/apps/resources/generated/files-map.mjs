@@ -1184,6 +1184,10 @@ export const filesMap = [
     "pathname": "/storefront-development/cart/manage-items"
   },
   {
+    "filePath": "/www/apps/resources/app/storefront-development/cart/manage-promotions/page.mdx",
+    "pathname": "/storefront-development/cart/manage-promotions"
+  },
+  {
     "filePath": "/www/apps/resources/app/storefront-development/cart/retrieve/page.mdx",
     "pathname": "/storefront-development/cart/retrieve"
   },
@@ -12048,6 +12052,10 @@ export const filesMap = [
     "pathname": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.user"
   },
   {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx",
+    "pathname": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views"
+  },
+  {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.workflowExecution/page.mdx",
     "pathname": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.workflowExecution"
   },
@@ -13604,6 +13612,42 @@ export const filesMap = [
     "pathname": "/references/js_sdk/admin/User/properties/js_sdk.admin.User.client"
   },
   {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.columns/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.columns"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.createConfiguration/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.createConfiguration"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.deleteConfiguration/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.deleteConfiguration"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.listConfigurations/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.listConfigurations"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.retrieveActiveConfiguration/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.retrieveActiveConfiguration"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.retrieveConfiguration/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.retrieveConfiguration"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.setActiveConfiguration/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.setActiveConfiguration"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.updateConfiguration/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/methods/js_sdk.admin.Views.updateConfiguration"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Views/properties/js_sdk.admin.Views.client/page.mdx",
+    "pathname": "/references/js_sdk/admin/Views/properties/js_sdk.admin.Views.client"
+  },
+  {
     "filePath": "/www/apps/resources/references/js_sdk/admin/WorkflowExecution/methods/js_sdk.admin.WorkflowExecution.list/page.mdx",
     "pathname": "/references/js_sdk/admin/WorkflowExecution/methods/js_sdk.admin.WorkflowExecution.list"
   },
@@ -13798,6 +13842,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/classes/js_sdk.admin.User/page.mdx",
     "pathname": "/references/js_sdk/admin/classes/js_sdk.admin.User"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/classes/js_sdk.admin.Views/page.mdx",
+    "pathname": "/references/js_sdk/admin/classes/js_sdk.admin.Views"
   },
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/classes/js_sdk.admin.WorkflowExecution/page.mdx",
@@ -16922,6 +16970,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOption/page.mdx",
     "pathname": "/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOption"
+  },
+  {
+    "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOptionValue/page.mdx",
+    "pathname": "/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductOptionValue"
   },
   {
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.retrieveProductTag/page.mdx",
@@ -24288,6 +24340,10 @@ export const filesMap = [
     "pathname": "/references/types/types/types.CleanupObject"
   },
   {
+    "filePath": "/www/apps/resources/references/types/types/types.ComputedJoinerRelationship/page.mdx",
+    "pathname": "/references/types/types/types.ComputedJoinerRelationship"
+  },
+  {
     "filePath": "/www/apps/resources/references/types/types/types.CreateCalculatedShippingOptionInput/page.mdx",
     "pathname": "/references/types/types/types.CreateCalculatedShippingOptionInput"
   },
@@ -24338,6 +24394,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/types/types/types.ExcludedProps/page.mdx",
     "pathname": "/references/types/types/types.ExcludedProps"
+  },
+  {
+    "filePath": "/www/apps/resources/references/types/types/types.ExecutionStage/page.mdx",
+    "pathname": "/references/types/types/types.ExecutionStage"
   },
   {
     "filePath": "/www/apps/resources/references/types/types/types.ExpandScalar/page.mdx",
@@ -25536,6 +25596,10 @@ export const filesMap = [
     "pathname": "/references/workflows/LocalWorkflow/methods/workflows.LocalWorkflow.replaceAction"
   },
   {
+    "filePath": "/www/apps/resources/references/workflows/LocalWorkflow/methods/workflows.LocalWorkflow.retryStep/page.mdx",
+    "pathname": "/references/workflows/LocalWorkflow/methods/workflows.LocalWorkflow.retryStep"
+  },
+  {
     "filePath": "/www/apps/resources/references/workflows/LocalWorkflow/methods/workflows.LocalWorkflow.run/page.mdx",
     "pathname": "/references/workflows/LocalWorkflow/methods/workflows.LocalWorkflow.run"
   },
@@ -25744,6 +25808,10 @@ export const filesMap = [
     "pathname": "/references/workflows/TransactionOrchestrator/methods/workflows.TransactionOrchestrator.retrieveExistingTransaction"
   },
   {
+    "filePath": "/www/apps/resources/references/workflows/TransactionOrchestrator/methods/workflows.TransactionOrchestrator.retryStep/page.mdx",
+    "pathname": "/references/workflows/TransactionOrchestrator/methods/workflows.TransactionOrchestrator.retryStep"
+  },
+  {
     "filePath": "/www/apps/resources/references/workflows/TransactionOrchestrator/methods/workflows.TransactionOrchestrator.skipStep/page.mdx",
     "pathname": "/references/workflows/TransactionOrchestrator/methods/workflows.TransactionOrchestrator.skipStep"
   },
@@ -25880,6 +25948,10 @@ export const filesMap = [
     "pathname": "/references/workflows/enums/workflows.TransactionStepStatus"
   },
   {
+    "filePath": "/www/apps/resources/references/workflows/functions/workflows.applyStep/page.mdx",
+    "pathname": "/references/workflows/functions/workflows.applyStep"
+  },
+  {
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.createHook/page.mdx",
     "pathname": "/references/workflows/functions/workflows.createHook"
   },
@@ -25894,6 +25966,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.parallelize/page.mdx",
     "pathname": "/references/workflows/functions/workflows.parallelize"
+  },
+  {
+    "filePath": "/www/apps/resources/references/workflows/functions/workflows.resolveValue/page.mdx",
+    "pathname": "/references/workflows/functions/workflows.resolveValue"
   },
   {
     "filePath": "/www/apps/resources/references/workflows/functions/workflows.transform/page.mdx",
@@ -26010,6 +26086,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/workflows/types/workflows.FlowRegisterStepSuccessOptions/page.mdx",
     "pathname": "/references/workflows/types/workflows.FlowRegisterStepSuccessOptions"
+  },
+  {
+    "filePath": "/www/apps/resources/references/workflows/types/workflows.FlowRetryStepOptions/page.mdx",
+    "pathname": "/references/workflows/types/workflows.FlowRetryStepOptions"
   },
   {
     "filePath": "/www/apps/resources/references/workflows/types/workflows.FlowRunOptions/page.mdx",

@@ -1863,6 +1863,9 @@ paths:
       x-sidebar-summary: Add Promotions
       description: Add a list of promotions to a cart.
       x-authenticated: false
+      externalDocs:
+        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
+        description: 'Storefront guide: How to add a promotion to cart.'
       parameters:
         - name: id
           in: path
@@ -1933,6 +1936,9 @@ paths:
       summary: Remove Promotions from Cart
       description: Remove a list of promotions from a cart.
       x-authenticated: false
+      externalDocs:
+        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
+        description: 'Storefront guide: How to remove a promotion from cart.'
       parameters:
         - name: id
           in: path
@@ -1963,7 +1969,11 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/store/carts/{id}/promotions' \
-            -H 'x-publishable-api-key: {your_publishable_api_key}'
+            -H 'x-publishable-api-key: {your_publishable_api_key}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "promo_codes": ["{value}"]
+            }'
       tags:
         - Carts
       responses:
@@ -13417,6 +13427,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -13430,6 +13441,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -13649,6 +13661,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderListResponse:
       type: object
       description: The list of draft orders with pagination fields.
@@ -13708,6 +13728,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -13721,6 +13742,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -14325,6 +14347,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderPreviewResponse:
       type: object
       description: The details of the preview on the draft order.
@@ -15700,6 +15730,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -15713,6 +15744,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -15931,6 +15963,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderAddress:
       type: object
       description: An order address.
@@ -16167,6 +16207,7 @@ components:
         - return_id
         - exchange_id
         - claim_id
+        - ordering
         - order_change_id
         - reference
         - reference_id
@@ -16253,6 +16294,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the action was updated.
+        ordering:
+          type: number
+          title: ordering
+          description: The action's order in the sequence of actions.
     AdminOrderChangesResponse:
       type: object
       description: The details of an order's changes.
@@ -16658,6 +16703,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -16671,6 +16717,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -17275,6 +17322,14 @@ components:
           type: number
           title: credit_line_total
           description: The order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderPreviewResponse:
       type: object
       description: The preview of an order.
@@ -24143,6 +24198,14 @@ components:
                     type: number
                     title: timeout
                     description: The maximum time in seconds to wait for this step to complete. If the step exceeds this time, the step's state is changed to `timeout`, but the step continues executing.
+                  autoRetry:
+                    type: boolean
+                    title: autoRetry
+                    description: Whether the step should be automatically retried if it fails.
+                  maxAwaitingRetries:
+                    type: number
+                    title: maxAwaitingRetries
+                    description: The maximum number of times to retry the step while it's in the `waiting_response` state.
               compensate:
                 type: object
                 description: The state of the step's compensation function.
@@ -25216,6 +25279,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -25229,6 +25293,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -25436,6 +25501,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     BaseOrderAddress:
       type: object
       description: An order address.
@@ -28108,6 +28181,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -28123,6 +28197,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -28400,6 +28475,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     OrderAddress:
       type: object
       description: The address's details.
@@ -31914,6 +31997,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -31927,6 +32011,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -32133,6 +32218,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     StoreOrderAddress:
       type: object
       description: An order address
