@@ -18,6 +18,14 @@ describe("Pluralize", () => {
     expectTypeOf<Pluralize<"knife">>().toEqualTypeOf<"knives">()
   })
 
+  test("pluralize words ending with s", () => {
+    expectTypeOf<Pluralize<"status">>().toEqualTypeOf<"statuses">()
+    expectTypeOf<Pluralize<"bus">>().toEqualTypeOf<"buses">()
+    expectTypeOf<Pluralize<"alias">>().toEqualTypeOf<"aliases">()
+    expectTypeOf<Pluralize<"bonus">>().toEqualTypeOf<"bonuses">()
+    expectTypeOf<Pluralize<"bias">>().toEqualTypeOf<"biases">()
+  })
+
   test("pluralize words ending with ch", () => {
     expectTypeOf<Pluralize<"church">>().toEqualTypeOf<"churches">()
     expectTypeOf<Pluralize<"arch">>().toEqualTypeOf<"arches">()

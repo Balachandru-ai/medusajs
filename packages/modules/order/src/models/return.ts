@@ -59,7 +59,7 @@ const _Return = model
       name: "IDX_return_display_id",
       on: ["display_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_return_deleted_at",
@@ -71,19 +71,19 @@ const _Return = model
       name: "IDX_return_order_id",
       on: ["order_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_return_exchange_id",
       on: ["exchange_id"],
       unique: false,
-      where: "exchange_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "exchange_id IS NOT NULL AND deleted_at IS NULL",
     },
     {
       name: "IDX_return_claim_id",
       on: ["claim_id"],
       unique: false,
-      where: "claim_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "claim_id IS NOT NULL AND deleted_at IS NULL",
     },
   ])
 

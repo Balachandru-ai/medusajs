@@ -123,7 +123,7 @@ export default class InventoryModuleService
       { location_id: string; inventory_item_id: string }[]
     ]
 
-    const inventoryLevels = await this.listInventoryLevels(
+    const inventoryLevels = await this.inventoryLevelService_.list(
       {
         $or: [
           { id: idData.filter(({ id }) => !!id).map((e) => e.id) },
@@ -588,7 +588,7 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof ReservationItem>[]> {
     const ids = input.map((u) => u.id)
-    const reservationItems = await this.listReservationItems(
+    const reservationItems = await this.reservationItemService_.list(
       { id: ids },
       {},
       context
@@ -729,9 +729,9 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await super.listReservationItems({ id: ids }, {}, context)
+      await this.reservationItemService_.list({ id: ids }, {}, context)
 
-    await super.softDeleteReservationItems({ id: ids }, config, context)
+    await super.softDeleteReservationItems(ids, config, context)
 
     await this.adjustInventoryLevelsForReservationsDeletion(
       reservations,
@@ -782,7 +782,11 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await this.listReservationItems({ location_id: locationId }, {}, context)
+      await this.reservationItemService_.list(
+        { location_id: locationId },
+        {},
+        context
+      )
 
     await this.reservationItemService_.softDelete(
       { location_id: locationId },
@@ -816,7 +820,11 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await this.listReservationItems({ line_item_id: lineItemId }, {}, context)
+      await this.reservationItemService_.list(
+        { line_item_id: lineItemId },
+        {},
+        context
+      )
 
     await this.reservationItemService_.softDelete(
       { line_item_id: lineItemId },
@@ -850,7 +858,11 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<void> {
     const reservations: InventoryTypes.ReservationItemDTO[] =
-      await this.listReservationItems({ line_item_id: lineItemId }, {}, context)
+      await this.reservationItemService_.list(
+        { line_item_id: lineItemId },
+        {},
+        context
+      )
 
     await this.reservationItemService_.restore(
       { line_item_id: lineItemId },
@@ -934,11 +946,18 @@ export default class InventoryModuleService
     adjustment: BigNumberInput,
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof InventoryLevel>> {
-    const inventoryLevel = await this.retrieveInventoryLevelByItemAndLocation(
-      inventoryItemId,
-      locationId,
+    const [inventoryLevel] = await this.inventoryLevelService_.list(
+      { inventory_item_id: inventoryItemId, location_id: locationId },
+      {},
       context
     )
+
+    if (!inventoryLevel) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Inventory level for item ${inventoryItemId} and location ${locationId} not found`
+      )
+    }
 
     const result = await this.inventoryLevelService_.update(
       {

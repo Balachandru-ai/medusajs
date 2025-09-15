@@ -99,6 +99,35 @@ export const recipesSidebar = [
   },
   {
     type: "link",
+    path: "/recipes/personalized-products",
+    title: "Personalized Products",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/personalized-products/example",
+        title: "Example",
+      },
+    ],
+  },
+  {
+    type: "link",
+    path: "/recipes/ticket-booking",
+    title: "Ticket Booking",
+    children: [
+      {
+        type: "link",
+        path: "/recipes/ticket-booking/example",
+        title: "Example",
+      },
+      {
+        type: "link",
+        path: "/recipes/ticket-booking/example/storefront",
+        title: "Storefront Customizations",
+      },
+    ],
+  },
+  {
+    type: "link",
     path: "/recipes/ecommerce",
     title: "Ecommerce",
   },
@@ -116,18 +145,6 @@ export const recipesSidebar = [
     type: "link",
     path: "/recipes/oms",
     title: "OMS",
-  },
-  {
-    type: "link",
-    path: "/recipes/personalized-products",
-    title: "Personalized Products",
-    children: [
-      {
-        type: "link",
-        path: "/recipes/personalized-products/example",
-        title: "Example",
-      },
-    ],
   },
   {
     type: "link",

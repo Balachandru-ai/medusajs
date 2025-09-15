@@ -777,6 +777,15 @@
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_handle_unique\" ON \"product\" (handle) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_status",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_status\" ON \"product\" (status) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "product_pkey",
           "columnNames": [
             "id"

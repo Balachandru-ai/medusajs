@@ -196,9 +196,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
       it("should create an order, shipping method and items. Including taxes and adjustments associated with them", async function () {
         const createdOrder = await service.createOrders(input)
 
-        const serializedOrder = JSON.parse(JSON.stringify(createdOrder))
-
-        expect(serializedOrder).toEqual(expectation)
+        expect(createdOrder).toEqual(expectation)
       })
 
       it("should create an order, shipping method and items. Including taxes and adjustments associated with them and add new transactions", async function () {

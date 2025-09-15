@@ -795,6 +795,7 @@ export class Store {
      * @returns The updated cart.
      *
      * @example
+     * // TODO must be authenticated as the customer to set the cart's customer
      * sdk.store.cart.transferCart("cart_123")
      * .then(({ cart }) => {
      *   console.log(cart)
@@ -1045,6 +1046,7 @@ export class Store {
      * To retrieve the list of orders:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to list their orders
      * sdk.store.order.list()
      * .then(({ orders, count, offset, limit }) => {
      *   console.log(orders)
@@ -1056,6 +1058,7 @@ export class Store {
      * For example, to retrieve only 10 items and skip 10 items:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to list their orders
      * sdk.store.order.list({
      *   limit: 10,
      *   offset: 10
@@ -1069,6 +1072,7 @@ export class Store {
      * in each order:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to list their orders
      * sdk.store.order.list({
      *   fields: "id,*items"
      * })
@@ -1148,6 +1152,7 @@ export class Store {
      * @returns The order details.
      *
      * @example
+     * // TODO must be authenticated as the customer to request the order transfer
      * sdk.store.order.requestTransfer(
      *   "order_123",
      *   {
@@ -1189,6 +1194,7 @@ export class Store {
      * @returns The order details.
      *
      * @example
+     * // TODO must be authenticated as the customer to cancel the order transfer
      * sdk.store.order.cancelTransfer(
      *   "order_123",
      *   {},
@@ -1361,6 +1367,7 @@ export class Store {
      * @returns The customer's details.
      *
      * @example
+     * // TODO must be authenticated as the customer to update their details
      * sdk.store.customer.update({
      *   first_name: "John"
      * })
@@ -1395,6 +1402,7 @@ export class Store {
      * @returns The customer's details.
      *
      * @example
+     * // TODO must be authenticated as the customer to retrieve their details
      * sdk.store.customer.retrieve()
      * .then(({ customer }) => {
      *   console.log(customer)
@@ -1424,6 +1432,7 @@ export class Store {
      * @returns The customer's details.
      *
      * @example
+     * // TODO must be authenticated as the customer to create an address
      * sdk.store.customer.createAddress({
      *   country_code: "us"
      * })
@@ -1462,6 +1471,7 @@ export class Store {
      * @returns The customer's details.
      *
      * @example
+     * // TODO must be authenticated as the customer to update their address
      * sdk.store.customer.updateAddress(
      *   "caddr_123",
      *   {
@@ -1505,6 +1515,7 @@ export class Store {
      * To retrieve the list of addresses:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to list their addresses
      * sdk.store.customer.listAddress()
      * .then(({ addresses, count, offset, limit }) => {
      *   console.log(addresses)
@@ -1516,6 +1527,7 @@ export class Store {
      * For example, to retrieve only 10 items and skip 10 items:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to list their addresses
      * sdk.store.customer.listAddress({
      *   limit: 10,
      *   offset: 10
@@ -1529,6 +1541,7 @@ export class Store {
      * in each address:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to list their addresses
      * sdk.store.customer.listAddress({
      *   fields: "id,country_code"
      * })
@@ -1569,6 +1582,7 @@ export class Store {
      * To retrieve an address by its ID:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to retrieve their address
      * sdk.store.customer.retrieveAddress(
      *   "caddr_123"
      * )
@@ -1580,6 +1594,7 @@ export class Store {
      * To specify the fields and relations to retrieve:
      *
      * ```ts
+     * // TODO must be authenticated as the customer to retrieve their address
      * sdk.store.customer.retrieveAddress(
      *   "caddr_123",
      *   {
@@ -1620,6 +1635,7 @@ export class Store {
      * @returns The deletion's details.
      *
      * @example
+     * // TODO must be authenticated as the customer to delete their address
      * sdk.store.customer.deleteAddress("caddr_123")
      * .then(({ deleted, parent: customer }) => {
      *   console.log(customer)

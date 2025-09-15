@@ -16,6 +16,10 @@ export const storefront = [
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items"
   },
   {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
+  },
+  {
     "title": "Retrieve Cart in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/retrieve"
   },

@@ -69,6 +69,7 @@ This API route is only available after [Medusa v2.0.5](https://github.com/medusa
 </Note>
 
 ```ts
+// TODO must be authenticated as the customer to set the cart's customer
 sdk.store.cart.transferCart(cartId)
 .then(({ cart }) => {
   // use cart...

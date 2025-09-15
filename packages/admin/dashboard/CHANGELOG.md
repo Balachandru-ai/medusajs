@@ -1,5 +1,43 @@
 # @medusajs/dashboard
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13373](https://github.com/medusajs/medusa/pull/13373) [`753e8081c49ba88ff4b0afa91f48bff2e0109b9c`](https://github.com/medusajs/medusa/commit/753e8081c49ba88ff4b0afa91f48bff2e0109b9c) Thanks [@pepijn-vanvlaanderen](https://github.com/pepijn-vanvlaanderen)! - Fix promotion expired status check when limit is null
+
+- [#11944](https://github.com/medusajs/medusa/pull/11944) [`ccff121691a454e2e2906c3964dc7b12ec6d221e`](https://github.com/medusajs/medusa/commit/ccff121691a454e2e2906c3964dc7b12ec6d221e) Thanks [@SteelRazor47](https://github.com/SteelRazor47)! - fix(dashboard): disable broken autofocus in SO cond. price form
+
+- [#13075](https://github.com/medusajs/medusa/pull/13075) [`963a613d1d1c7e15cec21e47ab6932ccd4b0b008`](https://github.com/medusajs/medusa/commit/963a613d1d1c7e15cec21e47ab6932ccd4b0b008) Thanks [@lemonteeea](https://github.com/lemonteeea)! - fix(dashboard): fix pagination when adding products to price list
+
+- [#13423](https://github.com/medusajs/medusa/pull/13423) [`ecf368e2bd9cfff4ecf9f98e78a7827b026e53a5`](https://github.com/medusajs/medusa/commit/ecf368e2bd9cfff4ecf9f98e78a7827b026e53a5) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): edit rules clear and reset
+
+- [#13407](https://github.com/medusajs/medusa/pull/13407) [`9b3831d2587bd03346dad3900528268f4e71eeec`](https://github.com/medusajs/medusa/commit/9b3831d2587bd03346dad3900528268f4e71eeec) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): support more decimals for tx rates
+
+- [#13081](https://github.com/medusajs/medusa/pull/13081) [`75e85414cc0c37879191379ec3f8cb87d55ca349`](https://github.com/medusajs/medusa/commit/75e85414cc0c37879191379ec3f8cb87d55ca349) Thanks [@rbxorkt12](https://github.com/rbxorkt12)! - feat(dashboard): improve Korean transl and add missing keys
+
+- [#13371](https://github.com/medusajs/medusa/pull/13371) [`b7fef5b7ef3bec53d9ea4d836f5f97da541816cc`](https://github.com/medusajs/medusa/commit/b7fef5b7ef3bec53d9ea4d836f5f97da541816cc) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): promotion decimal value definition
+
+- [#13324](https://github.com/medusajs/medusa/pull/13324) [`f53f027ce68b0518968482dccafeadd68cc55433`](https://github.com/medusajs/medusa/commit/f53f027ce68b0518968482dccafeadd68cc55433) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): rules form operator change
+
+- [#13414](https://github.com/medusajs/medusa/pull/13414) [`e67974ffe55b12cc9c80410f69741a57a9b68a3f`](https://github.com/medusajs/medusa/commit/e67974ffe55b12cc9c80410f69741a57a9b68a3f) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): customer `has_acccount` flag
+
+- [#13313](https://github.com/medusajs/medusa/pull/13313) [`2f6edf367abb9d3e71f398c3b98a749b73517ea6`](https://github.com/medusajs/medusa/commit/2f6edf367abb9d3e71f398c3b98a749b73517ea6) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,cart,types,utils): refine order details summary
+
+- [#13426](https://github.com/medusajs/medusa/pull/13426) [`88170a62398917dfa63c5de541066bb51262c3ff`](https://github.com/medusajs/medusa/commit/88170a62398917dfa63c5de541066bb51262c3ff) Thanks [@galdoway](https://github.com/galdoway)! - fix(dashboard): add missing translations to spanish file
+
+- [#13445](https://github.com/medusajs/medusa/pull/13445) [`cda659ab170688af7476dd351233aecf74bf3231`](https://github.com/medusajs/medusa/commit/cda659ab170688af7476dd351233aecf74bf3231) Thanks [@radeknapora](https://github.com/radeknapora)! - fix(dashboard): update and add missing Polish translations
+
+- [#13482](https://github.com/medusajs/medusa/pull/13482) [`b8b9b3ac74e3a60b4775112aa30ac6249f44f64c`](https://github.com/medusajs/medusa/commit/b8b9b3ac74e3a60b4775112aa30ac6249f44f64c) Thanks [@appinteractive](https://github.com/appinteractive)! - fix(dashboard): german translation issues
+
+- [#13178](https://github.com/medusajs/medusa/pull/13178) [`1b681a79da02aec3f872baa2213a4b2423d73e97`](https://github.com/medusajs/medusa/commit/1b681a79da02aec3f872baa2213a4b2423d73e97) Thanks [@Amirkhon](https://github.com/Amirkhon)! - feat(dashboard,currency): added Tajikistani somoni currency
+
+- Updated dependencies []:
+  - @medusajs/js-sdk@2.10.2
+  - @medusajs/admin-shared@2.10.2
+  - @medusajs/icons@2.10.2
+  - @medusajs/ui@4.0.22
+
 ## 2.10.1
 
 ### Patch Changes

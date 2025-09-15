@@ -1231,6 +1231,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Manage Cart Promotions in Storefront",
+              "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Manage Cart's Items in Storefront",
               "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items",
               "children": []
@@ -11798,6 +11806,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Ticket Booking",
+              "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Integrate Payload",
               "path": "https://docs.medusajs.com/resources/integrations/guides/payload",
               "children": []
@@ -13031,6 +13047,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/product/retrieveProductOptionValue",
+                      "title": "retrieveProductOptionValue",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/product/retrieveProductTag",
                       "title": "retrieveProductTag",
                       "description": "",
@@ -13487,6 +13512,26 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Implement Loyalty Points",
               "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points",
+              "children": []
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "category",
+          "title": "Storefront Guides",
+          "autogenerate_tags": "storefront+promotion,-jsSdk",
+          "autogenerate_as_ref": true,
+          "sort_sidebar": "alphabetize",
+          "description": "Learn how to integrate the Promotion Module's features into your storefront.",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Manage Cart Promotions in Storefront",
+              "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions",
               "children": []
             }
           ]

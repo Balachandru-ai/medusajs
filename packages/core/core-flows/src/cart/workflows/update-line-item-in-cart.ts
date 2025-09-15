@@ -134,6 +134,13 @@ export const updateLineItemInCartWorkflow = createWorkflow(
         input: UpdateLineItemInCartWorkflowInputDTO & AdditionalData
       }) => {
         const item = data.cart.items.find((i) => i.id === data.input.item_id)!
+        if (!item) {
+          throw new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `Line item with id: ${data.input.item_id} was not found`
+          )
+        }
+
         const variantIds = [item?.variant_id].filter(Boolean)
         return { item, variantIds }
       }
