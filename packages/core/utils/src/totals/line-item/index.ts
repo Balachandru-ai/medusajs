@@ -33,7 +33,6 @@ export interface GetItemTotalOutput {
   unit_price: BigNumber
 
   subtotal: BigNumber
-  original_subtotal?: BigNumber
 
   total: BigNumber
   original_total: BigNumber
@@ -163,13 +162,6 @@ function getLineItemTotals(
 
   const originalTaxTotal = calculateTaxTotal({
     taxLines: item.tax_lines || [],
-    taxableAmount: subtotal,
-    setTotalField: "subtotal",
-  })
-
-  // Original tax for the current quantity (before discounts)
-  const originalTaxTotalCurrent = calculateTaxTotal({
-    taxLines: item.tax_lines || [],
     taxableAmount: currentSubtotal,
     setTotalField: "subtotal",
   })
@@ -179,7 +171,6 @@ function getLineItemTotals(
   const taxTotalFull = calculateTaxTotal({
     taxLines: item.tax_lines || [],
     taxableAmount: fullDiscountedTaxable,
-    setTotalField: "total",
   })
   const fullNetTotal = MathBN.sum(fullDiscountedTaxable, taxTotalFull)
 
@@ -188,7 +179,7 @@ function getLineItemTotals(
     unit_price: item.unit_price,
 
     subtotal: new BigNumber(currentSubtotal),
-    original_subtotal: new BigNumber(subtotal),
+
     total: new BigNumber(
       MathBN.sum(
         MathBN.sub(currentSubtotal, currentDiscountsSubtotal),
@@ -197,18 +188,18 @@ function getLineItemTotals(
     ),
 
     original_total: new BigNumber(
-      isTaxInclusive ? totalItemPrice : MathBN.add(subtotal, originalTaxTotal)
+      isTaxInclusive
+        ? totalItemPrice
+        : MathBN.add(currentSubtotal, originalTaxTotal)
     ),
 
     // Discount values prorated to the current quantity
     discount_subtotal: new BigNumber(currentDiscountsSubtotal),
-    discount_tax_total: new BigNumber(
-      MathBN.sub(originalTaxTotalCurrent, taxTotal)
-    ),
+    discount_tax_total: new BigNumber(MathBN.sub(originalTaxTotal, taxTotal)),
     discount_total: new BigNumber(
       MathBN.add(
         currentDiscountsSubtotal,
-        MathBN.sub(originalTaxTotalCurrent, taxTotal)
+        MathBN.sub(originalTaxTotal, taxTotal)
       )
     ),
 

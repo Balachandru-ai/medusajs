@@ -102,9 +102,7 @@ export function decorateCartTotals(
 
   const cartItems = items.map((item, index) => {
     const rawTotals = itemsTotals[item.id ?? index] ?? {}
-    const { original_subtotal: itemOriginalSubtotal, ...itemTotalsRest } =
-      rawTotals as any
-    const itemTotals = Object.assign(item, itemTotalsRest)
+    const itemTotals = Object.assign(item, rawTotals)
     const itemSubtotal = itemTotals.subtotal
 
     const itemTotal = MathBN.convert(itemTotals.total)
@@ -126,10 +124,7 @@ export function decorateCartTotals(
 
     itemsTotal = MathBN.add(itemsTotal, itemTotal)
     itemsOriginalTotal = MathBN.add(itemsOriginalTotal, itemOriginalTotal)
-    itemsOriginalSubtotal = MathBN.add(
-      itemsOriginalSubtotal,
-      itemOriginalSubtotal
-    )
+    itemsOriginalSubtotal = MathBN.add(itemsOriginalSubtotal, itemSubtotal)
     itemsSubtotal = MathBN.add(itemsSubtotal, itemSubtotal)
     itemsTaxTotal = MathBN.add(itemsTaxTotal, itemTaxTotal)
     itemsOriginalTaxTotal = MathBN.add(

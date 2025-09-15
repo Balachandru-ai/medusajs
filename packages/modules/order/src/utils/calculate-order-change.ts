@@ -250,21 +250,13 @@ export class OrderChangeProcessing {
     for (const item of order.items ?? []) {
       const item_ = item as any
 
-      ;[
-        "return_requested_total",
-        "return_received_total",
-        // TODO: revisit this when we settle on which dismissed items need to be refunded
-        // "return_dismissed_total",
-      ].forEach((returnTotalKey) => {
-        const returnTotal = item_[returnTotalKey]
-
-        if (MathBN.gt(returnTotal, 0)) {
-          orderSummary.pending_difference = MathBN.sub(
-            orderSummary.pending_difference,
-            returnTotal
-          )
-        }
-      })
+      const returnTotal = item_["return_requested_total"]
+      if (MathBN.gt(returnTotal, 0)) {
+        orderSummary.pending_difference = MathBN.sub(
+          orderSummary.pending_difference,
+          returnTotal
+        )
+      }
     }
     orderSummary.pending_difference = new BigNumber(
       orderSummary.pending_difference

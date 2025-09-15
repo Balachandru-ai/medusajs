@@ -114,27 +114,37 @@ export const exchangeRequestItemReturnValidationStep = createStep(
 
     const inputItemIds = new Set(items.map((i) => i.id))
 
-    let hasManagedInventory = false
-    let hasStockLocation = false
+    const invalidManagedItems: string[] = []
+    const requestedOrderItems =
+      order.items?.filter((oi: any) => inputItemIds.has(oi.id)) ?? []
 
-    deepFlatMap(
-      order.items?.filter((oi: any) => inputItemIds.has(oi.id)) ?? [],
-      "variant.inventory_items.inventory.location_levels",
-      ({ variant, location_levels }) => {
-        if (!variant?.manage_inventory) {
-          return
-        }
-        hasManagedInventory = true
-
-        if (location_levels?.location_id === orderReturn.location_id) {
-          hasStockLocation = true
-        }
+    for (const orderItem of requestedOrderItems) {
+      const variant = (orderItem as any)?.variant
+      if (!variant?.manage_inventory) {
+        continue
       }
-    )
 
-    if (hasManagedInventory && !hasStockLocation) {
+      let hasStockAtLocation = false
+      deepFlatMap(
+        orderItem,
+        "variant.inventory_items.inventory.location_levels",
+        ({ location_levels }) => {
+          if (location_levels?.location_id === orderReturn.location_id) {
+            hasStockAtLocation = true
+          }
+        }
+      )
+
+      if (!hasStockAtLocation) {
+        invalidManagedItems.push(orderItem.id)
+      }
+    }
+
+    if (invalidManagedItems.length) {
       throw new Error(
-        `Cannot request item return at location ${orderReturn.location_id}`
+        `Cannot request item return at location ${
+          orderReturn.location_id
+        } for items: ${invalidManagedItems.join(", ")}`
       )
     }
   }
