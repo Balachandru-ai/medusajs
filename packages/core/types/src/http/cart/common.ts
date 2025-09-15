@@ -574,57 +574,57 @@ export interface BaseCartLineItemTotals {
   /**
    * The original total of the cart line item.
    */
-  original_total: number
+  original_total?: number
 
   /**
    * The original subtotal of the cart line item.
    */
-  original_subtotal: number
+  original_subtotal?: number
 
   /**
    * The original tax total of the cart line item.
    */
-  original_tax_total: number
+  original_tax_total?: number
 
   /**
    * The item total of the cart line item.
    */
-  item_total: number
+  item_total?: number
 
   /**
    * The item subtotal of the cart line item.
    */
-  item_subtotal: number
+  item_subtotal?: number
 
   /**
    * The item tax total of the cart line item.
    */
-  item_tax_total: number
+  item_tax_total?: number
 
   /**
    * The total of the cart line item.
    */
-  total: number
+  total?: number
 
   /**
    * The subtotal of the cart line item.
    */
-  subtotal: number
+  subtotal?: number
 
   /**
    * The tax total of the cart line item.
    */
-  tax_total: number
+  tax_total?: number
 
   /**
    * The discount total of the cart line item.
    */
-  discount_total: number
+  discount_total?: number
 
   /**
    * The discount tax total of the cart line item.
    */
-  discount_tax_total: number
+  discount_tax_total?: number
 }
 
 /**
