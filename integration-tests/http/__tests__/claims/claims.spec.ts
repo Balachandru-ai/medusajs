@@ -742,7 +742,7 @@ medusaIntegrationTestRunner({
           expect(paymentCollections[0]).toEqual(
             expect.objectContaining({
               status: "not_paid",
-              amount: 113.21,
+              amount: 138.21,
               currency_code: "usd",
             })
           )
@@ -811,7 +811,7 @@ medusaIntegrationTestRunner({
         })
 
         it("should create a payment collection successfully & mark as paid", async () => {
-          const paymentDelta = 113.21
+          const paymentDelta = 138.21
           const orderForPayment = (
             await api.get(`/admin/orders/${order.id}`, adminHeaders)
           ).data.order
@@ -1197,7 +1197,35 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
 
-          await api.post(`/admin/claims/${claimId}/request`, {}, adminHeaders)
+          const orderResult = await api.post(
+            `/admin/claims/${claimId}/request`,
+            {},
+            adminHeaders
+          )
+
+          const returnOrder = orderResult.data.return
+          let returnId = returnOrder.id
+          await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+
+          let lineItem = returnOrder.items[0].item
+          await api.post(
+            `/admin/returns/${returnId}/receive-items`,
+            {
+              items: [
+                {
+                  id: lineItem.id,
+                  quantity: returnOrder.items[0].quantity,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          await api.post(
+            `/admin/returns/${returnId}/receive/confirm`,
+            {},
+            adminHeaders
+          )
 
           const claims = (
             await api.get(
@@ -1218,8 +1246,8 @@ medusaIntegrationTestRunner({
           expect(orderCheck.summary).toEqual(
             expect.objectContaining({
               pending_difference: -9.7,
-              current_order_total: 76.3,
-              original_order_total: 61,
+              current_order_total: 51.3,
+              original_order_total: 76.3,
             })
           )
 
