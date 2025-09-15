@@ -1,5 +1,14 @@
 # @medusajs/index
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13428](https://github.com/medusajs/medusa/pull/13428) [`71d8a0031f2b75de24c4c4e80ef3314661020420`](https://github.com/medusajs/medusa/commit/71d8a0031f2b75de24c4c4e80ef3314661020420) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): index enum fields
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
 ## 2.10.1
 
 ### Patch Changes

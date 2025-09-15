@@ -41,7 +41,6 @@ import {
   promiseAll,
   removeNullish,
   simpleHash,
-  upperCaseFirst,
 } from "@medusajs/framework/utils"
 
 import {
@@ -55,7 +54,7 @@ import {
 
 import { Collection } from "@mikro-orm/core"
 import { ServiceTypes } from "@types"
-import { eventBuilders, validatePriceListDates } from "@utils"
+import { validatePriceListDates } from "@utils"
 import { joinerConfig } from "../joiner-config"
 
 type InjectedDependencies = {
@@ -169,6 +168,8 @@ export default class PricingModuleService
     return pricingContext
   }
 
+  @InjectTransactionManager()
+  @EmitEvents()
   // @ts-expect-error
   async createPriceRules(
     ...args: Parameters<PricingTypes.IPricingModuleService["createPriceRules"]>
@@ -180,6 +181,8 @@ export default class PricingModuleService
     }
   }
 
+  @InjectTransactionManager()
+  @EmitEvents()
   // @ts-expect-error
   async updatePriceRules(
     ...args: Parameters<PricingTypes.IPricingModuleService["updatePriceRules"]>
@@ -191,6 +194,8 @@ export default class PricingModuleService
     }
   }
 
+  @InjectTransactionManager()
+  @EmitEvents()
   // @ts-expect-error
   async createPriceListRules(
     ...args: any[]
@@ -203,6 +208,8 @@ export default class PricingModuleService
     }
   }
 
+  @InjectTransactionManager()
+  @EmitEvents()
   // @ts-expect-error
   async updatePriceListRules(
     ...args: any[]
@@ -269,7 +276,7 @@ export default class PricingModuleService
       priceSet.calculated_price = calculatedPrice ?? null
     }
 
-    return priceSets
+    return await this.baseRepository_.serialize<PriceSetDTO[]>(priceSets)
   }
 
   @InjectManager()
@@ -291,7 +298,10 @@ export default class PricingModuleService
       sharedContext
     )
     if (!pricingContext || !priceSets.length) {
-      return [priceSets, count]
+      const serializedPriceSets = await this.baseRepository_.serialize<
+        PriceSetDTO[]
+      >(priceSets)
+      return [serializedPriceSets, count]
     }
 
     const calculatedPrices = await this.calculatePrices(
@@ -310,7 +320,11 @@ export default class PricingModuleService
       priceSet.calculated_price = calculatedPrice ?? null
     }
 
-    return [priceSets, count]
+    const serializedPriceSets = await this.baseRepository_.serialize<
+      PriceSetDTO[]
+    >(priceSets)
+
+    return [serializedPriceSets, count]
   }
 
   @InjectManager()
@@ -405,73 +419,73 @@ export default class PricingModuleService
       sharedContext
     )
 
-    const calculatedPrices: PricingTypes.CalculatedPriceSet[] =
-      pricingFilters.id
-        .map((priceSetId: string): PricingTypes.CalculatedPriceSet | null => {
-          const prices = pricesSetPricesMap.get(priceSetId)
-          if (!prices) {
-            return null
-          }
-          const {
-            calculatedPrice,
-            originalPrice,
-          }: {
-            calculatedPrice: PricingTypes.CalculatedPriceSetDTO
-            originalPrice: PricingTypes.CalculatedPriceSetDTO | undefined
-          } = prices
+    const calculatedPrices: PricingTypes.CalculatedPriceSet[] = []
 
-          return {
-            id: priceSetId,
-            is_calculated_price_price_list: !!calculatedPrice?.price_list_id,
-            is_calculated_price_tax_inclusive: isTaxInclusive(
-              priceRulesPriceMap.get(calculatedPrice.id),
+    for (const priceSetId of pricingFilters.id) {
+      const prices = pricesSetPricesMap.get(priceSetId)
+      if (!prices) {
+        continue
+      }
+
+      const {
+        calculatedPrice,
+        originalPrice,
+      }: {
+        calculatedPrice: PricingTypes.CalculatedPriceSetDTO
+        originalPrice: PricingTypes.CalculatedPriceSetDTO | undefined
+      } = prices
+
+      const calculatedPrice_: PricingTypes.CalculatedPriceSet = {
+        id: priceSetId,
+        is_calculated_price_price_list: !!calculatedPrice?.price_list_id,
+        is_calculated_price_tax_inclusive: isTaxInclusive(
+          priceRulesPriceMap.get(calculatedPrice.id),
+          pricingPreferences,
+          calculatedPrice.currency_code!,
+          pricingContext.context?.region_id as string
+        ),
+        calculated_amount: isPresent(calculatedPrice?.amount)
+          ? parseFloat(calculatedPrice?.amount as string)
+          : null,
+        raw_calculated_amount: calculatedPrice?.raw_amount || null,
+
+        is_original_price_price_list: !!originalPrice?.price_list_id,
+        is_original_price_tax_inclusive: originalPrice?.id
+          ? isTaxInclusive(
+              priceRulesPriceMap.get(originalPrice.id),
               pricingPreferences,
-              calculatedPrice.currency_code!,
+              originalPrice.currency_code || calculatedPrice.currency_code!,
               pricingContext.context?.region_id as string
-            ),
-            calculated_amount: isPresent(calculatedPrice?.amount)
-              ? parseFloat(calculatedPrice?.amount as string)
-              : null,
-            raw_calculated_amount: calculatedPrice?.raw_amount || null,
+            )
+          : false,
+        original_amount: isPresent(originalPrice?.amount)
+          ? parseFloat(originalPrice?.amount as string)
+          : null,
+        raw_original_amount: originalPrice?.raw_amount || null,
 
-            is_original_price_price_list: !!originalPrice?.price_list_id,
-            is_original_price_tax_inclusive: originalPrice?.id
-              ? isTaxInclusive(
-                  priceRulesPriceMap.get(originalPrice.id),
-                  pricingPreferences,
-                  originalPrice.currency_code || calculatedPrice.currency_code!,
-                  pricingContext.context?.region_id as string
-                )
-              : false,
-            original_amount: isPresent(originalPrice?.amount)
-              ? parseFloat(originalPrice?.amount as string)
-              : null,
-            raw_original_amount: originalPrice?.raw_amount || null,
+        currency_code: calculatedPrice?.currency_code || null,
 
-            currency_code: calculatedPrice?.currency_code || null,
+        calculated_price: {
+          id: calculatedPrice?.id || null,
+          price_list_id: calculatedPrice?.price_list_id || null,
+          price_list_type: calculatedPrice?.price_list_type || null,
+          min_quantity: parseInt(calculatedPrice?.min_quantity || "") || null,
+          max_quantity: parseInt(calculatedPrice?.max_quantity || "") || null,
+        },
 
-            calculated_price: {
-              id: calculatedPrice?.id || null,
-              price_list_id: calculatedPrice?.price_list_id || null,
-              price_list_type: calculatedPrice?.price_list_type || null,
-              min_quantity:
-                parseInt(calculatedPrice?.min_quantity || "") || null,
-              max_quantity:
-                parseInt(calculatedPrice?.max_quantity || "") || null,
-            },
+        original_price: {
+          id: originalPrice?.id || null,
+          price_list_id: originalPrice?.price_list_id || null,
+          price_list_type: originalPrice?.price_list_type || null,
+          min_quantity: parseInt(originalPrice?.min_quantity || "") || null,
+          max_quantity: parseInt(originalPrice?.max_quantity || "") || null,
+        },
+      }
 
-            original_price: {
-              id: originalPrice?.id || null,
-              price_list_id: originalPrice?.price_list_id || null,
-              price_list_type: originalPrice?.price_list_type || null,
-              min_quantity: parseInt(originalPrice?.min_quantity || "") || null,
-              max_quantity: parseInt(originalPrice?.max_quantity || "") || null,
-            },
-          }
-        })
-        .filter(Boolean) as PricingTypes.CalculatedPriceSet[]
+      calculatedPrices.push(calculatedPrice_)
+    }
 
-    return JSON.parse(JSON.stringify(calculatedPrices))
+    return calculatedPrices
   }
 
   // @ts-expect-error
@@ -534,6 +548,22 @@ export default class PricingModuleService
     data: UpsertPriceSetDTO | UpsertPriceSetDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PriceSetDTO | PriceSetDTO[]> {
+    const result = await this.upsertPriceSets_(data, sharedContext)
+
+    try {
+      return await this.baseRepository_.serialize<PriceSetDTO[] | PriceSetDTO>(
+        Array.isArray(data) ? result : result[0]
+      )
+    } finally {
+      this.pricingRepository_.clearAvailableAttributes?.()
+    }
+  }
+
+  @InjectTransactionManager()
+  protected async upsertPriceSets_(
+    data: UpsertPriceSetDTO | UpsertPriceSetDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof PriceSet>[]> {
     const input = Array.isArray(data) ? data : [data]
 
     const forUpdate = input.filter(
@@ -554,13 +584,7 @@ export default class PricingModuleService
 
     const result = (await promiseAll(operations)).flat()
 
-    try {
-      return await this.baseRepository_.serialize<PriceSetDTO[] | PriceSetDTO>(
-        Array.isArray(data) ? result : result[0]
-      )
-    } finally {
-      this.pricingRepository_.clearAvailableAttributes?.()
-    }
+    return result
   }
 
   // @ts-expect-error
@@ -606,12 +630,13 @@ export default class PricingModuleService
       normalizedInput,
       sharedContext
     )
-    const priceSets = await this.baseRepository_.serialize<
+
+    const serializedUpdateResult = await this.baseRepository_.serialize<
       PriceSetDTO[] | PriceSetDTO
-    >(updateResult)
+    >(isString(idOrSelector) ? updateResult[0] : updateResult)
 
     try {
-      return isString(idOrSelector) ? priceSets[0] : priceSets
+      return serializedUpdateResult
     } finally {
       this.pricingRepository_.clearAvailableAttributes?.()
     }
@@ -707,10 +732,6 @@ export default class PricingModuleService
               })),
               sharedContext
             )
-            eventBuilders.createdPriceRule({
-              data: createdPriceRules.map((r) => ({ id: r.id })),
-              sharedContext,
-            })
           }
 
           if (priceRulesToUpdate.length > 0) {
@@ -718,10 +739,6 @@ export default class PricingModuleService
               priceRulesToUpdate,
               sharedContext
             )
-            eventBuilders.updatedPriceRule({
-              data: updatedPriceRules.map((r) => ({ id: r.id })),
-              sharedContext,
-            })
           }
 
           if (priceRulesToDelete.length > 0) {
@@ -729,10 +746,6 @@ export default class PricingModuleService
               priceRulesToDelete,
               sharedContext
             )
-            eventBuilders.deletedPriceRule({
-              data: priceRulesToDelete.map((id) => ({ id })),
-              sharedContext,
-            })
           }
 
           const upsertedPriceRules = [
@@ -755,10 +768,6 @@ export default class PricingModuleService
               priceRuleToDelete,
               sharedContext
             )
-            eventBuilders.deletedPriceRule({
-              data: priceRuleToDelete.map((id) => ({ id })),
-              sharedContext,
-            })
           }
 
           ;(priceToUpdate as InferEntityType<typeof Price>).rules_count = 0
@@ -778,27 +787,6 @@ export default class PricingModuleService
 
     if (pricesToDelete.length > 0) {
       await this.priceService_.delete(pricesToDelete, sharedContext)
-    }
-
-    if (createdPrices.length > 0) {
-      eventBuilders.createdPrice({
-        data: createdPrices.map((p) => ({ id: p.id })),
-        sharedContext,
-      })
-    }
-
-    if (updatedPrices.length > 0) {
-      eventBuilders.updatedPrice({
-        data: updatedPrices.map((p) => ({ id: p.id })),
-        sharedContext,
-      })
-    }
-
-    if (pricesToDelete.length > 0) {
-      eventBuilders.deletedPrice({
-        data: pricesToDelete.map((id) => ({ id })),
-        sharedContext,
-      })
     }
 
     const priceSets = await this.priceSetService_.list(
@@ -823,11 +811,6 @@ export default class PricingModuleService
 
     priceSets.forEach((ps) => {
       ps.prices = upsertedPricesMap.get(ps.id) || []
-    })
-
-    eventBuilders.updatedPriceSet({
-      data: priceSets.map((ps) => ({ id: ps.id })),
-      sharedContext,
     })
 
     return priceSets
@@ -885,8 +868,7 @@ export default class PricingModuleService
               return {
                 attribute,
                 operator: customRule.operator,
-                // TODO: we throw above if value is not a number, but the model expect the value to be a string
-                value: customRule.value.toString(),
+                value: customRule.value,
               }
             })
           }
@@ -953,8 +935,12 @@ export default class PricingModuleService
       return dbPrices.find((p) => p.id === inputItem.priceSetId)!
     })
 
+    const serializedOrderedPriceSets = await this.baseRepository_.serialize<
+      PricingTypes.PriceSetDTO[]
+    >(Array.isArray(data) ? orderedPriceSets : orderedPriceSets[0])
+
     try {
-      return Array.isArray(data) ? orderedPriceSets : orderedPriceSets[0]
+      return serializedOrderedPriceSets
     } finally {
       this.pricingRepository_.clearAvailableAttributes?.()
     }
@@ -978,7 +964,7 @@ export default class PricingModuleService
     }
   }
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   // @ts-ignore
   async updatePriceLists(
@@ -1118,6 +1104,18 @@ export default class PricingModuleService
     data: UpsertPricePreferenceDTO | UpsertPricePreferenceDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PricePreferenceDTO | PricePreferenceDTO[]> {
+    const result = await this.upsertPricePreferences_(data, sharedContext)
+
+    return await this.baseRepository_.serialize<
+      PricePreferenceDTO[] | PricePreferenceDTO
+    >(Array.isArray(data) ? result : result[0])
+  }
+
+  @InjectTransactionManager()
+  protected async upsertPricePreferences_(
+    data: UpsertPricePreferenceDTO | UpsertPricePreferenceDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof PricePreference>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (
@@ -1140,9 +1138,8 @@ export default class PricingModuleService
     }
 
     const result = (await promiseAll(operations)).flat()
-    return await this.baseRepository_.serialize<
-      PricePreferenceDTO[] | PricePreferenceDTO
-    >(Array.isArray(data) ? result : result[0])
+
+    return result
   }
 
   // @ts-expect-error
@@ -1159,6 +1156,7 @@ export default class PricingModuleService
   ): Promise<PricePreferenceDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updatePricePreferences(
     idOrSelector: string | PricingTypes.FilterablePricePreferenceProps,
@@ -1249,49 +1247,6 @@ export default class PricingModuleService
       sharedContext
     )
 
-    const eventsData = priceSets.reduce(
-      (eventsData, priceSet) => {
-        eventsData.priceSets.push({
-          id: priceSet.id,
-        })
-
-        priceSet.prices.map((price) => {
-          eventsData.prices.push({
-            id: price.id,
-          })
-          price.price_rules.map((priceRule) => {
-            eventsData.priceRules.push({
-              id: priceRule.id,
-            })
-          })
-        })
-
-        return eventsData
-      },
-      {
-        priceSets: [],
-        priceRules: [],
-        prices: [],
-      } as {
-        priceSets: { id: string }[]
-        priceRules: { id: string }[]
-        prices: { id: string }[]
-      }
-    )
-
-    eventBuilders.createdPriceSet({
-      data: eventsData.priceSets,
-      sharedContext,
-    })
-    eventBuilders.createdPrice({
-      data: eventsData.prices,
-      sharedContext,
-    })
-    eventBuilders.createdPriceRule({
-      data: eventsData.priceRules,
-      sharedContext,
-    })
-
     return priceSets
   }
 
@@ -1337,18 +1292,11 @@ export default class PricingModuleService
       }
     })
 
-    const { entities, performedActions } =
-      await this.priceService_.upsertWithReplace(
-        pricesToUpsert,
-        { relations: ["price_rules"] },
-        sharedContext
-      )
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
-      sharedContext,
-    })
+    const { entities } = await this.priceService_.upsertWithReplace(
+      pricesToUpsert,
+      { relations: ["price_rules"] },
+      sharedContext
+    )
 
     return entities
   }
@@ -1401,67 +1349,6 @@ export default class PricingModuleService
       priceListsToCreate,
       sharedContext
     )
-
-    /**
-     * Preparing data for emitting events
-     */
-    const eventsData = priceLists.reduce(
-      (eventsData, priceList) => {
-        eventsData.priceList.push({
-          id: priceList.id,
-        })
-
-        priceList.price_list_rules.map((listRule) => {
-          eventsData.priceListRules.push({
-            id: listRule.id,
-          })
-        })
-
-        priceList.prices.map((price) => {
-          eventsData.prices.push({
-            id: price.id,
-          })
-          price.price_rules.map((priceRule) => {
-            eventsData.priceRules.push({
-              id: priceRule.id,
-            })
-          })
-        })
-
-        return eventsData
-      },
-      {
-        priceList: [],
-        priceListRules: [],
-        priceRules: [],
-        prices: [],
-      } as {
-        priceList: { id: string }[]
-        priceListRules: { id: string }[]
-        priceRules: { id: string }[]
-        prices: { id: string }[]
-      }
-    )
-
-    /**
-     * Emitting events for all created entities
-     */
-    eventBuilders.createdPriceList({
-      data: eventsData.priceList,
-      sharedContext,
-    })
-    eventBuilders.createdPriceListRule({
-      data: eventsData.priceListRules,
-      sharedContext,
-    })
-    eventBuilders.createdPrice({
-      data: eventsData.prices,
-      sharedContext,
-    })
-    eventBuilders.createdPriceRule({
-      data: eventsData.priceRules,
-      sharedContext,
-    })
 
     return priceLists
   }
@@ -1520,16 +1407,12 @@ export default class PricingModuleService
       }
     )
 
-    const { entities, performedActions } =
-      await this.priceListService_.upsertWithReplace(normalizedData, {
+    const { entities } = await this.priceListService_.upsertWithReplace(
+      normalizedData,
+      {
         relations: ["price_list_rules"],
-      })
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
-      sharedContext,
-    })
+      }
+    )
 
     return entities
   }
@@ -1573,18 +1456,11 @@ export default class PricingModuleService
       }
     }
 
-    const { entities, performedActions } =
-      await this.priceService_.upsertWithReplace(
-        pricesToUpsert,
-        { relations: ["price_rules"] },
-        sharedContext
-      )
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
-      sharedContext,
-    })
+    const { entities } = await this.priceService_.upsertWithReplace(
+      pricesToUpsert,
+      { relations: ["price_rules"] },
+      sharedContext
+    )
 
     return entities
   }
@@ -1635,18 +1511,11 @@ export default class PricingModuleService
       }
     })
 
-    const { entities, performedActions } =
-      await this.priceService_.upsertWithReplace(
-        pricesToUpsert,
-        { relations: ["price_rules"] },
-        sharedContext
-      )
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
-      sharedContext,
-    })
+    const { entities } = await this.priceService_.upsertWithReplace(
+      pricesToUpsert,
+      { relations: ["price_rules"] },
+      sharedContext
+    )
 
     return entities
   }
@@ -1706,18 +1575,11 @@ export default class PricingModuleService
       })
       .filter(Boolean)
 
-    const { entities, performedActions } =
-      await this.priceListService_.upsertWithReplace(
-        priceListsUpsert,
-        { relations: ["price_list_rules"] },
-        sharedContext
-      )
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
-      sharedContext,
-    })
+    const { entities } = await this.priceListService_.upsertWithReplace(
+      priceListsUpsert,
+      { relations: ["price_list_rules"] },
+      sharedContext
+    )
 
     return entities
   }
@@ -1780,18 +1642,11 @@ export default class PricingModuleService
       })
       .filter(Boolean)
 
-    const { entities, performedActions } =
-      await this.priceListService_.upsertWithReplace(
-        priceListsUpsert,
-        { relations: ["price_list_rules"] },
-        sharedContext
-      )
-
-    composeAllEvents({
-      eventBuilders,
-      performedActions,
-      sharedContext,
-    })
+    const { entities } = await this.priceListService_.upsertWithReplace(
+      priceListsUpsert,
+      { relations: ["price_list_rules"] },
+      sharedContext
+    )
 
     return entities
   }
@@ -1826,26 +1681,6 @@ export default class PricingModuleService
         populateWhere: { prices: { price_list_id: null } },
       },
       ...config,
-    }
-  }
-}
-
-const composeAllEvents = ({
-  eventBuilders,
-  performedActions,
-  sharedContext,
-}) => {
-  for (const action of Object.keys(performedActions)) {
-    for (const entity of Object.keys(performedActions[action])) {
-      const eventName = action + upperCaseFirst(entity)
-      if (!eventBuilders[eventName]) {
-        continue
-      }
-
-      eventBuilders[eventName]({
-        data: performedActions[action][entity] ?? [],
-        sharedContext,
-      })
     }
   }
 }

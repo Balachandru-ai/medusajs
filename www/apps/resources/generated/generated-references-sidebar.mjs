@@ -7289,6 +7289,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/references/workflows/applyStep",
+              "title": "applyStep",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/references/workflows/createHook",
               "title": "createHook",
               "description": "",
@@ -7318,6 +7327,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "type": "link",
               "path": "/references/workflows/parallelize",
               "title": "parallelize",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/workflows/resolveValue",
+              "title": "resolveValue",
               "description": "",
               "children": []
             },

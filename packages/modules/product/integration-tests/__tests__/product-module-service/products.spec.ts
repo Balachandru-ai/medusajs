@@ -4,11 +4,8 @@ import {
   ProductTagDTO,
 } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   kebabCase,
   Modules,
-  ProductEvents,
   ProductStatus,
 } from "@medusajs/framework/utils"
 import {
@@ -20,7 +17,6 @@ import {
 } from "@models"
 
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 import { UpdateProductInput } from "@types"
@@ -34,9 +30,6 @@ jest.setTimeout(300000)
 
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
-  injectedDependencies: {
-    [Modules.EVENT_BUS]: new MockEventBusService(),
-  },
   testSuite: ({ MikroOrmWrapper, service }) => {
     describe("ProductModuleService products", function () {
       let productCollectionOne: ProductCollection
@@ -573,37 +566,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-          const data = buildProductAndRelationsData({
-            images,
-            thumbnail: images[0].url,
-          })
-
-          const updateData = {
-            ...data,
-            options: data.options,
-            id: productOne.id,
-            title: "updated title",
-          }
-
-          await service.upsertProducts([updateData])
-
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_UPDATED, {
-                data: { id: productOne.id },
-                object: "product",
-                source: Modules.PRODUCT,
-                action: CommonEvents.UPDATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
 
         it("should add relationships to a product", async () => {
           const updateData = {
@@ -864,12 +826,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           await service.upsertProducts([updateData])
 
           const product = await service.retrieveProduct(productTwo.id, {
-            relations: [
-              "options",
-              "options.values",
-              "variants",
-              "variants.options",
-            ],
+            relations: ["*"],
           })
 
           expect(product.options).toHaveLength(1)
@@ -1091,29 +1048,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-        it("should emit events through eventBus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-          const data = buildProductAndRelationsData({
-            images,
-            thumbnail: images[0].url,
-          })
-
-          const products = await service.createProducts([data])
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_CREATED, {
-                data: { id: products[0].id },
-                object: "product",
-                source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
 
         it("should throw because variant doesn't have all options set", async () => {
           const error = await service
@@ -1294,75 +1228,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(softDeleted).toHaveLength(1)
         })
 
-        it("should emit events through eventBus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-          const data = buildProductAndRelationsData({
-            images,
-            thumbnail: images[0].url,
-          })
-
-          const products = await service.createProducts([data])
-
-          await service.softDeleteProducts([products[0].id])
-
-          expect(eventBusSpy).toHaveBeenNthCalledWith(
-            1,
-            [
-              composeMessage(ProductEvents.PRODUCT_CREATED, {
-                data: { id: products[0].id },
-                object: "product",
-                source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-
-          expect(eventBusSpy).toHaveBeenNthCalledWith(
-            2,
-            [
-              composeMessage(ProductEvents.PRODUCT_DELETED, {
-                data: { id: [products[0].id] },
-                object: "product",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-              composeMessage(ProductEvents.PRODUCT_VARIANT_DELETED, {
-                data: { id: [products[0].variants[0].id] },
-                object: "product_variant",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-              composeMessage(ProductEvents.PRODUCT_OPTION_DELETED, {
-                data: { id: [products[0].options[0].id] },
-                object: "product_option",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-              composeMessage(ProductEvents.PRODUCT_IMAGE_DELETED, {
-                data: {
-                  id: [products[0].images[0].id],
-                },
-                object: "product_image",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-              composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
-                data: {
-                  id: [products[0].options[0].values[0].id],
-                },
-                object: "product_option_value",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
       })
 
       describe("restore", function () {

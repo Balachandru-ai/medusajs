@@ -25,7 +25,7 @@ export function useConfigurableTableColumns<TData = any>(
       // Get the cell renderer for this column
       // Check semantic_type for special rendering
       let renderType = apiColumn.render_type || apiColumn.computed?.type
-      
+
       // Map semantic types to render types
       if (!renderType) {
         if (apiColumn.semantic_type === 'timestamp') {
@@ -41,7 +41,7 @@ export function useConfigurableTableColumns<TData = any>(
           renderType = 'currency'
         }
       }
-      
+
       const renderer = getCellRenderer(
         renderType,
         apiColumn.data_type
@@ -89,12 +89,12 @@ function getDefaultColumnAlignment(column: HttpTypes.AdminColumn): "left" | "cen
   if (column.semantic_type === "currency" || column.data_type === "currency") {
     return "right"
   }
-  
+
   // Number columns should be right-aligned (except identifiers)
   if (column.data_type === "number" && column.context !== "identifier") {
     return "right"
   }
-  
+
   // Total/amount/price columns should be right-aligned
   if (
     column.field.includes("total") ||
@@ -105,19 +105,19 @@ function getDefaultColumnAlignment(column: HttpTypes.AdminColumn): "left" | "cen
   ) {
     return "right"
   }
-  
+
   // Status columns should be center-aligned
   if (column.semantic_type === "status") {
     return "center"
   }
-  
+
   // Country columns should be center-aligned
-  if (column.computed?.type === "country_code" || 
-      column.field === "country" || 
-      column.field.includes("country_code")) {
+  if (column.computed?.type === "country_code" ||
+    column.field === "country" ||
+    column.field.includes("country_code")) {
     return "center"
   }
-  
+
   // Default to left alignment
   return "left"
 }

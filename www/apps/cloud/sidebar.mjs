@@ -120,6 +120,11 @@ export const sidebar = [
           },
           {
             type: "link",
+            title: "Plans & Pricing",
+            path: "/pricing",
+          },
+          {
+            type: "link",
             title: "Manage Billing Details",
             path: "/billing/manage",
           },

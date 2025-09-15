@@ -5971,14 +5971,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@medusajs/admin-bundler@2.10.1, @medusajs/admin-bundler@workspace:packages/admin/admin-bundler":
+"@medusajs/admin-bundler@2.10.2, @medusajs/admin-bundler@workspace:packages/admin/admin-bundler":
   version: 0.0.0-use.local
   resolution: "@medusajs/admin-bundler@workspace:packages/admin/admin-bundler"
   dependencies:
-    "@medusajs/admin-shared": 2.10.1
-    "@medusajs/admin-vite-plugin": 2.10.1
-    "@medusajs/dashboard": 2.10.1
-    "@medusajs/types": 2.10.1
+    "@medusajs/admin-shared": 2.10.2
+    "@medusajs/admin-vite-plugin": 2.10.2
+    "@medusajs/dashboard": 2.10.2
+    "@medusajs/types": 2.10.2
     "@types/compression": ^1.7.5
     "@vitejs/plugin-react": ^4.2.1
     autoprefixer: ^10.4.16
@@ -5995,11 +5995,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/admin-sdk@2.10.1, @medusajs/admin-sdk@workspace:packages/admin/admin-sdk":
+"@medusajs/admin-sdk@2.10.2, @medusajs/admin-sdk@workspace:packages/admin/admin-sdk":
   version: 0.0.0-use.local
   resolution: "@medusajs/admin-sdk@workspace:packages/admin/admin-sdk"
   dependencies:
-    "@medusajs/admin-shared": 2.10.1
+    "@medusajs/admin-shared": 2.10.2
     "@types/react": ^18.3.2
     tsup: ^8.0.1
     typescript: ^5.3.3
@@ -6007,7 +6007,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/admin-shared@2.10.1, @medusajs/admin-shared@workspace:packages/admin/admin-shared":
+"@medusajs/admin-shared@2.10.2, @medusajs/admin-shared@workspace:packages/admin/admin-shared":
   version: 0.0.0-use.local
   resolution: "@medusajs/admin-shared@workspace:packages/admin/admin-shared"
   dependencies:
@@ -6017,14 +6017,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/admin-vite-plugin@2.10.1, @medusajs/admin-vite-plugin@workspace:packages/admin/admin-vite-plugin":
+"@medusajs/admin-vite-plugin@2.10.2, @medusajs/admin-vite-plugin@workspace:packages/admin/admin-vite-plugin":
   version: 0.0.0-use.local
   resolution: "@medusajs/admin-vite-plugin@workspace:packages/admin/admin-vite-plugin"
   dependencies:
     "@babel/parser": 7.25.6
     "@babel/traverse": 7.25.6
     "@babel/types": 7.25.6
-    "@medusajs/admin-shared": 2.10.1
+    "@medusajs/admin-shared": 2.10.2
     "@types/node": ^20.10.4
     chokidar: 3.5.3
     fdir: 6.1.1
@@ -6040,26 +6040,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/analytics-local@2.10.1, @medusajs/analytics-local@workspace:packages/modules/providers/analytics-local":
+"@medusajs/analytics-local@2.10.2, @medusajs/analytics-local@workspace:packages/modules/providers/analytics-local":
   version: 0.0.0-use.local
   resolution: "@medusajs/analytics-local@workspace:packages/modules/providers/analytics-local"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/analytics-posthog@2.10.1, @medusajs/analytics-posthog@workspace:packages/modules/providers/analytics-posthog":
+"@medusajs/analytics-posthog@2.10.2, @medusajs/analytics-posthog@workspace:packages/modules/providers/analytics-posthog":
   version: 0.0.0-use.local
   resolution: "@medusajs/analytics-posthog@workspace:packages/modules/providers/analytics-posthog"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6067,17 +6067,17 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     posthog-node: ^4.17.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/analytics@2.10.1, @medusajs/analytics@workspace:packages/modules/analytics":
+"@medusajs/analytics@2.10.2, @medusajs/analytics@workspace:packages/modules/analytics":
   version: 0.0.0-use.local
   resolution: "@medusajs/analytics@workspace:packages/modules/analytics"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6085,18 +6085,18 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/api-key@2.10.1, @medusajs/api-key@workspace:^, @medusajs/api-key@workspace:packages/modules/api-key":
+"@medusajs/api-key@2.10.2, @medusajs/api-key@workspace:^, @medusajs/api-key@workspace:packages/modules/api-key":
   version: 0.0.0-use.local
   resolution: "@medusajs/api-key@workspace:packages/modules/api-key"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6104,19 +6104,19 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/auth-emailpass@2.10.1, @medusajs/auth-emailpass@workspace:packages/modules/providers/auth-emailpass":
+"@medusajs/auth-emailpass@2.10.2, @medusajs/auth-emailpass@workspace:packages/modules/providers/auth-emailpass":
   version: 0.0.0-use.local
   resolution: "@medusajs/auth-emailpass@workspace:packages/modules/providers/auth-emailpass"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6124,15 +6124,15 @@ __metadata:
     scrypt-kdf: ^2.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/auth-github@2.10.1, @medusajs/auth-github@workspace:packages/modules/providers/auth-github":
+"@medusajs/auth-github@2.10.2, @medusajs/auth-github@workspace:packages/modules/providers/auth-github":
   version: 0.0.0-use.local
   resolution: "@medusajs/auth-github@workspace:packages/modules/providers/auth-github"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6140,15 +6140,15 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/auth-google@2.10.1, @medusajs/auth-google@workspace:packages/modules/providers/auth-google":
+"@medusajs/auth-google@2.10.2, @medusajs/auth-google@workspace:packages/modules/providers/auth-google":
   version: 0.0.0-use.local
   resolution: "@medusajs/auth-google@workspace:packages/modules/providers/auth-google"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6157,20 +6157,20 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/auth@2.10.1, @medusajs/auth@workspace:*, @medusajs/auth@workspace:packages/modules/auth":
+"@medusajs/auth@2.10.2, @medusajs/auth@workspace:*, @medusajs/auth@workspace:packages/modules/auth":
   version: 0.0.0-use.local
   resolution: "@medusajs/auth@workspace:packages/modules/auth"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6178,34 +6178,34 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/cache-inmemory@2.10.1, @medusajs/cache-inmemory@workspace:*, @medusajs/cache-inmemory@workspace:packages/modules/cache-inmemory":
+"@medusajs/cache-inmemory@2.10.2, @medusajs/cache-inmemory@workspace:*, @medusajs/cache-inmemory@workspace:packages/modules/cache-inmemory":
   version: 0.0.0-use.local
   resolution: "@medusajs/cache-inmemory@workspace:packages/modules/cache-inmemory"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/cache-redis@2.10.1, @medusajs/cache-redis@workspace:packages/modules/cache-redis":
+"@medusajs/cache-redis@2.10.2, @medusajs/cache-redis@workspace:packages/modules/cache-redis":
   version: 0.0.0-use.local
   resolution: "@medusajs/cache-redis@workspace:packages/modules/cache-redis"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     ioredis: ^5.4.1
@@ -6213,21 +6213,21 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/cart@2.10.1, @medusajs/cart@workspace:packages/modules/cart":
+"@medusajs/cart@2.10.2, @medusajs/cart@workspace:packages/modules/cart":
   version: 0.0.0-use.local
   resolution: "@medusajs/cart@workspace:packages/modules/cart"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6235,24 +6235,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/cli@2.10.1, @medusajs/cli@workspace:packages/cli/medusa-cli":
+"@medusajs/cli@2.10.2, @medusajs/cli@workspace:packages/cli/medusa-cli":
   version: 0.0.0-use.local
   resolution: "@medusajs/cli@workspace:packages/cli/medusa-cli"
   dependencies:
-    "@medusajs/telemetry": 2.10.1
-    "@medusajs/utils": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/telemetry": 2.10.2
+    "@medusajs/utils": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     "@types/express": ^4.17.17
@@ -6272,7 +6272,7 @@ __metadata:
     jest: ^29.7.0
     meant: ^1.0.3
     ora: ^5.4.1
-    pg: ^8.16.3
+    pg: ^8.13.0
     pg-god: ^1.0.12
     prompts: ^2.4.2
     resolve-cwd: ^3.0.0
@@ -6283,26 +6283,26 @@ __metadata:
     winston: ^3.8.2
     yargs: ^15.3.1
   peerDependencies:
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
-    pg: ^8.16.3
+    pg: ^8.13.0
   bin:
     medusa: cli.js
   languageName: unknown
   linkType: soft
 
-"@medusajs/core-flows@2.10.1, @medusajs/core-flows@workspace:*, @medusajs/core-flows@workspace:^, @medusajs/core-flows@workspace:packages/core/core-flows":
+"@medusajs/core-flows@2.10.2, @medusajs/core-flows@workspace:*, @medusajs/core-flows@workspace:^, @medusajs/core-flows@workspace:packages/core/core-flows":
   version: 0.0.0-use.local
   resolution: "@medusajs/core-flows@workspace:packages/core/core-flows"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     awilix: ^8.0.1
@@ -6310,26 +6310,26 @@ __metadata:
     expect-type: ^0.20.0
     jest: ^29.7.0
     json-2-csv: ^5.5.4
-    pg: ^8.16.3
+    pg: ^8.13.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
     zod: 3.25.76
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/currency@2.10.1, @medusajs/currency@workspace:^, @medusajs/currency@workspace:packages/modules/currency":
+"@medusajs/currency@2.10.2, @medusajs/currency@workspace:^, @medusajs/currency@workspace:packages/modules/currency":
   version: 0.0.0-use.local
   resolution: "@medusajs/currency@workspace:packages/modules/currency"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6337,24 +6337,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/customer@2.10.1, @medusajs/customer@workspace:^, @medusajs/customer@workspace:packages/modules/customer":
+"@medusajs/customer@2.10.2, @medusajs/customer@workspace:^, @medusajs/customer@workspace:packages/modules/customer":
   version: 0.0.0-use.local
   resolution: "@medusajs/customer@workspace:packages/modules/customer"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6362,15 +6362,15 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/dashboard@2.10.1, @medusajs/dashboard@workspace:packages/admin/dashboard":
+"@medusajs/dashboard@2.10.2, @medusajs/dashboard@workspace:packages/admin/dashboard":
   version: 0.0.0-use.local
   resolution: "@medusajs/dashboard@workspace:packages/admin/dashboard"
   dependencies:
@@ -6380,13 +6380,13 @@ __metadata:
     "@dnd-kit/utilities": ^3.2.2
     "@hookform/error-message": ^2.0.1
     "@hookform/resolvers": 3.4.2
-    "@medusajs/admin-shared": 2.10.1
-    "@medusajs/admin-vite-plugin": 2.10.1
-    "@medusajs/icons": 2.10.1
-    "@medusajs/js-sdk": 2.10.1
-    "@medusajs/types": 2.10.1
-    "@medusajs/ui": 4.0.21
-    "@medusajs/ui-preset": 2.10.1
+    "@medusajs/admin-shared": 2.10.2
+    "@medusajs/admin-vite-plugin": 2.10.2
+    "@medusajs/icons": 2.10.2
+    "@medusajs/js-sdk": 2.10.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/ui": 4.0.22
+    "@medusajs/ui-preset": 2.10.2
     "@radix-ui/react-dialog": 1.1.4
     "@radix-ui/react-dismissable-layer": 1.1.4
     "@tanstack/react-query": 5.64.2
@@ -6431,26 +6431,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/draft-order@2.10.1, @medusajs/draft-order@workspace:packages/plugins/draft-order":
+"@medusajs/draft-order@2.10.2, @medusajs/draft-order@workspace:packages/plugins/draft-order":
   version: 0.0.0-use.local
   resolution: "@medusajs/draft-order@workspace:packages/plugins/draft-order"
   dependencies:
     "@ariakit/react": ^0.4.15
     "@hookform/resolvers": 3.4.2
-    "@medusajs/admin-sdk": 2.10.1
-    "@medusajs/cli": 2.10.1
-    "@medusajs/framework": 2.10.1
-    "@medusajs/icons": 2.10.1
-    "@medusajs/js-sdk": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@medusajs/types": 2.10.1
-    "@medusajs/ui": 4.0.21
-    "@medusajs/ui-preset": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/admin-sdk": 2.10.2
+    "@medusajs/cli": 2.10.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/icons": 2.10.2
+    "@medusajs/js-sdk": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/ui": 4.0.22
+    "@medusajs/ui-preset": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": 1.5.7
     "@tanstack/react-query": 5.64.2
     "@types/lodash": ^4.17.15
@@ -6462,7 +6462,7 @@ __metadata:
     date-fns: ^3.6.0
     lodash: ^4.17.21
     match-sorter: ^6.3.4
-    pg: ^8.16.3
+    pg: ^8.13.0
     radix-ui: 1.1.2
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -6474,29 +6474,29 @@ __metadata:
     vite: ^5.2.11
     yalc: ^1.0.0-pre.53
   peerDependencies:
-    "@medusajs/admin-sdk": 2.10.1
-    "@medusajs/cli": 2.10.1
-    "@medusajs/framework": 2.10.1
-    "@medusajs/icons": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@medusajs/ui": 4.0.21
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/admin-sdk": 2.10.2
+    "@medusajs/cli": 2.10.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/icons": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@medusajs/ui": 4.0.22
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
     lodash: ^4.17.21
-    pg: ^8.16.3
+    pg: ^8.13.0
     react-router-dom: 6.20.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/event-bus-local@2.10.1, @medusajs/event-bus-local@workspace:*, @medusajs/event-bus-local@workspace:packages/modules/event-bus-local":
+"@medusajs/event-bus-local@2.10.2, @medusajs/event-bus-local@workspace:*, @medusajs/event-bus-local@workspace:packages/modules/event-bus-local":
   version: 0.0.0-use.local
   resolution: "@medusajs/event-bus-local@workspace:packages/modules/event-bus-local"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6504,15 +6504,15 @@ __metadata:
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/event-bus-redis@2.10.1, @medusajs/event-bus-redis@workspace:packages/modules/event-bus-redis":
+"@medusajs/event-bus-redis@2.10.2, @medusajs/event-bus-redis@workspace:packages/modules/event-bus-redis":
   version: 0.0.0-use.local
   resolution: "@medusajs/event-bus-redis@workspace:packages/modules/event-bus-redis"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     bullmq: 5.13.0
@@ -6521,33 +6521,33 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/file-local@2.10.1, @medusajs/file-local@workspace:packages/modules/providers/file-local":
+"@medusajs/file-local@2.10.2, @medusajs/file-local@workspace:packages/modules/providers/file-local":
   version: 0.0.0-use.local
   resolution: "@medusajs/file-local@workspace:packages/modules/providers/file-local"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/file-s3@2.10.1, @medusajs/file-s3@workspace:packages/modules/providers/file-s3":
+"@medusajs/file-s3@2.10.2, @medusajs/file-s3@workspace:packages/modules/providers/file-s3":
   version: 0.0.0-use.local
   resolution: "@medusajs/file-s3@workspace:packages/modules/providers/file-s3"
   dependencies:
     "@aws-sdk/client-s3": ^3.556.0
     "@aws-sdk/s3-request-presigner": ^3.556.0
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     axios: ^1.6.8
@@ -6556,20 +6556,20 @@ __metadata:
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/file@2.10.1, @medusajs/file@workspace:packages/modules/file":
+"@medusajs/file@2.10.2, @medusajs/file@workspace:packages/modules/file":
   version: 0.0.0-use.local
   resolution: "@medusajs/file@workspace:packages/modules/file"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6577,28 +6577,28 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/framework@2.10.1, @medusajs/framework@workspace:^, @medusajs/framework@workspace:packages/core/framework":
+"@medusajs/framework@2.10.2, @medusajs/framework@workspace:^, @medusajs/framework@workspace:packages/core/framework":
   version: 0.0.0-use.local
   resolution: "@medusajs/framework@workspace:packages/core/framework"
   dependencies:
     "@aws-sdk/client-dynamodb": ^3.218.0
     "@jercle/yargonaut": ^1.1.5
-    "@medusajs/cli": 2.10.1
-    "@medusajs/modules-sdk": 2.10.1
-    "@medusajs/orchestration": 2.10.1
-    "@medusajs/telemetry": 2.10.1
-    "@medusajs/types": 2.10.1
-    "@medusajs/utils": 2.10.1
-    "@medusajs/workflows-sdk": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/cli": 2.10.2
+    "@medusajs/modules-sdk": 2.10.2
+    "@medusajs/orchestration": 2.10.2
+    "@medusajs/telemetry": 2.10.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/utils": 2.10.2
+    "@medusajs/workflows-sdk": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@opentelemetry/api": ^1.9.0
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
@@ -6621,7 +6621,7 @@ __metadata:
     lodash: 4.17.21
     morgan: ^1.9.1
     path-to-regexp: ^0.1.10
-    pg: ^8.16.3
+    pg: ^8.13.0
     rimraf: ^3.0.2
     supertest: ^4.0.2
     tsconfig-paths: ^4.2.0
@@ -6631,16 +6631,16 @@ __metadata:
     zod-validation-error: 3.5.1
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.218.0
-    "@medusajs/cli": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/cli": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
     connect-dynamodb: ^3.0.5
     ioredis: ^5.4.1
-    pg: ^8.16.3
+    pg: ^8.13.0
     vite: ^5.4.14
   peerDependenciesMeta:
     "@aws-sdk/client-dynamodb":
@@ -6658,31 +6658,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/fulfillment-manual@2.10.1, @medusajs/fulfillment-manual@workspace:^, @medusajs/fulfillment-manual@workspace:packages/modules/providers/fulfillment-manual":
+"@medusajs/fulfillment-manual@2.10.2, @medusajs/fulfillment-manual@workspace:^, @medusajs/fulfillment-manual@workspace:packages/modules/providers/fulfillment-manual":
   version: 0.0.0-use.local
   resolution: "@medusajs/fulfillment-manual@workspace:packages/modules/providers/fulfillment-manual"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/fulfillment@2.10.1, @medusajs/fulfillment@workspace:^, @medusajs/fulfillment@workspace:packages/modules/fulfillment":
+"@medusajs/fulfillment@2.10.2, @medusajs/fulfillment@workspace:^, @medusajs/fulfillment@workspace:packages/modules/fulfillment":
   version: 0.0.0-use.local
   resolution: "@medusajs/fulfillment@workspace:packages/modules/fulfillment"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6690,20 +6690,20 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/icons@2.10.1, @medusajs/icons@workspace:packages/design-system/icons":
+"@medusajs/icons@2.10.2, @medusajs/icons@workspace:packages/design-system/icons":
   version: 0.0.0-use.local
   resolution: "@medusajs/icons@workspace:packages/design-system/icons"
   dependencies:
     "@atomico/rollup-plugin-sizes": ^1.1.4
-    "@medusajs/toolbox": 2.10.1
+    "@medusajs/toolbox": 2.10.2
     "@rollup/plugin-node-resolve": ^15.1.0
     "@rollup/plugin-replace": ^5.0.2
     "@testing-library/dom": ^9.3.1
@@ -6732,17 +6732,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/index@2.10.1, @medusajs/index@workspace:packages/modules/index":
+"@medusajs/index@2.10.2, @medusajs/index@workspace:packages/modules/index":
   version: 0.0.0-use.local
   resolution: "@medusajs/index@workspace:packages/modules/index"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6750,25 +6750,25 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/inventory@2.10.1, @medusajs/inventory@workspace:^, @medusajs/inventory@workspace:packages/modules/inventory":
+"@medusajs/inventory@2.10.2, @medusajs/inventory@workspace:^, @medusajs/inventory@workspace:packages/modules/inventory":
   version: 0.0.0-use.local
   resolution: "@medusajs/inventory@workspace:packages/modules/inventory"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6776,19 +6776,19 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/js-sdk@2.10.1, @medusajs/js-sdk@workspace:packages/core/js-sdk":
+"@medusajs/js-sdk@2.10.2, @medusajs/js-sdk@workspace:packages/core/js-sdk":
   version: 0.0.0-use.local
   resolution: "@medusajs/js-sdk@workspace:packages/core/js-sdk"
   dependencies:
-    "@medusajs/types": 2.10.1
+    "@medusajs/types": 2.10.2
     fetch-event-stream: ^0.1.5
     jest: ^29.7.0
     msw: ^2.3.0
@@ -6798,15 +6798,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/link-modules@2.10.1, @medusajs/link-modules@workspace:^, @medusajs/link-modules@workspace:packages/modules/link-modules":
+"@medusajs/link-modules@2.10.2, @medusajs/link-modules@workspace:^, @medusajs/link-modules@workspace:packages/modules/link-modules":
   version: 0.0.0-use.local
   resolution: "@medusajs/link-modules@workspace:packages/modules/link-modules"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     cross-env: ^5.2.1
@@ -6815,38 +6815,38 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/locking-postgres@2.10.1, @medusajs/locking-postgres@workspace:packages/modules/providers/locking-postgres":
+"@medusajs/locking-postgres@2.10.2, @medusajs/locking-postgres@workspace:packages/modules/providers/locking-postgres":
   version: 0.0.0-use.local
   resolution: "@medusajs/locking-postgres@workspace:packages/modules/providers/locking-postgres"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/locking-redis@2.10.1, @medusajs/locking-redis@workspace:packages/modules/providers/locking-redis":
+"@medusajs/locking-redis@2.10.2, @medusajs/locking-redis@workspace:packages/modules/providers/locking-redis":
   version: 0.0.0-use.local
   resolution: "@medusajs/locking-redis@workspace:packages/modules/providers/locking-redis"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     ioredis: ^5.4.1
@@ -6854,20 +6854,20 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/locking@2.10.1, @medusajs/locking@workspace:packages/modules/locking":
+"@medusajs/locking@2.10.2, @medusajs/locking@workspace:packages/modules/locking":
   version: 0.0.0-use.local
   resolution: "@medusajs/locking@workspace:packages/modules/locking"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -6875,21 +6875,21 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/medusa-oas-cli@2.10.1, @medusajs/medusa-oas-cli@workspace:packages/cli/oas/medusa-oas-cli":
+"@medusajs/medusa-oas-cli@2.10.2, @medusajs/medusa-oas-cli@workspace:packages/cli/oas/medusa-oas-cli":
   version: 0.0.0-use.local
   resolution: "@medusajs/medusa-oas-cli@workspace:packages/cli/oas/medusa-oas-cli"
   dependencies:
-    "@medusajs/medusa": 2.10.1
-    "@medusajs/types": 2.10.1
-    "@medusajs/utils": 2.10.1
+    "@medusajs/medusa": 2.10.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/utils": 2.10.2
     "@readme/json-schema-ref-parser": ^1.2.0
     "@readme/openapi-parser": ^2.4.0
     "@redocly/cli": ^1.7.0
@@ -6912,61 +6912,61 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/medusa@2.10.1, @medusajs/medusa@workspace:*, @medusajs/medusa@workspace:packages/medusa":
+"@medusajs/medusa@2.10.2, @medusajs/medusa@workspace:*, @medusajs/medusa@workspace:packages/medusa":
   version: 0.0.0-use.local
   resolution: "@medusajs/medusa@workspace:packages/medusa"
   dependencies:
     "@inquirer/checkbox": ^2.3.11
     "@inquirer/input": ^2.2.9
-    "@medusajs/admin-bundler": 2.10.1
-    "@medusajs/analytics": 2.10.1
-    "@medusajs/analytics-local": 2.10.1
-    "@medusajs/analytics-posthog": 2.10.1
-    "@medusajs/api-key": 2.10.1
-    "@medusajs/auth": 2.10.1
-    "@medusajs/auth-emailpass": 2.10.1
-    "@medusajs/auth-github": 2.10.1
-    "@medusajs/auth-google": 2.10.1
-    "@medusajs/cache-inmemory": 2.10.1
-    "@medusajs/cache-redis": 2.10.1
-    "@medusajs/cart": 2.10.1
-    "@medusajs/core-flows": 2.10.1
-    "@medusajs/currency": 2.10.1
-    "@medusajs/customer": 2.10.1
-    "@medusajs/draft-order": 2.10.1
-    "@medusajs/event-bus-local": 2.10.1
-    "@medusajs/event-bus-redis": 2.10.1
-    "@medusajs/file": 2.10.1
-    "@medusajs/file-local": 2.10.1
-    "@medusajs/file-s3": 2.10.1
-    "@medusajs/framework": 2.10.1
-    "@medusajs/fulfillment": 2.10.1
-    "@medusajs/fulfillment-manual": 2.10.1
-    "@medusajs/index": 2.10.1
-    "@medusajs/inventory": 2.10.1
-    "@medusajs/link-modules": 2.10.1
-    "@medusajs/locking": 2.10.1
-    "@medusajs/locking-postgres": 2.10.1
-    "@medusajs/locking-redis": 2.10.1
-    "@medusajs/notification": 2.10.1
-    "@medusajs/notification-local": 2.10.1
-    "@medusajs/notification-sendgrid": 2.10.1
-    "@medusajs/order": 2.10.1
-    "@medusajs/payment": 2.10.1
-    "@medusajs/payment-stripe": 2.10.1
-    "@medusajs/pricing": 2.10.1
-    "@medusajs/product": 2.10.1
-    "@medusajs/promotion": 2.10.1
-    "@medusajs/region": 2.10.1
-    "@medusajs/sales-channel": 2.10.1
-    "@medusajs/settings": 2.10.1
-    "@medusajs/stock-location": 2.10.1
-    "@medusajs/store": 2.10.1
-    "@medusajs/tax": 2.10.1
-    "@medusajs/telemetry": 2.10.1
-    "@medusajs/user": 2.10.1
-    "@medusajs/workflow-engine-inmemory": 2.10.1
-    "@medusajs/workflow-engine-redis": 2.10.1
+    "@medusajs/admin-bundler": 2.10.2
+    "@medusajs/analytics": 2.10.2
+    "@medusajs/analytics-local": 2.10.2
+    "@medusajs/analytics-posthog": 2.10.2
+    "@medusajs/api-key": 2.10.2
+    "@medusajs/auth": 2.10.2
+    "@medusajs/auth-emailpass": 2.10.2
+    "@medusajs/auth-github": 2.10.2
+    "@medusajs/auth-google": 2.10.2
+    "@medusajs/cache-inmemory": 2.10.2
+    "@medusajs/cache-redis": 2.10.2
+    "@medusajs/cart": 2.10.2
+    "@medusajs/core-flows": 2.10.2
+    "@medusajs/currency": 2.10.2
+    "@medusajs/customer": 2.10.2
+    "@medusajs/draft-order": 2.10.2
+    "@medusajs/event-bus-local": 2.10.2
+    "@medusajs/event-bus-redis": 2.10.2
+    "@medusajs/file": 2.10.2
+    "@medusajs/file-local": 2.10.2
+    "@medusajs/file-s3": 2.10.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/fulfillment": 2.10.2
+    "@medusajs/fulfillment-manual": 2.10.2
+    "@medusajs/index": 2.10.2
+    "@medusajs/inventory": 2.10.2
+    "@medusajs/link-modules": 2.10.2
+    "@medusajs/locking": 2.10.2
+    "@medusajs/locking-postgres": 2.10.2
+    "@medusajs/locking-redis": 2.10.2
+    "@medusajs/notification": 2.10.2
+    "@medusajs/notification-local": 2.10.2
+    "@medusajs/notification-sendgrid": 2.10.2
+    "@medusajs/order": 2.10.2
+    "@medusajs/payment": 2.10.2
+    "@medusajs/payment-stripe": 2.10.2
+    "@medusajs/pricing": 2.10.2
+    "@medusajs/product": 2.10.2
+    "@medusajs/promotion": 2.10.2
+    "@medusajs/region": 2.10.2
+    "@medusajs/sales-channel": 2.10.2
+    "@medusajs/settings": 2.10.2
+    "@medusajs/stock-location": 2.10.2
+    "@medusajs/store": 2.10.2
+    "@medusajs/tax": 2.10.2
+    "@medusajs/telemetry": 2.10.2
+    "@medusajs/user": 2.10.2
+    "@medusajs/workflow-engine-inmemory": 2.10.2
+    "@medusajs/workflow-engine-redis": 2.10.2
     "@opentelemetry/api": ^1.9.0
     "@opentelemetry/instrumentation-pg": ^0.52.0
     "@opentelemetry/resources": ^2.0.0
@@ -7000,11 +7000,11 @@ __metadata:
     yalc: 1.0.0-pre.53
     zod: 3.25.76
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@opentelemetry/instrumentation-pg": ^0.52.0
     "@opentelemetry/resources": ^2.0.0
     "@opentelemetry/sdk-node": ^0.200.0
@@ -7034,56 +7034,56 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/modules-sdk@2.10.1, @medusajs/modules-sdk@workspace:^, @medusajs/modules-sdk@workspace:packages/core/modules-sdk":
+"@medusajs/modules-sdk@2.10.2, @medusajs/modules-sdk@workspace:^, @medusajs/modules-sdk@workspace:packages/core/modules-sdk":
   version: 0.0.0-use.local
   resolution: "@medusajs/modules-sdk@workspace:packages/core/modules-sdk"
   dependencies:
-    "@medusajs/orchestration": 2.10.1
-    "@medusajs/types": 2.10.1
-    "@medusajs/utils": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/orchestration": 2.10.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/utils": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     awilix: ^8.0.1
     cross-env: ^5.2.1
     jest: ^29.7.0
-    pg: ^8.16.3
+    pg: ^8.13.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
     express: ^4.21.0
-    pg: ^8.16.3
+    pg: ^8.13.0
   languageName: unknown
   linkType: soft
 
-"@medusajs/notification-local@2.10.1, @medusajs/notification-local@workspace:packages/modules/providers/notification-local":
+"@medusajs/notification-local@2.10.2, @medusajs/notification-local@workspace:packages/modules/providers/notification-local":
   version: 0.0.0-use.local
   resolution: "@medusajs/notification-local@workspace:packages/modules/providers/notification-local"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/notification-sendgrid@2.10.1, @medusajs/notification-sendgrid@workspace:packages/modules/providers/notification-sendgrid":
+"@medusajs/notification-sendgrid@2.10.2, @medusajs/notification-sendgrid@workspace:packages/modules/providers/notification-sendgrid":
   version: 0.0.0-use.local
   resolution: "@medusajs/notification-sendgrid@workspace:packages/modules/providers/notification-sendgrid"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@sendgrid/mail": ^8.1.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
@@ -7091,20 +7091,20 @@ __metadata:
     rimraf: ^5.0.1
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
   languageName: unknown
   linkType: soft
 
-"@medusajs/notification@2.10.1, @medusajs/notification@workspace:packages/modules/notification":
+"@medusajs/notification@2.10.2, @medusajs/notification@workspace:packages/modules/notification":
   version: 0.0.0-use.local
   resolution: "@medusajs/notification@workspace:packages/modules/notification"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7112,10 +7112,10 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
@@ -7124,50 +7124,50 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/oas-github-ci@workspace:packages/cli/oas/oas-github-ci"
   dependencies:
-    "@medusajs/medusa-oas-cli": 2.10.1
+    "@medusajs/medusa-oas-cli": 2.10.2
     execa: ^5.1.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/orchestration@2.10.1, @medusajs/orchestration@workspace:packages/core/orchestration":
+"@medusajs/orchestration@2.10.2, @medusajs/orchestration@workspace:packages/core/orchestration":
   version: 0.0.0-use.local
   resolution: "@medusajs/orchestration@workspace:packages/core/orchestration"
   dependencies:
-    "@medusajs/types": 2.10.1
-    "@medusajs/utils": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/utils": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     awilix: ^8.0.1
     jest: ^29.7.0
-    pg: ^8.16.3
+    pg: ^8.13.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
     express: ^4.21.0
-    pg: ^8.16.3
+    pg: ^8.13.0
   languageName: unknown
   linkType: soft
 
-"@medusajs/order@2.10.1, @medusajs/order@workspace:packages/modules/order":
+"@medusajs/order@2.10.2, @medusajs/order@workspace:packages/modules/order":
   version: 0.0.0-use.local
   resolution: "@medusajs/order@workspace:packages/modules/order"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7175,19 +7175,19 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/payment-stripe@2.10.1, @medusajs/payment-stripe@workspace:packages/modules/providers/payment-stripe":
+"@medusajs/payment-stripe@2.10.2, @medusajs/payment-stripe@workspace:packages/modules/providers/payment-stripe":
   version: 0.0.0-use.local
   resolution: "@medusajs/payment-stripe@workspace:packages/modules/providers/payment-stripe"
   dependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7195,21 +7195,21 @@ __metadata:
     stripe: ^15.5.0
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
+    "@medusajs/framework": 2.10.2
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/payment@2.10.1, @medusajs/payment@workspace:^, @medusajs/payment@workspace:packages/modules/payment":
+"@medusajs/payment@2.10.2, @medusajs/payment@workspace:^, @medusajs/payment@workspace:packages/modules/payment":
   version: 0.0.0-use.local
   resolution: "@medusajs/payment@workspace:packages/modules/payment"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7217,24 +7217,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/pricing@2.10.1, @medusajs/pricing@workspace:^, @medusajs/pricing@workspace:packages/modules/pricing":
+"@medusajs/pricing@2.10.2, @medusajs/pricing@workspace:^, @medusajs/pricing@workspace:packages/modules/pricing":
   version: 0.0.0-use.local
   resolution: "@medusajs/pricing@workspace:packages/modules/pricing"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7242,24 +7242,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/product@2.10.1, @medusajs/product@workspace:^, @medusajs/product@workspace:packages/modules/product":
+"@medusajs/product@2.10.2, @medusajs/product@workspace:^, @medusajs/product@workspace:packages/modules/product":
   version: 0.0.0-use.local
   resolution: "@medusajs/product@workspace:packages/modules/product"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     faker: ^5.5.3
@@ -7268,24 +7268,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/promotion@2.10.1, @medusajs/promotion@workspace:^, @medusajs/promotion@workspace:packages/modules/promotion":
+"@medusajs/promotion@2.10.2, @medusajs/promotion@workspace:^, @medusajs/promotion@workspace:packages/modules/promotion":
   version: 0.0.0-use.local
   resolution: "@medusajs/promotion@workspace:packages/modules/promotion"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7293,24 +7293,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/region@2.10.1, @medusajs/region@workspace:^, @medusajs/region@workspace:packages/modules/region":
+"@medusajs/region@2.10.2, @medusajs/region@workspace:^, @medusajs/region@workspace:packages/modules/region":
   version: 0.0.0-use.local
   resolution: "@medusajs/region@workspace:packages/modules/region"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7318,24 +7318,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/sales-channel@2.10.1, @medusajs/sales-channel@workspace:packages/modules/sales-channel":
+"@medusajs/sales-channel@2.10.2, @medusajs/sales-channel@workspace:packages/modules/sales-channel":
   version: 0.0.0-use.local
   resolution: "@medusajs/sales-channel@workspace:packages/modules/sales-channel"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7343,24 +7343,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/settings@2.10.1, @medusajs/settings@workspace:packages/modules/settings":
+"@medusajs/settings@2.10.2, @medusajs/settings@workspace:packages/modules/settings":
   version: 0.0.0-use.local
   resolution: "@medusajs/settings@workspace:packages/modules/settings"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7368,24 +7368,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/stock-location@2.10.1, @medusajs/stock-location@workspace:^, @medusajs/stock-location@workspace:packages/modules/stock-location":
+"@medusajs/stock-location@2.10.2, @medusajs/stock-location@workspace:^, @medusajs/stock-location@workspace:packages/modules/stock-location":
   version: 0.0.0-use.local
   resolution: "@medusajs/stock-location@workspace:packages/modules/stock-location"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7393,24 +7393,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/store@2.10.1, @medusajs/store@workspace:^, @medusajs/store@workspace:packages/modules/store":
+"@medusajs/store@2.10.2, @medusajs/store@workspace:^, @medusajs/store@workspace:packages/modules/store":
   version: 0.0.0-use.local
   resolution: "@medusajs/store@workspace:packages/modules/store"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7418,24 +7418,24 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/tax@2.10.1, @medusajs/tax@workspace:^, @medusajs/tax@workspace:packages/modules/tax":
+"@medusajs/tax@2.10.2, @medusajs/tax@workspace:^, @medusajs/tax@workspace:packages/modules/tax":
   version: 0.0.0-use.local
   resolution: "@medusajs/tax@workspace:packages/modules/tax"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7443,15 +7443,15 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/telemetry@2.10.1, @medusajs/telemetry@workspace:packages/medusa-telemetry":
+"@medusajs/telemetry@2.10.2, @medusajs/telemetry@workspace:packages/medusa-telemetry":
   version: 0.0.0-use.local
   resolution: "@medusajs/telemetry@workspace:packages/medusa-telemetry"
   dependencies:
@@ -7473,30 +7473,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/test-utils@2.10.1, @medusajs/test-utils@workspace:*, @medusajs/test-utils@workspace:packages/medusa-test-utils":
+"@medusajs/test-utils@2.10.2, @medusajs/test-utils@workspace:*, @medusajs/test-utils@workspace:packages/medusa-test-utils":
   version: 0.0.0-use.local
   resolution: "@medusajs/test-utils@workspace:packages/medusa-test-utils"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@types/express": ^4.17.17
     awilix: ^8.0.1
     axios: ^0.21.4
     express: ^4.21.0
     get-port: ^5.1.0
     jest: ^29.7.0
-    pg: ^8.16.3
+    pg: ^8.13.0
     pg-god: ^1.0.12
     randomatic: ^3.1.1
     rimraf: ^3.0.2
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/medusa": 2.10.1
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/medusa": 2.10.2
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   peerDependenciesMeta:
     "@medusajs/medusa":
@@ -7504,7 +7504,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/toolbox@2.10.1, @medusajs/toolbox@workspace:packages/design-system/toolbox":
+"@medusajs/toolbox@2.10.2, @medusajs/toolbox@workspace:packages/design-system/toolbox":
   version: 0.0.0-use.local
   resolution: "@medusajs/toolbox@workspace:packages/design-system/toolbox"
   dependencies:
@@ -7530,7 +7530,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/types@2.10.1, @medusajs/types@workspace:^, @medusajs/types@workspace:packages/core/types":
+"@medusajs/types@2.10.2, @medusajs/types@workspace:^, @medusajs/types@workspace:packages/core/types":
   version: 0.0.0-use.local
   resolution: "@medusajs/types@workspace:packages/core/types"
   dependencies:
@@ -7554,11 +7554,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/ui-preset@2.10.1, @medusajs/ui-preset@workspace:packages/design-system/ui-preset":
+"@medusajs/ui-preset@2.10.2, @medusajs/ui-preset@workspace:packages/design-system/ui-preset":
   version: 0.0.0-use.local
   resolution: "@medusajs/ui-preset@workspace:packages/design-system/ui-preset"
   dependencies:
-    "@medusajs/toolbox": 2.10.1
+    "@medusajs/toolbox": 2.10.2
     "@tailwindcss/forms": ^0.5.3
     tailwindcss: ^3.4.1
     tailwindcss-animate: ^1.0.6
@@ -7569,7 +7569,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/ui@4.0.21, @medusajs/ui@workspace:packages/design-system/ui":
+"@medusajs/ui@4.0.22, @medusajs/ui@workspace:packages/design-system/ui":
   version: 0.0.0-use.local
   resolution: "@medusajs/ui@workspace:packages/design-system/ui"
   dependencies:
@@ -7577,8 +7577,8 @@ __metadata:
     "@dnd-kit/sortable": ^7.0.0
     "@dnd-kit/utilities": ^3.2.0
     "@faker-js/faker": ^9.2.0
-    "@medusajs/icons": 2.10.1
-    "@medusajs/ui-preset": 2.10.1
+    "@medusajs/icons": 2.10.2
+    "@medusajs/ui-preset": 2.10.2
     "@radix-ui/react-dialog": 1.1.4
     "@radix-ui/react-dismissable-layer": 1.1.4
     "@storybook/addon-essentials": ^8.3.5
@@ -7634,16 +7634,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/user@2.10.1, @medusajs/user@workspace:^, @medusajs/user@workspace:packages/modules/user":
+"@medusajs/user@2.10.2, @medusajs/user@workspace:^, @medusajs/user@workspace:packages/modules/user":
   version: 0.0.0-use.local
   resolution: "@medusajs/user@workspace:packages/modules/user"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
@@ -7652,15 +7652,15 @@ __metadata:
     tsc-alias: ^1.8.6
     typescript: ^5.6.2
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/utils@2.10.1, @medusajs/utils@workspace:^, @medusajs/utils@workspace:packages/core/utils":
+"@medusajs/utils@2.10.2, @medusajs/utils@workspace:^, @medusajs/utils@workspace:packages/core/utils":
   version: 0.0.0-use.local
   resolution: "@medusajs/utils@workspace:packages/core/utils"
   dependencies:
@@ -7668,11 +7668,11 @@ __metadata:
     "@graphql-codegen/typescript": ^4.0.9
     "@graphql-tools/merge": ^9.0.7
     "@graphql-tools/schema": ^10.0.6
-    "@medusajs/types": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/types": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     "@types/express": ^4.17.21
@@ -7686,7 +7686,7 @@ __metadata:
     graphql: ^16.9.0
     jest: ^29.7.0
     jsonwebtoken: ^9.0.2
-    pg: ^8.16.3
+    pg: ^8.13.0
     pg-connection-string: ^2.7.0
     pg-god: ^1.0.12
     pluralize: ^8.0.0
@@ -7695,26 +7695,26 @@ __metadata:
     ulid: ^2.3.0
     zod: 3.25.76
   peerDependencies:
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
     express: ^4.21.0
-    pg: ^8.16.3
+    pg: ^8.13.0
   languageName: unknown
   linkType: soft
 
-"@medusajs/workflow-engine-inmemory@2.10.1, @medusajs/workflow-engine-inmemory@workspace:*, @medusajs/workflow-engine-inmemory@workspace:packages/modules/workflow-engine-inmemory":
+"@medusajs/workflow-engine-inmemory@2.10.2, @medusajs/workflow-engine-inmemory@workspace:*, @medusajs/workflow-engine-inmemory@workspace:packages/modules/workflow-engine-inmemory":
   version: 0.0.0-use.local
   resolution: "@medusajs/workflow-engine-inmemory@workspace:packages/modules/workflow-engine-inmemory"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     cron-parser: ^4.9.0
@@ -7724,24 +7724,24 @@ __metadata:
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/workflow-engine-redis@2.10.1, @medusajs/workflow-engine-redis@workspace:packages/modules/workflow-engine-redis":
+"@medusajs/workflow-engine-redis@2.10.2, @medusajs/workflow-engine-redis@workspace:packages/modules/workflow-engine-redis":
   version: 0.0.0-use.local
   resolution: "@medusajs/workflow-engine-redis@workspace:packages/modules/workflow-engine-redis"
   dependencies:
-    "@medusajs/framework": 2.10.1
-    "@medusajs/test-utils": 2.10.1
-    "@mikro-orm/cli": 6.5.2
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@medusajs/test-utils": 2.10.2
+    "@mikro-orm/cli": 6.4.3
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     bullmq: 5.13.0
@@ -7752,84 +7752,84 @@ __metadata:
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
-    "@medusajs/framework": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/framework": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
   languageName: unknown
   linkType: soft
 
-"@medusajs/workflows-sdk@2.10.1, @medusajs/workflows-sdk@workspace:packages/core/workflows-sdk":
+"@medusajs/workflows-sdk@2.10.2, @medusajs/workflows-sdk@workspace:packages/core/workflows-sdk":
   version: 0.0.0-use.local
   resolution: "@medusajs/workflows-sdk@workspace:packages/core/workflows-sdk"
   dependencies:
-    "@medusajs/modules-sdk": 2.10.1
-    "@medusajs/orchestration": 2.10.1
-    "@medusajs/types": 2.10.1
-    "@medusajs/utils": 2.10.1
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@medusajs/modules-sdk": 2.10.2
+    "@medusajs/orchestration": 2.10.2
+    "@medusajs/types": 2.10.2
+    "@medusajs/utils": 2.10.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
     awilix: ^8.0.1
     expect-type: ^0.20.0
     jest: ^29.7.0
-    pg: ^8.16.3
+    pg: ^8.13.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
     ulid: ^2.3.0
     zod: 3.25.76
   peerDependencies:
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    "@mikro-orm/migrations": 6.5.2
-    "@mikro-orm/postgresql": 6.5.2
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    "@mikro-orm/migrations": 6.4.3
+    "@mikro-orm/postgresql": 6.4.3
     awilix: ^8.0.1
     express: ^4.21.0
-    pg: ^8.16.3
+    pg: ^8.13.0
   languageName: unknown
   linkType: soft
 
-"@mikro-orm/cli@npm:6.5.2":
-  version: 6.5.2
-  resolution: "@mikro-orm/cli@npm:6.5.2"
+"@mikro-orm/cli@npm:6.4.3":
+  version: 6.4.3
+  resolution: "@mikro-orm/cli@npm:6.4.3"
   dependencies:
     "@jercle/yargonaut": 1.1.5
-    "@mikro-orm/core": 6.5.2
-    "@mikro-orm/knex": 6.5.2
-    fs-extra: 11.3.1
+    "@mikro-orm/core": 6.4.3
+    "@mikro-orm/knex": 6.4.3
+    fs-extra: 11.2.0
     tsconfig-paths: 4.2.0
     yargs: 17.7.2
   bin:
     mikro-orm: ./cli
     mikro-orm-esm: ./esm
-  checksum: deb736bbc2b5b6bc42aa91289f76e367205efa39a1cfa54d2fcabe0eff78828a79e9a89a8864158a122f816eadace87f7911f3b2bc8c3a452854c2962a9c0b02
+  checksum: de49d269d942fad5b3bde9cc4d21d0252a38543e00e70335024c98c1dfbc12fb30ff6271215b998d5a3c56f0c5cc5bab30c0109cda76b47f8b64d81f312c8698
   languageName: node
   linkType: hard
 
-"@mikro-orm/core@npm:6.5.2":
-  version: 6.5.2
-  resolution: "@mikro-orm/core@npm:6.5.2"
+"@mikro-orm/core@npm:6.4.3":
+  version: 6.4.3
+  resolution: "@mikro-orm/core@npm:6.4.3"
   dependencies:
     dataloader: 2.2.3
-    dotenv: 17.2.1
+    dotenv: 16.4.7
     esprima: 4.0.1
-    fs-extra: 11.3.1
+    fs-extra: 11.2.0
     globby: 11.1.0
-    mikro-orm: 6.5.2
+    mikro-orm: 6.4.3
     reflect-metadata: 0.2.2
-  checksum: 410355df9b975b7a0faa7b41cb9617c7e8fcd2ad54887b9bc015f636fdfafa6787b6397786f9376b9aee0cc7af0babc79ec2d24ca6f9c2beb795e51059db36c1
+  checksum: d056eb9323a10f940e101a8a95454dcb2c4fa3429517e1a14a1b706869f53e92c2d2d2c9dfe330c02afbef101612787b1184db255ac5d74df5b0df0059928dd2
   languageName: node
   linkType: hard
 
-"@mikro-orm/knex@npm:6.5.2":
-  version: 6.5.2
-  resolution: "@mikro-orm/knex@npm:6.5.2"
+"@mikro-orm/knex@npm:6.4.3":
+  version: 6.4.3
+  resolution: "@mikro-orm/knex@npm:6.4.3"
   dependencies:
-    fs-extra: 11.3.1
+    fs-extra: 11.2.0
     knex: 3.1.0
     sqlstring: 2.3.3
   peerDependencies:
@@ -7844,35 +7844,35 @@ __metadata:
       optional: true
     mariadb:
       optional: true
-  checksum: 3cc17f91d44e47908fae5d31c9433baba4eb5c6f37c78364f20cab018805dcf5d8ddcc94f5612bfd219502f076ce832b903104e4a14252bb567aee873274c2c0
+  checksum: 08dabcf1ea99d6a976892b4973e5de3f4b53e7ed0d3a1e3dcec20dd9349ba5a3ed153bbb96173990cd12367b3744df17f27bb3de751624207592e5d2f6e8637d
   languageName: node
   linkType: hard
 
-"@mikro-orm/migrations@npm:6.5.2":
-  version: 6.5.2
-  resolution: "@mikro-orm/migrations@npm:6.5.2"
+"@mikro-orm/migrations@npm:6.4.3":
+  version: 6.4.3
+  resolution: "@mikro-orm/migrations@npm:6.4.3"
   dependencies:
-    "@mikro-orm/knex": 6.5.2
-    fs-extra: 11.3.1
+    "@mikro-orm/knex": 6.4.3
+    fs-extra: 11.2.0
     umzug: 3.8.2
   peerDependencies:
     "@mikro-orm/core": ^6.0.0
-  checksum: b0258d52d343aa939791885b65cd0b2fcac691e1437ad8e41154aebac860c04c806d9c262e2c51a225428f42d1f3d2e06eb2a9f689e6332ac180c7d2a13747f1
+  checksum: 04e7e2405a3d0d94213f2bf40c34988e190f8f0df5ff4565ef23c750680b198f293247418ee60c0605edfcbca119177f2e87dc01d3e6abfc15ec7c4dc976324a
   languageName: node
   linkType: hard
 
-"@mikro-orm/postgresql@npm:6.5.2":
-  version: 6.5.2
-  resolution: "@mikro-orm/postgresql@npm:6.5.2"
+"@mikro-orm/postgresql@npm:6.4.3":
+  version: 6.4.3
+  resolution: "@mikro-orm/postgresql@npm:6.4.3"
   dependencies:
-    "@mikro-orm/knex": 6.5.2
-    pg: 8.16.3
-    postgres-array: 3.0.4
+    "@mikro-orm/knex": 6.4.3
+    pg: 8.13.1
+    postgres-array: 3.0.2
     postgres-date: 2.1.0
     postgres-interval: 4.0.2
   peerDependencies:
     "@mikro-orm/core": ^6.0.0
-  checksum: a3e10a3e1de4503270df95b71302f9fb2918eee6b2a665f54f1173b5e13320451dd2ef9a935ff023d178981e72a3550ec562ed4ce70043cf7bb4e618e3b5b2fb
+  checksum: c0068dbd8f81d646de1171e9933e1385cd24faedb8a4347b9ab2c24e9bfa19a56cc5a6245aaf84fc8a19b355d02a7f1c160400483aa12411e3487e82b854e12c
   languageName: node
   linkType: hard
 
@@ -18128,6 +18128,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"buffer-writer@npm:2.0.0":
+  version: 2.0.0
+  resolution: "buffer-writer@npm:2.0.0"
+  checksum: c91b2ab09a200cf0862237e5a4dbd5077003b42d26d4f0c596ec7149f82ef83e0751d670bcdf379ed988d1a08c0fac7759a8cb928cf1a4710a1988a7618b1190
+  languageName: node
+  linkType: hard
+
 "buffer@npm:^5.5.0, buffer@npm:^5.6.0":
   version: 5.7.1
   resolution: "buffer@npm:5.7.1"
@@ -19468,7 +19475,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-medusa-app@workspace:packages/cli/create-medusa-app"
   dependencies:
-    "@medusajs/telemetry": 2.10.1
+    "@medusajs/telemetry": 2.10.2
     "@types/chalk": ^2.2.0
     "@types/commander": ^2.12.2
     "@types/configstore": ^6.0.0
@@ -19495,7 +19502,7 @@ __metadata:
     node-fetch: ^3.3.1
     open: ^9.1.0
     ora: ^6.3.0
-    pg: ^8.16.3
+    pg: ^8.11.3
     prettier: ^2.8.8
     slugify: ^1.6.6
     ts-node: ^10.9.1
@@ -20628,10 +20635,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:17.2.1":
-  version: 17.2.1
-  resolution: "dotenv@npm:17.2.1"
-  checksum: 918dd2f9d8b8f86b0afabad9534793d51de3718c437f9e7b6525628cf68c1d4ae768cc37a5afff38c066f58a8ecf549f4ac6cd5617485bd328e826112cc2650a
+"dotenv@npm:16.4.7":
+  version: 16.4.7
+  resolution: "dotenv@npm:16.4.7"
+  checksum: be9f597e36a8daf834452daa1f4cc30e5375a5968f98f46d89b16b983c567398a330580c88395069a77473943c06b877d1ca25b4afafcdd6d4adb549e8293462
   languageName: node
   linkType: hard
 
@@ -23009,14 +23016,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.1":
-  version: 11.3.1
-  resolution: "fs-extra@npm:11.3.1"
+"fs-extra@npm:11.2.0, fs-extra@npm:^11.1.0, fs-extra@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "fs-extra@npm:11.2.0"
   dependencies:
     graceful-fs: ^4.2.0
     jsonfile: ^6.0.1
     universalify: ^2.0.0
-  checksum: 61e5b7285b1ca72c68dfe1058b2514294a922683afac2a80aa90540f9bd85370763d675e3b408ef500077d355956fece3bd24b546790e261c3d3015967e2b2d9
+  checksum: d77a9a9efe60532d2e790e938c81a02c1b24904ef7a3efb3990b835514465ba720e99a6ea56fd5e2db53b4695319b644d76d5a0e9988a2beef80aa7b1da63398
   languageName: node
   linkType: hard
 
@@ -23039,17 +23046,6 @@ __metadata:
     jsonfile: ^6.0.1
     universalify: ^2.0.0
   checksum: 5f579466e7109719d162a9249abbeffe7f426eb133ea486e020b89bc6d67a741134076bf439983f2eb79276ceaf6bd7b7c1e43c3fd67fe889863e69072fb0a5e
-  languageName: node
-  linkType: hard
-
-"fs-extra@npm:^11.1.0, fs-extra@npm:^11.2.0":
-  version: 11.2.0
-  resolution: "fs-extra@npm:11.2.0"
-  dependencies:
-    graceful-fs: ^4.2.0
-    jsonfile: ^6.0.1
-    universalify: ^2.0.0
-  checksum: d77a9a9efe60532d2e790e938c81a02c1b24904ef7a3efb3990b835514465ba720e99a6ea56fd5e2db53b4695319b644d76d5a0e9988a2beef80aa7b1da63398
   languageName: node
   linkType: hard
 
@@ -27219,10 +27215,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mikro-orm@npm:6.5.2":
-  version: 6.5.2
-  resolution: "mikro-orm@npm:6.5.2"
-  checksum: 21cfa2c40ffdb03792ec119e442e1d902b91d8295af7dbe7dd7a0e0e9e217f533772b6f519a1e4c8446b300a0cbc7fd9c01b4041c1e5d47548dd54ca3d9dd276
+"mikro-orm@npm:6.4.3":
+  version: 6.4.3
+  resolution: "mikro-orm@npm:6.4.3"
+  checksum: 6d489b7ba8ee9e97545bf035c0d1571e5e00baba4653c24713f4f4703311461f10d467d42f230674049282add6340fc9f33f3e3034827f86d89b5d62b3cc0180
   languageName: node
   linkType: hard
 
@@ -28776,6 +28772,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"packet-reader@npm:1.0.0":
+  version: 1.0.0
+  resolution: "packet-reader@npm:1.0.0"
+  checksum: c86c3321bb07e0f03cc2db59f7701184e0bbfcb914f1fdc963993b03262486deb402292adcef39b64e3530ea66b3b2e2163d6da7b3792a730bdd1c6df3175aaa
+  languageName: node
+  linkType: hard
+
 "param-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "param-case@npm:3.0.4"
@@ -29050,10 +29053,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-cloudflare@npm:^1.2.7":
-  version: 1.2.7
-  resolution: "pg-cloudflare@npm:1.2.7"
-  checksum: 8a52713dbdecc9d389dc4e65e3b7ede2e199ec3715f7491ee80a15db171f2d75677a102e9c2cef0cb91a2f310e91f976eaec0dd6ef5d8bf357de0b948f9d9431
+"pg-cloudflare@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "pg-cloudflare@npm:1.1.1"
+  checksum: a68b957f755be6af813d68ccaf4c906a000fd2ecb362cd281220052cc9e2f6c26da3b88792742387008c30b3bf0d2fa3a0eff04aeb8af4414023c99ae78e07bd
   languageName: node
   linkType: hard
 
@@ -29064,17 +29067,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-connection-string@npm:^2.6.2":
+  version: 2.6.4
+  resolution: "pg-connection-string@npm:2.6.4"
+  checksum: 0d0b617df0fc6507bf6a94bdcd56c7a305788a1402d69bff9773350947c8f525d6d8136128065370749a3325e99658ae40fbdcce620fb8e60126181f0591a6a6
+  languageName: node
+  linkType: hard
+
 "pg-connection-string@npm:^2.7.0":
   version: 2.7.0
   resolution: "pg-connection-string@npm:2.7.0"
   checksum: 50a1496a1c858f9495d78a2c7a66d93ef3602e718aff2953bb5738f3ea616d7f727f32fc20513c9bed127650cd14c1ddc7b458396f4000e689d4b64c65c5c51e
-  languageName: node
-  linkType: hard
-
-"pg-connection-string@npm:^2.9.1":
-  version: 2.9.1
-  resolution: "pg-connection-string@npm:2.9.1"
-  checksum: 9a646529bbc0843806fc5de98ce93735a4612b571f11867178a85665d11989a827e6fd157388ca0e34ec948098564fce836c178cfd499b9f0e8cd9972b8e2e5c
   languageName: node
   linkType: hard
 
@@ -29108,30 +29111,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-pool@npm:^3.10.1":
-  version: 3.10.1
-  resolution: "pg-pool@npm:3.10.1"
+"pg-pool@npm:^3.6.1":
+  version: 3.6.2
+  resolution: "pg-pool@npm:3.6.2"
   peerDependencies:
     pg: ">=8.0"
-  checksum: a00916b7df64226cc597fe769e3a757ff9b11562dc87ce5b0a54101a18c1fe282daaa2accaf27221e81e1e4cdf4da6a33dab09614734d32904d6c4e11c44a079
+  checksum: 14c524549490954b5e48457a4b808df8f619f6deeb3b395b0cd184a8f4ed65a9273fe0697ba0341a41d6745af197f1437eb1cf51fff0cbbf5b0fb3852ebe5392
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:*":
+"pg-protocol@npm:*, pg-protocol@npm:^1.6.0":
   version: 1.6.1
   resolution: "pg-protocol@npm:1.6.1"
   checksum: 7eadef4010ac0a3925c460be7332ca4098a5c6d5181725a62193fcfa800000ae6632d98d814f3989b42cf5fdc3b45e34c714a1959d29174e81e30730e140ae5f
   languageName: node
   linkType: hard
 
-"pg-protocol@npm:^1.10.3":
-  version: 1.10.3
-  resolution: "pg-protocol@npm:1.10.3"
-  checksum: f7ef54708c93ee6d271e37678296fc5097e4337fca91a88a3d99359b78633dbdbf6e983f0adb34b7cdd261b7ec7266deb20c3233bf3dfdb498b3e1098e8750b9
-  languageName: node
-  linkType: hard
-
-"pg-types@npm:2.2.0, pg-types@npm:^2.2.0":
+"pg-types@npm:^2.1.0, pg-types@npm:^2.2.0":
   version: 2.2.0
   resolution: "pg-types@npm:2.2.0"
   dependencies:
@@ -29159,16 +29155,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:8.16.3":
-  version: 8.16.3
-  resolution: "pg@npm:8.16.3"
+"pg@npm:8.11.3":
+  version: 8.11.3
+  resolution: "pg@npm:8.11.3"
   dependencies:
-    pg-cloudflare: ^1.2.7
-    pg-connection-string: ^2.9.1
-    pg-pool: ^3.10.1
-    pg-protocol: ^1.10.3
-    pg-types: 2.2.0
-    pgpass: 1.0.5
+    buffer-writer: 2.0.0
+    packet-reader: 1.0.0
+    pg-cloudflare: ^1.1.1
+    pg-connection-string: ^2.6.2
+    pg-pool: ^3.6.1
+    pg-protocol: ^1.6.0
+    pg-types: ^2.1.0
+    pgpass: 1.x
   peerDependencies:
     pg-native: ">=3.0.1"
   dependenciesMeta:
@@ -29177,11 +29175,11 @@ __metadata:
   peerDependenciesMeta:
     pg-native:
       optional: true
-  checksum: a6a407ff0efb7599760d72ffdcda47a74c34c0fd71d896623caac45cf2cfb0f49a10973cce23110f182b9810639a1e9f6904454d7358c7001574ee0ffdcbce2a
+  checksum: 07e6967fc8bd5d72bab9be6620626e8e3ab59128ebf56bf0de83d67f10801a19221d88b3317e90b93339ba48d0498b39967b782ae39686aabda6bc647bceb438
   languageName: node
   linkType: hard
 
-"pgpass@npm:1.0.5":
+"pgpass@npm:1.x":
   version: 1.0.5
   resolution: "pgpass@npm:1.0.5"
   dependencies:
@@ -29869,10 +29867,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postgres-array@npm:3.0.4":
-  version: 3.0.4
-  resolution: "postgres-array@npm:3.0.4"
-  checksum: 47f3e648da512bacdd6a5ed55cf770605ec271330789faeece0fd13805a49f376d6e5c9e0e353377be11a9545e727dceaa2473566c505432bf06366ccd04c6b2
+"postgres-array@npm:3.0.2, postgres-array@npm:~3.0.1":
+  version: 3.0.2
+  resolution: "postgres-array@npm:3.0.2"
+  checksum: 644aa071f67a66a59f641f8e623887d2b915bc102a32643e2aa8b54c11acd343c5ad97831ea444dd37bd4b921ba35add4aa2cb0c6b76700a8252c2324aeba5b4
   languageName: node
   linkType: hard
 
@@ -29880,13 +29878,6 @@ __metadata:
   version: 2.0.0
   resolution: "postgres-array@npm:2.0.0"
   checksum: cbd56207e4141d7fbf08c86f2aebf21fa7064943d3f808ec85f442ff94b48d891e7a144cc02665fb2de5dbcb9b8e3183a2ac749959e794b4a4cfd379d7a21d08
-  languageName: node
-  linkType: hard
-
-"postgres-array@npm:~3.0.1":
-  version: 3.0.2
-  resolution: "postgres-array@npm:3.0.2"
-  checksum: 644aa071f67a66a59f641f8e623887d2b915bc102a32643e2aa8b54c11acd343c5ad97831ea444dd37bd4b921ba35add4aa2cb0c6b76700a8252c2324aeba5b4
   languageName: node
   linkType: hard
 

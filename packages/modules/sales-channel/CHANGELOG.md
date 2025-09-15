@@ -1,5 +1,14 @@
 # @medusajs/sales-channel
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13465](https://github.com/medusajs/medusa/pull/13465) [`8e849074e44fe3b967dbfb3bbbef527f4aed3eed`](https://github.com/medusajs/medusa/commit/8e849074e44fe3b967dbfb3bbbef527f4aed3eed) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): missing events
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
 ## 2.10.1
 
 ### Patch Changes

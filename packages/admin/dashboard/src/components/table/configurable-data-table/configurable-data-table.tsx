@@ -115,14 +115,14 @@ function ConfigurableDataTableWithAdapter<TData>({
       }
     }
   })
-  
+
   const searchParams = {
     ...parsedQueryParams,
     fields: requiredFields,
     limit: pageSize,
     offset: parsedQueryParams.offset ? Number(parsedQueryParams.offset) : 0,
   }
-  
+
   // Fetch data using adapter
   const fetchResult = adapter.useData(requiredFields, searchParams)
 

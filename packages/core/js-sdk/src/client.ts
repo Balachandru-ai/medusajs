@@ -250,7 +250,10 @@ export class Client {
           const params = Object.fromEntries(
             normalizedInput.searchParams.entries()
           )
-          const stringifiedQuery = stringify({ ...params, ...init.query }, { arrayFormat: 'brackets' })
+          const stringifiedQuery = stringify(
+            { ...params, ...init.query },
+            { arrayFormat: "brackets" }
+          )
           normalizedInput.search = stringifiedQuery
         }
       }

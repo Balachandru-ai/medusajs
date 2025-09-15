@@ -11798,6 +11798,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Ticket Booking",
+              "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Integrate Payload",
               "path": "https://docs.medusajs.com/resources/integrations/guides/payload",
               "children": []
@@ -13024,6 +13032,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/product/retrieveProductOption",
                       "title": "retrieveProductOption",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/product/retrieveProductOptionValue",
+                      "title": "retrieveProductOptionValue",
                       "description": "",
                       "children": []
                     },

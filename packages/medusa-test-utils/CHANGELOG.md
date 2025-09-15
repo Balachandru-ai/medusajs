@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.10.2
+
+### Patch Changes
+
+- [#12782](https://github.com/medusajs/medusa/pull/12782) [`a0693727a04855f07c710207aaeac07699fc8ee9`](https://github.com/medusajs/medusa/commit/a0693727a04855f07c710207aaeac07699fc8ee9) Thanks [@0xFl4g](https://github.com/0xFl4g)! - fix(test-utils): add DB_PORT environment variable support for PostgreSQL connections
+
+- [#13312](https://github.com/medusajs/medusa/pull/13312) [`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(framework): load custom flags before medusa config
+
+- Updated dependencies [[`0000ed69982b95f4bff80fd6182347291d25f7b8`](https://github.com/medusajs/medusa/commit/0000ed69982b95f4bff80fd6182347291d25f7b8), [`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`d622c61ce2008f3efdfbbaa4154c4329d7978d2b`](https://github.com/medusajs/medusa/commit/d622c61ce2008f3efdfbbaa4154c4329d7978d2b), [`637d4cf7ef792622830d49446283d3c578c4f09c`](https://github.com/medusajs/medusa/commit/637d4cf7ef792622830d49446283d3c578c4f09c), [`4fded2602bfbb63c8d648d2af717c2eb3bbb6f49`](https://github.com/medusajs/medusa/commit/4fded2602bfbb63c8d648d2af717c2eb3bbb6f49), [`8e119988950479345c90e88b541198eba53496a3`](https://github.com/medusajs/medusa/commit/8e119988950479345c90e88b541198eba53496a3), [`29dca1ca481e34cc17678b7b4f0e854d3a404acd`](https://github.com/medusajs/medusa/commit/29dca1ca481e34cc17678b7b4f0e854d3a404acd), [`e0943f3c9012a4a7b63c455bc23ade6ada26b33e`](https://github.com/medusajs/medusa/commit/e0943f3c9012a4a7b63c455bc23ade6ada26b33e), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/medusa@2.10.2
+  - @medusajs/framework@2.10.2
+
 ## 2.10.1
 
 ### Patch Changes

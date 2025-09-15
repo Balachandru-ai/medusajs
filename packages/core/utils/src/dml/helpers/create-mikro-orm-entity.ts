@@ -6,7 +6,7 @@ import type {
   Infer,
   PropertyType,
 } from "@medusajs/types"
-import { Entity, Filter, MetadataStorage } from "@mikro-orm/core"
+import { Entity, Filter } from "@mikro-orm/core"
 
 import {
   mikroOrmFreeTextSearchFilterOptionsFactory,
@@ -116,16 +116,12 @@ function createMikrORMEntity() {
     Filter(mikroOrmFreeTextSearchFilterOptionsFactory(modelName))(
       MikroORMEntity
     )
-
-    Entity({ tableName })(
+    const RegisteredEntity = Entity({ tableName })(
       Filter(mikroOrmSoftDeletableFilterOptions)(MikroORMEntity)
-    ) as any
+    ) as Infer<T>
 
-    const entityMetadata =
-      MetadataStorage.getMetadataFromDecorator(MikroORMEntity)
-
-    ENTITIES[modelName] = entityMetadata.class as Constructor<any>
-    return entityMetadata.class as Infer<T>
+    ENTITIES[modelName] = RegisteredEntity
+    return RegisteredEntity
   }
 
   /**

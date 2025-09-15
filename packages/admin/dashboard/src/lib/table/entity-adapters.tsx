@@ -30,29 +30,29 @@ export const productColumnAdapter: ColumnAdapter<HttpTypes.AdminProduct> = {
     if (column.computed?.type === "sales_channels_list") return "left"
     return "left"
   },
-  
+
   transformCellValue: (value, row, column) => {
     // Custom transformation for product-specific fields
     if (column.field === "variants_count" || column.computed?.type === "count") {
       const count = Array.isArray(row.variants) ? row.variants.length : 0
       return `${count} ${count === 1 ? 'variant' : 'variants'}`
     }
-    
+
     if (column.field === "product_display" || column.computed?.type === "product_info") {
       // This will be handled by the product cell component
       return null
     }
-    
+
     if (column.field === "sales_channels_display" || column.computed?.type === "sales_channels_list") {
       // This will be handled by the sales channels cell component
       return null
     }
-    
+
     if (column.field === "status") {
       // Status will be handled by the status cell component
       return null
     }
-    
+
     // Default to standard display
     return null
   }
@@ -66,7 +66,7 @@ export const customerColumnAdapter: ColumnAdapter<HttpTypes.AdminCustomer> = {
     if (column.semantic_type === "status") return "center"
     return "left"
   },
-  
+
   transformCellValue: (value, row, column) => {
     // Format customer name
     if (column.field === "name") {
@@ -76,7 +76,7 @@ export const customerColumnAdapter: ColumnAdapter<HttpTypes.AdminCustomer> = {
       }
       return "-"
     }
-    
+
     return null
   }
 }
