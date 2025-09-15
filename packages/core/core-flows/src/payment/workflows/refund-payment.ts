@@ -153,24 +153,28 @@ export const refundPaymentWorkflow = createWorkflow(
     }).config({ name: "order" })
 
     validateRefundStep({ order, payment, amount: input.amount })
-    refundPaymentStep(input)
+    const refundPayment = refundPaymentStep(input)
 
     when({ orderPaymentCollection }, ({ orderPaymentCollection }) => {
       return !!orderPaymentCollection?.order?.id
     }).then(() => {
       const orderTransactionData = transform(
-        { input, payment, orderPaymentCollection },
-        ({ input, payment, orderPaymentCollection }) => {
-          return {
-            order_id: orderPaymentCollection.order.id,
-            amount: MathBN.mult(
-              input.amount ?? payment.raw_amount ?? payment.amount,
-              -1
-            ),
-            currency_code: payment.currency_code ?? order.currency_code,
-            reference_id: payment.id,
-            reference: "refund",
-          }
+        { input, refundPayment, orderPaymentCollection, order },
+        ({ input, refundPayment, orderPaymentCollection, order }) => {
+          return refundPayment.refunds?.map((refund) => {
+            return {
+              order_id: orderPaymentCollection.order.id,
+              amount: MathBN.mult(
+                input.amount ??
+                  refundPayment.raw_amount ??
+                  refundPayment.amount,
+                -1
+              ),
+              currency_code: refundPayment.currency_code ?? order.currency_code,
+              reference_id: refund.id,
+              reference: "refund",
+            }
+          })
         }
       )
 

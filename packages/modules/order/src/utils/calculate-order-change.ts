@@ -246,18 +246,6 @@ export class OrderChangeProcessing {
       orderSummary.transaction_total
     )
 
-    // return total becomes pending difference
-    for (const item of order.items ?? []) {
-      const item_ = item as any
-
-      const returnTotal = item_["return_requested_total"]
-      if (MathBN.gt(returnTotal, 0)) {
-        orderSummary.pending_difference = MathBN.sub(
-          orderSummary.pending_difference,
-          returnTotal
-        )
-      }
-    }
     orderSummary.pending_difference = new BigNumber(
       orderSummary.pending_difference
     )
