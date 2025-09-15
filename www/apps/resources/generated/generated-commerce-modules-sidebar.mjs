@@ -11806,6 +11806,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Ticket Booking",
+              "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Integrate Payload",
               "path": "https://docs.medusajs.com/resources/integrations/guides/payload",
               "children": []

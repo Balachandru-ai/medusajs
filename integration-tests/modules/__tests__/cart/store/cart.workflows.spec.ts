@@ -29,15 +29,8 @@ import {
   IRegionModuleService,
   ISalesChannelModuleService,
   IStockLocationService,
-  PricingContext,
 } from "@medusajs/types"
-import {
-  ContainerRegistrationKeys,
-  Modules,
-  PriceListStatus,
-  PriceListType,
-  RuleOperator,
-} from "@medusajs/utils"
+import { ContainerRegistrationKeys, Modules, PriceListStatus, PriceListType, RuleOperator, } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,

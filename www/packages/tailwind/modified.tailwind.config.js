@@ -1,5 +1,5 @@
 // This config file includes the base configurations with the modified configs for UI docs
-import coreConfig from "./base.tailwind.config"
+const coreConfig = require("./base.tailwind.config")
 
 // modify core spacing to have "docs" prefix
 const modifiedSpacing = {}

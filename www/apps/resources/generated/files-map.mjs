@@ -1116,6 +1116,18 @@ export const filesMap = [
     "pathname": "/recipes/subscriptions"
   },
   {
+    "filePath": "/www/apps/resources/app/recipes/ticket-booking/example/page.mdx",
+    "pathname": "/recipes/ticket-booking/example"
+  },
+  {
+    "filePath": "/www/apps/resources/app/recipes/ticket-booking/example/storefront/page.mdx",
+    "pathname": "/recipes/ticket-booking/example/storefront"
+  },
+  {
+    "filePath": "/www/apps/resources/app/recipes/ticket-booking/page.mdx",
+    "pathname": "/recipes/ticket-booking"
+  },
+  {
     "filePath": "/www/apps/resources/app/references-overview/page.mdx",
     "pathname": "/references-overview"
   },
