@@ -57,6 +57,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to create an address
  *       sdk.store.customer.createAddress({
  *         country_code: "us"
  *       })

@@ -129,6 +129,10 @@ class OasKindGenerator extends FunctionKindGenerator {
       startsWith: "store/store-credit-accounts",
       requiresAuthentication: true,
     },
+    {
+      exact: "store/carts/[id]/customer",
+      requiresAuthentication: true,
+    },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
   readonly FIELD_QUERY_PARAMS = ["fields", "expand"]

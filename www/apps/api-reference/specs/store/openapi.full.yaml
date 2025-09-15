@@ -1265,13 +1265,13 @@ paths:
   /store/carts/{id}/customer:
     post:
       operationId: PostCartsIdCustomer
-      summary: Set Cart's Customer
-      x-sidebar-summary: Set Customer
-      description: Set the customer of the cart. This is useful when you create the cart for a guest customer, then they log in with their account.
+      summary: Change Cart's Customer to Logged-in Customer
+      x-sidebar-summary: Change Customer
+      description: Change the cart's customer to the currently logged-in customer. This is useful when you create the cart for a guest customer, then they log in with their account.
       externalDocs:
         url: https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
         description: 'Storefront guide: How to set the cart''s customer.'
-      x-authenticated: false
+      x-authenticated: true
       parameters:
         - name: id
           in: path
@@ -1318,6 +1318,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to set the cart's customer
             sdk.store.cart.transferCart("cart_123")
             .then(({ cart }) => {
               console.log(cart)
@@ -1326,6 +1327,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/store/carts/{id}/customer' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Carts
@@ -1361,6 +1363,9 @@ paths:
           description: Emitted when the customer in the cart is transferred.
           deprecated: false
           since: 2.8.0
+      security:
+        - cookie_auth: []
+        - jwt_token: []
   /store/carts/{id}/gift-cards:
     post:
       operationId: PostCartsIdGiftCards
@@ -3349,6 +3354,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to retrieve their details
             sdk.store.customer.retrieve()
             .then(({ customer }) => {
               console.log(customer)
@@ -3433,6 +3439,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to update their details
             sdk.store.customer.update({
               first_name: "John"
             })
@@ -3623,6 +3630,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to list their addresses
             sdk.store.customer.listAddress()
             .then(({ addresses, count, offset, limit }) => {
               console.log(addresses)
@@ -3708,6 +3716,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to create an address
             sdk.store.customer.createAddress({
               country_code: "us"
             })
@@ -3811,6 +3820,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to retrieve their address
             sdk.store.customer.retrieveAddress(
               "caddr_123"
             )
@@ -3904,6 +3914,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to update their address
             sdk.store.customer.updateAddress(
               "caddr_123",
               {
@@ -4001,6 +4012,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to delete their address
             sdk.store.customer.deleteAddress("caddr_123")
             .then(({ deleted, parent: customer }) => {
               console.log(customer)
@@ -4009,8 +4021,8 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/store/customers/me/addresses/{address_id}' \
-            -H 'x-publishable-api-key: {your_publishable_api_key}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Customers
       responses:
@@ -4343,6 +4355,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to list their orders
             sdk.store.order.list()
             .then(({ orders, count, offset, limit }) => {
               console.log(orders)
@@ -4351,6 +4364,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/store/orders' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Orders
@@ -4643,6 +4657,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to cancel the order transfer
             sdk.store.order.cancelTransfer(
               "order_123",
               {},
@@ -4657,6 +4672,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/store/orders/{id}/transfer/cancel' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Orders
@@ -4844,6 +4860,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to request the order transfer
             sdk.store.order.requestTransfer(
               "order_123",
               {
@@ -4861,6 +4878,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/store/orders/{id}/transfer/request' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Orders
