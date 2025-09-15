@@ -4260,20 +4260,24 @@ export const filesMap = [
     "pathname": "/references/core_flows/Line_Item/core_flows.Line_Item.Workflows_Line_Item"
   },
   {
-    "filePath": "/www/apps/resources/references/core_flows/Locking/functions/core_flows.Locking.acquireLockStep/page.mdx",
-    "pathname": "/references/core_flows/Locking/functions/core_flows.Locking.acquireLockStep"
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep/page.mdx",
+    "pathname": "/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep"
   },
   {
-    "filePath": "/www/apps/resources/references/core_flows/Locking/functions/core_flows.Locking.releaseLockStep/page.mdx",
-    "pathname": "/references/core_flows/Locking/functions/core_flows.Locking.releaseLockStep"
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep/page.mdx",
+    "pathname": "/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep"
   },
   {
-    "filePath": "/www/apps/resources/references/core_flows/Locking/variables/core_flows.Locking.acquireLockStepId/page.mdx",
-    "pathname": "/references/core_flows/Locking/variables/core_flows.Locking.acquireLockStepId"
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.acquireLockStepId/page.mdx",
+    "pathname": "/references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.acquireLockStepId"
   },
   {
-    "filePath": "/www/apps/resources/references/core_flows/Locking/variables/core_flows.Locking.releaseLockStepId/page.mdx",
-    "pathname": "/references/core_flows/Locking/variables/core_flows.Locking.releaseLockStepId"
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.releaseLockStepId/page.mdx",
+    "pathname": "/references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.releaseLockStepId"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/Locking/core_flows.Locking.Steps_Locking/page.mdx",
+    "pathname": "/references/core_flows/Locking/core_flows.Locking.Steps_Locking"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/Notification/Steps_Notification/functions/core_flows.Notification.Steps_Notification.notifyOnFailureStep/page.mdx",
@@ -12050,10 +12054,6 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.user/page.mdx",
     "pathname": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.user"
-  },
-  {
-    "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx",
-    "pathname": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views"
   },
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.workflowExecution/page.mdx",

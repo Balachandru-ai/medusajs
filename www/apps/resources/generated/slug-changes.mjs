@@ -1530,6 +1530,16 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/core_flows/Line_Item/Workflows_Line_Item/functions/core_flows.Line_Item.Workflows_Line_Item.deleteLineItemsWorkflow/page.mdx"
   },
   {
+    "origSlug": "/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep",
+    "newSlug": "/references/medusa-workflows/steps/acquireLockStep",
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep/page.mdx"
+  },
+  {
+    "origSlug": "/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep",
+    "newSlug": "/references/medusa-workflows/steps/releaseLockStep",
+    "filePath": "/www/apps/resources/references/core_flows/Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep/page.mdx"
+  },
+  {
     "origSlug": "/references/core_flows/Notification/Steps_Notification/functions/core_flows.Notification.Steps_Notification.notifyOnFailureStep",
     "newSlug": "/references/medusa-workflows/steps/notifyOnFailureStep",
     "filePath": "/www/apps/resources/references/core_flows/Notification/Steps_Notification/functions/core_flows.Notification.Steps_Notification.notifyOnFailureStep/page.mdx"
@@ -4903,11 +4913,6 @@ export const slugChanges = [
     "origSlug": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.user",
     "newSlug": "/references/js-sdk/admin/user",
     "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.user/page.mdx"
-  },
-  {
-    "origSlug": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views",
-    "newSlug": "/references/js-sdk/admin/views",
-    "filePath": "/www/apps/resources/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx"
   },
   {
     "origSlug": "/references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.workflowExecution",

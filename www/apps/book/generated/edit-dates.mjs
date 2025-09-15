@@ -4,7 +4,7 @@ export const generatedEditDates = {
   "app/learn/deployment/page.mdx": "2025-07-18T15:25:33.249Z",
   "app/learn/page.mdx": "2025-06-27T11:39:15.941Z",
   "app/learn/fundamentals/modules/commerce-modules/page.mdx": "2025-04-17T08:51:32.723Z",
-  "app/learn/fundamentals/workflows/retry-failed-steps/page.mdx": "2025-03-28T07:15:19.388Z",
+  "app/learn/fundamentals/workflows/retry-failed-steps/page.mdx": "2025-09-15T09:38:18.299Z",
   "app/learn/fundamentals/workflows/workflow-hooks/page.mdx": "2024-12-09T10:44:33.781Z",
   "app/learn/debugging-and-testing/logging/page.mdx": "2025-08-28T15:31:57.879Z",
   "app/learn/storefront-development/page.mdx": "2024-12-10T09:11:04.993Z",
@@ -121,7 +121,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/workflows/errors/page.mdx": "2025-04-25T14:26:25.000Z",
   "app/learn/fundamentals/api-routes/override/page.mdx": "2025-05-09T08:01:24.493Z",
   "app/learn/fundamentals/module-links/index/page.mdx": "2025-05-23T07:57:58.958Z",
-  "app/learn/fundamentals/module-links/index-module/page.mdx": "2025-06-19T16:02:05.665Z",
+  "app/learn/fundamentals/module-links/index-module/page.mdx": "2025-09-15T07:36:55.853Z",
   "app/learn/introduction/build-with-llms-ai/page.mdx": "2025-07-22T16:19:11.668Z",
   "app/learn/installation/docker/page.mdx": "2025-07-23T15:34:18.530Z",
   "app/learn/fundamentals/generated-types/page.mdx": "2025-07-25T13:17:35.319Z",
@@ -131,5 +131,6 @@ export const generatedEditDates = {
   "app/learn/debugging-and-testing/logging/custom-logger/page.mdx": "2025-08-28T15:37:07.328Z",
   "app/learn/fundamentals/scheduled-jobs/interval/page.mdx": "2025-09-02T08:36:12.714Z",
   "app/learn/debugging-and-testing/feature-flags/create/page.mdx": "2025-09-02T08:36:12.714Z",
-  "app/learn/debugging-and-testing/feature-flags/page.mdx": "2025-09-02T08:36:12.714Z"
+  "app/learn/debugging-and-testing/feature-flags/page.mdx": "2025-09-02T08:36:12.714Z",
+  "app/learn/fundamentals/workflows/locks/page.mdx": "2025-09-15T09:37:00.808Z"
 }

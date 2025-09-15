@@ -205,13 +205,22 @@ jobs:
     name: Module Integration Tests - Shard ${{ matrix.shard_index }}
     strategy:
       matrix:
-        shard_index: [1, 2]
+        shard_index: [1, 2, 3]
     runs-on: ubuntu-latest
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
     services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 1s
+          --health-timeout 10s
+          --health-retries 10
+        ports:
+          - 6379:6379
       postgres:
         image: postgres
         env:
