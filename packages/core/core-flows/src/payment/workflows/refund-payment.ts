@@ -165,9 +165,7 @@ export const refundPaymentWorkflow = createWorkflow(
             return {
               order_id: orderPaymentCollection.order.id,
               amount: MathBN.mult(
-                input.amount ??
-                  refundPayment.raw_amount ??
-                  refundPayment.amount,
+                input.amount ?? refund.raw_amount ?? refund.amount,
                 -1
               ),
               currency_code: refundPayment.currency_code ?? order.currency_code,
