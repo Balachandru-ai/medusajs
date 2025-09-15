@@ -370,8 +370,6 @@ medusaIntegrationTestRunner({
         adminHeaders
       )
 
-      await createClaim({ order })
-
       const e = await api
         .post(
           `/admin/payments/${payment.id}/refund`,
