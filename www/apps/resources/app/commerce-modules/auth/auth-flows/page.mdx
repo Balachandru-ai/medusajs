@@ -90,7 +90,7 @@ The basic authentication flow requires first using the `register` method, then t
 const { 
   success, 
   authIdentity, 
-  error
+  error,
 } = await authModuleService.register(
   "emailpass",
   // passed to auth provider
@@ -142,7 +142,7 @@ There are two ways to handle this:
 const { 
   success, 
   authIdentity, 
-  location
+  location,
 } = await authModuleService.authenticate(
   "emailpass",
   // passed to auth provider
@@ -215,7 +215,7 @@ The Google and GitHub providers allow you to override their `callbackUrl` option
 const { 
   success, 
   authIdentity, 
-  location
+  location,
 } = await authModuleService.authenticate(
   "google",
   // passed to auth provider
