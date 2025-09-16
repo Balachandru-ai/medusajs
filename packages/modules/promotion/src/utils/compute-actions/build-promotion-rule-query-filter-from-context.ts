@@ -100,13 +100,31 @@ export function buildPromotionRuleQueryFilterFromContext(
       const minValue = Math.min(...numericValues)
       const maxValue = Math.max(...numericValues)
 
-      // For gt/gte - context values should be greater than rule values
+      // For gt - context values should be greater than rule values
+      // This means: CAST(rule_value AS DECIMAL) < context_max_value
+      filters.push({
+        rules: {
+          $and: [
+            { attribute },
+            { operator: "gt" },
+            {
+              values: {
+                [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
+                  $lt: maxValue,
+                },
+              },
+            },
+          ],
+        },
+      })
+
+      // For gte - context values should be greater than or equal to rule values
       // This means: CAST(rule_value AS DECIMAL) <= context_max_value
       filters.push({
         rules: {
           $and: [
             { attribute },
-            { operator: { $in: ["gt", "gte"] } },
+            { operator: "gte" },
             {
               values: {
                 $or: [
@@ -123,13 +141,31 @@ export function buildPromotionRuleQueryFilterFromContext(
         },
       })
 
-      // For lt/lte - context values should be less than rule values
+      // For lt - context values should be less than rule values
+      // This means: CAST(rule_value AS DECIMAL) > context_min_value
+      filters.push({
+        rules: {
+          $and: [
+            { attribute },
+            { operator: "lt" },
+            {
+              values: {
+                [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
+                  $gt: minValue,
+                },
+              },
+            },
+          ],
+        },
+      })
+
+      // For lte - context values should be less than or equal to rule values
       // This means: CAST(rule_value AS DECIMAL) >= context_min_value
       filters.push({
         rules: {
           $and: [
             { attribute },
-            { operator: { $in: ["lt", "lte"] } },
+            { operator: "lte" },
             {
               values: {
                 $or: [
