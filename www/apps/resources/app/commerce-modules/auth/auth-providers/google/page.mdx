@@ -19,7 +19,7 @@ The Google Auth Module Provider allows you to authenticate users with their Goog
       link: "https://cloud.google.com/resource-manager/docs/creating-managing-projects"
     },
     {
-      text: "Create authorization credentials. When setting the Redirect Uri, set it to a URL in your frontend that later uses Medusa's callback route to validate the authentication.",
+      text: "Create Oauth client ID credentials. When setting the Redirect Uri, set it to a URL in your frontend (for example, storefront) that later uses Medusa's callback route to validate the authentication.",
       link: "https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred"
     }
   ]}
@@ -42,6 +42,10 @@ module.exports = defineConfig({
       options: {
         providers: [
           // other providers...
+          {
+            resolve: "@medusajs/medusa/auth-emailpass",
+            id: "emailpass",
+          }
           {
             resolve: "@medusajs/medusa/auth-google",
             id: "google",
