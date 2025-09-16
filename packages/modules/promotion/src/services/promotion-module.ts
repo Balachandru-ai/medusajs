@@ -493,17 +493,20 @@ export default class PromotionModuleService
         )
       }
 
-      const automaticPromotionFilter =
-        hasRulesPreFilter && prefilteredAutomaticPromotionIds.length
+      const automaticPromotionFilter = hasRulesPreFilter
+        ? prefilteredAutomaticPromotionIds.length
           ? {
               is_automatic: true,
               id: { $in: prefilteredAutomaticPromotionIds },
             }
-          : { is_automatic: true }
+          : null // No automatic promotions match the prefiltering rules
+        : { is_automatic: true }
 
-      queryFilter = {
-        $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
-      }
+      queryFilter = automaticPromotionFilter
+        ? {
+            $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
+          }
+        : { code: uniquePromotionCodes }
     }
 
     const promotions = await this.listActivePromotions_(
