@@ -113,7 +113,7 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
 
     validateCartShippingOptionsStep({
       option_ids: optionIds,
-      shippingOptions,
+      prefetched_shipping_options: shippingOptions,
     })
 
     validateCartShippingOptionsPriceStep({ shippingOptions })

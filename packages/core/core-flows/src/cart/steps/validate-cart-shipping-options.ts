@@ -60,7 +60,7 @@ export const validateCartShippingOptionsStep = createStep(
 
     let validShippingOptionIds: string[]
 
-    if (prefetchedShippingOptions) {
+    if (prefetchedShippingOptions.length) {
       // Use pre-fetched shipping options
       validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
     } else {
