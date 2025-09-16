@@ -469,10 +469,6 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    /**
-     * TEST
-     */
-
     let flattenItemsPropsValuesArray = flattenObjectToKeyValuePairs(
       items
     ) as Record<keyof ComputeActionItemLine & string, any>
@@ -514,7 +510,6 @@ export default class PromotionModuleService
       })
     })
 
-    // Build filters accounting for operators and type casting
     const rulePrefilteringFilters = Array.from(
       attributeValueMap.entries()
     ).flatMap(([attribute, valueSet]) => {
@@ -559,12 +554,12 @@ export default class PromotionModuleService
               {
                 values: {
                   $or: [
-                    { value: { $in: stringValues } }, // Exact string match
+                    { value: { $in: stringValues } },
                     {
                       [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
                         $lte: maxValue,
                       },
-                    }, // Numeric comparison
+                    },
                   ],
                 },
               },
@@ -582,12 +577,12 @@ export default class PromotionModuleService
               {
                 values: {
                   $or: [
-                    { value: { $in: stringValues } }, // Exact string match
+                    { value: { $in: stringValues } },
                     {
                       [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
                         $gte: minValue,
                       },
-                    }, // Numeric comparison
+                    },
                   ],
                 },
               },
@@ -613,16 +608,9 @@ export default class PromotionModuleService
         { select: ["rules.id", "code", "id"], relations: ["rules.values"] },
         sharedContext
       )
-      // const ruleIds = promotions.flatMap((promotion) =>
-      //   promotion.rules.map((rule) => rule.id)
-      // )
-      // prefilterTopValidRuleIds = ruleIds
+
       prefilteredPromotionIds = promotions.map((promotion) => promotion.id!)
     }
-
-    /**
-     * END TEST
-     */
 
     let queryFilter
 
@@ -631,7 +619,6 @@ export default class PromotionModuleService
         ? {
             $or: [
               { code: uniquePromotionCodes },
-              // { rules: { id: { $in: prefilterTopValidRuleIds } } },
               { id: { $in: prefilteredPromotionIds } },
             ],
           }
@@ -641,12 +628,10 @@ export default class PromotionModuleService
                 code: uniquePromotionCodes,
               },
               {
-                // rules: { id: { $in: prefilterTopValidRuleIds } },
                 id: { $in: prefilteredPromotionIds },
               },
               {
                 is_automatic: true,
-                // rules: { id: { $in: prefilterTopValidRuleIds } },
                 id: { $in: prefilteredPromotionIds },
               },
             ],

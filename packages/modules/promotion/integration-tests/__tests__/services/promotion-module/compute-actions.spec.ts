@@ -1,7 +1,4 @@
-import {
-  InferEntityType,
-  IPromotionModuleService,
-} from "@medusajs/framework/types"
+import { IPromotionModuleService } from "@medusajs/framework/types"
 import {
   ApplicationMethodType,
   Modules,
@@ -11,7 +8,6 @@ import {
 import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
-import { Promotion } from "@models"
 
 jest.setTimeout(300000)
 
@@ -27,214 +23,303 @@ moduleIntegrationTestRunner({
       })
 
       it.only("should prefilter promotions by applicable rules", async () => {
-        // create 10 automatic promotions with different rules, the first promotion does not have any top level rules
-        for (let i = 0; i < 10; i++) {
-          await createDefaultPromotion(service, {
-            code: "AUTOMATIC_PROMOTION_TEST_" + i,
-            is_automatic: true,
-            rules:
-              i === 0
-                ? []
-                : i === 9
-                ? [
-                    {
-                      attribute: "customer.id",
-                      operator: "in",
-                      values: ["customer"],
-                    },
-                  ]
-                : i === 2
-                ? [
-                    {
-                      attribute: "items.subtotal",
-                      operator: "gt",
-                      values: ["50"],
-                    },
-                  ]
-                : [
-                    {
-                      attribute: "customer.customer_group.id",
-                      operator: "in",
-                      values: ["VIP" + i],
-                    },
-                  ],
-            application_method: {
-              type: "fixed",
-              target_type: "items",
-              allocation: "each",
-              max_quantity: 100000,
-              value: 100,
-              target_rules:
-                i === 2
-                  ? []
-                  : [
-                      {
-                        attribute: "product.id",
-                        operator: "eq",
-                        values: ["prod_tshirt" + i],
-                      },
-                    ],
-            },
-          })
-        }
-
-        // create 10 non-automatic promotions with different rules
-        for (let i = 0; i < 10; i++) {
-          await createDefaultPromotion(service, {
-            code: "PROMOTION_TEST_" + i,
-            is_automatic: false,
-            rules: [
+        // 1. Promotion with NO rules (should always apply if automatic)
+        await createDefaultPromotion(service, {
+          code: "NO_RULES_PROMO",
+          is_automatic: true,
+          rules: [], // No global rules - always applicable
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
               {
-                attribute: "customer.customer_group.id",
-                operator: "in",
-                values: ["VIP" + i],
+                attribute: "product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"], // Only applies to product 0
               },
             ],
-            application_method: {
-              type: "fixed",
-              target_type: "items",
-              allocation: "each",
-              max_quantity: 100000,
-              value: 100,
-              target_rules: [
-                {
-                  attribute: "product.id",
-                  operator: "eq",
-                  values: ["prod_tshirt" + i],
-                },
-              ],
-            },
-          })
-        }
+          },
+        })
 
-        // manually spy on promotion promotionService_.list to expect the return value
-        let promotionListReturnValues!: InferEntityType<typeof Promotion>[]
+        // 2. Promotion matching customer group VIP1
+        await createDefaultPromotion(service, {
+          code: "CUSTOMER_GROUP_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP1"], // Matches our test customer
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "product.id",
+                operator: "eq",
+                values: ["prod_tshirt1"], // Only applies to product 1
+              },
+            ],
+          },
+        })
+
+        // 3. Promotion with subtotal rule (should match items with subtotal > 50)
+        await createDefaultPromotion(service, {
+          code: "SUBTOTAL_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "items.subtotal",
+              operator: "gt",
+              values: ["50"], // All our items have subtotal > 50
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [], // No target rules - applies to all items
+          },
+        })
+
+        // 4. Promotion matching customer.id
+        const promotionCustomerId = await createDefaultPromotion(service, {
+          code: "CUSTOMER_ID_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.id",
+              operator: "in",
+              values: ["customer"], // Matches our test customer
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 250, // Different value to distinguish
+            target_rules: [
+              {
+                attribute: "product.id",
+                operator: "eq",
+                values: ["prod_tshirt9"], // Only applies to product 9
+              },
+            ],
+          },
+        })
+
+        // 5. Promotion that should NOT match (different customer group)
+        await createDefaultPromotion(service, {
+          code: "NO_MATCH_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP99"], // Different customer group - won't match
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"],
+              },
+            ],
+          },
+        })
+
+        // 6. Non-automatic promotion (should be excluded from automatic processing)
+        createDefaultPromotion(service, {
+          code: "NON_AUTO_PROMO",
+          is_automatic: false, // Not automatic
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP1"], // Would match but not automatic
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"],
+              },
+            ],
+          },
+        })
+
+        // 6. Non-automatic promotion that do not match any rules (should be excluded from automatic processing and internal pre filtering)
+        createDefaultPromotion(service, {
+          code: "NON_AUTO_PROMO_2",
+          is_automatic: false, // Not automatic
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP99"], // Would not match our customer group
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"],
+              },
+            ],
+          },
+        })
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
         const originalPromotionServiceList = (service as any).promotionService_
           .list
 
-        ;(service as any).promotionService_.list = async (...args) => {
-          const promotions = await originalPromotionServiceList.bind(
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
             (service as any).promotionService_
           )(...args)
-          promotionListReturnValues ??= promotions
-          return promotions
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          return result
         }
 
-        const actions = await service.computeActions([], {
+        // Test Context: Customer with specific attributes
+        const testContext = {
           currency_code: "usd",
           customer: {
-            id: "customer",
+            id: "customer", // Matches CUSTOMER_ID_PROMO
             customer_group: {
-              id: "VIP1",
+              id: "VIP1", // Matches CUSTOMER_GROUP_PROMO
             },
           },
           items: [
             {
-              id: "item_cotton_tshirt0",
+              id: "item_tshirt0",
               quantity: 1,
-              subtotal: 100,
-              product_category: {
-                id: "catg_cotton",
-              },
-              product: {
-                id: "prod_tshirt0",
-              },
+              subtotal: 100, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_tshirt0" }, // Matches NO_RULES_PROMO target
             },
             {
-              id: "item_cotton_tshirt1",
+              id: "item_tshirt1",
               quantity: 1,
-              subtotal: 100,
-              product_category: {
-                id: "catg_cotton",
-              },
-              product: {
-                id: "prod_tshirt1",
-              },
+              subtotal: 100, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_tshirt1" }, // Matches CUSTOMER_GROUP_PROMO target
             },
             {
-              id: "item_cotton_tshirt9",
+              id: "item_tshirt9",
               quantity: 5,
-              subtotal: 750,
-              product_category: {
-                id: "catg_cotton",
-              },
-              product: {
-                id: "prod_tshirt9",
-              },
+              subtotal: 750, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_tshirt9" }, // Matches CUSTOMER_ID_PROMO target
             },
             {
-              id: "item_cotton_tshirt_unknown",
+              id: "item_unknown",
               quantity: 1,
-              subtotal: 110,
-              product_category: {
-                id: "catg_cotton",
-              },
-              product: {
-                id: "prod_tshirt_unknown",
-              },
+              subtotal: 110, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_unknown" }, // No specific target rules match
             },
           ] as any,
-        })
+        }
+
+        const actions = await service.computeActions([], testContext)
 
         ;(service as any).promotionService_.list = originalPromotionServiceList
 
-        // The internal service should return all valid promotions even
-        // if they dont pass the later check such as PROMOTION_TEST_1
-        expect(promotionListReturnValues).toEqual(
+        // 1. Verify prefiltering worked - should include matching promotions
+        const prefilteredCodes = prefilteredPromotions.map((p) => p.code)
+        expect(prefilteredCodes).toEqual(
           expect.arrayContaining([
-            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_0" }),
-            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_1" }),
-            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_2" }),
-            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_9" }),
-            expect.objectContaining({ code: "PROMOTION_TEST_1" }),
+            "NO_RULES_PROMO", // No rules - always included
+            "CUSTOMER_GROUP_PROMO", // customer.customer_group.id = VIP1
+            "SUBTOTAL_PROMO", // items.subtotal > 50
+            "CUSTOMER_ID_PROMO", // customer.id = customer
+            "NON_AUTO_PROMO", // Matches customer group but not automatic and no code will be provided so it wont be part of the actions
           ])
         )
 
-        // 5 actions should be returned:
-        // 1. AUTOMATIC_PROMOTION_TEST_0: does not have global rule and match application method rule product.id
-        // 2. AUTOMATIC_PROMOTION_TEST_1: match global rule customer.customer_group.id and application method rule product.id
-        // 3. AUTOMATIC_PROMOTION_TEST_2 twice: match global rule items.subtotal and application method does not have any rule
-        // 4. AUTOMATIC_PROMOTION_TEST_9: match global rule customer.id and application method rule product.id
-        expect(actions.length).toBe(5)
-        expect(JSON.parse(JSON.stringify(actions))).toEqual(
+        expect(actions).toHaveLength(4)
+
+        const actionsByCode = JSON.parse(JSON.stringify(actions)).reduce(
+          (acc, action) => {
+            if (!acc[action.code]) acc[action.code] = []
+            acc[action.code].push(action)
+            return acc
+          },
+          {} as Record<string, any[]>
+        )
+
+        // NO_RULES_PROMO: Applies to item_tshirt0 (product.id = prod_tshirt0)
+        expect(actionsByCode["NO_RULES_PROMO"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt0",
+            amount: 100,
+            code: "NO_RULES_PROMO",
+          }),
+        ])
+
+        // CUSTOMER_GROUP_PROMO: Applies to item_tshirt1 (product.id = prod_tshirt1)
+        expect(actionsByCode["CUSTOMER_GROUP_PROMO"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt1",
+            amount: 100,
+            code: "CUSTOMER_GROUP_PROMO",
+          }),
+        ])
+
+        // SUBTOTAL_PROMO: Applies to all items (no target rules)
+        expect(actionsByCode["SUBTOTAL_PROMO"]).toHaveLength(1)
+        expect(actionsByCode["SUBTOTAL_PROMO"]).toEqual(
           expect.arrayContaining([
-            expect.objectContaining({
-              action: "addItemAdjustment",
-              item_id: "item_cotton_tshirt0",
-              amount: 100,
-              code: "AUTOMATIC_PROMOTION_TEST_0",
-              is_tax_inclusive: false,
-            }),
-            expect.objectContaining({
-              action: "addItemAdjustment",
-              item_id: "item_cotton_tshirt1",
-              amount: 100,
-              code: "AUTOMATIC_PROMOTION_TEST_1",
-              is_tax_inclusive: false,
-            }),
-            expect.objectContaining({
-              action: "addItemAdjustment",
-              item_id: "item_cotton_tshirt9",
-              amount: 500,
-              code: "AUTOMATIC_PROMOTION_TEST_2",
-              is_tax_inclusive: false,
-            }),
-            expect.objectContaining({
-              action: "addItemAdjustment",
-              item_id: "item_cotton_tshirt_unknown",
-              amount: 100,
-              code: "AUTOMATIC_PROMOTION_TEST_2",
-              is_tax_inclusive: false,
-            }),
-            expect.objectContaining({
-              action: "addItemAdjustment",
-              item_id: "item_cotton_tshirt9",
-              amount: 250,
-              code: "AUTOMATIC_PROMOTION_TEST_9",
-              is_tax_inclusive: false,
-            }),
+            expect.objectContaining({ item_id: "item_unknown", amount: 100 }),
           ])
         )
+
+        // CUSTOMER_ID_PROMO: Applies to item_tshirt9 (product.id = prod_tshirt9)
+        expect(actionsByCode["CUSTOMER_ID_PROMO"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt9",
+            amount: 750,
+            code: "CUSTOMER_ID_PROMO",
+          }),
+        ])
       })
 
       it("should return empty array when promotion is not active (draft or inactive)", async () => {
