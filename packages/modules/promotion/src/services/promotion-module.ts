@@ -67,6 +67,7 @@ import {
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
 import { raw } from "@mikro-orm/postgresql"
+import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -469,130 +470,8 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    let flattenItemsPropsValuesArray = flattenObjectToKeyValuePairs(
-      items
-    ) as Record<keyof ComputeActionItemLine & string, any>
-    flattenItemsPropsValuesArray = Object.fromEntries(
-      Object.entries(flattenItemsPropsValuesArray).map(([k, v]) => [
-        `items.${k}`,
-        v,
-      ])
-    )
-
-    let flattenShippingMethodsPropsValuesArray = flattenObjectToKeyValuePairs(
-      shippingMethods
-    ) as Record<keyof ComputeActionShippingLine & string, any>
-    flattenShippingMethodsPropsValuesArray = Object.fromEntries(
-      Object.entries(flattenShippingMethodsPropsValuesArray).map(([k, v]) => [
-        `shipping_methods.${k}`,
-        v,
-      ])
-    )
-
-    const flattenRestContextPropsValuesArray = flattenObjectToKeyValuePairs(
-      restContext
-    ) as Record<keyof ComputeActionContext & string, any>
-
-    const attributeValueMap = new Map<string, Set<any>>()
-
-    ;[
-      flattenItemsPropsValuesArray,
-      flattenShippingMethodsPropsValuesArray,
-      flattenRestContextPropsValuesArray,
-    ].forEach((flattenedArray) => {
-      Object.entries(flattenedArray).forEach(([prop, value]) => {
-        if (!attributeValueMap.has(prop)) {
-          attributeValueMap.set(prop, new Set())
-        }
-
-        const values = Array.isArray(value) ? value : [value]
-        values.forEach((v) => attributeValueMap.get(prop)!.add(v))
-      })
-    })
-
-    const rulePrefilteringFilters = Array.from(
-      attributeValueMap.entries()
-    ).flatMap(([attribute, valueSet]) => {
-      const values = Array.from(valueSet)
-      const stringValues = values.map((v) => `${v}`)
-      const filters: any[] = []
-
-      // For 'in' and 'eq' operators - direct value matching
-      filters.push({
-        rules: {
-          $and: [
-            { attribute },
-            { operator: { $in: ["in", "eq"] } },
-            {
-              values: {
-                value: { $in: stringValues },
-              },
-            },
-          ],
-        },
-      })
-
-      // For numeric comparison operators, handle both string and numeric values
-      const numericValues = values
-        .map((v) => {
-          const num = Number(v)
-          return !isNaN(num) ? num : null
-        })
-        .filter((v) => v !== null)
-
-      if (numericValues.length > 0) {
-        const minValue = Math.min(...numericValues)
-        const maxValue = Math.max(...numericValues)
-
-        // For gt/gte - context values should be greater than rule values
-        // This means: CAST(rule_value AS DECIMAL) <= context_max_value
-        filters.push({
-          rules: {
-            $and: [
-              { attribute },
-              { operator: { $in: ["gt", "gte"] } },
-              {
-                values: {
-                  $or: [
-                    { value: { $in: stringValues } },
-                    {
-                      [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
-                        $lte: maxValue,
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        })
-
-        // For lt/lte - context values should be less than rule values
-        // This means: CAST(rule_value AS DECIMAL) >= context_min_value
-        filters.push({
-          rules: {
-            $and: [
-              { attribute },
-              { operator: { $in: ["lt", "lte"] } },
-              {
-                values: {
-                  $or: [
-                    { value: { $in: stringValues } },
-                    {
-                      [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
-                        $gte: minValue,
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        })
-      }
-
-      return filters
-    })
+    const rulePrefilteringFilters =
+      buildPromotionRuleQueryFilterFromContext(applicationContext)
 
     const hasRulesPreFilter = !!rulePrefilteringFilters.length
     let prefilteredPromotionIds: string[] = []
