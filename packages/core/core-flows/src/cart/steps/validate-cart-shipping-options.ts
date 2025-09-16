@@ -31,7 +31,7 @@ export interface ValidateCartShippingOptionsStepInput {
    * Pre-fetched shipping options. If provided, validation will be done against these
    * instead of querying the database.
    */
-  shippingOptions?: { id: string }[]
+  prefetched_shipping_options?: { id: string }[]
 }
 
 export const validateCartShippingOptionsStepId =
@@ -52,7 +52,7 @@ export const validateCartShippingOptionsStepId =
 export const validateCartShippingOptionsStep = createStep(
   validateCartShippingOptionsStepId,
   async (data: ValidateCartShippingOptionsStepInput, { container }) => {
-    const { option_ids: optionIds = [], cart, shippingOptionsContext, shippingOptions } = data
+    const { option_ids: optionIds = [], cart, shippingOptionsContext, prefetched_shipping_options: prefetchedShippingOptions = [] } = data
 
     if (!optionIds.length) {
       return new StepResponse(void 0)
@@ -60,9 +60,9 @@ export const validateCartShippingOptionsStep = createStep(
 
     let validShippingOptionIds: string[]
 
-    if (shippingOptions) {
+    if (prefetchedShippingOptions) {
       // Use pre-fetched shipping options
-      validShippingOptionIds = shippingOptions.map((o) => o.id)
+      validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
     } else {
       // Legacy behavior: query the database
       if (!cart || !shippingOptionsContext) {
