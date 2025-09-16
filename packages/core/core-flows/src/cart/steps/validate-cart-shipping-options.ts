@@ -52,14 +52,21 @@ export const validateCartShippingOptionsStepId =
 export const validateCartShippingOptionsStep = createStep(
   validateCartShippingOptionsStepId,
   async (data: ValidateCartShippingOptionsStepInput, { container }) => {
-    const { option_ids: optionIds = [], cart, shippingOptionsContext, prefetched_shipping_options: prefetchedShippingOptions = [] } = data
+    const { option_ids: optionIds = [], cart, shippingOptionsContext, prefetched_shipping_options: prefetchedShippingOptions } = data
 
     if (!optionIds.length) {
       return new StepResponse(void 0)
     }
 
-    let validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
-    if (cart && shippingOptionsContext) {
+    let validShippingOptionIds: string[]
+    if (!prefetchedShippingOptions) {
+      if (!cart || !shippingOptionsContext) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Cart and shippingOptionsContext need to be defined if prefetchedShippingOptions is not.`
+        )
+      }
+
       // Legacy behavior: query the database
       const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
         Modules.FULFILLMENT
@@ -81,6 +88,8 @@ export const validateCartShippingOptionsStep = createStep(
         )
 
       validShippingOptionIds = validShippingOptions.map((o) => o.id)
+    } else {
+      validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
     }
 
     const invalidOptionIds = arrayDifference(optionIds, validShippingOptionIds)
