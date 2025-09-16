@@ -462,39 +462,37 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    const rulePrefilteringFilters =
-      buildPromotionRuleQueryFilterFromContext(applicationContext)
+    let queryFilter: DAL.FilterQuery<any> = { code: uniquePromotionCodes }
 
-    const hasRulesPreFilter = !!rulePrefilteringFilters.length
-    let prefilteredAutomaticPromotionIds: string[] = []
+    if (!preventAutoPromotions) {
+      const rulePrefilteringFilters =
+        buildPromotionRuleQueryFilterFromContext(applicationContext)
 
-    if (hasRulesPreFilter && !preventAutoPromotions) {
-      const promotions = await this.promotionService_.list(
-        {
-          $and: [
-            { is_automatic: true },
-            {
-              $or: [
-                ...rulePrefilteringFilters,
-                { rules: { $eq: null } }, // Include automatic promotions with no rules
-              ],
-            },
-          ],
-        },
-        { select: ["id"] },
-        sharedContext
-      )
+      const hasRulesPreFilter = !!rulePrefilteringFilters.length
+      let prefilteredAutomaticPromotionIds: string[] = []
 
-      prefilteredAutomaticPromotionIds = promotions.map(
-        (promotion) => promotion.id!
-      )
-    }
+      if (hasRulesPreFilter) {
+        const promotions = await this.promotionService_.list(
+          {
+            $and: [
+              { is_automatic: true },
+              {
+                $or: [
+                  ...rulePrefilteringFilters,
+                  { rules: { $eq: null } }, // Include automatic promotions with no rules
+                ],
+              },
+            ],
+          },
+          { select: ["id"] },
+          sharedContext
+        )
 
-    let queryFilter
+        prefilteredAutomaticPromotionIds = promotions.map(
+          (promotion) => promotion.id!
+        )
+      }
 
-    if (preventAutoPromotions) {
-      queryFilter = { code: uniquePromotionCodes }
-    } else {
       const automaticPromotionFilter =
         hasRulesPreFilter && prefilteredAutomaticPromotionIds.length
           ? {
