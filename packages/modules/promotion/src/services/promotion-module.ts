@@ -617,7 +617,7 @@ export default class PromotionModuleService
                 { rules: { $eq: null } }, // Include promotions with no rules
               ],
             },
-        { select: ["rules.id", "code", "id"], relations: ["rules.values"] },
+        { select: ["id"] },
         sharedContext
       )
 
