@@ -303,7 +303,7 @@ moduleIntegrationTestRunner({
           }),
         ])
 
-        // SUBTOTAL_PROMO: Applies to all items (no target rules)
+        // SUBTOTAL_PROMO: (no target rules)
         expect(actionsByCode["SUBTOTAL_PROMO"]).toHaveLength(1)
         expect(actionsByCode["SUBTOTAL_PROMO"]).toEqual(
           expect.arrayContaining([
