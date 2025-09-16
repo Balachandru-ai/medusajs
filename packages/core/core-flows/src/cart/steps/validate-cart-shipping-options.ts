@@ -58,8 +58,7 @@ export const validateCartShippingOptionsStep = createStep(
       return new StepResponse(void 0)
     }
 
-    let validShippingOptionIds: string[]
-
+    let validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
     if (cart && shippingOptionsContext) {
       // Legacy behavior: query the database
       const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
@@ -82,10 +81,8 @@ export const validateCartShippingOptionsStep = createStep(
         )
 
       validShippingOptionIds = validShippingOptions.map((o) => o.id)
-    } else {
-      validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
     }
-    
+
     const invalidOptionIds = arrayDifference(optionIds, validShippingOptionIds)
 
     if (invalidOptionIds.length) {
