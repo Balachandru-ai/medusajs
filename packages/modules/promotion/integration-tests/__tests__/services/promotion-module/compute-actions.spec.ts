@@ -22,7 +22,7 @@ moduleIntegrationTestRunner({
         await createCampaigns(MikroOrmWrapper.forkManager())
       })
 
-      it.only("should prefilter promotions by applicable rules", async () => {
+      it("should prefilter promotions by applicable rules", async () => {
         // 1. Promotion with NO rules (should always apply if automatic)
         await createDefaultPromotion(service, {
           code: "NO_RULES_PROMO",
@@ -3176,7 +3176,7 @@ moduleIntegrationTestRunner({
             ])
           })
 
-          it("should compute the correct shipping_method amendments when promotion is automatic and prevent_auto_promotions is false", async () => {
+          it("should compute the correct shipping_method amendments when promotion is automatic and prevent_auto_promotions is true", async () => {
             await createDefaultPromotion(service, {
               rules: [
                 {

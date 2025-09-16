@@ -599,12 +599,24 @@ export default class PromotionModuleService
 
     if (hasRulesPreFilter) {
       const promotions = await this.promotionService_.list(
-        {
-          $or: [
-            ...rulePrefilteringFilters,
-            { rules: { $eq: null } }, // Include promotions with no rules
-          ],
-        },
+        preventAutoPromotions
+          ? {
+              $and: [
+                { is_automatic: false },
+                {
+                  $or: [
+                    ...rulePrefilteringFilters,
+                    { rules: { $eq: null } }, // Include promotions with no rules
+                  ],
+                },
+              ],
+            }
+          : {
+              $or: [
+                ...rulePrefilteringFilters,
+                { rules: { $eq: null } }, // Include promotions with no rules
+              ],
+            },
         { select: ["rules.id", "code", "id"], relations: ["rules.values"] },
         sharedContext
       )
