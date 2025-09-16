@@ -60,18 +60,8 @@ export const validateCartShippingOptionsStep = createStep(
 
     let validShippingOptionIds: string[]
 
-    if (prefetchedShippingOptions.length) {
-      // Use pre-fetched shipping options
-      validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
-    } else {
+    if (cart && shippingOptionsContext) {
       // Legacy behavior: query the database
-      if (!cart || !shippingOptionsContext) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `cart and shippingOptionsContext are required when shippingOptions are not provided.`
-        )
-      }
-
       const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
         Modules.FULFILLMENT
       )
@@ -92,8 +82,10 @@ export const validateCartShippingOptionsStep = createStep(
         )
 
       validShippingOptionIds = validShippingOptions.map((o) => o.id)
+    } else {
+      validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
     }
-
+    
     const invalidOptionIds = arrayDifference(optionIds, validShippingOptionIds)
 
     if (invalidOptionIds.length) {
