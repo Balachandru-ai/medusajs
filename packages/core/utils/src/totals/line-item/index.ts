@@ -189,7 +189,7 @@ function getLineItemTotals(
 
     original_total: new BigNumber(
       isTaxInclusive
-        ? totalItemPrice
+        ? currentSubtotal
         : MathBN.add(currentSubtotal, originalTaxTotal)
     ),
 
