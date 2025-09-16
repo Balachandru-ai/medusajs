@@ -241,7 +241,7 @@ export type ListShippingOptionsForCartWorkflowInput = {
    * are passed to [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
    * so you can pass names of custom models linked to the shipping option.
    */
-  fields: string[]
+  fields?: string[]
   /**
    * Whether to retrieve return shipping options.
    * By default, non-return shipping options are retrieved.

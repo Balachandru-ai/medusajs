@@ -194,7 +194,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
       }
     )
 
-    const fields = transform(input, ({ fields }) => {
+    const fields = transform(input, ({ fields = [] }) => {
       return deduplicate([
         ...fields,
         "id",
