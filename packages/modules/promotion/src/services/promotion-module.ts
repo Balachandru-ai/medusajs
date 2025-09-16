@@ -414,11 +414,8 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.ComputeActions[]> {
     const { prevent_auto_promotions: preventAutoPromotions } = options
     const computedActions: PromotionTypes.ComputeActions[] = []
-    const {
-      items = [],
-      shipping_methods: shippingMethods = [],
-      ...restContext
-    } = applicationContext
+    const { items = [], shipping_methods: shippingMethods = [] } =
+      applicationContext
 
     const codeAdjustmentMap = new Map<
       string,
