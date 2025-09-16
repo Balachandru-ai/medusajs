@@ -66,6 +66,7 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
+import { raw } from "@mikro-orm/postgresql"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -472,120 +473,151 @@ export default class PromotionModuleService
      * TEST
      */
 
-    const flattenItemsPropsValuesArray = flattenObjectToKeyValuePairs(
+    let flattenItemsPropsValuesArray = flattenObjectToKeyValuePairs(
       items
     ) as Record<keyof ComputeActionItemLine & string, any>
+    flattenItemsPropsValuesArray = Object.fromEntries(
+      Object.entries(flattenItemsPropsValuesArray).map(([k, v]) => [
+        `items.${k}`,
+        v,
+      ])
+    )
 
-    const flattenShippingMethodsPropsValuesArray = flattenObjectToKeyValuePairs(
+    let flattenShippingMethodsPropsValuesArray = flattenObjectToKeyValuePairs(
       shippingMethods
     ) as Record<keyof ComputeActionShippingLine & string, any>
+    flattenShippingMethodsPropsValuesArray = Object.fromEntries(
+      Object.entries(flattenShippingMethodsPropsValuesArray).map(([k, v]) => [
+        `shipping_methods.${k}`,
+        v,
+      ])
+    )
 
     const flattenRestContextPropsValuesArray = flattenObjectToKeyValuePairs(
       restContext
     ) as Record<keyof ComputeActionContext & string, any>
 
-    const uniqueItemsAttributes = Array.from(
-      new Set(Object.keys(flattenItemsPropsValuesArray))
-    )
-    const uniqueShippingMethodsAttributes = Array.from(
-      new Set(Object.keys(flattenShippingMethodsPropsValuesArray))
-    )
-    const uniqueRestContextAttributes = Array.from(
-      new Set(Object.keys(flattenRestContextPropsValuesArray))
-    )
+    const attributeValueMap = new Map<string, Set<any>>()
 
-    const allUniqueAttributes = [
-      ...uniqueItemsAttributes,
-      ...uniqueShippingMethodsAttributes,
-      ...uniqueRestContextAttributes,
-    ]
+    ;[
+      flattenItemsPropsValuesArray,
+      flattenShippingMethodsPropsValuesArray,
+      flattenRestContextPropsValuesArray,
+    ].forEach((flattenedArray) => {
+      Object.entries(flattenedArray).forEach(([prop, value]) => {
+        if (!attributeValueMap.has(prop)) {
+          attributeValueMap.set(prop, new Set())
+        }
 
-    const rulePrefilteringFilters: {
-      rules?: {
-        attribute: string
-        values?: Record<string, any>
-      }
-    }[] = []
+        const values = Array.isArray(value) ? value : [value]
+        values.forEach((v) => attributeValueMap.get(prop)!.add(v))
+      })
+    })
 
-    for (const attribute of allUniqueAttributes) {
-      const targetItems = Object.entries(flattenItemsPropsValuesArray).filter(
-        ([itemProp]) => itemProp === attribute
-      )
-      if (targetItems.length) {
-        for (const [, itemValue] of targetItems) {
-          rulePrefilteringFilters.push({
-            rules: {
-              attribute: attribute,
+    // Build filters accounting for operators and type casting
+    const rulePrefilteringFilters = Array.from(
+      attributeValueMap.entries()
+    ).flatMap(([attribute, valueSet]) => {
+      const values = Array.from(valueSet)
+      const stringValues = values.map((v) => `${v}`)
+      const filters: any[] = []
+
+      // For 'in' and 'eq' operators - direct value matching
+      filters.push({
+        rules: {
+          $and: [
+            { attribute },
+            { operator: { $in: ["in", "eq"] } },
+            {
               values: {
-                value: {
-                  $some: {
-                    $in: Array.isArray(itemValue) ? itemValue : [itemValue],
-                  },
-                },
+                value: { $in: stringValues },
               },
             },
-          })
-        }
-      }
+          ],
+        },
+      })
 
-      const targetShippingMethods = Object.entries(
-        flattenShippingMethodsPropsValuesArray
-      ).filter(([shippingMethodProp]) => shippingMethodProp === attribute)
-      if (targetShippingMethods.length) {
-        for (const [, shippingMethodValue] of targetShippingMethods) {
-          rulePrefilteringFilters.push({
-            rules: {
-              attribute: attribute,
-              values: {
-                value: {
-                  $some: {
-                    $in: Array.isArray(shippingMethodValue)
-                      ? shippingMethodValue
-                      : [shippingMethodValue],
-                  },
+      // For numeric comparison operators, handle both string and numeric values
+      const numericValues = values
+        .map((v) => {
+          const num = Number(v)
+          return !isNaN(num) ? num : null
+        })
+        .filter((v) => v !== null)
+
+      if (numericValues.length > 0) {
+        const minValue = Math.min(...numericValues)
+        const maxValue = Math.max(...numericValues)
+
+        // For gt/gte - context values should be greater than rule values
+        // This means: CAST(rule_value AS DECIMAL) <= context_max_value
+        filters.push({
+          rules: {
+            $and: [
+              { attribute },
+              { operator: { $in: ["gt", "gte"] } },
+              {
+                values: {
+                  $or: [
+                    { value: { $in: stringValues } }, // Exact string match
+                    {
+                      [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
+                        $lte: maxValue,
+                      },
+                    }, // Numeric comparison
+                  ],
                 },
               },
-            },
-          })
-        }
-      }
+            ],
+          },
+        })
 
-      const targetRestContext = Object.entries(
-        flattenRestContextPropsValuesArray
-      ).filter(([itemProp]) => itemProp === attribute)
-      if (targetRestContext.length) {
-        for (const [, restItemValue] of targetRestContext) {
-          rulePrefilteringFilters.push({
-            rules: {
-              attribute: attribute,
-              values: {
-                value: {
-                  $some: {
-                    $in: Array.isArray(restItemValue)
-                      ? restItemValue
-                      : [restItemValue],
-                  },
+        // For lt/lte - context values should be less than rule values
+        // This means: CAST(rule_value AS DECIMAL) >= context_min_value
+        filters.push({
+          rules: {
+            $and: [
+              { attribute },
+              { operator: { $in: ["lt", "lte"] } },
+              {
+                values: {
+                  $or: [
+                    { value: { $in: stringValues } }, // Exact string match
+                    {
+                      [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
+                        $gte: minValue,
+                      },
+                    }, // Numeric comparison
+                  ],
                 },
               },
-            },
-          })
-        }
+            ],
+          },
+        })
       }
-    }
+
+      return filters
+    })
 
     const hasRulesPreFilter = !!rulePrefilteringFilters.length
-    let prefilterTopValidRuleIds: string[] = []
+    let prefilteredPromotionIds: string[] = []
 
     if (hasRulesPreFilter) {
       const promotions = await this.promotionService_.list(
-        { $or: rulePrefilteringFilters },
-        { select: ["rules.id"], relations: ["rules"] },
+        {
+          $or: [
+            ...rulePrefilteringFilters,
+            { rules: { $eq: null } }, // Include promotions with no rules
+          ],
+        },
+        { select: ["rules.id", "code", "id"], relations: ["rules.values"] },
         sharedContext
       )
-      const ruleIds = promotions.flatMap((promotion) =>
-        promotion.rules.map((rule) => rule.id)
-      )
-      prefilterTopValidRuleIds = ruleIds
+      // const ruleIds = promotions.flatMap((promotion) =>
+      //   promotion.rules.map((rule) => rule.id)
+      // )
+      // prefilterTopValidRuleIds = ruleIds
+      prefilteredPromotionIds = promotions.map((promotion) => promotion.id!)
     }
 
     /**
@@ -594,21 +626,28 @@ export default class PromotionModuleService
 
     let queryFilter
 
-    if (prefilterTopValidRuleIds.length) {
+    if (prefilteredPromotionIds.length) {
       queryFilter = preventAutoPromotions
         ? {
-            code: uniquePromotionCodes,
-            rules: { id: { $in: prefilterTopValidRuleIds } },
+            $or: [
+              { code: uniquePromotionCodes },
+              // { rules: { id: { $in: prefilterTopValidRuleIds } } },
+              { id: { $in: prefilteredPromotionIds } },
+            ],
           }
         : {
             $or: [
               {
                 code: uniquePromotionCodes,
-                rules: { id: { $in: prefilterTopValidRuleIds } },
+              },
+              {
+                // rules: { id: { $in: prefilterTopValidRuleIds } },
+                id: { $in: prefilteredPromotionIds },
               },
               {
                 is_automatic: true,
-                rules: { id: { $in: prefilterTopValidRuleIds } },
+                // rules: { id: { $in: prefilterTopValidRuleIds } },
+                id: { $in: prefilteredPromotionIds },
               },
             ],
           }

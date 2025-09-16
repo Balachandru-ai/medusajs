@@ -8,6 +8,7 @@ import {
 import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
+import { ExceptionConverter } from "@mikro-orm/core"
 
 jest.setTimeout(300000)
 
@@ -20,6 +21,190 @@ moduleIntegrationTestRunner({
     describe("Promotion Service: computeActions", () => {
       beforeEach(async () => {
         await createCampaigns(MikroOrmWrapper.forkManager())
+      })
+
+      it.only("should prefilter promotions by applicable rules", async () => {
+        // create 1000 automatic promotions with different rules, the first promotion does not have any top level rules
+        for (let i = 0; i < 10; i++) {
+          await createDefaultPromotion(service, {
+            code: "AUTOMATIC_PROMOTION_TEST_" + i,
+            is_automatic: true,
+            rules:
+              i === 0
+                ? []
+                : i === 9
+                ? [
+                    {
+                      attribute: "customer.id",
+                      operator: "in",
+                      values: ["customer"],
+                    },
+                  ]
+                : i === 2
+                ? [
+                    {
+                      attribute: "items.subtotal",
+                      operator: "gt",
+                      values: ["50"],
+                    },
+                  ]
+                : [
+                    {
+                      attribute: "customer.customer_group.id",
+                      operator: "in",
+                      values: ["VIP" + i],
+                    },
+                  ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules:
+                i === 2
+                  ? []
+                  : [
+                      {
+                        attribute: "product.id",
+                        operator: "eq",
+                        values: ["prod_tshirt" + i],
+                      },
+                    ],
+            },
+          })
+        }
+
+        // create 1000 non-automatic promotions with different rules
+        for (let i = 0; i < 10; i++) {
+          await createDefaultPromotion(service, {
+            code: "PROMOTION_TEST_" + i,
+            is_automatic: false,
+            rules: [
+              {
+                attribute: "customer.customer_group.id",
+                operator: "in",
+                values: ["VIP" + i],
+              },
+            ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [
+                {
+                  attribute: "product.id",
+                  operator: "eq",
+                  values: ["prod_tshirt" + i],
+                },
+              ],
+            },
+          })
+        }
+
+        const actions = await service.computeActions([], {
+          currency_code: "usd",
+          customer: {
+            id: "customer",
+            customer_group: {
+              id: "VIP1",
+            },
+          },
+          items: [
+            {
+              id: "item_cotton_tshirt0",
+              quantity: 1,
+              subtotal: 100,
+              product_category: {
+                id: "catg_cotton",
+              },
+              product: {
+                id: "prod_tshirt0",
+              },
+            },
+            {
+              id: "item_cotton_tshirt1",
+              quantity: 1,
+              subtotal: 100,
+              product_category: {
+                id: "catg_cotton",
+              },
+              product: {
+                id: "prod_tshirt1",
+              },
+            },
+            {
+              id: "item_cotton_tshirt9",
+              quantity: 5,
+              subtotal: 750,
+              product_category: {
+                id: "catg_cotton",
+              },
+              product: {
+                id: "prod_tshirt9",
+              },
+            },
+            {
+              id: "item_cotton_tshirt_unknown",
+              quantity: 1,
+              subtotal: 110,
+              product_category: {
+                id: "catg_cotton",
+              },
+              product: {
+                id: "prod_tshirt_unknown",
+              },
+            },
+          ] as any,
+        })
+
+        // 5 actions should be returned:
+        // 1. AUTOMATIC_PROMOTION_TEST_0: does not have global rule and match application method rule product.id
+        // 2. AUTOMATIC_PROMOTION_TEST_1: match global rule customer.customer_group.id and application method rule product.id
+        // 3. AUTOMATIC_PROMOTION_TEST_2 twice: match global rule items.subtotal and application method does not have any rule
+        // 4. AUTOMATIC_PROMOTION_TEST_9: match global rule customer.id and application method rule product.id
+        expect(actions.length).toBe(5)
+        expect(actions).toEqual(
+          expect.arrayContaining([
+            {
+              action: "addItemAdjustment",
+              item_id: "item_cotton_tshirt0",
+              amount: 100,
+              code: "AUTOMATIC_PROMOTION_TEST_0",
+              is_tax_inclusive: false,
+            },
+            {
+              action: "addItemAdjustment",
+              item_id: "item_cotton_tshirt1",
+              amount: 100,
+              code: "AUTOMATIC_PROMOTION_TEST_1",
+              is_tax_inclusive: false,
+            },
+            {
+              action: "addItemAdjustment",
+              item_id: "item_cotton_tshirt9",
+              amount: 500,
+              code: "AUTOMATIC_PROMOTION_TEST_2",
+              is_tax_inclusive: false,
+            },
+            {
+              action: "addItemAdjustment",
+              item_id: "item_cotton_tshirt_unknown",
+              amount: 100,
+              code: "AUTOMATIC_PROMOTION_TEST_2",
+              is_tax_inclusive: false,
+            },
+            {
+              action: "addItemAdjustment",
+              item_id: "item_cotton_tshirt9",
+              amount: 250,
+              code: "AUTOMATIC_PROMOTION_TEST_9",
+              is_tax_inclusive: false,
+            },
+          ])
+        )
       })
 
       it("should return empty array when promotion is not active (draft or inactive)", async () => {
@@ -125,7 +310,7 @@ moduleIntegrationTestRunner({
 
       describe("when promotion is for items and allocation is each", () => {
         describe("when application type is fixed", () => {
-          it.only("should compute the correct item amendments", async () => {
+          it("should compute the correct item amendments", async () => {
             await createDefaultPromotion(service, {
               rules: [
                 {
@@ -207,6 +392,17 @@ moduleIntegrationTestRunner({
                 items: [
                   {
                     id: "item_cotton_tshirt",
+                    quantity: 1,
+                    subtotal: 100,
+                    product_category: {
+                      id: "catg_cotton",
+                    },
+                    product: {
+                      id: "prod_tshirt",
+                    },
+                  },
+                  {
+                    id: "item_cotton_tshirt2",
                     quantity: 1,
                     subtotal: 100,
                     product_category: {
