@@ -12,7 +12,7 @@ import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
 
-jest.setTimeout(300000)
+jest.setTimeout(30000)
 
 moduleIntegrationTestRunner({
   moduleName: Modules.PROMOTION,
@@ -633,17 +633,6 @@ moduleIntegrationTestRunner({
                 items: [
                   {
                     id: "item_cotton_tshirt",
-                    quantity: 1,
-                    subtotal: 100,
-                    product_category: {
-                      id: "catg_cotton",
-                    },
-                    product: {
-                      id: "prod_tshirt",
-                    },
-                  },
-                  {
-                    id: "item_cotton_tshirt2",
                     quantity: 1,
                     subtotal: 100,
                     product_category: {
