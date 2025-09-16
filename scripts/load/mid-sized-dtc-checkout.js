@@ -6,10 +6,17 @@ import http from "k6/http"
 // let endpoint = __ENV.K6_ENDPOINT
 // let projectID = __ENV.K6_PROJECT_ID
 
+// let publishableKey =
+//   "pk_03823fccbc94952c4e2a6d045adb1b3479389ccacef6e4d5198c5e7b2a9dc4b5"
+// let regionId = "reg_01K4JKNGBA9HXBS57EJFSXY2X7"
+// let endpoint = "http://localhost:9000"
+
 let publishableKey =
-  "pk_03823fccbc94952c4e2a6d045adb1b3479389ccacef6e4d5198c5e7b2a9dc4b5"
-let regionId = "reg_01K4JKNGBA9HXBS57EJFSXY2X7"
-let endpoint = "http://localhost:9000"
+  "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
+let regionId = "reg_01K2ZDG12VKJ64F2NFTNW7Y8AT"
+let endpoint = "https://dtc-starter-preview.medusajs.app"
+// let endpoint = "https://dtc-starter.medusajs.app"
+let projectId = 4475269
 
 const params = {
   headers: {
@@ -21,7 +28,7 @@ const params = {
 export const options = {
   cloud: {
     projectID: projectId,
-    name: `Load test, simulating mid-sized DTC ${new Date().toLocaleString()}`,
+    name: `Version 2.10.2, ${new Date().toLocaleString()} (local execution)`,
   },
   scenarios: {
     browseCatalog: {
