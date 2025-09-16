@@ -60,7 +60,7 @@
   "scripts": {
     "build": "rimraf dist && tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --runInBand --bail --forceExit",
+    "test": "jest --bail --forceExit",
     "test:run": "node ./dist/utils/_playground.js"
   }
 }

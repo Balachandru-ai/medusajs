@@ -28,7 +28,7 @@
     "watch:test": "tsc --build tsconfig.spec.json --watch",
     "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
     "build": "rimraf dist && tsc --build && npm run resolve:aliases",
-    "test": "jest --runInBand --bail --passWithNoTests --forceExit -- src",
+    "test": "jest --bail --passWithNoTests --forceExit -- src",
     "test:integration": "jest --forceExit -- integration-tests/**/__tests__/**/*.ts",
     "migration:generate": "MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.dev.ts medusa-mikro-orm migration:generate",
     "migration:initial": "MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.dev.ts medusa-mikro-orm migration:create --initial",
