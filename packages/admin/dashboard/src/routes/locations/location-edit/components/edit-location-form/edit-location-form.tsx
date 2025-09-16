@@ -4,9 +4,9 @@ import { Button, Input, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
-
+import { countries } from "../../../../../lib/data/countries"
 import { Form } from "../../../../../components/common/form"
-import { CountrySelect } from "../../../../../components/inputs/country-select"
+import { Select } from "@medusajs/ui"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdateStockLocation } from "../../../../../hooks/api/stock-locations"
@@ -163,7 +163,29 @@ export const EditLocationForm = ({ location }: EditLocationFormProps) => {
                   <Form.Item>
                     <Form.Label>{t("fields.country")}</Form.Label>
                     <Form.Control>
-                      <CountrySelect {...field} />
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <Select.Trigger>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Content>
+                          {countries.map((country) => {
+                            if (!country.iso_2) {
+                              return null
+                            }
+                            return (
+                              <Select.Item
+                                key={country.iso_2}
+                                value={country.iso_2}
+                              >
+                                {country.display_name}
+                              </Select.Item>
+                            )
+                          })}
+                        </Select.Content>
+                      </Select>
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
