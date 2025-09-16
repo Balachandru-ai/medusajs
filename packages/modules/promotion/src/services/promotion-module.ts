@@ -1,8 +1,5 @@
 import {
   CampaignBudgetTypeValues,
-  ComputeActionContext,
-  ComputeActionItemLine,
-  ComputeActionShippingLine,
   Context,
   DAL,
   FilterablePromotionProps,
@@ -22,7 +19,6 @@ import {
   ComputedActions,
   deduplicate,
   EmitEvents,
-  flattenObjectToKeyValuePairs,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -66,7 +62,6 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
-import { raw } from "@mikro-orm/postgresql"
 import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
