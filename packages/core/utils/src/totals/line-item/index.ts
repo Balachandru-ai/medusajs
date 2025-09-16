@@ -33,6 +33,7 @@ export interface GetItemTotalOutput {
   unit_price: BigNumber
 
   subtotal: BigNumber
+  original_subtotal: BigNumber
 
   total: BigNumber
   original_total: BigNumber
@@ -187,9 +188,18 @@ function getLineItemTotals(
       )
     ),
 
+    original_subtotal: new BigNumber(
+      MathBN.sub(
+        isTaxInclusive
+          ? currentTotalItemPrice
+          : MathBN.add(currentSubtotal, originalTaxTotal),
+        originalTaxTotal
+      )
+    ),
+
     original_total: new BigNumber(
       isTaxInclusive
-        ? currentSubtotal
+        ? currentTotalItemPrice
         : MathBN.add(currentSubtotal, originalTaxTotal)
     ),
 

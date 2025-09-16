@@ -209,6 +209,10 @@ export function decorateCartTotals(
 
   // TODO: Gift Card calculations
   const originalTotal = MathBN.add(itemsOriginalTotal, shippingOriginalTotal)
+  const originalSubtotal = MathBN.add(
+    itemsOriginalSubtotal,
+    shippingOriginalSubtotal
+  )
 
   // TODO: subtract (cart.gift_card_total + cart.gift_card_tax_total)
   const tempTotal = MathBN.add(subtotal, taxTotal)
@@ -232,6 +236,7 @@ export function decorateCartTotals(
   // cart.gift_card_tax_total = giftCardTotal.tax_total || 0
 
   cart.original_total = new BigNumber(originalTotal)
+  cart.original_subtotal = new BigNumber(originalSubtotal)
   cart.original_tax_total = new BigNumber(originalTaxTotal)
 
   // cart.original_gift_card_total =
