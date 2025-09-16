@@ -28,6 +28,7 @@ import { updateOrderChangesStep } from "../../steps/update-order-changes"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInOrder,
+  throwIfManagedItemsNotStockedAtReturnLocation,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
@@ -110,42 +111,11 @@ export const orderClaimRequestItemReturnValidationStep = createStep(
     throwIfIsCancelled(orderReturn, "Return")
     throwIfOrderChangeIsNotActive({ orderChange })
     throwIfItemsDoesNotExistsInOrder({ order, inputItems: items })
-
-    const inputItemIds = new Set(items.map((i) => i.id))
-
-    const invalidManagedItems: string[] = []
-    const requestedOrderItems =
-      order.items?.filter((oi: any) => inputItemIds.has(oi.id)) ?? []
-
-    for (const orderItem of requestedOrderItems) {
-      const variant = (orderItem as any)?.variant
-      if (!variant?.manage_inventory) {
-        continue
-      }
-
-      let hasStockAtLocation = false
-      deepFlatMap(
-        orderItem,
-        "variant.inventory_items.inventory.location_levels",
-        ({ location_levels }) => {
-          if (location_levels?.location_id === orderReturn.location_id) {
-            hasStockAtLocation = true
-          }
-        }
-      )
-
-      if (!hasStockAtLocation) {
-        invalidManagedItems.push(orderItem.id)
-      }
-    }
-
-    if (invalidManagedItems.length) {
-      throw new Error(
-        `Cannot request item return at location ${
-          orderReturn.location_id
-        } for managed inventory items: ${invalidManagedItems.join(", ")}`
-      )
-    }
+    throwIfManagedItemsNotStockedAtReturnLocation({
+      order,
+      orderReturn,
+      inputItems: items,
+    })
   }
 )
 

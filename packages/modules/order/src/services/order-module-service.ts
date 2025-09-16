@@ -373,6 +373,7 @@ export default class OrderModuleService
       "credit_line_total",
       "credit_line_tax_total",
       "credit_line_subtotal",
+      "refundable_amount",
     ]
 
     const includeTotals = (config?.select ?? []).some((field) =>
