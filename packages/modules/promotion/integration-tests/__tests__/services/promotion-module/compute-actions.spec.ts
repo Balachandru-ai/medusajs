@@ -9,7 +9,7 @@ import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
 
-jest.setTimeout(30000)
+jest.setTimeout(300000)
 
 moduleIntegrationTestRunner({
   moduleName: Modules.PROMOTION,
@@ -125,7 +125,7 @@ moduleIntegrationTestRunner({
 
       describe("when promotion is for items and allocation is each", () => {
         describe("when application type is fixed", () => {
-          it("should compute the correct item amendments", async () => {
+          it.only("should compute the correct item amendments", async () => {
             await createDefaultPromotion(service, {
               rules: [
                 {

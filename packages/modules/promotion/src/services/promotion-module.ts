@@ -1,5 +1,8 @@
 import {
   CampaignBudgetTypeValues,
+  ComputeActionContext,
+  ComputeActionItemLine,
+  ComputeActionShippingLine,
   Context,
   DAL,
   FilterablePromotionProps,
@@ -19,6 +22,7 @@ import {
   ComputedActions,
   deduplicate,
   EmitEvents,
+  flattenObjectToKeyValuePairs,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -413,8 +417,11 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.ComputeActions[]> {
     const { prevent_auto_promotions: preventAutoPromotions } = options
     const computedActions: PromotionTypes.ComputeActions[] = []
-    const { items = [], shipping_methods: shippingMethods = [] } =
-      applicationContext
+    const {
+      items = [],
+      shipping_methods: shippingMethods = [],
+      ...restContext
+    } = applicationContext
 
     const codeAdjustmentMap = new Map<
       string,
@@ -461,11 +468,157 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    const queryFilter = preventAutoPromotions
-      ? { code: uniquePromotionCodes }
-      : {
-          $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
+    /**
+     * TEST
+     */
+
+    const flattenItemsPropsValuesArray = flattenObjectToKeyValuePairs(
+      items
+    ) as Record<keyof ComputeActionItemLine & string, any>
+
+    const flattenShippingMethodsPropsValuesArray = flattenObjectToKeyValuePairs(
+      shippingMethods
+    ) as Record<keyof ComputeActionShippingLine & string, any>
+
+    const flattenRestContextPropsValuesArray = flattenObjectToKeyValuePairs(
+      restContext
+    ) as Record<keyof ComputeActionContext & string, any>
+
+    const uniqueItemsAttributes = Array.from(
+      new Set(Object.keys(flattenItemsPropsValuesArray))
+    )
+    const uniqueShippingMethodsAttributes = Array.from(
+      new Set(Object.keys(flattenShippingMethodsPropsValuesArray))
+    )
+    const uniqueRestContextAttributes = Array.from(
+      new Set(Object.keys(flattenRestContextPropsValuesArray))
+    )
+
+    const allUniqueAttributes = [
+      ...uniqueItemsAttributes,
+      ...uniqueShippingMethodsAttributes,
+      ...uniqueRestContextAttributes,
+    ]
+
+    const rulePrefilteringFilters: {
+      rules?: {
+        attribute: string
+        values?: Record<string, any>
+      }
+    }[] = []
+
+    for (const attribute of allUniqueAttributes) {
+      const targetItems = Object.entries(flattenItemsPropsValuesArray).filter(
+        ([itemProp]) => itemProp === attribute
+      )
+      if (targetItems.length) {
+        for (const [, itemValue] of targetItems) {
+          rulePrefilteringFilters.push({
+            rules: {
+              attribute: attribute,
+              values: {
+                value: {
+                  $some: {
+                    $in: Array.isArray(itemValue) ? itemValue : [itemValue],
+                  },
+                },
+              },
+            },
+          })
         }
+      }
+
+      const targetShippingMethods = Object.entries(
+        flattenShippingMethodsPropsValuesArray
+      ).filter(([shippingMethodProp]) => shippingMethodProp === attribute)
+      if (targetShippingMethods.length) {
+        for (const [, shippingMethodValue] of targetShippingMethods) {
+          rulePrefilteringFilters.push({
+            rules: {
+              attribute: attribute,
+              values: {
+                value: {
+                  $some: {
+                    $in: Array.isArray(shippingMethodValue)
+                      ? shippingMethodValue
+                      : [shippingMethodValue],
+                  },
+                },
+              },
+            },
+          })
+        }
+      }
+
+      const targetRestContext = Object.entries(
+        flattenRestContextPropsValuesArray
+      ).filter(([itemProp]) => itemProp === attribute)
+      if (targetRestContext.length) {
+        for (const [, restItemValue] of targetRestContext) {
+          rulePrefilteringFilters.push({
+            rules: {
+              attribute: attribute,
+              values: {
+                value: {
+                  $some: {
+                    $in: Array.isArray(restItemValue)
+                      ? restItemValue
+                      : [restItemValue],
+                  },
+                },
+              },
+            },
+          })
+        }
+      }
+    }
+
+    const hasRulesPreFilter = !!rulePrefilteringFilters.length
+    let prefilterTopValidRuleIds: string[] = []
+
+    if (hasRulesPreFilter) {
+      const promotions = await this.promotionService_.list(
+        { $or: rulePrefilteringFilters },
+        { select: ["rules.id"], relations: ["rules"] },
+        sharedContext
+      )
+      const ruleIds = promotions.flatMap((promotion) =>
+        promotion.rules.map((rule) => rule.id)
+      )
+      prefilterTopValidRuleIds = ruleIds
+    }
+
+    /**
+     * END TEST
+     */
+
+    let queryFilter
+
+    if (prefilterTopValidRuleIds.length) {
+      queryFilter = preventAutoPromotions
+        ? {
+            code: uniquePromotionCodes,
+            rules: { id: { $in: prefilterTopValidRuleIds } },
+          }
+        : {
+            $or: [
+              {
+                code: uniquePromotionCodes,
+                rules: { id: { $in: prefilterTopValidRuleIds } },
+              },
+              {
+                is_automatic: true,
+                rules: { id: { $in: prefilterTopValidRuleIds } },
+              },
+            ],
+          }
+    } else {
+      queryFilter = preventAutoPromotions
+        ? { code: uniquePromotionCodes }
+        : {
+            $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
+          }
+    }
 
     const promotions = await this.listActivePromotions_(
       queryFilter,
