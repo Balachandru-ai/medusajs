@@ -12,7 +12,7 @@ import {
   AdditionalData,
   ListShippingOptionsForCartWorkflowInput,
 } from "@medusajs/types"
-import { filterObjectByKeys, isDefined } from "@medusajs/framework/utils"
+import { deduplicate, filterObjectByKeys, isDefined } from "@medusajs/framework/utils"
 import { pricingContextResult } from "../utils/schemas"
 
 export const listShippingOptionsForCartWorkflowId =
@@ -194,9 +194,9 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
       }
     )
 
-    const shippingOptions = useRemoteQueryStep({
-      entry_point: "shipping_options",
-      fields: [
+    const fields = transform(input, ({ fields }) => {
+      return deduplicate([
+        ...fields,
         "id",
         "name",
         "price_type",
@@ -224,7 +224,11 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
         "calculated_price.*",
         "prices.*",
         "prices.price_rules.*",
-      ],
+      ])
+    })
+    const shippingOptions = useRemoteQueryStep({
+      entry_point: "shipping_options",
+      fields,
       variables: queryVariables,
     }).config({ name: "shipping-options-query" })
 
