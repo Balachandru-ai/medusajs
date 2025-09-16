@@ -96,7 +96,7 @@ moduleIntegrationTestRunner({
         })
 
         // 4. Promotion matching customer.id
-        const promotionCustomerId = await createDefaultPromotion(service, {
+        await createDefaultPromotion(service, {
           code: "CUSTOMER_ID_PROMO",
           is_automatic: true,
           rules: [
@@ -150,7 +150,7 @@ moduleIntegrationTestRunner({
         })
 
         // 6. Non-automatic promotion (should be excluded from automatic processing)
-        createDefaultPromotion(service, {
+        await createDefaultPromotion(service, {
           code: "NON_AUTO_PROMO",
           is_automatic: false, // Not automatic
           rules: [
@@ -177,7 +177,7 @@ moduleIntegrationTestRunner({
         })
 
         // 6. Non-automatic promotion that do not match any rules (should be excluded from automatic processing and internal pre filtering)
-        createDefaultPromotion(service, {
+        await createDefaultPromotion(service, {
           code: "NON_AUTO_PROMO_2",
           is_automatic: false, // Not automatic
           rules: [
@@ -271,7 +271,6 @@ moduleIntegrationTestRunner({
             "CUSTOMER_GROUP_PROMO", // customer.customer_group.id = VIP1
             "SUBTOTAL_PROMO", // items.subtotal > 50
             "CUSTOMER_ID_PROMO", // customer.id = customer
-            "NON_AUTO_PROMO", // Matches customer group but not automatic and no code will be provided so it wont be part of the actions
           ])
         )
 

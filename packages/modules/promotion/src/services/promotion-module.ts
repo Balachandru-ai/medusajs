@@ -466,65 +466,46 @@ export default class PromotionModuleService
       buildPromotionRuleQueryFilterFromContext(applicationContext)
 
     const hasRulesPreFilter = !!rulePrefilteringFilters.length
-    let prefilteredPromotionIds: string[] = []
+    let prefilteredAutomaticPromotionIds: string[] = []
 
-    if (hasRulesPreFilter) {
+    if (hasRulesPreFilter && !preventAutoPromotions) {
       const promotions = await this.promotionService_.list(
-        preventAutoPromotions
-          ? {
-              $and: [
-                { is_automatic: false },
-                {
-                  $or: [
-                    ...rulePrefilteringFilters,
-                    { rules: { $eq: null } }, // Include promotions with no rules
-                  ],
-                },
-              ],
-            }
-          : {
+        {
+          $and: [
+            { is_automatic: true },
+            {
               $or: [
                 ...rulePrefilteringFilters,
-                { rules: { $eq: null } }, // Include promotions with no rules
+                { rules: { $eq: null } }, // Include automatic promotions with no rules
               ],
             },
+          ],
+        },
         { select: ["id"] },
         sharedContext
       )
 
-      prefilteredPromotionIds = promotions.map((promotion) => promotion.id!)
+      prefilteredAutomaticPromotionIds = promotions.map(
+        (promotion) => promotion.id!
+      )
     }
 
     let queryFilter
 
-    if (prefilteredPromotionIds.length) {
-      queryFilter = preventAutoPromotions
-        ? {
-            $or: [
-              { code: uniquePromotionCodes },
-              { id: { $in: prefilteredPromotionIds } },
-            ],
-          }
-        : {
-            $or: [
-              {
-                code: uniquePromotionCodes,
-              },
-              {
-                id: { $in: prefilteredPromotionIds },
-              },
-              {
-                is_automatic: true,
-                id: { $in: prefilteredPromotionIds },
-              },
-            ],
-          }
+    if (preventAutoPromotions) {
+      queryFilter = { code: uniquePromotionCodes }
     } else {
-      queryFilter = preventAutoPromotions
-        ? { code: uniquePromotionCodes }
-        : {
-            $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
-          }
+      const automaticPromotionFilter =
+        hasRulesPreFilter && prefilteredAutomaticPromotionIds.length
+          ? {
+              is_automatic: true,
+              id: { $in: prefilteredAutomaticPromotionIds },
+            }
+          : { is_automatic: true }
+
+      queryFilter = {
+        $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
+      }
     }
 
     const promotions = await this.listActivePromotions_(
