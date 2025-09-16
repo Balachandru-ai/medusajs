@@ -1,4 +1,7 @@
-import { IPromotionModuleService } from "@medusajs/framework/types"
+import {
+  InferEntityType,
+  IPromotionModuleService,
+} from "@medusajs/framework/types"
 import {
   ApplicationMethodType,
   Modules,
@@ -8,7 +11,7 @@ import {
 import { moduleIntegrationTestRunner, SuiteOptions } from "@medusajs/test-utils"
 import { createCampaigns } from "../../../__fixtures__/campaigns"
 import { createDefaultPromotion } from "../../../__fixtures__/promotion"
-import { ExceptionConverter } from "@mikro-orm/core"
+import { Promotion } from "@models"
 
 jest.setTimeout(300000)
 
@@ -24,7 +27,7 @@ moduleIntegrationTestRunner({
       })
 
       it.only("should prefilter promotions by applicable rules", async () => {
-        // create 1000 automatic promotions with different rules, the first promotion does not have any top level rules
+        // create 10 automatic promotions with different rules, the first promotion does not have any top level rules
         for (let i = 0; i < 10; i++) {
           await createDefaultPromotion(service, {
             code: "AUTOMATIC_PROMOTION_TEST_" + i,
@@ -75,7 +78,7 @@ moduleIntegrationTestRunner({
           })
         }
 
-        // create 1000 non-automatic promotions with different rules
+        // create 10 non-automatic promotions with different rules
         for (let i = 0; i < 10; i++) {
           await createDefaultPromotion(service, {
             code: "PROMOTION_TEST_" + i,
@@ -102,6 +105,19 @@ moduleIntegrationTestRunner({
               ],
             },
           })
+        }
+
+        // manually spy on promotion promotionService_.list to expect the return value
+        let promotionListReturnValues!: InferEntityType<typeof Promotion>[]
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args) => {
+          const promotions = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+          promotionListReturnValues ??= promotions
+          return promotions
         }
 
         const actions = await service.computeActions([], {
@@ -160,49 +176,63 @@ moduleIntegrationTestRunner({
           ] as any,
         })
 
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // The internal service should return all valid promotions even
+        // if they dont pass the later check such as PROMOTION_TEST_1
+        expect(promotionListReturnValues).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_0" }),
+            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_1" }),
+            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_2" }),
+            expect.objectContaining({ code: "AUTOMATIC_PROMOTION_TEST_9" }),
+            expect.objectContaining({ code: "PROMOTION_TEST_1" }),
+          ])
+        )
+
         // 5 actions should be returned:
         // 1. AUTOMATIC_PROMOTION_TEST_0: does not have global rule and match application method rule product.id
         // 2. AUTOMATIC_PROMOTION_TEST_1: match global rule customer.customer_group.id and application method rule product.id
         // 3. AUTOMATIC_PROMOTION_TEST_2 twice: match global rule items.subtotal and application method does not have any rule
         // 4. AUTOMATIC_PROMOTION_TEST_9: match global rule customer.id and application method rule product.id
         expect(actions.length).toBe(5)
-        expect(actions).toEqual(
+        expect(JSON.parse(JSON.stringify(actions))).toEqual(
           expect.arrayContaining([
-            {
+            expect.objectContaining({
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt0",
               amount: 100,
               code: "AUTOMATIC_PROMOTION_TEST_0",
               is_tax_inclusive: false,
-            },
-            {
+            }),
+            expect.objectContaining({
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt1",
               amount: 100,
               code: "AUTOMATIC_PROMOTION_TEST_1",
               is_tax_inclusive: false,
-            },
-            {
+            }),
+            expect.objectContaining({
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt9",
               amount: 500,
               code: "AUTOMATIC_PROMOTION_TEST_2",
               is_tax_inclusive: false,
-            },
-            {
+            }),
+            expect.objectContaining({
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt_unknown",
               amount: 100,
               code: "AUTOMATIC_PROMOTION_TEST_2",
               is_tax_inclusive: false,
-            },
-            {
+            }),
+            expect.objectContaining({
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt9",
               amount: 250,
               code: "AUTOMATIC_PROMOTION_TEST_9",
               is_tax_inclusive: false,
-            },
+            }),
           ])
         )
       })
