@@ -19,7 +19,7 @@ The Google Auth Module Provider allows you to authenticate users with their Goog
       link: "https://cloud.google.com/resource-manager/docs/creating-managing-projects"
     },
     {
-      text: "Create authorization credentials. When setting the Redirect Uri, set it to a URL in your frontend that later uses Medusa's callback route to validate the authentication.",
+      text: "Create Oauth client ID credentials. When setting the Redirect Uri, set it to a URL in your frontend (for example, storefront) that later uses Medusa's callback route to validate the authentication.",
       link: "https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred"
     }
   ]}
@@ -35,25 +35,27 @@ import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 module.exports = defineConfig({
   // ...
   modules: [
+    // ...
     {
-      // ...
-      [Modules.AUTH]: {
-        resolve: "@medusajs/medusa/auth",
-        dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
-        options: {
-          providers: [
-            // other providers...
-            {
-              resolve: "@medusajs/medusa/auth-google",
-              id: "google",
-              options: {
-                clientId: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackUrl: process.env.GOOGLE_CALLBACK_URL,
-              },
+      resolve: "@medusajs/medusa/auth",
+      dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
+      options: {
+        providers: [
+          // other providers...
+          {
+            resolve: "@medusajs/medusa/auth-emailpass",
+            id: "emailpass",
+          },
+          {
+            resolve: "@medusajs/medusa/auth-google",
+            id: "google",
+            options: {
+              clientId: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              callbackUrl: process.env.GOOGLE_CALLBACK_URL,
             },
-          ],
-        },
+          },
+        ],
       },
     },
   ],
