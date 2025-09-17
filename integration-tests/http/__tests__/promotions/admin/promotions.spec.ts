@@ -939,7 +939,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.only("should add an automatic promotion and after cart update, should delete the adjustment and create a new one for the automatic promotion", async () => {
+          it("should add an automatic promotion and after cart update, should delete the adjustment and create a new one for the automatic promotion", async () => {
             const publishableKey = await generatePublishableKey(appContainer)
             const storeHeaders = generateStoreHeaders({ publishableKey })
 
