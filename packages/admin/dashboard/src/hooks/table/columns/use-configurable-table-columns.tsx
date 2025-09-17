@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { createDataTableColumnHelper } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
+import { useTranslation } from "react-i18next"
 import { getCellRenderer, getColumnValue } from "../../../lib/table/cell-renderers"
 
 export interface ColumnAdapter<TData> {
@@ -15,6 +16,7 @@ export function useConfigurableTableColumns<TData = any>(
   adapter?: ColumnAdapter<TData>
 ) {
   const columnHelper = createDataTableColumnHelper<TData>()
+  const { t } = useTranslation()
 
   return useMemo(() => {
     if (!apiColumns?.length) {
@@ -22,22 +24,16 @@ export function useConfigurableTableColumns<TData = any>(
     }
 
     return apiColumns.map(apiColumn => {
-      // Get the cell renderer for this column
-      // Check semantic_type for special rendering
-      let renderType = apiColumn.render_type || apiColumn.computed?.type
+      let renderType = apiColumn.computed?.type
 
-      // Map semantic types to render types
       if (!renderType) {
         if (apiColumn.semantic_type === 'timestamp') {
           renderType = 'timestamp'
         } else if (apiColumn.field === 'display_id') {
-          // Special case for display_id
           renderType = 'display_id'
         } else if (apiColumn.field === 'total') {
-          // Special case for total field
           renderType = 'total'
         } else if (apiColumn.semantic_type === 'currency') {
-          // General currency fields
           renderType = 'currency'
         }
       }
@@ -47,21 +43,18 @@ export function useConfigurableTableColumns<TData = any>(
         apiColumn.data_type
       )
 
-      // Determine header alignment
       const headerAlign = adapter?.getColumnAlignment
         ? adapter.getColumnAlignment(apiColumn)
         : getDefaultColumnAlignment(apiColumn)
 
-      // Create accessor function
       const accessor = (row: TData) => getColumnValue(row, apiColumn)
 
       return columnHelper.accessor(accessor, {
         id: apiColumn.field,
         header: () => apiColumn.name,
-        cell: ({ getValue, row }) => {
+        cell: ({ getValue, row }: { getValue: any, row: any }) => {
           const value = getValue()
 
-          // Allow adapter to transform the value first
           if (adapter?.transformCellValue) {
             const transformed = adapter.transformCellValue(value, row.original, apiColumn)
             if (transformed !== null) {
@@ -69,8 +62,7 @@ export function useConfigurableTableColumns<TData = any>(
             }
           }
 
-          // Use the renderer to display the value
-          return renderer(value, row.original, apiColumn)
+          return renderer(value, row.original, apiColumn, t)
         },
         meta: {
           name: apiColumn.name,
@@ -81,21 +73,18 @@ export function useConfigurableTableColumns<TData = any>(
         headerAlign, // Pass the header alignment to the DataTable
       } as any)
     })
-  }, [entity, apiColumns, adapter])
+  }, [entity, apiColumns, adapter, t])
 }
 
 function getDefaultColumnAlignment(column: HttpTypes.AdminColumn): "left" | "center" | "right" {
-  // Currency columns should be right-aligned
   if (column.semantic_type === "currency" || column.data_type === "currency") {
     return "right"
   }
 
-  // Number columns should be right-aligned (except identifiers)
   if (column.data_type === "number" && column.context !== "identifier") {
     return "right"
   }
 
-  // Total/amount/price columns should be right-aligned
   if (
     column.field.includes("total") ||
     column.field.includes("amount") ||
@@ -106,18 +95,15 @@ function getDefaultColumnAlignment(column: HttpTypes.AdminColumn): "left" | "cen
     return "right"
   }
 
-  // Status columns should be center-aligned
   if (column.semantic_type === "status") {
     return "center"
   }
 
-  // Country columns should be center-aligned
   if (column.computed?.type === "country_code" ||
     column.field === "country" ||
     column.field.includes("country_code")) {
     return "center"
   }
 
-  // Default to left alignment
   return "left"
 }

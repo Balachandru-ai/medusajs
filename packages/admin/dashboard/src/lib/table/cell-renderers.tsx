@@ -3,67 +3,62 @@ import { Badge, StatusBadge, Tooltip } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
 import ReactCountryFlag from "react-country-flag"
 import { getCountryByIso2 } from "../data/countries"
-
-// Import product-specific cell components
 import { ProductCell } from "../../components/table/table-cells/product/product-cell"
 import { CollectionCell } from "../../components/table/table-cells/product/collection-cell"
 import { SalesChannelsCell } from "../../components/table/table-cells/product/sales-channels-cell"
 import { VariantCell } from "../../components/table/table-cells/product/variant-cell"
 import { ProductStatusCell } from "../../components/table/table-cells/product/product-status-cell"
-
-// Import common cell components
 import { DateCell } from "../../components/table/table-cells/common/date-cell"
-
-// Import order-specific cell components
 import { DisplayIdCell } from "../../components/table/table-cells/order/display-id-cell"
 import { TotalCell } from "../../components/table/table-cells/order/total-cell"
 import { MoneyAmountCell } from "../../components/table/table-cells/common/money-amount-cell"
+import { TFunction } from "i18next"
 
-// Type definitions
 export type CellRenderer<TData = any> = (
   value: any,
   row: TData,
-  column: HttpTypes.AdminColumn
+  column: HttpTypes.AdminColumn,
+  t?: TFunction
 ) => React.ReactNode
 
 export type RendererRegistry = Map<string, CellRenderer>
 
-// Create the registry
 const cellRenderers: RendererRegistry = new Map()
 
-// Helper function to get nested value from object using dot notation
 const getNestedValue = (obj: any, path: string) => {
   return path.split('.').reduce((current, key) => current?.[key], obj)
 }
 
-// Built-in generic renderers
-const TextRenderer: CellRenderer = (value) => {
+const TextRenderer: CellRenderer = (value, _row, _column, _t) => {
   if (value === null || value === undefined) return '-'
   return String(value)
 }
 
-const CountRenderer: CellRenderer = (value, row, column) => {
-  // Handle different count scenarios
+const CountRenderer: CellRenderer = (value, row, column, t) => {
   if (column.field === 'variants_count' || column.field === 'variants') {
     const variants = row.variants || []
     const count = Array.isArray(variants) ? variants.length : 0
+    if (t) {
+      return count === 1 ? t('products.variantCount_one', '{{count}} variant', { count }) : t('products.variantCount_other', '{{count}} variants', { count })
+    }
     return `${count} ${count === 1 ? 'variant' : 'variants'}`
   }
-  
-  // Generic count
+
   const items = value || []
   const count = Array.isArray(items) ? items.length : 0
+  if (t) {
+    return count === 1 ? t('general.items_one', '{{count}} item', { count }) : t('general.items_other', '{{count}} items', { count })
+  }
   return `${count} ${count === 1 ? 'item' : 'items'}`
 }
 
-const StatusRenderer: CellRenderer = (value, row, column) => {
+const StatusRenderer: CellRenderer = (value, row, column, t) => {
   if (!value) return '-'
-  
-  // For product status specifically (check if it's a product by looking for product-specific fields)
+
   if (column.field === 'status' && row.status && (row.handle || row.is_giftcard !== undefined)) {
     return <ProductStatusCell status={row.status} />
   }
-  
+
   // Generic status badge
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -86,26 +81,50 @@ const StatusRenderer: CellRenderer = (value, row, column) => {
         return 'grey'
     }
   }
-  
+
+  // Use existing translation keys where available
+  const getTranslatedStatus = (status: string): string => {
+    if (!t) return status
+    
+    const lowerStatus = status.toLowerCase()
+    switch (lowerStatus) {
+      case 'active':
+        return t('general.active', 'Active') as string
+      case 'published':
+        return t('products.productStatus.published', 'Published') as string
+      case 'draft':
+        return t('orders.status.draft', 'Draft') as string
+      case 'pending':
+        return t('orders.status.pending', 'Pending') as string
+      case 'canceled':
+        return t('orders.status.canceled', 'Canceled') as string
+      default:
+        // Try generic status translation with fallback
+        return t(`status.${lowerStatus}`, status) as string
+    }
+  }
+
+  const translatedValue = getTranslatedStatus(value)
+
   return (
     <StatusBadge color={getStatusColor(value)}>
-      {value}
+      {translatedValue}
     </StatusBadge>
   )
 }
 
-const BadgeListRenderer: CellRenderer = (value, row, column) => {
+const BadgeListRenderer: CellRenderer = (value, row, column, t) => {
   // For sales channels
   if (column.field === 'sales_channels_display' || column.field === 'sales_channels') {
     return <SalesChannelsCell salesChannels={row.sales_channels} />
   }
-  
+
   // Generic badge list
   if (!Array.isArray(value)) return '-'
-  
+
   const items = value.slice(0, 2)
   const remaining = value.length - 2
-  
+
   return (
     <div className="flex gap-1">
       {items.map((item, index) => (
@@ -115,101 +134,87 @@ const BadgeListRenderer: CellRenderer = (value, row, column) => {
       ))}
       {remaining > 0 && (
         <Badge size="xsmall" color="grey">
-          +{remaining}
+          {t ? t('general.plusCountMore', '+ {{count}} more', { count: remaining }) : `+${remaining}`}
         </Badge>
       )}
     </div>
   )
 }
 
-// Product-specific renderers
-const ProductInfoRenderer: CellRenderer = (value, row) => {
-  // Use the existing ProductCell component
+const ProductInfoRenderer: CellRenderer = (_, row, _column, _t) => {
   return <ProductCell product={row} />
 }
 
-const CollectionRenderer: CellRenderer = (value, row) => {
-  // Use the existing CollectionCell component
+const CollectionRenderer: CellRenderer = (_, row, _column, _t) => {
   return <CollectionCell collection={row.collection} />
 }
 
-const VariantsRenderer: CellRenderer = (value, row) => {
-  // Use the existing VariantCell component
+const VariantsRenderer: CellRenderer = (_, row, _column, _t) => {
   return <VariantCell variants={row.variants} />
 }
 
 // Order-specific renderers
-const CustomerNameRenderer: CellRenderer = (value, row) => {
-  // Try customer object first
+const CustomerNameRenderer: CellRenderer = (_, row, _column, t) => {
   if (row.customer?.first_name || row.customer?.last_name) {
     const fullName = `${row.customer.first_name || ''} ${row.customer.last_name || ''}`.trim()
     if (fullName) return fullName
   }
-  
+
   // Fall back to email
   if (row.customer?.email) {
     return row.customer.email
   }
-  
+
   // Fall back to phone
   if (row.customer?.phone) {
     return row.customer.phone
   }
-  
-  return 'Guest'
+
+  return t ? t('customers.guest', 'Guest') : 'Guest'
 }
 
-const AddressSummaryRenderer: CellRenderer = (value, row, column) => {
-  // Determine which address to use based on the column field
+const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
   let address = null
   if (column.field === 'shipping_address_display') {
     address = row.shipping_address
   } else if (column.field === 'billing_address_display') {
     address = row.billing_address
   } else {
-    // Fallback to shipping address if no specific field
     address = row.shipping_address || row.billing_address
   }
-  
+
   if (!address) return '-'
-  
-  // Build address parts in a meaningful order
+
   const parts = []
-  
-  // Include street address if available
+
   if (address.address_1) {
     parts.push(address.address_1)
   }
-  
-  // City, Province/State, Postal Code
+
   const locationParts = []
   if (address.city) locationParts.push(address.city)
   if (address.province) locationParts.push(address.province)
   if (address.postal_code) locationParts.push(address.postal_code)
-  
+
   if (locationParts.length > 0) {
     parts.push(locationParts.join(', '))
   }
-  
-  // Country
+
   if (address.country_code) {
     parts.push(address.country_code.toUpperCase())
   }
-  
+
   return parts.join(' • ') || '-'
 }
 
-const CountryCodeRenderer: CellRenderer = (value, row) => {
-  // Get country code from shipping address
+const CountryCodeRenderer: CellRenderer = (_, row, _column, _t) => {
   const countryCode = row.shipping_address?.country_code
-  
+
   if (!countryCode) return <div className="flex w-full justify-center">-</div>
-  
-  // Get country information
+
   const country = getCountryByIso2(countryCode)
   const displayName = country?.display_name || countryCode.toUpperCase()
-  
-  // Display country flag with tooltip - centered in the cell
+
   return (
     <div className="flex w-full items-center justify-center">
       <Tooltip content={displayName}>
@@ -229,28 +234,21 @@ const CountryCodeRenderer: CellRenderer = (value, row) => {
   )
 }
 
-const DateRenderer: CellRenderer = (value) => {
-  // DateCell component handles null/undefined values
+const DateRenderer: CellRenderer = (value, _row, _column, _t) => {
   return <DateCell date={value} />
 }
 
-const DisplayIdRenderer: CellRenderer = (value) => {
-  // DisplayIdCell component handles null/undefined values
+const DisplayIdRenderer: CellRenderer = (value, _row, _column, _t) => {
   return <DisplayIdCell displayId={value} />
 }
 
-const CurrencyRenderer: CellRenderer = (value, row) => {
-  // For total field specifically, we need the currency code from the row
+const CurrencyRenderer: CellRenderer = (value, row, _column, _t) => {
   const currencyCode = row.currency_code || 'USD'
-  
-  // MoneyAmountCell handles formatting and alignment
   return <MoneyAmountCell currencyCode={currencyCode} amount={value} align="right" />
 }
 
-const TotalRenderer: CellRenderer = (value, row) => {
-  // TotalCell needs both total and currency code
+const TotalRenderer: CellRenderer = (value, row, _column, _t) => {
   const currencyCode = row.currency_code || 'USD'
-  
   return <TotalCell currencyCode={currencyCode} total={value} />
 }
 
@@ -276,17 +274,14 @@ cellRenderers.set('address_summary', AddressSummaryRenderer)
 cellRenderers.set('country_code', CountryCodeRenderer)
 cellRenderers.set('display_id', DisplayIdRenderer)
 
-// Export functions
 export function getCellRenderer(
   renderType?: string,
   dataType?: string
 ): CellRenderer {
-  // Try to get renderer by render type
   if (renderType && cellRenderers.has(renderType)) {
     return cellRenderers.get(renderType)!
   }
-  
-  // Fall back to data type defaults
+
   switch (dataType) {
     case 'number':
     case 'string':
@@ -294,7 +289,12 @@ export function getCellRenderer(
     case 'date':
       return DateRenderer
     case 'boolean':
-      return (value) => value ? 'Yes' : 'No'
+      return (value, _row, _column, t) => {
+        if (t) {
+          return value ? t('fields.yes', 'Yes') : t('fields.no', 'No')
+        }
+        return value ? 'Yes' : 'No'
+      }
     case 'enum':
       return StatusRenderer
     case 'currency':
@@ -308,14 +308,10 @@ export function registerCellRenderer(type: string, renderer: CellRenderer) {
   cellRenderers.set(type, renderer)
 }
 
-// Helper to get value for a column from a row
 export function getColumnValue(row: any, column: HttpTypes.AdminColumn): any {
-  // For computed columns, we might need to gather multiple fields
   if (column.computed) {
-    // Return the row itself for computed columns to have access to all data
     return row
   }
-  
-  // For regular fields, get the nested value
+
   return getNestedValue(row, column.field)
 }
