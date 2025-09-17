@@ -2,6 +2,7 @@ import {
   ComputeActionContext,
   ComputeActionItemLine,
   ComputeActionShippingLine,
+  DAL,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import { flattenObjectToKeyValuePairs } from "@medusajs/framework/utils"
@@ -10,15 +11,16 @@ import { raw } from "@mikro-orm/postgresql"
 /**
  * Builds a query filter for promotion rules based on the context.
  * This is used to prefilter promotions before computing actions.
- * It is mainly used to prevent loading all the data of all the promotions when computing actions
- * and potentially be smarter in rule querying
- * .
+ * The idea is that we first retrieve from the database the promotions where all rules can be
+ * satisfied by the given context. In other words, down there we actually check the promotion that
+ * are not satisfiable by the context and take all the other ones
+ *
  * @param context
  * @returns
  */
 export function buildPromotionRuleQueryFilterFromContext(
   context: PromotionTypes.ComputeActionContext
-) {
+): DAL.FilterQuery<any> {
   const {
     items = [],
     shipping_methods: shippingMethods = [],
@@ -66,125 +68,70 @@ export function buildPromotionRuleQueryFilterFromContext(
     })
   })
 
-  const rulePrefilteringFilters = Array.from(
-    attributeValueMap.entries()
-  ).flatMap(([attribute, valueSet]) => {
+  // Build conditions for a NOT EXISTS subquery to exclude promotions with unsatisfiable rules
+  const sqlConditions: string[] = []
+
+  attributeValueMap.forEach((valueSet, attribute) => {
     const values = Array.from(valueSet)
-    const stringValues = values.map((v) => `${v}`)
-    const filters: any[] = []
+    const stringValues = values
+      .map((v) => `'${v.toString().replace(/'/g, "''")}'`)
+      .join(",")
 
-    // For 'in' and 'eq' operators - direct value matching
-    filters.push({
-      rules: {
-        $and: [
-          { attribute },
-          { operator: { $in: ["in", "eq"] } },
-          {
-            values: {
-              value: { $in: stringValues },
-            },
-          },
-        ],
-      },
-    })
-
-    // For numeric comparison operators, handle both string and numeric values
     const numericValues = values
       .map((v) => {
         const num = Number(v)
         return !isNaN(num) ? num : null
       })
-      .filter((v) => v !== null)
+      .filter((v) => v !== null) as number[]
 
-    if (numericValues.length > 0) {
+    // For 'in' and 'eq' operators - rule is unsatisfiable if NO rule values overlap with context
+    // This requires checking that ALL rule values for a given rule are not in context
+    sqlConditions.push(
+      `(pr.attribute = '${attribute}' AND pr.operator IN ('in', 'eq') AND pr.id NOT IN (
+        SELECT DISTINCT prv_inner.promotion_rule_id
+        FROM promotion_rule_value prv_inner
+        WHERE prv_inner.value IN (${stringValues})
+      ))`
+    )
+
+    if (numericValues.length) {
       const minValue = Math.min(...numericValues)
       const maxValue = Math.max(...numericValues)
 
-      // For gt - context values should be greater than rule values
-      // This means: CAST(rule_value AS DECIMAL) < context_max_value
-      filters.push({
-        rules: {
-          $and: [
-            { attribute },
-            { operator: "gt" },
-            {
-              values: {
-                [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
-                  $lt: maxValue,
-                },
-              },
-            },
-          ],
-        },
-      })
+      // For gt - rule is unsatisfiable if rule_value >= context_max_value
+      sqlConditions.push(
+        `(pr.attribute = '${attribute}' AND pr.operator = 'gt' AND CAST(prv.value AS DECIMAL) >= ${maxValue})`
+      )
 
-      // For gte - context values should be greater than or equal to rule values
-      // This means: CAST(rule_value AS DECIMAL) <= context_max_value
-      filters.push({
-        rules: {
-          $and: [
-            { attribute },
-            { operator: "gte" },
-            {
-              values: {
-                $or: [
-                  { value: { $in: stringValues } },
-                  {
-                    [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
-                      $lte: maxValue,
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      })
+      // For gte - rule is unsatisfiable if rule_value > context_max_value
+      sqlConditions.push(
+        `(pr.attribute = '${attribute}' AND pr.operator = 'gte' AND prv.value NOT IN (${stringValues}) AND CAST(prv.value AS DECIMAL) > ${maxValue})`
+      )
 
-      // For lt - context values should be less than rule values
-      // This means: CAST(rule_value AS DECIMAL) > context_min_value
-      filters.push({
-        rules: {
-          $and: [
-            { attribute },
-            { operator: "lt" },
-            {
-              values: {
-                [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
-                  $gt: minValue,
-                },
-              },
-            },
-          ],
-        },
-      })
+      // For lt - rule is unsatisfiable if rule_value <= context_min_value
+      sqlConditions.push(
+        `(pr.attribute = '${attribute}' AND pr.operator = 'lt' AND CAST(prv.value AS DECIMAL) <= ${minValue})`
+      )
 
-      // For lte - context values should be less than or equal to rule values
-      // This means: CAST(rule_value AS DECIMAL) >= context_min_value
-      filters.push({
-        rules: {
-          $and: [
-            { attribute },
-            { operator: "lte" },
-            {
-              values: {
-                $or: [
-                  { value: { $in: stringValues } },
-                  {
-                    [raw((alias) => `CAST(${alias}.value AS DECIMAL)`)]: {
-                      $gte: minValue,
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      })
+      // For lte - rule is unsatisfiable if rule_value < context_min_value
+      sqlConditions.push(
+        `(pr.attribute = '${attribute}' AND pr.operator = 'lte' AND prv.value NOT IN (${stringValues}) AND CAST(prv.value AS DECIMAL) < ${minValue})`
+      )
     }
-
-    return filters
   })
 
-  return rulePrefilteringFilters
+  const notExistsSubquery = (alias: string) =>
+    `
+    NOT EXISTS (
+      SELECT 1 FROM promotion_promotion_rule ppr
+      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+      JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+      WHERE ppr.promotion_id = ${alias}.id
+      AND (${sqlConditions.join(" OR ")})
+    )
+  `.trim()
+
+  return {
+    [raw((alias) => notExistsSubquery(alias))]: true,
+  }
 }

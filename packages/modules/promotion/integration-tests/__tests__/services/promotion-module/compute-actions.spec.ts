@@ -231,6 +231,7 @@ moduleIntegrationTestRunner({
               id: "VIP1", // Matches CUSTOMER_GROUP_PROMO
             },
           },
+          region_id: "region_1",
           items: [
             {
               id: "item_tshirt0",
@@ -264,6 +265,7 @@ moduleIntegrationTestRunner({
         ;(service as any).promotionService_.list = originalPromotionServiceList
 
         // 1. Verify prefiltering worked - should include matching promotions
+        expect(prefilteredPromotions).toHaveLength(4)
         const prefilteredCodes = prefilteredPromotions.map((p) => p.code)
         expect(prefilteredCodes).toEqual(
           expect.arrayContaining([
@@ -326,7 +328,7 @@ moduleIntegrationTestRunner({
 
       it("should handle prefiltering of many automatic promotions targetting customers with only one that is relevant", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
-        // I ve also tested with 20k and the compute actions takes 200ms
+        // I ve also tested with 20k and the compute actions takes 200/300ms
         for (let i = 0; i < 100; i++) {
           promotionToCreate.push({
             code: "CUSTOMER_PROMO_" + i,
@@ -336,6 +338,11 @@ moduleIntegrationTestRunner({
                 attribute: "customer.id",
                 operator: "eq",
                 values: ["customer" + i], // Matches our test customer1
+              },
+              {
+                attribute: "region_id",
+                operator: "eq",
+                values: ["region_1"], // matches our region
               },
             ],
             application_method: {
@@ -385,6 +392,7 @@ moduleIntegrationTestRunner({
           customer: {
             id: "customer1", // Matches CUSTOMER_PROMO_1
           },
+          region_id: "region_1",
           items: [
             {
               id: "item_tshirt0",
@@ -417,7 +425,10 @@ moduleIntegrationTestRunner({
 
         ;(service as any).promotionService_.list = originalPromotionServiceList
 
-        // 1. Verify prefiltering worked - should include matching promotions
+        // 1. Verify prefiltering worked - should include matching promotion
+        // We expect the prefilter to have return a single promotion that is being satisfied by the
+        // context with the given customer id and region id
+        expect(prefilteredPromotions).toHaveLength(1)
         const prefilteredCodes = prefilteredPromotions.map((p) => p.code)
         expect(prefilteredCodes).toEqual(
           expect.arrayContaining([

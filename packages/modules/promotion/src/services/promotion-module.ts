@@ -468,30 +468,19 @@ export default class PromotionModuleService
       const rulePrefilteringFilters =
         buildPromotionRuleQueryFilterFromContext(applicationContext)
 
-      const hasRulesPreFilter = !!rulePrefilteringFilters.length
       let prefilteredAutomaticPromotionIds: string[] = []
 
-      if (hasRulesPreFilter) {
-        const promotions = await this.promotionService_.list(
-          {
-            $and: [
-              { is_automatic: true },
-              {
-                $or: [
-                  ...rulePrefilteringFilters,
-                  { rules: { $eq: null } }, // Include automatic promotions with no rules
-                ],
-              },
-            ],
-          },
-          { select: ["id"] },
-          sharedContext
-        )
+      const promotions = await this.promotionService_.list(
+        {
+          $and: [{ is_automatic: true }, rulePrefilteringFilters],
+        },
+        { select: ["id"] },
+        sharedContext
+      )
 
-        prefilteredAutomaticPromotionIds = promotions.map(
-          (promotion) => promotion.id!
-        )
-      }
+      prefilteredAutomaticPromotionIds = promotions.map(
+        (promotion) => promotion.id!
+      )
 
       const automaticPromotionFilter = prefilteredAutomaticPromotionIds.length
         ? {
