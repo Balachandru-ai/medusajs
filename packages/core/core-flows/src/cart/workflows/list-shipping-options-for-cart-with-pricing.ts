@@ -1,5 +1,6 @@
 import { isDefined, ShippingOptionPriceType } from "@medusajs/framework/utils"
 import {
+  createHook,
   createWorkflow,
   parallelize,
   transform,
@@ -7,6 +8,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
+  AdditionalData,
   CalculateShippingOptionPriceDTO,
   ListShippingOptionsForCartWithPricingWorkflowInput,
 } from "@medusajs/types"
@@ -15,6 +17,7 @@ import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import { calculateShippingOptionsPricesStep } from "../../fulfillment"
 import { cartFieldsForCalculateShippingOptionsPrices } from "../utils/fields"
+import { shippingOptionsContextResult } from "../utils/schemas"
 
 const COMMON_OPTIONS_FIELDS = [
   "id",
@@ -75,7 +78,7 @@ export const listShippingOptionsForCartWithPricingWorkflowId =
  */
 export const listShippingOptionsForCartWithPricingWorkflow = createWorkflow(
   listShippingOptionsForCartWithPricingWorkflowId,
-  (input: WorkflowData<ListShippingOptionsForCartWithPricingWorkflowInput>) => {
+  (input: WorkflowData<ListShippingOptionsForCartWithPricingWorkflowInput & AdditionalData>) => {
     const optionIds = transform({ input }, ({ input }) =>
       (input.options ?? []).map(({ id }) => id)
     )
@@ -137,10 +140,24 @@ export const listShippingOptionsForCartWithPricingWorkflow = createWorkflow(
       }
     )
 
+    const setShippingOptionsContext = createHook(
+      "setShippingOptionsContext",
+      {
+        cart: cart,
+        fulfillmentSetIds,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: shippingOptionsContextResult,
+      }
+    )
+    const setShippingOptionsContextResult = setShippingOptionsContext.getResult()
+
     const commonOptions = transform(
-      { input, cart, fulfillmentSetIds },
-      ({ input, cart, fulfillmentSetIds }) => ({
+      { input, cart, fulfillmentSetIds, setShippingOptionsContextResult },
+      ({ input, cart, fulfillmentSetIds, setShippingOptionsContextResult }) => ({
         context: {
+          ...(setShippingOptionsContextResult ? setShippingOptionsContextResult : {}),
           is_return: input.is_return ? "true" : "false",
           enabled_in_store: !isDefined(input.enabled_in_store)
             ? "true"
@@ -310,6 +327,8 @@ export const listShippingOptionsForCartWithPricingWorkflow = createWorkflow(
       }
     )
 
-    return new WorkflowResponse(shippingOptionsWithPrice)
+    return new WorkflowResponse(shippingOptionsWithPrice, {
+      hooks: [setShippingOptionsContext] as const,
+    })
   }
 )

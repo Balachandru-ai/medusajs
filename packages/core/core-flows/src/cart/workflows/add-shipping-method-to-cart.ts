@@ -20,6 +20,7 @@ import { validateCartShippingOptionsPriceStep } from "../steps/validate-shipping
 import { cartFieldsForRefreshSteps } from "../utils/fields"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { AdditionalData } from "@medusajs/types"
 
 /**
  * The data to add a shipping method to a cart.
@@ -80,7 +81,7 @@ export const addShippingMethodToCartWorkflowId = "add-shipping-method-to-cart"
  */
 export const addShippingMethodToCartWorkflow = createWorkflow(
   addShippingMethodToCartWorkflowId,
-  (input: WorkflowData<AddShippingMethodToCartWorkflowInput>) => {
+  (input: WorkflowData<AddShippingMethodToCartWorkflowInput & AdditionalData>) => {
     const cart = useRemoteQueryStep({
       entry_point: "cart",
       fields: cartFieldsForRefreshSteps,
@@ -100,20 +101,20 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
       return (data.input.options ?? []).map((i) => i.id)
     })
 
-    validateCartShippingOptionsStep({
-      option_ids: optionIds,
-      cart,
-      shippingOptionsContext: { is_return: "false", enabled_in_store: "true" },
-    })
-
     const shippingOptions =
       listShippingOptionsForCartWithPricingWorkflow.runAsStep({
         input: {
           options: input.options,
           cart_id: cart.id,
           is_return: false,
+          additional_data: input.additional_data,
         },
       })
+
+    validateCartShippingOptionsStep({
+      option_ids: optionIds,
+      prefetched_shipping_options: shippingOptions,
+    })
 
     validateCartShippingOptionsPriceStep({ shippingOptions })
 
@@ -200,7 +201,7 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
     )
 
     refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: cart.id, shipping_methods: createdShippingMethods },
+      input: { cart_id: cart.id, shipping_methods: createdShippingMethods, additional_data: input.additional_data },
     })
 
     return new WorkflowResponse(void 0, {
