@@ -18,7 +18,7 @@ export type CellRenderer<TData = any> = (
   value: any,
   row: TData,
   column: HttpTypes.AdminColumn,
-  t?: TFunction
+  t: TFunction
 ) => React.ReactNode
 
 export type RendererRegistry = Map<string, CellRenderer>
@@ -34,22 +34,10 @@ const TextRenderer: CellRenderer = (value, _row, _column, _t) => {
   return String(value)
 }
 
-const CountRenderer: CellRenderer = (value, row, column, t) => {
-  if (column.field === 'variants_count' || column.field === 'variants') {
-    const variants = row.variants || []
-    const count = Array.isArray(variants) ? variants.length : 0
-    if (t) {
-      return count === 1 ? t('products.variantCount_one', '{{count}} variant', { count }) : t('products.variantCount_other', '{{count}} variants', { count })
-    }
-    return `${count} ${count === 1 ? 'variant' : 'variants'}`
-  }
-
+const CountRenderer: CellRenderer = (value, _row, _column, t) => {
   const items = value || []
   const count = Array.isArray(items) ? items.length : 0
-  if (t) {
-    return count === 1 ? t('general.items_one', '{{count}} item', { count }) : t('general.items_other', '{{count}} items', { count })
-  }
-  return `${count} ${count === 1 ? 'item' : 'items'}`
+  return t('general.items', { count })
 }
 
 const StatusRenderer: CellRenderer = (value, row, column, t) => {
@@ -85,7 +73,7 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
   // Use existing translation keys where available
   const getTranslatedStatus = (status: string): string => {
     if (!t) return status
-    
+
     const lowerStatus = status.toLowerCase()
     switch (lowerStatus) {
       case 'active':
