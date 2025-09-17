@@ -34,7 +34,7 @@
     "watch": "tsc --build --watch",
     "build": "rimraf dist && tsc --build",
     "test": "jest --passWithNoTests",
-    "test:integration": "jest --no-cache --maxWorkers=50% --bail --detectOpenHandles --forceExit --logHeapUsage -- integration-tests/__tests__/**/*.spec.ts"
+    "test:integration": "jest --no-cache --bail --detectOpenHandles --forceExit --logHeapUsage -- integration-tests/__tests__/**/*.spec.ts"
   },
   "dependencies": {
     "ulid": "^2.3.0"

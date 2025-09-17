@@ -36259,6 +36259,135 @@ paths:
             type: boolean
             title: with_deleted
             description: Whether to include deleted records in the result.
+        - name: id
+          in: query
+          required: false
+          description: Filter by a promotion's ID.
+          schema:
+            oneOf:
+              - type: string
+                title: id
+                description: Filter by a promotion's ID.
+              - type: array
+                description: Filter by promotion IDs.
+                items:
+                  type: string
+                  title: id
+                  description: The promotion's ID.
+              - type: object
+                description: Filter by a promotion's ID.
+                properties:
+                  $and:
+                    type: array
+                    description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+                    items:
+                      type: object
+                    title: $and
+                  $or:
+                    type: array
+                    description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+                    items:
+                      type: object
+                    title: $or
+                  $eq:
+                    oneOf:
+                      - type: string
+                        title: $eq
+                        description: Filter by an exact match.
+                      - type: array
+                        description: Filter by an exact match.
+                        items:
+                          type: string
+                          title: $eq
+                          description: Filter by an exact match.
+                  $ne:
+                    type: string
+                    title: $ne
+                    description: Filter by values not equal to this parameter.
+                  $in:
+                    type: array
+                    description: Filter by values in this array.
+                    items:
+                      type: string
+                      title: $in
+                      description: Filter by values in this array.
+                  $nin:
+                    type: array
+                    description: Filter by values not in this array.
+                    items:
+                      type: string
+                      title: $nin
+                      description: Filter by values not in this array.
+                  $not:
+                    oneOf:
+                      - type: string
+                        title: $not
+                        description: Filter by values not matching the conditions in this parameter.
+                      - type: object
+                        description: Filter by values not matching the conditions in this parameter.
+                      - type: array
+                        description: Filter by values not matching the conditions in this parameter.
+                        items:
+                          type: string
+                          title: $not
+                          description: Filter by values not matching the conditions in this parameter.
+                  $gt:
+                    type: string
+                    title: $gt
+                    description: Filter by values greater than this parameter. Useful for numbers and dates only.
+                  $gte:
+                    type: string
+                    title: $gte
+                    description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
+                  $lt:
+                    type: string
+                    title: $lt
+                    description: Filter by values less than this parameter. Useful for numbers and dates only.
+                  $lte:
+                    type: string
+                    title: $lte
+                    description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+                  $like:
+                    type: string
+                    title: $like
+                    description: Apply a `like` filter. Useful for strings only.
+                  $re:
+                    type: string
+                    title: $re
+                    description: Apply a regex filter. Useful for strings only.
+                  $ilike:
+                    type: string
+                    title: $ilike
+                    description: Apply a case-insensitive `like` filter. Useful for strings only.
+                  $fulltext:
+                    type: string
+                    title: $fulltext
+                    description: Filter to apply on full-text properties.
+                  $overlap:
+                    type: array
+                    description: Filter arrays that have overlapping values with this parameter.
+                    items:
+                      type: string
+                      title: $overlap
+                      description: Filter arrays that have overlapping values with this parameter.
+                  $contains:
+                    type: array
+                    description: Filter arrays that contain some of the values of this parameter.
+                    items:
+                      type: string
+                      title: $contains
+                      description: Filter arrays that contain some of the values of this parameter.
+                  $contained:
+                    type: array
+                    description: Filter arrays that contain all values of this parameter.
+                    items:
+                      type: string
+                      title: $contained
+                      description: Filter arrays that contain all values of this parameter.
+                  $exists:
+                    type: boolean
+                    title: $exists
+                    description: Filter by whether a value for this parameter exists (not `null`).
       security:
         - api_token: []
         - cookie_auth: []
@@ -59055,6 +59184,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -59068,6 +59198,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -59287,6 +59418,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderListResponse:
       type: object
       description: The list of draft orders with pagination fields.
@@ -59346,6 +59485,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -59359,6 +59499,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -59963,6 +60104,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderPreviewResponse:
       type: object
       description: The details of the preview on the draft order.
@@ -61338,6 +61487,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -61351,6 +61501,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -61569,6 +61720,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderAddress:
       type: object
       description: An order address.
@@ -61805,6 +61964,7 @@ components:
         - return_id
         - exchange_id
         - claim_id
+        - ordering
         - order_change_id
         - reference
         - reference_id
@@ -61891,6 +62051,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the action was updated.
+        ordering:
+          type: number
+          title: ordering
+          description: The action's order in the sequence of actions.
     AdminOrderChangesResponse:
       type: object
       description: The details of an order's changes.
@@ -62296,6 +62460,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -62309,6 +62474,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -62913,6 +63079,14 @@ components:
           type: number
           title: credit_line_total
           description: The order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderPreviewResponse:
       type: object
       description: The preview of an order.
@@ -69781,6 +69955,14 @@ components:
                     type: number
                     title: timeout
                     description: The maximum time in seconds to wait for this step to complete. If the step exceeds this time, the step's state is changed to `timeout`, but the step continues executing.
+                  autoRetry:
+                    type: boolean
+                    title: autoRetry
+                    description: Whether the step should be automatically retried if it fails.
+                  maxAwaitingRetries:
+                    type: number
+                    title: maxAwaitingRetries
+                    description: The maximum number of times to retry the step while it's in the `waiting_response` state.
               compensate:
                 type: object
                 description: The state of the step's compensation function.
@@ -70854,6 +71036,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -70867,6 +71050,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -71074,6 +71258,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     BaseOrderAddress:
       type: object
       description: An order address.
@@ -73746,6 +73938,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -73761,6 +73954,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -74038,6 +74232,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     OrderAddress:
       type: object
       description: The address's details.
@@ -76056,17 +76258,6 @@ components:
         - cart
         - title
         - id
-        - item_total
-        - item_subtotal
-        - item_tax_total
-        - original_total
-        - original_subtotal
-        - original_tax_total
-        - total
-        - subtotal
-        - tax_total
-        - discount_total
-        - discount_tax_total
         - requires_shipping
         - is_discountable
         - is_tax_inclusive
@@ -76349,47 +76540,47 @@ components:
         original_total:
           type: number
           title: original_total
-          description: The item's total including taxes, excluding promotions.
+          description: The item's total including taxes, excluding promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         original_subtotal:
           type: number
           title: original_subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         original_tax_total:
           type: number
           title: original_tax_total
-          description: The total taxes of the item excluding promotions.
+          description: The total taxes of the item excluding promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_total:
           type: number
           title: original_tax_total
-          description: The item's total including taxes and promotions.
+          description: The item's total including taxes and promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_subtotal:
           type: number
           title: item_subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_tax_total:
           type: number
           title: item_tax_total
-          description: The total taxes of the item including promotions.
+          description: The total taxes of the item including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         total:
           type: number
           title: total
-          description: The item's total including taxes and promotions.
+          description: The item's total including taxes and promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         subtotal:
           type: number
           title: subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         tax_total:
           type: number
           title: tax_total
-          description: The total taxes of the item including promotions.
+          description: The total taxes of the item including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         discount_total:
           type: number
           title: discount_total
-          description: The total discount of the item.
+          description: The total discount of the item. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         discount_tax_total:
           type: number
           title: discount_tax_total
-          description: The total taxes applied on the discounted amount.
+          description: The total taxes applied on the discounted amount. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
     StoreCartPromotion:
       type: object
       description: The promotion's promotions.
@@ -76466,14 +76657,6 @@ components:
         - is_tax_inclusive
         - created_at
         - updated_at
-        - original_total
-        - original_subtotal
-        - original_tax_total
-        - total
-        - subtotal
-        - tax_total
-        - discount_total
-        - discount_tax_total
       properties:
         id:
           type: string
@@ -76675,35 +76858,35 @@ components:
         original_total:
           type: number
           title: original_total
-          description: The shipping method's total including taxes, excluding promotions.
+          description: The shipping method's total including taxes, excluding promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         original_subtotal:
           type: number
           title: original_subtotal
-          description: The shipping method's total excluding taxes, including promotions.
+          description: The shipping method's total excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         original_tax_total:
           type: number
           title: original_tax_total
-          description: The total taxes applied on the shipping method's amount including promotions.
+          description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         total:
           type: number
           title: total
-          description: The shipping method's total amount including taxes and promotions.
+          description: The shipping method's total amount including taxes and promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         subtotal:
           type: number
           title: subtotal
-          description: The shipping method's total amount excluding taxes, including promotions.
+          description: The shipping method's total amount excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         tax_total:
           type: number
           title: tax_total
-          description: The total taxes applied on the shipping method's amount including promotions.
+          description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         discount_total:
           type: number
           title: discount_total
-          description: The total amount discounted.
+          description: The total amount discounted. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         discount_tax_total:
           type: number
           title: discount_tax_total
-          description: The taxes applied on the discounted amount.
+          description: The taxes applied on the discounted amount. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
     StoreCartShippingOption:
       type: object
       description: The shipping option's details.
@@ -77552,6 +77735,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -77565,6 +77749,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -77771,6 +77956,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     StoreOrderAddress:
       type: object
       description: An order address

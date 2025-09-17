@@ -6,24 +6,16 @@ export const metadata = {
 
 # {metadata.title}
 
-In this document, you’ll learn about the GitHub Auth Module Provider and how to install and use it in the Auth Module.
+In this guide, you’ll learn about the GitHub Auth Module Provider and how to configure it.
 
-The Github Auth Module Provider authenticates users with their GitHub account.
+The GitHub Auth Module Provider allows you to authenticate users with their GitHub account.
 
-<Note title="Tip">
-
-Learn about the authentication flow in [this guide](../../authentication-route/page.mdx).
-
-</Note>
-
----
-
-## Register the Github Auth Module Provider
+## Register the GitHub Auth Module Provider
 
 <Prerequisites
   items={[
     {
-      text: "Register GitHub App. When setting the Callback URL, set it to a URL in your frontend that later uses Medusa's callback route to validate the authentication.",
+      text: "Register a GitHub App. When setting the Callback URL, set it to a URL in your frontend that later uses Medusa's callback route to validate the authentication.",
       link: "https://docs.github.com/en/apps/creating-github-apps/setting-up-a-github-app/creating-a-github-app"
     },
     {
@@ -33,7 +25,7 @@ Learn about the authentication flow in [this guide](../../authentication-route/p
   ]}
 />
 
-Add the module to the array of providers passed to the Auth Module:
+To use the GitHub Auth Module Provider, add the module to the array of providers passed to the Auth Module in your `medusa-config.ts`:
 
 ```ts title="medusa-config.ts"
 import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
@@ -146,12 +138,12 @@ GITHUB_CALLBACK_URL=<YOUR_GITHUB_CALLBACK_URL>
 
 ## Override Callback URL During Authentication
 
-In many cases, you may have different callback URL for actor types. For example, you may redirect admin users to a different URL than customers after authentication.
+In many cases, you may have different callback URLs for actor types. For example, you may redirect admin users to a different URL than customers after authentication.
 
-The [Authenticate or Login API Route](../../authentication-route/page.mdx#login-route) can accept a `callback_url` body parameter to override the provider's `callbackUrl` option. Learn more in [this documentation](../../authentication-route/page.mdx#login-route).
+The [Authenticate or Login API Route](../../authentication-route/page.mdx#login-route) accepts a `callback_url` body parameter to override the provider's `callbackUrl` option. Learn more in the [Auth Flows with Routes guide](../../authentication-route/page.mdx#login-route).
 
 ---
 
 ## Examples
 
-- [How to implement third-party / social login in the storefront.](../../../../storefront-development/customers/third-party-login/page.mdx).
+- [How to implement third-party / social login in the storefront](../../../../storefront-development/customers/third-party-login/page.mdx)

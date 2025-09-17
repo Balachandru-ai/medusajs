@@ -52,6 +52,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to retrieve their details
  *       sdk.store.customer.retrieve()
  *       .then(({ customer }) => {
  *         console.log(customer)

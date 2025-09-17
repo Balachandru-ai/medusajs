@@ -4,7 +4,7 @@ export const metadata = {
 
 # {metadata.title}
 
-In this chapter, you'll learn how to seed data using a custom CLI script.
+In this chapter, you'll learn how to seed data using a [custom CLI script](../page.mdx).
 
 ## How to Seed Data
 
@@ -12,7 +12,9 @@ To seed dummy data for development or demo purposes, use a custom CLI script.
 
 In the CLI script, use your custom workflows or Medusa's existing workflows, which you can browse in [this reference](!resources!/medusa-workflows-reference), to seed data.
 
-### Example: Seed Dummy Products
+---
+
+## Example: Seed Dummy Products
 
 In this section, you'll follow an example of creating a custom CLI script that seeds fifty dummy products.
 
@@ -25,7 +27,7 @@ npm install --save-dev @faker-js/faker
 Then, create the file `src/scripts/demo-products.ts` with the following content:
 
 export const highlights = [
-  ["16", "salesChannelModuleService", "Resolve the Sales Chanel Module's main service"],
+  ["16", "salesChannelModuleService", "Resolve the Sales Channel Module's service."],
   ["19", "logger", "Resolve the logger to log messages in the terminal."],
   ["22", "query", "Resolve Query to retrieve data later."],
   ["26", "defaultSalesChannel", "Retrieve the default sales channel to associate products with."],
@@ -77,8 +79,8 @@ export default async function seedDummyProducts({
 
 So far, in the script, you:
 
-- Resolve the Sales Channel Module's main service to retrieve the application's default sales channel. This is the sales channel the dummy products will be available in.
-- Resolve the Logger to log messages in the terminal, and Query to later retrieve data useful for the seeded products.
+- Resolve the [Sales Channel Module](!resources!/commerce-modules/sales-channel)'s service to retrieve the application's default sales channel. This is the sales channel the dummy products will be available in.
+- Resolve the [Logger](../../../debugging-and-testing/logging/page.mdx) to log messages in the terminal, and Query to later retrieve data useful for the seeded products.
 - Initialize some default data to use when seeding the products next.
 
 Next, replace the `TODO` with the following:
@@ -88,7 +90,7 @@ const productsData = new Array(productsNum).fill(0).map((_, index) => {
   const title = faker.commerce.product() + "_" + index
   return {
     title,
-    is_giftcard: true,
+    is_giftcard: false,
     description: faker.commerce.productDescription(),
     status: ProductStatus.PUBLISHED,
     options: [
@@ -154,7 +156,7 @@ logger.info(`Seeded ${products.length} products.`)
 
 You create the generated products using the `createProductsWorkflow` imported previously from `@medusajs/medusa/core-flows`. It accepts the product data as input, and returns the created products.
 
-Only thing left is to create inventory levels for the products. So, replace the last `TODO` with the following:
+The only thing left is to create [inventory levels](!resources!/commerce-modules/inventory/concepts#inventorylevel) for the product variants. So, replace the last `TODO` with the following:
 
 ```ts title="src/scripts/demo-products.ts"
 logger.info("Seeding inventory levels.")
@@ -184,7 +186,7 @@ await createInventoryLevelsWorkflow(container).run({
 logger.info("Finished seeding inventory levels data.")
 ```
 
-You use Query to retrieve the stock location, to use the first location in the application, and the inventory items.
+You use [Query](../../module-links/query/page.mdx) to retrieve the first stock location in the application and the inventory items.
 
 Then, you generate inventory levels for each inventory item, associating it with the first stock location.
 
