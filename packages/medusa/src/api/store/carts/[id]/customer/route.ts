@@ -7,10 +7,11 @@ import {
 } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
 import { refetchCart } from "../../helpers"
+import { StoreUpdateCartCustomerType } from "../../validators"
 import { AdditionalData } from "@medusajs/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdditionalData>,
+  req: AuthenticatedMedusaRequest<StoreUpdateCartCustomerType & AdditionalData>,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
