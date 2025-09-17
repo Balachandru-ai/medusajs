@@ -832,7 +832,7 @@ export const generatedEditDates = {
   "references/types/interfaces/types.BaseClaim/page.mdx": "2025-09-12T14:10:39.219Z",
   "app/commerce-modules/auth/auth-providers/github/page.mdx": "2025-01-13T11:31:35.361Z",
   "app/commerce-modules/auth/auth-providers/google/page.mdx": "2025-01-13T11:31:35.361Z",
-  "app/storefront-development/customers/third-party-login/page.mdx": "2025-03-28T09:31:36.450Z",
+  "app/storefront-development/customers/third-party-login/page.mdx": "2025-09-17T11:42:53.434Z",
   "references/types/HttpTypes/types/types.HttpTypes.AdminWorkflowRunResponse/page.mdx": "2024-12-09T13:21:34.761Z",
   "references/types/HttpTypes/types/types.HttpTypes.BatchResponse/page.mdx": "2025-04-11T09:04:46.523Z",
   "references/types/WorkflowsSdkTypes/types/types.WorkflowsSdkTypes.Acknowledgement/page.mdx": "2024-12-09T13:21:35.873Z",
