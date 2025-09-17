@@ -20,7 +20,7 @@ import { raw } from "@mikro-orm/postgresql"
  */
 export function buildPromotionRuleQueryFilterFromContext(
   context: PromotionTypes.ComputeActionContext
-): DAL.FilterQuery<any> {
+): DAL.FilterQuery<any> | null {
   const {
     items = [],
     shipping_methods: shippingMethods = [],
@@ -84,15 +84,21 @@ export function buildPromotionRuleQueryFilterFromContext(
       })
       .filter((v) => v !== null) as number[]
 
+    // Escape attribute name to prevent SQL injection
+    const escapedAttribute = `'${attribute.replace(/'/g, "''")}'`
+
     // For 'in' and 'eq' operators - rule is unsatisfiable if NO rule values overlap with context
     // This requires checking that ALL rule values for a given rule are not in context
-    sqlConditions.push(
-      `(pr.attribute = '${attribute}' AND pr.operator IN ('in', 'eq') AND pr.id NOT IN (
+
+    if (stringValues.length) {
+      sqlConditions.push(
+        `(pr.attribute = ${escapedAttribute} AND pr.operator IN ('in', 'eq') AND pr.id NOT IN (
         SELECT DISTINCT prv_inner.promotion_rule_id
         FROM promotion_rule_value prv_inner
         WHERE prv_inner.value IN (${stringValues})
       ))`
-    )
+      )
+    }
 
     if (numericValues.length) {
       const minValue = Math.min(...numericValues)
@@ -100,25 +106,30 @@ export function buildPromotionRuleQueryFilterFromContext(
 
       // For gt - rule is unsatisfiable if rule_value >= context_max_value
       sqlConditions.push(
-        `(pr.attribute = '${attribute}' AND pr.operator = 'gt' AND CAST(prv.value AS DECIMAL) >= ${maxValue})`
+        `(pr.attribute = ${escapedAttribute} AND pr.operator = 'gt' AND CAST(prv.value AS DECIMAL) >= ${maxValue})`
       )
 
       // For gte - rule is unsatisfiable if rule_value > context_max_value
       sqlConditions.push(
-        `(pr.attribute = '${attribute}' AND pr.operator = 'gte' AND prv.value NOT IN (${stringValues}) AND CAST(prv.value AS DECIMAL) > ${maxValue})`
+        `(pr.attribute = ${escapedAttribute} AND pr.operator = 'gte' AND prv.value NOT IN (${stringValues}) AND CAST(prv.value AS DECIMAL) > ${maxValue})`
       )
 
       // For lt - rule is unsatisfiable if rule_value <= context_min_value
       sqlConditions.push(
-        `(pr.attribute = '${attribute}' AND pr.operator = 'lt' AND CAST(prv.value AS DECIMAL) <= ${minValue})`
+        `(pr.attribute = ${escapedAttribute} AND pr.operator = 'lt' AND CAST(prv.value AS DECIMAL) <= ${minValue})`
       )
 
       // For lte - rule is unsatisfiable if rule_value < context_min_value
       sqlConditions.push(
-        `(pr.attribute = '${attribute}' AND pr.operator = 'lte' AND prv.value NOT IN (${stringValues}) AND CAST(prv.value AS DECIMAL) < ${minValue})`
+        `(pr.attribute = ${escapedAttribute} AND pr.operator = 'lte' AND prv.value NOT IN (${stringValues}) AND CAST(prv.value AS DECIMAL) < ${minValue})`
       )
     }
   })
+
+  // If no conditions were generated, return a filter that excludes nothing (all promotions pass)
+  if (sqlConditions.length === 0) {
+    return null
+  }
 
   const notExistsSubquery = (alias: string) =>
     `
