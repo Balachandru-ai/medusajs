@@ -52,6 +52,6 @@
   "scripts": {
     "build": "rimraf dist && tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --runInBand --bail --forceExit --passWithNoTests"
+    "test": "jest --bail --forceExit --passWithNoTests"
   }
 }

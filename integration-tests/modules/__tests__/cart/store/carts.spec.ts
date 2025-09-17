@@ -716,6 +716,122 @@ medusaIntegrationTestRunner({
           })
         })
 
+        it("handle line item quantity edge cases", async () => {
+          const shippingProfile =
+            await fulfillmentModule.createShippingProfiles({
+              name: "Test",
+              type: "default",
+            })
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                ...productData,
+                shipping_profile_id: shippingProfile.id,
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          // cannot create a cart with a negative item quantity
+          const errorRes = await api
+            .post(
+              `/store/carts`,
+              {
+                email: "tony@stark.com",
+                currency_code: region.currency_code,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: -2,
+                  },
+                ],
+              },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(errorRes.response.status).toEqual(400)
+          expect(errorRes.response.data).toEqual({
+            message:
+              "Invalid request: Value for field 'items, 0, quantity' too small, expected at least: '0'",
+            type: "invalid_data",
+          })
+
+          const cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                email: "tony@stark.com",
+                currency_code: region.currency_code,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 5,
+                  },
+                ],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          // cannot add a negative quantity item to the cart
+          let response = await api
+            .post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[1].id,
+                quantity: -2,
+              },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.response.status).toEqual(400)
+          expect(response.response.data).toEqual({
+            message:
+              "Invalid request: Value for field 'quantity' too small, expected at least: '0'",
+            type: "invalid_data",
+          })
+
+          // cannot update a negative quantity item on the cart
+          response = await api
+            .post(
+              `/store/carts/${cart.id}/line-items/${cart.items[0].id}`,
+              {
+                quantity: -1,
+              },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.response.status).toEqual(400)
+          expect(response.response.data).toEqual({
+            message:
+              "Invalid request: Value for field 'quantity' too small, expected at least: '0'",
+            type: "invalid_data",
+          })
+
+          // should remove the item from the cart when quantity is 0
+          const cartResponse = await api.post(
+            `/store/carts/${cart.id}/line-items/${cart.items[0].id}`,
+            {
+              quantity: 0,
+            },
+            storeHeaders
+          )
+
+          expect(cartResponse.status).toEqual(200)
+          expect(cartResponse.data.cart).toEqual(
+            expect.objectContaining({
+              items: expect.arrayContaining([]),
+            })
+          )
+        })
+
         it("adding an existing variant should update or create line item depending on metadata", async () => {
           const shippingProfile =
             await fulfillmentModule.createShippingProfiles({
