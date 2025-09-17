@@ -484,7 +484,7 @@ export default class PromotionModuleService
         )
       }
 
-      const automaticPromotionFilter = prefilteredAutomaticPromotionIds.length
+      const automaticPromotionFilter = rulePrefilteringFilters
         ? {
             id: { $in: prefilteredAutomaticPromotionIds },
           }
