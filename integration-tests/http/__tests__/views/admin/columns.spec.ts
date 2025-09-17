@@ -224,7 +224,7 @@ medusaIntegrationTestRunner({
             id: "title",
             name: "Title",
             field: "title",
-            default_visible: true,
+            default_visible: false,
           })
 
           const handleColumn = response.data.columns.find(
