@@ -9,6 +9,7 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
 import { setTaxLinesForItemsStep } from "../steps"
 
@@ -139,6 +140,13 @@ export const updateTaxLinesWorkflow = createWorkflow(
       return input.cart ?? fetchCart
     })
 
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const taxLineItems = getItemTaxLinesStep(
       transform({ input, cart }, (data) => ({
         orderOrCart: data.cart,
@@ -152,6 +160,11 @@ export const updateTaxLinesWorkflow = createWorkflow(
       cart,
       item_tax_lines: taxLineItems.lineItemTaxLines,
       shipping_tax_lines: taxLineItems.shippingMethodsTaxLines,
+    })
+
+    releaseLockStep({
+      key: cart.id,
+      skipOnSubWorkflow: true,
     })
   }
 )

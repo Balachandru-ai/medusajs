@@ -1,4 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { AdminShippingOption } from "@medusajs/types"
 import { ModuleRegistrationName } from "@medusajs/utils"
 import {
   adminHeaders,
@@ -9,7 +10,6 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
 import { createShippingOptionSeeder } from "../../fixtures/shipping"
-import { AdminShippingOption } from "@medusajs/types"
 
 jest.setTimeout(300000)
 
