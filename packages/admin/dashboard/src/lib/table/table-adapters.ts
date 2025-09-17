@@ -1,4 +1,8 @@
-import { DataTableColumnDef, DataTableEmptyStateProps, DataTableFilter } from "@medusajs/ui"
+import {
+  DataTableColumnDef,
+  DataTableEmptyStateProps,
+  DataTableFilter,
+} from "@medusajs/ui"
 import { ColumnAdapter } from "../../hooks/table/columns/use-configurable-table-columns"
 
 /**
@@ -15,9 +19,12 @@ export interface TableAdapter<TData> {
    * Hook to fetch data with the calculated required fields.
    * Called inside ConfigurableDataTable with the fields and search params.
    */
-  useData: (fields: string, params: any) => {
+  useData: (
+    fields: string,
+    params: any
+  ) => {
     data: TData[] | undefined
-    count: number
+    count: number | undefined
     isLoading: boolean
     isError: boolean
     error: any
@@ -39,7 +46,7 @@ export interface TableAdapter<TData> {
   filters?: DataTableFilter[]
 
   /**
-   * Transform API columns to table columns. 
+   * Transform API columns to table columns.
    * If not provided, will use default column generation.
    */
   getColumns?: (apiColumns: any[]) => DataTableColumnDef<TData, any>[]
