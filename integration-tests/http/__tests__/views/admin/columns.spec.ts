@@ -235,7 +235,7 @@ medusaIntegrationTestRunner({
             id: "handle",
             name: "Handle",
             field: "handle",
-            default_visible: true,
+            default_visible: false,
           })
         })
       })

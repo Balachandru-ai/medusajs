@@ -3,9 +3,6 @@ import { ColumnAdapter } from "../../hooks/table/columns/use-configurable-table-
 
 export const orderColumnAdapter: ColumnAdapter<HttpTypes.AdminOrder> = {
   getColumnAlignment: (column) => {
-    if (column.field === "display_id") {
-      return "center"
-    }
     if (column.semantic_type === "currency") {
       return "right"
     }
@@ -31,7 +28,7 @@ export const productColumnAdapter: ColumnAdapter<HttpTypes.AdminProduct> = {
       return "left"
     }
     if (column.field === "variants_count") {
-      return "center"
+      return "left"
     }
     if (column.field === "sku") {
       return "center"
@@ -43,13 +40,13 @@ export const productColumnAdapter: ColumnAdapter<HttpTypes.AdminProduct> = {
       return "right"
     }
     if (column.semantic_type === "status") {
-      return "center"
+      return "left"
     }
     if (column.computed?.type === "product_info") {
       return "left"
     }
     if (column.computed?.type === "count") {
-      return "center"
+      return "left"
     }
     if (column.computed?.type === "sales_channels_list") {
       return "left"

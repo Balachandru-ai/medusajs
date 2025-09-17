@@ -24,13 +24,10 @@ export interface UseTableConfigurationOptions {
 }
 
 export interface UseTableConfigurationReturn {
-  // View configuration
   activeView: any
   createView: any
   updateView: any
   isViewConfigEnabled: boolean
-  
-  // Column state
   visibleColumns: Record<string, boolean>
   columnOrder: string[]
   currentColumns: {
@@ -39,20 +36,12 @@ export interface UseTableConfigurationReturn {
   }
   setColumnOrder: (order: string[]) => void
   handleColumnVisibilityChange: (visibility: Record<string, boolean>) => void
-  
-  // Configuration state
   currentConfiguration: TableConfiguration
   hasConfigurationChanged: boolean
   handleClearConfiguration: () => void
-  
-  // API columns
-  apiColumns: HttpTypes.AdminViewColumn[] | undefined
+  apiColumns: HttpTypes.AdminColumn[] | undefined
   isLoadingColumns: boolean
-  
-  // Query params
   queryParams: Record<string, any>
-  
-  // Required fields for API calls
   requiredFields: string
 }
 
@@ -64,24 +53,20 @@ function parseSortingState(value: string) {
 
 export function useTableConfiguration({
   entity,
-  pageSize = 20,
   queryPrefix = "",
   filters = [],
 }: UseTableConfigurationOptions): UseTableConfigurationReturn {
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
   const [_, setSearchParams] = useSearchParams()
 
-  // View configurations
   const { activeView, createView } = useViewConfigurations(entity)
   const currentActiveView = activeView?.view_configuration || null
   const { updateView } = useViewConfiguration(entity, currentActiveView?.id || "")
 
-  // Entity columns
   const { columns: apiColumns, isLoading: isLoadingColumns } = useEntityColumns(entity, {
     enabled: isViewConfigEnabled,
   })
 
-  // Query params
   const queryParams = useQueryParams(
     ["q", "order", ...filters.map(f => f.id)],
     queryPrefix
@@ -152,7 +137,7 @@ export function useTableConfiguration({
 
   // Check if configuration has changed from view
   const [debouncedHasConfigChanged, setDebouncedHasConfigChanged] = useState(false)
-  
+
   const hasConfigurationChanged = useMemo(() => {
     const currentFilters = currentConfiguration.filters
     const currentSorting = currentConfiguration.sorting
@@ -282,32 +267,21 @@ export function useTableConfiguration({
   }, [entity, apiColumns, visibleColumns])
 
   return {
-    // View configuration
     activeView: currentActiveView,
     createView,
     updateView,
     isViewConfigEnabled,
-    
-    // Column state
     visibleColumns,
     columnOrder,
     currentColumns,
     setColumnOrder,
     handleColumnVisibilityChange,
-    
-    // Configuration state
     currentConfiguration,
     hasConfigurationChanged: debouncedHasConfigChanged,
     handleClearConfiguration,
-    
-    // API columns
     apiColumns,
     isLoadingColumns,
-    
-    // Query params
     queryParams,
-    
-    // Required fields
     requiredFields,
   }
 }

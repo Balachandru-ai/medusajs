@@ -255,15 +255,29 @@ export const getTypeInfoFromGraphQLType = (
   }
 }
 
-export const DEFAULT_COLUMN_ORDERS: Record<string, number> = {
-  display_id: 100,
-  created_at: 200,
-  customer_display: 300,
-  "sales_channel.name": 400,
-  fulfillment_status: 500,
-  payment_status: 600,
-  total: 700,
-  country: 800,
+export const DEFAULT_COLUMN_ORDERS: Record<string, Record<string, number>> = {
+  orders: {
+    display_id: 100,
+    created_at: 200,
+    customer_display: 300,
+    "sales_channel.name": 400,
+    fulfillment_status: 500,
+    payment_status: 600,
+    total: 700,
+    country: 800,
+  },
+  products: {
+    product_display: 100,
+    "collection.title": 200,
+    sales_channels_display: 300,
+    variants_count: 400,
+    status: 500,
+  },
+  // Add other entities as needed
+  customers: {},
+  users: {},
+  regions: {},
+  "sales-channels": {},
 }
 
 /**
@@ -406,8 +420,9 @@ export const generateEntityColumns = (
 
     const isDefaultField =
       entityMapping.defaultVisibleFields.includes(fieldName)
+    const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
     const defaultOrder =
-      DEFAULT_COLUMN_ORDERS[fieldName] || (isDefaultField ? 500 : 850)
+      entityOrders[fieldName] || (isDefaultField ? 500 : 850)
     const category = getColumnCategory(
       fieldName,
       typeInfo.data_type,
@@ -493,8 +508,9 @@ export const generateEntityColumns = (
         // If field is not in default visible fields, place it after country (850)
         const isDefaultField =
           entityMapping.defaultVisibleFields.includes(fieldPath)
+        const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
         const defaultOrder =
-          DEFAULT_COLUMN_ORDERS[fieldPath] || (isDefaultField ? 700 : 850)
+          entityOrders[fieldPath] || (isDefaultField ? 700 : 850)
         const category = getColumnCategory(
           fieldPath,
           typeInfo.data_type,
@@ -534,8 +550,9 @@ export const generateEntityColumns = (
       // If field is not in default visible fields, place it after country (850)
       const isDefaultField =
         entityMapping.defaultVisibleFields.includes(columnId)
+      const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
       const defaultOrder =
-        DEFAULT_COLUMN_ORDERS[columnId] || (isDefaultField ? 600 : 850)
+        entityOrders[columnId] || (isDefaultField ? 600 : 850)
       const category = getColumnCategory(columnId, "string", "computed")
 
       computedColumns.push({
