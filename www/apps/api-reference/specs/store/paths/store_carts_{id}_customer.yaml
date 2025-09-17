@@ -1,15 +1,16 @@
 post:
   operationId: PostCartsIdCustomer
-  summary: Set Cart's Customer
-  x-sidebar-summary: Set Customer
+  summary: Change Cart's Customer to Logged-in Customer
+  x-sidebar-summary: Change Customer
   description: >-
-    Set the customer of the cart. This is useful when you create the cart for a
-    guest customer, then they log in with their account.
+    Change the cart's customer to the currently logged-in customer. This is
+    useful when you create the cart for a guest customer, then they log in with
+    their account.
   externalDocs:
     url: >-
       https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
     description: 'Storefront guide: How to set the cart''s customer.'
-  x-authenticated: false
+  x-authenticated: true
   parameters:
     - name: id
       in: path
@@ -88,3 +89,6 @@ post:
       description: Emitted when the customer in the cart is transferred.
       deprecated: false
       since: 2.8.0
+  security:
+    - cookie_auth: []
+    - jwt_token: []

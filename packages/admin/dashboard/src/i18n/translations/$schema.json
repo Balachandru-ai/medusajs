@@ -11733,6 +11733,70 @@
       ],
       "additionalProperties": false
     },
+    "views": {
+      "type": "object",
+      "properties": {
+        "save": {
+          "type": "string"
+        },
+        "saveAsNew": {
+          "type": "string"
+        },
+        "updateDefaultForEveryone": {
+          "type": "string"
+        },
+        "updateViewName": {
+          "type": "string"
+        },
+        "prompts": {
+          "type": "object",
+          "properties": {
+            "updateDefault": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "confirmText": {
+                  "type": "string"
+                },
+                "cancelText": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description", "confirmText", "cancelText"],
+              "additionalProperties": false
+            },
+            "updateView": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "confirmText": {
+                  "type": "string"
+                },
+                "cancelText": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description", "confirmText", "cancelText"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["updateDefault", "updateView"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["save", "saveAsNew", "updateDefaultForEveryone", "updateViewName", "prompts"],
+      "additionalProperties": false
+    },
     "dateTime": {
       "type": "object",
       "properties": {
@@ -11893,6 +11957,7 @@
     "statuses",
     "labels",
     "fields",
+    "views",
     "dateTime"
   ],
   "additionalProperties": false

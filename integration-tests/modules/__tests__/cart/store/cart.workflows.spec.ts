@@ -29,7 +29,6 @@ import {
   IRegionModuleService,
   ISalesChannelModuleService,
   IStockLocationService,
-  PricingContext,
 } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,

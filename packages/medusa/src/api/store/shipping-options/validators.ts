@@ -1,5 +1,8 @@
 import { z } from "zod"
-import { applyAndAndOrOperators } from "../../utils/common-validators"
+import {
+  applyAndAndOrOperators,
+  booleanString,
+} from "../../utils/common-validators"
 import { createFindParams, createSelectParams } from "../../utils/validators"
 
 export const StoreGetShippingOptionsParams = createSelectParams()
@@ -7,7 +10,7 @@ export const StoreGetShippingOptionsParams = createSelectParams()
 export const StoreGetShippingOptionsFields = z
   .object({
     cart_id: z.string(),
-    is_return: z.boolean().optional(),
+    is_return: booleanString().optional(),
   })
   .strict()
 

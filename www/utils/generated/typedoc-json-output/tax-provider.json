@@ -1,12 +1,12 @@
 {
-	"id": 46030,
+	"id": 46285,
 	"name": "tax-provider",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 46031,
+			"id": 46286,
 			"name": "ShippingTaxCalculationLine",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -24,20 +24,20 @@
 					"fileName": "provider.ts",
 					"line": 14,
 					"character": 12,
-					"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L14"
+					"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L14"
 				}
 			],
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 46032,
+					"id": 46287,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 65536,
 					"flags": {},
 					"children": [
 						{
-							"id": 46033,
+							"id": 46288,
 							"name": "shipping_line",
 							"variant": "declaration",
 							"kind": 1024,
@@ -55,7 +55,7 @@
 									"fileName": "provider.ts",
 									"line": 18,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L18"
+									"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L18"
 								}
 							],
 							"type": {
@@ -69,7 +69,7 @@
 							}
 						},
 						{
-							"id": 46034,
+							"id": 46289,
 							"name": "rates",
 							"variant": "declaration",
 							"kind": 1024,
@@ -87,7 +87,7 @@
 									"fileName": "provider.ts",
 									"line": 22,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L22"
+									"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L22"
 								}
 							],
 							"type": {
@@ -108,8 +108,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								46033,
-								46034
+								46288,
+								46289
 							]
 						}
 					],
@@ -118,14 +118,14 @@
 							"fileName": "provider.ts",
 							"line": 14,
 							"character": 41,
-							"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L14"
+							"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L14"
 						}
 					]
 				}
 			}
 		},
 		{
-			"id": 46035,
+			"id": 46290,
 			"name": "ItemTaxCalculationLine",
 			"variant": "declaration",
 			"kind": 2097152,
@@ -143,20 +143,20 @@
 					"fileName": "provider.ts",
 					"line": 29,
 					"character": 12,
-					"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L29"
+					"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L29"
 				}
 			],
 			"type": {
 				"type": "reflection",
 				"declaration": {
-					"id": 46036,
+					"id": 46291,
 					"name": "__type",
 					"variant": "declaration",
 					"kind": 65536,
 					"flags": {},
 					"children": [
 						{
-							"id": 46037,
+							"id": 46292,
 							"name": "line_item",
 							"variant": "declaration",
 							"kind": 1024,
@@ -174,7 +174,7 @@
 									"fileName": "provider.ts",
 									"line": 33,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L33"
+									"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L33"
 								}
 							],
 							"type": {
@@ -188,7 +188,7 @@
 							}
 						},
 						{
-							"id": 46038,
+							"id": 46293,
 							"name": "rates",
 							"variant": "declaration",
 							"kind": 1024,
@@ -206,7 +206,7 @@
 									"fileName": "provider.ts",
 									"line": 37,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L37"
+									"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L37"
 								}
 							],
 							"type": {
@@ -227,8 +227,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								46037,
-								46038
+								46292,
+								46293
 							]
 						}
 					],
@@ -237,14 +237,14 @@
 							"fileName": "provider.ts",
 							"line": 29,
 							"character": 37,
-							"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L29"
+							"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L29"
 						}
 					]
 				}
 			}
 		},
 		{
-			"id": 46039,
+			"id": 46294,
 			"name": "ITaxProvider",
 			"variant": "declaration",
 			"kind": 256,
@@ -315,7 +315,7 @@
 			},
 			"children": [
 				{
-					"id": 46042,
+					"id": 46297,
 					"name": "getTaxLines",
 					"variant": "declaration",
 					"kind": 2048,
@@ -325,12 +325,12 @@
 							"fileName": "provider.ts",
 							"line": 145,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L145"
+							"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L145"
 						}
 					],
 					"signatures": [
 						{
-							"id": 46043,
+							"id": 46298,
 							"name": "getTaxLines",
 							"variant": "signature",
 							"kind": 4096,
@@ -404,12 +404,12 @@
 									"fileName": "provider.ts",
 									"line": 145,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L145"
+									"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L145"
 								}
 							],
 							"parameters": [
 								{
-									"id": 46044,
+									"id": 46299,
 									"name": "itemLines",
 									"variant": "param",
 									"kind": 32768,
@@ -426,14 +426,14 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 46035,
+											"target": 46290,
 											"name": "ItemTaxCalculationLine",
 											"package": "@medusajs/types"
 										}
 									}
 								},
 								{
-									"id": 46045,
+									"id": 46300,
 									"name": "shippingLines",
 									"variant": "param",
 									"kind": 32768,
@@ -450,14 +450,14 @@
 										"type": "array",
 										"elementType": {
 											"type": "reference",
-											"target": 46031,
+											"target": 46286,
 											"name": "ShippingTaxCalculationLine",
 											"package": "@medusajs/types"
 										}
 									}
 								},
 								{
-									"id": 46046,
+									"id": 46301,
 									"name": "context",
 									"variant": "param",
 									"kind": 32768,
@@ -526,7 +526,7 @@
 				{
 					"title": "Methods",
 					"children": [
-						46042
+						46297
 					]
 				}
 			],
@@ -535,7 +535,7 @@
 					"fileName": "provider.ts",
 					"line": 83,
 					"character": 17,
-					"url": "https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/types/src/tax/provider.ts#L83"
+					"url": "https://github.com/medusajs/medusa/blob/ed0dafb24c10a68d27745d9f4268e622f4d9912c/packages/core/types/src/tax/provider.ts#L83"
 				}
 			]
 		}
@@ -544,76 +544,76 @@
 		{
 			"title": "Interfaces",
 			"children": [
-				46039
+				46294
 			]
 		},
 		{
 			"title": "Type Aliases",
 			"children": [
-				46031,
-				46035
+				46286,
+				46290
 			]
 		}
 	],
 	"packageName": "@medusajs/types",
 	"symbolIdMap": {
-		"46030": {
+		"46285": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": ""
 		},
-		"46031": {
+		"46286": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "ShippingTaxCalculationLine"
 		},
-		"46032": {
+		"46287": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "__type"
 		},
-		"46033": {
+		"46288": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "__type.shipping_line"
 		},
-		"46034": {
+		"46289": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "__type.rates"
 		},
-		"46035": {
+		"46290": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "ItemTaxCalculationLine"
 		},
-		"46036": {
+		"46291": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "__type"
 		},
-		"46037": {
+		"46292": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "__type.line_item"
 		},
-		"46038": {
+		"46293": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "__type.rates"
 		},
-		"46039": {
+		"46294": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "ITaxProvider"
 		},
-		"46042": {
+		"46297": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "ITaxProvider.getTaxLines"
 		},
-		"46043": {
+		"46298": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "ITaxProvider.getTaxLines"
 		},
-		"46044": {
+		"46299": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "itemLines"
 		},
-		"46045": {
+		"46300": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "shippingLines"
 		},
-		"46046": {
+		"46301": {
 			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
 			"qualifiedName": "context"
 		}
@@ -623,7 +623,7 @@
 			"1": "../../../../packages/core/types/src/tax/provider.ts"
 		},
 		"reflections": {
-			"1": 46030
+			"1": 46285
 		}
 	}
 }

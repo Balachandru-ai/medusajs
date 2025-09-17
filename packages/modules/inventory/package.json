@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/inventory",
-  "version": "2.10.1",
+  "version": "2.10.2",
   "description": "Inventory Module for Medusa",
   "main": "dist/index.js",
   "repository": {
@@ -23,8 +23,8 @@
   "author": "Medusa",
   "license": "MIT",
   "devDependencies": {
-    "@medusajs/framework": "2.10.1",
-    "@medusajs/test-utils": "2.10.1",
+    "@medusajs/framework": "2.10.2",
+    "@medusajs/test-utils": "2.10.2",
     "@mikro-orm/cli": "6.4.3",
     "@mikro-orm/core": "6.4.3",
     "@mikro-orm/migrations": "6.4.3",
@@ -37,7 +37,7 @@
     "typescript": "^5.6.2"
   },
   "peerDependencies": {
-    "@medusajs/framework": "2.10.1",
+    "@medusajs/framework": "2.10.2",
     "@mikro-orm/core": "6.4.3",
     "@mikro-orm/migrations": "6.4.3",
     "@mikro-orm/postgresql": "6.4.3",
@@ -48,7 +48,7 @@
     "watch:test": "tsc --build tsconfig.spec.json --watch",
     "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
     "build": "rimraf dist && tsc --build && npm run resolve:aliases",
-    "test": "jest --runInBand --bail --forceExit -- src/**/__tests__/**/*.ts",
+    "test": "jest --bail --forceExit -- src/**/__tests__/**/*.ts",
     "test:integration": "jest --forceExit -- integration-tests/**/__tests__/**/*.spec.ts",
     "migration:initial": "MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.dev.ts medusa-mikro-orm migration:create --initial -n InitialSetupMigration",
     "migration:create": "MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.dev.ts medusa-mikro-orm migration:create",

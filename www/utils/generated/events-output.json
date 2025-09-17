@@ -720,8 +720,8 @@
     "description": "Emitted when a payment is captured.",
     "workflows": [
       "capturePaymentWorkflow",
-      "processPaymentWorkflow",
-      "markPaymentCollectionAsPaid"
+      "markPaymentCollectionAsPaid",
+      "processPaymentWorkflow"
     ],
     "deprecated": false
   },

@@ -12,6 +12,7 @@ import {
   isDefined,
   MedusaError,
   QueryContext,
+  MathBN,
 } from "@medusajs/framework/utils"
 import {
   createHook,
@@ -36,6 +37,7 @@ import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-
 import { pricingContextResult } from "../utils/schemas"
 import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { deleteLineItemsWorkflow } from "../../line-item"
 
 const cartFields = cartFieldsForPricingContext.concat(["items.*"])
 const variantFields = productVariantsFields.concat(["calculated_price.*"])
@@ -48,8 +50,9 @@ interface CartQueryDTO extends Omit<CartDTO, "items"> {
 
 export const updateLineItemInCartWorkflowId = "update-line-item-in-cart"
 /**
- * This workflow updates a line item's details in a cart. You can update the line item's quantity, unit price, and more. This workflow is executed
- * by the [Update Line Item Store API Route](https://docs.medusajs.com/api/store#carts_postcartsidlineitemsline_id).
+ * This workflow updates a line item's details in a cart. You can update the line item's quantity, unit price, and more.
+ * If the quantity is set to 0, the item will be removed from the cart.
+ * This workflow is executed by the [Update Line Item Store API Route](https://docs.medusajs.com/api/store#carts_postcartsidlineitemsline_id).
  *
  * You can use this workflow within your own customizations or custom workflows, allowing you to update a line item's details in your custom flows.
  *
@@ -184,11 +187,33 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       }
     )
 
+    const shouldRemoveItem = transform(
+      { input },
+      ({ input }) =>
+        !!(
+          isDefined(input.update.quantity) &&
+          MathBN.eq(input.update.quantity, 0)
+        )
+    )
+
+    when(
+      "should-remove-item",
+      { shouldRemoveItem },
+      ({ shouldRemoveItem }) => shouldRemoveItem
+    ).then(() => {
+      deleteLineItemsWorkflow.runAsStep({
+        input: {
+          cart_id: input.cart_id,
+          ids: [input.item_id],
+        },
+      })
+    })
+
     const variants = when(
       "should-fetch-variants",
-      { variantIds },
-      ({ variantIds }) => {
-        return !!variantIds.length
+      { variantIds, shouldRemoveItem },
+      ({ variantIds, shouldRemoveItem }) => {
+        return !!variantIds.length && !shouldRemoveItem
       }
     ).then(() => {
       const calculatedPriceQueryContext = transform(
@@ -217,70 +242,79 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       return variants
     })
 
-    const items = transform({ input, item }, (data) => {
-      return [
-        Object.assign(data.item, { quantity: data.input.update.quantity }),
-      ]
-    })
+    when(
+      "should-update-item",
+      { shouldRemoveItem },
+      ({ shouldRemoveItem }) => !shouldRemoveItem
+    ).then(() => {
+      const items = transform({ input, item }, (data) => {
+        return [
+          Object.assign(data.item, { quantity: data.input.update.quantity }),
+        ]
+      })
 
-    confirmVariantInventoryWorkflow.runAsStep({
-      input: {
-        sales_channel_id: pricingContext.sales_channel_id,
-        variants,
-        items,
-      },
-    })
-
-    const lineItemUpdate = transform({ input, variants, item }, (data) => {
-      const variant = data.variants?.[0] ?? undefined
-      const item = data.item
-
-      const updateData = {
-        ...data.input.update,
-        unit_price: isDefined(data.input.update.unit_price)
-          ? data.input.update.unit_price
-          : item.unit_price,
-        is_custom_price: isDefined(data.input.update.unit_price)
-          ? true
-          : item.is_custom_price,
-        is_tax_inclusive:
-          item.is_tax_inclusive ||
-          variant?.calculated_price?.is_calculated_price_tax_inclusive,
-      }
-
-      if (variant && !updateData.is_custom_price) {
-        updateData.unit_price = variant.calculated_price.calculated_amount
-      }
-
-      if (!isDefined(updateData.unit_price)) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `Line item ${item.title} has no unit price`
-        )
-      }
-
-      return {
-        data: updateData,
-        selector: {
-          id: data.input.item_id,
+      confirmVariantInventoryWorkflow.runAsStep({
+        input: {
+          sales_channel_id: pricingContext.sales_channel_id,
+          variants,
+          items,
         },
-      }
-    })
+      })
 
-    updateLineItemsStepWithSelector(lineItemUpdate)
+      const lineItemUpdate = transform(
+        { input, variants, item, pricingContext },
+        (data) => {
+          const variant = data.variants?.[0] ?? undefined
+          const item = data.item
 
-    refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+          const updateData = {
+            ...data.input.update,
+            unit_price: isDefined(data.input.update.unit_price)
+              ? data.input.update.unit_price
+              : item.unit_price,
+            is_custom_price: isDefined(data.input.update.unit_price)
+              ? true
+              : item.is_custom_price,
+            is_tax_inclusive:
+              item.is_tax_inclusive ||
+              variant?.calculated_price?.is_calculated_price_tax_inclusive,
+          }
+
+          if (variant && !updateData.is_custom_price) {
+            updateData.unit_price = variant.calculated_price.calculated_amount
+          }
+
+          if (!isDefined(updateData.unit_price)) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Line item ${item.title} has no unit price`
+            )
+          }
+
+          return {
+            data: updateData,
+            selector: {
+              id: data.input.item_id,
+            },
+          }
+        }
+      )
+
+      updateLineItemsStepWithSelector(lineItemUpdate)
+
+      refreshCartItemsWorkflow.runAsStep({
+        input: { cart_id: input.cart_id },
+      })
     })
 
     parallelize(
-      emitEventStep({
-        eventName: CartWorkflowEvents.UPDATED,
-        data: { id: input.cart_id },
-      }),
       releaseLockStep({
         key: input.cart_id,
         skipOnSubWorkflow: true,
+      }),
+      emitEventStep({
+        eventName: CartWorkflowEvents.UPDATED,
+        data: { id: input.cart_id },
       })
     )
 
