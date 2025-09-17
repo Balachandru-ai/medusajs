@@ -201,7 +201,7 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
     )
 
     refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: cart.id, shipping_methods: createdShippingMethods },
+      input: { cart_id: cart.id, shipping_methods: createdShippingMethods, additional_data: input.additional_data },
     })
 
     return new WorkflowResponse(void 0, {
