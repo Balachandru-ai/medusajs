@@ -1,3 +1,4 @@
+import { addShippingMethodToCartWorkflow } from "@medusajs/core-flows"
 import {
   AdminInventoryItem,
   AdminProduct,
@@ -242,15 +243,12 @@ export async function createOrderSeeder({
 
   if (!withoutShipping) {
     // Create shipping methods for each shipping option so shipping profiles of products in the cart are supported
-    await Promise.all(
-      shippingOptions.map(async (so) => {
-        await api.post(
-          `/store/carts/${cart.id}/shipping-methods`,
-          { option_id: so.id },
-          storeHeaders
-        )
-      })
-    )
+    await addShippingMethodToCartWorkflow(container).run({
+      input: {
+        cart_id: cart.id,
+        options: shippingOptions.map((so) => ({ id: so.id })),
+      },
+    })
   }
 
   const paymentCollection = (
