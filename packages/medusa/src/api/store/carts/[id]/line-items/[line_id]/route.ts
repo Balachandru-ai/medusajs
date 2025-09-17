@@ -33,7 +33,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: MedusaRequest<AdditionalData>,
+  req: MedusaRequest,
   res: MedusaResponse<HttpTypes.StoreLineItemDeleteResponse>
 ) => {
   const id = req.params.line_id
@@ -43,7 +43,6 @@ export const DELETE = async (
     input: {
       cart_id: req.params.id,
       ids: [id],
-      additional_data: req.validatedBody.additional_data,
     },
     transactionId: "cart-delete-item-" + req.params.id,
   })
