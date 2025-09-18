@@ -60,7 +60,7 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
           delete filters.category_id
 
           if (!isPresent(categoryIds)) {
-            return
+            return { is_internal: false, is_active: true }
           }
 
           return { id: categoryIds, is_internal: false, is_active: true }
@@ -92,13 +92,7 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
       }),
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
-        categories: (_filters, fields: string[]) => {
-          if (!fields.some((field) => field.startsWith("categories"))) {
-            return
-          }
-
-          return { is_internal: false, is_active: true }
-        },
+        categories: { is_internal: false, is_active: true } // Always apply this filter
       }),
       normalizeDataForContext(),
       setPricingContext(),
