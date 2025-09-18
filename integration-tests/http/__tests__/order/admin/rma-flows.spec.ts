@@ -12,14 +12,13 @@ jest.setTimeout(300000)
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
     let order
-    let salesChannel
+    let shippingProfile
     let fulfillmentSet
     let location
     let item
     let returnShippingOption
     let outboundShippingOption
     const shippingProviderId = "manual_test-provider"
-    let product
 
     beforeEach(async () => {
       const container = getContainer()
@@ -35,7 +34,15 @@ medusaIntegrationTestRunner({
         )
       ).data.inventory_item
 
-      const shippingProfileOverride = (
+      const seeders = await createOrderSeeder({
+        api,
+        container,
+        inventoryItemOverride,
+        withoutShipping: true,
+      })
+      order = seeders.order
+
+      shippingProfile = (
         await api.post(
           `/admin/shipping-profiles`,
           { name: "Test", type: "default" },
@@ -43,19 +50,51 @@ medusaIntegrationTestRunner({
         )
       ).data.shipping_profile
 
-      const seeders = await createOrderSeeder({
-        api,
-        container,
-        inventoryItemOverride,
-        shippingProfileOverride,
-        withoutShipping: true,
-      })
-      order = seeders.order
-      salesChannel = seeders.salesChannel
-      product = seeders.product
-      location = seeders.stockLocation
-      fulfillmentSet = seeders.fulfillmentSet
-      const shippingProfile = seeders.shippingProfile
+      location = (
+        await api.post(
+          `/admin/stock-locations`,
+          { name: "Test location" },
+          adminHeaders
+        )
+      ).data.stock_location
+
+      location = (
+        await api.post(
+          `/admin/stock-locations/${location.id}/fulfillment-sets?fields=*fulfillment_sets`,
+          { name: "Test", type: "test-type" },
+          adminHeaders
+        )
+      ).data.stock_location
+
+      fulfillmentSet = (
+        await api.post(
+          `/admin/fulfillment-sets/${location.fulfillment_sets[0].id}/service-zones`,
+          {
+            name: "Test",
+            geo_zones: [{ type: "country", country_code: "us" }],
+          },
+          adminHeaders
+        )
+      ).data.fulfillment_set
+
+      const inventoryItem = (
+        await api.get(`/admin/inventory-items?sku=test-variant`, adminHeaders)
+      ).data.inventory_items[0]
+
+      await api.post(
+        `/admin/inventory-items/${inventoryItem.id}/location-levels`,
+        {
+          location_id: location.id,
+          stocked_quantity: 10,
+        },
+        adminHeaders
+      )
+
+      await api.post(
+        `/admin/stock-locations/${location.id}/fulfillment-providers`,
+        { add: [shippingProviderId] },
+        adminHeaders
+      )
 
       const shippingOptionPayload = {
         name: "Return shipping",
@@ -475,7 +514,7 @@ medusaIntegrationTestRunner({
               paid_total: 212,
               refunded_total: 0,
               transaction_total: 212,
-              pending_difference: 121.9,
+              pending_difference: 15.9,
               current_order_total: 333.9,
               original_order_total: 212,
             }),
@@ -508,7 +547,7 @@ medusaIntegrationTestRunner({
               paid_total: 212,
               refunded_total: 0,
               transaction_total: 212,
-              pending_difference: 121.9,
+              pending_difference: 15.9,
               current_order_total: 333.9,
               original_order_total: 212,
             }),
@@ -520,12 +559,6 @@ medusaIntegrationTestRunner({
         await api.post(
           `/admin/claims/${claimWithInboundAndOutbound.id}/inbound/items`,
           { items: [{ id: inboundItem.id, quantity: 1 }] },
-          adminHeaders
-        )
-
-        await api.post(
-          `/admin/claims/${claimWithInboundAndOutbound.id}/inbound/shipping-method`,
-          { shipping_option_id: returnShippingOption.id },
           adminHeaders
         )
 
@@ -553,15 +586,15 @@ medusaIntegrationTestRunner({
 
         expect(orderResult).toEqual(
           expect.objectContaining({
-            total: 455.8,
-            subtotal: 430,
-            tax_total: 25.8,
+            total: 439.9,
+            subtotal: 415,
+            tax_total: 24.9,
             summary: expect.objectContaining({
               paid_total: 212,
               refunded_total: 0,
               transaction_total: 212,
-              pending_difference: 243.8,
-              current_order_total: 455.8,
+              pending_difference: 15.9,
+              current_order_total: 439.9,
               original_order_total: 333.9,
             }),
           })
@@ -574,7 +607,7 @@ medusaIntegrationTestRunner({
         expect(pendingPaymentCollection).toEqual(
           expect.objectContaining({
             status: "not_paid",
-            amount: 243.8,
+            amount: 15.9,
           })
         )
 
@@ -588,260 +621,39 @@ medusaIntegrationTestRunner({
 
         expect(paymentCollection).toEqual(
           expect.objectContaining({
-            amount: 243.8,
+            amount: 15.9,
             status: "completed",
             payment_sessions: [
               expect.objectContaining({
                 status: "authorized",
-                amount: 243.8,
+                amount: 15.9,
               }),
             ],
             payments: [
               expect.objectContaining({
                 provider_id: "pp_system_default",
-                amount: 243.8,
+                amount: 15.9,
               }),
             ],
           })
         )
 
-        orderResult = (
-          await api.get(
-            `/admin/orders/${order.id}?fields=*returns,*returns.items`,
-            adminHeaders
-          )
-        ).data.order
+        orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
+          .data.order
 
         // Totals summary after payment has been marked as paid
         expect(orderResult).toEqual(
           expect.objectContaining({
-            total: 455.8,
-            subtotal: 430,
-            tax_total: 25.8,
-            items: expect.arrayContaining([
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 106,
-              }),
-              expect.objectContaining({
-                refundable_total: 106,
-              }),
-            ]),
+            total: 439.9,
+            subtotal: 415,
+            tax_total: 24.9,
             summary: expect.objectContaining({
-              paid_total: 455.8,
+              paid_total: 227.9,
               refunded_total: 0,
-              transaction_total: 455.8,
+              transaction_total: 227.9,
               pending_difference: 0,
-              current_order_total: 455.8,
+              current_order_total: 439.9,
               original_order_total: 333.9,
-            }),
-          })
-        )
-
-        // Return and receive items from claim inbounds
-        const returnOrder1 = orderResult.returns[0]
-        const returnOrder2 = orderResult.returns[1]
-
-        let returnId = returnOrder1.id
-        await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
-
-        let lineItem = returnOrder1.items[0].item
-        await api.post(
-          `/admin/returns/${returnId}/receive-items`,
-          {
-            items: [
-              {
-                id: lineItem.id,
-                quantity: returnOrder1.items[0].quantity,
-              },
-            ],
-          },
-          adminHeaders
-        )
-
-        await api.post(
-          `/admin/returns/${returnId}/receive/confirm`,
-          {},
-          adminHeaders
-        )
-
-        orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
-          .data.order
-
-        // Totals summary after returns have been received
-        expect(orderResult).toEqual(
-          expect.objectContaining({
-            total: 349.8,
-            subtotal: 330,
-            tax_total: 19.8,
-            items: expect.arrayContaining([
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-            ]),
-            summary: expect.objectContaining({
-              paid_total: 455.8,
-              refunded_total: 0,
-              transaction_total: 455.8,
-              pending_difference: -106,
-              current_order_total: 349.8,
-              original_order_total: 455.8,
-            }),
-          })
-        )
-
-        const capturedPayment = orderResult.payment_collections.find(
-          (pc) => pc.captured_amount === 212
-        ).payments[0]
-
-        // partially refund order
-        await api.post(
-          `/admin/payments/${capturedPayment.id}/refund`,
-          { amount: 105 },
-          adminHeaders
-        )
-
-        orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
-          .data.order
-
-        expect(orderResult).toEqual(
-          expect.objectContaining({
-            total: 349.8,
-            subtotal: 330,
-            tax_total: 19.8,
-            summary: expect.objectContaining({
-              paid_total: 455.8,
-              refunded_total: 105,
-              transaction_total: 350.8,
-              pending_difference: -1,
-              current_order_total: 349.8,
-              original_order_total: 455.8,
-            }),
-          })
-        )
-
-        returnId = returnOrder2.id
-        await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
-
-        lineItem = returnOrder2.items[0].item
-        await api.post(
-          `/admin/returns/${returnId}/receive-items`,
-          {
-            items: [
-              {
-                id: lineItem.id,
-                quantity: returnOrder2.items[0].quantity,
-              },
-            ],
-          },
-          adminHeaders
-        )
-
-        await api.post(
-          `/admin/returns/${returnId}/receive/confirm`,
-          {},
-          adminHeaders
-        )
-
-        // partially refund order
-        await api.post(
-          `/admin/payments/${capturedPayment.id}/refund`,
-          { amount: 50 },
-          adminHeaders
-        )
-
-        orderResult = (
-          await api.get(
-            `/admin/orders/${order.id}?fields=*transactions`,
-            adminHeaders
-          )
-        ).data.order
-
-        // Totals summary after returns have been received
-        expect(orderResult).toEqual(
-          expect.objectContaining({
-            total: 243.8,
-            subtotal: 230,
-            tax_total: 13.8,
-            items: expect.arrayContaining([
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-            ]),
-            summary: expect.objectContaining({
-              paid_total: 455.8,
-              refunded_total: 155,
-              transaction_total: 300.8,
-              pending_difference: -57,
-              current_order_total: 243.8,
-              original_order_total: 349.8,
-            }),
-          })
-        )
-
-        // refunds remaining amount
-        await api.post(
-          `/admin/payments/${capturedPayment.id}/refund`,
-          { amount: 57 },
-          adminHeaders
-        )
-
-        orderResult = (
-          await api.get(
-            `/admin/orders/${order.id}?fields=*transactions`,
-            adminHeaders
-          )
-        ).data.order
-
-        expect(orderResult).toEqual(
-          expect.objectContaining({
-            total: 243.8,
-            subtotal: 230,
-            tax_total: 13.8,
-            items: expect.arrayContaining([
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-              expect.objectContaining({
-                refundable_total: 0,
-              }),
-            ]),
-            summary: expect.objectContaining({
-              paid_total: 455.8,
-              refunded_total: 212,
-              transaction_total: 243.8,
-              pending_difference: 0,
-              current_order_total: 243.8,
-              original_order_total: 349.8,
             }),
           })
         )

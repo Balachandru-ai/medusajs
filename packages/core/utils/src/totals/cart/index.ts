@@ -270,5 +270,22 @@ export function decorateCartTotals(
     cart.original_shipping_total = new BigNumber(shippingOriginalTotal)
   }
 
+  // Calculate pending return total
+  if (cart.summary) {
+    const pendingReturnTotal = MathBN.sum(
+      0,
+      ...(cart.items?.map((item) => item.return_requested_total ?? 0) ?? [0])
+    )
+
+    const pendingDifference = new BigNumber(
+      MathBN.sub(
+        MathBN.sub(cart.total, pendingReturnTotal),
+        cart.summary?.transaction_total ?? 0
+      )
+    )
+
+    cart.summary.pending_difference = pendingDifference
+  }
+
   return cart
 }

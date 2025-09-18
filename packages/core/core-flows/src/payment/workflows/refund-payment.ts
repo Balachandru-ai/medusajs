@@ -146,7 +146,7 @@ export const refundPaymentWorkflow = createWorkflow(
 
     const order = useRemoteQueryStep({
       entry_point: "order",
-      fields: ["id", "summary", "currency_code", "region_id"],
+      fields: ["id", "summary", "total", "currency_code", "region_id"],
       variables: { id: orderPaymentCollection.order.id },
       throw_if_key_not_found: true,
       list: false,

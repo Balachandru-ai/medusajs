@@ -4,6 +4,7 @@ export const defaultAdminOrderFields = [
   "status",
   "version",
   "summary",
+  "total",
   "metadata",
   "created_at",
   "updated_at",
