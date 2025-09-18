@@ -1,5 +1,5 @@
 import { BigNumberInput } from "../totals"
-import { PaymentCollectionStatus } from "./common"
+import { PaymentCollectionStatus, PaymentSessionStatus } from "./common"
 import {
   PaymentAccountHolderDTO,
   PaymentCustomerDTO,
@@ -212,6 +212,11 @@ export interface CreatePaymentSessionDTO {
    * Necessary context data for the associated payment provider.
    */
   context?: PaymentProviderContext
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -239,9 +244,19 @@ export interface UpdatePaymentSessionDTO {
   amount: BigNumberInput
 
   /**
+   * The status of the payment session.
+   */
+  status?: PaymentSessionStatus
+
+  /**
    * Necessary context data for the associated payment provider.
    */
   context?: PaymentProviderContext
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
 }
 
 /**

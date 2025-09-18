@@ -29,6 +29,26 @@ import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adju
 export const removeDraftOrderActionShippingMethodWorkflowId =
   "remove-draft-order-action-shipping-method"
 
+/**
+ * This workflow removes a shipping method that was added to an edited draft order. It's used by the
+ * [Remove Shipping Method from Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersideditshippingmethodsaction_id).
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
+ * removing a shipping method from an edited draft order.
+ *
+ * @example
+ * const { result } = await removeDraftOrderActionShippingMethodWorkflow(container)
+ * .run({
+ *   input: {
+ *     order_id: "order_123",
+ *     action_id: "action_123",
+ *   }
+ * })
+ *
+ * @summary
+ *
+ * Remove a shipping method from an edited draft order.
+ */
 export const removeDraftOrderActionShippingMethodWorkflow = createWorkflow(
   removeDraftOrderActionShippingMethodWorkflowId,
   function (
@@ -80,19 +100,11 @@ export const removeDraftOrderActionShippingMethodWorkflow = createWorkflow(
       order,
     })
 
-    const appliedPromoCodes = transform(context, (context) => {
-      const promotionLink = (context as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      context,
+      (context) =>
+        (context as any).promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     when(
       appliedPromoCodes,

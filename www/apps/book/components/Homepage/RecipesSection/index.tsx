@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import {
+  BundledProductIcon,
   CalendarRefreshIcon,
   Card,
   CardProps,
@@ -8,13 +9,19 @@ import {
   IconHeadline,
   ImageBinaryIcon,
   Link,
-  RestockIcon,
   ScrollTextIcon,
   ShopIcon,
 } from "docs-ui"
 
 const HomepageRecipesSection = () => {
   const cards: CardProps[] = [
+    {
+      type: "large",
+      title: "Marketplace",
+      text: "Build a marketplace with multiple vendors.",
+      href: "https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors",
+      icon: ShopIcon,
+    },
     {
       type: "large",
       title: "ERP",
@@ -24,10 +31,10 @@ const HomepageRecipesSection = () => {
     },
     {
       type: "large",
-      title: "Marketplace",
-      text: "Build a marketplace with multiple vendors.",
-      href: "https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors",
-      icon: ShopIcon,
+      title: "Bundled Products",
+      text: "Sell products as bundles with Admin and storefront customizations.",
+      href: "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard",
+      icon: BundledProductIcon,
     },
     {
       type: "large",
@@ -49,13 +56,6 @@ const HomepageRecipesSection = () => {
       text: "Sell digital products with custom fulfillment.",
       href: "https://docs.medusajs.com/resources/recipes/digital-products/examples/standard",
       icon: ImageBinaryIcon,
-    },
-    {
-      type: "large",
-      title: "Restock Notifications",
-      text: "Notify customers when a product is back in stock.",
-      href: "https://docs.medusajs.com/resources/recipes/commerce-automation/restock-notification",
-      icon: RestockIcon,
     },
   ]
   return (

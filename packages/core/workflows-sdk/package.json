@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/workflows-sdk",
-  "version": "2.6.1",
+  "version": "2.10.2",
   "description": "Set of workflows tooling for Medusa",
   "main": "dist/index.js",
   "exports": {
@@ -39,13 +39,13 @@
     "pg": "^8.13.0",
     "rimraf": "^5.0.1",
     "typescript": "^5.6.2",
-    "zod": "3.22.4"
+    "zod": "3.25.76"
   },
   "dependencies": {
-    "@medusajs/modules-sdk": "2.6.1",
-    "@medusajs/orchestration": "2.6.1",
-    "@medusajs/types": "2.6.1",
-    "@medusajs/utils": "2.6.1",
+    "@medusajs/modules-sdk": "2.10.2",
+    "@medusajs/orchestration": "2.10.2",
+    "@medusajs/types": "2.10.2",
+    "@medusajs/utils": "2.10.2",
     "ulid": "^2.3.0"
   },
   "peerDependencies": {
@@ -55,13 +55,12 @@
     "@mikro-orm/postgresql": "6.4.3",
     "awilix": "^8.0.1",
     "express": "^4.21.0",
-    "pg": "^8.13.0",
-    "zod": "3.22.4"
+    "pg": "^8.13.0"
   },
   "scripts": {
     "build": "rimraf dist && tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --runInBand --bail --forceExit",
+    "test": "jest --bail --forceExit",
     "test:run": "node ./dist/utils/_playground.js"
   }
 }

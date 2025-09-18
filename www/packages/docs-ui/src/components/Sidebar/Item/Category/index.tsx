@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react"
 import { Sidebar } from "types"
 import { Badge, Loading, SidebarItem, useSidebar } from "../../../.."
 import clsx from "clsx"
-import { MinusMini, PlusMini } from "@medusajs/icons"
+import { TriangleDownMini, TriangleUpMini } from "@medusajs/icons"
 
 export type SidebarItemCategoryProps = {
   item: Sidebar.SidebarItemCategory
@@ -64,7 +64,13 @@ export const SidebarItemCategory = ({
   }, [persistCategoryState])
 
   const handleOpen = () => {
-    item.onOpen?.()
+    if (!open) {
+      item.onOpen?.()
+    }
+    if (persistCategoryState) {
+      updatePersistedCategoryState(item.title, !open)
+    }
+    setOpen((prev) => !prev)
   }
 
   const isTitleOneWord = useMemo(
@@ -87,15 +93,7 @@ export const SidebarItemCategory = ({
             !isTitleOneWord && "break-words"
           )}
           tabIndex={-1}
-          onClick={() => {
-            if (!open) {
-              handleOpen()
-            }
-            if (persistCategoryState) {
-              updatePersistedCategoryState(item.title, !open)
-            }
-            setOpen((prev) => !prev)
-          }}
+          onClick={handleOpen}
         >
           <span
             className={clsx(
@@ -111,8 +109,8 @@ export const SidebarItemCategory = ({
           )}
           {!item.additionalElms && (
             <>
-              {open && <MinusMini />}
-              {!open && <PlusMini />}
+              {open && <TriangleDownMini />}
+              {!open && <TriangleUpMini />}
             </>
           )}
         </div>

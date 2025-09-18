@@ -24,11 +24,11 @@ export const MainNavMobileSubMenu = ({
     ) as (MenuItemLink | MenuItemSubMenu)[]
   }, [menu])
   return (
-    <div className="flex flex-col gap-[23px]">
+    <div className="flex flex-col gap-[23px] max-h-[90%]">
       <span className="text-compact-small-plus text-medusa-fg-muted uppercase">
         {title}
       </span>
-      <ul className="flex flex-col gap-[18px]">
+      <ul className="flex flex-col gap-[18px] max-h-full overflow-auto">
         {filteredItems.map((item, index) => (
           <li
             key={index}

@@ -17,6 +17,31 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "category",
+      "title": "Analytics",
+      "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "path": "/infrastructure-modules/analytics/posthog",
+          "title": "PostHog",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/segment",
+          "title": "Segment",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
       "title": "Auth",
       "initialOpen": true,
       "children": [
@@ -45,6 +70,22 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
       "title": "CMS",
       "initialOpen": true,
       "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/contentful",
+          "title": "Contentful",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/payload",
+          "title": "Payload CMS",
+          "children": []
+        },
         {
           "loaded": true,
           "isPathHref": true,
@@ -83,8 +124,8 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "ref",
-          "path": "/architectural-modules/file/s3",
-          "title": "AWS",
+          "path": "/infrastructure-modules/file/s3",
+          "title": "S3 (and Compatible APIs)",
           "children": []
         }
       ]
@@ -102,6 +143,23 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "type": "link",
           "path": "/integrations/guides/shipstation",
           "title": "ShipStation",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
+      "title": "Instrumentation",
+      "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/sentry",
+          "title": "Sentry",
           "children": []
         }
       ]
@@ -134,6 +192,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/integrations/guides/mailchimp",
+          "title": "Mailchimp",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/integrations/guides/resend",
           "title": "Resend",
           "children": []
@@ -142,8 +208,24 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "ref",
-          "path": "/architectural-modules/notification/sendgrid",
+          "path": "/infrastructure-modules/notification/sendgrid",
           "title": "SendGrid",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/slack",
+          "title": "Slack",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "path": "/how-to-tutorials/tutorials/phone-auth#step-3-integrate-twilio-sms",
+          "title": "Twilio SMS",
           "children": []
         }
       ]

@@ -1,3 +1,4 @@
+import { logger } from "@medusajs/framework/logger"
 import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
@@ -23,6 +24,7 @@ export interface InitModulesOptions {
   }
   joinerConfig?: ModuleJoinerConfig[]
   preventConnectionDestroyWarning?: boolean
+  cwd?: string
 }
 
 export async function initModules({
@@ -31,6 +33,7 @@ export async function initModules({
   modulesConfig,
   joinerConfig,
   preventConnectionDestroyWarning = false,
+  cwd,
 }: InitModulesOptions) {
   const moduleSdkImports = require("@medusajs/framework/modules-sdk")
 
@@ -54,6 +57,7 @@ export async function initModules({
     modulesConfig,
     servicesConfig: joinerConfig,
     injectedDependencies,
+    cwd,
   })
 
   await medusaApp.onApplicationStart()
@@ -69,7 +73,7 @@ export async function initModules({
       ])
     } else {
       if (!preventConnectionDestroyWarning) {
-        console.info(
+        logger.info(
           `You are using a custom shared connection. The connection won't be destroyed automatically.`
         )
       }

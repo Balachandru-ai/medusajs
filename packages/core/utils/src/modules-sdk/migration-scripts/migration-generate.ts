@@ -35,8 +35,8 @@ export function buildGenerateMigrationScript({
   > = {}) {
     logger ??= console as unknown as Logger
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
-    console.log("")
+    logger.info(new Array(TERMINAL_SIZE).join("-"))
+    logger.info("")
     logger.info(`MODULE: ${moduleName}`)
 
     const dbData = loadDatabaseConfig(moduleName, options)!

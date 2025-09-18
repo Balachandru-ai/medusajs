@@ -1,6 +1,6 @@
 export const storefront = [
   {
-    "title": "Customize the Stripe Integration in the Next.js Starter",
+    "title": "Use Stripe's Payment Element in the Next.js Starter Storefront",
     "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/customize-stripe"
   },
   {
@@ -14,6 +14,10 @@ export const storefront = [
   {
     "title": "Manage Cart's Items in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items"
+  },
+  {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
   },
   {
     "title": "Retrieve Cart in Storefront",

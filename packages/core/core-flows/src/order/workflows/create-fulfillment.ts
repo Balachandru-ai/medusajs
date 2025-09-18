@@ -38,12 +38,12 @@ import {
   updateReservationsStep,
 } from "../../reservation"
 import { registerOrderFulfillmentStep } from "../steps"
+import { buildReservationsMap } from "../utils/build-reservations-map"
 import {
   throwIfItemsAreNotGroupedByShippingRequirement,
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
 } from "../utils/order-validation"
-import { buildReservationsMap } from "../utils/build-reservations-map"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {
@@ -296,7 +296,8 @@ function prepareInventoryUpdate({
 
     if (!reservations?.length) {
       if (item.variant?.manage_inventory) {
-        throw new Error(
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
           `No stock reservation found for item ${item.id} - ${item.title} (${item.variant_title})`
         )
       }
@@ -306,13 +307,6 @@ function prepareInventoryUpdate({
     const inputQuantity = inputItemsMap[item.id]?.quantity ?? item.quantity
 
     reservations.forEach((reservation) => {
-      if (MathBN.gt(inputQuantity, reservation.quantity)) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `Quantity to fulfill exceeds the reserved quantity for the item: ${item.id}`
-        )
-      }
-
       const iItem = orderItem?.variant?.inventory_items.find(
         (ii) => ii.inventory.id === reservation.inventory_item_id
       )
@@ -326,6 +320,13 @@ function prepareInventoryUpdate({
         reservation.quantity,
         adjustemntQuantity
       )
+
+      if (MathBN.lt(remainingReservationQuantity, 0)) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Quantity to fulfill exceeds the reserved quantity for the item: ${item.id}`
+        )
+      }
 
       inventoryAdjustment.push({
         inventory_item_id: reservation.inventory_item_id,
@@ -396,8 +397,14 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
       entry_point: "orders",
       fields: [
         "id",
+        "display_id",
         "status",
+        "customer_id",
+        "customer.*",
+        "sales_channel_id",
+        "sales_channel.*",
         "region_id",
+        "region.*",
         "currency_code",
         "items.*",
         "items.variant.manage_inventory",
@@ -410,6 +417,23 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
         "items.variant.width",
         "items.variant.material",
         "items.variant_title",
+        "items.variant.upc",
+        "items.variant.sku",
+        "items.variant.barcode",
+        "items.variant.hs_code",
+        "items.variant.origin_country",
+        "items.variant.product.origin_country",
+        "items.variant.product.hs_code",
+        "items.variant.product.mid_code",
+        "items.variant.product.material",
+        "items.tax_lines.rate",
+        "subtotal",
+        "discount_total",
+        "tax_total",
+        "item_total",
+        "shipping_total",
+        "total",
+        "created_at",
         "items.variant.inventory_items.required_quantity",
         "items.variant.inventory_items.inventory.id",
         "items.variant.inventory_items.inventory.title",

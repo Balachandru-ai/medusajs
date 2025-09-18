@@ -1,5 +1,124 @@
 # @medusajs/cart
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13296](https://github.com/medusajs/medusa/pull/13296) [`e8822f3e693bde33fdfd8b0d6140b4e59b40af98`](https://github.com/medusajs/medusa/commit/e8822f3e693bde33fdfd8b0d6140b4e59b40af98) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Module Internal Events
+
+- [#13455](https://github.com/medusajs/medusa/pull/13455) [`49a4caa62daf9f12eda0999c236bb39ea01fccb9`](https://github.com/medusajs/medusa/commit/49a4caa62daf9f12eda0999c236bb39ea01fccb9) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cart fixes and opti
+
+- [#13472](https://github.com/medusajs/medusa/pull/13472) [`8dd9ae3d35b90b54f3490df3e0da61180f671ca4`](https://github.com/medusajs/medusa/commit/8dd9ae3d35b90b54f3490df3e0da61180f671ca4) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Improve cart module
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#12960](https://github.com/medusajs/medusa/pull/12960) [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a) Thanks [@scherddel](https://github.com/scherddel)! - This fixes the discount\_ calculation logic and promotion tax inclusiveness calculation
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12889](https://github.com/medusajs/medusa/pull/12889) [`2f70f133511857b499a992b65a0a4d6170e03ab9`](https://github.com/medusajs/medusa/commit/2f70f133511857b499a992b65a0a4d6170e03ab9) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Order constraint and receive return
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12412](https://github.com/medusajs/medusa/pull/12412) [`2621f00bb035a6b909f9498a2bc98fdba8570ba9`](https://github.com/medusajs/medusa/commit/2621f00bb035a6b909f9498a2bc98fdba8570ba9) Thanks [@fPolic](https://github.com/fPolic)! - feat(promotion, dashboard, core-flows, cart, types, utils, medusa): tax inclusive promotions
+
+- Updated dependencies [[`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`00505b4f8e49873123111752adfda47ccb35ab46`](https://github.com/medusajs/medusa/commit/00505b4f8e49873123111752adfda47ccb35ab46), [`94b62c67249d13ec6342411cf7efdedfd0ac47e1`](https://github.com/medusajs/medusa/commit/94b62c67249d13ec6342411cf7efdedfd0ac47e1)]:
+  - @medusajs/framework@2.8.5
+
+## 2.8.4
+
+### Patch Changes
+
+- Updated dependencies [[`7685d66c0775167994150e61a8b628ad6289ce23`](https://github.com/medusajs/medusa/commit/7685d66c0775167994150e61a8b628ad6289ce23), [`cf0297f74af1b043363ffbd5a23ca0933097a69d`](https://github.com/medusajs/medusa/commit/cf0297f74af1b043363ffbd5a23ca0933097a69d), [`1f5f50010ae42f8d5b9924edcd75612b1f336463`](https://github.com/medusajs/medusa/commit/1f5f50010ae42f8d5b9924edcd75612b1f336463)]:
+  - @medusajs/framework@2.8.4
+
+## 2.8.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.3
+
+## 2.8.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.2
+
+## 2.8.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.1
+
+## 2.8.0
+
+### Patch Changes
+
+- Updated dependencies [[`b868a4ef4deb7df09d6156a907f4c883cd55a3fd`](https://github.com/medusajs/medusa/commit/b868a4ef4deb7df09d6156a907f4c883cd55a3fd)]:
+  - @medusajs/framework@2.8.0
+
+## 2.7.1
+
+### Patch Changes
+
+- Updated dependencies [[`ee35f3ce9097832c10cdf2fd168763088e6c3fcb`](https://github.com/medusajs/medusa/commit/ee35f3ce9097832c10cdf2fd168763088e6c3fcb), [`2f6963a5fbea05537680cb1b1f6a2b9822c36325`](https://github.com/medusajs/medusa/commit/2f6963a5fbea05537680cb1b1f6a2b9822c36325), [`b8902637251e9ed4f8762ef280659bbab6d967de`](https://github.com/medusajs/medusa/commit/b8902637251e9ed4f8762ef280659bbab6d967de)]:
+  - @medusajs/framework@2.7.1
+
+## 2.7.0
+
+### Patch Changes
+
+- [#11994](https://github.com/medusajs/medusa/pull/11994) [`1f8fab36361aa8e473ffe6c411c8598a916a6d3f`](https://github.com/medusajs/medusa/commit/1f8fab36361aa8e473ffe6c411c8598a916a6d3f) Thanks [@riqwan](https://github.com/riqwan)! - feat(core-flows,types,order,cart): assign tax lines only to regular products
+
+- Updated dependencies [[`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8), [`2a18a75353f872b0cb4c203afc08cfd82f778428`](https://github.com/medusajs/medusa/commit/2a18a75353f872b0cb4c203afc08cfd82f778428)]:
+  - @medusajs/framework@2.7.0
+
 ## 2.6.1
 
 ### Patch Changes

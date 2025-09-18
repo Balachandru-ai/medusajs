@@ -80,6 +80,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateLinksWorkflow
+  x-events: []
 delete:
   operationId: DeleteProductsIdVariantsVariant_idInventoryItemsInventory_item_id
   summary: Remove Inventory Item Association with Product Variant
@@ -156,3 +157,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: dismissLinksWorkflow
+  x-events: []

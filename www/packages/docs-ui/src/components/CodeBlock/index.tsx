@@ -92,6 +92,7 @@ export const CodeBlock = ({
   style,
   forceNoTitle = false,
   animateTokenHighlights,
+  noAskAi = false,
   ...rest
 }: CodeBlockProps) => {
   if (!source && typeof children === "string") {
@@ -306,6 +307,7 @@ export const CodeBlock = ({
       isCollapsed: collapsibleType !== undefined && collapsibleResult.collapsed,
       inInnerCode: hasInnerCodeBlock,
       showGradientBg: scrollable,
+      noAskAi,
     }),
     [
       source,
@@ -317,6 +319,7 @@ export const CodeBlock = ({
       collapsibleResult,
       hasInnerCodeBlock,
       scrollable,
+      noAskAi,
     ]
   )
 
@@ -457,7 +460,7 @@ export const CodeBlock = ({
                   </code>
                 </pre>
                 {!hasInnerCodeBlock &&
-                  (!noCopy || !noReport || canShowApiTesting) && (
+                  (!noCopy || !noReport || canShowApiTesting || !noAskAi) && (
                     <CodeBlockActions
                       {...actionsProps}
                       inHeader={false}

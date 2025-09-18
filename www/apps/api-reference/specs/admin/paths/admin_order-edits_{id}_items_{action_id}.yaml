@@ -34,6 +34,11 @@ post:
         schema:
           $ref: ../components/schemas/AdminPostOrderEditsItemsActionReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_order-edits_{id}_items_{action_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -60,6 +65,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateOrderEditAddItemWorkflow
+  x-events: []
 delete:
   operationId: DeleteOrderEditsIdItemsAction_id
   summary: Remove Item from Order Edit
@@ -91,6 +97,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_order-edits_{id}_items_{action_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -118,3 +129,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: removeItemOrderEditActionWorkflow
+  x-events: []

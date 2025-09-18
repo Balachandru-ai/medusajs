@@ -458,7 +458,32 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.invite.list()
+ *       .then(({ invites, count, limit, offset }) => {
+ *         console.log(invites)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl '{backend_url}/admin/invites'

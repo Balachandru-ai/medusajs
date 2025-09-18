@@ -1,15 +1,16 @@
 import { useLoaderData, useParams } from "react-router-dom"
+import { useState } from "react"
 
 import { SingleColumnPage } from "../../../components/layout/pages"
 import { useTaxRegion } from "../../../hooks/api/tax-regions"
 import { TaxRegionDetailSection } from "./components/tax-region-detail-section"
 import { TaxRegionProvinceSection } from "./components/tax-region-province-section"
 
-import { useState } from "react"
 import { SingleColumnPageSkeleton } from "../../../components/common/skeleton"
 import { useExtension } from "../../../providers/extension-provider"
 import { TaxRegionOverrideSection } from "./components/tax-region-override-section"
 import { TaxRegionSublevelAlert } from "./components/tax-region-sublevel-alert"
+import { TaxRegionProviderSection } from "./tax-region-provider-section"
 import { taxRegionLoader } from "./loader"
 
 export const TaxRegionDetail = () => {
@@ -41,7 +42,7 @@ export const TaxRegionDetail = () => {
     <SingleColumnPage
       data={taxRegion}
       showJSON
-      // showMetadata // TOOD -> enable when tax region update is added to the API
+      // showMetadata // TOOD -> enable tax region metadata
       widgets={{
         after: getWidgets("tax.details.after"),
         before: getWidgets("tax.details.before"),
@@ -58,6 +59,7 @@ export const TaxRegionDetail = () => {
         showSublevelRegions={showSublevelRegions}
       />
       <TaxRegionOverrideSection taxRegion={taxRegion} />
+      <TaxRegionProviderSection taxRegion={taxRegion} />
     </SingleColumnPage>
   )
 }

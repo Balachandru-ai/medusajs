@@ -59,7 +59,7 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "isPathHref": true,
               "type": "ref",
               "title": "Create Cache Module",
-              "path": "https://docs.medusajs.com/resources/architectural-modules/cache/create",
+              "path": "https://docs.medusajs.com/resources/infrastructure-modules/cache/create",
               "children": []
             },
             {
@@ -67,7 +67,7 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "isPathHref": true,
               "type": "ref",
               "title": "Create Event Module",
-              "path": "https://docs.medusajs.com/resources/architectural-modules/event/create",
+              "path": "https://docs.medusajs.com/resources/infrastructure-modules/event/create",
               "children": []
             },
             {
@@ -114,6 +114,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Get Variant Inventory",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/variant-inventory",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Get Variant Price with Taxes",
               "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price-with-taxes",
               "children": []
@@ -130,7 +138,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
-              "title": "Handle Password Reset Event",
+              "title": "Invite User Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Reset Password Email",
               "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
               "children": []
             },
@@ -138,8 +154,32 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Retrieve Cart Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Retrieve Order Totals",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Send Notification",
-              "path": "https://docs.medusajs.com/resources/architectural-modules/notification/send-notification",
+              "path": "https://docs.medusajs.com/resources/infrastructure-modules/notification/send-notification",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Use Analytics Module",
+              "path": "https://docs.medusajs.com/resources/references/analytics/service",
               "children": []
             },
             {
@@ -187,7 +227,7 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "isPathHref": true,
               "type": "ref",
               "title": "Use Workflow Engine Module",
-              "path": "https://docs.medusajs.com/resources/architectural-modules/workflow-engine/how-to-use",
+              "path": "https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine/how-to-use",
               "children": []
             }
           ]
@@ -338,6 +378,7 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
       "isPathHref": true,
       "type": "category",
       "title": "Tutorials",
+      "sort_sidebar": "alphabetize",
       "description": "Tutorials are step-by-step guides that take you through implementing a specific use case in Medusa. You can follow these guides whether you're a beginner or an experienced Medusa developer.\n\nWhile tutorials show you a specific use case, they also help you understand how to implement similar use cases in your own projects. Also, you can implement the use case in a tutorial differently to fit your business requirements.",
       "children": [
         {
@@ -353,45 +394,36 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
-          "title": "Custom Item Pricing",
-          "path": "/examples/guides/custom-item-price",
-          "description": "Learn how to use prices from external systems for products.",
+          "title": "Add Gift Message",
+          "path": "/how-to-tutorials/tutorials/gift-message",
+          "description": "Learn how to add a gift option and message to items in the cart.",
           "children": []
         },
         {
           "loaded": true,
           "isPathHref": true,
           "type": "ref",
-          "title": "Magento Migration",
-          "path": "/integrations/guides/magento",
-          "description": "Learn how to migrate data from Magento to Medusa.",
+          "title": "Analytics with Segment",
+          "path": "/integrations/guides/segment",
+          "description": "Learn how to integrate Segment with Medusa to track user interactions and events.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Bundled Products",
+          "path": "/recipes/bundled-products/examples/standard",
+          "description": "Learn how to implement bundled products in your Medusa store.",
           "children": []
         },
         {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
-          "title": "Product Reviews",
-          "path": "/how-to-tutorials/tutorials/product-reviews",
-          "description": "Learn how to implement product reviews in your Medusa store.",
-          "children": []
-        },
-        {
-          "loaded": true,
-          "isPathHref": true,
-          "type": "link",
-          "title": "Quote Management",
-          "path": "/examples/guides/quote-management",
-          "description": "Learn how to implement quote management, useful for B2B use cases.",
-          "children": []
-        },
-        {
-          "loaded": true,
-          "isPathHref": true,
-          "type": "link",
-          "title": "Wishlist Plugin",
-          "path": "/plugins/guides/wishlist",
-          "description": "Learn how to build a plugin for wishlist functionalities.",
+          "title": "Custom Item Pricing",
+          "path": "/examples/guides/custom-item-price",
+          "description": "Learn how to use prices from external systems for products.",
           "children": []
         },
         {
@@ -436,6 +468,159 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "children": []
             }
           ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "First-Purchase Discounts",
+          "path": "/how-to-tutorials/tutorials/first-purchase-discounts",
+          "description": "Learn how to implement first-purchase discounts in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Generate Invoices",
+          "path": "/how-to-tutorials/tutorials/invoice-generator",
+          "description": "Learn how to generate invoices for orders in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Integrate Payload CMS",
+          "path": "/integrations/guides/payload",
+          "description": "Learn how to integrate Payload CMS with Medusa to manage your product content.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Localization with Contentful",
+          "path": "/integrations/guides/contentful",
+          "description": "Learn how to implement localization in Medusa by integrating Contentful.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Loyalty Points System",
+          "path": "/how-to-tutorials/tutorials/loyalty-points",
+          "description": "Learn how to implement a loyalty points system in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Magento Migration",
+          "path": "/integrations/guides/magento",
+          "description": "Learn how to migrate data from Magento to Medusa.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Meta Product Feed",
+          "path": "/how-to-tutorials/tutorials/product-feed",
+          "description": "Learn how to implement a product feed for Meta (Facebook and Instagram) and Google using Medusa.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Newsletter with Mailchimp",
+          "path": "/integrations/guides/mailchimp",
+          "description": "Learn how to integrate Mailchimp with Medusa to manage and automate newsletters.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "title": "Personalized Products",
+          "path": "/recipes/personalized-products/example",
+          "description": "Learn how to implement personalized products in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Phone Authentication",
+          "path": "/how-to-tutorials/tutorials/phone-auth",
+          "description": "Learn how to allow users to authenticate using their phone numbers.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Pre-Order Products",
+          "path": "/how-to-tutorials/tutorials/preorder",
+          "description": "Learn how to implement pre-order functionality for products in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Product Builder",
+          "path": "/how-to-tutorials/tutorials/product-builder",
+          "description": "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Product Reviews",
+          "path": "/how-to-tutorials/tutorials/product-reviews",
+          "description": "Learn how to implement product reviews in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Quote Management",
+          "path": "/examples/guides/quote-management",
+          "description": "Learn how to implement quote management, useful for B2B use cases.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Re-Order",
+          "path": "/how-to-tutorials/tutorials/re-order",
+          "description": "Learn how to allow customers to re-order previous orders.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Saved Payment Methods",
+          "path": "/how-to-tutorials/tutorials/saved-payment-methods",
+          "description": "Learn how to implement saved payment methods in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Wishlist Plugin",
+          "path": "/plugins/guides/wishlist",
+          "description": "Learn how to build a plugin for wishlist functionalities.",
+          "children": []
         }
       ]
     },
@@ -457,8 +642,8 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
-          "title": "Medusa Cloud",
-          "path": "https://medusajs.com/pricing",
+          "title": "Cloud",
+          "path": "https://docs.medusajs.com/cloud",
           "children": []
         },
         {

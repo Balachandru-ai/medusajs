@@ -1,3 +1,8 @@
+---
+products:
+  - product
+---
+
 import { Card, Prerequisites, Details, WorkflowDiagram } from "docs-ui"
 import { Github, PlaySolid } from "@medusajs/icons"
 
@@ -31,7 +36,7 @@ export const metadata = {
 
 In this tutorial, you'll learn how to integrate Medusa with Algolia.
 
-When you install a Medusa application, you get a fully-fledged commerce platform with a framework for customization. Medusa's architecture supports integrating third-party services, such as a search engine, allowing you to build your unique requirements around core commerce flows.
+When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. Medusa's architecture supports integrating third-party services, such as a search engine, allowing you to build your unique requirements around core commerce flows.
 
 [Algolia](https://www.algolia.com/doc/) is a search engine that enables you to build and manage an intuitive search experience for your customers. By integrating Algolia with Medusa, you can index e-commerce data, such as products, and allow clients to search through them.
 
@@ -45,6 +50,8 @@ By following this tutorial, you'll learn how to:
 - Integrate Algolia into Medusa.
 - Trigger Algolia reindexing when a product is created, updated, deleted, or when the admin manually triggers a reindex.
 - Customize the Next.js Starter Storefront to allow searching for products through Algolia.
+
+![Diagram illustrating the integration of Algolia with Medusa](https://res.cloudinary.com/dza7lstvk/image/upload/v1742889842/Medusa%20Resources/algolia-summary_lhegrr.jpg)
 
 <CardList items={[
   {
@@ -86,7 +93,7 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll first be asked for the project's name. Then, when asked whether you want to install the [Next.js starter storefront](../../../nextjs-starter/page.mdx), choose "Yes."
+You'll first be asked for the project's name. Then, when asked whether you want to install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx), choose "Yes."
 
 Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name and the Next.js Starter Storefront in a separate directory named `{project-name}-storefront`.
 
@@ -258,7 +265,7 @@ You define two methods:
 
 #### Search Method
 
-The last method you'll implement is a method to search through the Algolia index. You'll later use this method to expose the search functionality to clients, such as the Next.js Storefront.
+The last method you'll implement is a method to search through the Algolia index. You'll later use this method to expose the search functionality to clients, such as the Next.js Starter Storefront.
 
 Add the following method to the `AlgoliaModuleService` class:
 
@@ -453,7 +460,7 @@ You create a step with `createStep` from the Workflows SDK. It accepts two param
 1. The step's unique name, which is `sync-products`.
 2. An async function that receives two parameters:
     - The step's input, which is in this case an object holding an array of products to sync into Algolia.
-    - An object that has properties including the [Medusa container](!docs!/learn/fundamentals/medusa-container), which is a registry of framework and commerce tools that you can access in the step.
+    - An object that has properties including the [Medusa container](!docs!/learn/fundamentals/medusa-container), which is a registry of Framework and commerce tools that you can access in the step.
 
 In the step function, you resolve the Algolia Module's service from the Medusa container using the name you exported in the module definition's file.
 
@@ -463,7 +470,7 @@ Finally, you pass the products you received in the input to Algolia to create or
 
 A step function must return a `StepResponse` instance. The `StepResponse` constructor accepts two parameters:
 
-1. The step's output, which is the review created.
+1. The step's output, which in this case is `undefined`.
 2. Data to pass to the step's compensation function.
 
 #### Compensation Function
@@ -526,7 +533,6 @@ type SyncProductsWorkflowInput = {
 export const syncProductsWorkflow = createWorkflow(
   "sync-products",
   ({ filters, limit, offset }: SyncProductsWorkflowInput) => {
-    // @ts-ignore
     const { data, metadata } = useQueryGraphStep({
       entity: "product",
       fields: ["id", "title", "description", "handle", "thumbnail", "categories.*", "tags.*"],
@@ -535,7 +541,6 @@ export const syncProductsWorkflow = createWorkflow(
         skip: offset,
       },
       filters: {
-        // @ts-ignore
         status: "published",
         ...filters,
       },
@@ -588,7 +593,7 @@ Learn more about subscribers in the [Events and Subscribers documentation](!docs
 
 </Note>
 
-You create a subscriber in a TypeScript or JavaScript file under the `src/subscribers` directory. So, to create the subscriber that listens to the `algolia.sync` event, create the file `src/subscribers/products-sync.ts` with the following content:
+You create a subscriber in a TypeScript or JavaScript file under the `src/subscribers` directory. So, to create the subscriber that listens to the `algolia.sync` event, create the file `src/subscribers/algolia-sync.ts` with the following content:
 
 ```ts title="src/subscribers/algolia-sync.ts"
 import {
@@ -685,12 +690,12 @@ export async function POST(
 }
 ```
 
-Since you export a `POST` route handler function, you expose an `API` route at `/admin/algolia/sync`. The route handler function accepts two parameters:
+Since you export a `POST` route handler function, you expose a `POST` API route at `/admin/algolia/sync`. The route handler function accepts two parameters:
 
 1. A request object with details and context on the request, such as body parameters or authenticated user details.
 2. A response object to manipulate and send the response.
 
-In the route handler, you use the Medusa container that is available in the request object to resolve the [Event Module](../../../architectural-modules/event/page.mdx). This module manages events and their subscribers.
+In the route handler, you use the Medusa container that is available in the request object to resolve the [Event Module](../../../infrastructure-modules/event/page.mdx). This module manages events and their subscribers.
 
 Then, you emit the `algolia.sync` event using the Event Module's `emit` method, passing it the event name.
 
@@ -1023,9 +1028,9 @@ While you can implement the search functionality directly in the storefront to i
 
 </Note>
 
-To implement the API Route, create the file `src/api/store/search/route.ts` with the following content:
+To implement the API Route, create the file `src/api/store/products/search/route.ts` with the following content:
 
-```ts title="src/api/store/search/route.ts"
+```ts title="src/api/store/products/search/route.ts"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ALGOLIA_MODULE } from "../../../../modules/algolia"
 import AlgoliaModuleService from "../../../../modules/algolia/service"
@@ -1101,7 +1106,7 @@ You can use the search API route now. You'll see it in action as you customize t
 
 ---
 
-## Step 7: Search Products in Next.js Storefront
+## Step 7: Search Products in Next.js Starter Storefront
 
 The last step is to provide the search functionalities to customers on your storefront. In the first step, you installed the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx) along with the Medusa application.
 

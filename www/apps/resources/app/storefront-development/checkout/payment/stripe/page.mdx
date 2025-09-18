@@ -4,6 +4,9 @@ tags:
   - storefront
   - stripe
   - payment
+products:
+  - cart
+  - payment
 ---
 
 import { CodeTabs, CodeTab, Prerequisites } from "docs-ui"
@@ -33,7 +36,7 @@ For other types of frameworks or tech stacks, the steps are similar. Refer to [S
   },
   {
     text: "Cart context in your storefront, which is used in a code snippet later.",
-    link: "/resources/storefront-development/cart/context"
+    link: "/storefront-development/cart/context"
   },
 ]} />
 
@@ -219,7 +222,7 @@ In the code snippet above, you:
     - In the resolution function, you send a request to the [Complete Cart API route](!api!/store#carts_postcartsidcomplete) to complete the cart and place the order.
     - In the received response of the request, if the `type` is `cart`, it means that the cart completion failed. The error is set in the `error` response field.
     - If the `type` is `order`, it means the card was completed and the order was placed successfully. You can access the order in the `order` response field.
-    - When the order is placed, you refresh the cart. You can redirect the customer to an order success page at this point. The redirection logic depends on the framework you're using.
+    - When the order is placed, you refresh the cart. You can redirect the customer to an order success page at this point. The redirection logic depends on the storefront framework you're using.
 
 ---
 
@@ -247,6 +250,24 @@ const getPaymentUi = useCallback(() => {
 
 ---
 
+## Troubleshooting
+
+### Unknown Error for Zero Cart Total
+
+If your cart has a total of `0`, you might encounter an `unknown error` when trying to create a payment session.
+
+Stripe requires a non-zero amount to create a payment session. So, if your cart has a total of `0`, the error will be thrown on Stripe's side.
+
+In those cases, you can either:
+
+- Make sure the payment session is only initialized when the cart has a total greater than `0`.
+- Use payment providers like the Manual System Payment Provider, which doesn't create a payment session with a third-party provider.
+    - The Manual System Payment Provider is available by default in Medusa and can be used to handle payments without a third-party provider. It allows you to mark the order as paid without requiring any additional actions from the customer.
+    - Make sure to configure the Manual System Payment Provider in your store's region. Learn more in the [Manage Region](!user-guide!/settings/regions#edit-region-details) user guide.
+
+---
+
 ## More Resources
 
-Refer to [Stripe's documentation](https://docs.stripe.com/) for more details on integrating it in your storefront.
+- [Stripe's documentation](https://docs.stripe.com/).
+- [Saved Payment Methods with Stripe](../../../../how-to-tutorials/tutorials/saved-payment-methods/page.mdx).

@@ -1,5 +1,4 @@
 import { createProductsWorkflow } from "@medusajs/core-flows"
-import { featureFlagRouter } from "@medusajs/framework"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -7,15 +6,19 @@ import {
   refetchEntity,
 } from "@medusajs/framework/http"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, isPresent } from "@medusajs/framework/utils"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  isPresent,
+} from "@medusajs/framework/utils"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { remapKeysForProduct, remapProductResponse } from "./helpers"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductListParams>,
   res: MedusaResponse<HttpTypes.AdminProductListResponse>
 ) => {
-  if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+  if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
     // Use regular list when no filters are provided
     // TODO: Tags and categories are not supported by the index engine yet
     if (
@@ -43,7 +46,8 @@ async function getProducts(
     req.filterableFields,
     req.scope,
     selectFields,
-    req.queryConfig.pagination
+    req.queryConfig.pagination,
+    req.queryConfig.withDeleted
   )
 
   res.json({
@@ -75,11 +79,13 @@ async function getProductsWithIndexEngine(
     fields: req.queryConfig.fields ?? [],
     filters: filters,
     pagination: req.queryConfig.pagination,
+    withDeleted: req.queryConfig.withDeleted,
   })
 
   res.json({
     products: products.map(remapProductResponse),
-    count: metadata!.count,
+    count: metadata!.estimate_count,
+    estimate_count: metadata!.estimate_count,
     offset: metadata!.skip,
     limit: metadata!.take,
   })

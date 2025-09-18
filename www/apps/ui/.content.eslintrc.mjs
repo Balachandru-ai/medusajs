@@ -19,11 +19,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: [
-      "**/references/**/*",
-      "**/events-reference/**/*",
-      "**/_events-table/**/*",
-    ],
+    ignores: ["**/references/**/*"],
   },
   {
     plugins: {
@@ -154,7 +150,7 @@ export default [
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
       "@typescript-eslint/ban-types": "off",
-      "@typescript-eslint/no-require-imports": "warn",
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ]

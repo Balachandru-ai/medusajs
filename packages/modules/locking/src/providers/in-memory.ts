@@ -193,7 +193,7 @@ export class InMemoryLockingProvider implements ILockingProvider {
       setTimeout(() => {
         cancellationToken.cancelled = true
         reject(new Error("Timed-out acquiring lock."))
-      }, seconds * 1000)
+      }, seconds * 1000).unref()
     })
   }
 }

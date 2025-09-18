@@ -1,7 +1,6 @@
 import {
   createStep,
   createWorkflow,
-  parallelize,
   StepResponse,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"

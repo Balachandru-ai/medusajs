@@ -1,4 +1,4 @@
-import { Prerequisites, CardList } from "docs-ui"
+import { Prerequisites, CardList, Table } from "docs-ui"
 
 export const metadata = {
   title: `${pageNumber} Create a Plugin`,
@@ -65,23 +65,137 @@ For example:
 
 ### Package Keywords
 
-In addition, make sure that the `keywords` field in `package.json` includes the keyword `medusa-plugin` and `medusa-v2`. This helps Medusa list community plugins on the Medusa website:
+Medusa scrapes NPM for a list of plugins that integrate third-party services, to later showcase them on the Medusa website. If you want your plugin to appear in that listing, make sure to add the `medusa-v2` and `medusa-plugin-integration` keywords to the `keywords` field in `package.json`.
+
+<Note title="Important">
+
+Only plugins that integrate third-party services are listed in the Medusa integrations page. If your plugin doesn't integrate a third-party service, you can skip this step.
+
+</Note>
 
 ```json title="package.json"
 {
   "keywords": [
-    "medusa-plugin",
+    "medusa-plugin-integration",
     "medusa-v2"
   ],
   // ...
 }
 ```
 
+In addition, make sure to use one of the following keywords based on your integration type:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Keyword
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Example
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-analytics`
+      </Table.Cell>
+      <Table.Cell>
+        Analytics service integration
+      </Table.Cell>
+      <Table.Cell>
+        Google Analytics
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-auth`
+      </Table.Cell>
+      <Table.Cell>
+        Authentication service integration
+      </Table.Cell>
+      <Table.Cell>
+        Auth0
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-cms`
+      </Table.Cell>
+      <Table.Cell>
+        CMS service integration
+      </Table.Cell>
+      <Table.Cell>
+        Contentful
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-notification`
+      </Table.Cell>
+      <Table.Cell>
+        Notification service integration
+      </Table.Cell>
+      <Table.Cell>
+        Twilio SMS
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-payment`
+      </Table.Cell>
+      <Table.Cell>
+        Payment service integration
+      </Table.Cell>
+      <Table.Cell>
+        PayPal
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-search`
+      </Table.Cell>
+      <Table.Cell>
+        Search service integration
+      </Table.Cell>
+      <Table.Cell>
+        MeiliSearch
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-shipping`
+      </Table.Cell>
+      <Table.Cell>
+        Shipping service integration
+      </Table.Cell>
+      <Table.Cell>
+        DHL
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `medusa-plugin-other`
+      </Table.Cell>
+      <Table.Cell>
+        Other third-party integrations
+      </Table.Cell>
+      <Table.Cell>
+        Sentry
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
 ### Package Dependencies
 
 <Note>
 
-Your plugin project will already have the dependencies mentioned in this section. If you haven't made any changes to the dependencies, you can skip this section.
+Your plugin project will already have the dependencies mentioned in this section. Unless you made changes to the dependencies, you can skip this section.
 
 </Note>
 
@@ -112,6 +226,48 @@ For example, assuming `2.5.0` is the latest Medusa version:
   }
 }
 ```
+
+### Package Exports
+
+<Note>
+
+Your plugin project will already have the exports mentioned in this section. Unless you made changes to the exports or you created your plugin before [Medusa v2.7.0](https://github.com/medusajs/medusa/releases/tag/v2.7.0), you can skip this section.
+
+</Note>
+
+In the `package.json` file, make sure your plugin has the following exports:
+
+```json title="package.json"
+{
+  "exports": {
+    "./package.json": "./package.json",
+    "./workflows": "./.medusa/server/src/workflows/index.js",
+    "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
+    "./providers/*": "./.medusa/server/src/providers/*/index.js",
+    "./admin": {
+      "import": "./.medusa/server/src/admin/index.mjs",
+      "require": "./.medusa/server/src/admin/index.js",
+      "default": "./.medusa/server/src/admin/index.js"
+    },
+    "./*": "./.medusa/server/src/*.js"
+  }
+}
+```
+
+<Note title="Tip">
+
+Aside from the `./package.json`, `./providers`, and `./admin`, these exports are only a recommendation. You can cherry-pick the files and directories you want to export.
+
+</Note>
+
+The plugin exports the following files and directories:
+
+- `./package.json`: The `package.json` file. Medusa needs to access the `package.json` when registering the plugin.
+- `./workflows`: The workflows exported in `./src/workflows/index.ts`.
+- `./.medusa/server/src/modules/*`: The definition file of modules. This is useful if you create links to the plugin's modules in the Medusa application.
+- `./providers/*`: The definition file of module providers. This is useful if your plugin includes a module provider, allowing you to register the plugin's providers in Medusa applications. Learn more in the [Create Module Providers](#create-module-providers) section.
+- `./admin`: The admin extensions exported in `./src/admin/index.ts`.
+- `./*`: Any other files in the plugin's `src` directory.
 
 ---
 
@@ -150,7 +306,7 @@ Make sure to replace `~/path/to/medusa-app` with the path to your Medusa applica
 
 Then, if your project was created before v2.3.1 of Medusa, make sure to install `yalc` as a development dependency:
 
-```bash npm2yarn title="Medusa application"
+```bash npm2yarn badgeLabel="Medusa Application" badgeColor="green"
 npm install --save-dev yalc
 ```
 
@@ -231,7 +387,7 @@ This command will:
 
 You can start your Medusa application's development server to test out your plugin:
 
-```bash npm2yarn title="Medusa application"
+```bash npm2yarn badgeLabel="Medusa Application" badgeColor="green"
 npm run dev
 ```
 
@@ -289,49 +445,47 @@ While building those customizations, you can test them in your Medusa applicatio
 
 ### Generating Migrations for Modules
 
-During your development, you may need to generate migrations for modules in your plugin. To do that, use the `plugin:db:generate` command:
+During your development, you may need to generate migrations for modules in your plugin. To do that, first, add the following environment variables in your plugin project:
+
+```plain title="Plugin project"
+DB_USERNAME=postgres
+DB_PASSWORD=123...
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=db_name
+```
+
+You can add these environment variables in a `.env` file in your plugin project. The variables are:
+
+- `DB_USERNAME`: The username of the PostgreSQL user to connect to the database.
+- `DB_PASSWORD`: The password of the PostgreSQL user to connect to the database.
+- `DB_HOST`: The host of the PostgreSQL database. Typically, it's `localhost` if you're running the database locally.
+- `DB_PORT`: The port of the PostgreSQL database. Typically, it's `5432` if you're running the database locally.
+- `DB_NAME`: The name of the PostgreSQL database to connect to.
+
+Then, run the following command in your plugin project to generate migrations for the modules in your plugin:
 
 ```bash title="Plugin project"
 npx medusa plugin:db:generate
 ```
 
-This command generates migrations for all modules in the plugin. You can then run these migrations on the Medusa application that the plugin is installed in using the `db:migrate` command:
+This command generates migrations for all modules in the plugin.
+
+Finally, run these migrations on the Medusa application that the plugin is installed in using the `db:migrate` command:
 
 ```bash title="Medusa application"
 npx medusa db:migrate
 ```
 
+The migrations in your application, including your plugin, will run and update the database.
+
 ### Importing Module Resources
 
-Your plugin project should have the following exports in `package.json`:
+In the [Prepare Plugin](#2-prepare-plugin) section, you learned about [exported resources](#package-exports) in your plugin.
 
-```json title="package.json"
-{
-  "exports": {
-    "./package.json": "./package.json",
-    "./workflows": "./.medusa/server/src/workflows/index.js",
-    "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
-    "./providers/*": "./.medusa/server/src/providers/*/index.js",
-    "./*": "./.medusa/server/src/*.js"
-  }
-}
-```
+These exports allow you to import your plugin resources in your Medusa application, including workflows, links and modules.
 
-<Note title="Tip">
-
-Aside from the `./package.json` and `./providers`, these exports are only a recommendation. You can cherry-pick the files and directories you want to export.
-
-</Note>
-
-The plugin exports the following files and directories:
-
-- `./package.json`: The package.json file. Medusa needs to access the `package.json` when registering the plugin.
-- `./workflows`: The workflows exported in `./src/workflows/index.ts`.
-- `./.medusa/server/src/modules/*`: The definition file of modules. This is useful if you create links to the plugin's modules in the Medusa application.
-- `./providers/*`: The definition file of module providers. This allows you to register the plugin's providers in the Medusa application.
-- `./*`: Any other files in the plugin's `src` directory.
-
-With these exports, you can import the plugin's resources in the Medusa application's code like this:
+For example, to import the plugin's workflow in your Medusa application:
 
 <Note title="Tip">
 
@@ -346,7 +500,17 @@ import BlogModule from "@myorg/plugin-name/modules/blog"
 import BlogType from "@myorg/plugin-name/types/blog"
 ```
 
-And you can register a module provider in the Medusa application's `medusa-config.ts` like this:
+### Create Module Providers
+
+The [exported resources](#package-exports) also allow you to import module providers in your plugin and register them in the Medusa application's configuration. A module provider is a module that provides the underlying logic or integration related to a commerce or Infrastructure Module.
+
+For example, assuming your plugin has a [Notification Module Provider](!resources!/infrastructure-modules/notification) called `my-notification`, you can register it in your Medusa application's configuration like this:
+
+<Note title="Tip">
+
+`@myorg/plugin-name` is the plugin package's name.
+
+</Note>
 
 ```ts highlights={[["9"]]} title="medusa-config.ts"
 module.exports = defineConfig({
@@ -372,8 +536,6 @@ module.exports = defineConfig({
 ```
 
 You pass to `resolve` the path to the provider relative to the plugin package. So, in this example, the `my-notification` provider is located in `./src/providers/my-notification/index.ts` of the plugin.
-
-### Create Module Providers
 
 To learn how to create module providers, refer to the following guides:
 
@@ -410,6 +572,12 @@ To learn how to create module providers, refer to the following guides:
 ---
 
 ## 5. Publish Plugin to NPM
+
+<Note title="Want your plugin to be listed in the Integrations page?">
+
+Make sure to add the keywords mentioned in the [Package Keywords](#package-keywords) section in your plugin's `package.json` file.
+
+</Note>
 
 Medusa's CLI tool provides a command that bundles your plugin to be published to npm. Once you're ready to publish your plugin publicly, run the following command in your plugin project:
 

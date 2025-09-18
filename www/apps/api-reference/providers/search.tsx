@@ -1,10 +1,6 @@
 "use client"
 
-import {
-  usePageLoading,
-  SearchProvider as UiSearchProvider,
-  searchFilters,
-} from "docs-ui"
+import { usePageLoading, SearchProvider as UiSearchProvider } from "docs-ui"
 import { config } from "../config"
 import basePathUrl from "../utils/base-path-url"
 
@@ -20,17 +16,18 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
         appId: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID || "temp",
         apiKey: process.env.NEXT_PUBLIC_ALGOLIA_API_KEY || "temp",
         mainIndexName: process.env.NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME || "temp",
-        indices: [
-          {
-            name: process.env.NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME || "temp",
-            title: "Store & Admin API",
-          },
-          {
-            name: process.env.NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME || "temp",
-            title: "Docs",
-          },
-        ],
       }}
+      indices={[
+        {
+          value: process.env.NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME || "temp",
+          title: "Docs",
+        },
+        {
+          value: process.env.NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME || "temp",
+          title: "Store & Admin API",
+        },
+      ]}
+      defaultIndex={process.env.NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME || "temp"}
       searchProps={{
         isLoading,
         suggestions: [
@@ -55,7 +52,6 @@ const SearchProvider = ({ children }: SearchProviderProps) => {
         checkInternalPattern: new RegExp(
           `^${config.baseUrl}${basePathUrl(`/(admin|store)`)}`
         ),
-        filterOptions: searchFilters,
       }}
     >
       {children}

@@ -28,6 +28,10 @@ export type RefundPaymentsStepInput = {
    * The ID of the user that refunded the payment.
    */
   created_by?: string
+  /**
+   * The note to attach to the refund.
+   */
+  note?: string
 }[]
 
 export const refundPaymentsStepId = "refund-payments-step"

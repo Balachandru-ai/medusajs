@@ -1,15 +1,16 @@
 post:
   operationId: PostCartsIdCustomer
-  summary: Set Cart's Customer
-  x-sidebar-summary: Set Customer
+  summary: Change Cart's Customer to Logged-in Customer
+  x-sidebar-summary: Change Customer
   description: >-
-    Set the customer of the cart. This is useful when you create the cart for a
-    guest customer, then they log in with their account.
+    Change the cart's customer to the currently logged-in customer. This is
+    useful when you create the cart for a guest customer, then they log in with
+    their account.
   externalDocs:
     url: >-
       https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
     description: 'Storefront guide: How to set the cart''s customer.'
-  x-authenticated: false
+  x-authenticated: true
   parameters:
     - name: id
       in: path
@@ -46,6 +47,10 @@ post:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_carts_{id}_customer/post.js
     - lang: Shell
       label: cURL
       source:
@@ -72,3 +77,18 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: transferCartCustomerWorkflow
+  x-events:
+    - name: cart.customer_transferred
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the cart
+          customer_id, // The ID of the customer
+        }
+        ```
+      description: Emitted when the customer in the cart is transferred.
+      deprecated: false
+      since: 2.8.0
+  security:
+    - cookie_auth: []
+    - jwt_token: []

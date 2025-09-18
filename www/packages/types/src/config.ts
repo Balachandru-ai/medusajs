@@ -23,6 +23,10 @@ export declare type DocsConfig = {
     number: string
     releaseUrl: string
     hide?: boolean
+    bannerImage?: {
+      light: string
+      dark: string
+    }
   }
   reportIssueLink?: string
   logo: string

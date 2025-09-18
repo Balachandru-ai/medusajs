@@ -6,6 +6,8 @@ import { EOL } from "os"
 import { displayFactBox, FactBoxOptions } from "./facts.js"
 import ProcessManager from "./process-manager.js"
 import type { Client } from "pg"
+import PackageManager from "./package-manager.js"
+import { updatePackageVersions } from "./update-package-versions.js"
 
 const ADMIN_EMAIL = "admin@medusa-test.com"
 let STORE_CORS = "http://localhost:8000"
@@ -24,6 +26,7 @@ type PreparePluginOptions = {
   processManager: ProcessManager
   abortController?: AbortController
   verbose?: boolean
+  packageManager: PackageManager
 }
 
 type PrepareProjectOptions = {
@@ -42,6 +45,8 @@ type PrepareProjectOptions = {
   nextjsDirectory?: string
   client: Client | null
   verbose?: boolean
+  packageManager: PackageManager
+  version?: string
 }
 
 type PrepareOptions = PreparePluginOptions | PrepareProjectOptions
@@ -66,6 +71,7 @@ async function preparePlugin({
   processManager,
   abortController,
   verbose = false,
+  packageManager,
 }: PreparePluginOptions) {
   // initialize execution options
   const execOptions = {
@@ -98,20 +104,7 @@ async function preparePlugin({
     processManager,
   })
 
-  await processManager.runProcess({
-    process: async () => {
-      try {
-        await execute([`yarn`, execOptions], { verbose })
-      } catch (e) {
-        // yarn isn't available
-        // use npm
-        await execute([`npm install --legacy-peer-deps`, execOptions], {
-          verbose,
-        })
-      }
-    },
-    ignoreERESOLVE: true,
-  })
+  await packageManager.installDependencies(execOptions)
 
   factBoxOptions.interval = displayFactBox({
     ...factBoxOptions,
@@ -136,6 +129,8 @@ async function prepareProject({
   nextjsDirectory = "",
   client,
   verbose = false,
+  packageManager,
+  version,
 }: PrepareProjectOptions) {
   // initialize execution options
   const execOptions = {
@@ -167,6 +162,11 @@ async function prepareProject({
   // Update name
   packageJson.name = projectName
 
+  // Update medusa dependencies versions
+  if (version) {
+    updatePackageVersions(packageJson, version)
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
   // initialize the invite token to return
@@ -196,20 +196,7 @@ async function prepareProject({
     processManager,
   })
 
-  await processManager.runProcess({
-    process: async () => {
-      try {
-        await execute([`yarn`, execOptions], { verbose })
-      } catch (e) {
-        // yarn isn't available
-        // use npm
-        await execute([`npm install --legacy-peer-deps`, execOptions], {
-          verbose,
-        })
-      }
-    },
-    ignoreERESOLVE: true,
-  })
+  await packageManager.installDependencies(execOptions)
 
   factBoxOptions.interval = displayFactBox({
     ...factBoxOptions,
@@ -262,12 +249,6 @@ async function prepareProject({
       message: "Ran Migrations",
     })
 
-    // create admin user
-    factBoxOptions.interval = displayFactBox({
-      ...factBoxOptions,
-      title: "Creating an admin user...",
-    })
-
     await processManager.runProcess({
       process: async () => {
         const proc = await execute(
@@ -283,11 +264,6 @@ async function prepareProject({
       },
     })
 
-    factBoxOptions.interval = displayFactBox({
-      ...factBoxOptions,
-      message: "Created admin user",
-    })
-
     // TODO for now we just seed the default data
     // we should add onboarding seeding again if it makes
     // since once we re-introduce the onboarding flow.
@@ -296,18 +272,7 @@ async function prepareProject({
       title: "Seeding database...",
     })
 
-    await processManager.runProcess({
-      process: async () => {
-        try {
-          await execute([`yarn seed`, execOptions], { verbose })
-        } catch (e) {
-          // yarn isn't available
-          // use npm
-          await execute([`npm run seed`, execOptions], { verbose })
-        }
-      },
-      ignoreERESOLVE: true,
-    })
+    await packageManager.runCommand("seed", execOptions)
 
     displayFactBox({
       ...factBoxOptions,

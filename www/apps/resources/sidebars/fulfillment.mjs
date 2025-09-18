@@ -21,28 +21,28 @@ export const fulfillmentSidebar = [
       {
         type: "category",
         title: "Concepts",
-        autogenerate_tags: "concept+fulfillment",
+        autogenerate_tags: "fulfillment+concept",
         autogenerate_as_ref: true,
         children: [
           {
             type: "link",
             path: "/commerce-modules/fulfillment/concepts",
-            title: "Fulfillment Concepts",
-          },
-          {
-            type: "link",
-            path: "/commerce-modules/fulfillment/fulfillment-provider",
-            title: "Fulfillment Provider",
-          },
-          {
-            type: "link",
-            path: "/commerce-modules/fulfillment/shipping-option",
-            title: "Shipping Option",
+            title: "General Concepts",
           },
           {
             type: "link",
             path: "/commerce-modules/fulfillment/item-fulfillment",
             title: "Item Fulfillment",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/fulfillment/fulfillment-provider",
+            title: "Fulfillment Module Provider",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/fulfillment/shipping-option",
+            title: "Shipping Option",
           },
           {
             type: "link",
@@ -63,7 +63,7 @@ export const fulfillmentSidebar = [
           {
             type: "link",
             path: "/references/fulfillment/provider",
-            title: "Create Fulfillment Provider Module",
+            title: "Create Fulfillment Provider",
           },
           {
             type: "ref",
@@ -155,7 +155,7 @@ export const fulfillmentSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/fulfillment/events",
+            path: "/references/fulfillment/events",
             title: "Events Reference",
           },
           {

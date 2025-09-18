@@ -19,7 +19,7 @@ runs:
         access_token: ${{ github.token }}
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: "yarn"
@@ -28,11 +28,3 @@ runs:
       uses: ./.github/actions/cache-deps
       with:
         extension: ${{ inputs.cache-extension }}
-
-    - name: Install dev cli
-      shell: "bash"
-      run: sudo npm i -g medusa-dev-cli@preview
-
-    - name: Set path to medusa repo
-      shell: "bash"
-      run: medusa-dev --set-path-to-repo $(pwd)

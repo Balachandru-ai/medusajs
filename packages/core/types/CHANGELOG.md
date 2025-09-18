@@ -1,5 +1,165 @@
 # @medusajs/types
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13376](https://github.com/medusajs/medusa/pull/13376) [`0000ed69982b95f4bff80fd6182347291d25f7b8`](https://github.com/medusajs/medusa/commit/0000ed69982b95f4bff80fd6182347291d25f7b8) Thanks [@fPolic](https://github.com/fPolic)! - fix(draft-order,medusa,types): draft order promotion UI polish
+
+- [#13391](https://github.com/medusajs/medusa/pull/13391) [`d7692100e7a2b2f078756cac9ca2b33784d3d1ff`](https://github.com/medusajs/medusa/commit/d7692100e7a2b2f078756cac9ca2b33784d3d1ff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(orchestration): add support for autoRetry step configuration
+
+- [#12313](https://github.com/medusajs/medusa/pull/12313) [`6634765cedc68f605f005766845350d611db142c`](https://github.com/medusajs/medusa/commit/6634765cedc68f605f005766845350d611db142c) Thanks [@SteelRazor47](https://github.com/SteelRazor47)! - fix(types): add missing retrieveProductOptionValue to module interface
+
+- [#13313](https://github.com/medusajs/medusa/pull/13313) [`2f6edf367abb9d3e71f398c3b98a749b73517ea6`](https://github.com/medusajs/medusa/commit/2f6edf367abb9d3e71f398c3b98a749b73517ea6) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,cart,types,utils): refine order details summary
+
+## 2.10.1
+
+## 2.10.0
+
+### Minor Changes
+
+- [#13236](https://github.com/medusajs/medusa/pull/13236) [`9412669e654c994e2dbee9cf61c18004d79f6475`](https://github.com/medusajs/medusa/commit/9412669e654c994e2dbee9cf61c18004d79f6475) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(core-flows): idempotent cart operations and nested workflow deletion lifecycle fix
+
+### Patch Changes
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- [#12572](https://github.com/medusajs/medusa/pull/12572) [`2f594291ad8d227b499b80a5bfe66f5963d42d6a`](https://github.com/medusajs/medusa/commit/2f594291ad8d227b499b80a5bfe66f5963d42d6a) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows, dashboard, types): improve allocation flows in Admin
+
+- [#13283](https://github.com/medusajs/medusa/pull/13283) [`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat: define file config and improved feature flag support
+
+- [#13226](https://github.com/medusajs/medusa/pull/13226) [`67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad`](https://github.com/medusajs/medusa/commit/67d3660abf3ceeac3f04006fe5e92d2fa7c0ccad) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard, core-flows): associate shipping option to type
+
+- [#13289](https://github.com/medusajs/medusa/pull/13289) [`f764b3a36471a0ad9e9e05f125183464680e3a2d`](https://github.com/medusajs/medusa/commit/f764b3a36471a0ad9e9e05f125183464680e3a2d) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat(index): $nin and $not operators
+
+- [#13281](https://github.com/medusajs/medusa/pull/13281) [`fc4925327334c540c0125a91e81794c3c1f340e7`](https://github.com/medusajs/medusa/commit/fc4925327334c540c0125a91e81794c3c1f340e7) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(core, event-bus): Compensate emit event step utility
+
+- [#13156](https://github.com/medusajs/medusa/pull/13156) [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat: custom logger on medusa-config
+
+- [#13191](https://github.com/medusajs/medusa/pull/13191) [`34c3c14e0a1491ab80473605018b97981544167d`](https://github.com/medusajs/medusa/commit/34c3c14e0a1491ab80473605018b97981544167d) Thanks [@willbouch](https://github.com/willbouch)! - chore(types, api): support shipping option type api endpoints
+
+- [#13242](https://github.com/medusajs/medusa/pull/13242) [`492e0189573ffad4977a3559d71f39bf94d8b45d`](https://github.com/medusajs/medusa/commit/492e0189573ffad4977a3559d71f39bf94d8b45d) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard,core-flows,js-sdk,types,medusa): listing order's shipping option
+
+- [#13251](https://github.com/medusajs/medusa/pull/13251) [`6264a6262b0220c70ad35c0d56a93a39218ccb80`](https://github.com/medusajs/medusa/commit/6264a6262b0220c70ad35c0d56a93a39218ccb80) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Cart operation should calculate item prices accounting for quantity
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13185](https://github.com/medusajs/medusa/pull/13185) [`f1da73cb588a45afdeb80572d7d59987b5559252`](https://github.com/medusajs/medusa/commit/f1da73cb588a45afdeb80572d7d59987b5559252) Thanks [@willbouch](https://github.com/willbouch)! - fix(types): remove order_id in apis that do not handle it
+
+- [#12960](https://github.com/medusajs/medusa/pull/12960) [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a) Thanks [@scherddel](https://github.com/scherddel)! - This fixes the discount\_ calculation logic and promotion tax inclusiveness calculation
+
+- [#13106](https://github.com/medusajs/medusa/pull/13106) [`9766570827ebf50d49d8daf956deecce6666a8cc`](https://github.com/medusajs/medusa/commit/9766570827ebf50d49d8daf956deecce6666a8cc) Thanks [@scherddel](https://github.com/scherddel)! - Moved calculation logic from total to original_total to ensure consistent base values
+
+## 2.8.8
+
+### Patch Changes
+
+- [#13002](https://github.com/medusajs/medusa/pull/13002) [`468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8`](https://github.com/medusajs/medusa/commit/468b81c2cbdbc24b26e31bf6e347d3633a4fb4f8) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix(modules-sdk): Entity types
+
+- [#12936](https://github.com/medusajs/medusa/pull/12936) [`919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5`](https://github.com/medusajs/medusa/commit/919c53e44e2c7bb16bc513b5c96c93ac47bd6ce5) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(types): add attachments to CreateNotificationDTO type
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12885](https://github.com/medusajs/medusa/pull/12885) [`42be9a88d61a11db7aebde2d6f4d96d43f54ea79`](https://github.com/medusajs/medusa/commit/42be9a88d61a11db7aebde2d6f4d96d43f54ea79) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Update TIP on promotions
+
+## 2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12815](https://github.com/medusajs/medusa/pull/12815) [`6ca755ede7bfe3211464447412ca0d97e1207742`](https://github.com/medusajs/medusa/commit/6ca755ede7bfe3211464447412ca0d97e1207742) Thanks [@anteprimorac](https://github.com/anteprimorac)! - Enable filtering admin products API by variant EAN, UPC, and barcode
+
+- [#12813](https://github.com/medusajs/medusa/pull/12813) [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Add support for jwt asymetric keys
+
+- [#12712](https://github.com/medusajs/medusa/pull/12712) [`b316924572fc2cf529e0d91b84955da20b34248a`](https://github.com/medusajs/medusa/commit/b316924572fc2cf529e0d91b84955da20b34248a) Thanks [@thetutlage](https://github.com/thetutlage)! - fix: remote query types
+
+- [#12720](https://github.com/medusajs/medusa/pull/12720) [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd) Thanks [@riqwan](https://github.com/riqwan)! - feat(framework,types): add cookie options to project options
+
+- [#11885](https://github.com/medusajs/medusa/pull/11885) [`44d1d186890cd44b20e41b60d1e217bc3d4b2a51`](https://github.com/medusajs/medusa/commit/44d1d186890cd44b20e41b60d1e217bc3d4b2a51) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,types): add credit lines + loyalty changes
+
+- [#12412](https://github.com/medusajs/medusa/pull/12412) [`2621f00bb035a6b909f9498a2bc98fdba8570ba9`](https://github.com/medusajs/medusa/commit/2621f00bb035a6b909f9498a2bc98fdba8570ba9) Thanks [@fPolic](https://github.com/fPolic)! - feat(promotion, dashboard, core-flows, cart, types, utils, medusa): tax inclusive promotions
+
+- [#12644](https://github.com/medusajs/medusa/pull/12644) [`bd6d9777c50d69115a20334a103a8ab9997b259d`](https://github.com/medusajs/medusa/commit/bd6d9777c50d69115a20334a103a8ab9997b259d) Thanks [@fPolic](https://github.com/fPolic)! - fix(promotion, types): non discountable items check
+
+## 2.8.4
+
+### Patch Changes
+
+- [#12614](https://github.com/medusajs/medusa/pull/12614) [`791276e80f5745c8885352b7979c0faa979110f4`](https://github.com/medusajs/medusa/commit/791276e80f5745c8885352b7979c0faa979110f4) Thanks [@thetutlage](https://github.com/thetutlage)! - feat: introduce bulkDelete method for IFileProvider
+
+## 2.8.3
+
+### Patch Changes
+
+- [#12567](https://github.com/medusajs/medusa/pull/12567) [`4e49cebcf0f053cb89012276e935a7ec62a12046`](https://github.com/medusajs/medusa/commit/4e49cebcf0f053cb89012276e935a7ec62a12046) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(core-flows, types): export steps and types related to credit lines
+
+- [#12501](https://github.com/medusajs/medusa/pull/12501) [`59bbff62d81861282d55a32d6c0c45285203c4e0`](https://github.com/medusajs/medusa/commit/59bbff62d81861282d55a32d6c0c45285203c4e0) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): limit partition table name and index enum fields
+
+- [#12508](https://github.com/medusajs/medusa/pull/12508) [`52bd9f9a53f6e63e5fbe0beb1fb2c650d88f7c88`](https://github.com/medusajs/medusa/commit/52bd9f9a53f6e63e5fbe0beb1fb2c650d88f7c88) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(product, modules-sdk): Add missing index for select-in strategy + allow to pass top level strategy to force the behaviour
+
+- [#12543](https://github.com/medusajs/medusa/pull/12543) [`ebe5cc7acddb7c61dc82fd8ec7f2fe3779104a99`](https://github.com/medusajs/medusa/commit/ebe5cc7acddb7c61dc82fd8ec7f2fe3779104a99) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(index): return ids only
+
+## 2.8.2
+
+### Patch Changes
+
+- [#12496](https://github.com/medusajs/medusa/pull/12496) [`b2984f48f5fcf535177c98e921baa58fcf45bbe5`](https://github.com/medusajs/medusa/commit/b2984f48f5fcf535177c98e921baa58fcf45bbe5) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(types): change update signature of IAuthProvider
+
+## 2.8.1
+
+## 2.8.0
+
+### Patch Changes
+
+- [#12297](https://github.com/medusajs/medusa/pull/12297) [`9cedeb182dc19d6127b602fc06e4b8850490e2a9`](https://github.com/medusajs/medusa/commit/9cedeb182dc19d6127b602fc06e4b8850490e2a9) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard, js-sdk, medusa, tax, types): custom tax providers
+
+- [#11898](https://github.com/medusajs/medusa/pull/11898) [`b868a4ef4deb7df09d6156a907f4c883cd55a3fd`](https://github.com/medusajs/medusa/commit/b868a4ef4deb7df09d6156a907f4c883cd55a3fd) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat(index): add filterable fields to link definition
+
+## 2.7.1
+
+### Patch Changes
+
+- [#12027](https://github.com/medusajs/medusa/pull/12027) [`e180253d608103cd8dfba8fddd3af2ba6ff2455a`](https://github.com/medusajs/medusa/commit/e180253d608103cd8dfba8fddd3af2ba6ff2455a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - feat(workflows-sdk,orchestrator): step skip on permanent failure
+
+- [#12157](https://github.com/medusajs/medusa/pull/12157) [`2f6963a5fbea05537680cb1b1f6a2b9822c36325`](https://github.com/medusajs/medusa/commit/2f6963a5fbea05537680cb1b1f6a2b9822c36325) Thanks [@adrien2p](https://github.com/adrien2p)! - fix: event group propagation and event managements
+
+- [#12140](https://github.com/medusajs/medusa/pull/12140) [`b8902637251e9ed4f8762ef280659bbab6d967de`](https://github.com/medusajs/medusa/commit/b8902637251e9ed4f8762ef280659bbab6d967de) Thanks [@thetutlage](https://github.com/thetutlage)! - Add support for dynamoDB for storing sessions and some types cleanup
+
+- [#12160](https://github.com/medusajs/medusa/pull/12160) [`1f73281ab88c064404ecf7cc9dd0977dfd369723`](https://github.com/medusajs/medusa/commit/1f73281ab88c064404ecf7cc9dd0977dfd369723) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(types): fix type of application_method_type filter
+
+## 2.7.0
+
+### Patch Changes
+
+- [#12097](https://github.com/medusajs/medusa/pull/12097) [`74381addc3d6af42f0292e778948aabb60a6dad9`](https://github.com/medusajs/medusa/commit/74381addc3d6af42f0292e778948aabb60a6dad9) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Emit events in batch and index process event ids in batch
+
+- [#11720](https://github.com/medusajs/medusa/pull/11720) [`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(medusa,utils,test-utils,types,framework,dashboard,admin-vite-plugin,admib-bundler): Fix broken plugin dependencies in development server
+
+- [#11832](https://github.com/medusajs/medusa/pull/11832) [`95e89a39f347c8af6a5960943af56965bc3a07ba`](https://github.com/medusajs/medusa/commit/95e89a39f347c8af6a5960943af56965bc3a07ba) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows): cancel/refund payment on cart complete error
+
+- [#11876](https://github.com/medusajs/medusa/pull/11876) [`c3440e5e3812e3d1c6b82e9d4e41287398451611`](https://github.com/medusajs/medusa/commit/c3440e5e3812e3d1c6b82e9d4e41287398451611) Thanks [@riqwan](https://github.com/riqwan)! - feat(medusa,types,js-sdk): add enabled plugins route
+
+- [#12028](https://github.com/medusajs/medusa/pull/12028) [`3dba58785fb2d8e79f1ea89daa9e4ab8810821c8`](https://github.com/medusajs/medusa/commit/3dba58785fb2d8e79f1ea89daa9e4ab8810821c8) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(dashboard,medusa,types): allow searching for promotion rule options
+
+- [#11844](https://github.com/medusajs/medusa/pull/11844) [`0625f76cd4f040963829b61dcc70563e1d1b7070`](https://github.com/medusajs/medusa/commit/0625f76cd4f040963829b61dcc70563e1d1b7070) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(workflow-engine): expose cancel method
+
+- [#11975](https://github.com/medusajs/medusa/pull/11975) [`0cc306bf562d8f1f1f1c09d9658463e2c8def465`](https://github.com/medusajs/medusa/commit/0cc306bf562d8f1f1f1c09d9658463e2c8def465) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(js-sdk, types): fixes types and deprecate duplicate methods
+
+- [#11569](https://github.com/medusajs/medusa/pull/11569) [`cb6249320e7322e8eabfec8434f1278f8d63e96c`](https://github.com/medusajs/medusa/commit/cb6249320e7322e8eabfec8434f1278f8d63e96c) Thanks [@riqwan](https://github.com/riqwan)! - feat(order,types,medusa,core-flows): fix(types,order,medusa,core-flows): create order credit lines during order refund
+
+- [#11994](https://github.com/medusajs/medusa/pull/11994) [`1f8fab36361aa8e473ffe6c411c8598a916a6d3f`](https://github.com/medusajs/medusa/commit/1f8fab36361aa8e473ffe6c411c8598a916a6d3f) Thanks [@riqwan](https://github.com/riqwan)! - feat(core-flows,types,order,cart): assign tax lines only to regular products
+
+- [#11873](https://github.com/medusajs/medusa/pull/11873) [`13e159d8ad7ebb3e6977969b4bb10877d7bb7850`](https://github.com/medusajs/medusa/commit/13e159d8ad7ebb3e6977969b4bb10877d7bb7850) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(workflow-engine-\*): Prevent passing shared context reference and workflow.cancel
+
+- [#11872](https://github.com/medusajs/medusa/pull/11872) [`9dd62d93bd9e2acccc2e9f22bc029fd2b0df3234`](https://github.com/medusajs/medusa/commit/9dd62d93bd9e2acccc2e9f22bc029fd2b0df3234) Thanks [@riqwan](https://github.com/riqwan)! - feat(core-flows,types,utils): make payment optional when cart balance is 0
+
+- [#12103](https://github.com/medusajs/medusa/pull/12103) [`9ac74eead4760d6c92676d451e6f25c2305b1852`](https://github.com/medusajs/medusa/commit/9ac74eead4760d6c92676d451e6f25c2305b1852) Thanks [@shahednasser](https://github.com/shahednasser)! - feat(core-flows,types): export fetchShippingOptionForOrderWorkflow
+
 ## 2.6.1
 
 ### Patch Changes

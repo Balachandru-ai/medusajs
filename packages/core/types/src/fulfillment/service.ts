@@ -30,25 +30,22 @@ import {
   CreateServiceZoneDTO,
   CreateShippingOptionDTO,
   CreateShippingOptionRuleDTO,
+  CreateShippingOptionTypeDTO,
   UpdateFulfillmentDTO,
   UpdateFulfillmentSetDTO,
   UpdateGeoZoneDTO,
   UpdateServiceZoneDTO,
   UpdateShippingOptionDTO,
   UpdateShippingOptionRuleDTO,
+  UpdateShippingOptionTypeDTO,
   UpdateShippingProfileDTO,
   UpsertServiceZoneDTO,
   UpsertShippingOptionDTO,
+  UpsertShippingOptionTypeDTO,
 } from "./mutations"
 import { CreateFulfillmentDTO } from "./mutations/fulfillment"
-import {
-  CreateShippingProfileDTO,
-  UpsertShippingProfileDTO,
-} from "./mutations/shipping-profile"
-import {
-  CalculatedShippingOptionPrice,
-  ValidateFulfillmentDataContext,
-} from "./provider"
+import { CreateShippingProfileDTO, UpsertShippingProfileDTO, } from "./mutations/shipping-profile"
+import { CalculatedShippingOptionPrice, ValidateFulfillmentDataContext, } from "./provider"
 
 /**
  * The main service interface for the Fulfillment Module.
@@ -72,6 +69,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const fulfillmentSet = await fulfillmentModuleService.retrieveFulfillmentSet(
@@ -107,6 +111,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment set:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const fulfillmentSets = await fulfillmentModuleService.listFulfillmentSets(
@@ -160,6 +171,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment set:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [fulfillmentSets, count] =
@@ -374,6 +392,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const serviceZone =
    *   await fulfillmentModuleService.retrieveServiceZone(
@@ -410,6 +435,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the service zone:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const serviceZones =
@@ -465,6 +497,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the service zone:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [serviceZones, count] =
@@ -725,6 +764,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const geoZone =
    *   await fulfillmentModuleService.retrieveGeoZone("fgz_123", {
@@ -757,6 +803,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the geo zone:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const geoZones = await fulfillmentModuleService.listGeoZones(
@@ -811,6 +864,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved within the geo zone:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const [geoZones, count] =
    *   await fulfillmentModuleService.listAndCountGeoZones(
@@ -863,7 +923,7 @@ export interface IFulfillmentModuleService extends IModuleService {
    *     {
    *       type: "city",
    *       service_zone_id: "serzo_321",
-   *       province_code: "VT",
+   *       province_code: "us-vt",
    *       city: "Vermont",
    *       country_code: "us",
    *     },
@@ -912,7 +972,7 @@ export interface IFulfillmentModuleService extends IModuleService {
    *     {
    *       id: "fgz_321",
    *       type: "city",
-   *       province_code: "VT",
+   *       province_code: "us-vt",
    *     },
    *   ])
    */
@@ -1032,6 +1092,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const shippingOption =
    *   await fulfillmentModuleService.retrieveShippingOption(
@@ -1068,6 +1135,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const shippingOptions =
@@ -1130,6 +1204,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved within the shipping option:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const shippingOptions =
    *   await fulfillmentModuleService.listShippingOptionsForContext(
@@ -1191,6 +1272,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [shippingOptions, count] =
@@ -1485,6 +1573,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const shippingProfile =
    *   await fulfillmentModuleService.retrieveShippingProfile(
@@ -1521,6 +1616,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping profile:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const shippingProfiles =
@@ -1578,6 +1680,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping profile:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [shippingProfiles, count] =
@@ -1843,6 +1952,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const shippingOptionRule =
    *   await fulfillmentModuleService.retrieveShippingOptionRule(
@@ -1879,6 +1995,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option rule:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const shippingOptionRules =
@@ -1936,6 +2059,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option rule:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [shippingOptionRules, count] =
@@ -2119,6 +2249,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved:
    *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
+   *
    * ```ts
    * const shippingOptionType =
    *   await fulfillmentModuleService.retrieveShippingOptionType(
@@ -2134,6 +2271,146 @@ export interface IFulfillmentModuleService extends IModuleService {
     config?: FindConfig<ShippingOptionTypeDTO>,
     sharedContext?: Context
   ): Promise<ShippingOptionTypeDTO>
+
+  /**
+   * This method creates shipping option types.
+   *
+   * @param {CreateShippingOptionTypeDTO[]} data - The shipping option types to be created.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<ShippingOptionTypeDTO[]>} The created shipping option type.
+   *
+   * @example
+   * const shippingOptionTypes =
+   *   await fulfillmentModuleService.createShippingOptionTypes([
+   *     {
+   *       label: "Standard",
+   *       code: "standard",
+   *       description: "Ship in 2-3 days."
+   *     },
+   *     {
+   *       label: "Express",
+   *       code: "express",
+   *       description: "Ship in 24 hours."
+   *     }
+   *   ])
+   */
+  createShippingOptionTypes(
+    data: CreateShippingOptionTypeDTO[],
+    sharedContext?: Context
+  ): Promise<ShippingOptionTypeDTO[]>
+
+  /**
+   * This method creates a shipping option type.
+   *
+   * @param {CreateShippingOptionTypeDTO} data - The shipping option type to be created.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<ShippingOptionTypeDTO>} The created shipping option type.
+   *
+   * @example
+   * const shippingOption =
+   *   await fulfillmentModuleService.createShippingOptionTypes({
+   *     label: "Standard",
+   *     code: "standard",
+   *     description: "Ship in 2-3 days."
+   *   })
+   */
+  createShippingOptionTypes(
+    data: CreateShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<ShippingOptionTypeDTO>
+
+  /**
+   * This method updates an existing shipping option type.
+   *
+   * @param {string} id - The ID of the shipping option type.
+   * @param {UpdateShippingOptionTypeDTO} data - The attributes to update in the shipping option type.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<ShippingOptionDTO>} The updated shipping option type.
+   *
+   * @example
+   * const shippingOptionType =
+   *   await fulfillmentModuleService.updateShippingOptionTypes(
+   *     "sotype_123",
+   *     {
+   *       label: "Express",
+   *     }
+   *   )
+   */
+  updateShippingOptionTypes(
+    id: string,
+    data: UpdateShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<ShippingOptionTypeDTO>
+
+  /**
+   * This method updates existing shipping option types matching the specified filters.
+   *
+   * @param {FilterableShippingOptionProps} selector - The filters specifying which shipping option types to update.
+   * @param {FilterableShippingOptionTypeProps} data - The attributes to update in the shipping option type.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<ShippingOptionDTO[]>} The updated shipping option types.
+   *
+   * @example
+   * const shippingOptions =
+   *   await fulfillmentModuleService.updateShippingOptionTypes(
+   *     {
+   *       id: ["sotype_123", "sotype_321"],
+   *     },
+   *     {
+   *       label: "Express",
+   *     }
+   *   )
+   */
+  updateShippingOptionTypes(
+    selector: FilterableShippingOptionTypeProps,
+    data: UpdateShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<ShippingOptionTypeDTO[]>
+
+  /**
+   * This method updates or creates a shipping option type if it doesn't exist.
+   *
+   * @param {UpsertShippingOptionTypeDTO} data - The attributes in the shipping option type to be created or updated.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<ShippingOptionTypeDTO>} The created or updated shipping option type.
+   *
+   * @example
+   * const shippingOptions =
+   *   await fulfillmentModuleService.upsertShippingOptionTypes({
+   *     id: "sotype_123",
+   *     label: "Express",
+   *   })
+   */
+  upsertShippingOptionTypes(
+    data: UpsertShippingOptionTypeDTO,
+    sharedContext?: Context
+  ): Promise<ShippingOptionTypeDTO>
+
+  /**
+   * This method updates or creates shipping option types if they don't exist.
+   *
+   * @param {UpsertShippingOptionTypeDTO[]} data - The attributes in the shipping option types to be created or updated.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<ShippingOptionTypeDTO[]>} The created or updated shipping option types.
+   *
+   * @example
+   * const shippingOptions =
+   *   await fulfillmentModuleService.upsertShippingOptionTypes([
+   *     {
+   *       id: "sotype_123",
+   *       label: "Express",
+   *     },
+   *     {
+   *       label: "Express",
+   *       code: "express",
+   *       description: "Ship in 24 hours."
+   *     }
+   *   ])
+   */
+  upsertShippingOptionTypes(
+    data: UpsertShippingOptionTypeDTO[],
+    sharedContext?: Context
+  ): Promise<ShippingOptionTypeDTO[]>
 
   /**
    * This method retrieves a paginated list of shipping option types based on optional filters and configuration.
@@ -2155,6 +2432,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option type:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const shippingOptionTypes =
@@ -2212,6 +2496,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping option type:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [shippingOptionTypes, count] =
@@ -2280,6 +2571,49 @@ export interface IFulfillmentModuleService extends IModuleService {
   deleteShippingOptionTypes(id: string, sharedContext?: Context): Promise<void>
 
   /**
+   * This method soft deletes shipping option types by their IDs.
+   *
+   * @param {string[]} ids - The IDs of the shipping option types.
+   * @param {SoftDeleteReturn<TReturnableLinkableKeys>} config - An object that is used to specify an entity's related entities that should be soft-deleted when the main entity is soft-deleted.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<void | Record<string, string[]>>} An object that includes the IDs of related records that were also soft deleted.
+   * If there are no related records, the promise resolves to `void`.
+   *
+   * @example
+   * await fulfillmentModuleService.softDeleteShippingOptionTypes([
+   *   "sotype_123",
+   *   "sotype_321",
+   * ])
+   */
+  softDeleteShippingOptionTypes<TReturnableLinkableKeys extends string = string>(
+    ids: string[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+
+  /**
+   * This method restores soft deleted shipping option types by their IDs.
+   *
+   * @param {string[]} ids - The IDs of the shipping option types.
+   * @param {RestoreReturn<TReturnableLinkableKeys>} config - Configurations determining which relations to restore along with each of the shipping option types. You can pass to its `returnLinkableKeys`
+   * property any of the shipping option type's relation attribute names.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<void | Record<string, string[]>>} An object that includes the IDs of related records that were restored.
+   * If there are no related records restored, the promise resolves to `void`.
+   *
+   * @example
+   * await fulfillmentModuleService.restoreShippingOptions([
+   *   "sotype_123",
+   *   "sotype_321",
+   * ])
+   */
+  restoreShippingOptionTypes<TReturnableLinkableKeys extends string = string>(
+    ids: string[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+
+  /**
    * This method retrieves a fulfillment by its ID.
    *
    * @param {string} id - The ID of the fulfillment.
@@ -2299,6 +2633,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const fulfillment =
@@ -2336,6 +2677,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const fulfillments =
@@ -2398,6 +2746,13 @@ export interface IFulfillmentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the fulfillment:
+   *
+   * :::note
+   *
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   *
+   * :::
    *
    * ```ts
    * const [fulfillments, count] =

@@ -27,6 +27,26 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminCreateRegion"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.region.create({
+ *         name: "United States",
+ *         currency_code: "usd",
+ *       })
+ *       .then(({ region }) => {
+ *         console.log(region)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -60,6 +80,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createRegionsWorkflow
+ * x-events:
+ *   - name: region.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the region
+ *       }]
+ *       ```
+ *     description: Emitted when regions are created.
+ *     deprecated: false
  * 
 */
 

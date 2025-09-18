@@ -38,6 +38,13 @@ export type PaginatedResponse<T> = {
    * The total number of items.
    */
   count: number
+  /**
+   * The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+   * 
+   * @featureFlag index_engine
+   * @since 2.8.0
+   */
+  estimate_count?: number
 } & T
 
 export type BatchResponse<T> = {
@@ -59,7 +66,7 @@ export type BatchResponse<T> = {
     ids: string[]
     /**
      * The type of the items that were deleted.
-     * 
+     *
      * @example
      * "product"
      */

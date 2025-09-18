@@ -2,6 +2,8 @@
 sidebar_label: "Filtering"
 ---
 
+import { Table } from "docs-ui"
+
 export const metadata = {
   title: `Filter Records - Service Factory Reference`,
 }
@@ -134,6 +136,56 @@ const posts = await postModuleService.listPosts({
 ```
 
 In the example above, only posts that have a publish date are retrieved.
+
+--
+
+## Filter by Relation's Property
+
+Consider that your module also has an `Author` data model, and the `Post` data model has a relation to the `Author` data model.
+
+To filter posts by a property of the `Author` data model, you can use nested objects.
+
+For example:
+
+```ts
+const posts = await postModuleService.listPosts({
+  author: {
+    name: "John",
+  },
+})
+```
+
+In the example above, you retrieve posts whose `author` relation has a `name` property equal to `John`.
+
+### Filter by Relation's Property Not Equal
+
+```ts
+const posts = await postModuleService.listPosts({
+  author: {
+    name: {
+      $or: [
+        {
+          name: {
+            $eq: null,
+          },
+        },
+        {
+          name: {
+            $ne: "John",
+          },
+        },
+      ],
+    },
+  },
+})
+```
+
+When you need to filter by a relationship property whose value doesn't match a specific condition, you must use an `$or` operator that applies the following conditions:
+
+1. The relationship's property is not set. This is necessary to exclude posts that don't have an author.
+2. The relationship's property is not equal to the specific value.
+
+So, in the example above, you retrieve posts either not having an author or having an author whose name is not "John".
 
 ---
 
@@ -274,3 +326,172 @@ In the example above, posts are retrieved if they meet either of the following c
 2. The post's title contains the word `Featured`.
 
 By combining `and` and `or` conditions, you can create complex filters to retrieve records that meet specific criteria.
+
+---
+
+## Supported Filter Operators List
+
+The following operators are supported by the service factory filtering mechanism:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Operator
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+
+  <Table.Body>
+    <Table.Row className="bg-medusa-bg-component">
+      <Table.Cell colSpan={2}>
+        Comparison Operators
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$eq`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that are equal to a specified value.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$ne`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that are not equal to a specified value.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$in`
+      </Table.Cell>
+      <Table.Cell>
+        Matches any of the values specified in an array.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$nin`
+      </Table.Cell>
+      <Table.Cell>
+        Matches none of the values specified in an array.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$like`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values containing a specified substring.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$lt`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that are less than a specified value.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$lte`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that are less than or equal to a specified value.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$gt`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that are greater than a specified value.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$gte`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that are greater than or equal to a specified value.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$re`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that match a specified regular expression.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$ilike`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values containing a specified substring, case-insensitive.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$fulltext`
+      </Table.Cell>
+      <Table.Cell>
+        Performs a full-text search on a text property.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$overlap`
+      </Table.Cell>
+      <Table.Cell>
+        Matches values that have overlapping elements with the specified array.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$contains`
+      </Table.Cell>
+      <Table.Cell>
+        Performs an `@> value` comparison. Learn more in the [PostgreSQL documentation](https://www.postgresql.org/docs/9.6/functions-array.html).
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$contained`
+      </Table.Cell>
+      <Table.Cell>
+        Performs an `value @>` comparison. Learn more in the [PostgreSQL documentation](https://www.postgresql.org/docs/9.6/functions-array.html).
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row className="bg-medusa-bg-component">
+      <Table.Cell colSpan={2}>
+        Logical Operators
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$and`
+      </Table.Cell>
+      <Table.Cell>
+        Joins two or more conditions with a logical AND.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `$or`
+      </Table.Cell>
+      <Table.Cell>
+        Joins two or more conditions with a logical OR.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+

@@ -1,13 +1,15 @@
+import { dynamicImport, FileSystem, isFileSkipped } from "@medusajs/utils"
 import { join } from "path"
-import { dynamicImport, FileSystem } from "@medusajs/utils"
+import zod from "zod"
 
 import { logger } from "../logger"
 import {
-  type MiddlewaresConfig,
+  type AdditionalDataValidatorRoute,
   type BodyParserConfigRoute,
-  type MiddlewareDescriptor,
-  type MedusaErrorHandlerFunction,
   HTTP_METHODS,
+  type MedusaErrorHandlerFunction,
+  type MiddlewareDescriptor,
+  type MiddlewaresConfig,
 } from "./types"
 
 /**
@@ -32,6 +34,12 @@ export class MiddlewareFileLoader {
   #middleware: MiddlewareDescriptor[] = []
 
   /**
+   * Route matchers on which a custom additional data validator is
+   * defined
+   */
+  #additionalDataValidatorRoutes: AdditionalDataValidatorRoute[] = []
+
+  /**
    * Route matchers on which a custom body parser config is used
    */
   #bodyParserConfigRoutes: BodyParserConfigRoute[] = []
@@ -42,6 +50,10 @@ export class MiddlewareFileLoader {
    */
   async #processMiddlewareFile(absolutePath: string): Promise<void> {
     const middlewareExports = await dynamicImport(absolutePath)
+
+    if (isFileSkipped(middlewareExports)) {
+      return
+    }
 
     const middlewareConfig = middlewareExports.default
     if (!middlewareConfig) {
@@ -61,6 +73,7 @@ export class MiddlewareFileLoader {
 
     const result = routes.reduce<{
       bodyParserConfigRoutes: BodyParserConfigRoute[]
+      additionalDataValidatorRoutes: AdditionalDataValidatorRoute[]
       middleware: MiddlewareDescriptor[]
     }>(
       (result, route) => {
@@ -76,8 +89,11 @@ export class MiddlewareFileLoader {
 
         const matcher = String(route.matcher)
 
-        if ("bodyParser" in route && route.bodyParser !== undefined) {
-          const methods = route.methods || [...HTTP_METHODS]
+        if (route.bodyParser !== undefined) {
+          let methods = route.methods || [...HTTP_METHODS]
+          if (methods.includes("ALL")) {
+            methods = [...HTTP_METHODS]
+          }
 
           logger.debug(
             `using custom bodyparser config on matcher ${methods}:${route.matcher}`
@@ -87,6 +103,24 @@ export class MiddlewareFileLoader {
             matcher: matcher,
             methods,
             config: route.bodyParser,
+          })
+        }
+
+        if (route.additionalDataValidator !== undefined) {
+          let methods = route.methods || [...HTTP_METHODS]
+          if (methods.includes("ALL")) {
+            methods = [...HTTP_METHODS]
+          }
+
+          logger.debug(
+            `assigning additionalData validator on matcher ${methods}:${route.matcher}`
+          )
+
+          result.additionalDataValidatorRoutes.push({
+            matcher: matcher,
+            methods,
+            schema: route.additionalDataValidator,
+            validator: zod.object(route.additionalDataValidator).nullish(),
           })
         }
 
@@ -103,6 +137,7 @@ export class MiddlewareFileLoader {
       },
       {
         bodyParserConfigRoutes: [],
+        additionalDataValidatorRoutes: [],
         middleware: [],
       }
     )
@@ -117,6 +152,10 @@ export class MiddlewareFileLoader {
     this.#bodyParserConfigRoutes = this.#bodyParserConfigRoutes.concat(
       result.bodyParserConfigRoutes
     )
+    this.#additionalDataValidatorRoutes =
+      this.#additionalDataValidatorRoutes.concat(
+        result.additionalDataValidatorRoutes
+      )
   }
 
   /**
@@ -156,5 +195,13 @@ export class MiddlewareFileLoader {
    */
   getBodyParserConfigRoutes() {
     return this.#bodyParserConfigRoutes
+  }
+
+  /**
+   * Returns routes that have additional validator configured
+   * on them
+   */
+  getAdditionalDataValidatorRoutes() {
+    return this.#additionalDataValidatorRoutes
   }
 }

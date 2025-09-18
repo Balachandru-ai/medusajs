@@ -717,6 +717,28 @@ medusaIntegrationTestRunner({
           })
         )
       })
+
+      it("gets categories sorted by name", async () => {
+        const response = await api.get(
+          `/admin/product-categories?order=name`,
+          adminHeaders
+        )
+
+        const names = response.data.product_categories.map(pc => pc.name)
+        const sortedNames = [...names].sort((a: string, b: string) => a.localeCompare(b))
+        expect(names).toEqual(sortedNames)
+      })
+
+      it("gets categories sorted by name descending", async () => {
+        const response = await api.get(
+          `/admin/product-categories?order=-name`,
+          adminHeaders
+        )
+
+        const names = response.data.product_categories.map(pc => pc.name)
+        const sortedNames = [...names].sort((a: string, b: string) => b.localeCompare(a))
+        expect(names).toEqual(sortedNames)
+      })
     })
 
     describe("POST /admin/product-categories", () => {

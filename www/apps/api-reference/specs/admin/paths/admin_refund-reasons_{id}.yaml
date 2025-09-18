@@ -98,17 +98,7 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The properties to update in the refund reason.
-          properties:
-            label:
-              type: string
-              title: label
-              description: The refund reason's label.
-            description:
-              type: string
-              title: description
-              description: The refund reason's description.
+          $ref: ../components/schemas/AdminUpdatePaymentRefundReason.yaml
   x-codeSamples:
     - lang: Shell
       label: cURL
@@ -136,6 +126,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateRefundReasonsWorkflow
+  x-events: []
 delete:
   operationId: DeleteRefundReasonsId
   summary: Delete a Refund Reason
@@ -198,3 +189,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteRefundReasonsWorkflow
+  x-events: []

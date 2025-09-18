@@ -12,7 +12,7 @@ import { TypeList } from "docs-ui"
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[InitiatePaymentOutput](../types.InitiatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the payment session in the payment provider.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="initiatePayment"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[InitiatePaymentOutput](../types.InitiatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the payment session in the payment provider.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"status","type":"[PaymentSessionStatus](../../../payment/types/payment.PaymentSessionStatus/page.mdx)","description":"The status of the payment session, which will be stored in the payment session's `status` field.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="initiatePayment"/>
 
 ### updatePayment
 
@@ -22,7 +22,7 @@ import { TypeList } from "docs-ui"
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[UpdatePaymentOutput](../types.UpdatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="updatePayment"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[UpdatePaymentOutput](../types.UpdatePaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"data","type":"`Record<string, unknown>`","description":"The unstructured data returned from the payment provider. The content will vary between providers.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"status","type":"[PaymentSessionStatus](../../../payment/types/payment.PaymentSessionStatus/page.mdx)","description":"The status of the payment, which will be stored in the payment session's `status` field.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="updatePayment"/>
 
 ### deletePayment
 
@@ -86,8 +86,15 @@ import { TypeList } from "docs-ui"
 
 ### createAccountHolder
 
+<BadgesList badges={[
+  {
+    "variant": "neutral",
+    "children": "optional"
+  }
+]} className="mb-1" />
+
 This method is used when creating an account holder in Medusa, allowing you to create
-the equivalent account in the third-party service. An account holder is useful to
+the equivalent account in the third-party payment provider. An account holder is useful to
 later save payment methods, such as credit cards, for a customer in the
 third-party payment provider using the [savePaymentMethod](page.mdx#savepaymentmethod) method.
 
@@ -98,7 +105,7 @@ Medusa creates an account holder when a payment session initialized for a regist
 
 :::note
 
-This is only available after Medusa `v2.5.0`.
+This is available starting from Medusa `v2.5.0`.
 
 :::
 
@@ -147,15 +154,22 @@ class MyPaymentProviderService extends AbstractPaymentProvider<
 
 ### updateAccountHolder
 
+<BadgesList badges={[
+  {
+    "variant": "neutral",
+    "children": "optional"
+  }
+]} className="mb-1" />
+
 This method is used when updating an account holder in Medusa, allowing you to update
-the equivalent account in the third-party service.
+the equivalent account in the third-party payment provider.
 
 The returned data will be stored in the account holder created in Medusa. For example,
 the returned `id` property will be stored in the account holder's `external_id` property.
 
 :::note
 
-This is only available after Medusa `v2.5.1`.
+This is available starting from Medusa `v2.5.1`.
 
 :::
 
@@ -200,12 +214,19 @@ class MyPaymentProviderService extends AbstractPaymentProvider<
 
 ### deleteAccountHolder
 
+<BadgesList badges={[
+  {
+    "variant": "neutral",
+    "children": "optional"
+  }
+]} className="mb-1" />
+
 This method is used when an account holder is deleted in Medusa, allowing you
-to also delete the equivalent account holder in the third-party service.
+to also delete the equivalent account holder in the third-party payment provider.
 
 :::note
 
-This is only available after Medusa `v2.5.0`.
+This is available starting from Medusa `v2.5.0`.
 
 :::
 
@@ -247,13 +268,20 @@ class MyPaymentProviderService extends AbstractPaymentProvider<
 
 ### listPaymentMethods
 
+<BadgesList badges={[
+  {
+    "variant": "neutral",
+    "children": "optional"
+  }
+]} className="mb-1" />
+
 This method is used to retrieve the list of saved payment methods for an account holder
 in the third-party payment provider. A payment provider that supports saving payment methods
 must implement this method.
 
 :::note
 
-This is only available after Medusa `v2.5.0`.
+This is available starting from Medusa `v2.5.0`.
 
 :::
 
@@ -299,13 +327,20 @@ class MyPaymentProviderService extends AbstractPaymentProvider<
 
 ### savePaymentMethod
 
+<BadgesList badges={[
+  {
+    "variant": "neutral",
+    "children": "optional"
+  }
+]} className="mb-1" />
+
 This method is used to save a customer's payment method, such as a credit card, in the
 third-party payment provider. A payment provider that supports saving payment methods
 must implement this method.
 
 :::note
 
-This is only available after Medusa `v2.5.0`.
+This is available starting from Medusa `v2.5.0`.
 
 :::
 
@@ -369,4 +404,4 @@ class MyPaymentProviderService extends AbstractPaymentProvider<
 
 #### Returns
 
-<TypeList types={[{"name":"Promise","type":"Promise&#60;[WebhookActionResult](../types.WebhookActionResult/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"action","type":"[PaymentActions](../../types/types.PaymentActions/page.mdx)","description":"Normalized events from payment provider to internal payment module events.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"[WebhookActionData](../types.WebhookActionData/page.mdx)","description":"The webhook action's details.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"session_id","type":"`string`","description":"The associated payment session's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"amount","type":"[BigNumberValue](../../types/types.BigNumberValue/page.mdx)","description":"The amount to be captured or authorized (based on the action's type.)","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getWebhookActionAndData"/>
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[WebhookActionResult](../types.WebhookActionResult/page.mdx)&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"action","type":"[PaymentActions](../../types/types.PaymentActions/page.mdx)","description":"The action that was performed so that Medusa can handle it internally.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"[WebhookActionData](../types.WebhookActionData/page.mdx)","description":"The webhook action's details.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"session_id","type":"`string`","description":"The ID of the payment session in Medusa.\nMake sure to store this ID in the third-party payment provider\nto be able to retrieve the payment session later.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"amount","type":"[BigNumberValue](../../types/types.BigNumberValue/page.mdx)","description":"The amount to be captured or authorized (based on the action's type.)","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getWebhookActionAndData"/>

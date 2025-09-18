@@ -5,12 +5,16 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 /**
  * The transaction(s) to add to the order.
  */
-export type AddOrderTransactionStepInput = CreateOrderTransactionDTO | CreateOrderTransactionDTO[]
+export type AddOrderTransactionStepInput =
+  | CreateOrderTransactionDTO
+  | CreateOrderTransactionDTO[]
 
 /**
  * The added order transaction(s).
  */
-export type AddOrderTransactionStepOutput = CreateOrderTransactionDTO | CreateOrderTransactionDTO[]
+export type AddOrderTransactionStepOutput =
+  | CreateOrderTransactionDTO
+  | CreateOrderTransactionDTO[]
 
 export const addOrderTransactionStepId = "add-order-transaction"
 /**
@@ -18,35 +22,57 @@ export const addOrderTransactionStepId = "add-order-transaction"
  */
 export const addOrderTransactionStep = createStep(
   addOrderTransactionStepId,
-  async (
-    data: AddOrderTransactionStepInput,
-    { container }
-  ) => {
+  async (data: AddOrderTransactionStepInput, { container }) => {
     const service = container.resolve(Modules.ORDER)
 
     const trxsData = Array.isArray(data) ? data : [data]
 
-    for (const trx of trxsData) {
-      const existing = await service.listOrderTransactions(
-        {
-          order_id: trx.order_id,
-          reference: trx.reference,
-          reference_id: trx.reference_id,
-        },
-        {
-          select: ["id"],
-        }
-      )
+    if (!trxsData.length) {
+      return new StepResponse(null)
+    }
 
-      if (existing.length) {
-        return new StepResponse(null)
+    const existingQuery: any[] = []
+    for (const trx of trxsData) {
+      existingQuery.push({
+        order_id: trx.order_id,
+        reference: trx.reference,
+        reference_id: trx.reference_id,
+      })
+    }
+
+    const existing = await service.listOrderTransactions(
+      {
+        $or: existingQuery,
+      },
+      {
+        select: ["order_id", "reference", "reference_id"],
+      }
+    )
+    const existingSet = new Set<string>(
+      existing.map(
+        (trx) => `${trx.order_id}-${trx.reference}-${trx.reference_id}`
+      )
+    )
+
+    const selectedData: CreateOrderTransactionDTO[] = []
+    for (const trx of trxsData) {
+      if (
+        !existingSet.has(`${trx.order_id}-${trx.reference}-${trx.reference_id}`)
+      ) {
+        selectedData.push(trx)
       }
     }
 
-    const created = await service.addOrderTransactions(trxsData)
+    if (!selectedData.length) {
+      return new StepResponse(null)
+    }
+
+    const created = await service.addOrderTransactions(selectedData)
 
     return new StepResponse(
-      (Array.isArray(data) ? created : created[0]) as AddOrderTransactionStepOutput,
+      (Array.isArray(data)
+        ? created
+        : created[0]) as AddOrderTransactionStepOutput,
       created.map((c) => c.id)
     )
   },

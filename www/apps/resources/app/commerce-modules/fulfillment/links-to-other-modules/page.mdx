@@ -1,3 +1,11 @@
+---
+products:
+  - order
+  - pricing
+  - product
+  - stock location
+---
+
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
 export const metadata = {
@@ -6,7 +14,7 @@ export const metadata = {
 
 # {metadata.title}
 
-This document showcases the module links defined between the Fulfillment Module and other commerce modules.
+This document showcases the module links defined between the Fulfillment Module and other Commerce Modules.
 
 ## Summary
 
@@ -32,13 +40,27 @@ The Fulfillment Module has the following links to other modules:
   <Table.Body>
     <Table.Row>
       <Table.Cell>
+        [ShippingMethod](/references/cart/models/ShippingMethod) in [Cart Module](../../cart/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [ShippingOption](/references/fulfillment/models/ShippingOption)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#cart-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
         [Order](/references/order/models/Order) in [Order Module](../../order/page.mdx)
       </Table.Cell>
       <Table.Cell>
         [Fulfillment](/references/fulfillment/models/Fulfillment)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - one-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#order-module)
@@ -52,7 +74,7 @@ The Fulfillment Module has the following links to other modules:
         [Fulfillment](/references/fulfillment/models/Fulfillment)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - one-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#order-module)
@@ -66,7 +88,7 @@ The Fulfillment Module has the following links to other modules:
         [ShippingOption](/references/fulfillment/models/ShippingOption)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - many-to-one
       </Table.Cell>
       <Table.Cell>
         [Learn more](#pricing-module)
@@ -80,7 +102,7 @@ The Fulfillment Module has the following links to other modules:
         [ShippingProfile](/references/fulfillment/models/ShippingProfile)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - many-to-one
       </Table.Cell>
       <Table.Cell>
         [Learn more](#product-module)
@@ -88,13 +110,13 @@ The Fulfillment Module has the following links to other modules:
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
       </Table.Cell>
       <Table.Cell>
         [FulfillmentProvider](/references/fulfillment/models/FulfillmentProvider)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - one-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#stock-location-module)
@@ -102,13 +124,13 @@ The Fulfillment Module has the following links to other modules:
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
       </Table.Cell>
       <Table.Cell>
         [FulfillmentSet](/references/fulfillment/models/FulfillmentSet)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - one-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#stock-location-module)
@@ -116,6 +138,59 @@ The Fulfillment Module has the following links to other modules:
     </Table.Row>
   </Table.Body>
 </Table>
+
+---
+
+## Cart Module
+
+Medusa defines a read-only link between the `ShippingMethod` data model of the [Cart Module](../../cart/page.mdx) and the `ShippingOption` data model. This means you can retrieve the details of a shipping method's shipping option, but you don't manage the links in a pivot table in the database. The shipping option of a shipping method is determined by the `shipping_option_id` property of the `ShippingMethod` data model.
+
+This link allows you to retrieve the shipping option that a shipping method was created from.
+
+<Note>
+
+This read-only link was added in [Medusa v2.10.0](https://github.com/medusajs/medusa/releases/tag/v2.10.0)
+
+</Note>
+
+### Retrieve with Query
+
+To retrieve the shipping option of a shipping method with [Query](!docs!/learn/fundamentals/module-links/query), pass `shipping_option.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: shippingMethods } = await query.graph({
+  entity: "shipping_method",
+  fields: [
+    "shipping_option.*",
+  ],
+})
+
+// shippingMethods[0].shipping_option
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: shippingMethods } = useQueryGraphStep({
+  entity: "shipping_method",
+  fields: [
+    "shipping_option.*",
+  ],
+})
+
+// shippingMethods[0].shipping_option
+```
+
+  </CodeTab>
+</CodeTabs>
 
 ---
 
@@ -241,11 +316,11 @@ To retrieve the price set of a shipping option with [Query](!docs!/learn/fundame
 const { data: shippingOptions } = await query.graph({
   entity: "shipping_option",
   fields: [
-    "price_set.*",
+    "price_set_link.*",
   ],
 })
 
-// shippingOptions.price_set
+// shippingOptions[0].price_set_link?.price_set_id
 ```
 
   </CodeTab>
@@ -259,11 +334,11 @@ import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
 const { data: shippingOptions } = useQueryGraphStep({
   entity: "shipping_option",
   fields: [
-    "price_set.*",
+    "price_set_link.*",
   ],
 })
 
-// shippingOptions.price_set
+// shippingOptions[0].price_set_link?.price_set_id
 ```
 
   </CodeTab>
@@ -340,7 +415,7 @@ const { data: shippingProfiles } = await query.graph({
   ],
 })
 
-// shippingProfiles.products
+// shippingProfiles[0].products
 ```
 
   </CodeTab>
@@ -358,7 +433,7 @@ const { data: shippingProfiles } = useQueryGraphStep({
   ],
 })
 
-// shippingProfiles.products
+// shippingProfiles[0].products
 ```
 
   </CodeTab>
@@ -443,7 +518,7 @@ const { data: fulfillmentSets } = await query.graph({
   ],
 })
 
-// fulfillmentSets.location
+// fulfillmentSets[0].location
 ```
 
   </CodeTab>
@@ -461,7 +536,7 @@ const { data: fulfillmentSets } = useQueryGraphStep({
   ],
 })
 
-// fulfillmentSets.location
+// fulfillmentSets[0].location
 ```
 
   </CodeTab>

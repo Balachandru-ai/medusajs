@@ -581,6 +581,11 @@ export interface PaymentSessionDTO {
    * @expandable
    */
   payment?: PaymentDTO
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
 }
 
 /**

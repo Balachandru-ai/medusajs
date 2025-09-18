@@ -11,6 +11,7 @@ const fulfillmentProviderOptions: FormattingOptionsType = {
       slug: "/references/fulfillment/provider",
       tags: ["fulfillment", "server", "how to"],
       sidebar_label: "Create Fulfillment Provider",
+      keywords: ["fulfillment", "shipping", "provider", "integration"],
     },
     reflectionTitle: {
       fullReplacement: "How to Create a Fulfillment Module Provider",
@@ -18,6 +19,7 @@ const fulfillmentProviderOptions: FormattingOptionsType = {
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
     expandProperties: true,
+    sortMembers: true,
     sections: {
       ...baseSectionsOptions,
       member_declaration_title: false,
@@ -74,7 +76,13 @@ export default ModuleProvider(Modules.FULFILLMENT, {
 })
 \`\`\`
 
-This exports the module provider's definition, indicating that the \`MyFulfillmentProviderService\` is the module provider's service.`,
+This exports the module provider's definition, indicating that the \`MyFulfillmentProviderService\` is the module provider's service.
+
+<Note title="Tip">
+
+A fulfillment module provider can have export multiple provider services, where each are registered as a separate fulfillment provider.
+
+</Note>`,
       `## 4. Use Module Provider
 
 To use your Fulfillment Module Provider, add it to the \`providers\` array of the Fulfillment Module in \`medusa-config.ts\`:

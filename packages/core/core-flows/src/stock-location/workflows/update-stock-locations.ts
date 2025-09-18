@@ -1,5 +1,6 @@
 import {
   FilterableStockLocationProps,
+  RemoteQueryFilters,
   StockLocationDTO,
   UpdateStockLocationInput,
   UpsertStockLocationAddressInput,
@@ -32,10 +33,10 @@ export const updateStockLocationsWorkflowId = "update-stock-locations-workflow"
 /**
  * This workflow updates stock locations matching the specified filters. It's used by the
  * [Update Stock Location Admin API Route](https://docs.medusajs.com/api/admin#stock-locations_poststocklocationsid).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to update stock locations in your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateStockLocationsWorkflow(container)
  * .run({
@@ -48,9 +49,9 @@ export const updateStockLocationsWorkflowId = "update-stock-locations-workflow"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update stock locations.
  */
 export const updateStockLocationsWorkflow = createWorkflow(
@@ -60,7 +61,7 @@ export const updateStockLocationsWorkflow = createWorkflow(
   ): WorkflowResponse<StockLocationDTO[]> => {
     const stockLocationsQuery = useQueryGraphStep({
       entity: "stock_location",
-      filters: input.selector,
+      filters: input.selector as RemoteQueryFilters<"stock_location">,
       fields: ["id", "address.id"],
     }).config({ name: "get-stock-location" })
 

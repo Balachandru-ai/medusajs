@@ -460,11 +460,78 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
+ *   - name: ean
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: ean
+ *           description: The product variant's ean.
+ *         - type: array
+ *           description: The product variant's ean.
+ *           items:
+ *             type: string
+ *             title: ean
+ *             description: The ean's details.
+ *   - name: upc
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: upc
+ *           description: The product variant's upc.
+ *         - type: array
+ *           description: The product variant's upc.
+ *           items:
+ *             type: string
+ *             title: upc
+ *             description: The upc's details.
+ *   - name: barcode
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: barcode
+ *           description: The product variant's barcode.
+ *         - type: array
+ *           description: The product variant's barcode.
+ *           items:
+ *             type: string
+ *             title: barcode
+ *             description: The barcode's details.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.productVariant.list()
+ *       .then(({ variants, count, limit, offset }) => {
+ *         console.log(variants)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-

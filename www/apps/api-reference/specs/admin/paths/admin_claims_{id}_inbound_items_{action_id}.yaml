@@ -35,6 +35,11 @@ post:
           $ref: >-
             ../components/schemas/AdminPostReturnsRequestItemsActionReqSchema.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_claims_{id}_inbound_items_{action_id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -62,6 +67,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateRequestItemReturnWorkflow
+  x-events: []
 delete:
   operationId: DeleteClaimsIdInboundItemsAction_id
   summary: Remove an Inbound Item from Claim
@@ -93,6 +99,11 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_claims_{id}_inbound_items_{action_id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -120,3 +131,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: removeItemReturnActionWorkflow
+  x-events: []

@@ -10,13 +10,13 @@ In this document, you'll learn the general steps to deploy your Medusa applicati
 
 Find how-to guides for specific platforms in [this documentation](!resources!/deployment).
 
-<Note title="Deploy with Medusa Cloud" type="success">
+<Note title="Deploy with Cloud" type="success">
 
-Want Medusa to manage and maintain your infrastructure? [Sign up and learn more about Medusa Cloud](https://medusajs.com/pricing)
+Want Medusa to manage and maintain your infrastructure? [Sign up and learn more about Cloud](!cloud!)
 
-Medusa Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Medusa Cloud hosts your server, Admin dashboard, database, and Redis instance.
+Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Cloud hosts your server, Admin dashboard, database, and Redis instance.
 
-With Medusa Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+With Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
 
 - Push to deploy.
 - Multiple testing environments.
@@ -128,11 +128,13 @@ By default, your Medusa application uses modules and providers useful for develo
 
 It’s highly recommended to instead use modules and providers suitable for production, including:
 
-- [Redis Cache Module](!resources!/architectural-modules/cache/redis)
-- [Redis Event Bus Module](!resources!/architectural-modules/event/redis)
-- [Workflow Engine Redis Module](!resources!/architectural-modules/workflow-engine/redis)
-- [S3 File Module Provider](!resources!/architectural-modules/file/s3) (or other file module providers production-ready).
-- [SendGrid Notification Module Provider](!resources!/architectural-modules/notification/sendgrid) (or other notification module providers production-ready).
+- [Redis Cache Module](!resources!/infrastructure-modules/cache/redis)
+- [Redis Event Bus Module](!resources!/infrastructure-modules/event/redis)
+- [Workflow Engine Redis Module](!resources!/infrastructure-modules/workflow-engine/redis)
+- [Redis Locking Module Provider](!resources!/infrastructure-modules/locking/redis)
+- [PostHog Analytics Module Provider](!resources!/infrastructure-modules/analytics/posthog) (If you're using analytics in your application. You can also use other analytics module providers that are production-ready).
+- [S3 File Module Provider](!resources!/infrastructure-modules/file/s3) (or other file module providers that are production-ready).
+- [SendGrid Notification Module Provider](!resources!/infrastructure-modules/notification/sendgrid) (or other notification module providers that are production-ready).
 
 Then, add these modules in `medusa-config.ts`:
 
@@ -162,13 +164,29 @@ module.exports = defineConfig({
         },
       },
     },
+    {
+      resolve: "@medusajs/medusa/locking",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/locking-redis",
+            id: "locking-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.LOCKING_REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
+
   ],
 })
 ```
 
 <Note title="Tip">
 
-Check out the [Integrations](!resources!/integrations) and [Architectural Modules](!resources!/architectural-modules) documentation for other modules and providers to use.
+Check out the [Integrations](!resources!/integrations) and [Infrastructure Modules](!resources!/infrastructure-modules) documentation for other modules and providers to use.
 
 </Note>
 
@@ -203,7 +221,7 @@ AUTH_CORS= # STOREFRONT AND ADMIN URLS, SEPARATED BY COMMAS
 DISABLE_MEDUSA_ADMIN=false
 MEDUSA_WORKER_MODE=server
 PORT=9000
-DATABASE_URL # POSTGRES DATABASE URL
+DATABASE_URL= # POSTGRES DATABASE URL
 REDIS_URL= # REDIS DATABASE URL
 ```
 
@@ -217,7 +235,7 @@ Where:
 - Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`
 - Set the Redis database's connection URL as the value of `REDIS_URL`.
 
-Feel free to add any other relevant environment variables, such as for integrations and architectural modules. If you're using environment variables in your admin customizations, make sure to set them as well, as they're inlined during the build process.
+Feel free to add any other relevant environment variables, such as for integrations and Infrastructure Modules. If you're using environment variables in your admin customizations, make sure to set them as well, as they're inlined during the build process.
 
 ### Set Start Command
 
@@ -285,7 +303,7 @@ JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
 DISABLE_MEDUSA_ADMIN=true
 MEDUSA_WORKER_MODE=worker
 PORT=9000
-DATABASE_URL # POSTGRES DATABASE URL
+DATABASE_URL= # POSTGRES DATABASE URL
 REDIS_URL= # REDIS DATABASE URL
 ```
 
@@ -296,7 +314,7 @@ Where:
 - Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`
 - Set the Redis database's connection URL as the value of `REDIS_URL`.
 
-Feel free to add any other relevant environment variables, such as for integrations and architectural modules.
+Feel free to add any other relevant environment variables, such as for integrations and Infrastructure Modules.
 
 ### Set Start Command
 
@@ -305,7 +323,7 @@ The Medusa application's production build, which is created using the `build` co
 If your hosting provider doesn't support setting a current-working directory, set the start command to the following:
 
 ```bash npm2yarn
-cd .medusa/server && npm run install && npm run start
+cd .medusa/server && npm install && npm run start
 ```
 
 ---

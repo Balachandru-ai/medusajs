@@ -134,6 +134,41 @@ export const updateExchangeShippingMethodWorkflowId =
  * @summary
  *
  * Update an exchange's inbound or outbound shipping method.
+ * 
+ * @property hooks.setPricingContext - This hook is executed before the shipping method is updated. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
+ * 
+ * For example, assuming you have the following custom pricing rule:
+ * 
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ * 
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ * 
+ * ```ts
+ * import { updateExchangeShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ * 
+ * updateExchangeShippingMethodWorkflow.hooks.setPricingContext((
+ *   { order_exchange, order_change, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ * 
+ * The price of the shipping method's option will now be retrieved using the context you return.
+ * 
+ * :::note
+ * 
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ * 
+ * :::
  */
 export const updateExchangeShippingMethodWorkflow = createWorkflow(
   updateExchangeShippingMethodWorkflowId,

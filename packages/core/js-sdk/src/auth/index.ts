@@ -48,7 +48,7 @@ export class Auth {
   register = async (
     actor: string,
     method: string,
-    payload: HttpTypes.AdminSignUpWithEmailPassword
+    payload: HttpTypes.AdminSignUpWithEmailPassword | Record<string, unknown>
   ) => {
     const { token } = await this.client.fetch<{ token: string }>(
       `/auth/${actor}/${method}/register`,

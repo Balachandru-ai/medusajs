@@ -534,7 +534,19 @@ get:
         items:
           type: object
         title: $or
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_invites/get.js
     - lang: Shell
       label: cURL
       source:
@@ -635,6 +647,10 @@ post:
               type: object
               description: The invite's metadata. Can be custom data in key-value pairs.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_invites/post.js
     - lang: Shell
       label: cURL
       source:
@@ -665,3 +681,15 @@ post:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
+  x-events:
+    - name: invite.created
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the invite
+        }]
+        ```
+      description: |-
+        Emitted when invites are created. You can listen to this event
+        to send an email to the invited users, for example.
+      deprecated: false

@@ -85,7 +85,7 @@ const createManagerStep = createStep(
   }: Pick<CreateManagerWorkflowInput, "manager">, 
   { container }) => {
     const managerModuleService: ManagerModuleService = 
-      container.resolve("managerModuleService")
+      container.resolve("manager")
 
     const manager = await managerModuleService.createManager(
       managerData
@@ -243,12 +243,18 @@ export async function GET(
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ): Promise<void> {
-  const managerModuleService: ManagerModuleService = 
-    req.scope.resolve("managerModuleService")
+  const query = req.scope.resolve("query")
+  const managerId = req.auth_context?.actor_id
 
-  const manager = await managerModuleService.retrieveManager(
-    req.auth_context.actor_id
-  )
+  const { data: [manager] } = await query.graph({
+    entity: "manager",
+    fields: ["*"],
+    filters: {
+      id: managerId,
+    },
+  }, {
+    throwIfKeyNotFound: true,
+  })
 
   res.json({ manager })
 }
@@ -335,7 +341,7 @@ const deleteManagerStep = createStep(
     { id }: DeleteManagerWorkflow, 
     { container }) => {
       const managerModuleService: ManagerModuleService = 
-        container.resolve("managerModuleService")
+        container.resolve("manager")
 
       const manager = await managerModuleService.retrieve(id)
 
@@ -345,7 +351,7 @@ const deleteManagerStep = createStep(
     },
     async ({ manager }, { container }) => {
       const managerModuleService: ManagerModuleService = 
-        container.resolve("managerModuleService")
+        container.resolve("manager")
 
       await managerModuleService.createManagers(manager)
     }

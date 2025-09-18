@@ -1,4 +1,4 @@
-import { isDefined, OrchestrationUtils } from "@medusajs/utils"
+import { isDefined, isObject, OrchestrationUtils } from "@medusajs/utils"
 import { ulid } from "ulid"
 import { createStep } from "./create-step"
 import { StepResponse } from "./helpers/step-response"
@@ -20,30 +20,30 @@ type ThenFunc = <ThenResolver extends () => any>(
   : ReturnType<ThenResolver>
 
 /**
- * This function allows you to execute steps only if a condition is satisfied. As you can't use if conditions in 
+ * This function allows you to execute steps only if a condition is satisfied. As you can't use if conditions in
  * a workflow's constructor function, use `when-then` instead.
- * 
+ *
  * Learn more about why you can't use if conditions and `when-then` in [this documentation](https://docs.medusajs.com/learn/fundamentals/workflows/conditions).
- * 
+ *
  * @param values - The data to pass to the second parameter function.
  * @param condition - A function that returns a boolean value, indicating whether the steps in `then` should be executed.
- * 
+ *
  * @example
- * import { 
+ * import {
  *   createWorkflow,
  *   WorkflowResponse,
  *   when,
  * } from "@medusajs/framework/workflows-sdk"
  * // step imports...
- * 
+ *
  * export const workflow = createWorkflow(
- *   "workflow", 
+ *   "workflow",
  *   function (input: {
  *     is_active: boolean
  *   }) {
- * 
+ *
  *     const result = when(
- *       input, 
+ *       input,
  *       (input) => {
  *         return input.is_active
  *       }
@@ -51,10 +51,10 @@ type ThenFunc = <ThenResolver extends () => any>(
  *       const stepResult = isActiveStep()
  *       return stepResult
  *     })
- * 
+ *
  *     // executed without condition
  *     const anotherStepResult = anotherStep(result)
- * 
+ *
  *     return new WorkflowResponse(
  *       anotherStepResult
  *     )
@@ -135,7 +135,18 @@ export function when(...args) {
           name,
           ({ input }: { input: any }) => new StepResponse(input)
         )
-        returnStep = retStep({ input: ret })
+
+        /**
+         * object ret = { result, hooks }
+         */
+        if (isObject(ret) && "hooks" in ret && "result" in ret) {
+          returnStep = {
+            hooks: ret.hooks,
+            result: retStep({ input: ret.result }),
+          }
+        } else {
+          returnStep = retStep({ input: ret })
+        }
       }
 
       for (const step of applyCondition) {

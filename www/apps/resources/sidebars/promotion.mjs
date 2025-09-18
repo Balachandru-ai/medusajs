@@ -24,6 +24,11 @@ export const promotionSidebar = [
           },
           {
             type: "link",
+            path: "/commerce-modules/promotion/promotion-taxes",
+            title: "Tax-Inclusive Promotions",
+          },
+          {
+            type: "link",
             path: "/commerce-modules/promotion/application-method",
             title: "Application Method",
           },
@@ -47,7 +52,7 @@ export const promotionSidebar = [
       {
         type: "category",
         title: "Server Guides",
-        autogenerate_tags: "server+promotion",
+        autogenerate_tags: "promotion+server",
         autogenerate_as_ref: true,
         sort_sidebar: "alphabetize",
         description:

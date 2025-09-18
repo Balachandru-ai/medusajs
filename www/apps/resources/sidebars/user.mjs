@@ -32,6 +32,11 @@ export const userSidebar = [
             path: "/commerce-modules/user/user-creation-flows",
             title: "User Creation Flows",
           },
+          {
+            type: "link",
+            path: "/commerce-modules/user/invite-user-subscriber",
+            title: "Invite User Email",
+          },
         ],
       },
       {
@@ -117,7 +122,7 @@ export const userSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/user/events",
+            path: "/references/user/events",
             title: "Events Reference",
           },
           {

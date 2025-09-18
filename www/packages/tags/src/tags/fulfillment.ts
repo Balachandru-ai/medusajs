@@ -12,8 +12,16 @@ export const fulfillment = [
     "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping"
   },
   {
+    "title": "Manage Shipping Option Types",
+    "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/shipping-option-types"
+  },
+  {
     "title": "Manage Shipping Profiles",
     "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/shipping-profiles"
+  },
+  {
+    "title": "Shipping Option Price Rules",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules"
   },
   {
     "title": "Product Shipping Requirement",
@@ -236,6 +244,14 @@ export const fulfillment = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createAndCompleteReturnOrderWorkflow"
   },
   {
+    "title": "createClaimShippingMethodWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createClaimShippingMethodWorkflow"
+  },
+  {
+    "title": "createExchangeShippingMethodWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createExchangeShippingMethodWorkflow"
+  },
+  {
     "title": "createOrderFulfillmentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderFulfillmentWorkflow"
   },
@@ -244,16 +260,44 @@ export const fulfillment = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderShipmentWorkflow"
   },
   {
+    "title": "createReturnShippingMethodWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createReturnShippingMethodWorkflow"
+  },
+  {
+    "title": "fetchShippingOptionForOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/fetchShippingOptionForOrderWorkflow"
+  },
+  {
     "title": "markOrderFulfillmentAsDeliveredWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/markOrderFulfillmentAsDeliveredWorkflow"
   },
   {
-    "title": "parseProductCsvStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/parseProductCsvStep"
+    "title": "maybeRefreshShippingMethodsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/maybeRefreshShippingMethodsWorkflow"
   },
   {
-    "title": "importProductsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/importProductsWorkflow"
+    "title": "createShippingOptionTypesStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/createShippingOptionTypesStep"
+  },
+  {
+    "title": "deleteShippingOptionTypesStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/deleteShippingOptionTypesStep"
+  },
+  {
+    "title": "updateShippingOptionTypesStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateShippingOptionTypesStep"
+  },
+  {
+    "title": "createShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "deleteShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "updateShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateShippingOptionTypesWorkflow"
   },
   {
     "title": "deleteShippingProfilesStep",
@@ -286,6 +330,10 @@ export const fulfillment = [
   {
     "title": "shippingOption",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOption"
+  },
+  {
+    "title": "shippingOptionType",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOptionType"
   },
   {
     "title": "shippingProfile",

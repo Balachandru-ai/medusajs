@@ -33,6 +33,10 @@ post:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_exchanges_{id}_request/post.js
     - lang: Shell
       label: cURL
       source:
@@ -59,6 +63,17 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: confirmExchangeRequestWorkflow
+  x-events:
+    - name: order.exchange_created
+      payload: |-
+        ```ts
+        {
+          order_id, // The ID of the order
+          exchange_id, // The ID of the exchange
+        }
+        ```
+      description: Emitted when an exchange is created for an order.
+      deprecated: false
 delete:
   operationId: DeleteExchangesIdRequest
   summary: Cancel Exchange Request
@@ -76,6 +91,10 @@ delete:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_exchanges_{id}_request/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -102,3 +121,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: cancelBeginOrderExchangeWorkflow
+  x-events: []

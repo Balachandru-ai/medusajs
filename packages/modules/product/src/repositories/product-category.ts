@@ -6,7 +6,7 @@ import {
   ProductTypes,
 } from "@medusajs/framework/types"
 import { DALUtils, isDefined, MedusaError } from "@medusajs/framework/utils"
-import { LoadStrategy, FindOptions as MikroOptions } from "@mikro-orm/core"
+import { FindOptions as MikroOptions, LoadStrategy } from "@mikro-orm/core"
 import { SqlEntityManager } from "@mikro-orm/postgresql"
 import { ProductCategory } from "@models"
 import { UpdateCategoryInput } from "@types"
@@ -21,10 +21,9 @@ export class ProductCategoryRepository extends DALUtils.MikroOrmBaseTreeReposito
   ) {
     const findOptions_ = { ...findOptions }
     findOptions_.options ??= {}
-    findOptions_.options.orderBy = {
+    findOptions_.options.orderBy ??= {
       id: "ASC",
       rank: "ASC",
-      ...findOptions_.options.orderBy,
     }
 
     const fields = (findOptions_.options.fields ??= [])
@@ -452,9 +451,7 @@ export class ProductCategoryRepository extends DALUtils.MikroOrmBaseTreeReposito
         }
         let productCategory = await manager.findOne<
           InferEntityType<typeof ProductCategory>
-        >(ProductCategory.name, {
-          id: categoryData.id,
-        })
+        >(ProductCategory.name, categoryData.id!)
 
         if (!productCategory) {
           throw new MedusaError(

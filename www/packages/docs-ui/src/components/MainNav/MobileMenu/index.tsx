@@ -52,7 +52,10 @@ export const MainNavMobileMenu = () => {
             nodeRef={ref}
             timeout={250}
           >
-            <div ref={ref} className="w-full px-docs_1.5">
+            <div
+              ref={ref}
+              className="w-full px-docs_1.5 h-3/4 flex flex-col justify-center"
+            >
               {selectedMenus.length === 0 && (
                 <MainNavMobileMainMenu setSelectedMenus={setSelectedMenus} />
               )}

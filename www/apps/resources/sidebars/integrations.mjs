@@ -10,6 +10,23 @@ export const integrationsSidebar = [
   },
   {
     type: "category",
+    title: "Analytics",
+    initialOpen: true,
+    children: [
+      {
+        type: "ref",
+        path: "/infrastructure-modules/analytics/posthog",
+        title: "PostHog",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/segment",
+        title: "Segment",
+      },
+    ],
+  },
+  {
+    type: "category",
     title: "Auth",
     initialOpen: true,
     children: [
@@ -30,6 +47,16 @@ export const integrationsSidebar = [
     title: "CMS",
     initialOpen: true,
     children: [
+      {
+        type: "link",
+        path: "/integrations/guides/contentful",
+        title: "Contentful",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/payload",
+        title: "Payload CMS",
+      },
       {
         type: "link",
         path: "/integrations/guides/sanity",
@@ -56,8 +83,8 @@ export const integrationsSidebar = [
     children: [
       {
         type: "ref",
-        path: "/architectural-modules/file/s3",
-        title: "AWS",
+        path: "/infrastructure-modules/file/s3",
+        title: "S3 (and Compatible APIs)",
       },
     ],
   },
@@ -70,6 +97,18 @@ export const integrationsSidebar = [
         type: "link",
         path: "/integrations/guides/shipstation",
         title: "ShipStation",
+      },
+    ],
+  },
+  {
+    type: "category",
+    title: "Instrumentation",
+    initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/integrations/guides/sentry",
+        title: "Sentry",
       },
     ],
   },
@@ -92,13 +131,28 @@ export const integrationsSidebar = [
     children: [
       {
         type: "link",
+        path: "/integrations/guides/mailchimp",
+        title: "Mailchimp",
+      },
+      {
+        type: "link",
         path: "/integrations/guides/resend",
         title: "Resend",
       },
       {
         type: "ref",
-        path: "/architectural-modules/notification/sendgrid",
+        path: "/infrastructure-modules/notification/sendgrid",
         title: "SendGrid",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/slack",
+        title: "Slack",
+      },
+      {
+        type: "ref",
+        path: "/how-to-tutorials/tutorials/phone-auth#step-3-integrate-twilio-sms",
+        title: "Twilio SMS",
       },
     ],
   },

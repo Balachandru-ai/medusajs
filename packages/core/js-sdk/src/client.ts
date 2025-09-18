@@ -179,6 +179,10 @@ export class Client {
     await this.setToken_(token)
   }
 
+  async getToken() {
+    return await this.getToken_()
+  }
+
   async clearToken() {
     await this.clearToken_()
   }
@@ -246,7 +250,7 @@ export class Client {
           const params = Object.fromEntries(
             normalizedInput.searchParams.entries()
           )
-          const stringifiedQuery = stringify({ ...params, ...init.query })
+          const stringifiedQuery = stringify({ ...params, ...init.query }, { skipNulls: true })
           normalizedInput.search = stringifiedQuery
         }
       }

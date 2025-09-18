@@ -110,6 +110,23 @@ const generatedgeneratedRecipesSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "link",
+      "path": "/recipes/bundled-products",
+      "title": "Bundled Products",
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/bundled-products/examples/standard",
+          "title": "Example",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "link",
       "path": "/recipes/commerce-automation",
       "title": "Commerce Automation",
       "children": [
@@ -119,6 +136,48 @@ const generatedgeneratedRecipesSidebarSidebar = {
           "type": "link",
           "path": "/recipes/commerce-automation/restock-notification",
           "title": "Example: Restock Notifications",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "link",
+      "path": "/recipes/personalized-products",
+      "title": "Personalized Products",
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/personalized-products/example",
+          "title": "Example",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "link",
+      "path": "/recipes/ticket-booking",
+      "title": "Ticket Booking",
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/ticket-booking/example",
+          "title": "Example",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/ticket-booking/example/storefront",
+          "title": "Storefront Customizations",
           "children": []
         }
       ]
@@ -153,14 +212,6 @@ const generatedgeneratedRecipesSidebarSidebar = {
       "type": "link",
       "path": "/recipes/oms",
       "title": "OMS",
-      "children": []
-    },
-    {
-      "loaded": true,
-      "isPathHref": true,
-      "type": "link",
-      "path": "/recipes/personalized-products",
-      "title": "Personalized Products",
       "children": []
     },
     {

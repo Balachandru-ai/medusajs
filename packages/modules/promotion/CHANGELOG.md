@@ -1,5 +1,136 @@
 # @medusajs/promotion
 
+## 2.10.2
+
+### Patch Changes
+
+- [#13446](https://github.com/medusajs/medusa/pull/13446) [`ac09b3cbeffc11c76b8e5972ee25688b17e5fa58`](https://github.com/medusajs/medusa/commit/ac09b3cbeffc11c76b8e5972ee25688b17e5fa58) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/localised improvement to promotion module
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- [#13294](https://github.com/medusajs/medusa/pull/13294) [`338a42f72808052f8d4dcbda8e070b97048bac87`](https://github.com/medusajs/medusa/commit/338a42f72808052f8d4dcbda8e070b97048bac87) Thanks [@willbouch](https://github.com/willbouch)! - chore(promotion): cleanup old unused promotion codebase
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13078](https://github.com/medusajs/medusa/pull/13078) [`93d7a93b2806d7e7660a6702c9e9b60d01dfe936`](https://github.com/medusajs/medusa/commit/93d7a93b2806d7e7660a6702c9e9b60d01dfe936) Thanks [@mikkel-lindstrom](https://github.com/mikkel-lindstrom)! - chore(promotion): in operator work as In insted of equal logic
+
+- [#12960](https://github.com/medusajs/medusa/pull/12960) [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a) Thanks [@scherddel](https://github.com/scherddel)! - This fixes the discount\_ calculation logic and promotion tax inclusiveness calculation
+
+- [#13084](https://github.com/medusajs/medusa/pull/13084) [`75320e744f680afba06d8ad852f169242736fb19`](https://github.com/medusajs/medusa/commit/75320e744f680afba06d8ad852f169242736fb19) Thanks [@riqwan](https://github.com/riqwan)! - fix(promotion): check currency when computing actions for promotions
+
+- [#13106](https://github.com/medusajs/medusa/pull/13106) [`9766570827ebf50d49d8daf956deecce6666a8cc`](https://github.com/medusajs/medusa/commit/9766570827ebf50d49d8daf956deecce6666a8cc) Thanks [@scherddel](https://github.com/scherddel)! - Moved calculation logic from total to original_total to ensure consistent base values
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12889](https://github.com/medusajs/medusa/pull/12889) [`2f70f133511857b499a992b65a0a4d6170e03ab9`](https://github.com/medusajs/medusa/commit/2f70f133511857b499a992b65a0a4d6170e03ab9) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Order constraint and receive return
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12412](https://github.com/medusajs/medusa/pull/12412) [`2621f00bb035a6b909f9498a2bc98fdba8570ba9`](https://github.com/medusajs/medusa/commit/2621f00bb035a6b909f9498a2bc98fdba8570ba9) Thanks [@fPolic](https://github.com/fPolic)! - feat(promotion, dashboard, core-flows, cart, types, utils, medusa): tax inclusive promotions
+
+- [#12644](https://github.com/medusajs/medusa/pull/12644) [`bd6d9777c50d69115a20334a103a8ab9997b259d`](https://github.com/medusajs/medusa/commit/bd6d9777c50d69115a20334a103a8ab9997b259d) Thanks [@fPolic](https://github.com/fPolic)! - fix(promotion, types): non discountable items check
+
+- Updated dependencies [[`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`00505b4f8e49873123111752adfda47ccb35ab46`](https://github.com/medusajs/medusa/commit/00505b4f8e49873123111752adfda47ccb35ab46), [`94b62c67249d13ec6342411cf7efdedfd0ac47e1`](https://github.com/medusajs/medusa/commit/94b62c67249d13ec6342411cf7efdedfd0ac47e1)]:
+  - @medusajs/framework@2.8.5
+
+## 2.8.4
+
+### Patch Changes
+
+- Updated dependencies [[`7685d66c0775167994150e61a8b628ad6289ce23`](https://github.com/medusajs/medusa/commit/7685d66c0775167994150e61a8b628ad6289ce23), [`cf0297f74af1b043363ffbd5a23ca0933097a69d`](https://github.com/medusajs/medusa/commit/cf0297f74af1b043363ffbd5a23ca0933097a69d), [`1f5f50010ae42f8d5b9924edcd75612b1f336463`](https://github.com/medusajs/medusa/commit/1f5f50010ae42f8d5b9924edcd75612b1f336463)]:
+  - @medusajs/framework@2.8.4
+
+## 2.8.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.3
+
+## 2.8.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.2
+
+## 2.8.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.1
+
+## 2.8.0
+
+### Patch Changes
+
+- Updated dependencies [[`b868a4ef4deb7df09d6156a907f4c883cd55a3fd`](https://github.com/medusajs/medusa/commit/b868a4ef4deb7df09d6156a907f4c883cd55a3fd)]:
+  - @medusajs/framework@2.8.0
+
+## 2.7.1
+
+### Patch Changes
+
+- Updated dependencies [[`ee35f3ce9097832c10cdf2fd168763088e6c3fcb`](https://github.com/medusajs/medusa/commit/ee35f3ce9097832c10cdf2fd168763088e6c3fcb), [`2f6963a5fbea05537680cb1b1f6a2b9822c36325`](https://github.com/medusajs/medusa/commit/2f6963a5fbea05537680cb1b1f6a2b9822c36325), [`b8902637251e9ed4f8762ef280659bbab6d967de`](https://github.com/medusajs/medusa/commit/b8902637251e9ed4f8762ef280659bbab6d967de)]:
+  - @medusajs/framework@2.7.1
+
+## 2.7.0
+
+### Patch Changes
+
+- [#11799](https://github.com/medusajs/medusa/pull/11799) [`67b308c8eb52950991df34ac1c8d007a14cfaa1e`](https://github.com/medusajs/medusa/commit/67b308c8eb52950991df34ac1c8d007a14cfaa1e) Thanks [@riqwan](https://github.com/riqwan)! - fix(promotion): percentage value is accounted for in buyget promotions
+
+- [#12129](https://github.com/medusajs/medusa/pull/12129) [`d87b25203c3e1aa9b975dc68818d66fe877657a6`](https://github.com/medusajs/medusa/commit/d87b25203c3e1aa9b975dc68818d66fe877657a6) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(promotion): Improve performances [1]
+
+- [#11992](https://github.com/medusajs/medusa/pull/11992) [`c870a7a1baf7db748a831265f06dd4b7378b262e`](https://github.com/medusajs/medusa/commit/c870a7a1baf7db748a831265f06dd4b7378b262e) Thanks [@riqwan](https://github.com/riqwan)! - fix(promotion,utils): fix case where multiple percentage promotions werent applied
+
+- Updated dependencies [[`ec56a8bc857a74788df6523af25914da95c4c1d8`](https://github.com/medusajs/medusa/commit/ec56a8bc857a74788df6523af25914da95c4c1d8), [`2a18a75353f872b0cb4c203afc08cfd82f778428`](https://github.com/medusajs/medusa/commit/2a18a75353f872b0cb4c203afc08cfd82f778428)]:
+  - @medusajs/framework@2.7.0
+
 ## 2.6.1
 
 ### Patch Changes

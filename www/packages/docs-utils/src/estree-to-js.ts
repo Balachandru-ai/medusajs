@@ -5,6 +5,8 @@ import {
   Expression,
   ExpressionJsVar,
   ExpressionJsVarLiteral,
+  JSXElementExpression,
+  JSXTextExpression,
   LiteralExpression,
   ObjectExpression,
 } from "types"
@@ -64,7 +66,23 @@ function expressionToJs(
         data: (expression as LiteralExpression).value,
       } as ExpressionJsVarLiteral
     case "JSXElement":
-      // ignore JSXElements
-      return
+    case "JSXFragment":
+      // Only take text children
+      let text = ""
+      ;(expression as JSXElementExpression).children.forEach((child) => {
+        if (child.type !== "JSXText") {
+          return
+        }
+
+        text += (child as JSXTextExpression).value
+      })
+      return {
+        original: {
+          type: "Literal",
+          value: text,
+          raw: `"${text}"`,
+        },
+        data: text,
+      }
   }
 }

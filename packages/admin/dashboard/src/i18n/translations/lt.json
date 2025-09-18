@@ -539,18 +539,22 @@
     "fields": {
       "title": {
         "label": "Pavadinimas",
-        "hint": "Pavadinkite prekę trumpai ir aiškiai.<0/>50-60 simbolių yra rekomenduojamas ilgis paieškos sistemoms."
+        "hint": "Pavadinkite prekę trumpai ir aiškiai.<0/>50-60 simbolių yra rekomenduojamas ilgis paieškos sistemoms.",
+        "placeholder": "Žieminė striukė"
       },
       "subtitle": {
-        "label": "Paantraštė"
+        "label": "Paantraštė",
+        "placeholder": "Šilta ir jauku"
       },
       "handle": {
         "label": "Nuoroda",
-        "tooltip": "Nuoroda naudojama norint nurodyti prekės adresą jūsų parduotuvėje. Jei nenurodyta, nuoroda bus sugeneruota iš prekės pavadinimo."
+        "tooltip": "Nuoroda naudojama norint nurodyti prekės adresą jūsų parduotuvėje. Jei nenurodyta, nuoroda bus sugeneruota iš prekės pavadinimo.",
+        "placeholder": "žieminė-striukė"
       },
       "description": {
         "label": "Aprašymas",
-        "hint": "Aprašykite prekę trumpai ir aiškiai.<0/>120-160 simbolių yra rekomenduojamas ilgis paieškos sistemoms."
+        "hint": "Aprašykite prekę trumpai ir aiškiai.<0/>120-160 simbolių yra rekomenduojamas ilgis paieškos sistemoms.",
+        "placeholder": "Šilta ir jauki striukė"
       },
       "discountable": {
         "label": "Nukainuojama",

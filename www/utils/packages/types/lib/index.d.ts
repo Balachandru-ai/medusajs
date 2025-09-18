@@ -62,6 +62,7 @@ export type FrontmatterData = {
   sidebar_label?: string
   displayed_sidebar?: string
   tags?: Tag[]
+  keywords?: string[]
   [k: string]: unknown
 }
 
@@ -100,6 +101,9 @@ export type FormattingOptionType = {
   shouldIncrementAfterStartSections?: boolean
   hideTocHeaders?: boolean
   workflowDiagramComponent?: string
+  isEventsReference?: boolean
+  sortMembers?: boolean
+  internalType?: string
 }
 
 export type AllowedProjectDocumentsOption = {
@@ -289,6 +293,11 @@ export declare module "typedoc" {
      * Optionally specify a name prefix for all custom namespaces.
      */
     customNamespaceNamePrefix: string
+    /**
+     * Whether to resolve events.
+     * @defaultValue false
+     */
+    enableEventsResolver: boolean
   }
 }
 
@@ -327,4 +336,16 @@ export declare type NamespaceGenerateDetails = {
    * The namespace's children
    */
   children?: NamespaceGenerateDetails[]
+}
+
+export declare type MedusaEvent = {
+  name: string
+  parentName: string
+  propertyName: string
+  payload: string
+  description?: string
+  workflows: string[]
+  since?: string
+  deprecated?: boolean
+  deprecated_message?: string
 }

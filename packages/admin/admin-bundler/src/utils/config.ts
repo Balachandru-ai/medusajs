@@ -1,6 +1,6 @@
 import { VIRTUAL_MODULES } from "@medusajs/admin-shared"
 import path from "path"
-import type { InlineConfig } from "vite"
+import type { HmrOptions, InlineConfig } from "vite"
 import { injectTailwindCSS } from "../plugins/inject-tailwindcss"
 import { writeStaticFiles } from "../plugins/write-static-files"
 import { BundlerOptions } from "../types"
@@ -13,7 +13,10 @@ export async function getViteConfig(
   const { default: medusa } = await import("@medusajs/admin-vite-plugin")
 
   const getPort = await import("get-port")
-  const hmrPort = await getPort.default()
+  const hmrPort = process.env.HMR_PORT
+    ? parseInt(process.env.HMR_PORT)
+    : await getPort.default()
+  const hmrOptions = getHmrConfig(hmrPort)
 
   const root = path.resolve(process.cwd(), ".medusa/client")
 
@@ -49,9 +52,7 @@ export async function getViteConfig(
       fs: {
         allow: [searchForWorkspaceRoot(process.cwd())],
       },
-      hmr: {
-        port: hmrPort,
-      },
+      hmr: hmrOptions,
     },
     plugins: [
       writeStaticFiles({
@@ -75,4 +76,22 @@ export async function getViteConfig(
   }
 
   return baseConfig
+}
+
+function getHmrConfig(hmrPort: number): HmrOptions | boolean {
+  const options: HmrOptions = {
+    port: hmrPort,
+  }
+
+  if (process.env.HMR_PROTOCOL) {
+    options.protocol = process.env.HMR_PROTOCOL
+  }
+  if (process.env.HMR_HOST) {
+    options.host = process.env.HMR_HOST
+  }
+  if (process.env.HMR_CLIENT_PORT) {
+    options.clientPort = parseInt(process.env.HMR_CLIENT_PORT)
+  }
+
+  return options
 }

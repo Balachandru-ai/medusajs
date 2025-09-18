@@ -97,7 +97,7 @@ async function resolvePlugin(
   const adminConfig = hasAdmin
     ? {
         type: isAdminLocal ? ("local" as const) : ("package" as const),
-        resolve: path.join(
+        resolve: path.posix.join(
           isAdminLocal ? pluginStaticOptions.srcDir : name,
           "admin"
         ),

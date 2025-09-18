@@ -1,3 +1,7 @@
+---
+generate_toc: true
+---
+
 import { CodeTabs, CodeTab } from "docs-ui"
 
 export const metadata = {
@@ -14,7 +18,7 @@ Refer to the [Medusa Admin User Guide](!user-guide!/settings/tax-regions) to lea
 
 </Note>
 
-Medusa has tax related features available out-of-the-box through the Tax Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in commerce modules, such as this Tax Module.
+Medusa has tax related features available out-of-the-box through the Tax Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Tax Module.
 
 <Note>
 
@@ -27,12 +31,13 @@ Learn more about why modules are isolated in [this documentation](!docs!/learn/f
 - [Tax Settings Per Region](./tax-region/page.mdx): Set different tax settings for each tax region.
 - [Tax Rates and Rules](./tax-rates-and-rules/page.mdx): Manage each region's default tax rates and override them with conditioned tax rates.
 - [Retrieve Tax Lines for carts and orders](./tax-calculation-with-provider/page.mdx): Calculate and retrieve the tax lines of a cart or order's line items and shipping methods with tax providers.
+- [Custom Tax Providers](./tax-provider/page.mdx): Create custom tax providers to calculate tax lines differently for each tax region.
 
 ---
 
 ## How to Use Tax Module's Service
 
-In your Medusa application, you build flows around commerce modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
+In your Medusa application, you build flows around Commerce Modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
 
 You can build custom workflows and steps. You can also re-use Medusa's workflows and steps, which are provided by the `@medusajs/medusa/core-flows` package.
 

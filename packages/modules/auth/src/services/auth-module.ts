@@ -129,7 +129,7 @@ export default class AuthModuleService
       populate: true,
     })
 
-    return Array.isArray(data) ? serializedUsers : serializedUsers[0]
+    return serializedUsers
   }
 
   async register(
@@ -206,7 +206,7 @@ export default class AuthModuleService
       AuthTypes.ProviderIdentityDTO[]
     >(updatedProviders)
 
-    return Array.isArray(data) ? serializedProviders : serializedProviders[0]
+    return serializedProviders
   }
 
   async updateProvider(

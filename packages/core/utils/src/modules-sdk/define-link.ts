@@ -18,6 +18,7 @@ type InputSource = {
   alias?: string
   linkable: string
   primaryKey: string
+  filterable?: string[]
 }
 
 type ReadOnlyInputSource = {
@@ -42,6 +43,7 @@ type InputOptions = {
   field?: string
   isList?: boolean
   deleteCascade?: boolean
+  filterable?: string[]
 }
 
 type Shortcut = {
@@ -87,6 +89,7 @@ type ModuleLinkableKeyConfig = {
   alias: string
   hasMany?: boolean
   shortcut?: Shortcut | Shortcut[]
+  filterable?: string[]
 }
 
 function isInputOptions(input: any): input is InputOptions {
@@ -141,6 +144,7 @@ function prepareServiceConfig(
       isList: false,
       hasMany: false,
       deleteCascade: false,
+      filterable: source.filterable,
       module: source.serviceName,
       entity: source.entity,
     }
@@ -159,6 +163,7 @@ function prepareServiceConfig(
       isList: input.isList ?? false,
       hasMany,
       deleteCascade: input.deleteCascade ?? false,
+      filterable: input.filterable,
       module: source.serviceName,
       entity: source.entity,
     }
@@ -192,6 +197,17 @@ export function defineLink(
   const serviceBObj = prepareServiceConfig(rightService)
 
   if (linkServiceOptions?.readOnly) {
+    if (!leftService.linkable || !leftService.field) {
+      throw new Error(
+        `ReadOnly link requires "linkable" and "field" to be defined for the left service.`
+      )
+    } else if (
+      (leftService as DefineLinkInputSource).filterable ||
+      (rightService as DefineLinkInputSource).filterable
+    ) {
+      throw new Error(`ReadOnly link does not support filterable fields.`)
+    }
+
     return defineReadOnlyLink(
       serviceAObj,
       serviceBObj,
@@ -378,6 +394,7 @@ ${serviceBObj.module}: {
             methodSuffix: serviceAMethodSuffix,
           },
           deleteCascade: serviceAObj.deleteCascade,
+          filterable: serviceAObj.filterable,
           hasMany: serviceAObj.hasMany,
         },
         {
@@ -390,6 +407,7 @@ ${serviceBObj.module}: {
             methodSuffix: serviceBMethodSuffix,
           },
           deleteCascade: serviceBObj.deleteCascade,
+          filterable: serviceBObj.filterable,
           hasMany: serviceBObj.hasMany,
         },
       ],

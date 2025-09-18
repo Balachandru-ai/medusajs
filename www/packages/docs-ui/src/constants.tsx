@@ -1,5 +1,4 @@
-import { OptionType } from "@/hooks"
-import { NavigationItem } from "types"
+import { NavigationItem, Product } from "types"
 
 export const GITHUB_ISSUES_LINK =
   "https://github.com/medusajs/medusa/issues/new/choose"
@@ -16,14 +15,205 @@ export const navDropdownItems: NavigationItem[] = [
     title: "Product",
     children: [
       {
-        type: "link",
-        title: "Commerce Modules",
-        link: "/resources/commerce-modules",
+        type: "sub-menu",
+        title: "Framework",
+        link: "/learn/fundamentals/framework",
+        items: [
+          {
+            type: "link",
+            title: "API Routes",
+            link: "/learn/fundamentals/api-routes",
+          },
+          {
+            type: "link",
+            title: "Data Models",
+            link: "/learn/fundamentals/data-models",
+          },
+          {
+            type: "link",
+            title: "Events and Subscribers",
+            link: "/learn/fundamentals/events-and-subscribers",
+          },
+          {
+            type: "link",
+            title: "Index Module",
+            link: "/learn/fundamentals/module-links/index-module",
+          },
+          {
+            type: "link",
+            title: "Medusa Container",
+            link: "/learn/fundamentals/medusa-container",
+          },
+          {
+            type: "link",
+            title: "Modules",
+            link: "/learn/fundamentals/modules",
+          },
+          {
+            type: "link",
+            title: "Module Links",
+            link: "/learn/fundamentals/module-links",
+          },
+          {
+            type: "link",
+            title: "Plugins",
+            link: "/learn/fundamentals/plugins",
+          },
+          {
+            type: "link",
+            title: "Query",
+            link: "/learn/fundamentals/module-links/query",
+          },
+          {
+            type: "link",
+            title: "Scheduled Jobs",
+            link: "/learn/fundamentals/scheduled-jobs",
+          },
+          {
+            type: "link",
+            title: "Workflows",
+            link: "/learn/fundamentals/workflows",
+          },
+        ],
       },
       {
-        type: "link",
-        title: "Architectural Modules",
-        link: "/resources/architectural-modules",
+        type: "sub-menu",
+        title: "Commerce Modules",
+        link: "/resources/commerce-modules",
+        items: [
+          {
+            type: "link",
+            title: "API Key",
+            link: "/resources/commerce-modules/api-key",
+          },
+          {
+            type: "link",
+            title: "Auth",
+            link: "/resources/commerce-modules/auth",
+          },
+          {
+            type: "link",
+            title: "Cart",
+            link: "/resources/commerce-modules/cart",
+          },
+          {
+            type: "link",
+            title: "Currency",
+            link: "/resources/commerce-modules/currency",
+          },
+          {
+            type: "link",
+            title: "Customer",
+            link: "/resources/commerce-modules/customer",
+          },
+          {
+            type: "link",
+            title: "Fulfillment",
+            link: "/resources/commerce-modules/fulfillment",
+          },
+          {
+            type: "link",
+            title: "Inventory",
+            link: "/resources/commerce-modules/inventory",
+          },
+          {
+            type: "link",
+            title: "Order",
+            link: "/resources/commerce-modules/order",
+          },
+          {
+            type: "link",
+            title: "Payment",
+            link: "/resources/commerce-modules/payment",
+          },
+          {
+            type: "link",
+            title: "Pricing",
+            link: "/resources/commerce-modules/pricing",
+          },
+          {
+            type: "link",
+            title: "Product",
+            link: "/resources/commerce-modules/product",
+          },
+          {
+            type: "link",
+            title: "Promotion",
+            link: "/resources/commerce-modules/promotion",
+          },
+          {
+            type: "link",
+            title: "Region",
+            link: "/resources/commerce-modules/region",
+          },
+          {
+            type: "link",
+            title: "Sales Channel",
+            link: "/resources/commerce-modules/sales-channel",
+          },
+          {
+            type: "link",
+            title: "Stock Location",
+            link: "/resources/commerce-modules/stock-location",
+          },
+          {
+            type: "link",
+            title: "Store",
+            link: "/resources/commerce-modules/store",
+          },
+          {
+            type: "link",
+            title: "Tax",
+            link: "/resources/commerce-modules/tax",
+          },
+          {
+            type: "link",
+            title: "User",
+            link: "/resources/commerce-modules/user",
+          },
+        ],
+      },
+      {
+        type: "sub-menu",
+        title: "Infrastructure Modules",
+        link: "/resources/infrastructure-modules",
+        items: [
+          {
+            type: "link",
+            title: "Analytics",
+            link: "/resources/infrastructure-modules/analytics",
+          },
+          {
+            type: "link",
+            title: "Cache",
+            link: "/resources/infrastructure-modules/cache",
+          },
+          {
+            type: "link",
+            title: "Event",
+            link: "/resources/infrastructure-modules/event",
+          },
+          {
+            type: "link",
+            title: "File",
+            link: "/resources/infrastructure-modules/file",
+          },
+          {
+            type: "link",
+            title: "Locking",
+            link: "/resources/infrastructure-modules/locking",
+          },
+          {
+            type: "link",
+            title: "Notification",
+            link: "/resources/infrastructure-modules/notification",
+          },
+          {
+            type: "link",
+            title: "Workflow Engine",
+            link: "/resources/infrastructure-modules/workflow-engine",
+          },
+        ],
       },
     ],
   },
@@ -134,8 +324,13 @@ export const navDropdownItems: NavigationItem[] = [
       },
       {
         type: "link",
+        title: "Data Model Repository",
+        link: "/resources/data-model-repository-reference",
+      },
+      {
+        type: "link",
         title: "Events Reference",
-        link: "/resources/events-reference",
+        link: "/resources/references/events",
       },
       {
         type: "link",
@@ -164,32 +359,138 @@ export const navDropdownItems: NavigationItem[] = [
     title: "User Guide",
     link: "/user-guide",
   },
+  {
+    type: "link",
+    title: "Cloud",
+    link: "/cloud",
+  },
 ]
 
-export const searchFilters: OptionType[] = [
+export const products: Product[] = [
   {
-    value: "concepts-guides",
-    label: "Concepts & Guides",
-    hitsPerPage: 8,
+    type: "commerce",
+    name: "api key",
+    path: "/resources/commerce-modules/api-key",
+    title: "API Key",
+    image: "/images/api-key-icon.png",
   },
   {
-    value: "references",
-    label: "References",
+    type: "commerce",
+    name: "auth",
+    path: "/resources/commerce-modules/auth",
+    title: "Auth",
+    image: "/images/auth-icon.png",
   },
   {
-    value: "admin-v2",
-    label: "Admin API",
+    type: "commerce",
+    name: "cart",
+    path: "/resources/commerce-modules/cart",
+    title: "Cart",
+    image: "/images/cart-icon.png",
   },
   {
-    value: "store-v2",
-    label: "Store API",
+    type: "commerce",
+    name: "currency",
+    path: "/resources/commerce-modules/currency",
+    title: "Currency",
+    image: "/images/currency-icon.png",
   },
   {
-    value: "user-guide",
-    label: "User Guide",
+    type: "commerce",
+    name: "customer",
+    path: "/resources/commerce-modules/customer",
+    title: "Customer",
+    image: "/images/customer-icon.png",
   },
   {
-    value: "troubleshooting",
-    label: "Troubleshooting",
+    type: "commerce",
+    name: "fulfillment",
+    path: "/resources/commerce-modules/fulfillment",
+    title: "Fulfillment",
+    image: "/images/fulfillment-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "inventory",
+    path: "/resources/commerce-modules/inventory",
+    title: "Inventory",
+    image: "/images/inventory-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "order",
+    path: "/resources/commerce-modules/order",
+    title: "Order",
+    image: "/images/order-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "payment",
+    path: "/resources/commerce-modules/payment",
+    title: "Payment",
+    image: "/images/payment-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "pricing",
+    path: "/resources/commerce-modules/pricing",
+    title: "Pricing",
+    image: "/images/pricing-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "product",
+    path: "/resources/commerce-modules/product",
+    title: "Product",
+    image: "/images/product-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "promotion",
+    path: "/resources/commerce-modules/promotion",
+    title: "Promotion",
+    image: "/images/promotion-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "region",
+    path: "/resources/commerce-modules/region",
+    title: "Region",
+    image: "/images/region-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "sales channel",
+    path: "/resources/commerce-modules/sales-channel",
+    title: "Sales Channel",
+    image: "/images/sales-channel-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "stock location",
+    path: "/resources/commerce-modules/stock-location",
+    title: "Stock Location",
+    image: "/images/stock-location-icon.png",
+  },
+  // TODO need an image for this one
+  // {
+  //   type: "commerce",
+  //   name: "store",
+  //   title: "Store",
+  //   image: "/images/store-icon.png",
+  // },
+  {
+    type: "commerce",
+    name: "tax",
+    path: "/resources/commerce-modules/tax",
+    title: "Tax",
+    image: "/images/tax-icon.png",
+  },
+  {
+    type: "commerce",
+    name: "user",
+    path: "/resources/commerce-modules/user",
+    title: "User",
+    image: "/images/user-icon.png",
   },
 ]

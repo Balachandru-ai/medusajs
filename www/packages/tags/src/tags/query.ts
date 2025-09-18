@@ -8,6 +8,10 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price-with-taxes"
   },
   {
+    "title": "getVariantPriceSetsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getVariantPriceSetsStep"
+  },
+  {
     "title": "addShippingMethodToCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addShippingMethodToCartWorkflow"
   },
@@ -20,20 +24,12 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow"
   },
   {
-    "title": "listShippingOptionsForCartWithPricingWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/listShippingOptionsForCartWithPricingWorkflow"
-  },
-  {
-    "title": "listShippingOptionsForCartWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/listShippingOptionsForCartWorkflow"
+    "title": "createCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createCartWorkflow"
   },
   {
     "title": "refreshCartItemsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refreshCartItemsWorkflow"
-  },
-  {
-    "title": "refreshCartShippingMethodsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refreshCartShippingMethodsWorkflow"
   },
   {
     "title": "transferCartCustomerWorkflow",
@@ -52,8 +48,8 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep"
   },
   {
-    "title": "calculateShippingOptionsPricesWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/calculateShippingOptionsPricesWorkflow"
+    "title": "addDraftOrderItemsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
   },
   {
     "title": "deleteInventoryItemWorkflow",
@@ -64,32 +60,28 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteLineItemsWorkflow"
   },
   {
-    "title": "acceptOrderTransferWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/acceptOrderTransferWorkflow"
+    "title": "addOrderLineItemsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addOrderLineItemsWorkflow"
   },
   {
-    "title": "cancelOrderTransferRequestWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/cancelOrderTransferRequestWorkflow"
+    "title": "beginOrderEditOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/beginOrderEditOrderWorkflow"
   },
   {
-    "title": "cancelOrderWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/cancelOrderWorkflow"
+    "title": "createOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderWorkflow"
   },
   {
-    "title": "declineOrderTransferRequestWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/declineOrderTransferRequestWorkflow"
+    "title": "orderClaimAddNewItemWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderClaimAddNewItemWorkflow"
   },
   {
-    "title": "updateOrderWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderWorkflow"
+    "title": "orderEditAddNewItemWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderEditAddNewItemWorkflow"
   },
   {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
-  },
-  {
-    "title": "refundPaymentsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refundPaymentsWorkflow"
+    "title": "orderExchangeAddNewItemWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderExchangeAddNewItemWorkflow"
   },
   {
     "title": "batchProductVariantsWorkflow",
@@ -106,9 +98,5 @@ export const query = [
   {
     "title": "deleteShippingProfileWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteShippingProfileWorkflow"
-  },
-  {
-    "title": "updateStockLocationsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateStockLocationsWorkflow"
   }
 ]

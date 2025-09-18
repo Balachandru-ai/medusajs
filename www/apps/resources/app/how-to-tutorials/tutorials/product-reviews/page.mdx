@@ -5,6 +5,9 @@ tags:
       label: "Implement Product Reviews"
     - server
     - tutorial
+products:
+  - product
+  - customer
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -40,20 +43,20 @@ export const metadata = {
 
 In this tutorial, you'll learn how to implement product reviews in Medusa.
 
-When you install a Medusa application, you get a fully-fledged commerce platform with a framework for customization. The Medusa application's commerce features are built around [commerce modules](../../../commerce-modules/page.mdx) which are available out-of-the-box. The features include product-management features.
+When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. The Medusa application's commerce features are built around [Commerce Modules](../../../commerce-modules/page.mdx) which are available out-of-the-box. The features include product-management features.
 
-Medusa doesn't provide product reviews out-of-the-box, but Medusa's framework facilitate implementing customizations like product reviews. In this tutorial, you'll learn how to customize the Medusa server, admin dashboard, and Next.js Starter Storefront to implement product reviews.
+Medusa doesn't provide product reviews out-of-the-box, but the Medusa Framework facilitates implementing customizations like product reviews. In this tutorial, you'll learn how to customize the Medusa server, Admin dashboard, and Next.js Starter Storefront to implement product reviews.
 
 You can follow this guide whether you're new to Medusa or an advanced Medusa developer.
 
-### Summary
+## Summary
 
 By following this tutorial, you'll learn how to:
 
 - Install and set up Medusa.
 - Define product reviews models and implement their management features in the Medusa server.
 - Customize the Medusa Admin to allow merchants to view and manage product reviews.
-- Customize the Next.js storefront to display product reviews and allow customers to submit reviews.
+- Customize the Next.js Starter Storefront to display product reviews and allow customers to submit reviews.
 
 ![Diagram showcasing the product review features in the storefront and admin](https://res.cloudinary.com/dza7lstvk/image/upload/v1741941058/Medusa%20Resources/reviews-overview_nufybf.jpg)
 
@@ -97,7 +100,7 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll first be asked for the project's name. Then, when asked whether you want to install the [Next.js starter storefront](../../../nextjs-starter/page.mdx), choose Yes.
+You'll first be asked for the project's name. Then, when asked whether you want to install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx), choose Yes.
 
 Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name, and the Next.js Starter Storefront in a separate directory with the `{project-name}-storefront` name.
 
@@ -133,7 +136,7 @@ Refer to the [Modules documentation](!docs!/learn/fundamentals/modules) to learn
 
 ### Create Module Directory
 
-A module is created under the `src/modules` directory of your Medusa application. So, create the directory `src/modules/review`.
+A module is created under the `src/modules` directory of your Medusa application. So, create the directory `src/modules/product-review`.
 
 ### Create Data Models 
 
@@ -145,9 +148,9 @@ Refer to the [Data Models documentation](!docs!/learn/fundamentals/modules#1-cre
 
 </Note>
 
-For the Product Review Module, you need to define a `Review` data model that represents a product review. So, create the file `src/modules/review/models/review.ts` with the following content:
+For the Product Review Module, you need to define a `Review` data model that represents a product review. So, create the file `src/modules/product-review/models/review.ts` with the following content:
 
-```ts title="src/modules/review/models/review.ts"
+```ts title="src/modules/product-review/models/review.ts"
 import { model } from "@medusajs/framework/utils"
 
 const Review = model.define("review", {
@@ -187,7 +190,7 @@ The `Review` data model has the following properties:
 
 <Note>
 
-Learn more about defining data model properties in the [Property Types documentation](/learn/fundamentals/data-models/property-types).
+Learn more about defining data model properties in the [Property Types documentation](!docs!/learn/fundamentals/data-models/properties).
 
 </Note>
 
@@ -203,9 +206,9 @@ Refer to the [Module Service documentation](!docs!/learn/fundamentals/modules#2-
 
 </Note>
 
-To create the Review Module's service, create the file `src/modules/review/service.ts` with the following content:
+To create the Review Module's service, create the file `src/modules/product-review/service.ts` with the following content:
 
-```ts title="src/modules/review/service.ts"
+```ts title="src/modules/product-review/service.ts"
 import { MedusaService } from "@medusajs/framework/utils"
 import Review from "./models/review"
 
@@ -233,9 +236,9 @@ You'll use this service later when you implement custom flows for product review
 
 The final piece to a module is its definition, which you export in an `index.ts` file at its root directory. This definition tells Medusa the name of the module and its service.
 
-So, create the file `src/modules/review/index.ts` with the following content:
+So, create the file `src/modules/product-review/index.ts` with the following content:
 
-```ts title="src/modules/review/index.ts"
+```ts title="src/modules/product-review/index.ts"
 import { Module } from "@medusajs/framework/utils"
 import ProductReviewModuleService from "./service"
 
@@ -285,10 +288,10 @@ Refer to the [Migrations documentation](!docs!/learn/fundamentals/modules#5-gene
 Medusa's CLI tool can generate the migrations for you. To generate a migration for the Review Module, run the following command in your Medusa application's directory:
 
 ```bash
-npx medusa db:generate review
+npx medusa db:generate productReview
 ```
 
-The `db:generate` command of the Medusa CLI accepts the name of the module to generate the migration for. You'll now have a `migrations` directory under `src/modules/review` that holds the generated migration.
+The `db:generate` command of the Medusa CLI accepts the name of the module to generate the migration for. You'll now have a `migrations` directory under `src/modules/product-review` that holds the generated migration.
 
 Then, to reflect these migrations on the database, run the following command:
 
@@ -451,11 +454,11 @@ You create a step with `createStep` from the Workflows SDK. It accepts two param
 1. The step's unique name, which is `create-review`.
 2. An async function that receives two parameters:
     - The step's input, which is in this case an object with the review's properties.
-    - An object that has properties including the [Medusa container](!docs!/learn/fundamentals/medusa-container), which is a registry of framework and commerce tools that you can access in the step.
+    - An object that has properties including the [Medusa container](!docs!/learn/fundamentals/medusa-container), which is a registry of Framework and commerce tools that you can access in the step.
 
 In the step function, you resolve the Review Module's service from the Medusa container using its `resolve` method, passing it the module's name as a parameter.
 
-Then, you create the review using the `createReview` method. As you remember, the Review Module's service extends the `MedusaService` which generates data-management methods for you.
+Then, you create the review using the `createReviews` method. As you remember, the Review Module's service extends the `MedusaService` which generates data-management methods for you.
 
 A step function must return a `StepResponse` instance. The `StepResponse` constructor accepts two parameters:
 
@@ -502,7 +505,6 @@ export const createReviewWorkflow = createWorkflow(
   "create-review",
   (input: CreateReviewInput) => {
     // Check product exists
-    // @ts-ignore
     useQueryGraphStep({
       entity: "product",
       fields: ["id"],
@@ -517,7 +519,6 @@ export const createReviewWorkflow = createWorkflow(
     // Create the review
     const review = createReviewStep(input)
 
-    // @ts-ignore
     return new WorkflowResponse({
       review,
     })
@@ -536,7 +537,7 @@ In the workflow's constructor function, you:
 
 <Note title="Tip">
 
-`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), which allows you to retrieve data across modules. For example, in the above snippet you're retrieving the cart's promotions, which are managed in the [Promotion Module](../../../commerce-modules/promotion/page.mdx), by passing `promotions.code` to the `fields` array.
+`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), which allows you to retrieve data across modules. For example, in the above snippet you're retrieving the product, which is managed in the [Product Module](../../../commerce-modules/product/page.mdx), by passing `id` to the `fields` array.
 
 </Note>
 
@@ -1471,9 +1472,9 @@ Before doing that, you need to add an API route that retrieves the list of appro
 
 On the product's page, you want to display the average rating of a product. To do this, you'll add a method that retrieves the average rating of a product's reviews in the Review Module's service.
 
-In `src/modules/review/service.ts`, add the following methods to the `ProductReviewModuleService` class:
+In `src/modules/product-review/service.ts`, add the following methods to the `ProductReviewModuleService` class:
 
-```ts title="src/modules/review/service.ts"
+```ts title="src/modules/product-review/service.ts"
 import { InjectManager, MedusaService, MedusaContext } from "@medusajs/framework/utils"
 import Review from "./models/review"
 import { Context } from "@medusajs/framework/types"
@@ -1519,8 +1520,8 @@ export const GetStoreReviewsHighlights = [
   ["10", "GetStoreReviewsSchema", "Define the query parameters schema."],
   ["12", "GET", "Expose a GET API route."],
   ["26", "query.graph", "Retrieve reviews with pagination."],
-  ["31", "status", "Only retrieve approved reviews."],
-  ["41", "average_rating", "Retrieve the average rating of the product."],
+  ["30", "status", "Only retrieve approved reviews."],
+  ["40", "average_rating", "Retrieve the average rating of the product."],
 ]
 
 ```ts title="src/api/store/products/[id]/reviews/route.ts" highlights={GetStoreReviewsHighlights} collapsibleLines="1-9" expandButtonLabel="Show Imports"
@@ -1553,7 +1554,6 @@ export const GET = async (
     entity: "review",
     filters: {
       product_id: id,
-      // @ts-ignore
       status: "approved",
     },
     ...req.queryConfig,

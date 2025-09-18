@@ -1,14 +1,17 @@
 import {
-  DistributedTransaction,
   DistributedTransactionType,
   IDistributedSchedulerStorage,
   IDistributedTransactionStorage,
   SchedulerOptions,
+  SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
+  TransactionContext,
   TransactionFlow,
   TransactionOptions,
   TransactionStep,
+  TransactionStepError,
 } from "@medusajs/framework/orchestration"
 import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
@@ -18,6 +21,7 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
+import { raw } from "@mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
@@ -27,6 +31,27 @@ enum JobType {
   RETRY = "retry",
   STEP_TIMEOUT = "step_timeout",
   TRANSACTION_TIMEOUT = "transaction_timeout",
+}
+
+const ONE_HOUR_IN_MS = 1000 * 60 * 60
+const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
+
+const invokingStatesSet = new Set([
+  TransactionStepState.INVOKING,
+  TransactionStepState.NOT_STARTED,
+])
+
+const compensatingStatesSet = new Set([
+  TransactionStepState.COMPENSATING,
+  TransactionStepState.NOT_STARTED,
+])
+
+function isInvokingState(step: TransactionStep) {
+  return invokingStatesSet.has(step.invoke?.state)
+}
+
+function isCompensatingState(step: TransactionStep) {
+  return compensatingStatesSet.has(step.compensate?.state)
 }
 
 export class RedisDistributedTransactionStorage
@@ -44,6 +69,9 @@ export class RedisDistributedTransactionStorage
   private jobQueue?: Queue
   private worker: Worker
   private jobWorker?: Worker
+  private cleanerQueueName: string
+  private cleanerWorker_: Worker
+  private cleanerQueue_?: Queue
 
   #isWorkerMode: boolean = false
 
@@ -68,11 +96,17 @@ export class RedisDistributedTransactionStorage
     this.logger_ = logger
     this.redisClient = redisConnection
     this.redisWorkerConnection = redisWorkerConnection
+    this.cleanerQueueName = "workflows-cleaner"
     this.queueName = redisQueueName
     this.jobQueueName = redisJobQueueName
     this.queue = new Queue(redisQueueName, { connection: this.redisClient })
     this.jobQueue = isWorkerMode
       ? new Queue(redisJobQueueName, {
+          connection: this.redisClient,
+        })
+      : undefined
+    this.cleanerQueue_ = isWorkerMode
+      ? new Queue(this.cleanerQueueName, {
           connection: this.redisClient,
         })
       : undefined
@@ -83,11 +117,22 @@ export class RedisDistributedTransactionStorage
     // Close worker gracefully, i.e. wait for the current jobs to finish
     await this.worker?.close()
     await this.jobWorker?.close()
+
+    // Clean up repeatable jobs
+    const repeatableJobs = (await this.cleanerQueue_?.getRepeatableJobs()) ?? []
+    for (const job of repeatableJobs) {
+      if (job.id === REPEATABLE_CLEARER_JOB_ID) {
+        await this.cleanerQueue_?.removeRepeatableByKey(job.key)
+      }
+    }
+
+    await this.cleanerWorker_?.close()
   }
 
   async onApplicationShutdown() {
     await this.queue?.close()
     await this.jobQueue?.close()
+    await this.cleanerQueue_?.close()
   }
 
   async onApplicationStart() {
@@ -98,8 +143,7 @@ export class RedisDistributedTransactionStorage
     ]
 
     const workerOptions = {
-      connection:
-        this.redisWorkerConnection /*, runRetryDelay: 100000 for tests */,
+      connection: this.redisWorkerConnection,
     }
 
     // TODO: Remove this once we have released to all clients (Added: v2.6+)
@@ -117,7 +161,8 @@ export class RedisDistributedTransactionStorage
         if (allowedJobs.includes(job.name as JobType)) {
           await this.executeTransaction(
             job.data.workflowId,
-            job.data.transactionId
+            job.data.transactionId,
+            job.data.transactionMetadata
           )
         }
 
@@ -147,6 +192,27 @@ export class RedisDistributedTransactionStorage
         },
         workerOptions
       )
+
+      this.cleanerWorker_ = new Worker(
+        this.cleanerQueueName,
+        async () => {
+          await this.clearExpiredExecutions()
+        },
+        { connection: this.redisClient }
+      )
+
+      await this.cleanerQueue_?.add(
+        "cleaner",
+        {},
+        {
+          repeat: {
+            every: ONE_HOUR_IN_MS,
+          },
+          jobId: REPEATABLE_CLEARER_JOB_ID,
+          removeOnComplete: true,
+          removeOnFail: true,
+        }
+      )
     }
   }
 
@@ -155,10 +221,73 @@ export class RedisDistributedTransactionStorage
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
+    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
+    const isFinished = [
+      TransactionState.DONE,
+      TransactionState.FAILED,
+      TransactionState.REVERTED,
+    ].includes(data.flow.state)
+
+    /**
+     * Bit of explanation:
+     *
+     * When a workflow run, it run all sync step in memory until it reaches a async step.
+     * In that case, it might handover to another process to continue the execution. Thats why
+     * we need to save the current state of the flow. Then from there, it will run again all
+     * sync steps until the next async step. an so on so forth.
+     *
+     * To summarize, we only trully need to save the data when we are reaching any steps that
+     * trigger a handover to a potential other process.
+     *
+     * This allows us to spare some resources and time by not over communicating with the external
+     * database when it is not really needed
+     */
+
+    const isFlowInvoking = data.flow.state === TransactionState.INVOKING
+
+    const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
+    let currentStep!: TransactionStep
+
+    const targetStates = isFlowInvoking
+      ? [
+          TransactionStepState.INVOKING,
+          TransactionStepState.DONE,
+          TransactionStepState.FAILED,
+        ]
+      : [TransactionStepState.COMPENSATING]
+
+    // Find the current step from the end
+    for (let i = stepsArray.length - 1; i >= 0; i--) {
+      const step = stepsArray[i]
+
+      if (step.id === "_root") {
+        break
+      }
+
+      const isTargetState = targetStates.includes(step.invoke?.state)
+
+      if (isTargetState) {
+        currentStep = step
+        break
+      }
+    }
+
+    const currentStepsIsAsync = currentStep
+      ? stepsArray.some(
+          (step) =>
+            step?.definition?.async === true && step.depth === currentStep.depth
+        )
+      : false
+
+    if (!(isNotStarted || isFinished) && !currentStepsIsAsync) {
+      return
+    }
+
     await this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
         transaction_id: data.flow.transactionId,
+        run_id: data.flow.runId,
         execution: data.flow,
         context: {
           data: data.context,
@@ -173,17 +302,25 @@ export class RedisDistributedTransactionStorage
   private async deleteFromDb(data: TransactionCheckpoint) {
     await this.workflowExecutionService_.delete([
       {
-        workflow_id: data.flow.modelId,
-        transaction_id: data.flow.transactionId,
+        run_id: data.flow.runId,
       },
     ])
   }
 
-  private async executeTransaction(workflowId: string, transactionId: string) {
+  private async executeTransaction(
+    workflowId: string,
+    transactionId: string,
+    transactionMetadata: TransactionFlow["metadata"] = {}
+  ) {
     return await this.workflowOrchestratorService_.run(workflowId, {
       transactionId,
       logOnError: true,
       throwOnError: false,
+      context: {
+        eventGroupId: transactionMetadata.eventGroupId,
+        parentStepIdempotencyKey: transactionMetadata.parentStepIdempotencyKey,
+        preventReleaseEvents: transactionMetadata.preventReleaseEvents,
+      },
     })
   }
 
@@ -213,54 +350,69 @@ export class RedisDistributedTransactionStorage
 
   async get(
     key: string,
-    options?: TransactionOptions
+    options?: TransactionOptions & { isCancelling?: boolean }
   ): Promise<TransactionCheckpoint | undefined> {
-    const data = await this.redisClient.get(key)
-
-    if (data) {
-      return JSON.parse(data)
-    }
-
-    const { idempotent } = options ?? {}
-    if (!idempotent) {
-      return
-    }
-
     const [_, workflowId, transactionId] = key.split(":")
     const trx = await this.workflowExecutionService_
-      .retrieve(
+      .list(
         {
           workflow_id: workflowId,
           transaction_id: transactionId,
         },
         {
           select: ["execution", "context"],
+          order: {
+            id: "desc",
+          },
+          take: 1,
         }
       )
+      .then((trx) => trx[0])
       .catch(() => undefined)
 
     if (trx) {
-      return {
-        flow: trx.execution,
-        context: trx.context.data,
-        errors: trx.context.errors,
-      }
-    }
-    return
-  }
+      const rawData = await this.redisClient.get(key)
 
-  async list(): Promise<TransactionCheckpoint[]> {
-    const keys = await this.redisClient.keys(
-      DistributedTransaction.keyPrefix + ":*"
-    )
-    const transactions: any[] = []
-    for (const key of keys) {
-      const data = await this.redisClient.get(key)
-      if (data) {
-        transactions.push(JSON.parse(data))
+      let flow!: TransactionFlow, errors!: TransactionStepError[]
+      if (rawData) {
+        const data = JSON.parse(rawData)
+        flow = data.flow
+        errors = data.errors
+      }
+
+      const { idempotent } = options ?? {}
+      const execution = trx.execution as TransactionFlow
+
+      if (!idempotent) {
+        const isFailedOrReverted = [
+          TransactionState.REVERTED,
+          TransactionState.FAILED,
+        ].includes(execution.state)
+
+        const isDone = execution.state === TransactionState.DONE
+
+        const isCancellingAndFailedOrReverted =
+          options?.isCancelling && isFailedOrReverted
+
+        const isNotCancellingAndDoneOrFailedOrReverted =
+          !options?.isCancelling && (isDone || isFailedOrReverted)
+
+        if (
+          isCancellingAndFailedOrReverted ||
+          isNotCancellingAndDoneOrFailedOrReverted
+        ) {
+          return
+        }
+      }
+
+      return {
+        flow: flow ?? (trx.execution as TransactionFlow),
+        context: trx.context?.data as TransactionContext,
+        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
       }
     }
-    return transactions
+
+    return
   }
 
   async save(
@@ -279,38 +431,82 @@ export class RedisDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
-    const { retentionTime, idempotent } = options ?? {}
+    const { retentionTime } = options ?? {}
 
-    await this.#preventRaceConditionExecutionIfNecessary({
-      data,
-      key,
-      options,
-    })
+    if (data.flow.hasAsyncSteps) {
+      await this.#preventRaceConditionExecutionIfNecessary({
+        data,
+        key,
+        options,
+      })
+    }
 
-    if (hasFinished) {
+    if (hasFinished && retentionTime) {
       Object.assign(data, {
         retention_time: retentionTime,
       })
     }
 
-    const stringifiedData = JSON.stringify(data)
+    // Only set if not exists
+    const shouldSetNX =
+      data.flow.state === TransactionState.NOT_STARTED &&
+      !data.flow.transactionId.startsWith("auto-")
 
+    // Prepare operations to be executed in batch or pipeline
+    const data_ = {
+      errors: data.errors,
+      flow: data.flow,
+    }
+    const stringifiedData = JSON.stringify(data_)
+    const pipeline = this.redisClient.pipeline()
+
+    // Execute Redis operations
     if (!hasFinished) {
       if (ttl) {
-        await this.redisClient.set(key, stringifiedData, "EX", ttl)
+        if (shouldSetNX) {
+          pipeline.set(key, stringifiedData, "EX", ttl, "NX")
+        } else {
+          pipeline.set(key, stringifiedData, "EX", ttl)
+        }
       } else {
-        await this.redisClient.set(key, stringifiedData)
+        if (shouldSetNX) {
+          pipeline.set(key, stringifiedData, "NX")
+        } else {
+          pipeline.set(key, stringifiedData)
+        }
       }
-    }
-
-    if (hasFinished && !retentionTime && !idempotent) {
-      await this.deleteFromDb(data)
     } else {
-      await this.saveToDb(data, retentionTime)
+      pipeline.unlink(key)
     }
 
-    if (hasFinished) {
-      await this.redisClient.unlink(key)
+    const pipelinePromise = pipeline.exec().then((result) => {
+      if (!shouldSetNX) {
+        return result
+      }
+
+      const actionResult = result?.pop()
+      const isOk = !!actionResult?.pop()
+      if (!isOk) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_ARGUMENT,
+          "Transaction already started for transactionId: " +
+            data.flow.transactionId
+        )
+      }
+
+      return result
+    })
+
+    // Database operations
+    if (hasFinished && !retentionTime) {
+      // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
+      if (!data.flow.metadata?.parentStepIdempotencyKey) {
+        await promiseAll([pipelinePromise, this.deleteFromDb(data)])
+      } else {
+        await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
+      }
+    } else {
+      await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
     }
   }
 
@@ -325,6 +521,7 @@ export class RedisDistributedTransactionStorage
       {
         workflowId: transaction.modelId,
         transactionId: transaction.transactionId,
+        transactionMetadata: transaction.getFlow().metadata,
         stepId: step.id,
       },
       {
@@ -352,6 +549,7 @@ export class RedisDistributedTransactionStorage
       {
         workflowId: transaction.modelId,
         transactionId: transaction.transactionId,
+        transactionMetadata: transaction.getFlow().metadata,
       },
       {
         delay: interval * 1000,
@@ -378,6 +576,7 @@ export class RedisDistributedTransactionStorage
       {
         workflowId: transaction.modelId,
         transactionId: transaction.transactionId,
+        transactionMetadata: transaction.getFlow().metadata,
         stepId: step.id,
       },
       {
@@ -503,20 +702,32 @@ export class RedisDistributedTransactionStorage
     key: string
     options?: TransactionOptions
   }) {
-    let isInitialCheckpoint = false
-
-    if (data.flow.state === TransactionState.NOT_STARTED) {
-      isInitialCheckpoint = true
-    }
+    const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
+      data.flow.state
+    )
 
     /**
      * In case many execution can succeed simultaneously, we need to ensure that the latest
      * execution does continue if a previous execution is considered finished
      */
     const currentFlow = data.flow
-    const { flow: latestUpdatedFlow } =
-      (await this.get(key, options)) ??
-      ({ flow: {} } as { flow: TransactionFlow })
+
+    const rawData = await this.redisClient.get(key)
+    let data_ = {} as TransactionCheckpoint
+    if (rawData) {
+      data_ = JSON.parse(rawData)
+    } else {
+      const getOptions = {
+        ...options,
+        isCancelling: !!data.flow.cancelledAt,
+      } as Parameters<typeof this.get>[1]
+
+      data_ =
+        (await this.get(key, getOptions)) ??
+        ({ flow: {} } as TransactionCheckpoint)
+    }
+
+    const { flow: latestUpdatedFlow } = data_
 
     if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
       /**
@@ -528,49 +739,108 @@ export class RedisDistributedTransactionStorage
       throw new SkipExecutionError("Already finished by another execution")
     }
 
-    const currentFlowLastInvokingStepIndex = Object.values(
-      currentFlow.steps
-    ).findIndex((step) => {
-      return [
-        TransactionStepState.INVOKING,
-        TransactionStepState.NOT_STARTED,
-      ].includes(step.invoke?.state)
-    })
+    let currentFlowLatestExecutedStep: TransactionStep | undefined
+    const currentFlowSteps = Object.values(currentFlow.steps || {})
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (currentFlowSteps[i].lastAttempt) {
+        currentFlowLatestExecutedStep = currentFlowSteps[i]
+        break
+      }
+    }
 
-    const latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
+    let latestUpdatedFlowLatestExecutedStep: TransactionStep | undefined
+    const latestUpdatedFlowSteps = Object.values(latestUpdatedFlow.steps || {})
+    for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+      if (latestUpdatedFlowSteps[i].lastAttempt) {
+        latestUpdatedFlowLatestExecutedStep = latestUpdatedFlowSteps[i]
+        break
+      }
+    }
+
+    /**
+     * The current flow and the latest updated flow have the same latest executed step.
+     */
+    const isSameLatestExecutedStep =
+      currentFlowLatestExecutedStep &&
+      latestUpdatedFlowLatestExecutedStep &&
+      currentFlowLatestExecutedStep?.id ===
+        latestUpdatedFlowLatestExecutedStep?.id
+
+    /**
+     * The current flow's latest executed step has a last attempt ahead of the latest updated
+     * flow's latest executed step. Therefor it is fine, otherwise another execution has already
+     * finished the step.
+     */
+    const isCurrentLatestExecutedStepLastAttemptAhead =
+      currentFlowLatestExecutedStep?.lastAttempt &&
+      latestUpdatedFlowLatestExecutedStep?.lastAttempt &&
+      currentFlowLatestExecutedStep.lastAttempt >=
+        latestUpdatedFlowLatestExecutedStep.lastAttempt
+
+    if (
+      isSameLatestExecutedStep &&
+      !isCurrentLatestExecutedStepLastAttemptAhead
+    ) {
+      throw new SkipStepAlreadyFinishedError(
+        "Step already finished by another execution"
+      )
+    }
+
+    // First ensure that the latest execution was not cancelled, otherwise we skip the execution
+    const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
+    const currentTransactionCancelledAt = currentFlow.cancelledAt
+
+    if (
+      !!latestTransactionCancelledAt &&
+      currentTransactionCancelledAt == null
+    ) {
+      throw new SkipCancelledExecutionError(
+        "Workflow execution has been cancelled during the execution"
+      )
+    }
+
+    let currentFlowLastInvokingStepIndex = -1
+    for (let i = 0; i < currentFlowSteps.length; i++) {
+      if (isInvokingState(currentFlowSteps[i])) {
+        currentFlowLastInvokingStepIndex = i
+        break
+      }
+    }
+
+    let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
       ? 1 // There is no other execution, so the current execution is the latest
-      : Object.values(
-          (latestUpdatedFlow.steps as Record<string, TransactionStep>) ?? {}
-        ).findIndex((step) => {
-          return [
-            TransactionStepState.INVOKING,
-            TransactionStepState.NOT_STARTED,
-          ].includes(step.invoke?.state)
-        })
+      : -1
 
-    const currentFlowLastCompensatingStepIndex = Object.values(
-      currentFlow.steps
-    )
-      .reverse()
-      .findIndex((step) => {
-        return [
-          TransactionStepState.COMPENSATING,
-          TransactionStepState.NOT_STARTED,
-        ].includes(step.compensate?.state)
-      })
+    if (latestUpdatedFlow.steps) {
+      for (let i = 0; i < latestUpdatedFlowSteps.length; i++) {
+        if (isInvokingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastInvokingStepIndex = i
+          break
+        }
+      }
+    }
 
-    const latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
-      ? -1
-      : Object.values(
-          (latestUpdatedFlow.steps as Record<string, TransactionStep>) ?? {}
-        )
-          .reverse()
-          .findIndex((step) => {
-            return [
-              TransactionStepState.COMPENSATING,
-              TransactionStepState.NOT_STARTED,
-            ].includes(step.compensate?.state)
-          })
+    let currentFlowLastCompensatingStepIndex = -1
+    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
+      if (isCompensatingState(currentFlowSteps[i])) {
+        currentFlowLastCompensatingStepIndex = currentFlowSteps.length - 1 - i
+        break
+      }
+    }
+
+    let latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
+      ? -1 // There is no other execution, so the current execution is the latest
+      : -1
+
+    if (latestUpdatedFlow.steps) {
+      for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
+        if (isCompensatingState(latestUpdatedFlowSteps[i])) {
+          latestUpdatedFlowLastCompensatingStepIndex =
+            latestUpdatedFlowSteps.length - 1 - i
+          break
+        }
+      }
+    }
 
     const isLatestExecutionFinishedIndex = -1
     const invokeShouldBeSkipped =
@@ -587,22 +857,52 @@ export class RedisDistributedTransactionStorage
       latestUpdatedFlowLastCompensatingStepIndex !==
         isLatestExecutionFinishedIndex
 
+    const isCompensatingMismatch =
+      latestUpdatedFlow.state === TransactionState.COMPENSATING &&
+      ![TransactionState.REVERTED, TransactionState.FAILED].includes(
+        currentFlow.state
+      ) &&
+      currentFlow.state !== latestUpdatedFlow.state
+
+    const isRevertedMismatch =
+      latestUpdatedFlow.state === TransactionState.REVERTED &&
+      currentFlow.state !== TransactionState.REVERTED
+
+    const isFailedMismatch =
+      latestUpdatedFlow.state === TransactionState.FAILED &&
+      currentFlow.state !== TransactionState.FAILED
+
     if (
       (data.flow.state !== TransactionState.COMPENSATING &&
         invokeShouldBeSkipped) ||
       (data.flow.state === TransactionState.COMPENSATING &&
         compensateShouldBeSkipped) ||
-      (latestUpdatedFlow.state === TransactionState.COMPENSATING &&
-        ![TransactionState.REVERTED, TransactionState.FAILED].includes(
-          currentFlow.state
-        ) &&
-        currentFlow.state !== latestUpdatedFlow.state) ||
-      (latestUpdatedFlow.state === TransactionState.REVERTED &&
-        currentFlow.state !== TransactionState.REVERTED) ||
-      (latestUpdatedFlow.state === TransactionState.FAILED &&
-        currentFlow.state !== TransactionState.FAILED)
+      isCompensatingMismatch ||
+      isRevertedMismatch ||
+      isFailedMismatch
     ) {
       throw new SkipExecutionError("Already finished by another execution")
     }
+  }
+
+  async clearExpiredExecutions() {
+    await this.workflowExecutionService_.delete({
+      retention_time: {
+        $ne: null,
+      },
+      updated_at: {
+        $lte: raw(
+          (alias) =>
+            `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
+        ),
+      },
+      state: {
+        $in: [
+          TransactionState.DONE,
+          TransactionState.FAILED,
+          TransactionState.REVERTED,
+        ],
+      },
+    })
   }
 }

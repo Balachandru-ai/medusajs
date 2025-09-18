@@ -21,9 +21,8 @@ export default [
   {
     ignores: [
       "**/references/**/*",
-      "**/events-reference/**/*",
-      "**/events/_content/**/*",
-      "**/events/_content.mdx",
+      // TODO remove this once we support v1 comments
+      "**/nextjs-starter/guides/customize-stripe/**",
     ],
   },
   {

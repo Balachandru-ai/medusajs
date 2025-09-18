@@ -5,6 +5,10 @@ tags:
   - server
   - how to
 sidebar_label: Use Cache Module
+keywords:
+  - cache
+  - provider
+  - integration
 ---
 
 import { TypeList } from "docs-ui"
@@ -35,7 +39,7 @@ const step1 = createStep(
 )
 ```
 
-This will resolve the service of the configured Cache Module, which is the [In-Memory Cache Module](https://docs.medusajs.com/resources/architectural-modules/cache/in-memory) by default.
+This will resolve the service of the configured Cache Module, which is the [In-Memory Cache Module](https://docs.medusajs.com/resources/infrastructure-modules/cache/in-memory) by default.
 
 You can then use the Cache Module's service's methods in the step. The rest of this guide details these methods.
 
@@ -65,26 +69,6 @@ const data = await cacheModuleService.get("my-key")
 
 ___
 
-## set
-
-This method stores data in the cache.
-
-### Example
-
-```ts
-await cacheModuleService.set("my-key", { product_id: "prod_123" }, 60)
-```
-
-### Parameters
-
-<TypeList types={[{"name":"key","type":"`string`","description":"The key of the item to store.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`unknown`","description":"The data to store in the cache.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"ttl","type":"`number`","description":"The time-to-live (TTL) value in seconds. If not provided, the default TTL value is used. The default value is based on the used Cache Module.","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="set"/>
-
-### Returns
-
-<TypeList types={[{"name":"Promise","type":"Promise&#60;void&#62;","optional":false,"defaultValue":"","description":"This method stores data in the cache.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="set"/>
-
-___
-
 ## invalidate
 
 This method removes an item from the cache.
@@ -102,3 +86,23 @@ await cacheModuleService.invalidate("my-key")
 ### Returns
 
 <TypeList types={[{"name":"Promise","type":"Promise&#60;void&#62;","optional":false,"defaultValue":"","description":"This method removes an item from the cache.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="invalidate"/>
+
+___
+
+## set
+
+This method stores data in the cache.
+
+### Example
+
+```ts
+await cacheModuleService.set("my-key", { product_id: "prod_123" }, 60)
+```
+
+### Parameters
+
+<TypeList types={[{"name":"key","type":"`string`","description":"The key of the item to store.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`unknown`","description":"The data to store in the cache.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"ttl","type":"`number`","description":"The time-to-live (TTL) value in seconds. If not provided, the default TTL value is used. The default value is based on the used Cache Module.","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="set"/>
+
+### Returns
+
+<TypeList types={[{"name":"Promise","type":"Promise&#60;void&#62;","optional":false,"defaultValue":"","description":"This method stores data in the cache.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="set"/>

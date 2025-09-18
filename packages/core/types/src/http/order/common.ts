@@ -196,7 +196,7 @@ export interface BaseOrderAddress {
    */
   country_code?: string
   /**
-   * The address's province.
+   * The address's lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province.
    */
   province?: string
   /**
@@ -821,6 +821,10 @@ export interface BaseOrder {
    */
   item_tax_total: number
   /**
+   * The promotion total applied on the order's items.
+   */
+  item_discount_total: number
+  /**
    * The total of the order including taxes, excluding promotions.
    */
   original_total: number
@@ -837,7 +841,7 @@ export interface BaseOrder {
    */
   total: number
   /**
-   * The total of the order excluding taxes, including promotions.
+   * The total of the order excluding taxes and promotions.
    */
   subtotal: number
   /**
@@ -873,6 +877,10 @@ export interface BaseOrder {
    */
   shipping_tax_total: number
   /**
+   * The promotion total applied on the order's shipping methods.
+   */
+  shipping_discount_total: number
+  /**
    * The total of the order's shipping methods including taxes, excluding promotions.
    */
   original_shipping_total: number
@@ -884,6 +892,10 @@ export interface BaseOrder {
    * The tax total applied on the order's shipping methods, excluding promotions.
    */
   original_shipping_tax_total: number
+  /**
+   * The total of the order's credit lines.
+   */
+  credit_line_total: number
 }
 
 export interface BaseOrderFilters
@@ -1066,6 +1078,11 @@ export interface BaseOrderChange {
  * The order change action details.
  */
 export interface BaseOrderChangeAction {
+  /**
+   * The ordering of the order change action
+   */
+  ordering: number
+
   /**
    * The ID of the order change action
    */

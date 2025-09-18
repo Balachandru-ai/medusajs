@@ -24,8 +24,8 @@ import {
   isPresent,
   upperCaseFirst,
 } from "@medusajs/utils"
-import { pgConnectionLoader } from "./database"
 
+import type { Knex } from "@mikro-orm/knex"
 import { aliasTo, asValue } from "awilix"
 import { configManager } from "./config"
 import {
@@ -33,7 +33,6 @@ import {
   container as mainContainer,
   MedusaContainer,
 } from "./container"
-import type { Knex } from "@mikro-orm/knex"
 
 export class MedusaAppLoader {
   /**
@@ -50,20 +49,29 @@ export class MedusaAppLoader {
     | RegisterModuleJoinerConfig
     | RegisterModuleJoinerConfig[]
 
+  readonly #medusaConfigPath?: string
+  readonly #cwd?: string
+
   // TODO: Adjust all loaders to accept an optional container such that in test env it is possible if needed to provide a specific container otherwise use the main container
   // Maybe also adjust the different places to resolve the config from the container instead of the configManager for the same reason
   // To be discussed
   constructor({
     container,
     customLinksModules,
+    medusaConfigPath,
+    cwd,
   }: {
     container?: MedusaContainer
     customLinksModules?:
       | RegisterModuleJoinerConfig
       | RegisterModuleJoinerConfig[]
+    medusaConfigPath?: string
+    cwd?: string
   } = {}) {
     this.#container = container ?? mainContainer
     this.#customLinksModules = customLinksModules ?? []
+    this.#medusaConfigPath = medusaConfigPath
+    this.#cwd = cwd
   }
 
   protected mergeDefaultModules(
@@ -88,6 +96,7 @@ export class MedusaAppLoader {
       const def = {} as ModuleDefinition
       def.key ??= key
       def.label ??= ModulesDefinition[key]?.label ?? upperCaseFirst(key)
+      def.dependencies ??= ModulesDefinition[key]?.dependencies
       def.isQueryable = ModulesDefinition[key]?.isQueryable ?? true
 
       const orignalDef = value?.definition ?? ModulesDefinition[key]
@@ -115,18 +124,17 @@ export class MedusaAppLoader {
       ),
     }
 
-    const driverOptions = { ...(configManager.config.projectConfig.databaseDriverOptions ?? {}) }
-    const pool = driverOptions.pool ?? {}
+    const driverOptions = {
+      ...(configManager.config.projectConfig.databaseDriverOptions ?? {}),
+    }
+    const pool = (driverOptions.pool as Record<string, unknown>) ?? {}
     delete driverOptions.pool
 
     const sharedResourcesConfig: ModuleServiceInitializeOptions = {
       database: {
         clientUrl:
-          (
-            injectedDependencies[
-              ContainerRegistrationKeys.PG_CONNECTION
-            ] as ReturnType<typeof pgConnectionLoader>
-          )?.client?.config?.connection?.connectionString ??
+          injectedDependencies[ContainerRegistrationKeys.PG_CONNECTION]?.client
+            ?.config?.connection?.connectionString ??
           configManager.config.projectConfig.databaseUrl,
         driverOptions: configManager.config.projectConfig.databaseDriverOptions,
         pool: pool,
@@ -173,6 +181,8 @@ export class MedusaAppLoader {
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     }
 
     if (action === "revert") {
@@ -198,6 +208,8 @@ export class MedusaAppLoader {
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     }
 
     return await MedusaAppGetLinksExecutionPlanner(migrationOptions)
@@ -218,6 +230,8 @@ export class MedusaAppLoader {
       sharedResourcesConfig,
       injectedDependencies,
       loaderOnly: true,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     })
   }
 
@@ -256,6 +270,8 @@ export class MedusaAppLoader {
       linkModules: this.#customLinksModules,
       sharedResourcesConfig,
       injectedDependencies,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
     })
 
     if (!config.registerInContainer) {

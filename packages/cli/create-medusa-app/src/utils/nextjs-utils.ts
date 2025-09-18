@@ -8,6 +8,7 @@ import execute from "./execute.js"
 import { displayFactBox, FactBoxOptions } from "./facts.js"
 import logMessage from "./log-message.js"
 import ProcessManager from "./process-manager.js"
+import { updatePackageVersions } from "./update-package-versions.js"
 
 const NEXTJS_REPO = "https://github.com/medusajs/nextjs-starter-medusa"
 const NEXTJS_BRANCH = "main"
@@ -17,7 +18,7 @@ export async function askForNextjsStarter(): Promise<boolean> {
     {
       type: "confirm",
       name: "installNextjs",
-      message: `Would you like to create the Next.js storefront? You can also create it later`,
+      message: `Would you like to install the Next.js Starter Storefront? You can also install it later.`,
       default: false,
     },
   ])
@@ -31,6 +32,7 @@ type InstallOptions = {
   factBoxOptions: FactBoxOptions
   verbose?: boolean
   processManager: ProcessManager
+  version?: string
 }
 
 export async function installNextjsStarter({
@@ -39,10 +41,11 @@ export async function installNextjsStarter({
   factBoxOptions,
   verbose = false,
   processManager,
+  version,
 }: InstallOptions): Promise<string> {
   factBoxOptions.interval = displayFactBox({
     ...factBoxOptions,
-    title: "Installing Next.js Storefront...",
+    title: "Installing Next.js Starter Storefront...",
   })
 
   let nextjsDirectory = `${directoryName}-storefront`
@@ -70,6 +73,12 @@ export async function installNextjsStarter({
       ],
       { verbose }
     )
+
+    if (version) {
+      const packageJsonPath = path.join(nextjsDirectory, "package.json")
+      updatePackageVersions(packageJsonPath, version, { applyChanges: true })
+    }
+
     const execOptions = {
       signal: abortController?.signal,
       cwd: nextjsDirectory,
@@ -94,7 +103,7 @@ export async function installNextjsStarter({
     }
 
     logMessage({
-      message: `An error occurred while installing Next.js storefront: ${e}`,
+      message: `An error occurred while installing Next.js Starter Storefront: ${e}`,
       type: "error",
     })
   }
@@ -111,7 +120,7 @@ export async function installNextjsStarter({
 
   displayFactBox({
     ...factBoxOptions,
-    message: `Installed Next.js Starter successfully in the ${nextjsDirectory} directory.`,
+    message: `Installed Next.js Starter Storefront successfully in the ${nextjsDirectory} directory.`,
   })
 
   return nextjsDirectory

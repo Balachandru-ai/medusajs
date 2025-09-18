@@ -27,6 +27,25 @@
  *       schema:
  *         $ref: "#/components/schemas/AdminCreateSalesChannel"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.salesChannel.create({
+ *         name: "Storefront",
+ *       })
+ *       .then(({ salesChannel }) => {
+ *         console.log(salesChannel)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -60,6 +79,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createSalesChannelsWorkflow
+ * x-events:
+ *   - name: sales-channel.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the sales channel
+ *       }]
+ *       ```
+ *     description: Emitted when sales channels are created.
+ *     deprecated: false
  * 
 */
 

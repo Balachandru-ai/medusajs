@@ -2,13 +2,13 @@ import { Modules } from "@medusajs/utils"
 
 export const defaultSchema = `
   type Product @Listeners(values: ["${Modules.PRODUCT}.product.created", "${Modules.PRODUCT}.product.updated", "${Modules.PRODUCT}.product.deleted"]) {
-    id: String
+    id: ID
     title: String
     handle: String
     status: String
     type_id: String
     collection_id: String
-    is_giftcard: String
+    is_giftcard: Boolean
     external_id: String
     created_at: DateTime
     updated_at: DateTime
@@ -18,7 +18,7 @@ export const defaultSchema = `
   }
 
   type ProductVariant @Listeners(values: ["${Modules.PRODUCT}.product-variant.created", "${Modules.PRODUCT}.product-variant.updated", "${Modules.PRODUCT}.product-variant.deleted"]) {
-    id: String
+    id: ID
     product_id: String
     sku: String
 
@@ -26,13 +26,13 @@ export const defaultSchema = `
   }
   
   type Price @Listeners(values: ["${Modules.PRICING}.price.created", "${Modules.PRICING}.price.updated", "${Modules.PRICING}.price.deleted"]) {
-    id: String
+    id: ID
     amount: Float
     currency_code: String
   }
 
-  type SalesChannel @Listeners(values: ["${Modules.SALES_CHANNEL}.sales_channel.created", "${Modules.SALES_CHANNEL}.sales_channel.updated", "${Modules.SALES_CHANNEL}.sales_channel.deleted"]) {
-    id: String
+  type SalesChannel @Listeners(values: ["${Modules.SALES_CHANNEL}.sales-channel.created", "${Modules.SALES_CHANNEL}.sales-channel.updated", "${Modules.SALES_CHANNEL}.sales-channel.deleted"]) {
+    id: ID
     is_disabled: Boolean
   }
 `

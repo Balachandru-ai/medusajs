@@ -1,5 +1,9 @@
 export const cart = [
   {
+    "title": "Retrieve Cart Totals using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals"
+  },
+  {
     "title": "Extend Cart",
     "path": "https://docs.medusajs.com/resources/commerce-modules/cart/extend"
   },
@@ -16,6 +20,22 @@ export const cart = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
+    "title": "Implement First-Purchase Discount",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
+  },
+  {
+    "title": "Add Gift Message",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
+  },
+  {
+    "title": "Implement Loyalty Points",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
+  },
+  {
+    "title": "Implement Bundled Products",
+    "path": "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard"
+  },
+  {
     "title": "Create Cart Context in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/context"
   },
@@ -26,6 +46,10 @@ export const cart = [
   {
     "title": "Manage Cart's Items in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items"
+  },
+  {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
   },
   {
     "title": "Retrieve Cart in Storefront",

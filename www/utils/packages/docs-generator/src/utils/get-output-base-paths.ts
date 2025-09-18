@@ -16,6 +16,19 @@ export function getDmlOutputBasePath() {
 }
 
 /**
+ * Retrieves the base path to the `events-output` directory.
+ */
+export function getEventsOutputBasePath() {
+  return path.join(
+    getMonorepoRoot(),
+    "www",
+    "utils",
+    "generated",
+    "events-output.json"
+  )
+}
+
+/**
  * Retrieves the base path to the `route-examples-output` directory.
  */
 export function getRouteExamplesOutputBasePath() {

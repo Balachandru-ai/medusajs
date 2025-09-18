@@ -1,3 +1,4 @@
+import { isPresent } from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
@@ -25,7 +26,7 @@ const step_1 = createStep(
 const step_2 = createStep(
   "step_2",
   jest.fn((input, context) => {
-    if (input) {
+    if (isPresent(input)) {
       return new StepResponse({ notAsyncResponse: input.hey })
     }
   }),
@@ -52,6 +53,7 @@ const step_3 = createStep(
 createWorkflow(
   {
     name: "workflow_sync",
+    retentionTime: 20,
     idempotent: true,
   },
   function (input) {

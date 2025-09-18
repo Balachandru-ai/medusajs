@@ -1,3 +1,10 @@
+---
+products:
+  - product
+  - customer
+  - order
+---
+
 import { AcademicCapSolid, BoltSolid } from "@medusajs/icons"
 
 export const metadata = {
@@ -18,7 +25,11 @@ Medusa provides the necessary architecture and tools to implement commerce autom
 
 ## Re-Stock Notifications
 
-Customers may be interested in a product that is currently out of stock. The following guide explains how to add restock notifications in your Medusa application:
+Customers may be interested in a product that is currently out of stock. Instead of losing their interest, you can allow them to subscribe to receive a notification when the product is back in stock.
+
+Then, you can listen to product-related events and notify subscribed customers when a product variant is back in stock.
+
+The following guide explains how to add restock notifications in your Medusa application:
 
 <Card
   href="/recipes/commerce-automation/restock-notification"
@@ -31,21 +42,40 @@ Customers may be interested in a product that is currently out of stock. The fol
 
 ## Automated Customer Support
 
-Customer support is essential to build a store's brand and customer loyalty. This can include integrating with third-party services or automating notifications sent to customers when changes happen related to their orders, returns, exchanges, and more.
+Customer support is essential to build a store's brand and customer loyalty. However, to provide an efficient customer support, you often need to integrate with third-party services, like Zendesk, and automate customer notifications.
 
-You can use the Notification Module to send notifications when an action is triggered, such as when a customer or their order is updated.
+### Integrate with Third-Party Services
 
-<Note title="Tip">
+To provide customer support, you can Integrate with third-party services, such as ticket systems or chat bots in the storefront.
 
-The [Events reference](../../events-reference/page.mdx) shows an extensive list of events triggered for each commerce module.
+Medusa allows you to easily integrate with third-party services by creating a custom module, then build workflows for your business logic that perform actions with the third-party service.
 
-</Note>
-
-Medusa also provides Notification Module Providers that integrate with third-party services, such as SendGrid.
+This approach allows you to interact with the third-party service within custom and existing flows, while maintaining data consistency across systems. You can then execute the wokflow when an event is triggered, such as when a customer places an order or requests a return.
 
 <CardList items={[
   {
-    href: "/architectural-modules/notification",
+    href: "!docs!/learn/fundamentals/modules",
+    title: "Create Module",
+    text: "Learn about how to create a custom module.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "!docs!/learn/fundamentals/workflows",
+    title: "Create Workflow",
+    text: "Learn how to create a workflow.",
+    icon: AcademicCapSolid,
+  },
+]} />
+
+### Automate Customer Notifications
+
+You can also automate sending notifications to customers when changes happen related to their orders, returns, exchanges, and more.
+
+Medusa's Notification Module allows you to send notifications when an event is triggered, such as when a customer's order is updated. You can use third-party services, like [SendGrid](../../infrastructure-modules/notification/sendgrid/page.mdx), to send emails to customers.
+
+<CardList items={[
+  {
+    href: "/infrastructure-modules/notification",
     title: "Notification Module",
     text: "Learn about the Notification Module.",
     icon: AcademicCapSolid,
@@ -64,25 +94,45 @@ Medusa also provides Notification Module Providers that integrate with third-par
 
 As your commerce store grows, you'll likely need to synchronize data across different systems. For example, you need to synchronize data with an ERP system or a data warehouse.
 
-To implement that:
+<Note title="Integrating an ERP?">
 
-- Create a workflow that implements the synchronization steps, along with retry and rollback logic.
+Refer to the [ERP](../erp/page.mdx) recipe for a focused guide on how to integrate with an ERP system.
+
+</Note>
+
+To implement that, you can:
+
+- Create a workflow that implements the synchronization steps, along with retry and rollback logic. By using a workflow, you ensure data consistency across systems.
 - Create a scheduled job that executes the workflow automatically at the specified time pattern.
 
-<Card
-  href="!docs!/learn/fundamentals/scheduled-jobs"
-  title="Create a Scheduled Job"
-  text="Learn how to create a scheduled job in Medusa."
-  icon={AcademicCapSolid}
-/>
+<CardList items={[
+  {
+    href: "!docs!/learn/fundamentals/workflows",
+    title: "Create Workflow",
+    text: "Learn how to create a workflow.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "!docs!/learn/fundamentals/scheduled-jobs",
+    title: "Create a Scheduled Job",
+    text: "Learn how to create a scheduled job.",
+    icon: AcademicCapSolid,
+  },
+]} />
 
 ---
 
 ## Order Management Automation
 
-Using Medusa's architecture and commerce features, you can automate a large amount of order management functionalities.
+Medusa's architecture, Commerce Modules, and Framework for customizations facilitate automating a large amount of order management functionalities.
 
-To handle events within an order flow and automate actions, create a subscriber. For example, create a subscriber that listens to the `order.placed` event and automatically creates a fulfillment if predefined conditions are met.
+For example, you can automatically:
+
+- Create a fulfillment when an order is placed.
+- Create a refund when an item is returned.
+- Send a notification when an order is shipped.
+
+To handle events within an order flow and automate actions, you can create a subscriber that listens to the relevant event. For example, you can create a subscriber that listens to the `order.placed` event and automatically creates a fulfillment if predefined conditions are met.
 
 <CardList items={[
   {
@@ -92,9 +142,9 @@ To handle events within an order flow and automate actions, create a subscriber.
     icon: AcademicCapSolid,
   },
   {
-    href: "/events-reference",
+    href: "/references/events",
     title: "Events Reference",
-    text: "Check out triggered events by each commerce module.",
+    text: "Check out triggered events by each Commerce Module.",
     icon: AcademicCapSolid,
   },
 ]} />
@@ -113,7 +163,7 @@ Medusa's commerce features are geared towards automating RMA flows and ensuring 
 
 <CardList items={[
   {
-    href: "/commerce-modules/orders",
+    href: "/commerce-modules/order",
     title: "Order Module",
     text: "Learn about the Order Module and its features.",
     icon: AcademicCapSolid,
@@ -132,10 +182,10 @@ Medusa's commerce features are geared towards automating RMA flows and ensuring 
 
 Businesses use customer segmentation to organize customers into different groups and then apply different price rules to these groups.
 
-Medusa's commerce modules provide the necessary features to implement this use case:
+Medusa's Commerce Modules provide the necessary features to implement this use case:
 
-- The Customer Module provides a customer groups feature to organize customers into customer groups.
-- The Pricing Module provides the features to specify prices based on a condition, such as the group of the customer.
+- The Customer Module allows you to organize customers into customer groups.
+- The Pricing Module allows you to specify prices based on a condition, such as the group of the customer.
 
 For example, to group customers with over twenty orders:
 
@@ -162,9 +212,9 @@ For example, to group customers with over twenty orders:
     icon: AcademicCapSolid,
   },
   {
-    href: "/events-reference",
+    href: "/references/events",
     title: "Events Reference",
-    text: "Check out triggered events by each commerce module.",
+    text: "Check out triggered events by each Commerce Module.",
     icon: AcademicCapSolid,
   },
 ]} />
@@ -175,7 +225,7 @@ For example, to group customers with over twenty orders:
 
 In your commerce store, you may utilize marketing strategies that encourage customers to make purchases. For example, you send a newsletter when new products are added to your store.
 
-To do that, create a subscriber that listens to the `product.created`, and send an email to subscribed customers with tools like SendGrid or Mailchimp.
+To do that, create a subscriber that listens to the `product.created`, and send an email to subscribed customers with tools like [SendGrid](../../infrastructure-modules/notification/sendgrid/page.mdx).
 
 You can also create a scheduled job that checks whether the number of new products has exceeded a set threshold, then sends out the newsletter.
 

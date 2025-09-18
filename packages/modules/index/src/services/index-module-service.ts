@@ -10,6 +10,7 @@ import {
 import {
   MikroOrmBaseRepository as BaseRepository,
   ContainerRegistrationKeys,
+  GraphQLUtils,
   Modules,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
@@ -20,6 +21,7 @@ import {
   defaultSchema,
   gqlSchemaToTypes,
 } from "@utils"
+import { baseGraphqlSchema } from "../utils/base-graphql-schema"
 import { DataSynchronizer } from "./data-synchronizer"
 
 type InjectedDependencies = {
@@ -38,6 +40,8 @@ export default class IndexModuleService
   extends ModulesSdkUtils.MedusaService({})
   implements IndexTypes.IIndexService
 {
+  #isWorkerMode: boolean = false
+
   private readonly container_: InjectedDependencies
   private readonly moduleOptions_: IndexTypes.IndexModuleOptions
 
@@ -81,6 +85,8 @@ export default class IndexModuleService
     this.moduleOptions_ = (moduleDeclaration.options ??
       moduleDeclaration) as unknown as IndexTypes.IndexModuleOptions
 
+    this.#isWorkerMode = moduleDeclaration.worker_mode !== "server"
+
     const {
       [Modules.EVENT_BUS]: eventBusModuleService,
       storageProviderCtr,
@@ -105,7 +111,7 @@ export default class IndexModuleService
 
   protected async onApplicationStart_() {
     try {
-      this.buildSchemaObjectRepresentation_()
+      const executableSchema = this.buildSchemaObjectRepresentation_()
 
       this.storageProvider_ = new this.storageProviderCtr_(
         this.container_,
@@ -122,24 +128,31 @@ export default class IndexModuleService
         await this.storageProvider_.onApplicationStart()
       }
 
-      await gqlSchemaToTypes(this.moduleOptions_.schema ?? defaultSchema)
+      await gqlSchemaToTypes(executableSchema!)
 
-      this.dataSynchronizer_.onApplicationStart({
-        schemaObjectRepresentation: this.schemaObjectRepresentation_,
-        storageProvider: this.storageProvider_,
-      })
+      /**
+       * Only run the data synchronization in worker mode
+       */
 
-      const configurationChecker = new Configuration({
-        logger: this.logger_,
-        schemaObjectRepresentation: this.schemaObjectRepresentation_,
-        indexMetadataService: this.indexMetadataService_,
-        indexSyncService: this.indexSyncService_,
-        dataSynchronizer: this.dataSynchronizer_,
-      })
-      const entitiesMetadataChanged = await configurationChecker.checkChanges()
+      if (this.#isWorkerMode) {
+        this.dataSynchronizer_.onApplicationStart({
+          schemaObjectRepresentation: this.schemaObjectRepresentation_,
+          storageProvider: this.storageProvider_,
+        })
 
-      if (entitiesMetadataChanged.length) {
-        await this.dataSynchronizer_.syncEntities(entitiesMetadataChanged)
+        const configurationChecker = new Configuration({
+          logger: this.logger_,
+          schemaObjectRepresentation: this.schemaObjectRepresentation_,
+          indexMetadataService: this.indexMetadataService_,
+          indexSyncService: this.indexSyncService_,
+          dataSynchronizer: this.dataSynchronizer_,
+        })
+        const entitiesMetadataChanged =
+          await configurationChecker.checkChanges()
+
+        if (entitiesMetadataChanged.length) {
+          await this.dataSynchronizer_.syncEntities(entitiesMetadataChanged)
+        }
       }
     } catch (e) {
       this.logger_.error(e)
@@ -174,24 +187,21 @@ export default class IndexModuleService
     }
   }
 
-  private buildSchemaObjectRepresentation_() {
+  private buildSchemaObjectRepresentation_():
+    | GraphQLUtils.GraphQLSchema
+    | undefined {
     if (this.schemaObjectRepresentation_) {
-      return this.schemaObjectRepresentation_
+      return
     }
 
-    const baseSchema = `
-      scalar DateTime
-      scalar Date
-      scalar Time
-      scalar JSON
-    `
-    const [objectRepresentation, entityMap] = buildSchemaObjectRepresentation(
-      baseSchema + (this.moduleOptions_.schema ?? defaultSchema)
-    )
+    const { objectRepresentation, entitiesMap, executableSchema } =
+      buildSchemaObjectRepresentation(
+        baseGraphqlSchema + (this.moduleOptions_.schema ?? defaultSchema)
+      )
 
     this.schemaObjectRepresentation_ = objectRepresentation
-    this.schemaEntitiesMap_ = entityMap
+    this.schemaEntitiesMap_ = entitiesMap
 
-    return this.schemaObjectRepresentation_
+    return executableSchema
   }
 }

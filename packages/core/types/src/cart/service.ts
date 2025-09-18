@@ -65,6 +65,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const cart = await cartModuleService.retrieveCart("cart_123", {
@@ -97,6 +104,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the carts:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const carts = await cartModuleService.listCarts(
@@ -149,6 +163,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the carts:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [carts, count] = await cartModuleService.listAndCountCarts(
@@ -476,6 +497,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItem = await cartModuleService.retrieveLineItem(
@@ -511,6 +539,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the line items:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItems = await cartModuleService.listLineItems(
@@ -736,7 +771,14 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping methods:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const shippingMethods =
    *   await cartModuleService.listShippingMethods(
@@ -903,7 +945,14 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the line item adjustments:
-   *
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const lineItemAdjustments =
    *   await cartModuleService.listLineItemAdjustments(
@@ -1067,6 +1116,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the shipping method adjustments:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const shippingMethodAdjustments =
@@ -1237,6 +1293,13 @@ export interface ICartModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the line item tax lines:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const lineItemTaxLines =
@@ -1384,6 +1447,13 @@ export interface ICartModuleService extends IModuleService {
    *
    * To specify relations that should be retrieved within the shipping method tax lines:
    *
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
+   * 
    * ```ts
    * const shippingMethodTaxLines =
    *   await cartModuleService.listShippingMethodTaxLines(

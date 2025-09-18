@@ -72,6 +72,10 @@ export const jsSdk = [
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/paymentCollection"
   },
   {
+    "title": "plugin",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/plugin"
+  },
+  {
     "title": "priceList",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/priceList"
   },
@@ -136,6 +140,10 @@ export const jsSdk = [
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOption"
   },
   {
+    "title": "shippingOptionType",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOptionType"
+  },
+  {
     "title": "shippingProfile",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingProfile"
   },
@@ -146,6 +154,10 @@ export const jsSdk = [
   {
     "title": "store",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/store"
+  },
+  {
+    "title": "taxProvider",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/taxProvider"
   },
   {
     "title": "taxRate",

@@ -19,7 +19,7 @@ import { asValue } from "awilix"
 import * as path from "path"
 import { setTimeout } from "timers/promises"
 import { EventBusServiceMock } from "../__fixtures__"
-import { dbName } from "../__fixtures__/medusa-config"
+import config, { dbName } from "../__fixtures__/medusa-config"
 
 const eventBusMock = new EventBusServiceMock()
 const queryMock = {
@@ -147,14 +147,15 @@ describe("DataSynchronizer", () => {
       // Mock query response for products
       queryMock.graph.mockImplementation(async (config) => {
         if (Array.isArray(config.filters.id)) {
+          let data: any[] = []
           if (config.filters.id.includes(testProductId)) {
-            return {
-              data: [mockData[0]],
-            }
+            data.push(mockData[0])
           } else if (config.filters.id.includes(testProductId2)) {
-            return {
-              data: [mockData[1]],
-            }
+            data.push(mockData[1])
+          }
+
+          return {
+            data,
           }
         }
 

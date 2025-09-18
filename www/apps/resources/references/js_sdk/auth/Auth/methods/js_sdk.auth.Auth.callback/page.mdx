@@ -15,18 +15,28 @@ This documentation provides a reference to the `sdk.auth.callback` method used t
 This method is used to validate an Oauth callback from a third-party service, such as Google, for an admin user, customer, or custom actor types.
 It sends a request to the [Validate Authentication Callback](https://docs.medusajs.com/api/admin#auth\_postactor\_typeauth\_providercallback).
 
+The method stores the returned token and passes it in the header of subsequent requests. So, you can call the
+[store.customer.create](https://docs.medusajs.com/resources/references/js-sdk/store/customer#create) or [refresh](../js_sdk.auth.Auth.refresh/page.mdx) methods,
+for example, after calling this method.
+
+Learn more in the [JS SDK Authentication](https://docs.medusajs.com/resources/js-sdk/auth/overview) guide.
+
 ## Example
 
 ```ts
-sdk.auth.callback(
+await sdk.auth.callback(
   "customer",
   "google",
   {
     code: "123",
     state: "456"
   }
-).then((token) => {
-  console.log(token)
+)
+
+// all subsequent requests will use the token in the header
+const { customer } = await sdk.store.customer.create({
+  email: "customer@gmail.com",
+  password: "supersecret"
 })
 ```
 

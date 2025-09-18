@@ -1,16 +1,25 @@
 import {
   ChangeActionType,
+  isDefined,
+  MedusaError,
   OrderChangeStatus,
   PromotionActions,
+  ShippingOptionPriceType,
 } from "@medusajs/framework/utils"
 import {
+  createStep,
   createWorkflow,
   transform,
   when,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { BigNumberInput, OrderChangeDTO, OrderDTO } from "@medusajs/types"
+import {
+  BigNumberInput,
+  OrderChangeDTO,
+  OrderDTO,
+  ShippingOptionDTO,
+} from "@medusajs/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrderChangeActionsWorkflow,
@@ -23,28 +32,78 @@ import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-chan
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
 
+const validateShippingOptionStep = createStep(
+  "validate-shipping-option",
+  async (data: {
+    shippingOptions: ShippingOptionDTO[]
+    input: AddDraftOrderShippingMethodsWorkflowInput
+  }) => {
+    const shippingOption = data.shippingOptions[0]
+    const customAmount = data.input.custom_amount
+
+    if (
+      shippingOption.price_type === ShippingOptionPriceType.CALCULATED &&
+      !isDefined(customAmount)
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Calculated shipping options are not currently supported on draft orders without a custom amount."
+      )
+    }
+  }
+)
+
 export const addDraftOrderShippingMethodsWorkflowId =
   "add-draft-order-shipping-methods"
 
-interface AddDraftOrderShippingMethodsWorkflowInput {
+/**
+ * The details of the shipping methods to add to a draft order.
+ */
+export interface AddDraftOrderShippingMethodsWorkflowInput {
   /**
    * The ID of the draft order to add the shipping methods to.
    */
   order_id: string
   /**
-   * The ID of the shipping option to add the shipping methods from.
+   * The ID of the shipping option to add as a shipping method.
    */
   shipping_option_id: string
   /**
-   * The custom amount to add the shipping methods with.
+   * The custom amount to add the shipping method with.
+   * If not specified, the shipping option's fixed or calculated price will be used.
    */
   custom_amount?: BigNumberInput | null
 }
 
+/**
+ * This workflow adds shipping methods to a draft order. It's used by the
+ * [Add Shipping Method to Draft Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethods).
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around adding shipping methods to
+ * a draft order.
+ *
+ * @example
+ * const { result } = await addDraftOrderShippingMethodsWorkflow(container)
+ * .run({
+ *   input: {
+ *     order_id: "order_123",
+ *     shipping_option_id: "so_123",
+ *     custom_amount: 10
+ *   }
+ * })
+ *
+ * @summary
+ *
+ * Add shipping methods to a draft order.
+ */
 export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
   addDraftOrderShippingMethodsWorkflowId,
   function (input: WorkflowData<AddDraftOrderShippingMethodsWorkflowInput>) {
-    const order: OrderDTO = useRemoteQueryStep({
+    const order: OrderDTO & {
+      promotions: {
+        code: string
+      }[]
+    } = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
       variables: { id: input.order_id },
@@ -71,6 +130,7 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
       fields: [
         "id",
         "name",
+        "price_type",
         "calculated_price.calculated_amount",
         "calculated_price.is_calculated_price_tax_inclusive",
       ],
@@ -81,6 +141,8 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
         },
       },
     }).config({ name: "fetch-shipping-option" })
+
+    validateShippingOptionStep({ shippingOptions, input })
 
     const shippingMethodInput = transform(
       {
@@ -108,19 +170,10 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
       },
     })
 
-    const appliedPromoCodes = transform(order, (order) => {
-      const promotionLink = (order as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      order,
+      (order) => order.promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     // If any the order has any promo codes, then we need to refresh the adjustments.
     when(
@@ -149,7 +202,7 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
         order,
         shippingOptions,
         createdMethods,
-        customPrice: input.custom_amount as any, // Need to cast this to any otherwise the type becomes to complex.
+        customPrice: input.custom_amount as any, // Need to cast this to any otherwise the type becomes too complex.
         orderChange,
       },
       ({

@@ -26,7 +26,6 @@ export const wrapHandler = <T extends RouteHandler | MiddlewareFunction>(
     try {
       return await fn(req, res, next)
     } catch (err) {
-      console.log(err)
       next(err)
     }
   }

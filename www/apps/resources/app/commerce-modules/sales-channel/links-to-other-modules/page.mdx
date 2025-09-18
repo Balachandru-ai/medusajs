@@ -1,3 +1,12 @@
+---
+products:
+  - api key
+  - cart
+  - order
+  - product
+  - stock location
+---
+
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
 export const metadata = {
@@ -6,7 +15,7 @@ export const metadata = {
 
 # {metadata.title}
 
-This document showcases the module links defined between the Sales Channel Module and other commerce modules.
+This document showcases the module links defined between the Sales Channel Module and other Commerce Modules.
 
 ## Summary
 
@@ -44,7 +53,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [SalesChannel](/references/sales-channel/models/SalesChannel)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - many-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#api-key-module)
@@ -58,7 +67,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [SalesChannel](/references/sales-channel/models/SalesChannel)
       </Table.Cell>
       <Table.Cell>
-        Read-only
+        Read-only - has one
       </Table.Cell>
       <Table.Cell>
         [Learn more](#cart-module)
@@ -72,7 +81,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [SalesChannel](/references/sales-channel/models/SalesChannel)
       </Table.Cell>
       <Table.Cell>
-        Read-only
+        Read-only - has one
       </Table.Cell>
       <Table.Cell>
         [Learn more](#order-module)
@@ -86,7 +95,7 @@ Read-only links are used to query data across modules, but the relations aren't 
         [SalesChannel](/references/sales-channel/models/SalesChannel)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - many-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#product-module)
@@ -97,10 +106,10 @@ Read-only links are used to query data across modules, but the relations aren't 
         [SalesChannel](/references/sales-channel/models/SalesChannel)
       </Table.Cell>
       <Table.Cell>
-        [StockLocation](/references/stock-location/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
       </Table.Cell>
       <Table.Cell>
-        Stored
+        Stored - many-to-many
       </Table.Cell>
       <Table.Cell>
         [Learn more](#stock-location-module)
@@ -134,7 +143,7 @@ const { data: salesChannels } = await query.graph({
   ],
 })
 
-// salesChannels.publishable_api_keys
+// salesChannels[0].publishable_api_keys
 ```
 
   </CodeTab>
@@ -152,7 +161,7 @@ const { data: salesChannels } = useQueryGraphStep({
   ],
 })
 
-// salesChannels.publishable_api_keys
+// salesChannels[0].publishable_api_keys
 ```
 
   </CodeTab>
@@ -172,7 +181,7 @@ import { Modules } from "@medusajs/framework/utils"
 
 await link.create({
   [Modules.API_KEY]: {
-    api_key_id: "apk_123",
+    publishable_key_id: "apk_123",
   },
   [Modules.SALES_CHANNEL]: {
     sales_channel_id: "sc_123",
@@ -191,7 +200,7 @@ import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
 
 createRemoteLinkStep({
   [Modules.API_KEY]: {
-    api_key_id: "apk_123",
+    publishable_key_id: "apk_123",
   },
   [Modules.SALES_CHANNEL]: {
     sales_channel_id: "sc_123",
@@ -223,7 +232,7 @@ const { data: carts } = await query.graph({
   ],
 })
 
-// carts.sales_channel
+// carts[0].sales_channel
 ```
 
   </CodeTab>
@@ -241,7 +250,7 @@ const { data: carts } = useQueryGraphStep({
   ],
 })
 
-// carts.sales_channel
+// carts[0].sales_channel
 ```
 
   </CodeTab>
@@ -317,7 +326,7 @@ const { data: salesChannels } = await query.graph({
   ],
 })
 
-// salesChannels.products
+// salesChannels[0].products
 ```
 
   </CodeTab>
@@ -335,7 +344,7 @@ const { data: salesChannels } = useQueryGraphStep({
   ],
 })
 
-// salesChannels.products
+// salesChannels[0].products
 ```
 
   </CodeTab>
@@ -410,7 +419,7 @@ const { data: salesChannels } = await query.graph({
   ],
 })
 
-// salesChannels.stock_locations
+// salesChannels[0].stock_locations
 ```
 
   </CodeTab>
@@ -428,7 +437,7 @@ const { data: salesChannels } = useQueryGraphStep({
   ],
 })
 
-// salesChannels.stock_locations
+// salesChannels[0].stock_locations
 ```
 
   </CodeTab>

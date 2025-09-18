@@ -129,15 +129,6 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
-                  "path": "/medusa-cli/commands/start-cluster",
-                  "title": "start-cluster",
-                  "description": "",
-                  "children": []
-                },
-                {
-                  "loaded": true,
-                  "isPathHref": true,
-                  "type": "link",
                   "path": "/medusa-cli/commands/telemtry",
                   "title": "telemetry",
                   "description": "",
@@ -519,6 +510,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/plugin",
+                  "title": "plugin",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/priceList",
                   "title": "priceList",
                   "description": "",
@@ -663,6 +663,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/shippingOptionType",
+                  "title": "shippingOptionType",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/shippingProfile",
                   "title": "shippingProfile",
                   "description": "",
@@ -683,6 +692,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "link",
                   "path": "/references/js-sdk/admin/store",
                   "title": "store",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/js-sdk/admin/taxProvider",
+                  "title": "taxProvider",
                   "description": "",
                   "children": []
                 },
@@ -772,7 +790,7 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "isPathHref": true,
                   "type": "link",
                   "path": "/nextjs-starter/guides/customize-stripe",
-                  "title": "Customize Stripe Integration",
+                  "title": "Use Stripe's Payment Element",
                   "children": []
                 },
                 {
@@ -781,6 +799,73 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "link",
                   "path": "/nextjs-starter/guides/revalidate-cache",
                   "title": "Revalidate Cache",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "category",
+              "title": "Tutorials",
+              "autogenerate_tags": "nextjs+tutorial",
+              "autogenerate_as_ref": true,
+              "sort_sidebar": "alphabetize",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Add Gift Message",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "First-Purchase Discount",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Generate Invoices",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Pre-Orders",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Product Builder",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Saved Payment Methods",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Ticket Booking Storefront",
+                  "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront",
                   "children": []
                 }
               ]

@@ -41,10 +41,42 @@
  *       schema:
  *         $ref: "#/components/schemas/StoreRequestOrderTransfer"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+ *       })
+ * 
+ *       // TODO must be authenticated as the customer to request the order transfer
+ *       sdk.store.order.requestTransfer(
+ *         "order_123",
+ *         {
+ *           description: "I want to transfer this order to my friend."
+ *         },
+ *         {},
+ *         {
+ *           Authorization: `Bearer ${token}`
+ *         }
+ *       )
+ *       .then(({ order }) => {
+ *         console.log(order)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/orders/{id}/transfer/request' \
+ *       -H 'Authorization: Bearer {access_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Orders
@@ -71,6 +103,7 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
+ * x-events: []
  * 
 */
 

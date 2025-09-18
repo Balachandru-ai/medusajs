@@ -16,7 +16,9 @@ Businesses use ecommerce stores to:
 - Accept customer orders and payment.
 - Manage their store's data and logistics.
 
-Medusa provides all essential commerce features out-of-the-box. Businesses can go live and start selling without making any adjustments. They can also power-up their store by integrating third-party services for payments, fulfillment, and more.
+Medusa provides all essential commerce features out-of-the-box. Businesses can go live and start selling without making any adjustments.
+
+Businesses can also power-up their store by integrating third-party services for payments, fulfillment, and more.
 
 <Note title="Related use-case">
 
@@ -28,7 +30,7 @@ Medusa provides all essential commerce features out-of-the-box. Businesses can g
 
 ## Install Ecommerce Store Powered by Medusa
 
-Use the following command to install an ecommerce store with Medusa:
+You can use the following command to install an ecommerce store with Medusa:
 
 ```bash
 npx create-medusa-app@latest --with-nextjs-starter
@@ -37,7 +39,7 @@ npx create-medusa-app@latest --with-nextjs-starter
 This installs:
 
 - The Medusa application, which is composed of a Node.js server and a Medusa Admin dashboard. The dashboard opens right after the installation finishes, where you can create a user and start managing your store's data.
-- A [Next.js starter storefront](../../nextjs-starter/page.mdx) that connects to your Medusa application to provide customers with ecommerce features.
+- A [Next.js Starter Storefront](../../nextjs-starter/page.mdx) that connects to your Medusa application to provide customers with ecommerce features.
 
 ---
 
@@ -45,7 +47,7 @@ This installs:
 
 You can integrate third-party services and tools, customizing the architecture and commerce features of your store.
 
-For example, you can integrate Stripe for payment, or SendGrid for notifications.
+For example, you can integrate [Stripe](../../commerce-modules/payment/payment-provider/stripe/page.mdx) to accept payments, or [SendGrid](../../infrastructure-modules/notification/sendgrid/page.mdx) to send emails to customers.
 
 <Card
   href="/integrations"
@@ -58,19 +60,36 @@ For example, you can integrate Stripe for payment, or SendGrid for notifications
 
 ## Deploy the Medusa Application
 
-Our documentation has step-by-step guides to deploy your Medusa application, Medusa Admin, and the Next.js starter storefront.
+The most efficient way to deploy your Medusa application is to use [Cloud](!cloud!). Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Cloud hosts your server, Admin dashboard, database, and Redis instance.
 
-<Card
-  href="/deployment"
-  title="Deployment Guides"
-  text="Learn how to deploy the Medusa application, Medusa Admin, and Next.js starter storefront."
-  icon={AcademicCapSolid}
-/>
+With Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+
+- Push to deploy.
+- Multiple testing environments.
+- Preview environments for new PRs.
+- Test on production-like data.
+
+Our documentation also provides a step-by-step guides to deploy your Medusa application and the Next.js Starter Storefront.
+
+<CardList itemsPerRow={2} items={[
+  {
+    href: "!cloud!",
+    title: "Sign up for Cloud",
+    text: "Learn more about Cloud and sign up to get started.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "/deployment",
+    title: "Deployment Guides",
+    text: "Learn how to deploy the Medusa application and Next.js Starter Storefront.",
+    icon: AcademicCapSolid,
+  },
+]} />
 
 ---
 
 ## Add Custom Features
 
-Along with the extensive ecommerce features, Medusa also provides the architecture and tools to customize and add new features.
+Along with the extensive ecommerce features, Medusa also provides the architecture and Framework to customize your application and build custom features that are tailored for your business use case.
 
-To learn how to develop customziations with Medusa, refer to the [Medusa documentation](!docs!/learn)
+To learn how to develop customziations with Medusa, refer to the [Get Started](!docs!/learn) documentation.

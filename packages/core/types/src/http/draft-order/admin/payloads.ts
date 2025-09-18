@@ -181,14 +181,23 @@ export interface AdminAddDraftOrderItem {
 }
 
 export interface AdminAddDraftOrderItems {
+  /**
+   * The items to add to the draft order.
+   */
   items: AdminAddDraftOrderItem[]
 }
 
 export interface AdminAddDraftOrderPromotions {
+  /**
+   * The promotion codes to apply to the draft order.
+   */
   promo_codes: string[]
 }
 
 export interface AdminRemoveDraftOrderPromotions {
+  /**
+   * The promotion codes to remove from the draft order.
+   */
   promo_codes: string[]
 }
 

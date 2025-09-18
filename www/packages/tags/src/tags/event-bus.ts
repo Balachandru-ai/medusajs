@@ -20,8 +20,16 @@ export const eventBus = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createCartWorkflow"
   },
   {
+    "title": "transferCartCustomerWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/transferCartCustomerWorkflow"
+  },
+  {
     "title": "updateCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartWorkflow"
+  },
+  {
+    "title": "updateLineItemInCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateLineItemInCartWorkflow"
   },
   {
     "title": "emitEventStep",
@@ -48,6 +56,14 @@ export const eventBus = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCustomersWorkflow"
   },
   {
+    "title": "convertDraftOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/convertDraftOrderWorkflow"
+  },
+  {
+    "title": "updateDraftOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateDraftOrderWorkflow"
+  },
+  {
     "title": "acceptInviteWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/acceptInviteWorkflow"
   },
@@ -66,6 +82,10 @@ export const eventBus = [
   {
     "title": "archiveOrderWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/archiveOrderWorkflow"
+  },
+  {
+    "title": "cancelBeginOrderEditWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/cancelBeginOrderEditWorkflow"
   },
   {
     "title": "cancelOrderFulfillmentWorkflow",
@@ -88,16 +108,16 @@ export const eventBus = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmExchangeRequestWorkflow"
   },
   {
+    "title": "confirmOrderEditRequestWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmOrderEditRequestWorkflow"
+  },
+  {
     "title": "confirmReturnReceiveWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnReceiveWorkflow"
   },
   {
     "title": "confirmReturnRequestWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnRequestWorkflow"
-  },
-  {
-    "title": "createAndCompleteReturnOrderWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createAndCompleteReturnOrderWorkflow"
   },
   {
     "title": "createOrderFulfillmentWorkflow",
@@ -116,6 +136,10 @@ export const eventBus = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/markPaymentCollectionAsPaid"
   },
   {
+    "title": "requestOrderEditRequestWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/requestOrderEditRequestWorkflow"
+  },
+  {
     "title": "requestOrderTransferWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/requestOrderTransferWorkflow"
   },
@@ -126,10 +150,6 @@ export const eventBus = [
   {
     "title": "capturePaymentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/capturePaymentWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "refundPaymentWorkflow",
@@ -246,6 +266,18 @@ export const eventBus = [
   {
     "title": "updateSalesChannelsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateSalesChannelsWorkflow"
+  },
+  {
+    "title": "createShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "deleteShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "updateShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateShippingOptionTypesWorkflow"
   },
   {
     "title": "createUserAccountWorkflow",

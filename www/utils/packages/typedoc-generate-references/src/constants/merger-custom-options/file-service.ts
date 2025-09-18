@@ -15,6 +15,7 @@ const fileServiceOptions: FormattingOptionsType = {
       fullReplacement: "How to Use File Module",
     },
     expandMembers: true,
+    sortMembers: true,
     startSections: [
       `## Resolve File Module's Service
 

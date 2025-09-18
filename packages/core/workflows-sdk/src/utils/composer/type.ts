@@ -50,6 +50,8 @@ type ConvertHooksToFunctions<THooks extends any[]> = THooks extends [
   ? ConvertHookToObject<A> & ConvertHooksToFunctions<R>
   : {}
 
+export type Void = { " $$type": "void" }
+
 /**
  * A step function to be used in a workflow.
  *
@@ -62,7 +64,9 @@ export type StepFunction<
 > = (KeysOfUnion<TInput> extends []
   ? // Function that doesn't expect any input
     {
-      (): WorkflowData<TOutput> & StepFunctionReturnConfig<TOutput>
+      (): TOutput & {} extends never
+        ? WorkflowData<Void> & StepFunctionReturnConfig<TOutput>
+        : WorkflowData<TOutput> & StepFunctionReturnConfig<TOutput>
     }
   : // function that expects an input object
     {
@@ -109,10 +113,18 @@ export type CreateWorkflowComposerContext = {
   flow: OrchestratorBuilder
   isAsync: boolean
   handlers: WorkflowHandler
+  overriddenHandler: WorkflowHandler
   stepBinder: <TOutput = unknown>(
     fn: StepFunctionResult
   ) => WorkflowData<TOutput>
   hookBinder: (name: string, fn: () => HookHandler) => void
+  stepConditions_: Record<
+    string,
+    {
+      condition: (...args: any[]) => boolean | WorkflowData
+      input: any
+    }
+  >
   parallelizeBinder: <
     TOutput extends (WorkflowData | undefined)[] = WorkflowData[]
   >(
@@ -143,6 +155,11 @@ export interface StepExecutionContext {
    * The idempoency key of the parent step.
    */
   parentStepIdempotencyKey?: string
+
+  /**
+   * Whether to prevent release events.
+   */
+  preventReleaseEvents?: boolean
 
   /**
    * The name of the step.
@@ -176,12 +193,22 @@ export interface StepExecutionContext {
   transactionId?: string
 
   /**
+   * A string indicating the ID of the current run.
+   */
+  runId?: string
+
+  /**
    * Get access to the result returned by a named step. Returns undefined
    * when step is not found or when nothing was returned.
    *
    * Adding a space hides the method from the autocomplete
    */
   " getStepResult"(stepId: string, action?: "invoke" | "compensate"): any
+
+  /**
+   * Get access to the definition of the step.
+   */
+  " stepDefinition": TransactionStepsDefinition
 }
 
 export type WorkflowTransactionContext = StepExecutionContext &
@@ -241,7 +268,11 @@ export type ReturnWorkflow<TData, TResult, THooks extends any[]> = {
     container?: LoadedModule[] | MedusaContainer
   ): Omit<
     LocalWorkflow,
-    "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+    | "run"
+    | "registerStepSuccess"
+    | "registerStepFailure"
+    | "cancel"
+    | "retryStep"
   > &
     ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride>
 } & {

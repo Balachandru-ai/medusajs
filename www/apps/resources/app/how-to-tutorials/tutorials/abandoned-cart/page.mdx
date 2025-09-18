@@ -6,6 +6,8 @@ tags:
     - server
     - tutorial
     - notification
+products:
+  - cart
 ---
 
 import { Github, PlaySolid } from "@medusajs/icons"
@@ -41,9 +43,9 @@ export const metadata = {
 
 In this tutorial, you will learn how to send notifications to customers who have abandoned their carts.
 
-When you install a Medusa application, you get a fully-fledged commerce platform with a framework for customization. The Medusa application's commerce features are built around [commerce modules](../../../commerce-modules/page.mdx), which are available out-of-the-box. These features include cart-management capabilities.
+When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. The Medusa application's commerce features are built around [Commerce Modules](../../../commerce-modules/page.mdx), which are available out-of-the-box. These features include cart-management capabilities.
 
-Medusa's [Notification Module](../../../architectural-modules/notification/page.mdx) allows you to send notifications to users or customers, such as password reset emails, order confirmation SMS, or other types of notifications.
+Medusa's [Notification Module](../../../infrastructure-modules/notification/page.mdx) allows you to send notifications to users or customers, such as password reset emails, order confirmation SMS, or other types of notifications.
 
 In this tutorial, you will use the Notification Module to send an email to customers who have abandoned their carts. The email will contain a link to recover the customer's cart, encouraging them to complete their purchase. You will use SendGrid to send the emails, but you can also use other email providers.
 
@@ -90,7 +92,7 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You will first be asked for the project's name. Then, when asked whether you want to install the [Next.js starter storefront](../../../nextjs-starter/page.mdx), choose "Yes."
+You will first be asked for the project's name. Then, when asked whether you want to install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx), choose "Yes."
 
 Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name and the Next.js Starter Storefront in a separate directory with the `{project-name}-storefront` name.
 
@@ -129,9 +131,9 @@ Check out the [troubleshooting guides](../../../troubleshooting/create-medusa-ap
 
 Medusa's Notification Module provides the general functionality to send notifications, but the sending logic is implemented in a module provider. This allows you to integrate the email provider of your choice.
 
-To send the cart-abandonment emails, you will use SendGrid. Medusa provides a [SendGrid Notification Module Provider](../../../architectural-modules/notification/sendgrid/page.mdx) that you can use to send emails.
+To send the cart-abandonment emails, you will use SendGrid. Medusa provides a [SendGrid Notification Module Provider](../../../infrastructure-modules/notification/sendgrid/page.mdx) that you can use to send emails.
 
-Alternatively, you can use [other Notification Module Providers](../../../architectural-modules/notification/page.mdx#what-is-a-notification-module-provider) or [create a custom provider](/references/notification-provider-module).
+Alternatively, you can use [other Notification Module Providers](../../../infrastructure-modules/notification/page.mdx#what-is-a-notification-module-provider) or [create a custom provider](/references/notification-provider-module).
 
 To set up SendGrid, add the SendGrid Notification Module Provider to `medusa-config.ts`:
 
@@ -272,7 +274,7 @@ You create a step with `createStep` from the Workflows SDK. It accepts two param
 1. The step's unique name, which is `create-review`.
 2. An async function that receives two parameters:
     - The step's input, which is in this case an object with the review's properties.
-    - An object that has properties including the [Medusa container](!docs!/learn/fundamentals/medusa-container), which is a registry of framework and commerce tools that you can access in the step.
+    - An object that has properties including the [Medusa container](!docs!/learn/fundamentals/medusa-container), which is a registry of Framework and commerce tools that you can access in the step.
 
 In the step function, you first resolve the Notification Module's service, which has methods to manage notifications. Then, you prepare the data of each notification, and create the notifications with the `createNotifications` method.
 
@@ -556,11 +558,9 @@ const {
     updated_at: {
       $lt: oneDayAgo,
     },
-    // @ts-ignore
     email: {
       $ne: null,
     },
-    // @ts-ignore
     completed_at: null,
   },
   pagination: {
@@ -681,7 +681,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
 
 You add a `GET` route handler that receives the cart ID as a path parameter. In the route handler, you:
 
-- Try to retrieve the cart from the Medusa application. The `retrieveCart` function is already available in the Next.js storefront. If the cart is not found, you return a 404 response.
+- Try to retrieve the cart from the Medusa application. The `retrieveCart` function is already available in the Next.js Starter Storefront. If the cart is not found, you return a 404 response.
 - Set the cart ID in a cookie using the `setCartId` function. This is also a function that is already available in the storefront.
 - Redirect the customer to the cart page. You set the country code in the URL based on the cart's shipping address or region.
 

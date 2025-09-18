@@ -1,6 +1,7 @@
 import { DocsConfig, Sidebar } from "types"
 import { generatedSidebars } from "@/generated/sidebar.mjs"
 import { globalConfig } from "docs-ui"
+import { basePathUrl } from "../utils/base-path-url"
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
 
@@ -22,5 +23,12 @@ export const config: DocsConfig = {
         link: baseUrl,
       },
     ],
+  },
+  version: {
+    ...globalConfig.version,
+    bannerImage: {
+      light: basePathUrl("/images/release.png"),
+      dark: basePathUrl("/images/release-dark.png"),
+    },
   },
 }

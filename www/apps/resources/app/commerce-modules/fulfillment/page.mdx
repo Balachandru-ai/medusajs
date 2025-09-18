@@ -1,3 +1,7 @@
+---
+generate_toc: true
+---
+
 import { CodeTabs, CodeTab } from "docs-ui"
 
 export const metadata = {
@@ -17,7 +21,7 @@ Refer to the Medusa Admin User Guide to learn how to use the dashboard to:
 
 </Note>
 
-Medusa has fulfillment related features available out-of-the-box through the Fulfillment Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in commerce modules, such as this Fulfillment Module.
+Medusa has fulfillment related features available out-of-the-box through the Fulfillment Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Fulfillment Module.
 
 <Note>
 
@@ -31,12 +35,13 @@ Learn more about why modules are isolated in [this documentation](!docs!/learn/f
 - [Integrate Third-Party Fulfillment Providers](./fulfillment-provider/page.mdx): Create third-party fulfillment providers to provide customers with shipping options and fulfill their orders.
 - [Restrict By Location and Rules](./shipping-option/page.mdx): Shipping options can be restricted to specific geographical locations. You can also specify custom rules to restrict shipping options.
 - [Support Different Fulfillment Forms](./concepts/page.mdx): Support various fulfillment forms, such as shipping or pick up.
+- [Tiered Pricing and Price Rules](../pricing/price-rules/page.mdx): Set prices for shipping options with tiers and rules, allowing you to create complex pricing strategies.
 
 ---
 
 ## How to Use the Fulfillment Module
 
-In your Medusa application, you build flows around commerce modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
+In your Medusa application, you build flows around Commerce Modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
 
 You can build custom workflows and steps. You can also re-use Medusa's workflows and steps, which are provided by the `@medusajs/medusa/core-flows` package.
 

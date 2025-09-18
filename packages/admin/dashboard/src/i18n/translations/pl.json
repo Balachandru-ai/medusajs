@@ -45,6 +45,7 @@
     "plusCount": "+ {{count}}",
     "plusCountMore": "+ {{count}} więcej",
     "areYouSure": "Czy jesteś pewien?",
+    "areYouSureDescription": "Czy jesteś pewien że chcesz usunąć {{entity}} {{title}}. Tej akcji nie można cofnąć.",
     "noRecordsFound": "Nie znaleziono rekordów",
     "typeToConfirm": "Wpisz {val} aby potwierdzić:",
     "noResultsTitle": "Brak wyników",
@@ -359,6 +360,7 @@
     "backToDashboard": "Powrót do pulpitu"
   },
   "addresses": {
+    "title": "Adresy",
     "shippingAddress": {
       "header": "Adres dostawy",
       "editHeader": "Edytuj adres dostawy",
@@ -553,18 +555,22 @@
     "fields": {
       "title": {
         "label": "Tytuł",
-        "hint": "Podaj krótki i jasny tytuł dla swojego produktu.<0/>Zalecana długość to 50-60 znaków dla wyszukiwarek."
+        "hint": "Podaj krótki i jasny tytuł dla swojego produktu.<0/>Zalecana długość to 50-60 znaków dla wyszukiwarek.",
+        "placeholder": "Kurtka zimowa"
       },
       "subtitle": {
-        "label": "Podtytuł"
+        "label": "Podtytuł",
+        "placeholder": "Ciepły i przytulny"
       },
       "handle": {
         "label": "Uchwyt",
-        "tooltip": "Uchwyt jest używany do odniesienia do produktu w Twoim sklepie. Jeśli nie zostanie określony, uchwyt zostanie wygenerowany z tytułu produktu."
+        "tooltip": "Uchwyt jest używany do odniesienia do produktu w Twoim sklepie. Jeśli nie zostanie określony, uchwyt zostanie wygenerowany z tytułu produktu.",
+        "placeholder": "kurtka-zimowa"
       },
       "description": {
         "label": "Opis",
-        "hint": "Podaj krótki i jasny opis dla swojego produktu.<0/>Zalecana długość to 120-160 znaków dla wyszukiwarek."
+        "hint": "Podaj krótki i jasny opis dla swojego produktu.<0/>Zalecana długość to 120-160 znaków dla wyszukiwarek.",
+        "placeholder": "Ciepła i przytulna kurtka"
       },
       "discountable": {
         "label": "Rabaty",
@@ -839,8 +845,10 @@
     "locationLevels": "Lokalizacje",
     "associatedVariants": "Powiązane warianty",
     "manageLocations": "Zarządzaj lokalizacjami",
+    "manageLocationQuantity": "Zarządzaj ilościami w lokalizacji",
     "deleteWarning": "Zamierzasz usunąć element magazynowy. Tej akcji nie można cofnąć.",
     "editItemDetails": "Edytuj szczegóły elementu",
+    "quantityAcrossLocations": "{{quantity}} w {{locations}} lokalizacjach",
     "create": {
       "title": "Utwórz element magazynowy",
       "details": "Szczegóły",
@@ -963,7 +971,28 @@
     },
     "registered": "Zarejestrowany",
     "guest": "Gość",
-    "hasAccount": "Posiada konto"
+    "hasAccount": "Posiada konto",
+    "addresses": {
+      "title": "Adresy",
+      "fields": {
+        "addressName": "Nazwa adresu",
+        "address1": "Adres 1",
+        "address2": "Adres 2",
+        "city": "Miasto",
+        "province": "Prowincja",
+        "postalCode": "Kod pocztowy",
+        "country": "Kraj",
+        "phone": "Telefon",
+        "company": "Firma",
+        "countryCode": "Kod kraju",
+        "provinceCode": "Kod prowincji"
+      },
+      "create": {
+        "header": "Utwórz adres",
+        "hint": "Utwórz adres dla klienta",
+        "successToast": "Adres został pomyślnie utworzony"
+      }
+    }
   },
   "customerGroups": {
     "domain": "Grupy klientów",
@@ -1019,6 +1048,31 @@
     }
   },
   "orders": {
+    "giftCardsStoreCreditLines": "Karty podarunkowe i linie kredytowe",
+    "creditLines": {
+      "title": "Linie kredytowe",
+      "total": "Suma wszystkich linii kredytowych",
+      "creditOrDebit": "Kredyt / Debet",
+      "createCreditLine": "Utwórz linię kredytową",
+      "createCreditLineSuccess": "Linia kredytowa została pomyślnie utworzona",
+      "createCreditLineError": "Błąd podczas dodawania linii kredytowej",
+      "createCreditLineDescription": "Utwórz linię kredytową na kwotę {{amount}}",
+      "operation": "Operacja",
+      "credit": "Kredyt",
+      "creditDescription": "Dodaj dodatnią sumę do zamówienia",
+      "debit": "Debet",
+      "debitDescription": "Odejmuj ujemną sumę od zamówienia"
+    },
+    "balanceSettlement": {
+      "title": "Rozliczenie salda",
+      "settlementType": "Typ rozliczenia",
+      "settlementTypes": {
+        "paymentMethod": "Metoda płatności",
+        "paymentMethodDescription": "Kwota zwrotu na metodę płatności",
+        "creditLine": "Kredyt sklepowy",
+        "creditLineDescription": "Kwota zwrotu w formie kredytu sklepowego"
+      }
+    },
     "domain": "Zamówienia",
     "claim": "Reklamacja",
     "exchange": "Wymiana",
@@ -1039,19 +1093,20 @@
       "requires_action": "Wymaga działania"
     },
     "summary": {
-      "requestReturn": "Złóż wniosek o zwrot",
+      "requestReturn": "Zgłoś zwrot",
       "allocateItems": "Przydziel produkty",
       "editOrder": "Edytuj zamówienie",
       "editOrderContinue": "Kontynuuj edycję zamówienia",
-      "inventoryKit": "Składa się z {{count}}x produktów magazynowych",
-      "itemTotal": "Suma produktów",
-      "shippingTotal": "Suma wysyłki",
-      "discountTotal": "Suma rabatów",
-      "taxTotalIncl": "Suma podatku (wliczono)",
-      "itemSubtotal": "Suma produktów",
-      "shippingSubtotal": "Suma wysyłki",
-      "discountSubtotal": "Suma rabatów",
-      "taxTotal": "Suma podatku"
+      "inventoryKit": "Składa się z {{count}} produktów magazynowych",
+      "itemTotal": "Wartość produktów",
+      "shippingTotal": "Koszt wysyłki",
+      "discountTotal": "Wartość rabatów",
+      "taxTotalIncl": "Kwota podatku (wliczona)",
+      "itemSubtotal": "Wartość produktów",
+      "shippingSubtotal": "Koszt wysyłki",
+      "discountSubtotal": "Wartość rabatów",
+      "taxTotal": "Kwota podatku",
+      "totalAfterDiscount": "Razem po rabacie"
     },
     "transfer": {
       "title": "Przekaż własność",
@@ -1065,6 +1120,7 @@
       "title": "Płatności",
       "isReadyToBeCaptured": "Płatność <0/> jest gotowa do realizacji.",
       "totalPaidByCustomer": "Łączna kwota zapłacona przez klienta",
+      "totalStoreCreditRefunds": "Całkowite zwroty kredytów sklepowych",
       "capture": "Zrealizuj płatność",
       "capture_short": "Zrealizuj",
       "refund": "Zwrot",
@@ -1148,7 +1204,7 @@
       "sendNotificationHint": "Powiadom klienta o zwrocie.",
       "returnTotal": "Suma zwrotu",
       "inboundTotal": "Suma przychodząca",
-      "refundAmount": "Kwota zwrotu",
+      "estDifference": "Zaległa kwota",
       "outstandingAmount": "Pozostało do zapłaty",
       "reason": "Powód",
       "reasonHint": "Wybierz powód, dla którego klient chce zwrócić produkty.",
@@ -1288,7 +1344,8 @@
       "consistsOf": "Składa się z {{num}}x produktów magazynowych",
       "requires": "Wymaga {{num}} na wariant",
       "toast": {
-        "created": "Produkty zostały pomyślnie przydzielone"
+        "created": "Produkty zostały pomyślnie przydzielone",
+        "error": "Wystąpił błąd podczas przydzielania produktów: {{items}}"
       },
       "error": {
         "quantityNotAllocated": "Istnieją nieprzydzielone produkty."
@@ -1555,6 +1612,10 @@
       "shippingProfiles": {
         "label": "Profile wysyłki",
         "description": "Grupuj produkty według wymagań wysyłki"
+      },
+      "shippingOptionTypes": {
+        "label": "Typy opcji wysyłki",
+        "description": "Grupuj opcje wysyłki według typów"
       }
     },
     "salesChannels": {
@@ -1678,6 +1739,7 @@
         },
         "provider": "Dostawca realizacji",
         "profile": "Profil wysyłki",
+        "type": "Typ opcji wysyłki",
         "fulfillmentOption": "Opcja realizacji"
       }
     },
@@ -1739,10 +1801,15 @@
       "header": "Utwórz region podatkowy",
       "hint": "Utwórz nowy region podatkowy, aby zdefiniować stawki podatkowe dla konkretnego kraju.",
       "errors": {
-        "rateIsRequired": "Stawka podatku jest wymagana podczas tworzenia domyślnej stawki podatku.",
-        "nameIsRequired": "Nazwa jest wymagana podczas tworzenia domyślnej stawki podatku."
+        "missingCountry": "Kraj jest wymagany",
+        "missingProvider": "Dostawca podatków jest wymagany"
       },
       "successToast": "Region podatkowy został pomyślnie utworzony."
+    },
+    "edit": {
+      "header": "Edytuj region podatkowy",
+      "hint": "Edytuj szczegóły regionu podatkowego",
+      "successToast": "Region podatkowy został pomyślnie zaktualizowany"
     },
     "province": {
       "header": "Prowincje",
@@ -1750,6 +1817,9 @@
         "header": "Utwórz regionalny region podatkowy",
         "hint": "Utwórz nowy region podatkowy, aby zdefiniować stawki podatkowe dla konkretnej prowincji."
       }
+    },
+    "provider": {
+      "header": "Dostawca podatków"
     },
     "state": {
       "header": "Stany",
@@ -1876,6 +1946,7 @@
       },
       "taxRate": "Stawka podatku",
       "taxCode": "Kod podatkowy",
+      "taxProvider": "Dostawca podatków",
       "targets": {
         "label": "Cele",
         "hint": "Wybierz cele, do których będzie miała zastosowanie ta stawka podatku.",
@@ -1884,7 +1955,8 @@
           "productCollection": "Kolekcje produktów",
           "productTag": "Tagi produktów",
           "productType": "Typy produktów",
-          "customerGroup": "Grupy klientów"
+          "customerGroup": "Grupy klientów",
+          "shippingOption": "Opcje wysyłki"
         },
         "operators": {
           "in": "w",
@@ -1896,14 +1968,16 @@
           "productCollection": "Wyszukaj kolekcje produktów",
           "productTag": "Szukaj tagów produktów",
           "productType": "Wyszukaj typy produktów",
-          "customerGroup": "Wyszukaj grupy klientów"
+          "customerGroup": "Wyszukaj grupy klientów",
+          "shippingOption": "Wyszukaj opcje wysyłki"
         },
         "tags": {
           "product": "Produkt",
           "productCollection": "Kolekcja produktów",
           "productTag": "Etykieta produktu",
           "productType": "Typ produktu",
-          "customerGroup": "Grupa klientów"
+          "customerGroup": "Grupa klientów",
+          "shippingOption": "Opcja wysyłki"
         },
         "modal": {
           "header": "Dodaj cele"
@@ -1987,6 +2061,7 @@
       "allocation": "Przydział",
       "addCondition": "Dodaj warunek",
       "clearAll": "Wyczyść wszystko",
+      "taxInclusive": "Zawiera podatek",
       "amount": {
         "tooltip": "Wybierz kod waluty, aby umożliwić ustawienie kwoty"
       },
@@ -1996,8 +2071,18 @@
           "description": "Który klient może skorzystać z kodu promocyjnego? Kod promocyjny może być używany przez wszystkich klientów, jeśli pozostanie nietknięty."
         },
         "target-rules": {
-          "title": "Na jakie artykuły będzie miała zastosowanie promocja?",
-          "description": "Promocja zostanie zastosowana do artykułów spełniających poniższe warunki."
+          "order": {
+            "title": "Do których produktów zostanie zastosowana promocja?",
+            "description": "Promocja zostanie zastosowana do produktów spełniających poniższe warunki."
+          },
+          "shipping_methods": {
+            "title": "Do których metod wysyłki zostanie zastosowana promocja?",
+            "description": "Promocja zostanie zastosowana do metod wysyłki spełniających poniższe warunki."
+          },
+          "items": {
+            "title": "Do których produktów zostanie zastosowana promocja?",
+            "description": "Promocja zostanie zastosowana do produktów spełniających poniższe warunki."
+          }
         },
         "buy-rules": {
           "title": "Co musi znaleźć się w koszyku, aby odblokować promocję?",
@@ -2063,6 +2148,10 @@
           "description": "Kontynuuj bez kojarzenia promocji z kampanią"
         }
       },
+      "taxInclusive": {
+        "title": "Czy promocja zawiera podatki?",
+        "description": "Włącz, aby zastosować promocję po naliczeniu podatków"
+      },
       "status": {
         "label": "Status",
         "draft": {
@@ -2118,7 +2207,8 @@
         "description": "Kod, który Twoi klienci wprowadzą podczas realizacji transakcji."
       },
       "value": {
-        "title": "Wartość promocyjna"
+        "title": "Wartość promocji",
+        "invalid": "Nieprawidłowa wartość promocji"
       },
       "value_type": {
         "fixed": {
@@ -2506,7 +2596,6 @@
       "createTaxRate": "Utwórz stawkę podatku",
       "createTaxRateHint": "Utwórz nową stawkę podatku dla regionu.",
       "deleteRateDescription": "Zamierzasz usunąć stawkę podatku {{name}}. Tej akcji nie można cofnąć.",
-      "editTaxRate": "Edytuj stawkę podatku",
       "editRateAction": "Edytuj stawkę",
       "editOverridesAction": "Edytuj zastąpienia",
       "editOverridesTitle": "Edytuj zmiany stawek podatku",
@@ -2807,6 +2896,28 @@
       }
     }
   },
+  "shippingOptionTypes": {
+    "domain": "Typy opcji wysyłki",
+    "subtitle": "Zorganizuj opcje wysyłki według typów",
+    "create": {
+      "header": "Utwórz typ opcji wysyłki",
+      "hint": "Utwórz typ opcji wysyłki aby skategoryzować opcje dostawy",
+      "successToast": "Typ opcji wysyłki {{label}} został pomyślnie zaktalizowany"
+    },
+    "edit": {
+      "header": "Edytuj typ opcji wysyłki",
+      "successToast": "Typ opcji wysyłki {{label}} został pomyślnie zaktualizowany"
+    },
+    "delete": {
+      "confirmation": "Jesteś pewien że chcesz usunąć top opcji wysyłki \"{{label}}\". Tej operacji nie da się cofnąć",
+      "successToast": "Typ opcji wysyłki \"{{label}}\" został pomyślnie usunięty"
+    },
+    "fields": {
+      "label": "Nazwa",
+      "code": "Kod",
+      "description": "Opis"
+    }
+  },
   "productTypes": {
     "domain": "Typy produktów",
     "subtitle": "Uporządkuj swoje produkty według typów.",
@@ -2875,15 +2986,19 @@
     "prices": "Ceny",
     "available": "Dostępny",
     "inStock": "W magazynie",
-    "added": "W dodatku",
+    "added": "Dodany",
     "removed": "Usunięty",
     "from": "Od",
     "to": "Do",
     "beaware": "Zwróć uwagę",
-    "loading": "Ładowanie"
+    "loading": "Ładowanie",
+    "selectValue": "Wybierz wartość",
+    "selectValues": "Wybierz wartości"
   },
   "fields": {
     "amount": "Kwota",
+    "reference": "Referencja",
+    "reference_id": "ID referencji",
     "refundAmount": "Kwota zwrotu",
     "name": "Nazwa",
     "default": "Domyślny",
@@ -2906,6 +3021,8 @@
     "categories": "Kategorie",
     "shippingMethod": "Sposób wysyłki",
     "configurations": "Konfiguracje",
+    "enabledInStore": "Dostępne w sklepie",
+    "isReturn": "Zwrot",
     "conditions": "Warunki",
     "category": "Kategoria",
     "collection": "Kolekcja",
@@ -2941,6 +3058,7 @@
     "minutes": "Protokół",
     "totalRedemptions": "Całkowite wykupy",
     "countries": "Kraje",
+    "serviceZone": "Strefa obsługi",
     "paymentProviders": "Dostawcy płatności",
     "refundReason": "Powód zwrotu",
     "fulfillmentProviders": "Dostawcy realizacji",
@@ -2970,6 +3088,7 @@
     "account": "Konto",
     "total": "Wartość zamówienia",
     "paidTotal": "Zapłacono",
+    "creditTotal": "Łącznie linie kredytowe",
     "totalExclTax": "Razem bez podatek",
     "subtotal": "Suma częściowa",
     "shipping": "Wysyłka",
@@ -3029,7 +3148,7 @@
     "minSubtotal": "Min. Suma częściowa",
     "maxSubtotal": "Maks. Suma częściowa",
     "shippingProfile": "Profil wysyłki",
-    "summary": "Streszczenie",
+    "summary": "Podsumowanie",
     "details": "Bliższe dane",
     "label": "Etykieta",
     "rate": "Wskaźnik",
@@ -3065,7 +3184,7 @@
     "minutes_few": "Minuty",
     "minutes_many": "Minut",
     "minutes_other": "Minut",
-    "seconds_one": "Sekund",
+    "seconds_one": "Sekunda",
     "seconds_few": "Sekundy",
     "seconds_many": "Sekund",
     "seconds_other": "Sekund"

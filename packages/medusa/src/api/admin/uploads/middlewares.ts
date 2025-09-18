@@ -1,8 +1,11 @@
 import multer from "multer"
-import { MiddlewareRoute } from "@medusajs/framework/http"
+import {
+  MiddlewareRoute,
+  validateAndTransformBody,
+} from "@medusajs/framework/http"
 import { validateAndTransformQuery } from "@medusajs/framework"
 import { retrieveUploadConfig } from "./query-config"
-import { AdminGetUploadParams } from "./validators"
+import { AdminGetUploadParams, AdminUploadPreSignedUrl } from "./validators"
 
 // TODO: For now we keep the files in memory, as that's how they get passed to the workflows
 // This will need revisiting once we are closer to prod-ready v2, since with workflows and potentially
@@ -30,5 +33,10 @@ export const adminUploadRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/uploads/:id",
     middlewares: [],
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/uploads/presigned-urls",
+    middlewares: [validateAndTransformBody(AdminUploadPreSignedUrl)],
   },
 ]

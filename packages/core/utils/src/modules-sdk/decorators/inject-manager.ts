@@ -28,6 +28,7 @@ export function InjectManager(managerProperty?: string): MethodDecorator {
         }
 
         Object.defineProperty(copiedContext, key, {
+          enumerable: true,
           get: function () {
             return originalContext[key]
           },

@@ -227,39 +227,68 @@ describe("mikroOrmRepository", () => {
       )
     })
 
-    it("should successfully update a flat entity", async () => {
+    it("batch updates should retain order of entities", async () => {
       const entity1 = { id: "1", title: "en1" }
+      const entity2 = { id: "2", title: "en2" }
+      const entity3 = { id: "3", title: "en3" }
 
       const { performedActions: performedActions1 } =
-        await manager1().upsertWithReplace([entity1])
+        await manager1().upsertWithReplace([entity1, entity2, entity3])
 
       expect(performedActions1).toEqual({
         created: {
-          [Entity1.name]: [expect.objectContaining({ id: entity1.id })],
+          [Entity1.name]: [
+            expect.objectContaining({ id: entity1.id }),
+            expect.objectContaining({ id: entity2.id }),
+            expect.objectContaining({ id: entity3.id }),
+          ],
         },
         updated: {},
         deleted: {},
       })
 
-      entity1.title = "newen1"
+      // Doing this to shuffle the physical order of rows in the DB
+      entity1.title = "en1-update-1"
+      entity3.title = "en3-update-1"
+      await manager1().upsertWithReplace([entity1, entity3])
+
+      entity1.title = "en1-update-2"
+      entity2.title = "en2-update-2"
+      entity3.title = "en3-update-2"
       const { performedActions: performedActions2 } =
-        await manager1().upsertWithReplace([entity1])
+        await manager1().upsertWithReplace([entity1, entity2, entity3])
 
       expect(performedActions2).toEqual({
         created: {},
         updated: {
-          [Entity1.name]: [expect.objectContaining({ id: entity1.id })],
+          [Entity1.name]: [
+            expect.objectContaining({ id: entity1.id }),
+            expect.objectContaining({ id: entity2.id }),
+            expect.objectContaining({ id: entity3.id }),
+          ],
         },
         deleted: {},
       })
 
-      const listedEntities = await manager1().find()
-
-      expect(listedEntities).toHaveLength(1)
-      expect(wrap(listedEntities[0]).toPOJO()).toEqual(
+      const readEntity1 = await manager1().find({ where: { id: "1" } })
+      expect(wrap(readEntity1[0]).toPOJO()).toEqual(
         expect.objectContaining({
           id: "1",
-          title: "newen1",
+          title: "en1-update-2",
+        })
+      )
+      const readEntity2 = await manager1().find({ where: { id: "2" } })
+      expect(wrap(readEntity2[0]).toPOJO()).toEqual(
+        expect.objectContaining({
+          id: "2",
+          title: "en2-update-2",
+        })
+      )
+      const readEntity3 = await manager1().find({ where: { id: "3" } })
+      expect(wrap(readEntity3[0]).toPOJO()).toEqual(
+        expect.objectContaining({
+          id: "3",
+          title: "en3-update-2",
         })
       )
     })

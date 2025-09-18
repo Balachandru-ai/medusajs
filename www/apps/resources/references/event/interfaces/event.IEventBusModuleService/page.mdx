@@ -5,6 +5,10 @@ tags:
   - server
   - how to
 sidebar_label: Use Event Module
+keywords:
+  - event
+  - provider
+  - integration
 ---
 
 import { TypeList } from "docs-ui"
@@ -35,7 +39,7 @@ const step1 = createStep(
 )
 ```
 
-This will resolve the service of the configured Event Module, which is the [Local Event Module](https://docs.medusajs.com/resources/architectural-modules/event/local) by default.
+This will resolve the service of the configured Event Module, which is the [Local Event Module](https://docs.medusajs.com/resources/infrastructure-modules/event/local) by default.
 
 You can then use the Event Module's service's methods in the step. The rest of this guide details these methods.
 
@@ -48,9 +52,9 @@ This method emits one or more events. Subscribers listening to the event(s) are 
 ### Example
 
 ```ts
-await eventModuleService.emit({ 
-  name: "user.created", 
-  data: { 
+await eventModuleService.emit({
+  name: "user.created",
+  data: {
     user_id: "user_123"
   }
 })
@@ -62,7 +66,7 @@ await eventModuleService.emit({
 
 ### Parameters
 
-<TypeList types={[{"name":"data","type":"[Message](../../../types/EventBusTypes/types/types.EventBusTypes.Message/page.mdx)&#60;T&#62; \\| [Message](../../../types/EventBusTypes/types/types.EventBusTypes.Message/page.mdx)&#60;T&#62;[]","description":"The details of the events to emit.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"name","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"TData","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"[EventMetadata](../../../types/EventBusTypes/types/types.EventBusTypes.EventMetadata/page.mdx)","description":"","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"eventGroupId","type":"`string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"options","type":"`Record<string, unknown>`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"options","type":"`Record<string, unknown>`","description":"Additional options for the event.","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="emit"/>
+<TypeList types={[{"name":"data","type":"[Message](../../../types/EventBusTypes/types/types.EventBusTypes.Message/page.mdx)&#60;T&#62; \\| [Message](../../../types/EventBusTypes/types/types.EventBusTypes.Message/page.mdx)&#60;T&#62;[]","description":"The details of the events to emit.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"name","type":"`string`","description":"The event's name.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"TData","description":"The data payload that subscribers receive. For example, the ID or IDs of the created user. (e.g. &#123; id: \"123\" &#125; or &#123; ids: [\"123\", \"456\"] &#125;)","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"[EventMetadata](../../../types/EventBusTypes/types/types.EventBusTypes.EventMetadata/page.mdx)","description":"Additional meadata to pass with the event.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"eventGroupId","type":"`string`","description":"The ID of the event's group. Grouped events are useful when you have distributed transactions\nwhere you need to explicitly group, release and clear events upon lifecycle events of a transaction.\n\nWhen set, you must release the grouped events using the Event Module's `releaseGroupedEvents` method to emit the events.","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"options","type":"`Record<string, unknown>`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"options","type":"`Record<string, unknown>`","description":"Additional options for the event.","optional":true,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="emit"/>
 
 ### Returns
 
@@ -84,7 +88,7 @@ eventModuleService.subscribe("user.created", async (data) => {
 
 ### Parameters
 
-<TypeList types={[{"name":"eventName","type":"`string` \\| `symbol`","description":"The name of the event to subscribe to.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"subscriber","type":"[Subscriber](../../../types/EventBusTypes/types/types.EventBusTypes.Subscriber/page.mdx)","description":"The subscriber function to execute when the event is emitted.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[SubscriberContext](../../../types/EventBusTypes/types/types.EventBusTypes.SubscriberContext/page.mdx)","description":"The context of the subscriber.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"subscriberId","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="subscribe"/>
+<TypeList types={[{"name":"eventName","type":"`string` \\| `symbol`","description":"The name of the event to subscribe to.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"subscriber","type":"[Subscriber](../../../types/EventBusTypes/types/types.EventBusTypes.Subscriber/page.mdx)","description":"The subscriber function to execute when the event is emitted.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[SubscriberContext](../../../types/EventBusTypes/types/types.EventBusTypes.SubscriberContext/page.mdx)","description":"The context of the subscriber.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"subscriberId","type":"`string`","description":"The ID of the subscriber. Useful when retrying failed subscribers.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="subscribe"/>
 
 ### Returns
 
@@ -106,7 +110,7 @@ eventModuleService.unsubscribe("user.created", async (data) => {
 
 ### Parameters
 
-<TypeList types={[{"name":"eventName","type":"`string` \\| `symbol`","description":"The name of the event to unsubscribe from.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"subscriber","type":"[Subscriber](../../../types/EventBusTypes/types/types.EventBusTypes.Subscriber/page.mdx)","description":"The subscriber function to remove.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[SubscriberContext](../../../types/EventBusTypes/types/types.EventBusTypes.SubscriberContext/page.mdx)","description":"The context of the subscriber.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"subscriberId","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="unsubscribe"/>
+<TypeList types={[{"name":"eventName","type":"`string` \\| `symbol`","description":"The name of the event to unsubscribe from.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"subscriber","type":"[Subscriber](../../../types/EventBusTypes/types/types.EventBusTypes.Subscriber/page.mdx)","description":"The subscriber function to remove.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[SubscriberContext](../../../types/EventBusTypes/types/types.EventBusTypes.SubscriberContext/page.mdx)","description":"The context of the subscriber.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"subscriberId","type":"`string`","description":"The ID of the subscriber. Useful when retrying failed subscribers.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="unsubscribe"/>
 
 ### Returns
 
@@ -148,7 +152,7 @@ await eventModuleService.clearGroupedEvents("group_123")
 
 ### Parameters
 
-<TypeList types={[{"name":"eventGroupId","type":"`string`","description":"The ID of the event group.","optional":false,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="clearGroupedEvents"/>
+<TypeList types={[{"name":"eventGroupId","type":"`string`","description":"The ID of the event group.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"options","type":"`object`","description":"Additional options for the event.","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"eventNames","type":"`string`[]","description":"The names of the events to clear. If not provided, The group will\nbe entirely cleared.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="clearGroupedEvents"/>
 
 ### Returns
 

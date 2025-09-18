@@ -24,6 +24,23 @@
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.user.retrieve("user_123")
+ *       .then(({ user }) => {
+ *         console.log(user)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl '{backend_url}/admin/users/{id}'

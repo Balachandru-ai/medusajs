@@ -11,6 +11,7 @@ const lockingOptions: FormattingOptionsType = {
       slug: "/references/locking-module-provider",
       tags: ["locking", "server", "how to"],
       sidebar_label: "Create Locking Provider",
+      keywords: ["locking", "provider", "integration"],
     },
     reflectionTitle: {
       fullReplacement: "How to Create a Locking Module Provider",
@@ -18,6 +19,7 @@ const lockingOptions: FormattingOptionsType = {
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
     expandProperties: true,
+    sortMembers: true,
     sections: {
       ...baseSectionsOptions,
       member_declaration_title: false,
@@ -138,6 +140,7 @@ The Locking Module will now use your provider to handle all locking operations.
       fullReplacement: "How to Use Locking Module",
     },
     expandMembers: true,
+    sortMembers: true,
     startSections: [
       `## Resolve Locking Module's Service
 

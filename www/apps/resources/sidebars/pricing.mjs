@@ -25,7 +25,7 @@ export const pricingSidebar = [
           {
             type: "link",
             path: "/commerce-modules/pricing/price-rules",
-            title: "Price Rules",
+            title: "Price Tiers and Rules",
           },
           {
             type: "link",

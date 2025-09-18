@@ -9,7 +9,6 @@ import { useAiAssistant, useSearch, useSiteConfig } from "../../../providers"
 import { useKeyboardShortcut } from "../../../hooks"
 import Image from "next/image"
 
-// const AI_ASSISTANT_ICON = "/images/ai-assistent-luminosity.png"
 const AI_ASSISTANT_ICON_ACTIVE = "/images/ai-assistent.png"
 
 export const AiAssistantTriggerButton = () => {

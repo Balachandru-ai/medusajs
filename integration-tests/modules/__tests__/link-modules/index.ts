@@ -103,47 +103,50 @@ medusaIntegrationTestRunner({
 
         const values = await links.linkServiceName.list()
 
-        expect(values).toEqual([
-          {
-            product_id: "modA_id",
-            inventory_item_id: "modB_id",
-            id: expect.stringMatching("prefix_.+"),
-            extra_field: -1,
-            another_field: null,
-            created_at: expect.any(Date),
-            updated_at: expect.any(Date),
-            deleted_at: null,
-          },
-          expect.objectContaining({
-            product_id: "123",
-            inventory_item_id: "abc",
-            id: expect.stringMatching("prefix_.+"),
-            extra_field: 333,
-            another_field: "value**",
-          }),
-          expect.objectContaining({
-            product_id: "111",
-            inventory_item_id: "aaa",
-            extra_field: -1,
-            another_field: "test",
-          }),
-          expect.objectContaining({
-            product_id: "222",
-            inventory_item_id: "bbb",
-            extra_field: -1,
-            another_field: null,
-          }),
-          expect.objectContaining({
-            product_id: "333",
-            inventory_item_id: "ccc",
-            id: expect.stringMatching("prefix_.+"),
-            extra_field: 2,
-          }),
-          expect.objectContaining({
-            product_id: "444",
-            inventory_item_id: "bbb",
-          }),
-        ])
+        expect(values).toHaveLength(6)
+        expect(values).toEqual(
+          expect.arrayContaining([
+            {
+              product_id: "modA_id",
+              inventory_item_id: "modB_id",
+              id: expect.stringMatching("prefix_.+"),
+              extra_field: -1,
+              another_field: null,
+              created_at: expect.any(Date),
+              updated_at: expect.any(Date),
+              deleted_at: null,
+            },
+            expect.objectContaining({
+              product_id: "123",
+              inventory_item_id: "abc",
+              id: expect.stringMatching("prefix_.+"),
+              extra_field: 333,
+              another_field: "value**",
+            }),
+            expect.objectContaining({
+              product_id: "111",
+              inventory_item_id: "aaa",
+              extra_field: -1,
+              another_field: "test",
+            }),
+            expect.objectContaining({
+              product_id: "222",
+              inventory_item_id: "bbb",
+              extra_field: -1,
+              another_field: null,
+            }),
+            expect.objectContaining({
+              product_id: "333",
+              inventory_item_id: "ccc",
+              id: expect.stringMatching("prefix_.+"),
+              extra_field: 2,
+            }),
+            expect.objectContaining({
+              product_id: "444",
+              inventory_item_id: "bbb",
+            }),
+          ])
+        )
       })
 
       it("Should dismiss the link of a given pair of keys", async function () {

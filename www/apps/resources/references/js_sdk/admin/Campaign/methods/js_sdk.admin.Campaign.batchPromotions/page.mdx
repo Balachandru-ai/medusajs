@@ -6,9 +6,21 @@ This method manages the promotions of a campaign to either add or remove the ass
 It sends a request to the [Manage Promotions](https://docs.medusajs.com/api/admin#campaigns\_postcampaignsidpromotions)
 API route.
 
+## Example
+
+```ts
+sdk.admin.campaign.batchPromotions("procamp_123", {
+  add: ["prom_123", "prom_456"],
+  remove: ["prom_789"]
+})
+.then(({ campaign }) => {
+  console.log(campaign)
+})
+```
+
 ## Parameters
 
-<TypeList types={[{"name":"id","type":"`string`","description":"The campaign's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"payload","type":"[AdminBatchLink](../../../../../types/HttpTypes/interfaces/types.HttpTypes.AdminBatchLink/page.mdx)","description":"The promotions to add or remove associations to them.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"add","type":"`string`[]","description":"The items to create an association to.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"remove","type":"`string`[]","description":"The items to remove association from.","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"headers","type":"[ClientHeaders](../../../types/js_sdk.admin.ClientHeaders/page.mdx)","description":"Headers to pass in the request","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"tags","type":"`string`[]","description":"Tags to cache data under for Next.js applications.\n\nLearn more in [Next.js's documentation](https://nextjs.org/docs/app/building-your-application/caching#fetch-optionsnexttags-and-revalidatetag).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="batchPromotions"/>
+<TypeList types={[{"name":"id","type":"`string`","description":"The campaign's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"payload","type":"[AdminBatchLink](../../../../../types/HttpTypes/interfaces/types.HttpTypes.AdminBatchLink/page.mdx)","description":"The promotions to add or remove associations to them.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"add","type":"`string`[]","description":"The IDs of the items to create an association to.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"remove","type":"`string`[]","description":"The IDs of the items to remove the association from.","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"headers","type":"[ClientHeaders](../../../types/js_sdk.admin.ClientHeaders/page.mdx)","description":"Headers to pass in the request","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"tags","type":"`string`[]","description":"Tags to cache data under for Next.js applications.\n\nLearn more in [Next.js's documentation](https://nextjs.org/docs/app/building-your-application/caching#fetch-optionsnexttags-and-revalidatetag).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="batchPromotions"/>
 
 ## Returns
 

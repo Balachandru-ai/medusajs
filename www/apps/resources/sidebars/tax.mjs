@@ -34,8 +34,13 @@ export const taxSidebar = [
           },
           {
             type: "link",
+            path: "/commerce-modules/tax/tax-provider",
+            title: "Tax Module Providers",
+          },
+          {
+            type: "link",
             path: "/commerce-modules/tax/tax-calculation-with-provider",
-            title: "Tax Calculation and Providers",
+            title: "Tax Calculation",
           },
         ],
       },

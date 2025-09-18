@@ -52,6 +52,10 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/inventory/inventory-kit"
   },
   {
+    "title": "Variant Price Rules",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules"
+  },
+  {
     "title": "Extend Product",
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/extend"
   },
@@ -64,12 +68,52 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price-with-taxes"
   },
   {
+    "title": "Get Variant Inventory",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/variant-inventory"
+  },
+  {
+    "title": "Implement Custom Line Item Pricing in Medusa",
+    "path": "https://docs.medusajs.com/resources/examples/guides/custom-item-price"
+  },
+  {
+    "title": "Implement Pre-Order Products",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
+  },
+  {
+    "title": "Implement Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
+    "title": "Implement Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
     "title": "Implement Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },
   {
+    "title": "Localization with Contentful",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/contentful"
+  },
+  {
+    "title": "Integrate Payload",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
+  },
+  {
     "title": "Build Wishlist Plugin",
     "path": "https://docs.medusajs.com/resources/plugins/guides/wishlist"
+  },
+  {
+    "title": "Implement Bundled Products",
+    "path": "https://docs.medusajs.com/resources/recipes/bundled-products/examples/standard"
+  },
+  {
+    "title": "Implement Personalized Products",
+    "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
+  },
+  {
+    "title": "Implement Ticket Booking",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
   },
   {
     "title": "Implement Express Checkout with Medusa",
@@ -196,14 +240,6 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getProductsStep"
   },
   {
-    "title": "groupProductsForBatchStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/groupProductsForBatchStep"
-  },
-  {
-    "title": "parseProductCsvStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/parseProductCsvStep"
-  },
-  {
     "title": "updateCollectionsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateCollectionsStep"
   },
@@ -286,10 +322,6 @@ export const product = [
   {
     "title": "deleteProductsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteProductsWorkflow"
-  },
-  {
-    "title": "importProductsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/importProductsWorkflow"
   },
   {
     "title": "updateCollectionsWorkflow",

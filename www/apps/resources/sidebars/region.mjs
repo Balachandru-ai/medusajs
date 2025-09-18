@@ -116,7 +116,7 @@ export const regionSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/region/events",
+            path: "/references/region/events",
             title: "Events Reference",
           },
           {

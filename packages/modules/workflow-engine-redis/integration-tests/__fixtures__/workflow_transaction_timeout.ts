@@ -29,6 +29,12 @@ createWorkflow(
   }
 )
 
+const step_1_async = createStep(
+  "step_1_async",
+  jest.fn(async (input) => {}),
+  jest.fn()
+)
+
 createWorkflow(
   {
     name: "workflow_transaction_timeout_async",
@@ -37,7 +43,7 @@ createWorkflow(
     retentionTime: 5,
   },
   function (input) {
-    const resp = step_1(input).config({
+    const resp = step_1_async(input).config({
       async: true,
     })
 

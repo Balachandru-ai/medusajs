@@ -25,12 +25,6 @@ export interface AuthIdentityProviderService {
   getState: (key: string) => Promise<Record<string, unknown> | null>
 }
 
-/**
- * ## Overview
- *
- * Authentication provider interface for the auth module.
- *
- */
 export interface IAuthProvider {
   authenticate(
     data: AuthenticationInput,
@@ -44,8 +38,8 @@ export interface IAuthProvider {
     data: AuthenticationInput,
     authIdentityProviderService: AuthIdentityProviderService
   ): Promise<AuthenticationResponse>
-  update: (
+  update(
     data: Record<string, unknown>,
     authIdentityProviderService: AuthIdentityProviderService
-  ) => Promise<AuthenticationResponse>
+  ): Promise<AuthenticationResponse>
 }

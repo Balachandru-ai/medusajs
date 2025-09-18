@@ -35,9 +35,7 @@ export class Configuration {
   }
 
   async checkChanges(): Promise<InferEntityType<typeof IndexMetadata>[]> {
-    this.#logger.info(
-      "[Index engine] Checking for changes in the index configuration"
-    )
+    this.#logger.info("[Index engine] Checking for index changes")
     const schemaObjectRepresentation = this.#schemaObjectRepresentation
 
     const currentConfig = await this.#indexMetadataService.list()
@@ -127,29 +125,31 @@ export class Configuration {
     }
 
     if (idxSyncData.length > 0) {
-      if (updatedConfig.length > 0) {
-        const ids = await this.#indexSyncService.list({
-          entity: updatedConfig.map((c) => c.entity),
-        })
-        idxSyncData.forEach((sync) => {
-          const id = ids.find((i) => i.entity === sync.entity)?.id
-          if (id) {
-            sync.id = id
-          }
-        })
-      }
+      const ids = await this.#indexSyncService.list({
+        entity: idxSyncData.map((c) => c.entity),
+      })
+      idxSyncData.forEach((sync) => {
+        const id = ids.find((i) => i.entity === sync.entity)?.id
+        if (id) {
+          sync.id = id
+        }
+      })
 
       await this.#indexSyncService.upsert(idxSyncData)
     }
 
     const changes = await this.#indexMetadataService.list({
-      status: [IndexMetadataStatus.PENDING, IndexMetadataStatus.PROCESSING],
+      status: [
+        IndexMetadataStatus.PENDING,
+        IndexMetadataStatus.PROCESSING,
+        IndexMetadataStatus.ERROR,
+      ],
     })
 
     this.#logger.info(
-      `[Index engine] Found ${changes.length} change${
+      `[Index engine] Found ${changes.length} index change${
         changes.length > 1 ? "s" : ""
-      } in the index configuration that are either pending or processing`
+      } that are either pending or processing`
     )
 
     return changes

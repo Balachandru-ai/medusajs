@@ -1,6 +1,7 @@
 import { Link } from "@medusajs/modules-sdk"
 import {
   ConfigModule,
+  IAnalyticsModuleService,
   IApiKeyModuleService,
   IAuthModuleService,
   ICacheService,
@@ -20,6 +21,7 @@ import {
   IPromotionModuleService,
   IRegionModuleService,
   ISalesChannelModuleService,
+  ISettingsModuleService,
   IStockLocationService,
   IStoreModuleService,
   ITaxModuleService,
@@ -40,7 +42,7 @@ declare module "@medusajs/types" {
      */
     [ContainerRegistrationKeys.REMOTE_LINK]: Link
     /**
-     * @version 2.2.0
+     * @since 2.2.0
      */
     [ContainerRegistrationKeys.LINK]: Link
     [ContainerRegistrationKeys.CONFIG_MODULE]: ConfigModule
@@ -48,6 +50,7 @@ declare module "@medusajs/types" {
     [ContainerRegistrationKeys.REMOTE_QUERY]: RemoteQueryFunction
     [ContainerRegistrationKeys.QUERY]: Omit<RemoteQueryFunction, symbol>
     [ContainerRegistrationKeys.LOGGER]: Logger
+    [Modules.ANALYTICS]: IAnalyticsModuleService
     [Modules.AUTH]: IAuthModuleService
     [Modules.CACHE]: ICacheService
     [Modules.CART]: ICartModuleService
@@ -72,6 +75,7 @@ declare module "@medusajs/types" {
     [Modules.FILE]: IFileModuleService
     [Modules.NOTIFICATION]: INotificationModuleService
     [Modules.LOCKING]: ILockingModule
+    [Modules.SETTINGS]: ISettingsModuleService
   }
 }
 

@@ -26,6 +26,7 @@
  *   - item_total
  *   - item_subtotal
  *   - item_tax_total
+ *   - item_discount_total
  *   - original_total
  *   - original_subtotal
  *   - original_tax_total
@@ -39,9 +40,11 @@
  *   - shipping_total
  *   - shipping_subtotal
  *   - shipping_tax_total
+ *   - shipping_discount_total
  *   - original_shipping_total
  *   - original_shipping_subtotal
  *   - original_shipping_tax_total
+ *   - credit_line_total
  * properties:
  *   return_requested_total:
  *     type: number
@@ -213,6 +216,9 @@
  *             metadata:
  *               type: object
  *               description: The item's metadata, can hold custom key-value pairs.
+ *               externalDocs:
+ *                 url: https://docs.medusajs.com/api/admin#manage-metadata
+ *                 description: Learn how to manage metadata
  *             original_total:
  *               type: number
  *               title: original_total
@@ -339,6 +345,9 @@
  *             metadata:
  *               type: object
  *               description: The shipping method's metadata, can hold custom key-value pairs.
+ *               externalDocs:
+ *                 url: https://docs.medusajs.com/api/admin#manage-metadata
+ *                 description: Learn how to manage metadata
  *             tax_lines:
  *               type: array
  *               description: The shipping method's tax lines.
@@ -516,6 +525,9 @@
  *   metadata:
  *     type: object
  *     description: The order's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -622,6 +634,25 @@
  *     type: string
  *     title: status
  *     description: The order's status.
+ *   region:
+ *     $ref: "#/components/schemas/AdminRegion"
+ *   credit_lines:
+ *     type: array
+ *     description: The order preview's credit lines.
+ *     items:
+ *       $ref: "#/components/schemas/OrderCreditLine"
+ *   credit_line_total:
+ *     type: number
+ *     title: credit_line_total
+ *     description: The order preview's credit line total.
+ *   item_discount_total:
+ *     type: number
+ *     title: item_discount_total
+ *     description: The total discount amount applied on the order's items.
+ *   shipping_discount_total:
+ *     type: number
+ *     title: shipping_discount_total
+ *     description: The total discount amount applied on the order's shipping.
  * 
 */
 

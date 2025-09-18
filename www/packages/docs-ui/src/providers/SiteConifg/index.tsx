@@ -1,13 +1,17 @@
 "use client"
 
 import React, { createContext, useContext, useState } from "react"
-import { DocsConfig } from "types"
+import { DocsConfig, FrontMatter, ToCItem } from "types"
 import { globalConfig } from "../../global-config"
 import { GITHUB_ISSUES_LINK } from "../.."
 
 export type SiteConfigContextType = {
   config: DocsConfig
   setConfig: React.Dispatch<React.SetStateAction<DocsConfig>>
+  frontmatter: FrontMatter
+  setFrontmatter: React.Dispatch<React.SetStateAction<FrontMatter>>
+  toc: ToCItem[] | null
+  setToc: React.Dispatch<React.SetStateAction<ToCItem[] | null>>
 }
 
 const SiteConfigContext = createContext<SiteConfigContextType | null>(null)
@@ -37,12 +41,18 @@ export const SiteConfigProvider = ({
       initConfig || {}
     )
   )
+  const [frontmatter, setFrontmatter] = useState<FrontMatter>({})
+  const [toc, setToc] = useState<ToCItem[] | null>(null)
 
   return (
     <SiteConfigContext.Provider
       value={{
         config,
         setConfig,
+        frontmatter,
+        setFrontmatter,
+        toc,
+        setToc,
       }}
     >
       {children}

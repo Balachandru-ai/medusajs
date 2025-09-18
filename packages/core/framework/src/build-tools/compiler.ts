@@ -1,7 +1,7 @@
 import type { AdminOptions, ConfigModule, Logger } from "@medusajs/types"
 import { FileSystem, getConfigFile, getResolvedPlugins } from "@medusajs/utils"
 import chokidar from "chokidar"
-import { access, constants, copyFile, rm } from "fs/promises"
+import { access, constants, copyFile, mkdir, rm } from "fs/promises"
 import path from "path"
 import type tsStatic from "typescript"
 
@@ -37,10 +37,10 @@ export class Compiler {
     this.#adminOnlyDistFolder = path.join(this.#projectRoot, ".medusa/admin")
     this.#pluginsDistFolder = path.join(this.#projectRoot, ".medusa/server")
     this.#backendIgnoreFiles = [
-      "integration-tests",
-      "test",
-      "unit-tests",
-      "src/admin",
+      "/integration-tests/",
+      "/test/",
+      "/unit-tests/",
+      "/src/admin/",
     ]
   }
 
@@ -190,7 +190,7 @@ export class Compiler {
   }> {
     const ts = await this.#loadTSCompiler()
     const filesToCompile = tsConfig.fileNames.filter((fileName) => {
-      return !chunksToIgnore.some((chunk) => fileName.includes(`${chunk}/`))
+      return !chunksToIgnore.some((chunk) => fileName.includes(`${chunk}`))
     })
 
     /**
@@ -283,6 +283,11 @@ export class Compiler {
       `Removing existing "${path.relative(this.#projectRoot, dist)}" folder`
     )
     await this.#clean(dist)
+
+    /**
+     * Create first the target directory now that everything is clean
+     */
+    await mkdir(dist, { recursive: true })
 
     /**
      * Step 2: Compile TypeScript source code

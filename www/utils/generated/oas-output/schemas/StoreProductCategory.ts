@@ -16,11 +16,6 @@
  *   - updated_at
  *   - deleted_at
  * properties:
- *   products:
- *     type: array
- *     description: The category's products.
- *     items:
- *       $ref: "#/components/schemas/StoreProduct"
  *   id:
  *     type: string
  *     title: id
@@ -55,6 +50,9 @@
  *   metadata:
  *     type: object
  *     description: The category's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -70,6 +68,11 @@
  *     format: date-time
  *     title: deleted_at
  *     description: The date the category was deleted.
+ *   products:
+ *     type: array
+ *     description: The category's products.
+ *     items:
+ *       $ref: "#/components/schemas/StoreProduct"
  * 
 */
 

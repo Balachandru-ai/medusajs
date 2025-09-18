@@ -37,11 +37,14 @@ import { ShippingOption } from "./shipping-option"
 import { ShippingProfile } from "./shipping-profile"
 import { StockLocation } from "./stock-location"
 import { Store } from "./store"
+import { TaxProvider } from "./tax-provider"
 import { TaxRate } from "./tax-rate"
 import { TaxRegion } from "./tax-region"
 import { Upload } from "./upload"
 import { User } from "./user"
+import { Views } from "./views"
 import { WorkflowExecution } from "./workflow-execution"
+import { ShippingOptionType } from "./shipping-option-type"
 
 export class Admin {
   /**
@@ -112,6 +115,10 @@ export class Admin {
    * @tags fulfillment
    */
   public shippingOption: ShippingOption
+  /**
+   * @tags fulfillment
+   */
+  public shippingOptionType: ShippingOptionType
   /**
    * @tags fulfillment
    */
@@ -209,6 +216,10 @@ export class Admin {
    */
   public promotion: Promotion
   /**
+   * @tags tax
+   */
+  public taxProvider: TaxProvider
+  /**
    * @tags promotion
    */
   public campaign: Campaign
@@ -216,6 +227,11 @@ export class Admin {
    * @tags plugin
    */
   public plugin: Plugin
+  /**
+   * @tags views
+   * @featureFlag view_configurations
+   */
+  public views: Views
 
   constructor(client: Client) {
     this.invite = new Invite(client)
@@ -235,6 +251,7 @@ export class Admin {
     this.fulfillment = new Fulfillment(client)
     this.fulfillmentProvider = new FulfillmentProvider(client)
     this.shippingOption = new ShippingOption(client)
+    this.shippingOptionType = new ShippingOptionType(client)
     this.shippingProfile = new ShippingProfile(client)
     this.inventoryItem = new InventoryItem(client)
     this.notification = new Notification(client)
@@ -261,5 +278,7 @@ export class Admin {
     this.promotion = new Promotion(client)
     this.campaign = new Campaign(client)
     this.plugin = new Plugin(client)
+    this.taxProvider = new TaxProvider(client)
+    this.views = new Views(client)
   }
 }

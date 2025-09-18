@@ -1,4 +1,7 @@
 import { Reflection, ReflectionKind } from "typedoc"
+import pkg from "slugify"
+
+const slugify = pkg.default
 
 export function replaceTemplateVariables(
   reflection: Reflection,
@@ -11,6 +14,12 @@ export function replaceTemplateVariables(
   return text
     .replaceAll("{{alias}}", reflection.name)
     .replaceAll("{{alias-lower}}", reflection.name.toLowerCase())
+    .replaceAll(
+      "{{alias-slug}}",
+      slugify(reflection.name, {
+        lower: true,
+      })
+    )
     .replaceAll("{{parent.alias}}", reflection.parent?.name || "")
     .replaceAll(
       "{{parent.alias-lower}}",

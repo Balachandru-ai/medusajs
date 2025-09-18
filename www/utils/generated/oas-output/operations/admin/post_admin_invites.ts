@@ -35,6 +35,25 @@
  *             type: object
  *             description: The invite's metadata. Can be custom data in key-value pairs.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.invite.create({
+ *         email: "user@gmail.com",
+ *       })
+ *       .then(({ invite }) => {
+ *         console.log(invite)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -69,6 +88,18 @@
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
+ * x-events:
+ *   - name: invite.created
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the invite
+ *       }]
+ *       ```
+ *     description: |-
+ *       Emitted when invites are created. You can listen to this event
+ *       to send an email to the invited users, for example.
+ *     deprecated: false
  * 
 */
 

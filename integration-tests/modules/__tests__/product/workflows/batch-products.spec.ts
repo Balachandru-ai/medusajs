@@ -4,12 +4,12 @@ import {
   batchProductVariantsWorkflow,
   batchProductVariantsWorkflowId,
 } from "@medusajs/core-flows"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   IFulfillmentModuleService,
   IProductModuleService,
 } from "@medusajs/types"
 import { Modules } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(50000)
 
@@ -165,14 +165,16 @@ medusaIntegrationTestRunner({
             })
 
             expect(product.variants).toHaveLength(2)
-            expect(product.variants).toEqual([
-              expect.objectContaining({
-                title: "variant1",
-              }),
-              expect.objectContaining({
-                title: "variant2",
-              }),
-            ])
+            expect(product.variants).toEqual(
+              expect.arrayContaining([
+                expect.objectContaining({
+                  title: "variant1",
+                }),
+                expect.objectContaining({
+                  title: "variant2",
+                }),
+              ])
+            )
           })
         })
       })

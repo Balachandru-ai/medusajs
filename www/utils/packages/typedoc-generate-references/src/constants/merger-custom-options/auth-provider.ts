@@ -11,6 +11,7 @@ const authProviderOptions: FormattingOptionsType = {
       slug: "/references/auth/provider",
       tags: ["auth", "server", "how to"],
       sidebar_label: "Create Auth Provider",
+      keywords: ["auth", "provider", "integration"],
     },
     reflectionTitle: {
       fullReplacement: "How to Create an Auth Module Provider",
@@ -18,6 +19,7 @@ const authProviderOptions: FormattingOptionsType = {
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
     expandProperties: true,
+    sortMembers: true,
     sections: {
       ...baseSectionsOptions,
       member_declaration_title: false,
@@ -73,7 +75,13 @@ export default ModuleProvider(Modules.AUTH, {
 })
 \`\`\`
 
-This exports the module provider's definition, indicating that the \`MyAuthProviderService\` is the module provider's service.`,
+This exports the module provider's definition, indicating that the \`MyAuthProviderService\` is the module provider's service.
+
+<Note title="Tip">
+
+A auth module provider can have export multiple provider services, where each are registered as a separate auth provider.
+
+</Note>`,
       `## 4. Use Module Provider
 
 To use your Auth Module Provider, add it to the \`providers\` array of the Auth Module in \`medusa-config.ts\`:
@@ -86,19 +94,18 @@ module.exports = defineConfig({
   modules: [
     {
       resolve: "@medusajs/medusa/auth",
+      dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
       options: {
         providers: [
           // default provider
           {
             resolve: "@medusajs/medusa/auth-emailpass",
-            dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
             id: "emailpass",
           },
           {
             // if module provider is in a plugin, use \`plugin-name/providers/my-auth\`
             resolve: "./src/modules/my-auth",
             id: "my-auth",
-            dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
             options: {
               // provider options...
             },
@@ -112,7 +119,7 @@ module.exports = defineConfig({
 `,
       `## 5. Test it Out
 
-To test out your Authentication Module Provider, use any of the [Authentication Routes](https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route), using your provider's ID as a path parameter.
+To test out your Authentication Module Provider, use any of the [Authentication Routes](https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route), using your provider's ID as a path parameter.
 
 For example, to get a registration token for an admin user, send a \`POST\` request to \`/auth/user/my-auth/register\` replacing \`my-auth\` with your Authentication Module Provider's ID:
 

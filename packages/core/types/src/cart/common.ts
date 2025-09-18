@@ -23,6 +23,11 @@ export interface AdjustmentLineDTO {
   amount: BigNumberValue
 
   /**
+   * Whether the adjustment is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The raw amount to adjust the original amount with.
    */
   raw_amount: BigNumberRawValue
@@ -260,7 +265,7 @@ export interface CartAddressDTO {
   country_code?: string
 
   /**
-   * The province/state of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province/state of the address.
    */
   province?: string
 

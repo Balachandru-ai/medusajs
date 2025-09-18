@@ -1,5 +1,118 @@
 # @medusajs/ui
 
+## 4.0.22
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.2
+
+## 4.0.21
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.1
+
+## 4.0.20
+
+### Patch Changes
+
+- [#13092](https://github.com/medusajs/medusa/pull/13092) [`5b7a0412463ebab1dbc86c29024c1fd326ac47fc`](https://github.com/medusajs/medusa/commit/5b7a0412463ebab1dbc86c29024c1fd326ac47fc) Thanks [@fPolic](https://github.com/fPolic)! - chore(ui): display toast in top right corner
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.0
+
+## 4.0.19
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.9.0
+
+## 4.0.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.8
+
+## 4.0.17
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.7
+
+## 4.0.16
+
+### Patch Changes
+
+- [#12855](https://github.com/medusajs/medusa/pull/12855) [`4b224d5effda952d7d87b96dd30407178edf4115`](https://github.com/medusajs/medusa/commit/4b224d5effda952d7d87b96dd30407178edf4115) Thanks [@peterlgh7](https://github.com/peterlgh7)! - fix: fix onScroll in Select.Content
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.6
+
+## 4.0.15
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.5
+
+## 4.0.14
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.4
+
+## 4.0.13
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.3
+
+## 4.0.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.2
+
+## 4.0.11
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.1
+
+## 4.0.10
+
+### Patch Changes
+
+- [#12309](https://github.com/medusajs/medusa/pull/12309) [`4f6362b1cb1b84f01cc4cd277981aae7ae5797c9`](https://github.com/medusajs/medusa/commit/4f6362b1cb1b84f01cc4cd277981aae7ae5797c9) Thanks [@fPolic](https://github.com/fPolic)! - fix(design-system): filter/sorting menu tooltip error
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.0
+
+## 4.0.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.7.1
+
+## 4.0.8
+
+### Patch Changes
+
+- [#11442](https://github.com/medusajs/medusa/pull/11442) [`c40fb01d9200283c5d69f3295e65fccc56a9a76f`](https://github.com/medusajs/medusa/commit/c40fb01d9200283c5d69f3295e65fccc56a9a76f) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(ui): Disable select cells if the row cannot be selected
+
+- Updated dependencies [[`cc4c5c86e227a6693d53ea6b5b9e62d0a7c57fa2`](https://github.com/medusajs/medusa/commit/cc4c5c86e227a6693d53ea6b5b9e62d0a7c57fa2)]:
+  - @medusajs/icons@2.7.0
+
 ## 4.0.7
 
 ### Patch Changes

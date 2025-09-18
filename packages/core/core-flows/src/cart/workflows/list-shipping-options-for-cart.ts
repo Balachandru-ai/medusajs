@@ -5,15 +5,21 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import {
+  useQueryGraphStep,
+  useRemoteQueryStep,
+  validatePresenceOfStep,
+} from "../../common"
 import { cartFieldsForPricingContext } from "../utils/fields"
 import {
   AdditionalData,
   ListShippingOptionsForCartWorkflowInput,
 } from "@medusajs/types"
-import { isDefined } from "@medusajs/framework/utils"
-import { pricingContextResult } from "../utils/schemas"
+import { filterObjectByKeys, isDefined } from "@medusajs/framework/utils"
+import {
+  pricingContextResult,
+  shippingOptionsContextResult,
+} from "../utils/schemas"
 
 export const listShippingOptionsForCartWorkflowId =
   "list-shipping-options-for-cart"
@@ -43,6 +49,83 @@ export const listShippingOptionsForCartWorkflowId =
  * @summary
  *
  * List a cart's shipping options.
+ *
+ * @property hooks.setPricingContext - This hook is executed before the shipping options are retrieved. You can consume this hook to return any custom context useful for the prices retrieval of shipping options.
+ *
+ * For example, assuming you have the following custom pricing rule:
+ *
+ * ```json
+ * {
+ *   "attribute": "location_id",
+ *   "operator": "eq",
+ *   "value": "sloc_123",
+ * }
+ * ```
+ *
+ * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
+ *
+ * ```ts
+ * import { listShippingOptionsForCartWorkflow } from "@medusajs/medusa/core-flows";
+ * import { StepResponse } from "@medusajs/workflows-sdk";
+ *
+ * listShippingOptionsForCartWorkflow.hooks.setPricingContext((
+ *   { cart, fulfillmentSetIds, additional_data }, { container }
+ * ) => {
+ *   return new StepResponse({
+ *     location_id: "sloc_123", // Special price for in-store purchases
+ *   });
+ * });
+ * ```
+ *
+ * The shipping options' prices will now be retrieved using the context you return.
+ *
+ * :::note
+ *
+ * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
+ *
+ * :::
+ * 
+ * @property hooks.setShippingOptionsContext - This hook is executed after the cart is retrieved and before the shipping options are queried. You can consume this hook to return any custom context useful for the shipping options retrieval.
+ *
+ * For example, you can consume the hook to add the customer Id to the context:
+ * 
+ * ```ts
+ * import { listShippingOptionsForCartWithPricingWorkflow } from "@medusajs/medusa/core-flows"
+ * import { StepResponse } from "@medusajs/workflows-sdk"
+ * 
+ * listShippingOptionsForCartWithPricingWorkflow.hooks.setShippingOptionsContext(
+ *   async ({ cart }, { container }) => {
+ * 
+ *     if (cart.customer_id) {
+ *       return new StepResponse({
+ *         customer_id: cart.customer_id,
+ *       })
+ *     }
+ * 
+ *     const query = container.resolve("query")
+ * 
+ *     const { data: carts } = await query.graph({
+ *       entity: "cart",
+ *       filters: {
+ *         id: cart.id,
+ *       },
+ *       fields: ["customer_id"],
+ *     })
+ * 
+ *     return new StepResponse({
+ *       customer_id: carts[0].customer_id,
+ *     })
+ *   }
+ * )
+ * ```
+ * 
+ * The `customer_id` property will be added to the context along with other properties such as `is_return` and `enabled_in_store`.
+ * 
+ * :::note
+ * 
+ * You should also consume the `setShippingOptionsContext` hook in the {@link listShippingOptionsForCartWithPricingWorkflow} workflow to ensure that the context is consistent when listing shipping options across workflows.
+ * 
+ * :::
  */
 export const listShippingOptionsForCartWorkflow = createWorkflow(
   listShippingOptionsForCartWorkflowId,
@@ -118,13 +201,27 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
+    const setShippingOptionsContext = createHook(
+      "setShippingOptionsContext",
+      {
+        cart: cart,
+        fulfillmentSetIds,
+        additional_data: input.additional_data,
+      },
+      {
+        resultValidator: shippingOptionsContextResult,
+      }
+    )
+    const setShippingOptionsContextResult = setShippingOptionsContext.getResult()
+
     const queryVariables = transform(
-      { input, fulfillmentSetIds, cart, setPricingContextResult },
-      ({ input, fulfillmentSetIds, cart, setPricingContextResult }) => {
+      { input, fulfillmentSetIds, cart, setPricingContextResult, setShippingOptionsContextResult },
+      ({ input, fulfillmentSetIds, cart, setPricingContextResult, setShippingOptionsContextResult }) => {
         return {
           id: input.option_ids,
 
           context: {
+            ...(setShippingOptionsContextResult ? setShippingOptionsContextResult : {}),
             is_return: input.is_return ? "true" : "false",
             enabled_in_store: !isDefined(input.enabled_in_store)
               ? "true"
@@ -146,7 +243,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
 
           calculated_price: {
             context: {
-              ...cart,
+              ...filterObjectByKeys(cart, cartFieldsForPricingContext),
               ...(setPricingContextResult ? setPricingContextResult : {}),
               currency_code: cart.currency_code,
               region_id: cart.region_id,
@@ -235,7 +332,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
     )
 
     return new WorkflowResponse(shippingOptionsWithPrice, {
-      hooks: [setPricingContext] as const,
+      hooks: [setPricingContext, setShippingOptionsContext] as const,
     })
   }
 )

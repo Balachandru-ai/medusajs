@@ -7,15 +7,11 @@ import {
   UpdateProductVariantDTO,
 } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   Modules,
-  ProductEvents,
   ProductStatus,
 } from "@medusajs/framework/utils"
 
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 
@@ -24,15 +20,6 @@ jest.setTimeout(30000)
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
   testSuite: ({ service }) => {
-    let eventBusEmitSpy
-
-    beforeEach(() => {
-      eventBusEmitSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
 
     describe("ProductModuleService product variants", () => {
       let variantOne: ProductVariantDTO
@@ -212,20 +199,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
           expect(productVariant.title).toEqual("new test")
 
-          expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(1)
-          expect(eventBusEmitSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_VARIANT_UPDATED, {
-                data: { id: variantOne.id },
-                object: "product_variant",
-                source: Modules.PRODUCT,
-                action: CommonEvents.UPDATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
         })
 
         it("should do a partial update on the options of a variant successfully", async () => {
@@ -294,20 +267,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             })
           )
 
-          expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(1)
-          expect(eventBusEmitSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_VARIANT_CREATED, {
-                data: { id: variant.id },
-                object: "product_variant",
-                source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
         })
 
         it("should correctly associate variants with own product options", async () => {

@@ -1,5 +1,5 @@
 import { BigNumberInput, PaymentDTO } from "@medusajs/framework/types"
-import { MathBN, MedusaError } from "@medusajs/framework/utils"
+import { isDefined, MathBN, MedusaError } from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
@@ -8,7 +8,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
-import { addOrderTransactionStep } from "../../order"
+import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
 import { refundPaymentsStep } from "../steps/refund-payments"
 
 /**
@@ -29,14 +29,14 @@ export type ValidatePaymentsRefundStepInput = {
  * This step validates that the refund is valid for the payment.
  * If the payment's refundable amount is less than the amount to be refunded,
  * the step throws an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve a payment's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = validatePaymentsRefundStep({
  *   payment: [{
@@ -53,10 +53,7 @@ export type ValidatePaymentsRefundStepInput = {
  */
 export const validatePaymentsRefundStep = createStep(
   "validate-payments-refund-step",
-  async function ({
-    payments,
-    input,
-  }: ValidatePaymentsRefundStepInput) {
+  async function ({ payments, input }: ValidatePaymentsRefundStepInput) {
     const paymentIdAmountMap = new Map<string, BigNumberInput>(
       input.map(({ payment_id, amount }) => [payment_id, amount])
     )
@@ -101,15 +98,19 @@ export type RefundPaymentsWorkflowInput = {
    * The ID of the user that's refunding the payment.
    */
   created_by?: string
+  /**
+   * The note to attach to the refund.
+   */
+  note?: string
 }[]
 
 export const refundPaymentsWorkflowId = "refund-payments-workflow"
 /**
  * This workflow refunds payments.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * refund payments in your custom flow.
- * 
+ *
  * @example
  * const { result } = await refundPaymentsWorkflow(container)
  * .run({
@@ -120,9 +121,9 @@ export const refundPaymentsWorkflowId = "refund-payments-workflow"
  *     }
  *   ]
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Refund one or more payments.
  */
 export const refundPaymentsWorkflow = createWorkflow(
@@ -171,18 +172,24 @@ export const refundPaymentsWorkflow = createWorkflow(
           paymentsMap[payment.id] = payment
         }
 
-        return input.map((paymentInput) => {
-          const payment = paymentsMap[paymentInput.payment_id]!
-          const order = payment.payment_collection.order
+        return input
+          .map((paymentInput) => {
+            const payment = paymentsMap[paymentInput.payment_id]!
+            const order = payment.payment_collection?.order
 
-          return {
-            order_id: order.id,
-            amount: MathBN.mult(paymentInput.amount, -1),
-            currency_code: payment.currency_code,
-            reference_id: payment.id,
-            reference: "refund",
-          }
-        })
+            if (!order) {
+              return
+            }
+
+            return {
+              order_id: order.id,
+              amount: MathBN.mult(paymentInput.amount, -1),
+              currency_code: payment.currency_code,
+              reference_id: payment.id,
+              reference: "refund",
+            }
+          })
+          .filter(isDefined)
       }
     )
 

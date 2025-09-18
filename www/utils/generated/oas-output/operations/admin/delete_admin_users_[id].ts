@@ -12,6 +12,23 @@
  *     schema:
  *       type: string
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.user.delete("user_123")
+ *       .then(({ deleted }) => {
+ *         console.log(deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X DELETE '{backend_url}/admin/users/{id}'
@@ -40,6 +57,16 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
+ * x-events:
+ *   - name: user.deleted
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the user
+ *       }]
+ *       ```
+ *     description: Emitted when users are deleted.
+ *     deprecated: false
  * 
 */
 

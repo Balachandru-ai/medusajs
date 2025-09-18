@@ -38,6 +38,23 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.deleteOption("prod_123", "prodopt_123")
+ *       .then(({ deleted }) => {
+ *         console.log(deleted)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -65,6 +82,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteProductOptionsWorkflow
+ * x-events:
+ *   - name: product-option.deleted
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product option
+ *       }]
+ *       ```
+ *     description: Emitted when product options are deleted.
+ *     deprecated: false
  * 
 */
 

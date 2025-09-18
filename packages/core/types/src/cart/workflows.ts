@@ -197,7 +197,7 @@ export interface CreateCartAddressDTO {
   country_code?: string
 
   /**
-   * The province or state of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province or state of the address.
    */
   province?: string
 
@@ -218,6 +218,8 @@ export interface CreateCartAddressDTO {
 export interface CreateCartWorkflowInputDTO {
   /**
    * The ID of the region that the cart belongs to.
+   * If not provided, the default region of the store is used.
+   * If the store doesn't have a default region, an error is thrown.
    */
   region_id?: string
 
@@ -525,3 +527,30 @@ export interface CartWorkflowDTO {
   id: string
   payment_collection: PaymentCollectionDTO
 }
+
+export type CreateCartCreditLinesWorkflowInput = {
+  /**
+   * The ID of the cart that the credit line belongs to.
+   */
+  cart_id: string
+
+  /**
+   * The amount of the credit line.
+   */
+  amount: number
+
+  /**
+   * The reference model name that the credit line is generated from
+   */
+  reference: string | null
+
+  /**
+   * The reference model id that the credit line is generated from
+   */
+  reference_id: string | null
+
+  /**
+   * The metadata of the cart detail
+   */
+  metadata: Record<string, unknown> | null
+}[]

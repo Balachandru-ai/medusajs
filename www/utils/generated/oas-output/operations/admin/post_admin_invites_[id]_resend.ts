@@ -24,6 +24,23 @@
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.invite.resend("invite_123")
+ *       .then(({ invite }) => {
+ *         console.log(invite)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: curl -X POST '{backend_url}/admin/invites/{id}/resend'
@@ -53,6 +70,19 @@
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
+ * x-events:
+ *   - name: invite.resent
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the invite
+ *       }]
+ *       ```
+ *     description: |-
+ *       Emitted when invites should be resent because their token was
+ *       refreshed. You can listen to this event to send an email to the invited users,
+ *       for example.
+ *     deprecated: false
  * 
 */
 

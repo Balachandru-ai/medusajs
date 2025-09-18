@@ -1,4 +1,8 @@
-import { Modules, OrderStatus } from "@medusajs/framework/utils"
+import {
+  Modules,
+  OrderStatus,
+  OrderWorkflowEvents,
+} from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
@@ -7,28 +11,35 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { IOrderModuleService, OrderDTO } from "@medusajs/types"
-import { useRemoteQueryStep } from "../../common"
+import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
 
-const convertDraftOrderWorkflowId = "convert-draft-order"
+export const convertDraftOrderWorkflowId = "convert-draft-order"
 
-interface ConvertDraftOrderWorkflowInput {
+/**
+ * The details of the draft order to convert to an order.
+ */
+export interface ConvertDraftOrderWorkflowInput {
+  /**
+   * The ID of the draft order to convert to an order.
+   */
   id: string
 }
 
-interface ConvertDraftOrderStepInput {
+/**
+ * The details of the draft order to convert to an order.
+ */
+export interface ConvertDraftOrderStepInput {
+  /**
+   * The ID of the draft order to convert to an order.
+   */
   id: string
 }
 
 /**
  * This step converts a draft order to a pending order.
- *
- * @example
- * ```typescript
- * const order = await convertDraftOrderStep({ id: "order_123" })
- * ```
  */
-const convertDraftOrderStep = createStep(
+export const convertDraftOrderStep = createStep(
   "convert-draft-order",
   async function ({ id }: ConvertDraftOrderStepInput, { container }) {
     const service = container.resolve<IOrderModuleService>(Modules.ORDER)
@@ -65,12 +76,23 @@ const convertDraftOrderStep = createStep(
 )
 
 /**
- * This workflow converts a draft order to a pending order.
- *
+ * This workflow converts a draft order to a pending order. It's used by the
+ * [Convert Draft Order to Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidconverttoorder).
+ * 
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
+ * converting a draft order to a pending order.
+ * 
  * @example
- * ```typescript
- * const order = await convertDraftOrderWorkflow({ id: "order_123" })
- * ```
+ * const { result } = await convertDraftOrderWorkflow(container)
+ * .run({
+ *   input: {
+ *     id: "order_123",
+ *   }
+ * })
+ * 
+ * @summary
+ * 
+ * Convert a draft order to a pending order.
  */
 export const convertDraftOrderWorkflow = createWorkflow(
   convertDraftOrderWorkflowId,
@@ -90,6 +112,11 @@ export const convertDraftOrderWorkflow = createWorkflow(
     validateDraftOrderStep({ order })
 
     const updatedOrder = convertDraftOrderStep({ id: input.id })
+
+    emitEventStep({
+      eventName: OrderWorkflowEvents.PLACED,
+      data: { id: updatedOrder.id },
+    })
 
     return new WorkflowResponse(updatedOrder)
   }

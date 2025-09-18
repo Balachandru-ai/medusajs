@@ -13,6 +13,11 @@ post:
         schema:
           $ref: ../components/schemas/AdminBatchInventoryItemsLocationLevels.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_inventory-items_location-levels_batch/post.js
     - lang: Shell
       label: cURL
       source:
@@ -41,3 +46,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: batchInventoryItemLevelsWorkflow
+  x-events: []

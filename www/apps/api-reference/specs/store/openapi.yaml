@@ -25,7 +25,7 @@ tags:
       place an order.
     externalDocs:
       description: How to implement cart functionality in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/cart
+      url: https://docs.medusajs.com/resources/storefront-development/cart
     x-associatedSchema:
       $ref: ./components/schemas/StoreCart.yaml
   - name: Collections
@@ -38,7 +38,7 @@ tags:
     externalDocs:
       description: How to list product collections in a storefront.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/products/collections/list
+        https://docs.medusajs.com/resources/storefront-development/products/collections/list
     x-associatedSchema:
       $ref: ./components/schemas/StoreCollection.yaml
   - name: Currencies
@@ -55,7 +55,7 @@ tags:
     externalDocs:
       description: How to retrieve product variant prices in a storefront.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/products/price
+        https://docs.medusajs.com/resources/storefront-development/products/price
     x-associatedSchema:
       $ref: ./components/schemas/StoreCurrency.yaml
   - name: Customers
@@ -70,9 +70,28 @@ tags:
       These API routes allow customers to create and manage their accounts.
     externalDocs:
       description: How to implement customer account functionalities in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/customers
+      url: https://docs.medusajs.com/resources/storefront-development/customers
     x-associatedSchema:
       $ref: ./components/schemas/StoreCustomer.yaml
+  - name: Gift Cards
+    description: >
+      A gift card is a prepaid card that customers can use to purchase products
+      in the store.
+
+      Customers can purchase gift cards for themselves or others, and then use
+      them to pay for their orders.
+
+      These API routes allow logged-in customers to create and manage their gift
+      cards.
+
+      <Note>
+
+      Gift Cards are only available for Cloud users using the [Loyalty
+      Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+      </Note>
+    x-associatedSchema:
+      $ref: ./components/schemas/StoreGiftCard.yaml
   - name: Orders
     description: |
       Guest and registered customers can view orders they placed.
@@ -90,7 +109,7 @@ tags:
     externalDocs:
       description: How to implement payment during checkout.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        https://docs.medusajs.com/resources/storefront-development/checkout/payment
     x-associatedSchema:
       $ref: ./components/schemas/StorePaymentCollection.yaml
   - name: Payment Providers
@@ -108,7 +127,7 @@ tags:
     externalDocs:
       description: How to implement payment during checkout.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        https://docs.medusajs.com/resources/storefront-development/checkout/payment
     x-associatedSchema:
       $ref: ./components/schemas/StorePaymentProvider.yaml
   - name: Product Categories
@@ -119,7 +138,7 @@ tags:
     externalDocs:
       description: How to list product categories in a storefront.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/products/categories/list
+        https://docs.medusajs.com/resources/storefront-development/products/categories/list
     x-associatedSchema:
       $ref: ./components/schemas/StoreProductCategory.yaml
   - name: Product Tags
@@ -140,7 +159,7 @@ tags:
       These API routes allow customers to browse products.
     externalDocs:
       description: How to list products, get their prices, and more in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/products
+      url: https://docs.medusajs.com/resources/storefront-development/products
     x-associatedSchema:
       $ref: ./components/schemas/StoreProduct.yaml
   - name: Regions
@@ -156,18 +175,9 @@ tags:
       Use these API routes to retrieve available regions in the store.
     externalDocs:
       description: How to retrieve and store selected region in a storefront.
-      url: https://docs.medusajs.com/v2/resources/storefront-development/regions
+      url: https://docs.medusajs.com/resources/storefront-development/regions
     x-associatedSchema:
       $ref: ./components/schemas/StoreRegion.yaml
-  - name: Return
-    description: >
-      Customers can request to return items in their order. The admin user then
-      receives and handles the return.
-
-
-      These API routes allows customers to create a return.
-    x-associatedSchema:
-      $ref: ./components/schemas/StoreReturn.yaml
   - name: Return Reasons
     description: >
       A return reason is a possible reason a customer wants to return an item.
@@ -177,6 +187,15 @@ tags:
       storefront to allow customers to select their return reason.
     x-associatedSchema:
       $ref: ./components/schemas/StoreReturnReason.yaml
+  - name: Returns
+    description: >
+      Customers can request to return items in their order. The admin user then
+      receives and handles the return.
+
+
+      These API routes allows customers to create a return.
+    x-associatedSchema:
+      $ref: ./components/schemas/StoreReturn.yaml
   - name: Shipping Options
     description: >
       A shipping option is a way of shipping an item to or from the customer.
@@ -191,9 +210,25 @@ tags:
     externalDocs:
       description: How to implement shipping during checkout.
       url: >-
-        https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping
+        https://docs.medusajs.com/resources/storefront-development/checkout/shipping
     x-associatedSchema:
       $ref: ./components/schemas/StoreShippingOption.yaml
+  - name: Store Credit Accounts
+    x-associatedSchema:
+      description: >
+        A store credit account is a way for customers to manage their store
+        credit balance. Customers can use their store credit to pay for orders,
+        and view their store credit balance.
+
+        These API routes allow customers to view their store credit accounts.
+
+        <Note>
+
+        Store Credit Accounts are only available for Cloud users using the
+        [Loyalty Plugin](https://docs.medusajs.com/cloud/loyalty-plugin).
+
+        </Note>
+      $ref: ./components/schemas/StoreStoreCreditAccount.yaml
 paths:
   /auth/customer/{auth_provider}:
     $ref: paths/auth_customer_{auth_provider}.yaml
@@ -217,6 +252,8 @@ paths:
     $ref: paths/store_carts_{id}_complete.yaml
   /store/carts/{id}/customer:
     $ref: paths/store_carts_{id}_customer.yaml
+  /store/carts/{id}/gift-cards:
+    $ref: paths/store_carts_{id}_gift-cards.yaml
   /store/carts/{id}/line-items:
     $ref: paths/store_carts_{id}_line-items.yaml
   /store/carts/{id}/line-items/{line_id}:
@@ -225,6 +262,8 @@ paths:
     $ref: paths/store_carts_{id}_promotions.yaml
   /store/carts/{id}/shipping-methods:
     $ref: paths/store_carts_{id}_shipping-methods.yaml
+  /store/carts/{id}/store-credits:
+    $ref: paths/store_carts_{id}_store-credits.yaml
   /store/carts/{id}/taxes:
     $ref: paths/store_carts_{id}_taxes.yaml
   /store/collections:
@@ -243,6 +282,10 @@ paths:
     $ref: paths/store_customers_me_addresses.yaml
   /store/customers/me/addresses/{address_id}:
     $ref: paths/store_customers_me_addresses_{address_id}.yaml
+  /store/gift-cards/{idOrCode}:
+    $ref: paths/store_gift-cards_{idOrCode}.yaml
+  /store/gift-cards/{idOrCode}/redeem:
+    $ref: paths/store_gift-cards_{idOrCode}_redeem.yaml
   /store/orders:
     $ref: paths/store_orders.yaml
   /store/orders/{id}:
@@ -281,16 +324,20 @@ paths:
     $ref: paths/store_regions.yaml
   /store/regions/{id}:
     $ref: paths/store_regions_{id}.yaml
-  /store/return:
-    $ref: paths/store_return.yaml
   /store/return-reasons:
     $ref: paths/store_return-reasons.yaml
   /store/return-reasons/{id}:
     $ref: paths/store_return-reasons_{id}.yaml
+  /store/returns:
+    $ref: paths/store_returns.yaml
   /store/shipping-options:
     $ref: paths/store_shipping-options.yaml
   /store/shipping-options/{id}/calculate:
     $ref: paths/store_shipping-options_{id}_calculate.yaml
+  /store/store-credit-accounts:
+    $ref: paths/store_store-credit-accounts.yaml
+  /store/store-credit-accounts/{id}:
+    $ref: paths/store_store-credit-accounts_{id}.yaml
 components:
   securitySchemes:
     jwt_token:

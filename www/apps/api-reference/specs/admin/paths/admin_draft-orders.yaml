@@ -1745,11 +1745,23 @@ get:
               type: string
               title: customer_id
               description: The customer id's details.
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   security:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_draft-orders/get.js
     - lang: Shell
       label: cURL
       source:
@@ -1776,12 +1788,13 @@ get:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: getOrdersListWorkflow
+  x-events: []
 post:
   operationId: PostDraftOrders
   summary: Create Draft Order
   description: >-
     Create a draft order. This creates an order with the `is_draft_order`
-    property enabled.
+    property enabled. You can later convert the draft order to an order.
   x-authenticated: true
   parameters:
     - name: fields
@@ -1892,7 +1905,13 @@ post:
                     province:
                       type: string
                       title: province
-                      description: The billing address's province.
+                      description: >-
+                        The billing address's ISO 3166-2 province code. Must be
+                        lower-case.
+                      example: us-ca
+                      externalDocs:
+                        url: https://en.wikipedia.org/wiki/ISO_3166-2
+                        description: Learn more about ISO 3166-2
                     postal_code:
                       type: string
                       title: postal_code
@@ -1951,7 +1970,13 @@ post:
                     province:
                       type: string
                       title: province
-                      description: The shipping address's province.
+                      description: >-
+                        The shipping address's ISO 3166-2 province code. Must be
+                        lower-case.
+                      example: us-ca
+                      externalDocs:
+                        url: https://en.wikipedia.org/wiki/ISO_3166-2
+                        description: Learn more about ISO 3166-2
                     postal_code:
                       type: string
                       title: postal_code
@@ -2107,6 +2132,10 @@ post:
                     `additional_data` parameter.
           description: The draft order's details.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_draft-orders/post.js
     - lang: Shell
       label: cURL
       source:
@@ -2133,3 +2162,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createOrderWorkflow
+  x-events: []

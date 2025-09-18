@@ -76,8 +76,37 @@ export const referencesSidebar = [
     ],
   },
   {
+    type: "sidebar",
+    sidebar_id: "data-model-repository-reference",
+    title: "Data Model Repository",
+    description:
+      "List of methods in your service extending the data model repository.",
+    children: [
+      {
+        type: "link",
+        path: "/data-model-repository-reference",
+        title: "Overview",
+      },
+      {
+        type: "separator",
+      },
+      {
+        type: "category",
+        title: "Methods",
+        initialOpen: true,
+        autogenerate_path: "/data-model-repository-reference/methods",
+      },
+      {
+        type: "category",
+        title: "Tips",
+        initialOpen: true,
+        autogenerate_path: "/data-model-repository-reference/tips",
+      },
+    ],
+  },
+  {
     type: "link",
-    path: "/events-reference",
+    path: "/references/events",
     title: "Events",
     description: "List of events emitted by Medusa's Commerce Modules.",
   },

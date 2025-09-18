@@ -9,7 +9,7 @@ const GRAPHQL_TYPES = {
   boolean: "Boolean",
   dateTime: "DateTime",
   number: "Int",
-  bigNumber: "String",
+  bigNumber: "Float",
   text: "String",
   json: "JSON",
   array: "[String]",
@@ -44,7 +44,7 @@ export function getGraphQLAttributeFromDMLPropety(
       const enumValues = field.dataType
         .options!.choices.map((value) => {
           const enumValue = value.replace(/[^a-z0-9_]/gi, "_").toUpperCase()
-          return `  ${enumValue}`
+          return `  ${enumValue} @enumValue(value: "${value}")`
         })
         .join("\n")
 

@@ -4,7 +4,11 @@ export interface AdminCreateTaxRegion {
    */
   country_code: string
   /**
-   * The province code of the tax region.
+   * The ID of the tax provider.
+   */
+  provider_id?: string
+  /**
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province or state code of the tax region.
    */
   province_code?: string
   /**
@@ -36,6 +40,24 @@ export interface AdminCreateTaxRegion {
      */
     metadata?: Record<string, unknown>
   }
+  /**
+   * Custom key-value pairs that can be added to the tax region.
+   */
+  metadata?: Record<string, unknown>
+}
+
+export interface AdminUpdateTaxRegion {
+  /**
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province or state code of the tax region.
+   */
+  province_code?: string
+  /**
+   * The ID of the tax provider.
+   */
+  provider_id?: string
+  /**
+   * Custom key-value pairs that can be added to the tax region.
+   */
   /**
    * Custom key-value pairs that can be added to the tax region.
    */

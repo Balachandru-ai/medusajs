@@ -6,9 +6,22 @@ export const metadata = {
 
 In this document, you’ll learn about orders and related concepts
 
+## Order
+
+An order is a purchase made by a customer, either through the storefront or through the API. It is represented by the [Order data model](/references/order/models/Order).
+
+An order holds information about:
+
+- The purchased items.
+- The customer who made the order.
+    - This is stored and handled by the [Customer Module](../../customer/page.mdx).
+- Payment and shipping information
+
+---
+
 ## Order Items
 
-The items purchased in the order are represented by the [OrderItem data model](/references/order/models/OrderItem). An order can have multiple items.
+The items purchased in an order are represented by the [OrderItem data model](/references/order/models/OrderItem). An order can have multiple items.
 
 ![A diagram showcasing the relation between an order and its items.](https://res.cloudinary.com/dza7lstvk/image/upload/v1712304722/Medusa%20Resources/order-order-items_uvckxd.jpg)
 
@@ -28,7 +41,7 @@ Each shipping method is represented by the [OrderShippingMethod data model](/ref
 
 ### data Property
 
-When fulfilling the order, you can use a third-party fulfillment provider that requires additional custom data to be passed along from the order creation process.
+When fulfilling an order, you can use a third-party fulfillment provider that requires additional custom data to be passed along from the order creation process.
 
 The `OrderShippingMethod` data model has a `data` property. It’s an object used to store custom data relevant later for fulfillment.
 
@@ -38,7 +51,9 @@ The Medusa application passes the `data` property to the Fulfillment Module when
 
 ## Order Totals
 
-The order’s total amounts (including tax total, total after an item is returned, etc…) are represented by the [OrderSummary data model](/references/order/models/OrderSummary).
+An order’s total amounts (including tax total, total after an item is returned, etc…) are represented by the [OrderSummary data model](/references/order/models/OrderSummary).
+
+Refer to the [Retrieve Order Totals](../order-totals/page.mdx) guide to learn how to retrieve an order’s totals.
 
 ---
 
@@ -48,4 +63,4 @@ Payments made on an order, whether they’re capture or refund payments, are rec
 
 An order can have multiple transactions. The sum of these transactions must be equal to the order summary’s total. Otherwise, there’s an outstanding amount.
 
-Learn more about transactions in [this guide](../transactions/page.mdx).
+Refer to the [Transactions](../transactions/page.mdx) guide to learn more.

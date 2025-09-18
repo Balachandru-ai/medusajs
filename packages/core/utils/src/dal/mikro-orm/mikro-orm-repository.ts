@@ -64,11 +64,8 @@ export class MikroOrmBase {
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    const freshManager = this.getFreshManager
-      ? this.getFreshManager()
-      : this.manager_
-
-    return await transactionWrapper(freshManager, task, options).catch(
+    this.manager_.global = true
+    return await transactionWrapper(this.manager_, task, options).catch(
       dbErrorMapper
     )
   }
@@ -967,28 +964,24 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       }
 
       const promises: Promise<any>[] = []
-      const toInsert: unknown[] = []
-      let shouldInsert = false
+      const toInsert: any[] = []
+      const toUpdate: any[] = []
 
-      entries.map(async (data) => {
+      entries.forEach((data) => {
         const existingEntity = existingEntitiesMap.get(data.id)
         orderedEntities.push(data)
         if (existingEntity) {
           if (skipUpdate) {
             return
           }
-          const update = manager.nativeUpdate(entityName, { id: data.id }, data)
-          promises.push(update)
 
-          performedActions.updated[entityName] ??= []
-          performedActions.updated[entityName].push({ id: data.id })
+          toUpdate.push(data)
         } else {
-          shouldInsert = true
           toInsert.push(data)
         }
       })
 
-      if (shouldInsert) {
+      if (toInsert.length > 0) {
         let insertQb = manager.qb(entityName).insert(toInsert).returning("id")
 
         if (skipUpdate) {
@@ -1002,6 +995,28 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
               ...res.map((data) => ({ id: data.id }))
             )
           })
+        )
+      }
+
+      if (toUpdate.length > 0) {
+        promises.push(
+          manager
+            .getDriver()
+            .nativeUpdateMany(
+              entityName,
+              toUpdate.map((d) => ({ id: d.id })),
+              toUpdate,
+              { ctx: manager.getTransactionContext() }
+            )
+            .then((res) => {
+              const updatedRows = res.rows ?? []
+              const updatedRowsMap = new Map(updatedRows.map((d) => [d.id, d]))
+
+              performedActions.updated[entityName] = toUpdate
+                .map((d) => updatedRowsMap.get(d.id))
+                .filter((row) => row !== undefined)
+                .map((d) => ({ id: d.id }))
+            })
         )
       }
 

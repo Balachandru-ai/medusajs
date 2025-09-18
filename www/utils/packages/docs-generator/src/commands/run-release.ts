@@ -7,6 +7,7 @@ import OasGenerator from "../classes/generators/oas.js"
 import { CommonCliOptions } from "../types/index.js"
 import DmlGenerator from "../classes/generators/dml.js"
 import RouteExamplesGenerator from "../classes/generators/route-examples.js"
+import EventsGenerator from "../classes/generators/events.js"
 
 export default async function ({ type, tag, ...options }: CommonCliOptions) {
   const gitManager = new GitManager()
@@ -67,6 +68,15 @@ export default async function ({ type, tag, ...options }: CommonCliOptions) {
     })
 
     await routeExamplesGenerator.run()
+  }
+
+  if (type === "all" || type === "events") {
+    const eventsGenerator = new EventsGenerator({
+      paths: filteredFiles,
+      ...options,
+    })
+
+    await eventsGenerator.run()
   }
 
   console.log(`Finished generating docs for ${filteredFiles.length} files.`)

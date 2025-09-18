@@ -1,4 +1,5 @@
-import { MDXRemote } from "next-mdx-remote/rsc"
+import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote/rsc"
+import { serialize } from "next-mdx-remote/serialize"
 import path from "path"
 import { promises as fs } from "fs"
 import { notFound } from "next/navigation"
@@ -7,12 +8,14 @@ import {
   localLinksRehypePlugin,
   workflowDiagramLinkFixerPlugin,
   prerequisitesLinkFixerPlugin,
+  recmaInjectMdxDataPlugin,
 } from "remark-rehype-plugins"
 import MDXComponents from "@/components/MDXComponents"
 import mdxOptions from "../../../mdx-options.mjs"
 import { filesMap } from "../../../generated/files-map.mjs"
 import { Metadata } from "next"
-import { cache } from "react"
+import { cache, Suspense } from "react"
+import { Loading } from "docs-ui"
 
 type PageProps = {
   params: Promise<{
@@ -36,40 +39,50 @@ export default async function ReferencesPage(props: PageProps) {
   }
 
   return (
-    <MDXRemote
-      source={fileData.content}
-      components={MDXComponents}
-      options={{
-        mdxOptions: {
-          rehypePlugins: [
-            ...mdxOptions.options.rehypePlugins,
-            [
-              typeListLinkFixerPlugin,
-              {
-                ...pluginOptions,
-                checkLinksType: "md",
-              },
-            ],
-            [
-              workflowDiagramLinkFixerPlugin,
-              {
-                ...pluginOptions,
-                checkLinksType: "value",
-              },
-            ],
-            [
-              prerequisitesLinkFixerPlugin,
-              {
-                ...pluginOptions,
-                checkLinksType: "value",
-              },
-            ],
-            [localLinksRehypePlugin, pluginOptions],
-          ],
-          remarkPlugins: mdxOptions.options.remarkPlugins,
-        },
-      }}
-    />
+    <Suspense fallback={<Loading />}>
+      <div className="animate animate-fadeIn">
+        <MDXRemote
+          source={fileData.content}
+          components={MDXComponents}
+          options={{
+            mdxOptions: {
+              rehypePlugins: [
+                ...mdxOptions.options.rehypePlugins,
+                [
+                  typeListLinkFixerPlugin,
+                  {
+                    ...pluginOptions,
+                    checkLinksType: "md",
+                  },
+                ],
+                [
+                  workflowDiagramLinkFixerPlugin,
+                  {
+                    ...pluginOptions,
+                    checkLinksType: "value",
+                  },
+                ],
+                [
+                  prerequisitesLinkFixerPlugin,
+                  {
+                    ...pluginOptions,
+                    checkLinksType: "value",
+                  },
+                ],
+                [localLinksRehypePlugin, pluginOptions],
+              ],
+              remarkPlugins: [...mdxOptions.options.remarkPlugins],
+              recmaPlugins: [
+                [
+                  recmaInjectMdxDataPlugin,
+                  { isRemoteMdx: true, mode: process.env.NODE_ENV },
+                ],
+              ],
+            },
+          }}
+        />
+      </div>
+    </Suspense>
   )
 }
 
@@ -93,6 +106,7 @@ export async function generateMetadata({
   }
 
   metadata.title = pageTitleMatch.groups.title
+  metadata.keywords = (fileData.source.frontmatter?.keywords || []) as string[]
 
   return metadata
 }
@@ -103,6 +117,7 @@ const loadFile = cache(
   ): Promise<
     | {
         content: string
+        source: MDXRemoteSerializeResult
         path: string
       }
     | undefined
@@ -120,8 +135,14 @@ const loadFile = cache(
       return undefined
     }
     const fullPath = path.join(monoRepoPath, fileDetails.filePath)
+
+    const fileContent = await fs.readFile(fullPath, "utf-8")
+    const serialized = await serialize(fileContent, {
+      parseFrontmatter: true,
+    })
     return {
-      content: await fs.readFile(fullPath, "utf-8"),
+      content: fileContent,
+      source: serialized,
       path: fullPath,
     }
   }

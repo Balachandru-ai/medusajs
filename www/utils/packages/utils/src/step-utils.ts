@@ -1,10 +1,22 @@
-import { ArrayType, SignatureReflection, SomeType, UnionType } from "typedoc"
+import {
+  ArrayType,
+  ReferenceType,
+  SignatureReflection,
+  SomeType,
+  UnionType,
+} from "typedoc"
 
 const disallowedIntrinsicTypeNames = ["unknown", "void", "any", "never"]
 
 export function isWorkflowStep(reflection: SignatureReflection): boolean {
   if (reflection.parent?.children?.some((child) => child.name === "__step__")) {
     return true
+  }
+  if (
+    reflection.type?.type === "reference" &&
+    reflection.type.name === "ReturnType"
+  ) {
+    return getStepFunctionTypeArg(reflection.type) !== undefined
   }
   if (reflection.type?.type !== "intersection") {
     return false
@@ -19,7 +31,21 @@ export function isWorkflowStep(reflection: SignatureReflection): boolean {
 export function getStepInputType(
   reflection: SignatureReflection
 ): SomeType | undefined {
-  if (!isWorkflowStep(reflection) || !reflection.parameters?.length) {
+  if (!isWorkflowStep(reflection)) {
+    return
+  }
+
+  if (reflection.type?.type === "reference") {
+    const stepFunctionType = getStepFunctionTypeArg(reflection.type)
+
+    if (stepFunctionType) {
+      return cleanUpType(stepFunctionType.typeArguments?.[0])
+    }
+
+    return
+  }
+
+  if (!reflection.parameters?.length) {
     return
   }
 
@@ -37,6 +63,16 @@ export function getStepOutputType(
     reflection.type?.type === "intrinsic" &&
     disallowedIntrinsicTypeNames.includes(reflection.type.name)
   ) {
+    return
+  }
+
+  if (reflection.type?.type === "reference") {
+    const stepFunctionType = getStepFunctionTypeArg(reflection.type)
+
+    if (stepFunctionType) {
+      return cleanUpType(stepFunctionType.typeArguments?.[1])
+    }
+
     return
   }
 
@@ -94,4 +130,10 @@ function cleanUpArrayType(arrayType: ArrayType): SomeType {
   }
 
   return new ArrayType(cleanedUpType)
+}
+
+function getStepFunctionTypeArg(referenceType: ReferenceType) {
+  return referenceType.typeArguments?.find(
+    (typeArg) => typeArg.type === "reference" && typeArg.name === "StepFunction"
+  ) as ReferenceType | undefined
 }

@@ -562,11 +562,23 @@ get:
         items:
           type: object
         title: $or
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   security:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_stock-locations/get.js
     - lang: Shell
       label: cURL
       source:
@@ -626,6 +638,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminCreateStockLocation.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_stock-locations/post.js
     - lang: Shell
       label: cURL
       source:
@@ -652,3 +668,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createStockLocationsWorkflow
+  x-events: []

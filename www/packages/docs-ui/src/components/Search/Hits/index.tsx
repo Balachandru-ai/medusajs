@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Fragment, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import clsx from "clsx"
 import {
   Configure,
@@ -11,7 +11,7 @@ import {
   useInstantSearch,
 } from "react-instantsearch"
 import { SearchNoResult } from "../NoResults"
-import { AlgoliaIndex, useSearch } from "@/providers"
+import { useSearch } from "@/providers"
 import { Link, SearchHitGroupName } from "@/components"
 
 export type Hierarchy = "lvl0" | "lvl1" | "lvl2" | "lvl3" | "lvl4" | "lvl5"
@@ -42,7 +42,6 @@ export type GroupedHitType = {
 
 export type SearchHitWrapperProps = {
   configureProps: ConfigureProps
-  indices: AlgoliaIndex[]
 } & Omit<SearchHitsProps, "indexName" | "setNoResults">
 
 export type IndexResults = {
@@ -51,41 +50,46 @@ export type IndexResults = {
 
 export const SearchHitsWrapper = ({
   configureProps,
-  indices,
   ...rest
 }: SearchHitWrapperProps) => {
   const { status } = useInstantSearch()
-  const [hasNoResults, setHashNoResults] = useState<IndexResults>({
-    [indices[0].name]: false,
-    [indices[1].name]: false,
+  const { selectedIndex, indices } = useSearch()
+  const [hasNoResults, setHasNoResults] = useState<IndexResults>({
+    [indices[0].value]: false,
+    [indices[1].value]: false,
   })
-  const showNoResults = useMemo(() => {
-    return Object.values(hasNoResults).every((value) => value === true)
-  }, [hasNoResults])
-
   const setNoResults = (index: string, value: boolean) => {
-    setHashNoResults((prev: IndexResults) => ({
+    setHasNoResults((prev) => ({
       ...prev,
       [index]: value,
     }))
   }
+  const showNoResults = useMemo(() => {
+    return Object.values(hasNoResults).every((val) => val)
+  }, [hasNoResults])
 
   return (
-    <div className="h-full overflow-auto px-docs_0.5">
+    <div className="overflow-auto px-docs_0.5 flex-1">
       {status !== "loading" && showNoResults && <SearchNoResult />}
-      {indices.map((index, key) => (
-        // @ts-expect-error React v19 doesn't see this type as a React element
-        <Index indexName={index.name} key={key}>
-          {!hasNoResults[index.name] && (
-            <SearchHitGroupName name={index.title} />
-          )}
-          <SearchHits
-            indexName={index.name}
-            setNoResults={setNoResults}
-            {...rest}
-          />
-          <Configure {...configureProps} />
-        </Index>
+      {indices.map((index) => (
+        <div
+          className={clsx(index.value !== selectedIndex && "hidden")}
+          key={index.value}
+          data-index
+        >
+          {/* @ts-expect-error React v19 doesn't see this type as a React element */}
+          <Index indexName={index.value}>
+            {!hasNoResults[index.value] && (
+              <SearchHitGroupName name={index.title} />
+            )}
+            <SearchHits
+              indexName={index.value}
+              setNoResults={setNoResults}
+              {...rest}
+            />
+            <Configure {...configureProps} />
+          </Index>
+        </div>
       ))}
     </div>
   )
@@ -102,7 +106,7 @@ export const SearchHits = ({
   setNoResults,
   checkInternalPattern,
 }: SearchHitsProps) => {
-  const { items: hits } = useHits<HitType>()
+  const { items: hits, sendEvent } = useHits<HitType>()
   const { status } = useInstantSearch()
   const { setIsOpen } = useSearch()
 
@@ -126,6 +130,7 @@ export const SearchHits = ({
         "[&_mark]:bg-medusa-bg-highlight",
         "[&_mark]:text-medusa-fg-interactive"
       )}
+      data-group
     >
       {hits.map((item, index) => {
         const hierarchies = Object.values(item.hierarchy)
@@ -182,6 +187,7 @@ export const SearchHits = ({
               className="absolute top-0 left-0 h-full w-full"
               target="_self"
               onClick={(e) => {
+                sendEvent("click", item, "Search Result Clicked")
                 if (checkIfInternal(item.url)) {
                   e.preventDefault()
                   window.location.href = item.url

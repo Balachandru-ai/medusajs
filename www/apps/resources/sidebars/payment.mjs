@@ -40,7 +40,12 @@ export const paymentSidebar = [
           {
             type: "link",
             path: "/commerce-modules/payment/payment-provider",
-            title: "Payment Provider Module",
+            title: "Payment Module Provider",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/payment/payment-checkout-flow",
+            title: "Payment in Checkout",
           },
           {
             type: "link",
@@ -174,7 +179,7 @@ export const paymentSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/payment/events",
+            path: "/references/payment/events",
             title: "Events Reference",
           },
           {

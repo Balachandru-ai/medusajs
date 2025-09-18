@@ -28,10 +28,23 @@ import {
   FlowCancelOptions,
   FlowRegisterStepFailureOptions,
   FlowRegisterStepSuccessOptions,
+  FlowRetryStepOptions,
   FlowRunOptions,
   MainExportedWorkflow,
   WorkflowResult,
 } from "./type"
+
+// Cache for loaded modules to avoid repeated traversal
+let cachedLoadedModules: LoadedModule[] | null = null
+
+function getCachedLoadedModules(): LoadedModule[] {
+  if (!cachedLoadedModules) {
+    cachedLoadedModules = MedusaModule.getLoadedModules().map(
+      (mod) => Object.values(mod)[0]
+    )
+  }
+  return cachedLoadedModules
+}
 
 function createContextualWorkflowRunner<
   TData = unknown,
@@ -53,7 +66,7 @@ function createContextualWorkflowRunner<
   container?: LoadedModule[] | MedusaContainer
 }): Omit<
   LocalWorkflow,
-  "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+  "run" | "registerStepSuccess" | "registerStepFailure" | "cancel" | "retryStep"
 > &
   ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride> {
   const flow = new LocalWorkflow(workflowId, container!)
@@ -62,6 +75,7 @@ function createContextualWorkflowRunner<
   const originalRegisterStepSuccess = flow.registerStepSuccess.bind(flow)
   const originalRegisterStepFailure = flow.registerStepFailure.bind(flow)
   const originalCancel = flow.cancel.bind(flow)
+  const originalRetryStep = flow.retryStep.bind(flow)
 
   const originalExecution = async (
     method,
@@ -71,6 +85,14 @@ function createContextualWorkflowRunner<
       resultFrom,
       isCancel = false,
       container: executionContainer,
+      forcePermanentFailure,
+    }: {
+      throwOnError?: boolean
+      logOnError?: boolean
+      resultFrom?: string | Symbol
+      isCancel?: boolean
+      container?: LoadedModule[] | MedusaContainer
+      forcePermanentFailure?: boolean
     },
     transactionOrIdOrIdempotencyKey: DistributedTransactionType | string,
     input: unknown,
@@ -81,9 +103,7 @@ function createContextualWorkflowRunner<
       const container_ = flow.container as MedusaContainer
 
       if (!container_ || !isPresent(container_?.registrations)) {
-        executionContainer = MedusaModule.getLoadedModules().map(
-          (mod) => Object.values(mod)[0]
-        )
+        executionContainer = getCachedLoadedModules()
       }
     }
 
@@ -91,9 +111,10 @@ function createContextualWorkflowRunner<
       flow.container = executionContainer
     }
 
-    const { eventGroupId, parentStepIdempotencyKey } = context
+    const { eventGroupId, parentStepIdempotencyKey, preventReleaseEvents } =
+      context
 
-    if (!parentStepIdempotencyKey) {
+    if (!preventReleaseEvents) {
       attachOnFinishReleaseEvents(events, flow, { logOnError })
     }
 
@@ -101,15 +122,20 @@ function createContextualWorkflowRunner<
       eventGroupId,
       parentStepIdempotencyKey,
       sourcePath: options?.sourcePath,
+      preventReleaseEvents,
     }
 
-    const args = [
-      transactionOrIdOrIdempotencyKey,
-      input,
-      context,
-      events,
-      flowMetadata,
-    ]
+    context.isCancelling = isCancel
+
+    const args = [transactionOrIdOrIdempotencyKey, input, context, events]
+
+    if (method === originalRegisterStepFailure) {
+      // Only available on registerStepFailure
+      args.push(forcePermanentFailure)
+    } else {
+      args.push(flowMetadata)
+    }
+
     const transaction = (await method.apply(
       method,
       args
@@ -157,7 +183,8 @@ function createContextualWorkflowRunner<
         })
       }
     } else {
-      result = transaction.getContext().invoke?.[resultFrom]
+      result =
+        resultFrom && transaction.getContext().invoke?.[resultFrom.toString()]
     }
 
     return {
@@ -186,8 +213,10 @@ function createContextualWorkflowRunner<
       __type: MedusaContextType as Context["__type"],
     }
 
-    context.transactionId ??= ulid()
-    context.eventGroupId ??= ulid()
+    const uniqId = ulid()
+
+    context.transactionId ??= "auto-" + uniqId
+    context.eventGroupId ??= uniqId
 
     return await originalExecution(
       originalRun,
@@ -259,6 +288,7 @@ function createContextualWorkflowRunner<
       resultFrom,
       events,
       container,
+      forcePermanentFailure,
     }: FlowRegisterStepFailureOptions = {
       idempotencyKey: "",
     }
@@ -284,6 +314,7 @@ function createContextualWorkflowRunner<
         resultFrom,
         container,
         logOnError,
+        forcePermanentFailure,
       },
       idempotencyKey,
       response,
@@ -292,6 +323,46 @@ function createContextualWorkflowRunner<
     )
   }
   flow.registerStepFailure = newRegisterStepFailure as any
+
+  const newRetryStep = async (
+    {
+      idempotencyKey,
+      context: outerContext,
+      throwOnError,
+      logOnError,
+      events,
+      container,
+    }: FlowRetryStepOptions = {
+      idempotencyKey: "",
+    }
+  ) => {
+    idempotencyKey ??= ""
+    throwOnError ??= true
+    logOnError ??= false
+
+    const [, transactionId] = idempotencyKey.split(":")
+    const context = {
+      ...outerContext,
+      transactionId,
+      __type: MedusaContextType as Context["__type"],
+    }
+
+    context.eventGroupId ??= ulid()
+
+    return await originalExecution(
+      originalRetryStep,
+      {
+        throwOnError,
+        container,
+        logOnError,
+      },
+      idempotencyKey,
+      undefined,
+      context,
+      events
+    )
+  }
+  flow.retryStep = newRetryStep as any
 
   const newCancel = async ({
     transaction,
@@ -350,7 +421,11 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     container?: LoadedModule[] | MedusaContainer
   ): Omit<
     LocalWorkflow,
-    "run" | "registerStepSuccess" | "registerStepFailure" | "cancel"
+    | "run"
+    | "registerStepSuccess"
+    | "registerStepFailure"
+    | "cancel"
+    | "retryStep"
   > &
     ExportedWorkflow<TData, TResult, TDataOverride, TResultOverride> {
     return createContextualWorkflowRunner<
@@ -371,11 +446,17 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
       | "run"
       | "registerStepSuccess"
       | "registerStepFailure"
-      | "cancel",
+      | "cancel"
+      | "retryStep",
     TDataOverride,
     TResultOverride
   >(
-    action: "run" | "registerStepSuccess" | "registerStepFailure" | "cancel",
+    action:
+      | "run"
+      | "registerStepSuccess"
+      | "registerStepFailure"
+      | "cancel"
+      | "retryStep",
     container?: LoadedModule[] | MedusaContainer
   ) => {
     const contextualRunner = createContextualWorkflowRunner<
@@ -412,14 +493,11 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   > => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowRunOptions<
-      TDataOverride extends undefined ? TData : TDataOverride
-    >
 
     return await buildRunnerFn<"run", TDataOverride, TResultOverride>(
       "run",
       container
-    )(inputArgs)
+    )(args)
   }
 
   exportedWorkflow.registerStepSuccess = async <
@@ -436,9 +514,6 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   > => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowRegisterStepSuccessOptions<
-      TDataOverride extends undefined ? TData : TDataOverride
-    >
 
     return await buildRunnerFn<
       "registerStepSuccess",
@@ -447,7 +522,7 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
     >(
       "registerStepSuccess",
       container
-    )(inputArgs)
+    )(args)
   }
 
   exportedWorkflow.registerStepFailure = async <
@@ -464,9 +539,6 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   > => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowRegisterStepFailureOptions<
-      TDataOverride extends undefined ? TData : TDataOverride
-    >
 
     return await buildRunnerFn<
       "registerStepFailure",
@@ -474,6 +546,22 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
       TResultOverride
     >(
       "registerStepFailure",
+      container
+    )(args)
+  }
+
+  exportedWorkflow.retryStep = async <
+    TDataOverride = undefined,
+    TResultOverride = undefined
+  >(
+    args?: FlowRetryStepOptions
+  ): Promise<WorkflowResult> => {
+    const container = args?.container
+    delete args?.container
+    const inputArgs = { ...args } as FlowRetryStepOptions
+
+    return await buildRunnerFn<"retryStep", TDataOverride, TResultOverride>(
+      "retryStep",
       container
     )(inputArgs)
   }
@@ -483,12 +571,11 @@ export const exportWorkflow = <TData = unknown, TResult = unknown>(
   ): Promise<WorkflowResult> => {
     const container = args?.container
     delete args?.container
-    const inputArgs = { ...args } as FlowCancelOptions
 
     return await buildRunnerFn<"cancel", unknown, unknown>(
       "cancel",
       container
-    )(inputArgs)
+    )(args)
   }
 
   MedusaWorkflow.registerWorkflow(workflowId, exportedWorkflow)

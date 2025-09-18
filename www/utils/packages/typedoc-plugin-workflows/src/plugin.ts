@@ -22,9 +22,13 @@ import {
   addTagsToReflection,
   getResolvedResourcesOfStep,
   getUniqueStrArray,
+  getWorkflowInputType,
 } from "utils"
 import { StepType } from "./types.js"
 import Examples from "./utils/examples.js"
+import { MedusaEvent } from "types"
+import path from "path"
+import { readFileSync } from "fs"
 
 type ParsedStep = {
   stepReflection: DeclarationReflection
@@ -47,6 +51,7 @@ class WorkflowsPlugin {
       workflowIds: string[]
     }
   }
+  protected events: MedusaEvent[] = []
 
   constructor(app: Application) {
     this.app = app
@@ -92,6 +97,7 @@ class WorkflowsPlugin {
     if (!isEnabled) {
       return
     }
+    this.readEventsJson()
     for (const reflection of context.project.getReflectionsByKind(
       ReflectionKind.All
     )) {
@@ -198,6 +204,7 @@ class WorkflowsPlugin {
           workflow,
           stepDepth,
           workflowReflection,
+          constructorFn,
         })
         resources.push(...whenResources)
       } else {
@@ -208,6 +215,7 @@ class WorkflowsPlugin {
           workflowVarName: parentReflection.name,
           workflowReflection,
           workflowComments: parentReflection.comment?.blockTags,
+          constructorFn,
         })
 
         if (!steps.length) {
@@ -233,6 +241,7 @@ class WorkflowsPlugin {
     ])
 
     this.updateWorkflowsTagsMap(workflowId, uniqueResources)
+    this.attachEvents(parentReflection)
   }
 
   /**
@@ -248,6 +257,7 @@ class WorkflowsPlugin {
     workflowVarName,
     workflowReflection,
     workflowComments = [],
+    constructorFn,
   }: {
     initializer: ts.CallExpression
     context: Context
@@ -255,6 +265,7 @@ class WorkflowsPlugin {
     workflowVarName: string
     workflowReflection: SignatureReflection
     workflowComments?: CommentTag[]
+    constructorFn: ts.ArrowFunction | ts.FunctionExpression
   }): ParsedStep[] {
     const steps: ParsedStep[] = []
     const initializerName = this.helper.normalizeName(
@@ -278,6 +289,8 @@ class WorkflowsPlugin {
             workflow,
             workflowVarName,
             workflowReflection,
+            workflowComments,
+            constructorFn,
           })
         )
       })
@@ -290,14 +303,34 @@ class WorkflowsPlugin {
       if (stepType === "hook" && "symbol" in initializer.arguments[1]) {
         // get the hook's name from the first argument
         stepId = this.helper.normalizeName(initializer.arguments[0].getText())
-        stepReflection = this.assembleHookReflection({
-          stepId,
-          context,
-          inputSymbol: initializer.arguments[1].symbol as ts.Symbol,
-          workflowName: workflowVarName,
-          workflowComments,
-          workflowReflection: workflowReflection.parent,
-        })
+        const shouldIgnore = ts
+          .getJSDocCommentsAndTags(initializer.parent)
+          .some((comment) => {
+            if (!("tags" in comment)) {
+              return false
+            }
+
+            return comment.tags?.some(
+              (tag) => tag.tagName.getText() === "ignore"
+            )
+          })
+        if (!shouldIgnore) {
+          const hookArgumetSymbol = this.getHookArgumentSymbol({
+            argument: initializer.arguments[1],
+            constructorFn,
+          })
+
+          if (hookArgumetSymbol) {
+            stepReflection = this.assembleHookReflection({
+              stepId,
+              context,
+              inputSymbol: hookArgumetSymbol,
+              workflowName: workflowVarName,
+              workflowComments,
+              workflowReflection: workflowReflection.parent,
+            })
+          }
+        }
       } else {
         const initializerReflection = findReflectionInNamespaces(
           context.project,
@@ -373,6 +406,7 @@ class WorkflowsPlugin {
     workflow,
     stepDepth,
     workflowReflection,
+    ...rest
   }: {
     initializer: ts.CallExpression
     parentReflection: DeclarationReflection
@@ -380,6 +414,7 @@ class WorkflowsPlugin {
     workflow?: WorkflowDefinition
     stepDepth: number
     workflowReflection: SignatureReflection
+    constructorFn: ts.ArrowFunction | ts.FunctionExpression
   }): {
     resources: string[]
   } {
@@ -452,6 +487,7 @@ class WorkflowsPlugin {
         workflow,
         workflowVarName: parentReflection.name,
         workflowReflection,
+        ...rest,
       }).forEach((step) => {
         this.createStepDocumentReflection({
           ...step,
@@ -493,12 +529,32 @@ class WorkflowsPlugin {
     workflowComments?: CommentTag[]
     workflowReflection: DeclarationReflection
   }): DeclarationReflection {
-    const declarationReflection = context.createDeclarationReflection(
-      ReflectionKind.Function,
-      undefined,
-      undefined,
-      stepId
-    )
+    const hooksProperty = workflowReflection.getChildByName("hooks")
+    let declarationReflection: DeclarationReflection | undefined
+    if (
+      hooksProperty?.isDeclaration() &&
+      hooksProperty.type?.type === "intersection"
+    ) {
+      hooksProperty.type.types.some((hookType) => {
+        if (hookType.type !== "reflection") {
+          return
+        }
+
+        declarationReflection = hookType.declaration.children?.find((child) => {
+          return child.name === stepId
+        })
+
+        return declarationReflection !== undefined
+      })
+    }
+    if (!declarationReflection) {
+      declarationReflection = context.createDeclarationReflection(
+        ReflectionKind.Function,
+        undefined,
+        undefined,
+        stepId
+      )
+    }
 
     declarationReflection.comment = new Comment()
 
@@ -523,38 +579,45 @@ class WorkflowsPlugin {
       ReflectionKind.Parameter,
       signatureReflection
     )
+    const isParameterWorkflowInput =
+      inputSymbol.valueDeclaration?.kind === ts.SyntaxKind.Parameter &&
+      workflowReflection.signatures?.length
+    parameter.type = isParameterWorkflowInput
+      ? getWorkflowInputType(workflowReflection.signatures![0]) ||
+        ReferenceType.createSymbolReference(inputSymbol, context)
+      : ReferenceType.createSymbolReference(inputSymbol, context)
 
-    parameter.type = ReferenceType.createSymbolReference(inputSymbol, context)
+    if (parameter.type.type === "reference") {
+      if (parameter.type.name === "__object") {
+        parameter.type.name = "object"
+        parameter.type.qualifiedName = "object"
 
-    if (parameter.type.name === "__object") {
-      parameter.type.name = "object"
-      parameter.type.qualifiedName = "object"
-
-      if (!parameter.comment?.summary) {
-        parameter.comment = new Comment()
-        parameter.comment.summary = [
-          {
-            kind: "text",
-            text: "The input data for the hook.",
-          },
-        ]
+        if (!parameter.comment?.summary) {
+          parameter.comment = new Comment()
+          parameter.comment.summary = [
+            {
+              kind: "text",
+              text: "The input data for the hook.",
+            },
+          ]
+        }
       }
-    }
 
-    if (parameter.type.reflection instanceof DeclarationReflection) {
-      const additionalDataChild = parameter.type.reflection.children?.find(
-        (child) => child.name === "additional_data"
-      )
+      if (parameter.type.reflection instanceof DeclarationReflection) {
+        const additionalDataChild = parameter.type.reflection.children?.find(
+          (child) => child.name === "additional_data"
+        )
 
-      if (additionalDataChild) {
-        additionalDataChild.comment =
-          additionalDataChild.comment || new Comment()
-        additionalDataChild.comment.summary = [
-          {
-            kind: "text",
-            text: "Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).",
-          },
-        ]
+        if (additionalDataChild) {
+          additionalDataChild.comment =
+            additionalDataChild.comment || new Comment()
+          additionalDataChild.comment.summary = [
+            {
+              kind: "text",
+              text: "Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).",
+            },
+          ]
+        }
       }
     }
 
@@ -579,7 +642,6 @@ class WorkflowsPlugin {
       ])
     )
 
-    const hooksProperty = workflowReflection.getChildByName("hooks")
     if (
       hooksProperty?.isDeclaration() &&
       hooksProperty.type?.type === "reflection"
@@ -798,6 +860,85 @@ class WorkflowsPlugin {
     do {
       handleForWorkflow(keys[0], this.addTagsAfterParsing[keys[0]])
     } while (keys.length > 0)
+  }
+
+  getHookArgumentSymbol({
+    argument,
+    constructorFn,
+  }: {
+    argument: ts.Node
+    constructorFn: ts.ArrowFunction | ts.FunctionExpression
+  }): ts.Symbol | undefined {
+    if ("symbol" in argument && argument.symbol) {
+      return argument.symbol as ts.Symbol
+    }
+
+    if (!("locals" in constructorFn) || !constructorFn.locals) {
+      return undefined
+    }
+
+    // try to retrieve from the locals in the constructor function
+    return (constructorFn.locals as Map<string, ts.Symbol>).get(
+      argument.getText()
+    )
+  }
+
+  readEventsJson() {
+    if (this.events.length) {
+      return
+    }
+
+    const eventsPath = path.resolve(
+      "..",
+      "..",
+      "generated",
+      "events-output.json"
+    )
+
+    this.events = JSON.parse(readFileSync(eventsPath, "utf-8"))
+  }
+
+  attachEvents(workflowReflection: DeclarationReflection) {
+    if (!workflowReflection.comment) {
+      workflowReflection.comment = new Comment()
+    }
+
+    const eventsTag = workflowReflection.comment.blockTags.find(
+      (tag) => tag.tag === "@workflowEvent"
+    )
+
+    if (eventsTag) {
+      return
+    }
+
+    const workflowEvents = this.events.filter((event) =>
+      event.workflows.includes(workflowReflection.name)
+    )
+
+    if (!workflowEvents) {
+      return
+    }
+
+    workflowReflection.comment.blockTags.push(
+      ...workflowEvents.map((event) => {
+        let commentText = `${event.name} -- ${event.description} -- ${event.payload}`
+        if (event.deprecated) {
+          commentText += " -- deprecated"
+          if (event.deprecated_message) {
+            commentText += ` -- ${event.deprecated_message}`
+          }
+        }
+        if (event.since) {
+          commentText += ` -- since: ${event.since}`
+        }
+        return new CommentTag(`@workflowEvent`, [
+          {
+            kind: "text",
+            text: commentText,
+          },
+        ])
+      })
+    )
   }
 }
 

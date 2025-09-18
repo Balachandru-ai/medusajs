@@ -109,6 +109,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const paymentCollection =
@@ -148,6 +155,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the payment collection:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const paymentCollections =
@@ -205,6 +219,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the payment collection:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const paymentCollections =
@@ -559,6 +580,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the payment session:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const paymentSessions =
@@ -615,6 +643,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the payment:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const payments = await paymentModuleService.listPayments(
@@ -775,6 +810,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the payment providers:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [paymentProviders, count] =
@@ -1059,6 +1101,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the capture:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const captures = await paymentModuleService.listCaptures(
@@ -1126,6 +1175,13 @@ export interface IPaymentModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the refund:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const refunds = await paymentModuleService.listRefunds(
@@ -1332,7 +1388,14 @@ export interface IPaymentModuleService extends IModuleService {
    *   })
    * ```
    *
-   * To specify relations that should be retrieved within the refund :
+   * To specify relations that should be retrieved within the refund reasons:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const refundReasons =

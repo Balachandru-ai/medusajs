@@ -1,3 +1,8 @@
+---
+products:
+  - sales channel
+---
+
 import { AcademicCapSolid, BoltSolid } from "@medusajs/icons"
 
 export const metadata = {
@@ -39,11 +44,13 @@ Businesses are no longer bound to sell in their stores. They can reach their cus
 
 One example is marketplaces like Amazon. Customers searching through Amazon to find products are inadvertently searching through many third-party stores connected to Amazon’s marketplace.
 
-You can implement this example in Medusa with the Sales Channel Module and a custom module. Use the Sales Channel Module's features to set different product availability across sales channels. Then, in the custom module, integrate with Amazon’s seller program and use their APIs to push your products on Amazon.
+You can implement this example in Medusa with the Sales Channel Module and a custom module. Use the Sales Channel Module's features to set different product availability across sales channels.
+
+Then, in the custom module, integrate with Amazon’s seller program. You can then build workflows that sync your products with Amazon’s marketplace.
 
 Another channel that attracts customer sales is social media. You can create a custom module that integrates with social media apps to show your products and sell them to customers.
 
-<CardList itemsPerRow={2} items={[
+<CardList items={[
   {
     href: "/commerce-modules/sales-channel",
     title: "Sales Channels",
@@ -58,6 +65,14 @@ Another channel that attracts customer sales is social media. You can create a c
   },
 ]} />
 
+<Card
+  href="!docs!/learn/fundamentals/workflows#1-create-workflow"
+  title="Create a Workflow"
+  text="Learn how to create a workflow."
+  icon={AcademicCapSolid}
+  className="mt-1"
+/>
+
 ---
 
 ## Optimize Customer Experience
@@ -67,10 +82,11 @@ Implement the customer journey and design for your storefronts that leads to the
 Medusa’s architecture also makes it easier to integrate any third-party services to provide a better customer experience:
 
 - Create a module that integrates the third-party service.
-- Expose the module's features in API routes.
+- Build a workflow that performs actions spanning across the third-party service and your Medusa application.
+- Expose the workflow's features in API routes.
 - Send requests to these API routes from your storefront.
 
-<CardList itemsPerRow={2} items={[
+<CardList items={[
   {
     href: "!docs!/learn/fundamentals/modules",
     title: "Create a Module",
@@ -78,9 +94,17 @@ Medusa’s architecture also makes it easier to integrate any third-party servic
     icon: AcademicCapSolid,
   },
   {
-    href: "!docs!/learn/fundamentals/api-routes",
-    title: "Create an API Route",
-    text: "Learn how to create an API route.",
+    href: "!docs!/learn/fundamentals/workflows",
+    title: "Create a Workflow",
+    text: "Learn how to create a workflow.",
     icon: AcademicCapSolid,
   },
 ]} />
+
+<Card 
+  href="!docs!/learn/fundamentals/api-routes"
+  title="Create API Route"
+  text="Learn how to create an API route."
+  icon={AcademicCapSolid}
+  className="mt-1"
+/>

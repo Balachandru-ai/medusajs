@@ -11,7 +11,7 @@ const HomepageLinksSection = () => {
           text: "Create your first application",
         },
         {
-          href: "/learn/customization",
+          href: "/learn/customization/custom-features/module",
           text: "Build a Module",
         },
         {

@@ -67,16 +67,38 @@ export const howToTutorialsSidebar = [
   {
     type: "category",
     title: "Tutorials",
+    sort_sidebar: "alphabetize",
     description: `Tutorials are step-by-step guides that take you through implementing a specific use case in Medusa. You can follow these guides whether you're a beginner or an experienced Medusa developer.
 
 While tutorials show you a specific use case, they also help you understand how to implement similar use cases in your own projects. Also, you can implement the use case in a tutorial differently to fit your business requirements.`,
     children: [
       {
         type: "link",
+        title: "Add Gift Message",
+        path: "/how-to-tutorials/tutorials/gift-message",
+        description:
+          "Learn how to add a gift option and message to items in the cart.",
+      },
+      {
+        type: "ref",
+        title: "Analytics with Segment",
+        path: "/integrations/guides/segment",
+        description:
+          "Learn how to integrate Segment with Medusa to track user interactions and events.",
+      },
+      {
+        type: "link",
         title: "Abandoned Cart",
         path: "/how-to-tutorials/tutorials/abandoned-cart",
         description:
           "Learn how to send abandoned cart notifications to customers.",
+      },
+      {
+        type: "ref",
+        title: "Bundled Products",
+        path: "/recipes/bundled-products/examples/standard",
+        description:
+          "Learn how to implement bundled products in your Medusa store.",
       },
       {
         type: "link",
@@ -86,10 +108,87 @@ While tutorials show you a specific use case, they also help you understand how 
           "Learn how to use prices from external systems for products.",
       },
       {
+        type: "link",
+        title: "First-Purchase Discounts",
+        path: "/how-to-tutorials/tutorials/first-purchase-discounts",
+        description:
+          "Learn how to implement first-purchase discounts in your Medusa store.",
+      },
+      {
+        type: "link",
+        title: "Generate Invoices",
+        path: "/how-to-tutorials/tutorials/invoice-generator",
+        description:
+          "Learn how to generate invoices for orders in your Medusa store.",
+      },
+      {
+        type: "ref",
+        title: "Integrate Payload CMS",
+        path: "/integrations/guides/payload",
+        description:
+          "Learn how to integrate Payload CMS with Medusa to manage your product content.",
+      },
+      {
+        type: "link",
+        title: "Loyalty Points System",
+        path: "/how-to-tutorials/tutorials/loyalty-points",
+        description:
+          "Learn how to implement a loyalty points system in your Medusa store.",
+      },
+      {
+        type: "ref",
+        title: "Localization with Contentful",
+        path: "/integrations/guides/contentful",
+        description:
+          "Learn how to implement localization in Medusa by integrating Contentful.",
+      },
+      {
         type: "ref",
         title: "Magento Migration",
         path: "/integrations/guides/magento",
         description: "Learn how to migrate data from Magento to Medusa.",
+      },
+      {
+        type: "link",
+        title: "Meta Product Feed",
+        path: "/how-to-tutorials/tutorials/product-feed",
+        description:
+          "Learn how to implement a product feed for Meta (Facebook and Instagram) and Google using Medusa.",
+      },
+      {
+        type: "ref",
+        title: "Newsletter with Mailchimp",
+        path: "/integrations/guides/mailchimp",
+        description:
+          "Learn how to integrate Mailchimp with Medusa to manage and automate newsletters.",
+      },
+      {
+        type: "ref",
+        title: "Personalized Products",
+        path: "/recipes/personalized-products/example",
+        description:
+          "Learn how to implement personalized products in your Medusa store.",
+      },
+      {
+        type: "link",
+        title: "Phone Authentication",
+        path: "/how-to-tutorials/tutorials/phone-auth",
+        description:
+          "Learn how to allow users to authenticate using their phone numbers.",
+      },
+      {
+        type: "link",
+        title: "Pre-Order Products",
+        path: "/how-to-tutorials/tutorials/preorder",
+        description:
+          "Learn how to implement pre-order functionality for products in your Medusa store.",
+      },
+      {
+        type: "link",
+        title: "Product Builder",
+        path: "/how-to-tutorials/tutorials/product-builder",
+        description:
+          "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
       },
       {
         type: "link",
@@ -104,6 +203,20 @@ While tutorials show you a specific use case, they also help you understand how 
         path: "/examples/guides/quote-management",
         description:
           "Learn how to implement quote management, useful for B2B use cases.",
+      },
+      {
+        type: "link",
+        title: "Re-Order",
+        path: "/how-to-tutorials/tutorials/re-order",
+        description:
+          "Learn how to allow customers to re-order previous orders.",
+      },
+      {
+        type: "link",
+        title: "Saved Payment Methods",
+        path: "/how-to-tutorials/tutorials/saved-payment-methods",
+        description:
+          "Learn how to implement saved payment methods in your Medusa store.",
       },
       {
         type: "link",
@@ -132,8 +245,8 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
-        title: "Medusa Cloud",
-        path: "https://medusajs.com/pricing",
+        title: "Cloud",
+        path: "https://docs.medusajs.com/cloud",
       },
       {
         type: "sub-category",

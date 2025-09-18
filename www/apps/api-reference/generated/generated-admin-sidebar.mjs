@@ -22,6 +22,12 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "link",
+      "title": "Manage Metadata",
+      "path": "manage-metadata",
+      "loaded": true
+    },
+    {
+      "type": "link",
       "title": "Select Fields and Relations",
       "path": "select-fields-and-relations",
       "loaded": true
@@ -49,13 +55,6 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
-      "title": "Auth",
-      "children": [],
-      "loaded": false,
-      "showLoadingIfEmpty": true
-    },
-    {
-      "type": "category",
       "title": "Api Keys",
       "children": [
         {
@@ -69,6 +68,13 @@ const generatedgeneratedAdminSidebarSidebar = {
           }
         }
       ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Auth",
+      "children": [],
       "loaded": false,
       "showLoadingIfEmpty": true
     },
@@ -218,6 +224,13 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Feature Flags",
+      "children": [],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Fulfillment Providers",
       "children": [
         {
@@ -260,6 +273,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "fulfillments_fulfillment_schema",
           "title": "Fulfillment Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Gift Cards",
+      "children": [
+        {
+          "type": "link",
+          "path": "gift-cards_giftcard_schema",
+          "title": "GiftCard Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -375,6 +406,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "payments_payment_schema",
           "title": "Payment Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Plugins",
+      "children": [
+        {
+          "type": "link",
+          "path": "plugins_plugin_schema",
+          "title": "Plugin Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -639,6 +688,24 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Shipping Option Types",
+      "children": [
+        {
+          "type": "link",
+          "path": "shipping-option-types_shippingoptiontype_schema",
+          "title": "ShippingOptionType Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Shipping Options",
       "children": [
         {
@@ -693,12 +760,48 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Store Credit Accounts",
+      "children": [
+        {
+          "type": "link",
+          "path": "store-credit-accounts_storecreditaccount_schema",
+          "title": "StoreCreditAccount Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Stores",
       "children": [
         {
           "type": "link",
           "path": "stores_store_schema",
           "title": "Store Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Tax Providers",
+      "children": [
+        {
+          "type": "link",
+          "path": "tax-providers_taxprovider_schema",
+          "title": "TaxProvider Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -735,6 +838,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "tax-regions_taxregion_schema",
           "title": "TaxRegion Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Transaction Groups",
+      "children": [
+        {
+          "type": "link",
+          "path": "transaction-groups_transactiongroup_schema",
+          "title": "TransactionGroup Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",

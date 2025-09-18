@@ -30,7 +30,7 @@ export const authSidebar = [
           {
             type: "link",
             path: "/commerce-modules/auth/auth-providers",
-            title: "Auth Providers",
+            title: "Auth Module Provider",
           },
           {
             type: "link",
@@ -47,7 +47,7 @@ export const authSidebar = [
       {
         type: "category",
         title: "Server Guides",
-        autogenerate_tags: "server+auth",
+        autogenerate_tags: "auth+server",
         autogenerate_as_ref: true,
         sort_sidebar: "alphabetize",
         description:
@@ -66,7 +66,7 @@ export const authSidebar = [
           {
             type: "link",
             path: "/references/auth/provider",
-            title: "Create Auth Provider Module",
+            title: "Create Auth Provider",
           },
         ],
       },
@@ -157,7 +157,7 @@ export const authSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/auth/events",
+            path: "/references/auth/events",
             title: "Events Reference",
           },
           {

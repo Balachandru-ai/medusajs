@@ -1,6 +1,7 @@
 import { IndexTypes } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@mikro-orm/postgresql"
 import { schemaObjectRepresentationPropertiesToOmit } from "@types"
+import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 
 export async function createPartitions(
   schemaObjectRepresentation: IndexTypes.SchemaObjectRepresentation,
@@ -9,6 +10,8 @@ export async function createPartitions(
   const activeSchema = manager.config.get("schema")
     ? `"${manager.config.get("schema")}".`
     : ""
+
+  const createdPartitions: Set<string> = new Set()
   const partitions = Object.keys(schemaObjectRepresentation)
     .filter(
       (key) =>
@@ -16,17 +19,32 @@ export async function createPartitions(
         schemaObjectRepresentation[key].listeners.length > 0
     )
     .map((key) => {
-      const cName = key.toLowerCase()
+      const cName = normalizeTableName(key)
+
+      if (createdPartitions.has(cName)) {
+        return []
+      }
+      createdPartitions.add(cName)
+
       const part: string[] = []
       part.push(
         `CREATE TABLE IF NOT EXISTS ${activeSchema}cat_${cName} PARTITION OF ${activeSchema}index_data FOR VALUES IN ('${key}')`
       )
 
       for (const parent of schemaObjectRepresentation[key].parents) {
-        const pKey = `${parent.ref.entity}-${key}`
-        const pName = `${parent.ref.entity}${key}`.toLowerCase()
+        if (parent.isInverse) {
+          continue
+        }
+
+        const pName = getPivotTableName(`${parent.ref.entity}${key}`)
+
+        if (createdPartitions.has(pName)) {
+          continue
+        }
+        createdPartitions.add(pName)
+
         part.push(
-          `CREATE TABLE IF NOT EXISTS ${activeSchema}cat_pivot_${pName} PARTITION OF ${activeSchema}index_relation FOR VALUES IN ('${pKey}')`
+          `CREATE TABLE IF NOT EXISTS ${activeSchema}${pName} PARTITION OF ${activeSchema}index_relation FOR VALUES IN ('${parent.ref.entity}-${key}')`
         )
       }
       return part
@@ -47,7 +65,7 @@ export async function createPartitions(
         schemaObjectRepresentation[key].listeners.length > 0
     )
     .map((key) => {
-      const cName = key.toLowerCase()
+      const cName = normalizeTableName(key)
       const part: string[] = []
 
       part.push(
@@ -58,11 +76,15 @@ export async function createPartitions(
         `CREATE INDEX CONCURRENTLY IF NOT EXISTS "IDX_cat_${cName}_id" ON ${activeSchema}cat_${cName} ("id")`
       )
 
-      // create child id index on pivot partitions
       for (const parent of schemaObjectRepresentation[key].parents) {
-        const pName = `${parent.ref.entity}${key}`.toLowerCase()
+        if (parent.isInverse) {
+          continue
+        }
+
+        const pName = getPivotTableName(`${parent.ref.entity}${key}`)
+
         part.push(
-          `CREATE INDEX CONCURRENTLY IF NOT EXISTS "IDX_cat_pivot_${pName}_child_id" ON ${activeSchema}cat_pivot_${pName} ("child_id")`
+          `CREATE INDEX CONCURRENTLY IF NOT EXISTS "IDX_${pName}_child_id" ON ${activeSchema}${pName} ("child_id")`
         )
       }
 
@@ -70,18 +92,25 @@ export async function createPartitions(
     })
     .flat()
 
-  // Execute index creation commands separately to avoid blocking
   for (const cmd of indexCreationCommands) {
     try {
       await manager.execute(cmd)
     } catch (error) {
-      // Log error but continue with other indexes
       console.error(`Failed to create index: ${error.message}`)
     }
   }
 
-  partitions.push(`analyse ${activeSchema}index_data`)
-  partitions.push(`analyse ${activeSchema}index_relation`)
+  // Create count estimate function
+  partitions.push(`
+    CREATE OR REPLACE FUNCTION count_estimate(query text) RETURNS bigint AS $$
+    DECLARE
+        plan jsonb;
+    BEGIN
+        EXECUTE 'EXPLAIN (FORMAT JSON) ' || query INTO plan;
+        RETURN (plan->0->'Plan'->>'Plan Rows')::bigint;
+    END;
+    $$ LANGUAGE plpgsql;
+  `)
 
   await manager.execute(partitions.join("; "))
 }

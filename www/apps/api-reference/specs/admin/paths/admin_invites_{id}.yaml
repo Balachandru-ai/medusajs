@@ -31,6 +31,10 @@ get:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_invites_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -73,6 +77,10 @@ delete:
       schema:
         type: string
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_invites_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -122,3 +130,13 @@ delete:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
+  x-events:
+    - name: invite.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the invite
+        }]
+        ```
+      description: Emitted when invites are deleted.
+      deprecated: false

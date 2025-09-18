@@ -2033,9 +2033,12 @@
                 },
                 "hint": {
                   "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
                 }
               },
-              "required": ["label", "hint"],
+              "required": ["label", "hint", "placeholder"],
               "additionalProperties": false
             },
             "subtitle": {
@@ -2043,9 +2046,12 @@
               "properties": {
                 "label": {
                   "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
                 }
               },
-              "required": ["label"],
+              "required": ["label", "placeholder"],
               "additionalProperties": false
             },
             "handle": {
@@ -2056,9 +2062,12 @@
                 },
                 "tooltip": {
                   "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
                 }
               },
-              "required": ["label", "tooltip"],
+              "required": ["label", "tooltip", "placeholder"],
               "additionalProperties": false
             },
             "description": {
@@ -2069,9 +2078,12 @@
                 },
                 "hint": {
                   "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
                 }
               },
-              "required": ["label", "hint"],
+              "required": ["label", "hint", "placeholder"],
               "additionalProperties": false
             },
             "discountable": {
@@ -3043,6 +3055,9 @@
         "editItemDetails": {
           "type": "string"
         },
+        "quantityAcrossLocations": {
+          "type": "string"
+        },
         "create": {
           "type": "object",
           "properties": {
@@ -3258,6 +3273,7 @@
         "manageLocationQuantity",
         "deleteWarning",
         "editItemDetails",
+        "quantityAcrossLocations",
         "create",
         "reservation",
         "adjustInventory",
@@ -3767,6 +3783,102 @@
     "orders": {
       "type": "object",
       "properties": {
+        "giftCardsStoreCreditLines": {
+          "type": "string"
+        },
+        "creditLines": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "total": {
+              "type": "string"
+            },
+            "creditOrDebit": {
+              "type": "string"
+            },
+            "createCreditLine": {
+              "type": "string"
+            },
+            "createCreditLineSuccess": {
+              "type": "string"
+            },
+            "createCreditLineError": {
+              "type": "string"
+            },
+            "createCreditLineDescription": {
+              "type": "string"
+            },
+            "operation": {
+              "type": "string"
+            },
+            "credit": {
+              "type": "string"
+            },
+            "creditDescription": {
+              "type": "string"
+            },
+            "debit": {
+              "type": "string"
+            },
+            "debitDescription": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "total",
+            "creditOrDebit",
+            "createCreditLine",
+            "createCreditLineSuccess",
+            "createCreditLineError",
+            "createCreditLineDescription",
+            "operation",
+            "credit",
+            "creditDescription",
+            "debit",
+            "debitDescription"
+          ],
+          "additionalProperties": false
+        },
+        "balanceSettlement": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "settlementType": {
+              "type": "string"
+            },
+            "settlementTypes": {
+              "type": "object",
+              "properties": {
+                "paymentMethod": {
+                  "type": "string"
+                },
+                "paymentMethodDescription": {
+                  "type": "string"
+                },
+                "creditLine": {
+                  "type": "string"
+                },
+                "creditLineDescription": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "paymentMethod",
+                "paymentMethodDescription",
+                "creditLine",
+                "creditLineDescription"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": ["title", "settlementType", "settlementTypes"],
+          "additionalProperties": false
+        },
         "domain": {
           "type": "string"
         },
@@ -3875,6 +3987,9 @@
             },
             "taxTotal": {
               "type": "string"
+            },
+            "totalAfterDiscount": {
+              "type": "string"
             }
           },
           "required": [
@@ -3890,7 +4005,8 @@
             "itemSubtotal",
             "shippingSubtotal",
             "discountSubtotal",
-            "taxTotal"
+            "taxTotal",
+            "totalAfterDiscount"
           ],
           "additionalProperties": false
         },
@@ -3936,6 +4052,9 @@
               "type": "string"
             },
             "totalPaidByCustomer": {
+              "type": "string"
+            },
+            "totalStoreCreditRefunds": {
               "type": "string"
             },
             "capture": {
@@ -4039,6 +4158,7 @@
             "title",
             "isReadyToBeCaptured",
             "totalPaidByCustomer",
+            "totalStoreCreditRefunds",
             "capture",
             "capture_short",
             "refund",
@@ -4784,9 +4904,12 @@
               "properties": {
                 "created": {
                   "type": "string"
+                },
+                "error": {
+                  "type": "string"
                 }
               },
-              "required": ["created"],
+              "required": ["created", "error"],
               "additionalProperties": false
             },
             "error": {
@@ -5447,6 +5570,9 @@
         }
       },
       "required": [
+        "giftCardsStoreCreditLines",
+        "creditLines",
+        "balanceSettlement",
         "domain",
         "claim",
         "exchange",
@@ -5812,9 +5938,22 @@
               },
               "required": ["label", "description"],
               "additionalProperties": false
+            },
+            "shippingOptionTypes": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "description"],
+              "additionalProperties": false
             }
           },
-          "required": ["header", "shippingProfiles"],
+          "required": ["header", "shippingProfiles", "shippingOptionTypes"],
           "additionalProperties": false
         },
         "salesChannels": {
@@ -6216,6 +6355,9 @@
                 "profile": {
                   "type": "string"
                 },
+                "type": {
+                  "type": "string"
+                },
                 "fulfillmentOption": {
                   "type": "string"
                 }
@@ -6226,6 +6368,7 @@
                 "enableInStore",
                 "provider",
                 "profile",
+                "type",
                 "fulfillmentOption"
               ],
               "additionalProperties": false
@@ -6446,14 +6589,14 @@
             "errors": {
               "type": "object",
               "properties": {
-                "rateIsRequired": {
+                "missingProvider": {
                   "type": "string"
                 },
-                "nameIsRequired": {
+                "missingCountry": {
                   "type": "string"
                 }
               },
-              "required": ["rateIsRequired", "nameIsRequired"],
+              "required": ["missingProvider", "missingCountry"],
               "additionalProperties": false
             },
             "successToast": {
@@ -6461,6 +6604,22 @@
             }
           },
           "required": ["header", "hint", "errors", "successToast"],
+          "additionalProperties": false
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "hint": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "hint", "successToast"],
           "additionalProperties": false
         },
         "province": {
@@ -6484,6 +6643,16 @@
             }
           },
           "required": ["header", "create"],
+          "additionalProperties": false
+        },
+        "provider": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            }
+          },
+          "required": ["header"],
           "additionalProperties": false
         },
         "state": {
@@ -6894,6 +7063,9 @@
             "taxCode": {
               "type": "string"
             },
+            "taxProvider": {
+              "type": "string"
+            },
             "targets": {
               "type": "object",
               "properties": {
@@ -6920,6 +7092,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -6927,7 +7102,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -6964,6 +7140,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -6971,7 +7150,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -6992,6 +7172,9 @@
                     },
                     "customerGroup": {
                       "type": "string"
+                    },
+                    "shippingOption": {
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -6999,7 +7182,8 @@
                     "productCollection",
                     "productTag",
                     "productType",
-                    "customerGroup"
+                    "customerGroup",
+                    "shippingOption"
                   ],
                   "additionalProperties": false
                 },
@@ -7224,6 +7408,7 @@
             "defaultTaxRate",
             "taxRate",
             "taxCode",
+            "taxProvider",
             "targets",
             "sublevels",
             "noDefaultRate"
@@ -7236,7 +7421,9 @@
         "list",
         "delete",
         "create",
+        "edit",
         "province",
+        "provider",
         "state",
         "stateOrTerritory",
         "county",
@@ -7314,6 +7501,9 @@
             "clearAll": {
               "type": "string"
             },
+            "taxInclusive": {
+              "type": "string"
+            },
             "amount": {
               "type": "object",
               "properties": {
@@ -7343,14 +7533,47 @@
                 "target-rules": {
                   "type": "object",
                   "properties": {
-                    "title": {
-                      "type": "string"
+                    "order": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
                     },
-                    "description": {
-                      "type": "string"
+                    "shipping_methods": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
+                    },
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["title", "description"],
+                      "additionalProperties": false
                     }
                   },
-                  "required": ["title", "description"],
+                  "required": ["order", "shipping_methods", "items"],
                   "additionalProperties": false
                 },
                 "buy-rules": {
@@ -7380,6 +7603,7 @@
             "allocation",
             "addCondition",
             "clearAll",
+            "taxInclusive",
             "amount",
             "conditions"
           ],
@@ -7578,6 +7802,19 @@
               "required": ["existing", "new", "none"],
               "additionalProperties": false
             },
+            "taxInclusive": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
+            },
             "status": {
               "type": "object",
               "properties": {
@@ -7760,9 +7997,12 @@
               "properties": {
                 "title": {
                   "type": "string"
+                },
+                "invalid": {
+                  "type": "string"
                 }
               },
-              "required": ["title"],
+              "required": ["title", "invalid"],
               "additionalProperties": false
             },
             "value_type": {
@@ -7804,6 +8044,7 @@
             "and",
             "selectAttribute",
             "campaign",
+            "taxInclusive",
             "status",
             "method",
             "max_quantity",
@@ -9176,9 +9417,6 @@
             "deleteRateDescription": {
               "type": "string"
             },
-            "editTaxRate": {
-              "type": "string"
-            },
             "editRateAction": {
               "type": "string"
             },
@@ -9236,7 +9474,6 @@
             "createTaxRate",
             "createTaxRateHint",
             "deleteRateDescription",
-            "editTaxRate",
             "editRateAction",
             "editOverridesAction",
             "editOverridesTitle",
@@ -10273,6 +10510,77 @@
       ],
       "additionalProperties": false
     },
+    "shippingOptionTypes": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "create": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "hint": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "hint", "successToast"],
+          "additionalProperties": false
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "successToast"],
+          "additionalProperties": false
+        },
+        "delete": {
+          "type": "object",
+          "properties": {
+            "confirmation": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["confirmation", "successToast"],
+          "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": ["label", "code", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["domain", "subtitle", "create", "edit", "delete", "fields"],
+      "additionalProperties": false
+    },
     "productTypes": {
       "type": "object",
       "properties": {
@@ -10517,6 +10825,12 @@
         },
         "loading": {
           "type": "string"
+        },
+        "selectValue": {
+          "type": "string"
+        },
+        "selectValues": {
+          "type": "string"
         }
       },
       "required": [
@@ -10529,7 +10843,9 @@
         "from",
         "to",
         "beaware",
-        "loading"
+        "loading",
+        "selectValue",
+        "selectValues"
       ],
       "additionalProperties": false
     },
@@ -10537,6 +10853,12 @@
       "type": "object",
       "properties": {
         "amount": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "reference_id": {
           "type": "string"
         },
         "refundAmount": {
@@ -10603,6 +10925,12 @@
           "type": "string"
         },
         "configurations": {
+          "type": "string"
+        },
+        "enabledInStore": {
+          "type": "string"
+        },
+        "isReturn": {
           "type": "string"
         },
         "conditions": {
@@ -10710,6 +11038,9 @@
         "countries": {
           "type": "string"
         },
+        "serviceZone": {
+          "type": "string"
+        },
         "paymentProviders": {
           "type": "string"
         },
@@ -10795,6 +11126,9 @@
           "type": "string"
         },
         "paidTotal": {
+          "type": "string"
+        },
+        "creditTotal": {
           "type": "string"
         },
         "totalExclTax": {
@@ -11007,6 +11341,8 @@
       },
       "required": [
         "amount",
+        "reference",
+        "reference_id",
         "refundAmount",
         "name",
         "default",
@@ -11029,6 +11365,8 @@
         "categories",
         "shippingMethod",
         "configurations",
+        "enabledInStore",
+        "isReturn",
         "conditions",
         "category",
         "collection",
@@ -11064,6 +11402,7 @@
         "minutes",
         "totalRedemptions",
         "countries",
+        "serviceZone",
         "paymentProviders",
         "refundReason",
         "fulfillmentProviders",
@@ -11093,6 +11432,7 @@
         "account",
         "total",
         "paidTotal",
+        "creditTotal",
         "totalExclTax",
         "subtotal",
         "shipping",
@@ -11163,6 +11503,70 @@
         "draft",
         "values"
       ],
+      "additionalProperties": false
+    },
+    "views": {
+      "type": "object",
+      "properties": {
+        "save": {
+          "type": "string"
+        },
+        "saveAsNew": {
+          "type": "string"
+        },
+        "updateDefaultForEveryone": {
+          "type": "string"
+        },
+        "updateViewName": {
+          "type": "string"
+        },
+        "prompts": {
+          "type": "object",
+          "properties": {
+            "updateDefault": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "confirmText": {
+                  "type": "string"
+                },
+                "cancelText": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description", "confirmText", "cancelText"],
+              "additionalProperties": false
+            },
+            "updateView": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "confirmText": {
+                  "type": "string"
+                },
+                "cancelText": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description", "confirmText", "cancelText"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["updateDefault", "updateView"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["save", "saveAsNew", "updateDefaultForEveryone", "updateViewName", "prompts"],
       "additionalProperties": false
     },
     "dateTime": {
@@ -11275,6 +11679,7 @@
     "invite",
     "resetPassword",
     "workflowExecutions",
+    "shippingOptionTypes",
     "productTypes",
     "productTags",
     "notifications",
@@ -11282,6 +11687,7 @@
     "statuses",
     "labels",
     "fields",
+    "views",
     "dateTime"
   ],
   "additionalProperties": false

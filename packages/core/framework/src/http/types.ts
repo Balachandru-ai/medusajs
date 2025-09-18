@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express"
-import { ZodNullable, ZodObject, ZodOptional } from "zod"
+import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "zod"
 
 import {
   FindConfig,
@@ -60,6 +60,7 @@ export type MiddlewareRoute = {
   methods?: MiddlewareVerb[]
   matcher: string | RegExp
   bodyParser?: ParserConfig
+  additionalDataValidator?: ZodRawShape
   middlewares?: MiddlewareFunction[]
 }
 
@@ -102,6 +103,13 @@ export type BodyParserConfigRoute = {
   config: ParserConfig
 }
 
+export type AdditionalDataValidatorRoute = {
+  matcher: string
+  methods: MiddlewareVerb | MiddlewareVerb[]
+  schema: ZodRawShape
+  validator: ZodOptional<ZodNullable<ZodObject<any, any>>>
+}
+
 export type GlobalMiddlewareDescriptor = {
   config?: MiddlewaresConfig
 }
@@ -128,11 +136,12 @@ export interface MedusaRequest<
   /**
    * An object containing fields and variables to be used with the remoteQuery
    *
-   * @version 2.2.0
+   * @since 2.2.0
    */
   queryConfig: {
     fields: string[]
     pagination: { order?: Record<string, string>; skip: number; take?: number }
+    withDeleted?: boolean
   }
 
   /**

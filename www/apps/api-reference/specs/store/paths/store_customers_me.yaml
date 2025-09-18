@@ -25,7 +25,11 @@ get:
         Comma-separated fields that should be included in the returned data. if
         a field is prefixed with `+` it will be added to the default fields,
         using `-` will remove it from the default fields. without prefix it will
-        replace the entire default fields.
+        replace the entire default fields. This API route restricts the fields
+        that can be selected. Learn how to override the retrievable fields in
+        the [Retrieve Custom
+        Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+        documentation.
       required: false
       schema:
         type: string
@@ -34,13 +38,21 @@ get:
           Comma-separated fields that should be included in the returned data.
           if a field is prefixed with `+` it will be added to the default
           fields, using `-` will remove it from the default fields. without
-          prefix it will replace the entire default fields.
+          prefix it will replace the entire default fields. This API route
+          restricts the fields that can be selected. Learn how to override the
+          retrievable fields in the [Retrieve Custom
+          Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+          documentation.
         externalDocs:
           url: '#select-fields-and-relations'
   security:
     - cookie_auth: []
     - jwt_token: []
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_customers_me/get.js
     - lang: Shell
       label: cURL
       source:
@@ -99,7 +111,11 @@ post:
           Comma-separated fields that should be included in the returned data.
           if a field is prefixed with `+` it will be added to the default
           fields, using `-` will remove it from the default fields. without
-          prefix it will replace the entire default fields.
+          prefix it will replace the entire default fields. This API route
+          restricts the fields that can be selected. Learn how to override the
+          retrievable fields in the [Retrieve Custom
+          Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links)
+          documentation.
         externalDocs:
           url: '#select-fields-and-relations'
   security:
@@ -111,6 +127,10 @@ post:
         schema:
           $ref: ../components/schemas/StoreUpdateCustomer.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_customers_me/post.js
     - lang: Shell
       label: cURL
       source:
@@ -137,3 +157,13 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCustomersWorkflow
+  x-events:
+    - name: customer.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the customer
+        }]
+        ```
+      description: Emitted when a customer is updated.
+      deprecated: false

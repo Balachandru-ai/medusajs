@@ -13,6 +13,7 @@ import { load as dmlTypesNormalizer } from "./dml-types-normalizer.js"
 import { MermaidDiagramDMLGenerator } from "./mermaid-diagram-dml-generator.js"
 import { load as dmlJsonParser } from "./dml-json-parser.js"
 import { GenerateCustomNamespacePlugin } from "./generate-custom-namespaces.js"
+import { EventsResolver } from "./events-resolver.js"
 
 export function load(app: Application) {
   resolveReferencesPluginLoad(app)
@@ -30,4 +31,5 @@ export function load(app: Application) {
   new DmlRelationsResolver(app)
   new MermaidDiagramDMLGenerator(app)
   new GenerateCustomNamespacePlugin(app)
+  new EventsResolver(app)
 }

@@ -1,3 +1,5 @@
+import { Prerequisites } from "docs-ui"
+
 export const metadata = {
   title: `Docs Contribution Guidelines`,
 }
@@ -12,9 +14,20 @@ This guide is specific to contributing to the documentation. If you’re interes
 
 </Note>
 
+## What Can You Contribute?
+
+You can contribute to the Medusa documentation in the following ways:
+
+- Fixes to existing content. This includes small fixes like typos, or adding missing information.
+- Additions to the documentation. If you think a documentation page can be useful to other developers, you can contribute by adding it.
+    - Make sure to open an issue first in the [medusa repository](https://github.com/medusajs/medusa) to confirm that you can add that documentation page.
+- Fixes to UI components and tooling. If you find a bug while browsing the documentation, you can contribute by fixing it.
+
+---
+
 ## Documentation Workspace
 
-Medusa's documentation projects are all part of the documentation yarn workspace, which you can find in the [medusa repository](https://github.com/medusajs/medusa) under the `www` directory.
+Medusa's documentation projects are all part of the documentation `yarn` workspace, which you can find in the [medusa repository](https://github.com/medusajs/medusa) under the `www` directory.
 
 The workspace has the following two directories:
 
@@ -26,6 +39,35 @@ The workspace has the following two directories:
 - `packages`: this directory holds the shared packages and components necessary for the development of the projects in the `apps` directory.
   - `docs-ui` includes the shared React components between the different apps.
   - `remark-rehype-plugins` includes Remark and Rehype plugins used by the documentation projects.
+
+### Setup the Documentation Workspace
+
+<Prerequisites
+  items={[
+    {
+      text: "Node.js v20+",
+      link: "https://nodejs.org/en/download"
+    },
+    {
+      text: "Yarn v3+",
+      link: "https://v3.yarnpkg.com/getting-started/install"
+    }
+  ]}
+/>
+
+In the `www` directory, run the following command to install the dependencies:
+
+```bash
+yarn install
+```
+
+Then, run the following command to build packages under the `www/packages` directory:
+
+```bash
+yarn build
+```
+
+After that, you can change into the directory of any documentation project under the `www/apps` directory and run the `dev` command to start the development server.
 
 ---
 
@@ -56,11 +98,11 @@ The API reference's content is split into two types:
 
 ### Medusa UI Documentation
 
-The content of the Medusa UI documentation are located under the `www/apps/ui/src/content/docs` directory. They are MDX files.
+The content of the Medusa UI documentation are located under the `www/apps/ui/app` directory. They are MDX files.
 
-The UI documentation also shows code examples, which are under the `www/apps/ui/src/examples` directory.
+The UI documentation also shows code examples, which are under the `www/apps/ui/specs/examples` directory.
 
-The UI component props are generated from the source code and placed into the `www/apps/ui/src/specs` directory. To contribute to these props and their comments, check the comments in the source code under the `packages/design-system/ui` directory.
+The UI component props are generated from the source code and placed into the `www/apps/ui/specs/components` directory. To contribute to these props and their comments, check the comments in the source code under the `packages/design-system/ui` directory.
 
 ---
 
@@ -153,7 +195,7 @@ cd www/vale
 # to lint content for the API reference
 ./run-vale.sh api-reference/markdown error
 # to lint content for the Medusa UI documentation
-./run-vale.sh ui/src/content/docs error
+./run-vale.sh ui/app error
 # to lint content for the user guide
 ./run-vale.sh user-guide/app error
 ```

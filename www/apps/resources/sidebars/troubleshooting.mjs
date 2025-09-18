@@ -28,6 +28,11 @@ export const troubleshootingSidebar = [
         path: "/troubleshooting/general-errors",
         title: "General Errors",
       },
+      {
+        type: "link",
+        path: "/troubleshooting/pnpm",
+        title: "pnpm Errors",
+      },
     ],
   },
   {
@@ -48,14 +53,30 @@ export const troubleshootingSidebar = [
     initialOpen: true,
     children: [
       {
-        type: "link",
-        path: "/troubleshooting/eaddrinuse",
-        title: "EADDRINUSE Error",
+        type: "sub-category",
+        title: "API Routes",
+        children: [
+          {
+            type: "link",
+            title: "Unrecognized Additional Data",
+            path: "/troubleshooting/api-routes/additional-data-error",
+          },
+          {
+            type: "link",
+            title: "Middleware Registration",
+            path: "/troubleshooting/api-routes/middleware-registration",
+          },
+        ],
       },
       {
         type: "link",
         path: "/troubleshooting/database-errors",
         title: "Database Errors",
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/eaddrinuse",
+        title: "EADDRINUSE Error",
       },
       {
         type: "link",
@@ -68,10 +89,30 @@ export const troubleshootingSidebar = [
         children: [
           {
             type: "link",
+            path: "/troubleshooting/query/expression-type-error",
+            title: "Expression Type Error",
+          },
+          {
+            type: "link",
             path: "/troubleshooting/query/filter-linked",
             title: "Not Exising Property",
           },
+          {
+            type: "link",
+            path: "/troubleshooting/query/service-list",
+            title: "service.list Error",
+          },
         ],
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/scheduled-job-not-running",
+        title: "Scheduled Job Not Running",
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/test-errors",
+        title: "Test Errors",
       },
       {
         type: "sub-category",
@@ -91,8 +132,8 @@ export const troubleshootingSidebar = [
       },
       {
         type: "link",
-        path: "/troubleshooting/test-errors",
-        title: "Test Errors",
+        title: "ValidationError",
+        path: "/troubleshooting/validation-error",
       },
     ],
   },
@@ -118,6 +159,11 @@ export const troubleshootingSidebar = [
         path: "/troubleshooting/s3",
         title: "S3 Module Provider Errors",
       },
+      {
+        type: "link",
+        path: "/troubleshooting/payment",
+        title: "Payment Provider Errors",
+      },
     ],
   },
   {
@@ -134,6 +180,11 @@ export const troubleshootingSidebar = [
         type: "link",
         path: "/troubleshooting/medusa-admin/blocked-request",
         title: "Blocked Request",
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/medusa-admin/build-error",
+        title: "index.html Error",
       },
     ],
   },

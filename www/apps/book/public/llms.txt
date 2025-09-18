@@ -1,10 +1,10 @@
 # Medusa
 
-> Medusa is a digital commerce platform with a built-in framework for customization. When you install Medusa, you get a fully fledged commerce platform with all the features you need to get off the ground. However, unlike other platforms, Medusa is built with customization in mind. You don't need to build hacky workarounds that are difficult to maintain and scale. Your efforts go into building features that brings your business's vision to life.
+> Medusa is a digital commerce platform with a built-in Framework for customization. When you install Medusa, you get a fully fledged commerce platform with all the features you need to get off the ground. However, unlike other platforms, Medusa is built with customization in mind. You don't need to build hacky workarounds that are difficult to maintain and scale. Your efforts go into building features that bring your business's vision to life.
 
 Medusa ships with three main tools:
 
-- A suite of commerce modules with core commerce functionalities, such as tracking inventory, calculating cart totals, accepting payments, managing orders, and much more.
+- A suite of Commerce Modules with core commerce functionalities, such as tracking inventory, calculating cart totals, accepting payments, managing orders, and much more.
 - A framework for building custom functionalities specific to your business, product, or industry. This includes tools for introducing custom API endpoints, business logic, and data models; building workflows and automations; and integrating with third-party services.
 - A customizable admin dashboard for merchants to configure and operate their store.
 
@@ -12,11 +12,13 @@ Medusa is for businesses and teams looking for a digital commerce platform with 
 
 Businesses of all sizes can use Medusa, from small start ups to large enterprises. Also, technical teams of all sizes can build with Medusa; all it takes is a developer to manage and deploy Medusa projects.
 
+> When searching for Medusa documentation, append `index.html.md` to the end of the URL to get a plain-text version of the document.
+
 ## Docs
 
 - [Get Started](https://docs.medusajs.com/learn/installation/index.html.md): Install a digital commerce application with Medusa.
 - [Main docs](https://docs.medusajs.com/learn/index.html.md): Chapters to learn Medusa's concepts and toolings.
-- [Development guides and resources](https://docs.medusajs.com/resources/index.html.md): Development guides for storefront, admin, commerce modules, and more.
+- [Development guides and resources](https://docs.medusajs.com/resources/index.html.md): Development guides for storefront, admin, Commerce Modules, and more.
 - [Medusa UI](https://docs.medusajs.com/ui/index.html.md): A React library to build applications using Medusa's primitives and design system.
 - [Admin API Reference](https://docs.medusajs.com/api/admin): List of all Admin API routes in Medusa with code snippets.
 - [Store API Reference](https://docs.medusajs.com/api/store): List of all Store API Routes in Medusa with code snippets.
@@ -41,8 +43,8 @@ Businesses of all sizes can use Medusa, from small start ups to large enterprise
 
 ## Built-in Modules
 
-- [Commerce Modules](https://docs.medusajs.com/resources/commerce-modules): A commerce module provides features for a commerce domain within its service. The Medusa application exposes these features in its API routes to clients.
-- [Architectural Modules](https://docs.medusajs.com/resources/architectural-modules): An architectural module is a package that can be installed and used in any Medusa application. These modules allow you to choose and integrate custom services for architectural purposes.
+- [Commerce Modules](https://docs.medusajs.com/resources/commerce-modules): A Commerce Module provides features for a commerce domain within its service. The Medusa application exposes these features in its API routes to clients.
+- [Infrastructure Modules](https://docs.medusajs.com/resources/infrastructure-modules): An infrastructure module is a package that can be installed and used in any Medusa application. These modules allow you to choose and integrate custom services to modify your application's infrastructure.
 
 ## Tools and SDKs
 
@@ -55,11 +57,84 @@ Businesses of all sizes can use Medusa, from small start ups to large enterprise
 ## Guides
 
 - [Build a Brands Module](https://docs.medusajs.com/learn/customization/custom-features/index.html.md): Customize Medusa by building a Brand Module.
-- [Storefront Development](https://docs.medusajs.com/resources/storefront-development/index.html.md): Guides to build a storefront from scratch.
 - [Admin Components](https://docs.medusajs.com/resources/admin-components/index.html.md): Components you can use in your admin customizations to build widgets and routes that match the Medusa Admin's design system.
 - [Examples](https://docs.medusajs.com/resources/examples/index.html.md): Examples and code snippets of how to use different Medusa concepts.
 - [Recipes](https://docs.medusajs.com/resources/recipes/index.html.md): Learn how to build common commerce use cases, such as marketplace and subscription-based purchases, with Medusa.
 - [Deployment Guides](https://docs.medusajs.com/resources/deployment/index.html.md): Deploy to Medusa Cloud or self-host Medusa.
+
+## Storefront Development
+
+- [Storefront Development Tips](https://docs.medusajs.com/resources/storefront-development/tips/index.html.md): Tips and best practices for building storefronts with Medusa.
+- [Use a Publishable API Key in the Storefront](https://docs.medusajs.com/resources/storefront-development/publishable-api-keys/index.html.md): Learn how to use publishable API keys to scope API requests to sales channels.
+
+### Products
+
+- [Products in Storefront](https://docs.medusajs.com/resources/storefront-development/products/index.html.md): Learn how to display and manage products in your storefront.
+- [Show Products in Storefront](https://docs.medusajs.com/resources/storefront-development/products/list/index.html.md): Learn how to retrieve and display a list of products.
+- [Retrieve a Product in Storefront](https://docs.medusajs.com/resources/storefront-development/products/retrieve/index.html.md): Learn how to retrieve and display a single product's details.
+- [Select Product Variants in Storefront](https://docs.medusajs.com/resources/storefront-development/products/variants/index.html.md): Learn how to handle product variant selection in your storefront.
+- [Retrieve Product Variant's Prices in Storefront](https://docs.medusajs.com/resources/storefront-development/products/price/index.html.md): Learn how to retrieve and display product variant prices.
+- [Retrieve Product Variant's Inventory in Storefront](https://docs.medusajs.com/resources/storefront-development/products/inventory/index.html.md): Learn how to check product variant inventory availability.
+
+### Product Categories
+
+- [Product Categories in Storefront](https://docs.medusajs.com/resources/storefront-development/products/categories/index.html.md): Learn how to work with product categories in your storefront.
+- [Show Product Categories in Storefront](https://docs.medusajs.com/resources/storefront-development/products/categories/list/index.html.md): Learn how to retrieve and display product categories.
+- [Retrieve a Category in Storefront](https://docs.medusajs.com/resources/storefront-development/products/categories/retrieve/index.html.md): Learn how to retrieve and display a specific category.
+- [Retrieve Nested Categories in Storefront](https://docs.medusajs.com/resources/storefront-development/products/categories/nested-categories/index.html.md): Learn how to handle nested category structures.
+- [Retrieve a Category's Products in Storefront](https://docs.medusajs.com/resources/storefront-development/products/categories/products/index.html.md): Learn how to retrieve products that belong to a specific category.
+
+### Product Collections
+
+- [Product Collections in Storefront](https://docs.medusajs.com/resources/storefront-development/products/collections/index.html.md): Learn how to work with product collections in your storefront.
+- [List Product Collections in Storefront](https://docs.medusajs.com/resources/storefront-development/products/collections/list/index.html.md): Learn how to retrieve and display product collections.
+- [Retrieve a Collection in Storefront](https://docs.medusajs.com/resources/storefront-development/products/collections/retrieve/index.html.md): Learn how to retrieve and display a specific collection.
+- [Retrieve a Collection's Products in Storefront](https://docs.medusajs.com/resources/storefront-development/products/collections/products/index.html.md): Learn how to retrieve products that belong to a specific collection.
+
+### Cart Management
+
+- [Carts in Storefront](https://docs.medusajs.com/resources/storefront-development/cart/index.html.md): Learn how to manage shopping carts in your storefront.
+- [Create Cart in Storefront](https://docs.medusajs.com/resources/storefront-development/cart/create/index.html.md): Learn how to create a new shopping cart.
+- [Retrieve Cart in Storefront](https://docs.medusajs.com/resources/storefront-development/cart/retrieve/index.html.md): Learn how to retrieve an existing cart.
+- [Update Cart in Storefront](https://docs.medusajs.com/resources/storefront-development/cart/update/index.html.md): Learn how to update cart information.
+- [Manage Cart's Items in Storefront](https://docs.medusajs.com/resources/storefront-development/cart/manage-items/index.html.md): Learn how to add, update, and remove items from a cart.
+- [Show Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals/index.html.md): Learn how to calculate and display cart totals.
+- [Create Cart Context in Storefront](https://docs.medusajs.com/resources/storefront-development/cart/context/index.html.md): Learn how to create a React context for cart management.
+
+### Checkout Process
+
+- [Checkout in Storefront](https://docs.medusajs.com/resources/storefront-development/checkout/index.html.md): Learn how to implement the complete checkout process.
+- [Checkout Step 1: Enter Email](https://docs.medusajs.com/resources/storefront-development/checkout/email/index.html.md): Learn how to implement the email entry step in checkout.
+- [Checkout Step 2: Set Shipping and Billing Addresses](https://docs.medusajs.com/resources/storefront-development/checkout/address/index.html.md): Learn how to handle address collection in checkout.
+- [Checkout Step 3: Choose Shipping Method](https://docs.medusajs.com/resources/storefront-development/checkout/shipping/index.html.md): Learn how to implement shipping method selection.
+- [Checkout Step 4: Choose Payment Provider](https://docs.medusajs.com/resources/storefront-development/checkout/payment/index.html.md): Learn how to implement payment provider selection.
+- [Payment with Stripe in React Storefront](https://docs.medusajs.com/resources/storefront-development/checkout/payment/stripe/index.html.md): Learn how to integrate Stripe payments in your React storefront.
+- [Checkout Step 5: Complete Cart](https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart/index.html.md): Learn how to complete the checkout process.
+- [Order Confirmation in Storefront](https://docs.medusajs.com/resources/storefront-development/checkout/order-confirmation/index.html.md): Learn how to display order confirmation to customers.
+
+### Customer Management
+
+- [Customers in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/index.html.md): Learn how to manage customer accounts in your storefront.
+- [Customer Context in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/context/index.html.md): Learn how to create a React context for customer management.
+- [Register Customer in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/register/index.html.md): Learn how to implement customer registration.
+- [Login Customer in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/login/index.html.md): Learn how to implement customer login functionality.
+- [Third-Party or Social Login in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/third-party-login/index.html.md): Learn how to implement social login options.
+- [Retrieve Logged-In Customer in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/retrieve/index.html.md): Learn how to retrieve customer information.
+- [Edit Customer Profile in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/profile/index.html.md): Learn how to allow customers to edit their profiles.
+- [Manage Customer Addresses in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/addresses/index.html.md): Learn how to manage customer shipping and billing addresses.
+- [Reset Customer Password in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/reset-password/index.html.md): Learn how to implement password reset functionality.
+- [Log-out Customer in Storefront](https://docs.medusajs.com/resources/storefront-development/customers/log-out/index.html.md): Learn how to implement customer logout functionality.
+
+### Regions
+
+- [Regions in Storefront](https://docs.medusajs.com/resources/storefront-development/regions/index.html.md): Learn how to handle multi-region support in your storefront.
+- [List Regions in Storefront](https://docs.medusajs.com/resources/storefront-development/regions/list/index.html.md): Learn how to retrieve and display available regions.
+- [Store Selected Region in Storefront](https://docs.medusajs.com/resources/storefront-development/regions/store-retrieve-region/index.html.md): Learn how to persist and retrieve the selected region.
+- [Region React Context in Storefront](https://docs.medusajs.com/resources/storefront-development/regions/context/index.html.md): Learn how to create a React context for region management.
+
+### Advanced Guides
+
+- [Implement Express Checkout with Medusa](https://docs.medusajs.com/resources/storefront-development/guides/express-checkout/index.html.md): Learn how to implement a streamlined express checkout flow.
 
 ## API Reference
 
@@ -260,13 +335,40 @@ Businesses of all sizes can use Medusa, from small start ups to large enterprise
 - [User Module's Service Reference](https://docs.medusajs.com/resources/references/user/index.html.md): Methods of the User Module's Service.
 - [User Module's Data Models Reference](https://docs.medusajs.com/resources/references/user/models/index.html.md): Data models created by the User Module.
 
-## Architectural Modules
+## Infrastructure Modules
 
-- [Cache Modules](https://docs.medusajs.com/resources/architectural-modules/cache/index.html.md): A Cache Module is used to cache the results of computations such as price selection or various tax calculations.
-- [Event Modules](https://docs.medusajs.com/resources/architectural-modules/event/index.html.md): An Event Module implements the underlying publish/subscribe system that handles queueing events, emitting them, and executing their subscribers.
-- [File Module Providers](https://docs.medusajs.com/resources/architectural-modules/file/index.html.md): A file module provider implements the underlying logic of handling uploads and downloads of assets, such as integrating third-party services. The File Module must have one file module provider configured.
-- [Notification Module Provider](https://docs.medusajs.com/resources/architectural-modules/notification/index.html.md): A notification module provider implements the underlying logic of sending notification. It either integrates a third-party service or uses custom logic to send the notification.
-- [Workflow Engine Modules](https://docs.medusajs.com/resources/architectural-modules/workflow-engine/index.html.md): Workflow engine modules handle tracking and recording the transactions and statuses of workflows and their steps.
+- [Cache Modules](https://docs.medusajs.com/resources/infrastructure-modules/cache/index.html.md): A Cache Module is used to cache the results of computations such as price selection or various tax calculations.
+- [Event Modules](https://docs.medusajs.com/resources/infrastructure-modules/event/index.html.md): An Event Module implements the underlying publish/subscribe system that handles queueing events, emitting them, and executing their subscribers.
+- [File Module Providers](https://docs.medusajs.com/resources/infrastructure-modules/file/index.html.md): A file module provider implements the underlying logic of handling uploads and downloads of assets, such as integrating third-party services. The File Module must have one file module provider configured.
+- [Notification Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/notification/index.html.md): A notification module provider implements the underlying logic of sending notification. It either integrates a third-party service or uses custom logic to send the notification.
+- [Workflow Engine Modules](https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine/index.html.md): Workflow engine modules handle tracking and recording the transactions and statuses of workflows and their steps.
+
+## Integration Guides
+
+- [Algolia](https://docs.medusajs.com/resources/integrations/guides/algolia/index.html.md): Learn how to integrate Algolia with Medusa and add search functionalities.
+- [Contentful](https://docs.medusajs.com/resources/integrations/guides/contentful/index.html.md): Learn how to integrate Contentful with Medusa and add localization to your Medusa store.
+- [Magento](https://docs.medusajs.com/resources/integrations/guides/magento/index.html.md): Learn how to migrate your products and categories from Magento to Medusa.
+- [Mailchimp](https://docs.medusajs.com/resources/integrations/guides/mailchimp/index.html.md): Learn how to integrate Mailchimp into Medusa and send notifications like newsletters.
+- [Resend](https://docs.medusajs.com/resources/integrations/guides/resend/index.html.md): Learn how to integrate Resend into Medusa and send notifications, such as order-confirmation emails.
+- [Sanity](https://docs.medusajs.com/resources/integrations/guides/sanity/index.html.md): Learn how to integrate Sanity into Medusa to use rich CMS capabilities.
+- [Segment](https://docs.medusajs.com/resources/integrations/guides/segment/index.html.md): Learn how to integrate Segment into Medusa to track events and user behavior.
+- [Sentry](https://docs.medusajs.com/resources/integrations/guides/sentry/index.html.md): Learn how to integrate Senrty into Medusa to monitor performance and track errors.
+- [ShipStation](https://docs.medusajs.com/resources/integrations/guides/shipstation/index.html.md): Learn how to integrate ShipStation into Medusa to fulfill orders.
+- [Slack](https://docs.medusajs.com/resources/integrations/guides/slack/index.html.md): Learn how to integrate Slack into Medusa to send notifications, such as new-order notifications.
+
+## Tutorials
+
+- [Use Saved Payment Methods During Checkout](https://docs.medusajs.com/resources/tutorials/saved-payment-methods/index.html.md): Learn how to allow customers to save their payment methods and use them for future purchases.
+- [Implement Product Reviews in Medusa](https://docs.medusajs.com/resources/tutorials/product-reviews/index.html.md): Learn how to implement a product review system with ratings and comments.
+- [Add Gift Message to Line Items in Medusa](https://docs.medusajs.com/resources/tutorials/gift-message/index.html.md): Learn how to add gift message functionality to line items in orders.
+- [Send Abandoned Cart Notifications in Medusa](https://docs.medusajs.com/resources/tutorials/abandoned-cart/index.html.md): Learn how to implement abandoned cart email notifications to recover lost sales.
+- [Implement Loyalty Points System in Medusa](https://docs.medusajs.com/resources/tutorials/loyalty-points/index.html.md): Learn how to build a customer loyalty points system with rewards.
+- [Implement Quick Re-Order Functionality in Medusa](https://docs.medusajs.com/resources/tutorials/re-order/index.html.md): Learn how to allow customers to quickly reorder their previous purchases.
+- [Implement Phone Authentication and Integrate Twilio SMS](https://docs.medusajs.com/resources/tutorials/phone-auth/index.html.md): Learn how to implement phone number authentication using Twilio SMS verification.
+- [Implement First-Purchase Discount in Medusa](https://docs.medusajs.com/resources/tutorials/first-purchase-discounts/index.html.md): Learn how to create automatic discounts for first-time customers.
+- [Marketplace Recipe: Vendors Example](https://docs.medusajs.com/resources/recipes/marketplace/examples/vendors/index.html.md): Learn how to build a marketplace with multiple vendors, vendor admins, and order splitting.
+- [Marketplace Recipe: Restaurant Delivery Example](https://docs.medusajs.com/resources/recipes/marketplace/examples/restaurant-delivery/index.html.md): Learn how to build a restaurant delivery marketplace with location-based ordering.
+- [Create Wishlist Plugin](https://docs.medusajs.com/resources/plugins/guides/wishlist/index.html.md): Learn how to build a wishlist plugin.
 
 ## Optional
 
@@ -274,10 +376,12 @@ Businesses of all sizes can use Medusa, from small start ups to large enterprise
 - [Troubleshooting Guides](https://docs.medusajs.com/resources/troubleshooting/index.html.md): Find solutions for common problems you face during your development.
 - [Admin Widget Injection Zones](https://docs.medusajs.com/resources/admin-widget-injection-zones/index.html.md): List of zones you can inject admin widgets into.
 - [Medusa Container Resources](https://docs.medusajs.com/resources/medusa-container-resources/index.html.md): List of resources or dependencies you can resolve from the Medusa container.
-- [Events List](https://docs.medusajs.com/resources/events-reference/index.html.md): List of events you can listen to in a subscriber.
+- [Events Reference](https://docs.medusajs.com/resources/references/events/index.html.md): List of events you can listen to in a subscriber.
 - [Workflows SDK Reference](https://docs.medusajs.com/resources/references/workflows/index.html.md): A reference to the SDK to create workflows in your Medusa application.
 - [DML Reference](https://docs.medusajs.com/resources/references/data-model/index.html.md): A reference to Medusa's data-modeling language.
+- [Data Model Repository Reference](https://docs.medusajs.com/resources/data-model-repository-reference/index.html.md): A reference to the repository generated for data models.
 - [Service Factory Reference](https://docs.medusajs.com/resources/service-factory-reference/index.html.md): A reference to the methods generated by the service factory.
 - [Helper Steps Reference](https://docs.medusajs.com/resources/references/helper-steps/index.html.md): A reference to the helper steps you can use in your custom workflows.
 - [Core Workflows Reference](https://docs.medusajs.com/resources/medusa-workflows-reference/index.html.md): A reference to all workflows and steps provided by Medusa.
 - [Testing Framework Reference](https://docs.medusajs.com/resources/test-tools-reference/index.html.md): A reference to Medusa's testing framework toolkit.
+- [Full Documentation file](https://docs.medusajs.com/llms-full.txt): An llms-full.txt file that holds the entire documentation in plain text.

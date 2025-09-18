@@ -22,6 +22,9 @@
  *   metadata:
  *     type: object
  *     description: The variant's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   id:
  *     type: string
  *     title: id
@@ -130,10 +133,10 @@
  *   - deleted_at
  *   - sku
  *   - barcode
+ *   - manage_inventory
+ *   - allow_backorder
  *   - ean
  *   - upc
- *   - allow_backorder
- *   - manage_inventory
  * 
 */
 

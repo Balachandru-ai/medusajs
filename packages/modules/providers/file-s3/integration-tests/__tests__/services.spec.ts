@@ -81,4 +81,110 @@ describe.skip("S3 File Plugin", () => {
       expect(response.status).toEqual(404)
     })
   })
+
+  it("gets a presigned upload URL and uploads a file successfully", async () => {
+    const fileContent = await fs.readFile(fixtureImagePath)
+    const fixtureAsBinary = fileContent.toString("binary")
+
+    const resp = await s3Service.getPresignedUploadUrl({
+      filename: "catphoto.jpg",
+      mimeType: "image/jpeg",
+      access: "private",
+    })
+
+    expect(resp).toEqual({
+      key: expect.stringMatching(/tests\/catphoto.*\.jpg/),
+      url: expect.stringMatching(/https:\/\/.*catphoto\.jpg/),
+    })
+
+    const uploadResp = await axios.put(resp.url, fileContent, {
+      headers: {
+        // On Digitalocean, among others, despite the ACL set on the upload URL, the caller can set the acl to anything they want.
+        // On AWS passing the ACL in the upload will fail since it's set on the signed URL.
+        // "x-amz-acl": "private",
+        "Content-Type": "image/jpeg",
+      },
+    })
+
+    expect(uploadResp.status).toEqual(200)
+
+    const signedUrl = await s3Service.getPresignedDownloadUrl({
+      fileKey: resp.key,
+    })
+
+    const signedUrlFile = Buffer.from(
+      await axios
+        .get(signedUrl, { responseType: "arraybuffer" })
+        .then((r) => r.data)
+    )
+
+    expect(signedUrlFile.toString("binary")).toEqual(fixtureAsBinary)
+
+    await s3Service.delete({ fileKey: resp.key })
+  })
+
+  it("gets a presigned upload URL for a nested filename structure and uploads a file successfully", async () => {
+    const fileContent = await fs.readFile(fixtureImagePath)
+    const fixtureAsBinary = fileContent.toString("binary")
+
+    const resp = await s3Service.getPresignedUploadUrl({
+      filename: "testfolder/catphoto.jpg",
+      mimeType: "image/jpeg",
+      access: "private",
+    })
+
+    expect(resp).toEqual({
+      key: expect.stringMatching(/tests\/testfolder\/catphoto.*\.jpg/),
+      url: expect.stringMatching(/https:\/\/.*testfolder\/catphoto\.jpg/),
+    })
+
+    const uploadResp = await axios.put(resp.url, fileContent, {
+      headers: {
+        "Content-Type": "image/jpeg",
+      },
+    })
+
+    expect(uploadResp.status).toEqual(200)
+
+    const signedUrl = await s3Service.getPresignedDownloadUrl({
+      fileKey: resp.key,
+    })
+
+    const signedUrlFile = Buffer.from(
+      await axios
+        .get(signedUrl, { responseType: "arraybuffer" })
+        .then((r) => r.data)
+    )
+
+    expect(signedUrlFile.toString("binary")).toEqual(fixtureAsBinary)
+
+    await s3Service.delete({ fileKey: resp.key })
+  })
+
+  it("deletes multiple files in bulk", async () => {
+    const fileContent = await fs.readFile(fixtureImagePath)
+    const fixtureAsBinary = fileContent.toString("binary")
+
+    const cat = await s3Service.upload({
+      filename: "catphoto.jpg",
+      mimeType: "image/jpeg",
+      content: fixtureAsBinary,
+    })
+    const cat1 = await s3Service.upload({
+      filename: "catphoto-1.jpg",
+      mimeType: "image/jpeg",
+      content: fixtureAsBinary,
+    })
+    const cat2 = await s3Service.upload({
+      filename: "catphoto-2.jpg",
+      mimeType: "image/jpeg",
+      content: fixtureAsBinary,
+    })
+
+    await s3Service.delete([
+      { fileKey: cat.key },
+      { fileKey: cat1.key },
+      { fileKey: cat2.key },
+    ])
+  })
 })

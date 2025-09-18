@@ -248,6 +248,11 @@ export declare type ModuleJoinerRelationship = JoinerRelationship & {
    * If true, the link joiner will cascade deleting the relationship
    */
   deleteCascade?: boolean
+
+  /**
+   * The fields to be filterable by the Index module using query.index
+   */
+  filterable?: string[]
   /**
    * Allow multiple relationships to exist for this
    * entity

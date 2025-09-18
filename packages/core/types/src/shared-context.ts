@@ -55,6 +55,11 @@ export type Context<TManager = unknown> = {
   transactionId?: string
 
   /**
+   * A string indicating the ID of the current run.
+   */
+  runId?: string
+
+  /**
    * An instance of a message aggregator, which is used to aggregate messages to be emitted at a later point.
    */
   messageAggregator?: IMessageAggregator
@@ -73,4 +78,14 @@ export type Context<TManager = unknown> = {
    * A string indicating the idempotencyKey of the parent workflow execution.
    */
   parentStepIdempotencyKey?: string
+
+  /**
+   * preventReleaseEvents
+   */
+  preventReleaseEvents?: boolean
+
+  /**
+   * A boolean value indicating whether the current workflow execution is being cancelled.
+   */
+  isCancelling?: boolean
 }

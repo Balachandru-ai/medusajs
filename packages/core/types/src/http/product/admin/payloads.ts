@@ -570,3 +570,30 @@ interface AdminDeleteProductVariantInventoryItem {
    */
   variant_id: string
 }
+
+export interface AdminImportProductsRequest {
+  /**
+   * The file's identifier in the third-party system.
+   * For example, the S3 Module Provider
+   * returns the file's key in S3, whereas the
+   * Local File Module Provider returns the file's
+   * path.
+   */
+  file_key: string
+  /**
+   * The original name of the file on the user's computer (aka clientName)
+   */
+  originalname: string
+  /**
+   * The file's extension.
+   */
+  extension: string
+  /**
+   * The file's size in bytes.
+   */
+  size: number
+  /**
+   * The file's mime type.
+   */
+  mime_type: string
+}

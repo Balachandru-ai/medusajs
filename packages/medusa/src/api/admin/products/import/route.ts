@@ -6,6 +6,9 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 import { importProductsWorkflow } from "@medusajs/core-flows"
 
+/**
+ * @deprecated use `POST /admin/products/imports` instead.
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminImportProductRequest>,
   res: MedusaResponse<HttpTypes.AdminImportProductResponse>

@@ -66,8 +66,17 @@ async function main() {
           "commerce-modules"
         ),
         allowedFilesPatterns: [
-          /^(?!.*\/(workflows|js-sdk|extend|events|admin-widget-zones)\/).*$/,
+          /^(?!.*\/(workflows|js-sdk|extend|admin-widget-zones)\/).*$/,
         ],
+      },
+      {
+        dir: path.join(
+          process.cwd(),
+          "..",
+          "resources",
+          "app",
+          "infrastructure-modules"
+        ),
       },
       {
         dir: path.join(
@@ -100,6 +109,16 @@ async function main() {
             baseUrl,
           },
         },
+      },
+      {
+        dir: path.join(
+          process.cwd(),
+          "..",
+          "resources",
+          "references",
+          "modules",
+          "events"
+        ),
       },
       {
         dir: path.join(process.cwd(), "..", "resources", "app", "medusa-cli"),
@@ -187,17 +206,6 @@ async function main() {
           process.cwd(),
           "..",
           "resources",
-          "references",
-          "medusa_config",
-          "interfaces",
-          "medusa_config.ConfigModule"
-        ),
-      },
-      {
-        dir: path.join(
-          process.cwd(),
-          "..",
-          "resources",
           "app",
           "admin-components"
         ),
@@ -209,6 +217,16 @@ async function main() {
           "resources",
           "app",
           "service-factory-reference"
+        ),
+      },
+      {
+        dir: path.join(
+          process.cwd(),
+          "..",
+          "resources",
+          "app",
+          "nextjs-starter",
+          "guides"
         ),
       },
       {
@@ -257,7 +275,7 @@ async function main() {
         },
       },
       {
-        dir: path.join(process.cwd(), "..", "ui", "src", "content", "docs"),
+        dir: path.join(process.cwd(), "..", "ui", "app"),
         options: {
           parserOptions: {
             ComponentExample: {
@@ -265,16 +283,25 @@ async function main() {
                 process.cwd(),
                 "..",
                 "ui",
-                "src",
+                "specs",
                 "examples"
               ),
             },
             ComponentReference: {
-              specsPath: path.join(process.cwd(), "..", "ui", "src", "specs"),
+              specsPath: path.join(
+                process.cwd(),
+                "..",
+                "ui",
+                "specs",
+                "components"
+              ),
             },
           },
         },
         allowedFilesPatterns: [/^(?!.*\/(colors|icons|hooks)\/).*$/],
+      },
+      {
+        dir: path.join(process.cwd(), "..", "resources", "app", "recipes"),
       },
     ],
   })

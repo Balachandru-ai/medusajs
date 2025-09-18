@@ -9,7 +9,6 @@
  *   - shipping_profile_id
  *   - price_type
  *   - provider_id
- *   - type
  *   - prices
  * properties:
  *   name:
@@ -82,6 +81,10 @@
  *     description: The shipping option's rules.
  *     items:
  *       $ref: "#/components/schemas/AdminCreateShippingOptionRule"
+ *   type_id:
+ *     type: string
+ *     title: type_id
+ *     description: The ID of the shipping option type that this shipping option belongs to.
  * 
 */
 

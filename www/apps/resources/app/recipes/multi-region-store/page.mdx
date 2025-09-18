@@ -1,3 +1,13 @@
+---
+products:
+  - region
+  - currency
+  - tax
+  - payment
+  - fulfillment
+  - pricing
+---
+
 import { AcademicCapSolid, UsersSolid } from "@medusajs/icons"
 
 export const metadata = {
@@ -34,7 +44,7 @@ During checkout, Medusa calculates the taxes using the tax region settings of th
 
 <CardList items={[
   {
-    href: "!user-guides!/settings/tax-regions",
+    href: "!user-guide!/settings/tax-regions",
     title: "Using Medusa Admin",
     text: "Learn how to manage tax regions in the Medusa Admin",
     icon: UsersSolid,
@@ -49,13 +59,15 @@ During checkout, Medusa calculates the taxes using the tax region settings of th
 
 ### Payment and Fulfillment Providers
 
-Merchants choose which payment providers are available in each region. For example, one region can use Payment Provider A and B while another only uses Payment Provider B. Merchants can also choose the fulfillment providers available in each stock location, and provide shipping options using the providers in those locations.
+Merchants choose which payment providers are available in each region. For example, one region can use Payment Provider A and B while another only uses Payment Provider B.
+
+Merchants can also choose the fulfillment providers available in each stock location, and provide shipping options using the providers in those locations.
 
 During checkout, customers only see the payment providers configured for the region, and they can only choose shipping options that can be used to fulfill items to their shipping address. This allows merchants to give customers a localized experience that feels familiar and instills trust.
 
 Medusa provides official module providers for payment and fulfillment. You can also create custom module providers.
 
-<CardList items={[
+<CardList itemsPerRow={2} items={[
   {
     href: "!user-guide!/settings/regions",
     title: "Manage Payment Providers in Medusa Admin",
@@ -68,22 +80,26 @@ Medusa provides official module providers for payment and fulfillment. You can a
     text: "Learn how to manage providers in a location.",
     icon: UsersSolid,
   },
+  {
+    href: "/integrations",
+    title: "Integrations",
+    text: "Check out available integrations, including payment module providers.",
+    icon: AcademicCapSolid
+  },
+  {
+    href: "/references/fulfillment/provider",
+    title: "Create Fulfillment Module Provider",
+    text: "Learn how to create a fulfillment module provider.",
+    icon: AcademicCapSolid,
+  }
 ]} />
-
-<Card
-  href="/integrations"
-  title="Integrations"
-  text="Check out available integrations, including payment module providers."
-  icon={AcademicCapSolid}
-  className="mt-1"
-/>
 
 
 ---
 
 ## Prices Per Region and Currency
 
-Merchants set the price of a product's variants per currency and region. This also applies to adding sales or overriding prices for specific conditions.
+Merchants set the price of shipping options and product variants per currency and region. This also applies to adding sales or overriding prices for specific conditions.
 
 Using the tax-inclusive feature, merchants can also specify prices including taxes per currency and region. Medusa then calculates the tax amount applied to a line item in the cart based on the region's tax configurations.
 
@@ -131,7 +147,7 @@ A multi-regional setup lets merchants manage their inventory through Medusa acro
 
 By integrating a third-party Content Management Systems (CMS), you benefit from rich content features including managing your content in multiple languages. This allows you to cater to customers’ different languages in the regions you serve.
 
-To integrate a third-party system, create a custom module whose main service connects to that third-party service. You can also follow the [Sanity integration guide](../../integrations/guides/sanity/page.mdx) to integrate Sanity with Medusa.
+To integrate a third-party system, create a custom module whose main service connects to that third-party service. You can also follow the [Contentful integration guide](../../integrations/guides/contentful/page.mdx) to learn how to integrate Contentful and benefit from localization features.
 
 <CardList items={[
   {
@@ -141,9 +157,9 @@ To integrate a third-party system, create a custom module whose main service con
     icon: AcademicCapSolid,
   },
   {
-    href: "/integrations/guides/sanity",
-    title: "Integrate Sanity",
-    text: "Follow a step-by-step guide to integrate Sanity.",
+    href: "/integrations/guides/contentful",
+    title: "Integrate Contentful",
+    text: "Integrate Contentful with Localization Features.",
     icon: AcademicCapSolid,
   },
 ]} />

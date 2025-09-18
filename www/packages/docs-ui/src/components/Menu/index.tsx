@@ -39,3 +39,5 @@ export const Menu = ({ items, className, itemsOnClick }: MenuProps) => {
     </div>
   )
 }
+
+export * from "./Dropdown"

@@ -1,16 +1,16 @@
 import {
-  AuthenticatedMedusaRequest,
-  MedusaResponse,
-} from "@medusajs/framework/http"
-import {
   deleteCollectionsWorkflow,
   updateCollectionsWorkflow,
 } from "@medusajs/core-flows"
+import {
+  AuthenticatedMedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
 
-import { AdminUpdateCollectionType } from "../validators"
-import { refetchCollection } from "../helpers"
-import { HttpTypes } from "@medusajs/framework/types"
+import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
+import { refetchCollection } from "../helpers"
+import { AdminUpdateCollectionType } from "../validators"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -26,7 +26,7 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateCollectionType>,
+  req: AuthenticatedMedusaRequest<AdminUpdateCollectionType & AdditionalData>,
   res: MedusaResponse<HttpTypes.AdminCollectionResponse>
 ) => {
   const existingCollection = await refetchCollection(req.params.id, req.scope, [
@@ -39,10 +39,13 @@ export const POST = async (
     )
   }
 
+  const { additional_data, ...rest } = req.validatedBody
+
   await updateCollectionsWorkflow(req.scope).run({
     input: {
       selector: { id: req.params.id },
-      update: req.validatedBody,
+      update: rest,
+      additional_data,
     },
   })
 

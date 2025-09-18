@@ -1,6 +1,5 @@
 import { MedusaAppLoader } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
@@ -8,18 +7,20 @@ import {
   mergePluginModules,
 } from "@medusajs/framework/utils"
 import { join } from "path"
-
 import { initializeContainer } from "../../loaders"
 import { ensureDbExists } from "../utils"
 
 const TERMINAL_SIZE = process.stdout.columns
 
 const main = async function ({ directory, modules }) {
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     /**
      * Setup
      */
-    const container = await initializeContainer(directory)
+
     await ensureDbExists(container)
 
     const medusaAppLoader = new MedusaAppLoader()
@@ -33,7 +34,7 @@ const main = async function ({ directory, modules }) {
     const linksSourcePaths = plugins.map((plugin) =>
       join(plugin.resolve, "links")
     )
-    await new LinkLoader(linksSourcePaths).load()
+    await new LinkLoader(linksSourcePaths, logger).load()
 
     /**
      * Reverting migrations
@@ -43,12 +44,12 @@ const main = async function ({ directory, modules }) {
       moduleNames: modules,
       action: "revert",
     })
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migrations reverted")
 
     process.exit()
   } catch (error) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     if (error.code && error.code === MedusaError.Codes.UNKNOWN_MODULES) {
       logger.error(error.message)
       const modulesList = error.allModules.map(

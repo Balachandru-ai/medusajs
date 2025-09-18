@@ -22,6 +22,14 @@ export type Operation = OpenAPIV3.OperationObject<{
   "x-featureFlag"?: string
   "x-workflow"?: string
   "x-sidebar-summary"?: string
+  "x-events"?: OasEvents[]
+  "x-since"?: string
+  "x-deprecated_message"?: string
+  "x-badges"?: {
+    text: string
+    description: string
+    variant?: "purple" | "orange" | "green" | "blue" | "red" | "neutral"
+  }[]
 }>
 
 export type RequestObject = OpenAPIV3.RequestBodyObject & {
@@ -133,4 +141,13 @@ export type TagObject = OpenAPIV3.TagObject & {
 
 export type ParsedPathItemObject = OpenAPIV3.PathItemObject<Operation> & {
   operationPath?: string
+}
+
+export type OasEvents = {
+  name: string
+  payload: string
+  description?: string
+  deprecated?: boolean
+  deprecated_message?: string
+  since?: string
 }

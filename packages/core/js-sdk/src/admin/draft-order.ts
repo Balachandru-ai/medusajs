@@ -29,7 +29,7 @@ export class DraftOrder {
    * To retrieve a draft order by its ID:
    *
    * ```ts
-   * sdk.admin.draftOrder.retrieve("draft_order_123")
+   * sdk.admin.draftOrder.retrieve("order_123")
    * .then(({ draft_order }) => {
    *   console.log(draft_order)
    * })
@@ -38,7 +38,7 @@ export class DraftOrder {
    * To specify the fields and relations to retrieve:
    *
    * ```ts
-   * sdk.admin.draftOrder.retrieve("draft_order_123", {
+   * sdk.admin.draftOrder.retrieve("order_123", {
    *   fields: "id,*items"
    * })
    * .then(({ draft_order }) => {
@@ -128,11 +128,9 @@ export class DraftOrder {
    * @param body - The data to create the draft order.
    * @param query - Configure the fields to retrieve in the draft order.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order's details.
    *
    * @example
-   * To create a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.create({
    *   email: "test@test.com",
    *   items: [
@@ -142,12 +140,11 @@ export class DraftOrder {
    *     },
    *   ],
    *   region_id: "region_123",
-   *   sales_channel_id: "sales_channel_123",
+   *   sales_channel_id: "sc_123",
    * })
    * .then(({ draft_order }) => {
    *   console.log(draft_order)
    * })
-   * ```
    */
   async create(
     body: HttpTypes.AdminCreateDraftOrder,
@@ -166,6 +163,29 @@ export class DraftOrder {
   }
 
   /**
+   * This method deletes a draft order. It sends a request to the
+   * [Delete Draft Order](https://docs.medusajs.com/api/admin#draft-orders_deleteordereditsid) API route.
+   *
+   * @param id - The draft order's ID.
+   * @param headers - Headers to pass in the request.
+   *
+   * @example
+   * sdk.admin.draftOrder.delete("order_123")
+   * .then(({ id, object, deleted }) => {
+   *   console.log(id, object, deleted)
+   * })
+   */
+  async delete(id: string, headers?: ClientHeaders) {
+    return await this.client.fetch<HttpTypes.DeleteResponse<"draft-order">>(
+      `/admin/draft-orders/${id}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    )
+  }
+
+  /**
    * This method updates a draft order. It sends a request to the
    * [Update Draft Order](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersid) API route.
    *
@@ -173,18 +193,15 @@ export class DraftOrder {
    * @param body - The data to update the draft order.
    * @param query - Configure the fields to retrieve in the draft order.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order's details.
    *
    * @example
-   * To update a draft order:
-   *
-   * ```ts
-   * sdk.admin.draftOrder.update("draft_order_123", {
+   * sdk.admin.draftOrder.update("order_123", {
    *   email: "test@test.com",
    * })
    * .then(({ draft_order }) => {
    *   console.log(draft_order)
    * })
-   * ```
    */
   async update(
     id: string,
@@ -205,17 +222,15 @@ export class DraftOrder {
 
   /**
    * This method converts a draft order to an order. It sends a request to the
-   * [Convert Draft Order to Order](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidconvert-to-order) API route.
+   * [Convert Draft Order to Order](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidconverttoorder) API route.
    *
    * @param id - The draft order's ID.
    * @param query - Configure the fields to retrieve in the order.
    * @param headers - Headers to pass in the request.
+   * @returns The order's details.
    *
    * @example
-   * To convert a draft order to an order:
-   *
-   * ```ts
-   * sdk.admin.draftOrder.convertToOrder("draft_order_123")
+   * sdk.admin.draftOrder.convertToOrder("order_123")
    * .then(({ order }) => {
    *   console.log(order)
    * })
@@ -237,16 +252,14 @@ export class DraftOrder {
 
   /**
    * This method adds items to a draft order. It sends a request to the
-   * [Add Draft Order Items](https://docs.medusajs.com/api/admin#draft-orders_postordereditsiditems) API route.
+   * [Add Draft Order Items](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedititems) API route.
    *
    * @param id - The draft order's ID.
    * @param body - The data to add the items to the draft order.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To add items to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.addItems("order_123", {
    *   items: [
    *     {
@@ -258,7 +271,6 @@ export class DraftOrder {
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async addItems(
     id: string,
@@ -277,24 +289,21 @@ export class DraftOrder {
 
   /**
    * This method updates an item that is part of an action in a draft order. It sends a request to the
-   * [Update Draft Order Item](https://docs.medusajs.com/api/admin#draft-orders_postordereditsiditemsaction_id) API route.
+   * [Update Draft Order Item](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedititemsaction_id) API route.
    *
    * @param id - The draft order's ID.
    * @param actionId - The action ID.
    * @param body - The data to update the item.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To update an item that is part of an action in a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.updateActionItem("order_123", "action_123", {
    *   quantity: 2,
    * })
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async updateActionItem(
     id: string,
@@ -314,21 +323,18 @@ export class DraftOrder {
 
   /**
    * This method removes an item that is part of an action in a draft order. It sends a request to the
-   * [Remove Draft Order Item](https://docs.medusajs.com/api/admin#draft-orders_deleteordereditsiditemsaction_id) API route.
+   * [Remove Draft Order Item](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersidedititemsaction_id) API route.
    *
    * @param id - The draft order's ID.
    * @param actionId - The action ID.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To remove an item that is part of an action in a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.removeActionItem("order_123", "action_123")
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async removeActionItem(
     id: string,
@@ -346,24 +352,21 @@ export class DraftOrder {
 
   /**
    * This method updates an item in a draft order. It sends a request to the
-   * [Update Draft Order Item](https://docs.medusajs.com/api/admin#draft-orders_postordereditsiditemsitem_id) API route.
+   * [Update Draft Order Item](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedititemsitemitem_id) API route.
    *
    * @param id - The draft order's ID.
    * @param itemId - The item ID.
    * @param body - The data to update the item.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To update an item in a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.updateItem("order_123", "item_123", {
    *   quantity: 2,
    * })
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async updateItem(
     id: string,
@@ -383,23 +386,20 @@ export class DraftOrder {
 
   /**
    * This method adds promotions to a draft order. It sends a request to the
-   * [Add Draft Order Promotions](https://docs.medusajs.com/api/admin#draft-orders_postordereditsidpromotions) API route.
+   * [Add Draft Order Promotions](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditpromotions) API route.
    *
    * @param id - The draft order's ID.
    * @param body - The data to add the promotions to the draft order.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To add promotions to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.addPromotions("order_123", {
    *   promo_codes: ["PROMO_CODE_1", "PROMO_CODE_2"],
    * })
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async addPromotions(
     id: string,
@@ -418,20 +418,17 @@ export class DraftOrder {
 
   /**
    * This method removes promotions from a draft order. It sends a request to the
-   * [Remove Draft Order Promotions](https://docs.medusajs.com/api/admin#draft-orders_deleteordereditsidpromotions) API route.
+   * [Remove Draft Order Promotions](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersideditpromotions) API route.
    *
    * @param id - The draft order's ID.
    * @param body - The data to remove the promotions from the draft order.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To remove promotions from a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.removePromotions("order_123", {
    *   promo_codes: ["PROMO_CODE_1", "PROMO_CODE_2"],
    * })
-   * ```
    */
   async removePromotions(
     id: string,
@@ -450,23 +447,20 @@ export class DraftOrder {
 
   /**
    * This method adds a shipping method to a draft order. It sends a request to the
-   * [Add Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_postordereditsidshipping-methods) API route.
+   * [Add Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethods) API route.
    *
    * @param id - The draft order's ID.
    * @param body - The data to add the shipping method to the draft order.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To add a shipping method to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.addShippingMethod("order_123", {
    *   shipping_option_id: "shipping_option_123",
    * })
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async addShippingMethod(
     id: string,
@@ -485,24 +479,21 @@ export class DraftOrder {
 
   /**
    * This method updates a shipping method in a draft order. It sends a request to the
-   * [Update Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_postordereditsidshipping-methodsaction_id) API route.
+   * [Update Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethodsaction_id) API route.
    *
    * @param id - The draft order's ID.
    * @param actionId - The action ID.
    * @param body - The data to update the shipping method.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To update a shipping method in a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.updateShippingMethod("order_123", "action_123", {
    *   shipping_option_id: "shipping_option_123",
    * })
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async updateActionShippingMethod(
     id: string,
@@ -522,21 +513,18 @@ export class DraftOrder {
 
   /**
    * This method removes a shipping method from a draft order. It sends a request to the
-   * [Remove Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_deleteordereditsidshipping-methodsaction_id) API route.
+   * [Remove Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersideditshippingmethodsaction_id) API route.
    *
    * @param id - The draft order's ID.
    * @param actionId - The action ID.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To remove a shipping method from a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.removeShippingMethod("order_123", "action_123")
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async removeActionShippingMethod(
     id: string,
@@ -552,6 +540,56 @@ export class DraftOrder {
     )
   }
 
+  /**
+   * This method removes a shipping method from an edited draft order. It sends a request to the
+   * [Remove Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersideditshippingmethodsmethodmethod_id) API route.
+   * 
+   * @param id - The draft order's ID.
+   * @param shippingMethodId - The shipping method's ID.
+   * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
+   * 
+   * @example
+   * sdk.admin.draftOrder.removeShippingMethod(
+   *   "order_123", 
+   *   "shipping_method_123"
+   * )
+   * .then(({ draft_order_preview }) => {
+   *   console.log(draft_order_preview)
+   * })
+   */
+  async removeShippingMethod(
+    id: string,
+    shippingMethodId: string,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminDraftOrderPreviewResponse>(
+      `/admin/draft-orders/${id}/edit/shipping-methods/method/${shippingMethodId}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    )
+  }
+
+  /**
+   * This method updates a shipping method in a draft order. It sends a request to the
+   * [Update Draft Order Shipping Method](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethodsmethodmethod_id) API route.
+   *
+   * @param id - The draft order's ID.
+   * @param methodId - The shipping method's ID.
+   * @param body - The data to update the shipping method.
+   * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
+   *
+   * @example
+   * sdk.admin.draftOrder.updateShippingMethod("order_123", "sm_123", {
+   *  shipping_option_id: "so_123",
+   * })
+   * .then(({ draft_order_preview }) => {
+   *   console.log(draft_order_preview)
+   * })
+   */
   async updateShippingMethod(
     id: string,
     methodId: string,
@@ -569,20 +607,16 @@ export class DraftOrder {
   }
   /**
    * This method begins an edit to a draft order. It sends a request to the
-   * [Begin Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_postordereditsid) API route.
+   * [Begin Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedit) API route.
    *
    * @param id - The draft order's ID.
    * @param headers - Headers to pass in the request.
    *
    * @example
-   * To begin an edit to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.beginEdit("order_123")
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async beginEdit(id: string, headers?: ClientHeaders) {
     return await this.client.fetch<HttpTypes.AdminDraftOrderPreviewResponse>(
@@ -596,20 +630,17 @@ export class DraftOrder {
 
   /**
    * This method cancels an edit to a draft order. It sends a request to the
-   * [Cancel Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_deleteordereditsid) API route.
+   * [Cancel Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersidedit) API route.
    *
    * @param id - The draft order's ID.
    * @param headers - Headers to pass in the request.
+   * @returns The cancelation's details.
    *
    * @example
-   * To cancel an edit to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.cancelEdit("order_123")
    * .then(({ id, object, deleted }) => {
    *   console.log(id, object, deleted)
    * })
-   * ```
    */
   async cancelEdit(id: string, headers?: ClientHeaders) {
     return await this.client.fetch<
@@ -622,20 +653,17 @@ export class DraftOrder {
 
   /**
    * This method requests an edit to a draft order. It sends a request to the
-   * [Request Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_postordereditsidrequest) API route.
+   * [Request Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditrequest) API route.
    *
    * @param id - The draft order's ID.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To request an edit to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.requestEdit("order_123")
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async requestEdit(id: string, headers?: ClientHeaders) {
     return await this.client.fetch<HttpTypes.AdminDraftOrderPreviewResponse>(
@@ -649,20 +677,17 @@ export class DraftOrder {
 
   /**
    * This method confirms an edit to a draft order. It sends a request to the
-   * [Confirm Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_postordereditsidconfirm) API route.
+   * [Confirm Draft Order Edit](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditconfirm) API route.
    *
    * @param id - The draft order's ID.
    * @param headers - Headers to pass in the request.
+   * @returns The draft order preview's details.
    *
    * @example
-   * To confirm an edit to a draft order:
-   *
-   * ```ts
    * sdk.admin.draftOrder.confirmEdit("order_123")
    * .then(({ draft_order_preview }) => {
    *   console.log(draft_order_preview)
    * })
-   * ```
    */
   async confirmEdit(id: string, headers?: ClientHeaders) {
     return await this.client.fetch<HttpTypes.AdminDraftOrderPreviewResponse>(

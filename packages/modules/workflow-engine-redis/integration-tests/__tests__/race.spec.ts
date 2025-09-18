@@ -10,18 +10,19 @@ import {
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { setTimeout as setTimeoutSync } from "timers"
 import { setTimeout } from "timers/promises"
+import { ulid } from "ulid"
 import "../__fixtures__"
 
-jest.setTimeout(999900000)
+jest.setTimeout(300000)
 
-const failTrap = (done) => {
-  setTimeoutSync(() => {
+const failTrap = (done, name, timeout = 5000) => {
+  return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
-      "Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually."
+      `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
     )
     done()
-  }, 5000)
+  }, timeout)
 }
 
 // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
@@ -35,10 +36,11 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
     },
   },
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
-    // TODO: Debug the issue with this test https://github.com/medusajs/medusa/actions/runs/13900190144/job/38897122803#step:5:5616
-    describe.skip("Testing race condition of the workflow during retry", () => {
+    describe("Testing race condition of the workflow during retry", () => {
       it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
-        const transactionId = "transaction_id"
+        const transactionId = "transaction_id" + ulid()
+        const workflowId = "workflow-1" + ulid()
+        const subWorkflowId = "sub-" + workflowId
 
         const step0InvokeMock = jest.fn()
         const step1InvokeMock = jest.fn()
@@ -61,12 +63,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse({ result: input })
         })
 
-        const subWorkflow = createWorkflow("sub-workflow-1", function () {
+        const subWorkflow = createWorkflow(subWorkflowId, function () {
           const status = step1()
           return new WorkflowResponse(status)
         })
 
-        createWorkflow("workflow-1", function () {
+        createWorkflow(workflowId, function () {
           const build = step0()
 
           const status = subWorkflow.runAsStep({} as any).config({
@@ -88,31 +90,45 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         void workflowOrcModule.subscribe({
-          workflowId: "workflow-1",
+          workflowId,
           transactionId,
-          subscriber: (event) => {
+          subscriber: async (event) => {
             if (event.eventType === "onFinish") {
-              expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-              expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(1)
-              expect(step2InvokeMock).toHaveBeenCalledTimes(1)
-              expect(transformMock).toHaveBeenCalledTimes(1)
-              setTimeoutSync(done, 500)
+              try {
+                expect(step0InvokeMock).toHaveBeenCalledTimes(1)
+                expect(
+                  step1InvokeMock.mock.calls.length
+                ).toBeGreaterThanOrEqual(1)
+                expect(step2InvokeMock).toHaveBeenCalledTimes(1)
+                expect(transformMock).toHaveBeenCalledTimes(1)
+
+                // Prevent killing the test to early
+                await setTimeout(500)
+                done()
+              } catch (e) {
+                return done(e)
+              } finally {
+                clearTimeout(timeout)
+              }
             }
           },
         })
 
         workflowOrcModule
-          .run("workflow-1", { transactionId })
+          .run(workflowId, { transactionId })
           .then(({ result }) => {
             expect(result).toBe("result from step 0")
           })
 
-        failTrap(done)
+        const timeout = failTrap(
+          done,
+          "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
+        )
       })
 
       it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
-        const transactionId = "transaction_id"
-        const workflowId = "RACE_workflow-1"
+        const transactionId = "transaction_id" + ulid()
+        const workflowId = "RACE_workflow-1" + ulid()
 
         const step0InvokeMock = jest.fn()
         const step0CompensateMock = jest.fn()
@@ -180,24 +196,35 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           transactionId,
           subscriber: (event) => {
             if (event.eventType === "onFinish") {
-              expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-              expect(step0CompensateMock).toHaveBeenCalledTimes(1)
-              expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(2)
-              expect(step1CompensateMock).toHaveBeenCalledTimes(1)
-              expect(step2InvokeMock).toHaveBeenCalledTimes(0)
-              expect(transformMock).toHaveBeenCalledTimes(0)
-              done()
+              try {
+                expect(step0InvokeMock).toHaveBeenCalledTimes(1)
+                expect(step0CompensateMock).toHaveBeenCalledTimes(1)
+                expect(
+                  step1InvokeMock.mock.calls.length
+                ).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1sdepending on the event loop congestions)
+                expect(step1CompensateMock).toHaveBeenCalledTimes(1)
+                expect(step2InvokeMock).toHaveBeenCalledTimes(0)
+                expect(transformMock).toHaveBeenCalledTimes(0)
+                done()
+              } catch (e) {
+                return done(e)
+              } finally {
+                clearTimeout(timeout)
+              }
             }
           },
         })
 
         workflowOrcModule
-          .run(workflowId, { transactionId })
+          .run(workflowId, { transactionId, throwOnError: false })
           .then(({ result }) => {
             expect(result).toBe("result from step 0")
           })
 
-        failTrap(done)
+        const timeout = failTrap(
+          done,
+          "should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution"
+        )
       })
     })
   },

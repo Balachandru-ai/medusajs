@@ -4,6 +4,10 @@ export const salesChannel = [
     "path": "https://docs.medusajs.com/user-guide/settings/sales-channels"
   },
   {
+    "title": "Get Variant Inventory",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/variant-inventory"
+  },
+  {
     "title": "Product Variant Inventory",
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/variant-inventory"
   },
@@ -36,6 +40,10 @@ export const salesChannel = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createDefaultsWorkflow"
   },
   {
+    "title": "addDraftOrderItemsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
+  },
+  {
     "title": "addOrderLineItemsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addOrderLineItemsWorkflow"
   },
@@ -54,14 +62,6 @@ export const salesChannel = [
   {
     "title": "orderExchangeAddNewItemWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderExchangeAddNewItemWorkflow"
-  },
-  {
-    "title": "parseProductCsvStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/parseProductCsvStep"
-  },
-  {
-    "title": "importProductsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/importProductsWorkflow"
   },
   {
     "title": "createDefaultSalesChannelStep",

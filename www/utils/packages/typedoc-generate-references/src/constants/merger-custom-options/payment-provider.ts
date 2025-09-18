@@ -11,6 +11,7 @@ const paymentProviderOptions: FormattingOptionsType = {
       slug: "/references/payment/provider",
       tags: ["payment", "server", "how to"],
       sidebar_label: "Create Payment Provider",
+      keywords: ["payment", "provider", "integration"],
     },
     reflectionTitle: {
       fullReplacement: "How to Create a Payment Module Provider",
@@ -18,6 +19,7 @@ const paymentProviderOptions: FormattingOptionsType = {
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
     expandProperties: true,
+    sortMembers: true,
     sections: {
       ...baseSectionsOptions,
       member_declaration_title: false,
@@ -85,7 +87,13 @@ export default ModuleProvider(Modules.PAYMENT, {
 })
 \`\`\`
 
-This exports the module provider's definition, indicating that the \`MyPaymentProviderService\` is the module provider's service.`,
+This exports the module provider's definition, indicating that the \`MyPaymentProviderService\` is the module provider's service.
+
+<Note title="Tip">
+
+A payment module provider can have export multiple provider services, where each are registered as a separate payment provider.
+
+</Note>`,
       `## 4. Use Module Provider
 
 To use your Payment Module Provider, add it to the \`providers\` array of the Payment Module in \`medusa-config.ts\`:

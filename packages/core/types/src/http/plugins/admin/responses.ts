@@ -1,4 +1,7 @@
 export interface AdminPlugin {
+  /**
+   * The plugin's name.
+   */
   name: string
 }
 

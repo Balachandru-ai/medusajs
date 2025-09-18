@@ -8,6 +8,10 @@ export const tax = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price-with-taxes"
   },
   {
+    "title": "Tax-Inclusive Promotions",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/promotion/promotion-taxes"
+  },
+  {
     "title": "Example: Show Price with Taxes",
     "path": "https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price"
   },
@@ -42,6 +46,18 @@ export const tax = [
   {
     "title": "updateTaxLinesWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateTaxLinesWorkflow"
+  },
+  {
+    "title": "addDraftOrderItemsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
+  },
+  {
+    "title": "addDraftOrderShippingMethodsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderShippingMethodsWorkflow"
+  },
+  {
+    "title": "updateDraftOrderShippingMethodWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateDraftOrderShippingMethodWorkflow"
   },
   {
     "title": "deleteLineItemsWorkflow",
@@ -158,6 +174,10 @@ export const tax = [
   {
     "title": "updateTaxRegionsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateTaxRegionsWorkflow"
+  },
+  {
+    "title": "taxProvider",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/taxProvider"
   },
   {
     "title": "taxRate",

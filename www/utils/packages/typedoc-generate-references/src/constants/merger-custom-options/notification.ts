@@ -23,6 +23,7 @@ const notificationOptions: FormattingOptionsType = {
       member_declaration_title: false,
       reflection_typeParameters: false,
     },
+    maxLevel: 2,
     startSections: [
       `## Implementation Example
       
@@ -77,7 +78,13 @@ export default ModuleProvider(Modules.NOTIFICATION, {
 })
 \`\`\`
 
-This exports the module provider's definition, indicating that the \`MyNotificationProviderService\` is the module provider's service.`,
+This exports the module provider's definition, indicating that the \`MyNotificationProviderService\` is the module provider's service.
+
+<Note title="Tip">
+
+A notification module provider can have export multiple provider services, where each are registered as a separate notification provider.
+
+</Note>`,
       `## 4. Use Module Provider
 
 To use your Notification Module Provider, add it to the \`providers\` array of the Notification Module in \`medusa-config.ts\`:
@@ -142,11 +149,15 @@ export default async function userCreatedHandler({
   const notificationModuleService = container.resolve(
     Modules.NOTIFICATION
   )
-  const userModule = container.resolve(
-    Modules.USER
-  )
+  const query = container.resolve("query")
 
-  const user = await userModule.retrieveUser(data.id)
+  const { data: [user] } = await query.graph({
+    entity: "user",
+    fields: ["*"],
+    filters: {
+      id: data.id,
+    }
+  })
 
   await notificationModuleService.createNotifications({
     to: user.email,

@@ -10,6 +10,7 @@ const taxProviderOptions: FormattingOptionsType = {
       slug: "/references/tax/provider",
       tags: ["tax", "server", "how to"],
       sidebar_label: "Create Tax Provider",
+      keywords: ["tax", "provider", "integration"],
     },
     reflectionTitle: {
       fullReplacement: "How to Create a Tax Module Provider",
@@ -17,6 +18,7 @@ const taxProviderOptions: FormattingOptionsType = {
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
     expandProperties: true,
+    sortMembers: true,
     startSections: [
       `## Overview
 
@@ -41,7 +43,7 @@ The rest of this guide always uses the \`src/modules/my-tax\` directory as an ex
 </Note>`,
       `## 2. Create the Tax Module Provider's Service
 
-Create the file \`src/modules/my-tax/service.ts\` that holds the module provider's main service. It must extend the \`ITaxProvider\` class imported from \`@medusajs/framework/types\`:
+Create the file \`src/modules/my-tax/service.ts\` that holds the module provider's main service. It must implement the \`ITaxProvider\` interface imported from \`@medusajs/framework/types\`:
 
 \`\`\`ts title="src/modules/my-tax/service.ts"
 import { ITaxProvider } from "@medusajs/framework/types"
@@ -68,7 +70,13 @@ export default ModuleProvider(Modules.TAX, {
 })
 \`\`\`
 
-This exports the module provider's definition, indicating that the \`MyTaxProvider\` is the module provider's service.`,
+This exports the module provider's definition, indicating that the \`MyTaxProvider\` is the module provider's service.
+
+<Note title="Tip">
+
+A tax module provider can have export multiple provider services, where each are registered as a separate tax provider.
+
+</Note>`,
       `## 4. Use Module Provider
 
 To use your Tax Module Provider, add it to the \`providers\` array of the Tax Module in \`medusa-config.ts\`:

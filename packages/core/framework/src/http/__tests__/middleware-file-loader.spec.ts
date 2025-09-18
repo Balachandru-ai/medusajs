@@ -11,6 +11,21 @@ describe("Middleware file loader", () => {
       [
         {
           "config": {
+            "sizeLimit": "500kb",
+          },
+          "matcher": "/v1*",
+          "methods": [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "OPTIONS",
+            "HEAD",
+          ],
+        },
+        {
+          "config": {
             "preserveRawBody": true,
           },
           "matcher": "/webhooks",

@@ -1,6 +1,6 @@
-import { ConfigModule } from "./types"
 import { deepCopy, isDefined } from "@medusajs/utils"
 import { logger } from "../logger"
+import { ConfigModule } from "./types"
 
 export class ConfigManager {
   /**
@@ -80,7 +80,21 @@ export class ConfigManager {
     http.storeCors = http.storeCors ?? ""
     http.adminCors = http.adminCors ?? ""
 
+    http.jwtOptions ??= {}
+    http.jwtOptions.expiresIn = http.jwtExpiresIn
+
     http.jwtSecret = http?.jwtSecret ?? process.env.JWT_SECRET
+    http.jwtPublicKey = http?.jwtPublicKey ?? process.env.JWT_PUBLIC_KEY
+
+    if (
+      http?.jwtPublicKey &&
+      ((http.jwtVerifyOptions && !http.jwtVerifyOptions.algorithms?.length) ||
+        (http.jwtOptions && !http.jwtOptions.algorithm))
+    ) {
+      this.rejectErrors(
+        `JWT public key is provided but no algorithm is set in the 'jwtVerifyOptions' or 'jwtOptions' if 'jwtVerifyOptions' is not provided. It means that the algorithm will be inferred from the public key which can lead to missmatch and invalid algorithm errors.`
+      )
+    }
 
     if (!http.jwtSecret) {
       this.rejectErrors(
@@ -110,21 +124,23 @@ export class ConfigManager {
 
   /**
    * Normalizes the project config object and assign the defaults if needed
-   * @param projectConfig
+   * @param config
    * @protected
    */
   protected normalizeProjectConfig(
-    projectConfig: Partial<ConfigModule["projectConfig"]>
+    config: Partial<ConfigModule>
   ): ConfigModule["projectConfig"] {
-    const outputConfig = deepCopy(
-      projectConfig
-    ) as ConfigModule["projectConfig"]
+    const projConfig = config?.projectConfig ?? {}
+    const outputConfig = deepCopy(projConfig) as ConfigModule["projectConfig"]
 
     if (!outputConfig?.redisUrl) {
-      console.log(`redisUrl not found. A fake redis instance will be used.`)
+      const customLogger = config?.logger ?? logger
+      customLogger.log(
+        `redisUrl not found. A fake redis instance will be used.`
+      )
     }
 
-    outputConfig.http = this.buildHttpConfig(projectConfig)
+    outputConfig.http = this.buildHttpConfig(projConfig)
 
     let workerMode = outputConfig?.workerMode!
 
@@ -158,16 +174,17 @@ export class ConfigManager {
   }): ConfigModule {
     this.#baseDir = baseDir
 
-    const normalizedProjectConfig = this.normalizeProjectConfig(
-      projectConfig.projectConfig ?? {}
-    )
+    const normalizedProjectConfig = this.normalizeProjectConfig(projectConfig)
 
     this.#config = {
       projectConfig: normalizedProjectConfig,
-      admin: projectConfig.admin ?? {},
+      admin: projectConfig.admin ?? {
+        path: "/app",
+      },
       modules: projectConfig.modules ?? {},
       featureFlags: projectConfig.featureFlags ?? {},
       plugins: projectConfig.plugins ?? [],
+      logger: projectConfig.logger ?? logger,
     }
 
     return this.#config

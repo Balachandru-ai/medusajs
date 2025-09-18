@@ -1,5 +1,6 @@
 import { DocsConfig } from "types"
 import { globalConfig } from "docs-ui"
+import { basePathUrl } from "../utils/base-path-url"
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
 
@@ -22,4 +23,11 @@ export const config: DocsConfig = {
     ],
   },
   logo: `${process.env.NEXT_PUBLIC_BASE_PATH}/images/logo.png`,
+  version: {
+    ...globalConfig.version,
+    bannerImage: {
+      light: basePathUrl("/images/release.png"),
+      dark: basePathUrl("/images/release-dark.png"),
+    },
+  },
 }

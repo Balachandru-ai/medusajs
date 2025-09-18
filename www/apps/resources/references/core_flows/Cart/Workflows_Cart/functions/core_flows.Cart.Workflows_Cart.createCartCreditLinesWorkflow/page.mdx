@@ -12,7 +12,9 @@ import { TypeList, WorkflowDiagram } from "docs-ui"
 
 This documentation provides a reference to the `createCartCreditLinesWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/b9edc066c8486e8ec52e4f505968db1c558bc7b8/packages/core/core-flows/src/cart/workflows/create-cart-credit-lines.ts#L14" />
+This workflow creates one or more credit lines for a cart.
+
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/e90dcedcd7627c61ed1a823400f734d624eaee05/packages/core/core-flows/src/cart/workflows/create-cart-credit-lines.ts#L31" />
 
 ## Examples
 
@@ -32,9 +34,15 @@ export async function POST(
 ) {
   const { result } = await createCartCreditLinesWorkflow(req.scope)
     .run({
-      input: [
-        "{value}"
-      ]
+      input: {
+        cart_id: "cart_123",
+        amount: 10,
+        reference: "payment",
+        reference_id: "payment_123",
+        metadata: {
+          key: "value",
+        },
+      }
     })
 
   res.send(result)
@@ -57,9 +65,15 @@ export default async function handleOrderPlaced({
 }: SubscriberArgs < { id: string } > ) {
   const { result } = await createCartCreditLinesWorkflow(container)
     .run({
-      input: [
-        "{value}"
-      ]
+      input: {
+        cart_id: "cart_123",
+        amount: 10,
+        reference: "payment",
+        reference_id: "payment_123",
+        metadata: {
+          key: "value",
+        },
+      }
     })
 
   console.log(result)
@@ -82,9 +96,15 @@ export default async function myCustomJob(
 ) {
   const { result } = await createCartCreditLinesWorkflow(container)
     .run({
-      input: [
-        "{value}"
-      ]
+      input: {
+        cart_id: "cart_123",
+        amount: 10,
+        reference: "payment",
+        reference_id: "payment_123",
+        metadata: {
+          key: "value",
+        },
+      }
     })
 
   console.log(result)
@@ -108,9 +128,15 @@ const myWorkflow = createWorkflow(
   () => {
     const result = createCartCreditLinesWorkflow
       .runAsStep({
-        input: [
-          "{value}"
-        ]
+        input: {
+          cart_id: "cart_123",
+          amount: 10,
+          reference: "payment",
+          reference_id: "payment_123",
+          metadata: {
+            key: "value",
+          },
+        }
       })
   }
 )
@@ -119,10 +145,14 @@ const myWorkflow = createWorkflow(
     </CodeTab>
   </CodeTabs>
 
+## Steps
+
+<WorkflowDiagram workflow={{"name":"createCartCreditLinesWorkflow","steps":[{"type":"step","name":"createEntitiesStep","description":"This step creates one or more entities using methods in a module's service.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.createEntitiesStep/page.mdx","depth":1}]}} />
+
 ## Input
 
-<TypeList types={[{"name":"CreateCartCreditLineDTO[]","type":"`CreateCartCreditLineDTO`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"CreateCartCreditLineDTO","type":"`CreateCartCreditLineDTO`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createCartCreditLinesWorkflow"/>
+<TypeList types={[{"name":"CreateCartCreditLinesWorkflowInput","type":"[CreateCartCreditLinesWorkflowInput](../../../../../types/types/types.CreateCartCreditLinesWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"The ID of the cart that the credit line belongs to.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"amount","type":"`number`","description":"The amount of the credit line.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"reference","type":"`string` \\| `null`","description":"The reference model name that the credit line is generated from","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"reference_id","type":"`string` \\| `null`","description":"The reference model id that the credit line is generated from","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`Record<string, unknown>` \\| `null`","description":"The metadata of the cart detail","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createCartCreditLinesWorkflow"/>
 
 ## Output
 
-<TypeList types={[{"name":"CartCreditLineDTO[]","type":"[CartCreditLineDTO](../../../../../cart/interfaces/cart.CartCreditLineDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"CartCreditLineDTO","type":"[CartCreditLineDTO](../../../../../cart/interfaces/cart.CartCreditLineDTO/page.mdx)","optional":false,"defaultValue":"","description":"The cart credit line details.","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the cart credit line.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"cart_id","type":"`string`","description":"The ID of the cart that the credit line belongs to.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"amount","type":"[BigNumberValue](../../../../../cart/types/cart.BigNumberValue/page.mdx)","description":"The amount of the credit line.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"numeric","type":"`number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"raw","type":"[BigNumberRawValue](../../../../../cart/types/cart.BigNumberRawValue/page.mdx)","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"bigNumber","type":"`BigNumber`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"raw_amount","type":"[BigNumberRawValue](../../../../../cart/types/cart.BigNumberRawValue/page.mdx)","description":"The raw amount of the credit line.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"value","type":"`string` \\| `number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"reference","type":"`null` \\| `string`","description":"The reference model name that the credit line is generated from","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"reference_id","type":"`null` \\| `string`","description":"The reference model id that the credit line is generated from","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, unknown>`","description":"The metadata of the cart detail","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`Date`","description":"The date when the cart credit line was created.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`Date`","description":"The date when the cart credit line was last updated.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createCartCreditLinesWorkflow"/>
+<TypeList types={[{"name":"CartCreditLineDTO[]","type":"[CartCreditLineDTO](../../../../../cart/interfaces/cart.CartCreditLineDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the cart credit line.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"cart_id","type":"`string`","description":"The ID of the cart that the credit line belongs to.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"amount","type":"[BigNumberValue](../../../../../cart/types/cart.BigNumberValue/page.mdx)","description":"The amount of the credit line.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"numeric","type":"`number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"raw","type":"[BigNumberRawValue](../../../../../cart/types/cart.BigNumberRawValue/page.mdx)","description":"","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"value","type":"`string` \\| `number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"bigNumber","type":"`BigNumber`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"raw_amount","type":"[BigNumberRawValue](../../../../../cart/types/cart.BigNumberRawValue/page.mdx)","description":"The raw amount of the credit line.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"value","type":"`string` \\| `number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]},{"name":"reference","type":"`null` \\| `string`","description":"The reference model name that the credit line is generated from","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"reference_id","type":"`null` \\| `string`","description":"The reference model id that the credit line is generated from","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, unknown>`","description":"The metadata of the cart detail","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`Date`","description":"The date when the cart credit line was created.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`Date`","description":"The date when the cart credit line was last updated.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createCartCreditLinesWorkflow"/>

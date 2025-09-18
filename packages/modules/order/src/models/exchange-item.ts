@@ -20,13 +20,13 @@ const _OrderExchangeItem = model
       name: "IDX_order_exchange_item_exchange_id",
       on: ["exchange_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_exchange_item_item_id",
       on: ["item_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_exchange_item_deleted_at",

@@ -35,8 +35,18 @@
  *       - gte
  *       - nin
  *   value:
- *     type: string
- *     title: value
+ *     oneOf:
+ *       - type: string
+ *         title: value
+ *         description: The shipping option rule's value.
+ *         example: "true"
+ *       - type: array
+ *         description: The shipping option rule's values.
+ *         items:
+ *           type: string
+ *           title: value
+ *           description: A value of the shipping option rule.
+ *           example: "true"
  *   shipping_option_id:
  *     type: string
  *     title: shipping_option_id
@@ -56,5 +66,6 @@
  *     format: date-time
  *     title: deleted_at
  *     description: The date the shipping option rule was deleted.
- *
- */
+ * 
+*/
+

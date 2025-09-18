@@ -1,12 +1,19 @@
+import {
+  ContainerRegistrationKeys,
+  createMedusaContainer,
+} from "@medusajs/utils"
+import { asValue } from "awilix"
 import express from "express"
 import { resolve } from "path"
+import { logger as defaultLogger } from "../../logger"
 import {
   customersCreateMiddlewareMock,
+  customersCreateMiddlewareValidatorMock,
   customersGlobalMiddlewareMock,
   storeGlobalMiddlewareMock,
 } from "../__fixtures__/mocks"
 import { createServer } from "../__fixtures__/server"
-import { MedusaNextFunction, ApiLoader } from "../index"
+import { ApiLoader, MedusaNextFunction } from "../index"
 
 jest.setTimeout(30000)
 
@@ -203,6 +210,16 @@ describe("RoutesLoader", function () {
       expect(customersCreateMiddlewareMock).toHaveBeenCalled()
     })
 
+    it("should assign the req.additionalDataValidator when the method and route matches", async function () {
+      const res = await request("POST", "/customers")
+
+      expect(res.status).toBe(200)
+      expect(res.text).toBe("create customer")
+      expect(customersGlobalMiddlewareMock).toHaveBeenCalled()
+      expect(customersCreateMiddlewareMock).toHaveBeenCalled()
+      expect(customersCreateMiddlewareValidatorMock).toHaveBeenCalled()
+    })
+
     it("should call store global middleware on `/store/*` routes", async function () {
       const res = await request("POST", "/store/products/1000/sync")
 
@@ -324,9 +341,16 @@ describe("RoutesLoader", function () {
         __dirname,
         "../__fixtures__/routers-duplicate-parameter"
       )
+      const container = createMedusaContainer()
+      container.register(
+        ContainerRegistrationKeys.LOGGER,
+        asValue(defaultLogger)
+      )
+
       const err = await new ApiLoader({
         app,
         sourceDir: rootDir,
+        container,
       })
         .load()
         .catch((e) => e)

@@ -25,12 +25,39 @@ import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adju
 
 export const updateDraftOrderActionItemId = "update-draft-order-action-item"
 
+/**
+ * This workflow updates a new item that was added to a draft order edit. It's used by the
+ * [Update New Item in Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedititemsaction_id).
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
+ * updating a new item in a draft order edit.
+ *
+ * @example
+ * const { result } = await updateDraftOrderActionItemWorkflow(container)
+ * .run({
+ *   input: {
+ *     order_id: "order_123",
+ *     action_id: "action_123",
+ *     data: {
+ *       quantity: 2,
+ *     }
+ *   }
+ * })
+ *
+ * @summary
+ *
+ * Update a new item in a draft order edit.
+ */
 export const updateDraftOrderActionItemWorkflow = createWorkflow(
   updateDraftOrderActionItemId,
   function (
     input: WorkflowData<OrderWorkflow.UpdateOrderEditAddNewItemWorkflowInput>
   ) {
-    const order: OrderDTO = useRemoteQueryStep({
+    const order: OrderDTO & {
+      promotions: {
+        code: string
+      }[]
+    } = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
       variables: { id: input.order_id },
@@ -89,19 +116,11 @@ export const updateDraftOrderActionItemWorkflow = createWorkflow(
       order,
     })
 
-    const appliedPromoCodes: string[] = transform(context, (context) => {
-      const promotionLink = (context as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      context,
+      (context) =>
+        (context as any).promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     // If any the order has any promo codes, then we need to refresh the adjustments.
     when(

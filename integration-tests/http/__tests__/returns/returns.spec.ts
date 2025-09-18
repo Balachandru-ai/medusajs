@@ -1,9 +1,9 @@
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ContainerRegistrationKeys,
   Modules,
   RuleOperator,
 } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -478,6 +478,16 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        expect(result.data.order_preview.summary).toEqual(
+          expect.objectContaining({
+            transaction_total: 0,
+            current_order_total: 61,
+            pending_difference: 11,
+            paid_total: 0,
+            refunded_total: 0,
+          })
+        )
+
         expect(result.data.order_preview).toEqual(
           expect.objectContaining({
             id: order.id,
@@ -724,6 +734,39 @@ medusaIntegrationTestRunner({
           })
         )
 
+        const return_ = (
+          await api.get(
+            `/admin/returns/${returnId}?fields=*fulfillments,*fulfillments.items`,
+            adminHeaders
+          )
+        ).data.return
+
+        // return fulfillment is created for the return
+        expect(return_.fulfillments).toHaveLength(1)
+        expect(return_.fulfillments[0]).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            location_id: location.id,
+            packed_at: null,
+            shipped_at: null,
+            marked_shipped_by: null,
+            delivered_at: null,
+            canceled_at: null,
+            data: {},
+            requires_shipping: true,
+            provider_id: "manual_test-provider",
+            items: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(String),
+                title: "Custom Item 2",
+                line_item_id: item.id,
+                inventory_item_id: null,
+                fulfillment_id: return_.fulfillments[0].id,
+                quantity: 2,
+              }),
+            ]),
+          })
+        )
         expect(result.data.order_preview).toEqual(
           expect.objectContaining({
             id: order.id,

@@ -18,7 +18,7 @@ export type EventMetadata = Record<string, unknown> & {
   /**
    * The ID of the event's group. Grouped events are useful when you have distributed transactions
    * where you need to explicitly group, release and clear events upon lifecycle events of a transaction.
-   * 
+   *
    * When set, you must release the grouped events using the Event Module's `releaseGroupedEvents` method to emit the events.
    */
   eventGroupId?: string
@@ -27,7 +27,7 @@ export type EventMetadata = Record<string, unknown> & {
 export type Event<TData = unknown> = {
   /**
    * The event's name.
-   * 
+   *
    * @example
    * user.created
    */
@@ -37,7 +37,7 @@ export type Event<TData = unknown> = {
    */
   metadata?: EventMetadata
   /**
-   * The data payload that subscribers receive. For example, the ID of the created user.
+   * The data payload that subscribers receive. For example, the ID or IDs of the created user. (e.g. { id: "123" } or { ids: ["123", "456"] })
    */
   data: TData
 }

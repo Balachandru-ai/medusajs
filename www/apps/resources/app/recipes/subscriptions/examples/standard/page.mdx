@@ -1,3 +1,11 @@
+---
+products:
+  - order
+  - payment
+  - cart
+  - customer
+---
+
 import { Github, PlaySolid, EllipsisHorizontal } from "@medusajs/icons"
 import { Prerequisites, InlineIcon } from "docs-ui"
 
@@ -9,7 +17,7 @@ export const metadata = {
 
 In this guide, you'll learn how to support subscription purchases with Medusa.
 
-When you install a Medusa application, you get a fully-fledged commerce platform with support for customizations. While Medusa doesn't provide subscription-based purchases natively, it provides the framework to support you in implementing this feature.
+When you install a Medusa application, you get a fully-fledged commerce platform with support for customizations. While Medusa doesn't provide subscription-based purchases natively, it provides the Framework to support you in implementing this feature.
 
 In this guide, you'll customize Medusa to implement subscription-based purchases with the following features:
 
@@ -23,7 +31,7 @@ This guide uses Stripe as an example to capture the subscription payments. You'r
 
 <Note>
 
-This guide provides an example of an approach to implement subscriptions. You're free to choose a different approach using Medusa's framework.
+This guide provides an example of an approach to implement subscriptions. You're free to choose a different approach using the Medusa Framework.
 
 </Note>
 
@@ -67,9 +75,9 @@ Start by installing the Medusa application on your machine with the following co
 npx create-medusa-app@latest
 ```
 
-You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js storefront, choose `Y` for yes.
+You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js Starter Storefront, choose `Y` for yes.
 
-Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name, and the Next.js storefront in a directory with the `{project-name}-storefront` name.
+Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name, and the Next.js Starter Storefront in a directory with the `{project-name}-storefront` name.
 
 <Note title="Why is the storefront installed separately?">
 
@@ -79,7 +87,7 @@ The Medusa application is composed of a headless Node.js server and an admin das
 
 Once the installation finishes successfully, the Medusa Admin dashboard will open with a form to create a new user. Enter the user's credentials and submit the form.
 
-Afterwards, you can log in with the new user and explore the dashboard. The Next.js storefront is also running at `http://localhost:8000`.
+Afterwards, you can log in with the new user and explore the dashboard. The Next.js Starter Storefront is also running at `http://localhost:8000`.
 
 <Note title="Ran into Errors?">
 
@@ -306,7 +314,7 @@ So, you can't have relations between data models in modules. Instead, you define
 
 Links are relations between data models of different modules that maintain the isolation between the modules.
 
-In this step, you’ll define links between the Subscription Module’s `Subscription` data model and the data models of Medusa’s commerce modules:
+In this step, you’ll define links between the Subscription Module’s `Subscription` data model and the data models of Medusa’s Commerce Modules:
 
 1. Link between the `Subscription` data model and the Cart Module's `Cart` model.
 2. Link between the `Subscription` data model and the Customer Module's `Customer` model.
@@ -346,7 +354,7 @@ import CustomerModule from "@medusajs/medusa/customer"
 
 export default defineLink(
   {
-    linkable: SubscriptionModule.linkable.subscription,
+    linkable: SubscriptionModule.linkable.subscription.id,
     isList: true,
   },
   CustomerModule.linkable.customer
@@ -367,7 +375,7 @@ import OrderModule from "@medusajs/medusa/order"
 export default defineLink(
   SubscriptionModule.linkable.subscription,
   {
-    linkable: OrderModule.linkable.order,
+    linkable: OrderModule.linkable.order.id,
     isList: true,
   }
 )
@@ -917,7 +925,7 @@ In the route handler function, you retrieve the cart to access it's `metadata` p
 
 Then, you use the `createSubscriptionWorkflow` you created to create the order, and return the created order and subscription in the response.
 
-In the next step, you'll customize the Next.js storefront, allowing you to test out the subscription feature.
+In the next step, you'll customize the Next.js Starter Storefront, allowing you to test out the subscription feature.
 
 ### Further Reads
 
@@ -937,7 +945,7 @@ To support subscriptions, you need to support capturing the payment each time th
 
 <Note title="Tip">
 
-If you're using a custom payment provider, you can handle that additional data in the [initiatePayment method](!resources!/references/payment/provider#initiatepayment) of your provider's service.
+If you're using a custom payment provider, you can handle that additional data in the [initiatePayment method](/references/payment/provider#initiatepayment) of your provider's service.
 
 </Note>
 
@@ -947,7 +955,7 @@ The account holder allows you to retrieve the saved payment method and use it to
 
 ---
 
-## Step 9: Add Subscriptions to Next.js Storefront
+## Step 9: Add Subscriptions to Next.js Starter Storefront
 
 In this step, you'll customize the checkout flow in the [Next.js Starter storefront](../../../../nextjs-starter/page.mdx), which you installed in the first step, to:
 

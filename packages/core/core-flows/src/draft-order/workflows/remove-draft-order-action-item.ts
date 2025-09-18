@@ -25,12 +25,36 @@ import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adju
 export const removeDraftOrderActionItemWorkflowId =
   "remove-draft-order-action-item"
 
+/**
+ * This workflow removes an item that was added or updated in a draft order edit. It's used by the
+ * [Remove Item from Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersidedititemsaction_id).
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
+ * removing an item from a draft order edit.
+ *
+ * @example
+ * const { result } = await removeDraftOrderActionItemWorkflow(container)
+ * .run({
+ *   input: {
+ *     order_id: "order_123",
+ *     action_id: "action_123",
+ *   }
+ * })
+ *
+ * @summary
+ *
+ * Remove an item from a draft order edit.
+ */
 export const removeDraftOrderActionItemWorkflow = createWorkflow(
   removeDraftOrderActionItemWorkflowId,
   function (
     input: WorkflowData<OrderWorkflow.DeleteOrderEditItemActionWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
+    const order: OrderDTO & {
+      promotions: {
+        code: string
+      }[]
+    } = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["id", "status", "is_draft_order", "canceled_at", "items.*"],
       variables: { id: input.order_id },
@@ -69,19 +93,8 @@ export const removeDraftOrderActionItemWorkflow = createWorkflow(
 
     const appliedPromoCodes: string[] = transform(
       refetchedOrder,
-      (refetchedOrder) => {
-        const promotionLink = (refetchedOrder as any).promotion_link
-
-        if (!promotionLink) {
-          return []
-        }
-
-        if (Array.isArray(promotionLink)) {
-          return promotionLink.map((promo) => promo.promotion.code)
-        }
-
-        return [promotionLink.promotion.code]
-      }
+      (refetchedOrder) =>
+        refetchedOrder.promotions?.map((promotion) => promotion.code) ?? []
     )
 
     // If any the order has any promo codes, then we need to refresh the adjustments.

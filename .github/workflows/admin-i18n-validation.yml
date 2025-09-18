@@ -5,7 +5,6 @@ on:
     paths:
       - packages/admin/dashboard/src/i18n/translations/**
 
-
 jobs:
   i18n-validation-admin-dashboard:
     runs-on: ubuntu-latest
@@ -17,10 +16,10 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: "20"
+          cache: "yarn"
 
       - name: Install dependencies
         working-directory: packages/admin/dashboard
@@ -30,18 +29,18 @@ jobs:
         working-directory: packages/admin/dashboard
         run: |
           git diff --name-only --diff-filter=A origin/develop HEAD -- src/i18n/translations > i18n_added_files.txt
-          
+
           cat i18n_added_files.txt
-          
+
           while read -r file; do
             # Get the base name of the file
             filename=$(basename "$file")
-          
+
             # Skip those items
             if [ "$filename" = "\$schema.json" ] || [ "$filename" = "index.ts" ] || [ -d "$file" ]; then
               continue
             fi
-          
+
             # Run validation on the file
             yarn i18n:validate "$filename"
           done < i18n_added_files.txt

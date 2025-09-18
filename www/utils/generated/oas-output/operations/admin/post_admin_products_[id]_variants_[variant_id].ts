@@ -48,6 +48,29 @@
  *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  *         description: The properties to update in the variant.
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.product.updateVariant(
+ *         "prod_123",
+ *         "variant_123",
+ *           {
+ *           title: "Blue Shirt",
+ *         }
+ *       )
+ *       .then(({ product }) => {
+ *         console.log(product)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -75,6 +98,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateProductVariantsWorkflow
+ * x-events:
+ *   - name: product-variant.updated
+ *     payload: |-
+ *       ```ts
+ *       [{
+ *         id, // The ID of the product variant
+ *       }]
+ *       ```
+ *     description: Emitted when product variants are updated.
+ *     deprecated: false
  * 
 */
 

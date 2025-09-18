@@ -1,5 +1,45 @@
 # @medusajs/admin-shared
 
+## 2.10.2
+
+## 2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13208](https://github.com/medusajs/medusa/pull/13208) [`4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d`](https://github.com/medusajs/medusa/commit/4b3c43fe92d99a98b3d7b9ee6705114de01cbc5d) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard, js-sdk): shipping option type mngmt dashboard
+
+## 2.9.0
+
+## 2.8.8
+
+## 2.8.7
+
+## 2.8.6
+
+## 2.8.5
+
+## 2.8.4
+
+## 2.8.3
+
+## 2.8.2
+
+## 2.8.1
+
+## 2.8.0
+
+## 2.7.1
+
+## 2.7.0
+
+### Patch Changes
+
+- [#11871](https://github.com/medusajs/medusa/pull/11871) [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,js-sdk,admin-shared): add customer addresses + layout change
+
+- [#11871](https://github.com/medusajs/medusa/pull/11871) [`5ab15a29889870411b719ebad3fb94786baee45e`](https://github.com/medusajs/medusa/commit/5ab15a29889870411b719ebad3fb94786baee45e) Thanks [@riqwan](https://github.com/riqwan)! - feat(dashboard,js-sdk,admin-shared): add customer addresses + layout change
+
 ## 2.6.1
 
 ## 2.6.0

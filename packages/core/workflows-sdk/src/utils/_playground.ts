@@ -1,103 +1,54 @@
-import { z } from "zod"
-import {
-  createStep,
-  createWorkflow,
-  StepResponse,
-  WorkflowData,
-} from "./composer"
+import { createStep, createWorkflow, StepResponse, transform } from "./composer"
 import { createHook } from "./composer/create-hook"
 import { WorkflowResponse } from "./composer/helpers/workflow-response"
 
-const step1 = createStep("step1", async (input: {}, context) => {
-  return new StepResponse({ step1: "step1" })
-})
-
-type Step2Input = { filters: { id: string[] } } | { filters: { id: string } }
-const step2 = createStep("step2", async (input: Step2Input, context) => {
-  return new StepResponse({ step2: input })
-})
-
-const step3 = createStep("step3", async function (_, context) {
-  return new StepResponse({ step3: "step3" })
-})
-
-const workflow = createWorkflow(
-  "sub-workflow",
-  function (input: WorkflowData<{ outsideWorkflowData: string }>) {
-    step1()
-    step2({ filters: { id: [] } })
-
-    let somethingHook = createHook(
-      "something",
-      { id: "1" },
-      {
-        resultValidator: z.object({
-          id: z.number(),
-        }),
-      }
-    )
-
-    return new WorkflowResponse(
-      { r: somethingHook.getResult(), step3: step3() },
-      { hooks: [somethingHook] }
-    )
+const step1 = createStep(
+  "step1",
+  () => {
+    return new StepResponse("step1")
+  },
+  () => {
+    console.log("compensate step1")
   }
 )
 
-workflow.hooks.something((input, context) => {
-  console.log("input>", input)
-  console.log("context>", context)
-  return new StepResponse({ id: 2, foo: "bar" })
-})
+const step2 = createStep(
+  "step2",
+  (input: any) => {
+    return new StepResponse(input)
+  },
+  (input) => {
+    console.log("compensate step2", input)
+  }
+)
 
-workflow.run().then((res) => {
-  console.log("res", res)
-})
+const workflow = createWorkflow("workflow", () => {
+  const step1Result = step1()
 
-/*const workflow2 = createWorkflow("workflow", function () {
-  const step1Res = step1()
-
-  const step3Res = when({ value: true }, ({ value }) => {
-    return value
-  }).then(() => {
-    return step3()
+  const step2Input = transform({ step1Result }, (input) => {
+    return input
   })
 
-  transform({ step3Res }, ({ step3Res }) => {
-    console.log(step3Res)
+  const step2Result = step2(step2Input)
+
+  const hook = createHook("hook", {
+    step2Result,
   })
 
-  const workflowRes = workflow.asStep({ outsideWorkflowData: step1Res.step1 })
-
-  return workflowRes
-})*/
-
-// workflow()
-//   .run({})
-//   .then((res) => {
-//     console.log(res.result)
-//   })
-
-/*const step1 = createStep("step1", async (input: {}, context) => {
-  return new StepResponse({ step1: ["step1"] })
+  return new WorkflowResponse(void 0, {
+    hooks: [hook],
+  })
 })
 
-const step2 = createStep("step2", async (input: string[], context) => {
-  return new StepResponse({ step2: input })
-})
-
-const step3 = createStep("step3", async () => {
-  return new StepResponse({ step3: "step3" })
-})
-
-const workflow = createWorkflow("workflow", function () {
-  const step1Res = step1()
-  step3()
-  return step2(step1Res.step1)
+workflow.hooks.hook(() => {
+  throw new Error("hook failed")
 })
 
 workflow()
-  .run({})
+  .run()
   .then((res) => {
-    console.log(res.result)
-  })*/
+    console.log(res)
+  })
+  .catch((e) => {
+    console.log(e)
+  })

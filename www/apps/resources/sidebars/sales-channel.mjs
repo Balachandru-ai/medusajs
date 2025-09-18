@@ -123,7 +123,7 @@ export const salesChannelSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/sales-channel/events",
+            path: "/references/sales-channel/events",
             title: "Events Reference",
           },
           {

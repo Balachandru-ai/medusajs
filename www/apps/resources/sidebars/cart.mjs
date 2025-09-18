@@ -53,6 +53,11 @@ export const cartSidebar = [
             path: "/commerce-modules/cart/extend",
             title: "Extend Module",
           },
+          {
+            type: "link",
+            path: "/commerce-modules/cart/cart-totals",
+            title: "Retrieve Cart Totals",
+          },
         ],
       },
       {
@@ -138,7 +143,7 @@ export const cartSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/cart/events",
+            path: "/references/cart/events",
             title: "Events Reference",
           },
           {

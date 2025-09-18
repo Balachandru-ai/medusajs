@@ -31,6 +31,10 @@ get:
         externalDocs:
           url: '#select-fields-and-relations'
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_users_{id}/get.js
     - lang: Shell
       label: cURL
       source:
@@ -95,6 +99,10 @@ post:
         schema:
           $ref: ../components/schemas/AdminUpdateUser.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_users_{id}/post.js
     - lang: Shell
       label: cURL
       source:
@@ -124,6 +132,16 @@ post:
   security:
     - cookie_auth: []
     - jwt_token: []
+  x-events:
+    - name: user.updated
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the user
+        }]
+        ```
+      description: Emitted when users are updated.
+      deprecated: false
 delete:
   operationId: DeleteUsersId
   summary: Delete a User
@@ -137,6 +155,10 @@ delete:
       schema:
         type: string
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/admin_users_{id}/delete.js
     - lang: Shell
       label: cURL
       source:
@@ -166,3 +188,13 @@ delete:
   security:
     - cookie_auth: []
     - jwt_token: []
+  x-events:
+    - name: user.deleted
+      payload: |-
+        ```ts
+        [{
+          id, // The ID of the user
+        }]
+        ```
+      description: Emitted when users are deleted.
+      deprecated: false

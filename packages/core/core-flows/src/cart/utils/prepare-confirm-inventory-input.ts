@@ -9,6 +9,43 @@ import {
   deepFlatMap,
 } from "@medusajs/framework/utils"
 
+export const requiredOrderFieldsForInventoryConfirmation = [
+  "id",
+  "version",
+  "canceled_at",
+  "sales_channel_id",
+  "items.*",
+  "items.variant.manage_inventory",
+  "items.variant.allow_backorder",
+  "items.variant.inventory_items.inventory_item_id",
+  "items.variant.inventory_items.required_quantity",
+  "items.variant.inventory_items.inventory.location_levels.stocked_quantity",
+  "items.variant.inventory_items.inventory.location_levels.reserved_quantity",
+  "items.variant.inventory_items.inventory.location_levels.raw_stocked_quantity",
+  "items.variant.inventory_items.inventory.location_levels.raw_reserved_quantity",
+  "items.variant.inventory_items.inventory.location_levels.location_id",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.id",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.name",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
+]
+
+export const requiredVariantFieldsForInventoryConfirmation = [
+  "manage_inventory",
+  "allow_backorder",
+  "inventory_items.inventory_item_id",
+  "inventory_items.required_quantity",
+  "inventory_items.inventory.location_levels.stocked_quantity",
+  "inventory_items.inventory.location_levels.reserved_quantity",
+  "inventory_items.inventory.location_levels.raw_stocked_quantity",
+  "inventory_items.inventory.location_levels.raw_reserved_quantity",
+  "inventory_items.inventory.location_levels.location_id",
+  "inventory_items.inventory.location_levels.stock_locations.id",
+  "inventory_items.inventory.location_levels.stock_locations.name",
+  "inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
+  "inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
+]
+
 interface ConfirmInventoryPreparationInput {
   product_variant_inventory_items: {
     variant_id: string
@@ -38,6 +75,17 @@ interface ConfirmInventoryItem {
   location_ids: string[]
 }
 
+/**
+ * This function prepares the input for the confirm inventory workflow.
+ * In essesnce, it maps a list of cart items to a list of inventory items,
+ * serving as a bridge between the cart and inventory domains.
+ *
+ * @throws {MedusaError} INVALID_DATA if any cart item is for a variant that has no inventory items.
+ * @throws {MedusaError} INVALID_DATA if any cart item is for a variant with no stock locations in the input.sales_channel_id. An exception is made for variants with allow_backorder set to true.
+ *
+ * @returns {ConfirmInventoryPreparationInput}
+ * A list of inventory items to confirm. Only inventory items for variants with managed inventory are included.
+ */
 export const prepareConfirmInventoryInput = (data: {
   input: ConfirmVariantInventoryWorkflowInputDTO
 }) => {
@@ -45,7 +93,7 @@ export const prepareConfirmInventoryInput = (data: {
   const stockLocationIds = new Set<string>()
   const allVariants = new Map<string, any>()
   const mapLocationAvailability = new Map<string, Map<string, BigNumberInput>>()
-  let hasSalesChannelStockLocation = false
+  const variantsWithLocationForChannel = new Set<string>()
   let hasManagedInventory = false
 
   const salesChannelId = data.input.sales_channel_id
@@ -75,11 +123,8 @@ export const prepareConfirmInventoryInput = (data: {
         return
       }
 
-      if (
-        !hasSalesChannelStockLocation &&
-        sales_channels?.id === salesChannelId
-      ) {
-        hasSalesChannelStockLocation = true
+      if (salesChannelId && sales_channels?.id === salesChannelId) {
+        variantsWithLocationForChannel.add(variants.id)
       }
 
       if (location_levels && inventory_items) {
@@ -140,11 +185,19 @@ export const prepareConfirmInventoryInput = (data: {
     return { items: [] }
   }
 
-  if (salesChannelId && !hasSalesChannelStockLocation) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      `Sales channel ${salesChannelId} is not associated with any stock location.`
-    )
+  if (salesChannelId) {
+    for (const variant of allVariants.values()) {
+      if (
+        variant.manage_inventory &&
+        !variantsWithLocationForChannel.has(variant.id) &&
+        !variant.allow_backorder
+      ) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Sales channel ${salesChannelId} is not associated with any stock location for variant ${variant.id}.`
+        )
+      }
+    }
   }
 
   const items = formatInventoryInput({

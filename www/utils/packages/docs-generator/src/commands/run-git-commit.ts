@@ -7,6 +7,7 @@ import { CommonCliOptions } from "../types/index.js"
 import { GitManager } from "../classes/helpers/git-manager.js"
 import DmlGenerator from "../classes/generators/dml.js"
 import RouteExamplesGenerator from "../classes/generators/route-examples.js"
+import EventsGenerator from "../classes/generators/events.js"
 
 export default async function (
   commitSha: string,
@@ -69,6 +70,15 @@ export default async function (
     })
 
     await routeExamplesGenerator.run()
+  }
+
+  if (type === "all" || type === "events") {
+    const eventsGenerator = new EventsGenerator({
+      paths: filteredFiles,
+      ...options,
+    })
+
+    await eventsGenerator.run()
   }
 
   console.log(`Finished generating docs for ${filteredFiles.length} files.`)

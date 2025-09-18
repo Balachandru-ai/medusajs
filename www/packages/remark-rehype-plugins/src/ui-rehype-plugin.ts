@@ -38,7 +38,7 @@ export function uiRehypePlugin({ exampleRegistry }: Options) {
               tagName: "span",
               properties: {
                 __src__: src,
-                code: source,
+                codeLinesJSON: JSON.stringify(source.split("\n")),
               },
             })
           )
@@ -53,7 +53,7 @@ export function uiRehypePlugin({ exampleRegistry }: Options) {
           return null
         }
 
-        const mainSpecsDir = path.join(process.cwd(), "src/specs")
+        const mainSpecsDir = path.join(process.cwd(), "specs", "components")
         const componentSpecsDir = path.join(mainSpecsDir, mainComponent)
         const specs: Documentation[] = []
 

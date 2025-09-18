@@ -133,7 +133,19 @@ get:
                 - completed
                 - draft
                 - archived
+    - name: with_deleted
+      in: query
+      description: Whether to include deleted records in the result.
+      required: false
+      schema:
+        type: boolean
+        title: with_deleted
+        description: Whether to include deleted records in the result.
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: ../code_samples/JavaScript/store_orders/get.js
     - lang: Shell
       label: cURL
       source:
@@ -194,3 +206,4 @@ get:
     - cookie_auth: []
     - jwt_token: []
   x-workflow: getOrdersListWorkflow
+  x-events: []

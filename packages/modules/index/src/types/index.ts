@@ -29,5 +29,4 @@ export type QueryOptions = {
   skip?: number
   take?: number
   orderBy?: OrderBy | OrderBy[]
-  keepFilteredEntities?: boolean
 }

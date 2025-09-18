@@ -44,6 +44,11 @@ export const orderSidebar = [
           },
           {
             type: "link",
+            path: "/commerce-modules/order/draft-orders",
+            title: "Draft Orders",
+          },
+          {
+            type: "link",
             path: "/commerce-modules/order/return",
             title: "Return",
           },
@@ -77,11 +82,18 @@ export const orderSidebar = [
       {
         type: "category",
         title: "Server Guides",
-        autogenerate_tags: "server+order",
+        autogenerate_tags: "order+server",
         autogenerate_as_ref: true,
         sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Order Module in your customizations on the Medusa application server.",
+        children: [
+          {
+            type: "link",
+            path: "/commerce-modules/order/order-totals",
+            title: "Retrieve Order Totals",
+          },
+        ],
       },
       {
         type: "category",
@@ -166,7 +178,7 @@ export const orderSidebar = [
           },
           {
             type: "link",
-            path: "/commerce-modules/order/events",
+            path: "/references/order/events",
             title: "Events Reference",
           },
           {

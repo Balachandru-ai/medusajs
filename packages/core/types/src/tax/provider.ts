@@ -42,7 +42,9 @@ export type ItemTaxCalculationLine = {
  * 
  * ### Identifier Property
  *
- * The `identifier` property in a tax provider is used when the tax provider is loaded by the Tax Module and added to the database. A tax provider is represented in the database by the `TaxProvider` data model.
+ * Each tax provider has a unique identifier defined in its class. The provider's ID
+ * will be stored as `tp_{identifier}_{id}`, where `{id}` is the provider's `id`
+ * property in the `medusa-config.ts`.
  *
  * For example:
  *

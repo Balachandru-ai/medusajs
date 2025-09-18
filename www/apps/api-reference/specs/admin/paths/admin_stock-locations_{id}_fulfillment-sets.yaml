@@ -37,21 +37,13 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The fulfillment set to create.
-          required:
-            - type
-            - name
-          properties:
-            name:
-              type: string
-              title: name
-              description: The fulfillment set's name.
-            type:
-              type: string
-              title: type
-              description: The fulfillment set's type.
+          $ref: ../components/schemas/AdminCreateStockLocationFulfillmentSet.yaml
   x-codeSamples:
+    - lang: JavaScript
+      label: JS SDK
+      source:
+        $ref: >-
+          ../code_samples/JavaScript/admin_stock-locations_{id}_fulfillment-sets/post.js
     - lang: Shell
       label: cURL
       source:
@@ -79,3 +71,4 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: createLocationFulfillmentSetWorkflow
+  x-events: []

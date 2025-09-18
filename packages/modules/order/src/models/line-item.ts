@@ -56,19 +56,19 @@ const _OrderLineItem = model
       name: "IDX_order_line_item_product_id",
       on: ["product_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_line_item_product_type_id",
       on: ["product_type_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL AND product_type_id IS NOT NULL",
+      where: "deleted_at IS NULL AND product_type_id IS NOT NULL",
     },
     {
       name: "IDX_order_line_item_variant_id",
       on: ["variant_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
   ])
 

@@ -9,6 +9,7 @@ const fileOptions: FormattingOptionsType = {
     reflectionDescription: `In this document, you’ll learn how to create a File Module Provider and the methods you must implement in its main service.`,
     frontmatterData: {
       slug: "/references/file-provider-module",
+      keywords: ["file", "storage", "provider", "integration"],
     },
     reflectionTitle: {
       fullReplacement: "How to Create a File Module Provider",
@@ -16,6 +17,7 @@ const fileOptions: FormattingOptionsType = {
     shouldIncrementAfterStartSections: true,
     expandMembers: true,
     expandProperties: true,
+    sortMembers: true,
     sections: {
       ...baseSectionsOptions,
       member_declaration_title: false,

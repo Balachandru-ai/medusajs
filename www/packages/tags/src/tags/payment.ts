@@ -4,7 +4,11 @@ export const payment = [
     "path": "https://docs.medusajs.com/user-guide/orders/payments"
   },
   {
-    "title": "Customize the Stripe Integration in the Next.js Starter",
+    "title": "Saved Payment Methods",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods"
+  },
+  {
+    "title": "Customize Stripe in Next.js Starter",
     "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/customize-stripe"
   },
   {
@@ -56,6 +60,10 @@ export const payment = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refreshPaymentCollectionForCartWorkflow"
   },
   {
+    "title": "refundPaymentAndRecreatePaymentSessionWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refundPaymentAndRecreatePaymentSessionWorkflow"
+  },
+  {
     "title": "transferCartCustomerWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/transferCartCustomerWorkflow"
   },
@@ -66,6 +74,14 @@ export const payment = [
   {
     "title": "updateLineItemInCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateLineItemInCartWorkflow"
+  },
+  {
+    "title": "confirmDraftOrderEditWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmDraftOrderEditWorkflow"
+  },
+  {
+    "title": "requestDraftOrderEditWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/requestDraftOrderEditWorkflow"
   },
   {
     "title": "deleteLineItemsWorkflow",
@@ -104,10 +120,6 @@ export const payment = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/markPaymentCollectionAsPaid"
   },
   {
-    "title": "requestOrderEditRequestWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/requestOrderEditRequestWorkflow"
-  },
-  {
     "title": "authorizePaymentSessionStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/authorizePaymentSessionStep"
   },
@@ -130,10 +142,6 @@ export const payment = [
   {
     "title": "capturePaymentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/capturePaymentWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "refundPaymentWorkflow",

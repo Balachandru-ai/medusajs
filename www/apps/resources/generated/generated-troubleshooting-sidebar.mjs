@@ -43,6 +43,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "path": "/troubleshooting/general-errors",
           "title": "General Errors",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/pnpm",
+          "title": "pnpm Errors",
+          "children": []
         }
       ]
     },
@@ -73,10 +81,26 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
-          "type": "link",
-          "path": "/troubleshooting/eaddrinuse",
-          "title": "EADDRINUSE Error",
-          "children": []
+          "type": "sub-category",
+          "title": "API Routes",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "title": "Unrecognized Additional Data",
+              "path": "/troubleshooting/api-routes/additional-data-error",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "title": "Middleware Registration",
+              "path": "/troubleshooting/api-routes/middleware-registration",
+              "children": []
+            }
+          ]
         },
         {
           "loaded": true,
@@ -84,6 +108,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "type": "link",
           "path": "/troubleshooting/database-errors",
           "title": "Database Errors",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/eaddrinuse",
+          "title": "EADDRINUSE Error",
           "children": []
         },
         {
@@ -104,11 +136,43 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/troubleshooting/query/expression-type-error",
+              "title": "Expression Type Error",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/troubleshooting/query/filter-linked",
               "title": "Not Exising Property",
               "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/troubleshooting/query/service-list",
+              "title": "service.list Error",
+              "children": []
             }
           ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/scheduled-job-not-running",
+          "title": "Scheduled Job Not Running",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/test-errors",
+          "title": "Test Errors",
+          "children": []
         },
         {
           "loaded": true,
@@ -138,8 +202,8 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
-          "path": "/troubleshooting/test-errors",
-          "title": "Test Errors",
+          "title": "ValidationError",
+          "path": "/troubleshooting/validation-error",
           "children": []
         }
       ]
@@ -175,6 +239,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "path": "/troubleshooting/s3",
           "title": "S3 Module Provider Errors",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/payment",
+          "title": "Payment Provider Errors",
+          "children": []
         }
       ]
     },
@@ -199,6 +271,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "type": "link",
           "path": "/troubleshooting/medusa-admin/blocked-request",
           "title": "Blocked Request",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/medusa-admin/build-error",
+          "title": "index.html Error",
           "children": []
         }
       ]

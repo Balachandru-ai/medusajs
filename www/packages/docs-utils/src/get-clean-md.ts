@@ -14,12 +14,14 @@ import {
   parseComponentExample,
   parseComponentReference,
   parseDetails,
+  parseEventHeader,
   parseHookValues,
   parseIconSearch,
   parseNote,
   parsePackageInstall,
   parsePrerequisites,
   parseSourceCodeLink,
+  parseSplitList,
   parseTable,
   parseTabs,
   parseTypeList,
@@ -46,6 +48,8 @@ const parsers: Record<string, ComponentParser> = {
   IconSearch: parseIconSearch,
   HookValues: parseHookValues,
   Colors: parseColors,
+  SplitList: parseSplitList,
+  EventHeader: parseEventHeader,
 }
 
 const isComponentAllowed = (nodeName: string): boolean => {

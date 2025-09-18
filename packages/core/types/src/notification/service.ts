@@ -69,6 +69,13 @@ export interface INotificationModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const notification = await notificationModuleService.retrieveNotification(
@@ -105,6 +112,13 @@ export interface INotificationModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the notifications:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const notifications = await notificationModuleService.listNotifications(
@@ -159,6 +173,13 @@ export interface INotificationModuleService extends IModuleService {
    * ```
    *
    * To specify relations that should be retrieved within the notifications:
+   * 
+   * :::note
+   * 
+   * You can only retrieve data models defined in the same module. To retrieve linked data models
+   * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
+   * 
+   * :::
    *
    * ```ts
    * const [notifications, count] =

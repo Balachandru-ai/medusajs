@@ -45,6 +45,7 @@ export type TagOperationParametersProps = {
   topLevel?: boolean
   className?: string
   isRequired?: boolean
+  isExpanded?: boolean
 }
 
 const TagOperationParameters = ({
@@ -52,6 +53,7 @@ const TagOperationParameters = ({
   className,
   topLevel = false,
   isRequired: originalIsRequired = false,
+  isExpanded = false,
 }: TagOperationParametersProps) => {
   const isRequired =
     originalIsRequired || checkRequired(schemaObject, schemaObject.title)
@@ -95,6 +97,7 @@ const TagOperationParameters = ({
           schema={schemaObject}
           topLevel={topLevel}
           isRequired={isRequired}
+          isExpanded={isExpanded}
         />
       )
     }

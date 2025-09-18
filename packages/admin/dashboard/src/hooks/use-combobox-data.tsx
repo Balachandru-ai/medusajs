@@ -13,6 +13,7 @@ type ComboboxExternalData = {
 }
 
 type ComboboxQueryParams = {
+  id?: string
   q?: string
   offset?: number
   limit?: number
@@ -27,6 +28,7 @@ export const useComboboxData = <
   getOptions,
   defaultValue,
   defaultValueKey,
+  selectedValue,
   pageSize = 10,
   enabled = true,
 }: {
@@ -35,6 +37,7 @@ export const useComboboxData = <
   getOptions: (data: TResponse) => { label: string; value: string }[]
   defaultValueKey?: keyof TParams
   defaultValue?: string | string[]
+  selectedValue?: string
   pageSize?: number
   enabled?: boolean
 }) => {
@@ -42,7 +45,7 @@ export const useComboboxData = <
 
   const queryInitialDataBy = defaultValueKey || "id"
   const { data: initialData } = useQuery({
-    queryKey: queryKey,
+    queryKey: [...queryKey, defaultValue].filter(Boolean) as QueryKey,
     queryFn: async () => {
       return queryFn({
         [queryInitialDataBy]: defaultValue,
@@ -52,8 +55,21 @@ export const useComboboxData = <
     enabled: !!defaultValue && enabled,
   })
 
+  // always load selected value in case current data dosn't contain the value
+  const { data: selectedData } = useQuery({
+    queryKey: [...queryKey, selectedValue].filter(Boolean) as QueryKey,
+    queryFn: async () => {
+      return queryFn({
+        id: selectedValue,
+        limit: 1,
+      } as TParams)
+    },
+    enabled: !!selectedValue && enabled,
+  })
+
   const { data, ...rest } = useInfiniteQuery({
-    queryKey: [...queryKey, query],
+    // prevent infinite query response shape beeing stored under regualr list reponse QKs
+    queryKey: [...queryKey, "_cbx_", query].filter(Boolean) as QueryKey,
     queryFn: async ({ pageParam = 0 }) => {
       return await queryFn({
         q: query,
@@ -72,7 +88,7 @@ export const useComboboxData = <
 
   const options = data?.pages.flatMap((page) => getOptions(page)) ?? []
   const defaultOptions = initialData ? getOptions(initialData) : []
-
+  const selectedOptions = selectedData ? getOptions(selectedData) : []
   /**
    * If there are no options and the query is empty, then the combobox should be disabled,
    * as there is no data to search for.
@@ -83,6 +99,14 @@ export const useComboboxData = <
   // make sure that the default value is included in the options
   if (defaultValue && defaultOptions.length && !searchValue) {
     defaultOptions.forEach((option) => {
+      if (!options.find((o) => o.value === option.value)) {
+        options.unshift(option)
+      }
+    })
+  }
+
+  if (selectedValue && selectedOptions.length) {
+    selectedOptions.forEach((option) => {
       if (!options.find((o) => o.value === option.value)) {
         options.unshift(option)
       }

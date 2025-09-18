@@ -12,13 +12,17 @@ interface DataTableFilterMenuProps {
    * The tooltip to show when hovering over the filter menu.
    */
   tooltip?: string
+  /**
+   * Callback when a filter is added
+   */
+  onAddFilter?: (id: string, value: unknown) => void
 }
 
 /**
  * This component adds a filter menu to the data table, allowing users
  * to filter the table's data.
  */
-const DataTableFilterMenu = (props: DataTableFilterMenuProps) => {
+const DataTableFilterMenu = ({ tooltip, onAddFilter }: DataTableFilterMenuProps) => {
   const { instance } = useDataTableContext()
 
   const enabledFilters = Object.keys(instance.getFiltering())
@@ -33,7 +37,10 @@ const DataTableFilterMenu = (props: DataTableFilterMenuProps) => {
     )
   }
 
-  const Wrapper = props.tooltip ? Tooltip : React.Fragment
+  const Wrapper = tooltip ? Tooltip : React.Fragment
+  const wrapperProps = tooltip
+    ? { content: tooltip, hidden: filterOptions.length === 0 }
+    : ({} as any)
 
   if (instance.showSkeleton) {
     return <DataTableFilterMenuSkeleton />
@@ -41,24 +48,52 @@ const DataTableFilterMenu = (props: DataTableFilterMenuProps) => {
 
   return (
     <DropdownMenu>
-      <Wrapper content={props.tooltip} hidden={filterOptions.length === 0}>
+      <Wrapper {...wrapperProps}>
         <DropdownMenu.Trigger asChild disabled={filterOptions.length === 0}>
           <IconButton size="small">
             <Funnel />
           </IconButton>
         </DropdownMenu.Trigger>
       </Wrapper>
-      <DropdownMenu.Content side="bottom">
-        {filterOptions.map((filter) => (
-          <DropdownMenu.Item
-            key={filter.id}
-            onClick={() => {
-              instance.addFilter({ id: filter.id, value: undefined })
-            }}
-          >
-            {filter.label}
-          </DropdownMenu.Item>
-        ))}
+      <DropdownMenu.Content side="bottom" align="start">
+        {filterOptions.map((filter) => {
+          const getDefaultValue = () => {
+            switch (filter.type) {
+              case "select":
+              case "multiselect":
+                return []
+              case "string":
+                return ""
+              case "number":
+                return null
+              case "date":
+                return null
+              case "radio":
+                return null
+              case "custom":
+                return null
+              default:
+                return null
+            }
+          }
+          
+          return (
+            <DropdownMenu.Item
+              key={filter.id}
+              onClick={(e) => {
+                // Prevent any bubbling that might interfere
+                e.stopPropagation()
+                if (onAddFilter) {
+                  onAddFilter(filter.id, getDefaultValue())
+                } else {
+                  instance.addFilter({ id: filter.id, value: getDefaultValue() })
+                }
+              }}
+            >
+              {filter.label}
+            </DropdownMenu.Item>
+          )
+        })}
       </DropdownMenu.Content>
     </DropdownMenu>
   )
@@ -71,4 +106,3 @@ const DataTableFilterMenuSkeleton = () => {
 
 export { DataTableFilterMenu }
 export type { DataTableFilterMenuProps }
-

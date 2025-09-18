@@ -29,10 +29,17 @@
  *   province_code:
  *     type: string
  *     title: province_code
- *     description: The tax region's province code.
+ *     description: The tax region's lower-case ISO 3166-2 province code.
+ *     example: us-ca
+ *     externalDocs:
+ *       url: https://en.wikipedia.org/wiki/ISO_3166-2
+ *       description: Learn more about ISO 3166-2
  *   metadata:
  *     type: object
  *     description: The tax region's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   parent_id:
  *     type: string
  *     title: parent_id

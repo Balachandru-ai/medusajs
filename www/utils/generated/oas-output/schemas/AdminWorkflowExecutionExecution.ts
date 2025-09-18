@@ -27,17 +27,20 @@
  *           type: object
  *           description: The state of the step's invokation function.
  *           x-schemaName: WorkflowExecutionFn
+ *           required:
+ *             - state
+ *             - status
  *           properties:
  *             state:
  *               type: string
  *               description: The invokation step's state.
  *               enum:
+ *                 - failed
  *                 - not_started
  *                 - invoking
  *                 - compensating
  *                 - done
  *                 - reverted
- *                 - failed
  *                 - dormant
  *                 - skipped
  *                 - skipped_failure
@@ -51,9 +54,6 @@
  *                 - waiting_response
  *                 - temp_failure
  *                 - permanent_failure
- *           required:
- *             - state
- *             - status
  *         definition:
  *           type: object
  *           description: The step's definition details.
@@ -74,7 +74,15 @@
  *             continueOnPermanentFailure:
  *               type: boolean
  *               title: continueOnPermanentFailure
- *               description: Whether the step continues executing even if its status is changed to failed.
+ *               description: Whether the workflow should continue executing even if its status is changed to failed.
+ *             skipOnPermanentFailure:
+ *               oneOf:
+ *                 - type: string
+ *                   title: skipOnPermanentFailure
+ *                   description: The ID of the step to skip to in case of a permanent failure.
+ *                 - type: boolean
+ *                   title: skipOnPermanentFailure
+ *                   description: Whether the workflow should skip subsequent steps in case of a permanent failure.
  *             maxRetries:
  *               type: number
  *               title: maxRetries
@@ -100,21 +108,32 @@
  *               type: number
  *               title: timeout
  *               description: The maximum time in seconds to wait for this step to complete. If the step exceeds this time, the step's state is changed to `timeout`, but the step continues executing.
+ *             autoRetry:
+ *               type: boolean
+ *               title: autoRetry
+ *               description: Whether the step should be automatically retried if it fails.
+ *             maxAwaitingRetries:
+ *               type: number
+ *               title: maxAwaitingRetries
+ *               description: The maximum number of times to retry the step while it's in the `waiting_response` state.
  *         compensate:
  *           type: object
  *           description: The state of the step's compensation function.
  *           x-schemaName: WorkflowExecutionFn
+ *           required:
+ *             - state
+ *             - status
  *           properties:
  *             state:
  *               type: string
  *               description: The compensation function's state.
  *               enum:
+ *                 - failed
  *                 - not_started
  *                 - invoking
  *                 - compensating
  *                 - done
  *                 - reverted
- *                 - failed
  *                 - dormant
  *                 - skipped
  *                 - skipped_failure
@@ -128,9 +147,6 @@
  *                 - waiting_response
  *                 - temp_failure
  *                 - permanent_failure
- *           required:
- *             - state
- *             - status
  *         depth:
  *           type: number
  *           title: depth

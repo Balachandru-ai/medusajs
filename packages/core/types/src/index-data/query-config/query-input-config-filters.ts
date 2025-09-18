@@ -19,8 +19,12 @@ type ExtractFiltersOperators<
     ? never
     : Key extends ExcludedProps
     ? never
-    : TypeOnly<T[Key]> extends string | number | boolean | Date
-    ? TypeOnly<T[Key]> | TypeOnly<T[Key]>[] | OperatorMap<TypeOnly<T[Key]>>
+    : TypeOnly<T[Key]> extends string | number | boolean | Date | null
+    ?
+        | TypeOnly<T[Key]>
+        | TypeOnly<T[Key]>[]
+        | OperatorMap<TypeOnly<T[Key]> | TypeOnly<T[Key]>[] | null>
+        | null
     : TypeOnly<T[Key]> extends Array<infer R>
     ? TypeOnly<R> extends { __typename: any }
       ? IndexFilters<Key & string, T, [Key & string, ...Exclusion], Depth[Lim]>

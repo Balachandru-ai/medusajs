@@ -4,7 +4,7 @@ import {
   WorkflowStepHandler,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
-import { isString, OrchestrationUtils } from "@medusajs/utils"
+import { isDefined, isString, OrchestrationUtils } from "@medusajs/utils"
 import { ulid } from "ulid"
 import { resolveValue, StepResponse } from "./helpers"
 import { createStepHandler } from "./helpers/create-step-handler"
@@ -101,6 +101,38 @@ export interface ApplyStepOptions<
  * @param invokeFn
  * @param compensateFn
  */
+// Factory function to create and configure handlers
+function createAndConfigureHandler<
+  TInvokeInput,
+  TStepInput extends {
+    [K in keyof TInvokeInput]: WorkflowData<TInvokeInput[K]>
+  },
+  TInvokeResultOutput,
+  TInvokeResultCompensateInput
+>(
+  context: CreateWorkflowComposerContext,
+  stepName: string,
+  config: TransactionStepsDefinition,
+  input: TStepInput | undefined,
+  invokeFn: InvokeFn<
+    TInvokeInput,
+    TInvokeResultOutput,
+    TInvokeResultCompensateInput
+  >,
+  compensateFn?: CompensateFn<TInvokeResultCompensateInput>
+) {
+  const handler = createStepHandler.bind(context)({
+    stepName,
+    input,
+    invokeFn,
+    compensateFn,
+  })
+
+  wrapAsyncHandler(config, handler)
+
+  return handler
+}
+
 export function applyStep<
   TInvokeInput,
   TStepInput extends {
@@ -127,14 +159,14 @@ export function applyStep<
       )
     }
 
-    const handler = createStepHandler.bind(this)({
+    const handler = createAndConfigureHandler(
+      this,
       stepName,
+      stepConfig,
       input,
       invokeFn,
-      compensateFn,
-    })
-
-    wrapAsyncHandler(stepConfig, handler)
+      compensateFn
+    )
 
     stepConfig.uuid = ulid()
     stepConfig.noCompensation = !compensateFn
@@ -143,9 +175,9 @@ export function applyStep<
 
     this.isAsync ||= !!(stepConfig.async || stepConfig.compensateAsync)
 
-    if (!this.handlers.has(stepName)) {
-      this.handlers.set(stepName, handler)
-    }
+    this.overriddenHandler.set(stepName, this.handlers.get(stepName)!)
+
+    this.handlers.set(stepName, handler)
 
     const ret = {
       __type: OrchestrationUtils.SymbolWorkflowStep,
@@ -173,21 +205,32 @@ export function applyStep<
         ...localConfig,
       }
 
-      delete localConfig.name
+      if (isDefined(newConfig.nested)) {
+        newConfig.nested ||= newConfig.async
+      }
 
-      const handler = createStepHandler.bind(this)({
-        stepName: newStepName,
+      delete newConfig.name
+
+      const handler = createAndConfigureHandler(
+        this,
+        newStepName,
+        newConfig,
         input,
         invokeFn,
-        compensateFn,
-      })
+        compensateFn
+      )
 
-      wrapAsyncHandler(stepConfig, handler)
+      this.handlers.set(stepName, this.overriddenHandler.get(stepName)!)
+      this.overriddenHandler.delete(stepName)
 
       this.handlers.set(newStepName, handler)
 
       this.flow.replaceAction(stepConfig.uuid!, newStepName, newConfig)
       this.isAsync ||= !!(newConfig.async || newConfig.compensateAsync)
+
+      const stepCondition = this.stepConditions_[stepName]
+      delete this.stepConditions_[stepName]
+      this.stepConditions_[newStepName] = stepCondition
 
       ret.__step__ = newStepName
       WorkflowManager.update(this.workflowId, this.flow, this.handlers)
@@ -211,6 +254,11 @@ export function applyStep<
     ): WorkflowData<TInvokeResultOutput> => {
       if (typeof condition !== "function") {
         throw new Error("Condition must be a function")
+      }
+
+      this.stepConditions_[ret.__step__] = {
+        condition,
+        input,
       }
 
       wrapConditionalStep(input, condition, handler)
@@ -293,7 +341,7 @@ function wrapAsyncHandler(
  * @param condition
  * @param handle
  */
-function wrapConditionalStep(
+export function wrapConditionalStep(
   input: any,
   condition: (...args: any) => boolean | WorkflowData,
   handle: {
@@ -303,7 +351,11 @@ function wrapConditionalStep(
 ) {
   const originalInvoke = handle.invoke
   handle.invoke = async (stepArguments: WorkflowStepHandlerArguments) => {
-    const args = await resolveValue(input, stepArguments)
+    let args = resolveValue(input, stepArguments)
+    if (args instanceof Promise) {
+      args = await args
+    }
+
     const canContinue = await condition(args, stepArguments)
 
     if (stepArguments.step.definition?.async) {

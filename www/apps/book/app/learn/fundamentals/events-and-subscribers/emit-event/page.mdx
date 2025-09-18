@@ -162,6 +162,9 @@ The method accepts an object having the following properties:
 
 3. By default, the Event Module's service isn't injected into your module's container. To add it to the container, pass it in the module's registration object in `medusa-config.ts` in the `dependencies` property:
 
+<CodeTabs group="module-deps">
+  <CodeTab label="Module Registration" value="module_registration">
+
 export const depsHighlight = [
   ["8", "dependencies", "An array of module registration names to inject into the Module's container."],
 ]
@@ -182,9 +185,47 @@ module.exports = defineConfig({
 })
 ```
 
+  </CodeTab>
+  <CodeTab label="Module Provider Registration" value="module_registration_factory">
+
+export const providerHighlights = [
+  ["8", "dependencies", "An array of module registration names to inject into the module and provider's container."],
+]
+
+```ts title="medusa-config.ts" highlights={depsHighlight}
+import { Modules } from "@medusajs/framework/utils"
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      dependencies: [
+        Modules.EVENT_BUS,
+      ],
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/my-provider",
+            id: "my-provider",
+            options: {
+              // ...
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+  </CodeTab>
+</CodeTabs>
+
+
+
 The `dependencies` property accepts an array of module registration keys. The specified modules' main services are injected into the module's container.
 
-That's how you can resolve it in your module's main service's constructor.
+If a module has providers, the dependencies are also injected into the providers' containers.
 
 ### Test it Out
 

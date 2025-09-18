@@ -58,9 +58,9 @@ export default function RootLayout({
       gaId={process.env.NEXT_PUBLIC_GA_ID}
     >
       <WideLayout
-        showToc={false}
         showBreadcrumbs={false}
         ProvidersComponent={Providers}
+        showContentMenu={false}
       >
         {children}
       </WideLayout>

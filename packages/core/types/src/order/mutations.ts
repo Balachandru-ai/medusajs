@@ -34,52 +34,52 @@ export interface UpsertOrderAddressDTO {
   /**
    * The company name.
    */
-  company?: string
+  company?: string | null
 
   /**
    * The first name of the customer.
    */
-  first_name?: string
+  first_name?: string | null
 
   /**
    * The last name of the customer.
    */
-  last_name?: string
+  last_name?: string | null
 
   /**
    * The address 1 of the address.
    */
-  address_1?: string
+  address_1?: string | null
 
   /**
    * The address 2 of the address.
    */
-  address_2?: string
+  address_2?: string | null
 
   /**
    * The city of the address.
    */
-  city?: string
+  city?: string | null
 
   /**
    * The country code of the address.
    */
-  country_code?: string
+  country_code?: string | null
 
   /**
-   * The province of the address.
+   * The lower-case [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) province of the address.
    */
-  province?: string
+  province?: string | null
 
   /**
    * The postal code of the address.
    */
-  postal_code?: string
+  postal_code?: string | null
 
   /**
    * The phone of the address.
    */
-  phone?: string
+  phone?: string | null
 
   /**
    * Holds custom data in key-value pairs.
@@ -296,6 +296,11 @@ export interface CreateOrderAdjustmentDTO {
    * The associated provider's ID.
    */
   provider_id?: string
+
+  /**
+   * Whether the adjustment is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
 }
 
 /**
@@ -1573,7 +1578,7 @@ export interface CreateOrderReturnDTO extends BaseOrderBundledActionsDTO {
   /**
    * The ID of the location to return the items to.
    */
-  location_id?: string
+  location_id?: string | null
 
   /**
    * The items of the return.
@@ -2297,12 +2302,12 @@ export interface CreateOrderCreditLineDTO {
   /**
    * The reference model name that the credit line is generated from
    */
-  reference: string | null
+  reference?: string | null
 
   /**
    * The reference model id that the credit line is generated from
    */
-  reference_id: string | null
+  reference_id?: string | null
 
   /**
    * The metadata of the order detail

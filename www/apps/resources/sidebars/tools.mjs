@@ -111,7 +111,7 @@ export const toolsSidebar = [
               {
                 type: "link",
                 path: "/nextjs-starter/guides/customize-stripe",
-                title: "Customize Stripe Integration",
+                title: "Use Stripe's Payment Element",
               },
               {
                 type: "link",
@@ -119,6 +119,13 @@ export const toolsSidebar = [
                 title: "Revalidate Cache",
               },
             ],
+          },
+          {
+            type: "category",
+            title: "Tutorials",
+            autogenerate_tags: "nextjs+tutorial",
+            autogenerate_as_ref: true,
+            sort_sidebar: "alphabetize",
           },
         ],
       },

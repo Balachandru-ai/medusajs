@@ -7,7 +7,7 @@
  *   Generate a reset password token for an admin user. This API route doesn't reset the admin's password or send them the reset instructions in a notification.
  * 
  * 
- *   Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password), then send the user a notification. The notification is sent using a [Notification Module Provider](https://docs.medusajs.com/resources/architectural-modules/notification), and it should have the URL to reset the password in the Medusa Admin dashboard, such as `http://localhost:9000/app/reset-password?token=123`.
+ *   Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password), then send the user a notification. The notification is sent using a [Notification Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/notification), and it should have the URL to reset the password in the Medusa Admin dashboard, such as `http://localhost:9000/app/reset-password?token=123`.
  * 
  * 
  *    Use the generated token to update the user's password using the [Reset Password API route](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerupdate).
@@ -32,6 +32,29 @@
  *         description: The user's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the user's email.
  *         example: "admin@medusa-test.com"
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.auth.resetPassword(
+ *         "user",
+ *         "emailpass",
+ *         {
+ *           identifier: "user@gmail.com"
+ *         }
+ *       )
+ *       .then(() => {
+ *         // user receives token
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source:  |-
@@ -58,6 +81,19 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: generateResetPasswordTokenWorkflow
- * 
+ * x-events:
+ *   - name: auth.password_reset
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         entity_id, // The identifier of the user or customer. For example, an email address.
+ *         actor_type, // The type of actor. For example, "customer", "user", or custom.
+ *         token, // The generated token.
+ *       }
+ *       ```
+ *     description: |-
+ *       Emitted when a reset password token is generated. You can listen to this event
+ *       to send a reset password email to the user or customer, for example.
+ *     deprecated: false
 */
 

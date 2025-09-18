@@ -1,15 +1,27 @@
 export const notification = [
   {
-    "title": "Send Notification",
-    "path": "https://docs.medusajs.com/resources/architectural-modules/notification/send-notification"
+    "title": "Reset Password Email",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
   },
   {
-    "title": "Handle Password Reset Event",
-    "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password"
+    "title": "Invite User Email",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber"
   },
   {
     "title": "Abandoned Cart Notification",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
+  },
+  {
+    "title": "Send Notification",
+    "path": "https://docs.medusajs.com/resources/infrastructure-modules/notification/send-notification"
+  },
+  {
+    "title": "Integrate Mailchimp",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
+  },
+  {
+    "title": "Integrate Slack",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
   },
   {
     "title": "notifyOnFailureStep",
@@ -22,6 +34,10 @@ export const notification = [
   {
     "title": "exportProductsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/exportProductsWorkflow"
+  },
+  {
+    "title": "importProductsAsChunksWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/importProductsAsChunksWorkflow"
   },
   {
     "title": "importProductsWorkflow",

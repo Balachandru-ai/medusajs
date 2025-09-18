@@ -1,13 +1,19 @@
-import { ContainerRegistrationKeys, ModulesSdkUtils } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  ModulesSdkUtils,
+  retryExecution,
+  stringifyCircular,
+} from "@medusajs/utils"
 import { asValue } from "awilix"
-import { container } from "../container"
 import { configManager } from "../config"
+import { container } from "../container"
+import { logger } from "../logger"
 
 /**
  * Initialize a knex connection that can then be shared to any resources if needed
  */
-export function pgConnectionLoader(): ReturnType<
-  typeof ModulesSdkUtils.createPgConnection
+export async function pgConnectionLoader(): Promise<
+  ReturnType<typeof ModulesSdkUtils.createPgConnection>
 > {
   if (container.hasRegistration(ContainerRegistrationKeys.PG_CONNECTION)) {
     return container.resolve(
@@ -44,6 +50,31 @@ export function pgConnectionLoader(): ReturnType<
       createRetryIntervalMillis,
     },
   })
+
+  const maxRetries = process.env.__MEDUSA_DB_CONNECTION_MAX_RETRIES
+    ? parseInt(process.env.__MEDUSA_DB_CONNECTION_MAX_RETRIES)
+    : 5
+
+  const retryDelay = process.env.__MEDUSA_DB_CONNECTION_RETRY_DELAY
+    ? parseInt(process.env.__MEDUSA_DB_CONNECTION_RETRY_DELAY)
+    : 1000
+
+  await retryExecution(
+    async () => {
+      await pgConnection.raw("SELECT 1")
+    },
+    {
+      maxRetries,
+      retryDelay,
+      onRetry: (error) => {
+        logger.warn(
+          `Pg connection failed to connect to the database. Retrying...\n${stringifyCircular(
+            error
+          )}`
+        )
+      },
+    }
+  )
 
   container.register(
     ContainerRegistrationKeys.PG_CONNECTION,

@@ -1,3 +1,12 @@
+---
+products:
+  - product
+  - inventory
+  - order
+  - sales channel
+  - payment
+---
+
 import { AcademicCapSolid } from "@medusajs/icons"
 
 export const metadata = {
@@ -24,9 +33,9 @@ Medusa's modular architecture solves these challenges. Any frontend can utilize 
 
 ## Freedom in Choosing Your POS Tech Stack
 
-When you build a POS system, you must choose which programming framework, language, or tool you want to use.
+When you build a POS system, you choose the programming language or tool you want to use.
 
-Medusa's modular architecture removes any restrictions you may have while making this choice. Any client or front end can connect to the Medusa application using its headless REST APIs.
+Medusa's modular architecture removes any restrictions you may have while making this choice. Any client or frontend can connect to the Medusa application using its headless REST APIs.
 
 ![POS Tech Stack](https://res.cloudinary.com/dza7lstvk/image/upload/v1709034046/Medusa%20Book/pos-tech-stack_fy8uiu.jpg)
 
@@ -43,7 +52,7 @@ Medusa's modular architecture removes any restrictions you may have while making
 
 POS systems make the checkout process smoother by integrating a barcode scanner. Merchants scan a product by its barcode to check its details or add it to the customer's purchase.
 
-The Product Module's `ProductVariant` data model has the properties to implement this integration, mainly the `barcode` attribute. Other notable properties include `ean`, `upc`, and `hs_code`, among others.
+The Product Module's [ProductVariant](/references/product/models/ProductVariant) data model has the properties to implement this integration, mainly the `barcode` attribute. Other notable properties include `ean`, `upc`, and `hs_code`, among others.
 
 To search through product variants by their barcode, create a custom API Route and call it within your POS.
 
@@ -79,7 +88,9 @@ Medusa's [Inventory](../../commerce-modules/inventory/page.mdx), [Stock Location
 
 Merchants can create a sales channel for their online store and a sales channel for their POS system, then manage the inventory quantity of product variants in each channel.
 
-This also opens the door for other business opportunities, such as an endless aisle experience. Suppose a product isn't available in-store but is available in different warehouses. You can allow customers to purchase that item in-store and deliver it to their address.
+This also opens the door for other business opportunities, such as an endless aisle experience.
+
+Suppose a product isn't available in-store but is available in different warehouses. You can allow customers to purchase that item in-store and deliver it to their address.
 
 <CardList
   items={[
@@ -117,7 +128,14 @@ In addition, using Medusa's [Promotion Module](../../commerce-modules/promotion/
 You can also create custom modules to provide features for a better customer experience, such as a rewards system or loyalty points.
 
 <CardList
+  itemsPerRow={2}
   items={[
+    {
+      href: "/how-to-tutorials/tutorials/loyalty-points",
+      title: "Loyalty Points Tutorial",
+      text: "Learn how to create a loyalty points system.",
+      icon: AcademicCapSolid,
+    },
     {
       href: "/commerce-modules/customer",
       title: "Customer Module",
@@ -130,15 +148,13 @@ You can also create custom modules to provide features for a better customer exp
       text: "Learn about the Promotion Module.",
       icon: AcademicCapSolid,
     },
+    {
+      href: "!docs!/learn/fundamentals/modules",
+      title: "Create a Module",
+      text: "Learn how to create a module.",
+      icon: AcademicCapSolid,
+    }
   ]}
-/>
-
-<Card
-  href="!docs!/learn/fundamentals/modules"
-  title="Create a Module"
-  text="Learn how to create a module."
-  icon={AcademicCapSolid}
-  className="mt-1"
 />
 
 ---
@@ -147,7 +163,7 @@ You can also create custom modules to provide features for a better customer exp
 
 Medusa's architecture allows you to integrate any third-party payment provider for your POS and online storefront. For example, you can integrate [Stripe Terminal](https://stripe.com/terminal) to accept in-store payments.
 
-Once you accept the payment, place an order in the POS system using the [Draft Order APIs](!api!/admin#draft-orders). Draft orders provide similar features to an online checkout experience, including discounts, payment processing, and more.
+Once you accept the payment, you can place an order in the POS system using the [Draft Order APIs](!api!/admin#draft-orders). Draft orders provide similar features to an online checkout experience, including discounts, payment processing, and more.
 
 Then, merchants can view all orders coming from different sales channels using the Medusa Admin. This keeps logistics and order handling consistent between online and in-store customers.
 

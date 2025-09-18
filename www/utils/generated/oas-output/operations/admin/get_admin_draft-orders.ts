@@ -1421,11 +1421,36 @@
  *             type: string
  *             title: customer_id
  *             description: The customer id's details.
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.draftOrder.list()
+ *       .then(({ draft_orders, count, limit, offset }) => {
+ *         console.log(draft_orders)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
@@ -1453,6 +1478,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: getOrdersListWorkflow
+ * x-events: []
  * 
 */
 

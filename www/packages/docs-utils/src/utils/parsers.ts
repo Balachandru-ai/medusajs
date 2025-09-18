@@ -886,6 +886,119 @@ export const parseColors: ComponentParser<{
   })
 }
 
+export const parseSplitList: ComponentParser = (
+  node: UnistNodeWithData,
+  index: number,
+  parent: UnistTree
+): VisitorResult => {
+  const items = node.attributes?.find((attr) => attr.name === "items")
+
+  if (!items || typeof items.value === "string" || !items.value.data?.estree) {
+    return
+  }
+
+  const itemsJsVar = estreeToJs(items.value.data.estree)
+
+  if (!itemsJsVar || !Array.isArray(itemsJsVar)) {
+    return
+  }
+
+  const listItems = itemsJsVar
+    .map((item) => {
+      if (
+        !isExpressionJsVarObj(item) ||
+        !("title" in item) ||
+        !("link" in item) ||
+        !isExpressionJsVarLiteral(item.title) ||
+        !isExpressionJsVarLiteral(item.link)
+      ) {
+        return null
+      }
+      const description = isExpressionJsVarLiteral(item.description)
+        ? (item.description.data as string)
+        : ""
+      return {
+        type: "listItem",
+        children: [
+          {
+            type: "paragraph",
+            children: [
+              {
+                type: "link",
+                url: `${item.link.data}`,
+                children: [
+                  {
+                    type: "text",
+                    value: `${item.title.data}${description ? `: ${description}` : ""}`,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }
+    })
+    .filter(Boolean) as UnistNode[]
+  if (!listItems.length) {
+    return
+  }
+  parent?.children.splice(index, 1, {
+    type: "list",
+    ordered: false,
+    spread: false,
+    children: listItems,
+  })
+  return [SKIP, index]
+}
+
+export const parseEventHeader: ComponentParser = (
+  node: UnistNodeWithData,
+  index: number,
+  parent: UnistTree
+): VisitorResult => {
+  const headerContent = node.attributes?.find(
+    (attr) => attr.name === "headerProps"
+  )
+  const headerLvl = node.attributes?.find((attr) => attr.name === "headerLvl")
+
+  if (
+    !headerContent ||
+    typeof headerContent.value === "string" ||
+    !headerContent.value.data?.estree ||
+    !headerLvl ||
+    typeof headerLvl.value !== "string" ||
+    !headerLvl.value
+  ) {
+    return
+  }
+
+  const headerPropsJsVar = estreeToJs(headerContent.value.data.estree)
+
+  if (
+    !isExpressionJsVarObj(headerPropsJsVar) ||
+    !("children" in headerPropsJsVar) ||
+    !isExpressionJsVarLiteral(headerPropsJsVar.children)
+  ) {
+    return
+  }
+
+  const headerLevel = parseInt(headerLvl.value, 10)
+  const headerChildren = headerPropsJsVar.children.data as string
+
+  const headerChildrenNode = {
+    type: "text",
+    value: headerChildren,
+  }
+  const headerNode = {
+    type: "heading",
+    depth: headerLevel,
+    children: [headerChildrenNode],
+  }
+
+  parent?.children.splice(index, 1, headerNode)
+  return [SKIP, index]
+}
+
 /**
  * Helpers
  */
@@ -899,11 +1012,13 @@ const getTextNode = (node: UnistNode): UnistNode | undefined => {
       textNode = child
     } else if (child.type === "paragraph") {
       textNode = getTextNode(child)
+    } else if (child.type === "link") {
+      textNode = getTextNode(child)
     } else if (child.value) {
       textNode = child
     }
 
-    return false
+    return textNode !== undefined
   })
 
   return textNode

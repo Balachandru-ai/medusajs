@@ -539,18 +539,22 @@
     "fields": {
       "title": {
         "label": "Title",
-        "hint": "Give your product a short and clear title.<0/>50-60 characters is the recommended length for search engines."
+        "hint": "Give your product a short and clear title.<0/>50-60 characters is the recommended length for search engines.",
+        "placeholder": "Winter jacket"
       },
       "subtitle": {
-        "label": "Subtitle"
+        "label": "Subtitle",
+        "placeholder": "Warm and cosy"
       },
       "handle": {
         "label": "Handle",
-        "tooltip": "The handle is used to reference the product in your storefront. If not specified, the handle will be generated from the product title."
+        "tooltip": "The handle is used to reference the product in your storefront. If not specified, the handle will be generated from the product title.",
+        "placeholder": "winter-jacket"
       },
       "description": {
         "label": "Description",
-        "hint": "Give your product a short and clear description.<0/>120-160 characters is the recommended length for search engines."
+        "hint": "Give your product a short and clear description.<0/>120-160 characters is the recommended length for search engines.",
+        "placeholder": "A warm and cozy jacket"
       },
       "discountable": {
         "label": "Discountable",
@@ -814,6 +818,7 @@
     "manageLocationQuantity": "Manage location quantity",
     "deleteWarning": "You are about to delete an inventory item. This action cannot be undone.",
     "editItemDetails": "Edit item details",
+    "quantityAcrossLocations": "{{quantity}} across {{locations}} locations",
     "create": {
       "title": "Create Inventory Item",
       "details": "Details",
@@ -1005,6 +1010,31 @@
     }
   },
   "orders": {
+    "giftCardsStoreCreditLines": "Gift cards & credit lines",
+    "creditLines": {
+      "title": "Credit lines",
+      "total": "Sum of all credit lines",
+      "creditOrDebit": "Credit / Debit",
+      "createCreditLine": "Create credit line",
+      "createCreditLineSuccess": "Credit line created successfully",
+      "createCreditLineError": "Error creating credit line",
+      "createCreditLineDescription": "Create a credit line for amount {{amount}}",
+      "operation": "Operation",
+      "credit": "Credit",
+      "creditDescription": "Adds a positive sum to the order",
+      "debit": "Debit",
+      "debitDescription": "Subtracts a negative sum from the order"
+    },
+    "balanceSettlement": {
+      "title": "Balance settlement",
+      "settlementType": "Settlement type",
+      "settlementTypes": {
+        "paymentMethod": "Payment method",
+        "paymentMethodDescription": "Refund amount to the payment method",
+        "creditLine": "Store credit",
+        "creditLineDescription": "Refund amount as store credit"
+      }
+    },
     "domain": "Orders",
     "claim": "Claim",
     "exchange": "Exchange",
@@ -1037,7 +1067,8 @@
       "itemSubtotal": "Item Subtotal",
       "shippingSubtotal": "Shipping Subtotal",
       "discountSubtotal": "Discount Subtotal",
-      "taxTotal": "Tax Total"
+      "taxTotal": "Tax Total",
+      "totalAfterDiscount": "Total After Discount"
     },
     "transfer": {
       "title": "Transfer ownership",
@@ -1051,6 +1082,7 @@
       "title": "Payments",
       "isReadyToBeCaptured": "Payment <0/> is ready to be captured.",
       "totalPaidByCustomer": "Total paid by customer",
+      "totalStoreCreditRefunds": "Total store credit refunds",
       "capture": "Capture payment",
       "capture_short": "Capture",
       "refund": "Refund",
@@ -1274,7 +1306,8 @@
       "consistsOf": "Consists of {{num}}x inventory items",
       "requires": "Requires {{num}} per variant",
       "toast": {
-        "created": "Items successfully allocated"
+        "created": "Items successfully allocated",
+        "error": "Failed to allocate following items: {{items}}"
       },
       "error": {
         "quantityNotAllocated": "There are unallocated items."
@@ -1535,6 +1568,10 @@
       "shippingProfiles": {
         "label": "Shipping Profiles",
         "description": "Group products by shipping requirements"
+      },
+      "shippingOptionTypes": {
+        "label": "Shipping Option Types",
+        "description": "Group shipping options by types"
       }
     },
     "salesChannels": {
@@ -1652,6 +1689,7 @@
         },
         "provider": "Fulfillment provider",
         "profile": "Shipping profile",
+        "type": "Shipping option type",
         "fulfillmentOption": "Fulfillment option"
       }
     },
@@ -1713,10 +1751,15 @@
       "header": "Create Tax Region",
       "hint": "Create a new tax region to define tax rates for a specific country.",
       "errors": {
-        "rateIsRequired": "Tax rate is required when creating a default tax rate.",
-        "nameIsRequired": "Name is required when creating a default tax rate."
+        "missingProvider": "Provider is required when creating a tax region.",
+        "missingCountry": "Country is required when creating a tax region."
       },
       "successToast": "The tax region was successfully created."
+    },
+    "edit": {
+      "header": "Edit Tax Region",
+      "hint": "Edit the tax region details.",
+      "successToast": "The tax region was successfully updated."
     },
     "province": {
       "header": "Provinces",
@@ -1724,6 +1767,9 @@
         "header": "Create Province Tax Region",
         "hint": "Create a new tax region to define tax rates for a specific province."
       }
+    },
+    "provider": {
+      "header": "Tax Provider"
     },
     "state": {
       "header": "States",
@@ -1850,6 +1896,7 @@
       },
       "taxRate": "Tax rate",
       "taxCode": "Tax code",
+      "taxProvider": "Tax provider",
       "targets": {
         "label": "Targets",
         "hint": "Select the targets that this tax rate will apply to.",
@@ -1858,7 +1905,8 @@
           "productCollection": "Product collections",
           "productTag": "Product tags",
           "productType": "Product types",
-          "customerGroup": "Customer groups"
+          "customerGroup": "Customer groups",
+          "shippingOption": "Shipping options"
         },
         "operators": {
           "in": "in",
@@ -1870,14 +1918,16 @@
           "productCollection": "Search for product collections",
           "productTag": "Search for product tags",
           "productType": "Search for product types",
-          "customerGroup": "Search for customer groups"
+          "customerGroup": "Search for customer groups",
+          "shippingOption": "Search for shipping options"
         },
         "tags": {
           "product": "Product",
           "productCollection": "Product collection",
           "productTag": "Product tag",
           "productType": "Product type",
-          "customerGroup": "Customer group"
+          "customerGroup": "Customer group",
+          "shippingOption": "Shipping option"
         },
         "modal": {
           "header": "Add targets"
@@ -1955,6 +2005,7 @@
       "allocation": "Allocation",
       "addCondition": "Add condition",
       "clearAll": "Clear all",
+      "taxInclusive": "Tax Inclusive",
       "amount": {
         "tooltip": "Select the currency code to enable setting the amount"
       },
@@ -1964,8 +2015,18 @@
           "description": "Which customer is allowed to use the promotion code? Promotion code can be used by all customers if left untouched."
         },
         "target-rules": {
-          "title": "What items will the promotion be applied to?",
-          "description": "The promotion will be applied to items that match the following conditions."
+          "order": {
+            "title": "What items will the promotion be applied to?",
+            "description": "The promotion will be applied to items that match the following conditions."
+          },
+          "shipping_methods": {
+            "title": "What shipping methods will the promotion be applied to?",
+            "description": "The promotion will be applied to shipping methods that match the following conditions."
+          },
+          "items": {
+            "title": "What items will the promotion be applied to?",
+            "description": "The promotion will be applied to items that match the following conditions."
+          }
         },
         "buy-rules": {
           "title": "What needs to be in the cart to unlock the promotion?",
@@ -2031,6 +2092,10 @@
           "description": "Proceed without associating promotion with campaign"
         }
       },
+      "taxInclusive": {
+        "title": "Does promotion include taxes?",
+        "description": "Enable this field to apply the promotion after taxes"
+      },
       "status": {
         "label": "Status",
         "draft": {
@@ -2086,7 +2151,8 @@
         "description": "The code your customers will enter during checkout."
       },
       "value": {
-        "title": "Promotion Value"
+        "title": "Promotion Value",
+        "invalid": "Invalid promotion value"
       },
       "value_type": {
         "fixed": {
@@ -2466,7 +2532,6 @@
       "createTaxRate": "Create Tax Rate",
       "createTaxRateHint": "Create a new tax rate for the region.",
       "deleteRateDescription": "You are about to delete the tax rate {{name}}. This action cannot be undone.",
-      "editTaxRate": "Edit Tax Rate",
       "editRateAction": "Edit rate",
       "editOverridesAction": "Edit overrides",
       "editOverridesTitle": "Edit Tax Rate Overrides",
@@ -2653,7 +2718,10 @@
         "placeholder": "wrong_size",
         "tooltip": "The value should be a unique identifier for the return reason."
       },
-      "label": { "label": "Label", "placeholder": "Wrong size" },
+      "label": {
+        "label": "Label",
+        "placeholder": "Wrong size"
+      },
       "description": {
         "label": "Description",
         "placeholder": "Customer received the wrong size"
@@ -2752,6 +2820,28 @@
       }
     }
   },
+  "shippingOptionTypes": {
+    "domain": "Shipping Option Types",
+    "subtitle": "Organize your shipping options into types.",
+    "create": {
+      "header": "Create Shipping Option Type",
+      "hint": "Create a new shipping option type to categorize your shipping options.",
+      "successToast": "Shipping option type {{label}} was successfully created."
+    },
+    "edit": {
+      "header": "Edit Shipping Option Type",
+      "successToast": "Shipping option type {{label}} was successfully updated."
+    },
+    "delete": {
+      "confirmation": "You are about to delete the shipping option type \"{{label}}\". This action cannot be undone.",
+      "successToast": "Shipping option type \"{{label}}\" was successfully deleted."
+    },
+    "fields": {
+      "label": "Label",
+      "code": "Code",
+      "description": "Description"
+    }
+  },
   "productTypes": {
     "domain": "Product Types",
     "subtitle": "Organize your products into types.",
@@ -2825,10 +2915,14 @@
     "from": "From",
     "to": "To",
     "beaware": "Be aware",
-    "loading": "Loading"
+    "loading": "Loading",
+    "selectValue": "Select Value",
+    "selectValues": "Select Values"
   },
   "fields": {
     "amount": "Amount",
+    "reference": "Reference",
+    "reference_id": "Reference ID",
     "refundAmount": "Refund amount",
     "name": "Name",
     "default": "Default",
@@ -2851,6 +2945,8 @@
     "categories": "Categories",
     "shippingMethod": "Shipping method",
     "configurations": "Configurations",
+    "enabledInStore": "Enabled in store",
+    "isReturn": "Is return",
     "conditions": "Conditions",
     "category": "Category",
     "collection": "Collection",
@@ -2886,6 +2982,7 @@
     "minutes": "Minutes",
     "totalRedemptions": "Total Redemptions",
     "countries": "Countries",
+    "serviceZone": "Service Zone",
     "paymentProviders": "Payment Providers",
     "refundReason": "Refund Reason",
     "fulfillmentProviders": "Fulfillment Providers",
@@ -2914,7 +3011,8 @@
     "orders": "Orders",
     "account": "Account",
     "total": "Order Total",
-    "paidTotal": "Total captured",
+    "paidTotal": "Paid Total",
+    "creditTotal": "Credit Lines Total",
     "totalExclTax": "Total excl. tax",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
@@ -3000,5 +3098,25 @@
     "minutes_other": "Minutes",
     "seconds_one": "Second",
     "seconds_other": "Seconds"
+  },
+  "views": {
+    "save": "Save",
+    "saveAsNew": "Save as new view",
+    "updateDefaultForEveryone": "Update default for everyone",
+    "updateViewName": "Update view",
+    "prompts": {
+      "updateDefault": {
+        "title": "Update default view",
+        "description": "This will update the default view for all users. Are you sure?",
+        "confirmText": "Update for everyone",
+        "cancelText": "Cancel"
+      },
+      "updateView": {
+        "title": "Update view",
+        "description": "Are you sure you want to update \"{{name}}\"?",
+        "confirmText": "Update",
+        "cancelText": "Cancel"
+      }
+    }
   }
 }

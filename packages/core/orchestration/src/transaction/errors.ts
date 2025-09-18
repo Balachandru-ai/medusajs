@@ -92,4 +92,41 @@ export class SkipExecutionError extends Error {
       error?.name === "SkipExecutionError"
     )
   }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipExecutionError"
+  }
+}
+
+export class SkipStepAlreadyFinishedError extends Error {
+  static isSkipStepAlreadyFinishedError(
+    error: Error
+  ): error is SkipStepAlreadyFinishedError {
+    return (
+      error instanceof SkipStepAlreadyFinishedError ||
+      error?.name === "SkipStepAlreadyFinishedError"
+    )
+  }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipStepAlreadyFinishedError"
+  }
+}
+
+export class SkipCancelledExecutionError extends Error {
+  static isSkipCancelledExecutionError(
+    error: Error
+  ): error is SkipCancelledExecutionError {
+    return (
+      error instanceof SkipCancelledExecutionError ||
+      error?.name === "SkipCancelledExecutionError"
+    )
+  }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipCancelledExecutionError"
+  }
 }
