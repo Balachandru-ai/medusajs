@@ -252,7 +252,7 @@ export class Client {
           )
           const stringifiedQuery = stringify(
             { ...params, ...init.query },
-            { skipNulls: true, arrayFormat: "brackets" }
+            { skipNulls: true }
           )
           normalizedInput.search = stringifiedQuery
         }
