@@ -43,15 +43,16 @@ export function calculateAdjustmentTotal({
   }
 
   const quantity = item?.quantity || MathBN.convert(1)
-  const adjustmentPerItem = MathBN.eq(quantity, 0)
-    ? 0
-    : MathBN.div(adjustmentsTotal, quantity)
-  const adjustmentSubtotalPerItem = MathBN.eq(quantity, 0)
-    ? 0
-    : MathBN.div(adjustmentsSubtotal, quantity)
-  const adjustmentTaxTotalPerItem = MathBN.eq(quantity, 0)
-    ? 0
-    : MathBN.div(adjustmentsTaxTotal, quantity)
+
+  let adjustmentPerItem = MathBN.convert(0)
+  let adjustmentSubtotalPerItem = MathBN.convert(0)
+  let adjustmentTaxTotalPerItem = MathBN.convert(0)
+
+  if (!MathBN.eq(quantity, 0)) {
+    adjustmentPerItem = MathBN.div(adjustmentsTotal, quantity)
+    adjustmentSubtotalPerItem = MathBN.div(adjustmentsSubtotal, quantity)
+    adjustmentTaxTotalPerItem = MathBN.div(adjustmentsTaxTotal, quantity)
+  }
 
   return {
     adjustmentsTotal,
