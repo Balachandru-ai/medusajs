@@ -224,7 +224,7 @@ export class OrderChangeProcessing {
     return orderSummary
   }
 
-  // Calculate the order summary from a calculated order including taxes
+  // Returns the order summary from a calculated order including taxes
   public getSummaryFromOrder(order: OrderDTO): OrderSummaryDTO {
     const summary_ = this.summary
     const total = order.total
@@ -240,15 +240,6 @@ export class OrderChangeProcessing {
     } as any
 
     orderSummary.accounting_total = orderSummary.current_order_total
-
-    orderSummary.pending_difference = MathBN.sub(
-      orderSummary.current_order_total,
-      orderSummary.transaction_total
-    )
-
-    orderSummary.pending_difference = new BigNumber(
-      orderSummary.pending_difference
-    )
 
     return orderSummary
   }
