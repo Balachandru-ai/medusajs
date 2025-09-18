@@ -255,7 +255,9 @@ export const getTypeInfoFromGraphQLType = (
   }
 }
 
-export const DEFAULT_COLUMN_ORDERS: Record<string, Record<string, number>> = {
+type Entities = keyof typeof ENTITY_MAPPINGS
+
+export const DEFAULT_COLUMN_ORDERS: Record<Entities, Record<string, number>> = {
   orders: {
     display_id: 100,
     created_at: 200,
@@ -288,7 +290,7 @@ export const DEFAULT_COLUMN_ORDERS: Record<string, Record<string, number>> = {
  */
 export const generateEntityColumns = (
   entity: string,
-  entityMapping: typeof ENTITY_MAPPINGS[keyof typeof ENTITY_MAPPINGS]
+  entityMapping: (typeof ENTITY_MAPPINGS)[keyof typeof ENTITY_MAPPINGS]
 ): HttpTypes.AdminColumn[] | null => {
   const joinerConfigs = MedusaModule.getAllJoinerConfigs()
 
@@ -318,8 +320,7 @@ export const generateEntityColumns = (
   const mergedSchemaAST = mergeTypeDefs(allSchemas)
   const mergedSchemaString = print(mergedSchemaAST)
 
-  const { schema: cleanedSchemaString } =
-    cleanGraphQLSchema(mergedSchemaString)
+  const { schema: cleanedSchemaString } = cleanGraphQLSchema(mergedSchemaString)
 
   const schema = makeExecutableSchema({
     typeDefs: cleanedSchemaString,
@@ -407,9 +408,7 @@ export const generateEntityColumns = (
   const directColumns = directFields.map((fieldName) => {
     const displayName = formatFieldName(fieldName)
 
-    const type = schemaTypeMap[
-      entityMapping.graphqlType
-    ] as GraphQLObjectType
+    const type = schemaTypeMap[entityMapping.graphqlType] as GraphQLObjectType
     const fieldDef = type?.getFields()?.[fieldName]
     const typeInfo = fieldDef
       ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
@@ -421,8 +420,7 @@ export const generateEntityColumns = (
     const isDefaultField =
       entityMapping.defaultVisibleFields.includes(fieldName)
     const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
-    const defaultOrder =
-      entityOrders[fieldName] || (isDefaultField ? 500 : 850)
+    const defaultOrder = entityOrders[fieldName] || (isDefaultField ? 500 : 850)
     const category = getColumnCategory(
       fieldName,
       typeInfo.data_type,
@@ -436,8 +434,7 @@ export const generateEntityColumns = (
       field: fieldName,
       sortable,
       hideable: true,
-      default_visible:
-        entityMapping.defaultVisibleFields.includes(fieldName),
+      default_visible: entityMapping.defaultVisibleFields.includes(fieldName),
       data_type: typeInfo.data_type,
       semantic_type: typeInfo.semantic_type,
       context: typeInfo.context,
@@ -457,9 +454,7 @@ export const generateEntityColumns = (
       )
 
       // Filter out problematic fields from related type
-      const relatedType = schemaTypeMap[
-        relatedTypeName
-      ] as GraphQLObjectType
+      const relatedType = schemaTypeMap[relatedTypeName] as GraphQLObjectType
       const relatedFields = allRelatedFields.filter((fieldName) => {
         const field = relatedType?.getFields()[fieldName]
         if (!field) return true
@@ -481,13 +476,11 @@ export const generateEntityColumns = (
 
       limitedFields.forEach((fieldName) => {
         const fieldPath = `${relationName}.${fieldName}`
-        const displayName = `${formatFieldName(
-          relationName
-        )} ${formatFieldName(fieldName)}`
+        const displayName = `${formatFieldName(relationName)} ${formatFieldName(
+          fieldName
+        )}`
 
-        const relatedType = schemaTypeMap[
-          relatedTypeName
-        ] as GraphQLObjectType
+        const relatedType = schemaTypeMap[relatedTypeName] as GraphQLObjectType
         const fieldDef = relatedType?.getFields()?.[fieldName]
         const typeInfo = fieldDef
           ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
@@ -562,8 +555,7 @@ export const generateEntityColumns = (
         field: columnId,
         sortable: false, // Computed columns can't be sorted server-side
         hideable: true,
-        default_visible:
-          entityMapping.defaultVisibleFields.includes(columnId),
+        default_visible: entityMapping.defaultVisibleFields.includes(columnId),
         data_type: "string", // Computed columns typically output strings
         semantic_type: "computed",
         context: "display",
