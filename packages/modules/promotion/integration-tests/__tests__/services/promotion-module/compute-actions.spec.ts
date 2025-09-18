@@ -353,7 +353,7 @@ moduleIntegrationTestRunner({
               value: 100,
               target_rules: [
                 {
-                  attribute: "product.id",
+                  attribute: "items.product.id",
                   operator: "eq",
                   values: ["prod_tshirt0"], // Only applies to product 0
                 },

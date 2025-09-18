@@ -466,7 +466,10 @@ export default class PromotionModuleService
 
     if (!preventAutoPromotions) {
       const rulePrefilteringFilters =
-        buildPromotionRuleQueryFilterFromContext(applicationContext)
+        await buildPromotionRuleQueryFilterFromContext(
+          applicationContext,
+          sharedContext
+        )
 
       let prefilteredAutomaticPromotionIds: string[] = []
 

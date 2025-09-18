@@ -2,11 +2,12 @@ import {
   ComputeActionContext,
   ComputeActionItemLine,
   ComputeActionShippingLine,
+  Context,
   DAL,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import { flattenObjectToKeyValuePairs } from "@medusajs/framework/utils"
-import { raw } from "@mikro-orm/postgresql"
+import { raw, SqlEntityManager } from "@mikro-orm/postgresql"
 
 /**
  * Builds a query filter for promotion rules based on the context.
@@ -17,9 +18,10 @@ import { raw } from "@mikro-orm/postgresql"
  * @param context
  * @returns
  */
-export function buildPromotionRuleQueryFilterFromContext(
-  context: PromotionTypes.ComputeActionContext
-): DAL.FilterQuery<any> | null {
+export async function buildPromotionRuleQueryFilterFromContext(
+  context: PromotionTypes.ComputeActionContext,
+  sharedContext: Context
+): Promise<DAL.FilterQuery<any> | null> {
   const {
     items = [],
     shipping_methods: shippingMethods = [],
@@ -66,6 +68,33 @@ export function buildPromotionRuleQueryFilterFromContext(
       values.forEach((v) => attributeValueMap.get(prop)!.add(v))
     })
   })
+
+  // count the number of attributes in the map
+  const numberOfAttributes = attributeValueMap.size
+  if (numberOfAttributes > 10) {
+    const manager = (sharedContext.transactionManager ??
+      sharedContext.manager) as SqlEntityManager
+    const knex = manager.getKnex()
+
+    const { rows } = await knex.raw(
+      `
+        SELECT DISTINCT attribute 
+        FROM promotion_rule
+        WHERE deleted_at IS NULL
+      `
+    )
+
+    const dbAvailableAttributes = new Set(
+      rows.map(({ attribute }) => attribute)
+    )
+
+    // update the attribute in the map to remove the one that are not in the db
+    attributeValueMap.forEach((valueSet, attribute) => {
+      if (!dbAvailableAttributes.has(attribute)) {
+        attributeValueMap.delete(attribute)
+      }
+    })
+  }
 
   // Build conditions for a NOT EXISTS subquery to exclude promotions with unsatisfiable rules
   const sqlConditions: string[] = []
