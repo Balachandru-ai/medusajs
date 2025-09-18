@@ -1,5 +1,12 @@
 # @medusajs/notification-local
 
+## 2.10.3
+
+### Patch Changes
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
 ## 2.10.2
 
 ### Patch Changes

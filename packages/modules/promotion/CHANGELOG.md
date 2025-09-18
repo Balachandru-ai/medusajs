@@ -1,5 +1,16 @@
 # @medusajs/promotion
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13524](https://github.com/medusajs/medusa/pull/13524) [`57897c232e23db042f523cbe83b6318b97de519d`](https://github.com/medusajs/medusa/commit/57897c232e23db042f523cbe83b6318b97de519d) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat(): promo prepare top level rules filter
+
+- [#13540](https://github.com/medusajs/medusa/pull/13540) [`4736c58da5de67f6868b4552351a093e67715e4b`](https://github.com/medusajs/medusa/commit/4736c58da5de67f6868b4552351a093e67715e4b) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Prevent promotion filtering to exceed psql limits
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
 ## 2.10.2
 
 ### Patch Changes
