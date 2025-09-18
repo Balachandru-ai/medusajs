@@ -1,10 +1,6 @@
 import { CartDTO, IFulfillmentModuleService } from "@medusajs/framework/types"
-import {
-  MedusaError,
-  Modules,
-  arrayDifference,
-} from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { arrayDifference, MedusaError, Modules, } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The details of the cart and its shipping options context.
@@ -13,11 +9,11 @@ export interface ValidateCartShippingOptionsStepInput {
   /**
    * The cart to validate shipping options for.
    */
-  cart: CartDTO
+  cart?: CartDTO
   /**
    * The context to validate the shipping options.
    */
-  shippingOptionsContext: {
+  shippingOptionsContext?: {
     /**
      * Validate whether the shipping options are enabled in the store.
      */
@@ -31,6 +27,11 @@ export interface ValidateCartShippingOptionsStepInput {
    * The IDs of the shipping options to validate.
    */
   option_ids: string[]
+  /**
+   * Pre-fetched shipping options. If provided, validation will be done against these
+   * instead of querying the database.
+   */
+  prefetched_shipping_options?: { id: string }[]
 }
 
 export const validateCartShippingOptionsStepId =
@@ -51,32 +52,46 @@ export const validateCartShippingOptionsStepId =
 export const validateCartShippingOptionsStep = createStep(
   validateCartShippingOptionsStepId,
   async (data: ValidateCartShippingOptionsStepInput, { container }) => {
-    const { option_ids: optionIds = [], cart, shippingOptionsContext } = data
+    const { option_ids: optionIds = [], cart, shippingOptionsContext, prefetched_shipping_options: prefetchedShippingOptions } = data
 
     if (!optionIds.length) {
       return new StepResponse(void 0)
     }
 
-    const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
-      Modules.FULFILLMENT
-    )
+    let validShippingOptionIds: string[]
+    if (!prefetchedShippingOptions) {
+      if (!cart || !shippingOptionsContext) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Cart and shippingOptionsContext need to be defined if prefetchedShippingOptions is not.`
+        )
+      }
 
-    const validShippingOptions =
-      await fulfillmentModule.listShippingOptionsForContext(
-        {
-          id: optionIds,
-          context: shippingOptionsContext,
-          address: {
-            country_code: cart.shipping_address?.country_code,
-            province_code: cart.shipping_address?.province,
-            city: cart.shipping_address?.city,
-            postal_expression: cart.shipping_address?.postal_code,
-          },
-        },
-        { relations: ["rules"] }
+      // Legacy behavior: query the database
+      const fulfillmentModule = container.resolve<IFulfillmentModuleService>(
+        Modules.FULFILLMENT
       )
 
-    const validShippingOptionIds = validShippingOptions.map((o) => o.id)
+      const validShippingOptions =
+        await fulfillmentModule.listShippingOptionsForContext(
+          {
+            id: optionIds,
+            context: shippingOptionsContext,
+            address: {
+              country_code: cart.shipping_address?.country_code,
+              province_code: cart.shipping_address?.province,
+              city: cart.shipping_address?.city,
+              postal_expression: cart.shipping_address?.postal_code,
+            },
+          },
+          { relations: ["rules"] }
+        )
+
+      validShippingOptionIds = validShippingOptions.map((o) => o.id)
+    } else {
+      validShippingOptionIds = prefetchedShippingOptions.map((o) => o.id)
+    }
+
     const invalidOptionIds = arrayDifference(optionIds, validShippingOptionIds)
 
     if (invalidOptionIds.length) {

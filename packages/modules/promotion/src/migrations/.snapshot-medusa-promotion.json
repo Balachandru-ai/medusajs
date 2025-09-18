@@ -461,6 +461,15 @@
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_unique_promotion_code\" ON \"promotion\" (code) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_promotion_is_automatic",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_is_automatic\" ON \"promotion\" (is_automatic) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "promotion_pkey",
           "columnNames": [
             "id"
@@ -833,6 +842,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_deleted_at\" ON \"promotion_rule\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_promotion_rule_attribute_operator",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_attribute_operator\" ON \"promotion_rule\" (attribute, operator) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "promotion_rule_pkey",
           "columnNames": [
             "id"
@@ -1130,6 +1148,24 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_value_deleted_at\" ON \"promotion_rule_value\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_rule_value_rule_id_value",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_value_rule_id_value\" ON \"promotion_rule_value\" (promotion_rule_id, value) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_rule_value_value",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_value_value\" ON \"promotion_rule_value\" (value) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "promotion_rule_value_pkey",
