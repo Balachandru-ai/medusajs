@@ -12,8 +12,7 @@ import { raw } from "@mikro-orm/postgresql"
  * Builds a query filter for promotion rules based on the context.
  * This is used to prefilter promotions before computing actions.
  * The idea is that we first retrieve from the database the promotions where all rules can be
- * satisfied by the given context. In other words, down there we actually check the promotion that
- * are not satisfiable by the context and take all the other ones
+ * satisfied by the given context. We exclude promotions that have any rule that cannot be satisfied.
  *
  * @param context
  * @returns
@@ -71,6 +70,15 @@ export function buildPromotionRuleQueryFilterFromContext(
   // Build conditions for a NOT EXISTS subquery to exclude promotions with unsatisfiable rules
   const sqlConditions: string[] = []
 
+  // First, check for rules where the attribute doesn't exist in context at all
+  // These rules can never be satisfied
+  sqlConditions.push(
+    `pr.attribute NOT IN (${Array.from(attributeValueMap.keys())
+      .map((attr) => `'${attr.replace(/'/g, "''")}'`)
+      .join(",")})`
+  )
+
+  // Then, for attributes that exist in context, check if the values don't satisfy the rules
   attributeValueMap.forEach((valueSet, attribute) => {
     const values = Array.from(valueSet)
     const stringValues = values
@@ -89,7 +97,6 @@ export function buildPromotionRuleQueryFilterFromContext(
 
     // For 'in' and 'eq' operators - rule is unsatisfiable if NO rule values overlap with context
     // This requires checking that ALL rule values for a given rule are not in context
-
     if (stringValues.length) {
       sqlConditions.push(
         `(pr.attribute = ${escapedAttribute} AND pr.operator IN ('in', 'eq') AND pr.id NOT IN (
@@ -126,8 +133,30 @@ export function buildPromotionRuleQueryFilterFromContext(
     }
   })
 
-  // If no conditions were generated, return a filter that excludes nothing (all promotions pass)
-  if (sqlConditions.length === 0) {
+  // Handle the case where context has no attributes at all, it means
+  // that any promotion that have a rule cant be satisfied by the context
+  if (attributeValueMap.size === 0) {
+    // If context has no attributes, exclude all promotions that have any rules
+    const notExistsSubquery = (alias: string) =>
+      `
+      NOT EXISTS (
+        SELECT 1 FROM promotion_promotion_rule ppr
+        WHERE ppr.promotion_id = ${alias}.id
+      )
+    `.trim()
+
+    return {
+      [raw((alias) => notExistsSubquery(alias))]: true,
+    }
+  }
+
+  const joinedConditions = sqlConditions.join(" OR ")
+  const queryEstimatedSize = joinedConditions.length
+  const maxQuerySize = 2147483648 * 0.9
+
+  if (queryEstimatedSize > maxQuerySize) {
+    // ~100KB threshold we do not pre filter as the context is too big and the
+    // generated query could be too long
     return null
   }
 
@@ -136,9 +165,9 @@ export function buildPromotionRuleQueryFilterFromContext(
     NOT EXISTS (
       SELECT 1 FROM promotion_promotion_rule ppr
       JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
-      JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
       WHERE ppr.promotion_id = ${alias}.id
-      AND (${sqlConditions.join(" OR ")})
+      AND (${joinedConditions})
     )
   `.trim()
 

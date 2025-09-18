@@ -326,7 +326,7 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it("should handle prefiltering of many automatic promotions targetting customers with only one that is relevant", async () => {
+      it("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         // I ve also tested with 20k and the compute actions takes 200/300ms
         for (let i = 0; i < 100; i++) {
@@ -456,6 +456,107 @@ moduleIntegrationTestRunner({
             code: "CUSTOMER_PROMO_1",
           }),
         ])
+      })
+
+      it("should handle prefiltering of many automatic promotions targetting customers and regions while no context attribute can satisfies any of those rules", async () => {
+        const promotionToCreate: CreatePromotionDTO[] = []
+        for (let i = 0; i < 100; i++) {
+          promotionToCreate.push({
+            code: "CUSTOMER_PROMO_" + i,
+            is_automatic: true,
+            rules: [
+              {
+                attribute: "customer.id",
+                operator: "eq",
+                values: ["customer" + i], // Matches our test customer1
+              },
+              {
+                attribute: "region_id",
+                operator: "eq",
+                values: ["region_1"], // matches our region
+              },
+            ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [
+                {
+                  attribute: "product.id",
+                  operator: "eq",
+                  values: ["prod_tshirt0"], // Only applies to product 0
+                },
+              ],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          })
+        }
+
+        await service.createPromotions(promotionToCreate)
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          return result
+        }
+
+        // Test Context: Customer with specific attributes
+        const testContext = {
+          currency_code: "usd",
+          items: [
+            {
+              id: "item_tshirt0",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod_tshirt0" }, // Matches CUSTOMER_PROMO_1 target
+            },
+            {
+              id: "item_tshirt1",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod_tshirt1" },
+            },
+            {
+              id: "item_tshirt9",
+              quantity: 5,
+              subtotal: 750,
+              product: { id: "prod_tshirt9" },
+            },
+            {
+              id: "item_unknown",
+              quantity: 1,
+              subtotal: 110,
+              product: { id: "prod_unknown" },
+            },
+          ] as any,
+        }
+
+        const actions = await service.computeActions([], testContext)
+
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // 1. Verify prefiltering worked - should include matching promotion
+        // We expect the prefilter to have return 0 promotion that is being satisfied by the
+        expect(prefilteredPromotions).toHaveLength(0)
+
+        expect(actions).toHaveLength(0)
       })
 
       it("should return empty array when promotion is not active (draft or inactive)", async () => {
