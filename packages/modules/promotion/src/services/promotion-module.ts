@@ -62,6 +62,7 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
+import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -461,11 +462,40 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    const queryFilter = preventAutoPromotions
-      ? { code: uniquePromotionCodes }
-      : {
-          $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
-        }
+    let queryFilter: DAL.FilterQuery<any> = { code: uniquePromotionCodes }
+
+    if (!preventAutoPromotions) {
+      const rulePrefilteringFilters =
+        buildPromotionRuleQueryFilterFromContext(applicationContext)
+
+      let prefilteredAutomaticPromotionIds: string[] = []
+
+      if (rulePrefilteringFilters) {
+        const promotions = await this.promotionService_.list(
+          {
+            $and: [{ is_automatic: true }, rulePrefilteringFilters],
+          },
+          { select: ["id"] },
+          sharedContext
+        )
+
+        prefilteredAutomaticPromotionIds = promotions.map(
+          (promotion) => promotion.id!
+        )
+      }
+
+      const automaticPromotionFilter = rulePrefilteringFilters
+        ? {
+            id: { $in: prefilteredAutomaticPromotionIds },
+          }
+        : { is_automatic: true }
+
+      queryFilter = automaticPromotionFilter
+        ? {
+            $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
+          }
+        : queryFilter
+    }
 
     const promotions = await this.listActivePromotions_(
       queryFilter,
