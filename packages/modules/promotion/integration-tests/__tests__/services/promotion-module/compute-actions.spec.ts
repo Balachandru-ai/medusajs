@@ -517,7 +517,7 @@ moduleIntegrationTestRunner({
           return result
         }
 
-        // Test Context: Customer with specific attributes
+        // Test Context
         const testContext = {
           currency_code: "usd",
           items: [
