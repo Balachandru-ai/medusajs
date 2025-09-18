@@ -10,9 +10,9 @@ import {
   deduplicate,
   filterObjectByKeys,
   isDefined,
+  MathBN,
   MedusaError,
   QueryContext,
-  MathBN,
 } from "@medusajs/framework/utils"
 import {
   createHook,
@@ -205,6 +205,7 @@ export const updateLineItemInCartWorkflow = createWorkflow(
         input: {
           cart_id: input.cart_id,
           ids: [input.item_id],
+          additional_data: input.additional_data,
         },
       })
     })
@@ -303,7 +304,7 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       updateLineItemsStepWithSelector(lineItemUpdate)
 
       refreshCartItemsWorkflow.runAsStep({
-        input: { cart_id: input.cart_id },
+        input: { cart_id: input.cart_id, additional_data: input.additional_data },
       })
     })
 
