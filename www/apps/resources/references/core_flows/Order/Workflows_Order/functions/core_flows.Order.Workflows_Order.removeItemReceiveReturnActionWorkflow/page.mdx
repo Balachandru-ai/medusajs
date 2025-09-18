@@ -20,7 +20,7 @@ This workflow removes an item from a return receival. It's used by the
 You can use this workflow within your customizations or your own custom workflows, allowing you to remove an item from a return receival
 in your custom flow.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/e90dcedcd7627c61ed1a823400f734d624eaee05/packages/core/core-flows/src/order/workflows/return/remove-item-receive-return-action.ts#L136" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a503bbe5963f95710f599c466dfb2c3956914e06/packages/core/core-flows/src/order/workflows/return/remove-item-receive-return-action.ts#L136" />
 
 ## Examples
 
@@ -137,7 +137,7 @@ const myWorkflow = createWorkflow(
 
 ## Input
 
-<TypeList types={[{"name":"DeleteRequestItemReceiveReturnWorkflowInput","type":"[DeleteRequestItemReceiveReturnWorkflowInput](../../../../../types/WorkflowTypes/OrderWorkflow/interfaces/types.WorkflowTypes.OrderWorkflow.DeleteRequestItemReceiveReturnWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"return_id","type":"`string`","description":"The ID of the return to remove the item from.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"action_id","type":"`string`","description":"The ID of the action associated with the item to remove.\nEvery item has an `actions` property, whose value is an array of actions. \nYou can find an action with the name `RECEIVE_RETURN_ITEM` using its `action` property, \nand use the value of its `id` property.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="removeItemReceiveReturnActionWorkflow"/>
+<TypeList types={[{"name":"DeleteRequestItemReceiveReturnWorkflowInput","type":"[DeleteRequestItemReceiveReturnWorkflowInput](../../../../../types/WorkflowTypes/OrderWorkflow/interfaces/types.WorkflowTypes.OrderWorkflow.DeleteRequestItemReceiveReturnWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"return_id","type":"`string`","description":"The ID of the return to remove the item from.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"action_id","type":"`string`","description":"The ID of the action associated with the item to remove.\nEvery item has an `actions` property, whose value is an array of actions.\nYou can find an action with the name `RECEIVE_RETURN_ITEM` using its `action` property,\nand use the value of its `id` property.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="removeItemReceiveReturnActionWorkflow"/>
 
 ## Output
 
