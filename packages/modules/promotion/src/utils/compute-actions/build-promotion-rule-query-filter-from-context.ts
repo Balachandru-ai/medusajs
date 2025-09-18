@@ -155,7 +155,6 @@ export function buildPromotionRuleQueryFilterFromContext(
   const maxQuerySize = 2147483648 * 0.9
 
   if (queryEstimatedSize > maxQuerySize) {
-    // ~100KB threshold we do not pre filter as the context is too big and the
     // generated query could be too long
     return null
   }
