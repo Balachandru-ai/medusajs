@@ -33,7 +33,7 @@ enum JobType {
   TRANSACTION_TIMEOUT = "transaction_timeout",
 }
 
-const ONE_HOUR_IN_MS = 1000 * 60 * 60
+const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
 const invokingStatesSet = new Set([
@@ -198,7 +198,7 @@ export class RedisDistributedTransactionStorage
         {},
         {
           repeat: {
-            every: ONE_HOUR_IN_MS,
+            every: THIRTY_MINUTES_IN_MS,
           },
           jobId: REPEATABLE_CLEARER_JOB_ID,
           removeOnComplete: true,
