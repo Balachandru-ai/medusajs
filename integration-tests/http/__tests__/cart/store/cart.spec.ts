@@ -4353,7 +4353,7 @@ medusaIntegrationTestRunner({
                     currency_code: "eur",
                     target_rules: [
                       {
-                        attribute: "product_id",
+                        attribute: "items.product_id",
                         operator: "in",
                         values: [product.id],
                       },
