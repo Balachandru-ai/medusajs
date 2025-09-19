@@ -189,7 +189,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
     .map((attr) => `'${attr.replace(/'/g, "''")}'`)
     .join(",")
 
-  // Use efficient CTE approach with corrected logic for large datasets
+  // Use efficient CTE approach for better performances overall
   const cteSubquery = (alias: string) =>
     `
     ${alias}.id IN (
