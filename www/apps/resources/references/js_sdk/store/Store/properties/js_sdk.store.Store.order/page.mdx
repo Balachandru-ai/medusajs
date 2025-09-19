@@ -24,6 +24,7 @@ API route.
 To retrieve the list of orders:
 
 ```ts
+// TODO must be authenticated as the customer to list their orders
 sdk.store.order.list()
 .then(({ orders, count, offset, limit }) => {
   console.log(orders)
@@ -35,6 +36,7 @@ To configure the pagination, pass the `limit` and `offset` query parameters.
 For example, to retrieve only 10 items and skip 10 items:
 
 ```ts
+// TODO must be authenticated as the customer to list their orders
 sdk.store.order.list({
   limit: 10,
   offset: 10
@@ -48,6 +50,7 @@ Using the `fields` query parameter, you can specify the fields and relations to 
 in each order:
 
 ```ts
+// TODO must be authenticated as the customer to list their orders
 sdk.store.order.list({
   fields: "id,*items"
 })
@@ -116,6 +119,7 @@ Customer requesting the transfer must be logged in.
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to request the order transfer
 sdk.store.order.requestTransfer(
   "order_123",
   {
@@ -150,6 +154,7 @@ Customer requesting the transfer must be logged in.
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to cancel the order transfer
 sdk.store.order.cancelTransfer(
   "order_123",
   {},
