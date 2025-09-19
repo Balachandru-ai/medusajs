@@ -200,7 +200,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
         JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
         WHERE pr.attribute NOT IN (${attributeKeys})
 
-        UNION ALL
+        UNION
 
         SELECT am.promotion_id
         FROM promotion_application_method am
@@ -208,7 +208,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
         JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
         WHERE pr.attribute NOT IN (${attributeKeys})
 
-        UNION ALL
+        UNION
 
         SELECT am2.promotion_id
         FROM promotion_application_method am2
@@ -216,7 +216,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
         JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
         WHERE pr.attribute NOT IN (${attributeKeys})
 
-        UNION ALL
+        UNION
 
         -- Promotions with unsatisfiable rules for context attributes
         SELECT ppr.promotion_id
@@ -225,7 +225,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
         LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
         WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
 
-        UNION ALL
+        UNION
 
         SELECT am.promotion_id
         FROM promotion_application_method am
@@ -234,7 +234,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
         LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
         WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
 
-        UNION ALL
+        UNION
 
         SELECT am2.promotion_id
         FROM promotion_application_method am2
