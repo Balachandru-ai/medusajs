@@ -189,62 +189,65 @@ export async function buildPromotionRuleQueryFilterFromContext(
     .map((attr) => `'${attr.replace(/'/g, "''")}'`)
     .join(",")
 
-  // Use NOT IN approach for better performance with large datasets
-  const notInSubquery = (alias: string) =>
+  // Use anti-join approach for better performance than NOT IN
+  const antiJoinSubquery = (alias: string) =>
     `
-    ${alias}.id NOT IN (
-      -- Exclude promotions with rules for attributes not in context
-      SELECT DISTINCT ppr.promotion_id
-      FROM promotion_promotion_rule ppr
-      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
-      WHERE pr.attribute NOT IN (${attributeKeys})
+    NOT EXISTS (
+      SELECT 1 FROM (
+        -- Promotions with rules for attributes not in context
+        SELECT ppr.promotion_id
+        FROM promotion_promotion_rule ppr
+        JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+        WHERE pr.attribute NOT IN (${attributeKeys})
 
-      UNION
+        UNION ALL
 
-      SELECT DISTINCT am.promotion_id
-      FROM promotion_application_method am
-      JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
-      JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
-      WHERE pr.attribute NOT IN (${attributeKeys})
+        SELECT am.promotion_id
+        FROM promotion_application_method am
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
+        WHERE pr.attribute NOT IN (${attributeKeys})
 
-      UNION
+        UNION ALL
 
-      SELECT DISTINCT am2.promotion_id
-      FROM promotion_application_method am2
-      JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
-      JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
-      WHERE pr.attribute NOT IN (${attributeKeys})
+        SELECT am2.promotion_id
+        FROM promotion_application_method am2
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+        JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
+        WHERE pr.attribute NOT IN (${attributeKeys})
 
-      UNION
+        UNION ALL
 
-      -- Exclude promotions with unsatisfiable rules for context attributes
-      SELECT DISTINCT ppr.promotion_id
-      FROM promotion_promotion_rule ppr
-      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
-      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
-      WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+        -- Promotions with unsatisfiable rules for context attributes
+        SELECT ppr.promotion_id
+        FROM promotion_promotion_rule ppr
+        JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
 
-      UNION
+        UNION ALL
 
-      SELECT DISTINCT am.promotion_id
-      FROM promotion_application_method am
-      JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
-      JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
-      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
-      WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+        SELECT am.promotion_id
+        FROM promotion_application_method am
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
 
-      UNION
+        UNION ALL
 
-      SELECT DISTINCT am2.promotion_id
-      FROM promotion_application_method am2
-      JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
-      JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
-      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
-      WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+        SELECT am2.promotion_id
+        FROM promotion_application_method am2
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+        JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+      ) excluded_promotions
+      WHERE excluded_promotions.promotion_id = ${alias}.id
     )
   `.trim()
 
   return {
-    [raw((alias) => notInSubquery(alias))]: true,
+    [raw((alias) => antiJoinSubquery(alias))]: true,
   }
 }
