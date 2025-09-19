@@ -3,5 +3,5 @@ curl -X POST '{backend_url}/admin/views/{entity}/configurations' \
 -H 'Content-Type: application/json' \
 -d '{
   "is_system_default": true,
-  "name": "Custom View",
+  "name": "Custom View"
 }'
