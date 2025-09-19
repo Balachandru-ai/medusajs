@@ -197,7 +197,6 @@ export async function buildPromotionRuleQueryFilterFromContext(
         SELECT ppr.promotion_id as id, pr.id as rule_id, pr.attribute, pr.operator
         FROM promotion_promotion_rule ppr
         JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
-        WHERE pr.attribute IN (${attributeKeys})
 
         UNION ALL
 
@@ -205,7 +204,6 @@ export async function buildPromotionRuleQueryFilterFromContext(
         FROM promotion_application_method am
         JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
         JOIN promotion_rule pr_target ON amtr.promotion_rule_id = pr_target.id
-        WHERE pr_target.attribute IN (${attributeKeys})
 
         UNION ALL
 
@@ -213,7 +211,6 @@ export async function buildPromotionRuleQueryFilterFromContext(
         FROM promotion_application_method am2
         JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
         JOIN promotion_rule pr_buy ON ambr.promotion_rule_id = pr_buy.id
-        WHERE pr_buy.attribute IN (${attributeKeys})
       ),
       rule_counts AS (
         SELECT id, COUNT(*) as total_rules
@@ -227,6 +224,13 @@ export async function buildPromotionRuleQueryFilterFromContext(
         WHERE (${joinedConditions
           .replace(/pr\./g, "pru.")
           .replace(/prv\./g, "prv.")})
+
+        UNION
+
+        -- Exclude promotions with rules for attributes not in context
+        SELECT DISTINCT pru.id
+        FROM promotion_rules_union pru
+        WHERE pru.attribute NOT IN (${attributeKeys})
       )
       SELECT rc.id
       FROM rule_counts rc

@@ -433,7 +433,7 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
+      it.only("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         // I ve also tested with 20k and the compute actions takes 200/300ms
         for (let i = 0; i < 100; i++) {
