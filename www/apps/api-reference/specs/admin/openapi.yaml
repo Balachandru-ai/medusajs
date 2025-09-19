@@ -715,6 +715,7 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: ./components/schemas/AdminUser.yaml
+  - name: Views
   - name: Workflows Executions
     description: >
       These API routes allow you to track workflow executions in your Medusa
@@ -1156,6 +1157,14 @@ paths:
     $ref: paths/admin_users_me.yaml
   /admin/users/{id}:
     $ref: paths/admin_users_{id}.yaml
+  /admin/views/{entity}/columns:
+    $ref: paths/admin_views_{entity}_columns.yaml
+  /admin/views/{entity}/configurations:
+    $ref: paths/admin_views_{entity}_configurations.yaml
+  /admin/views/{entity}/configurations/active:
+    $ref: paths/admin_views_{entity}_configurations_active.yaml
+  /admin/views/{entity}/configurations/{id}:
+    $ref: paths/admin_views_{entity}_configurations_{id}.yaml
   /admin/workflows-executions:
     $ref: paths/admin_workflows-executions.yaml
   /admin/workflows-executions/{id}:
