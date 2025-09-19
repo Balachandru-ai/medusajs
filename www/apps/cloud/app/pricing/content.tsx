@@ -10,7 +10,9 @@ export default async function PricingPage() {
     process.env.NEXT_PUBLIC_ENV === "CI" ||
     process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
   ) {
-    return <div>Pricing page is not available in the CI environment.</div>
+    return (
+      <div>Pricing page is not available in the CI / Preview environment.</div>
+    )
   }
   const data = await loadPricingData()
 
@@ -41,8 +43,6 @@ export default async function PricingPage() {
 }
 
 const loadPricingData = async () => {
-  // eslint-disable-next-line no-console
-  console.log("Fetching pricing data from Sanity...")
   const data: PricingQueryResult = await sanityClient.fetch(
     `*[
       (_type == "featureTable" && _id == "9cb4e359-786a-4cdb-9334-88ad4ce44f05") ||
