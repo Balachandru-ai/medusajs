@@ -1,13 +1,28 @@
 ---
 slug: /references/medusa-workflows/steps/createViewConfigurationStep
 sidebar_label: createViewConfigurationStep
+tags:
+  - settings
+  - step
 ---
 
 import { TypeList, WorkflowDiagram } from "docs-ui"
 
 # createViewConfigurationStep - Medusa Core Workflows Reference
 
+:::note
+
+To use this resource, make sure to [enable its feature flag: view_configurations](https://docs.medusajs.com/development/feature-flags/toggle)
+
+:::
+
 This documentation provides a reference to the `createViewConfigurationStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+:::note
+
+This is available starting from Medusa `v2.10.3`.
+
+:::
 
 ```ts title="src/workflows/my-workflow.ts"
 import { createWorkflow } from "@medusajs/framework/workflows-sdk"
