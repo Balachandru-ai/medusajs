@@ -147,7 +147,11 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "title": "Draft Orders",
-            "path": "/draft-order-plugin",
+            "path": "https://docs.medusajs.com/resources/commerce-modules/order/draft-orders",
+            "badge": {
+              "text": "Published",
+              "variant": "blue"
+            },
             "children": []
           }
         ]
@@ -165,6 +169,14 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Overview",
             "path": "/billing",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Plans & Pricing",
+            "path": "/pricing",
             "children": []
           },
           {

@@ -7,8 +7,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { AdditionalData } from "@medusajs/types"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import {
   addShippingMethodToCartStep,
   removeShippingMethodFromCartStep,
@@ -80,7 +82,16 @@ export const addShippingMethodToCartWorkflowId = "add-shipping-method-to-cart"
  */
 export const addShippingMethodToCartWorkflow = createWorkflow(
   addShippingMethodToCartWorkflowId,
-  (input: WorkflowData<AddShippingMethodToCartWorkflowInput>) => {
+  (
+    input: WorkflowData<AddShippingMethodToCartWorkflowInput & AdditionalData>
+  ) => {
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+    
     const cart = useRemoteQueryStep({
       entry_point: "cart",
       fields: cartFieldsForRefreshSteps,
@@ -100,20 +111,20 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
       return (data.input.options ?? []).map((i) => i.id)
     })
 
-    validateCartShippingOptionsStep({
-      option_ids: optionIds,
-      cart,
-      shippingOptionsContext: { is_return: "false", enabled_in_store: "true" },
-    })
-
     const shippingOptions =
       listShippingOptionsForCartWithPricingWorkflow.runAsStep({
         input: {
           options: input.options,
           cart_id: cart.id,
           is_return: false,
+          additional_data: input.additional_data,
         },
       })
+
+    validateCartShippingOptionsStep({
+      option_ids: optionIds,
+      prefetched_shipping_options: shippingOptions,
+    })
 
     validateCartShippingOptionsPriceStep({ shippingOptions })
 
@@ -192,16 +203,27 @@ export const addShippingMethodToCartWorkflow = createWorkflow(
       }),
       addShippingMethodToCartStep({
         shipping_methods: shippingMethodInput,
-      }),
-      emitEventStep({
-        eventName: CartWorkflowEvents.UPDATED,
-        data: { id: input.cart_id },
       })
     )
 
     refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: cart.id, shipping_methods: createdShippingMethods },
+      input: {
+        cart_id: cart.id,
+        shipping_methods: createdShippingMethods,
+        additional_data: input.additional_data,
+      },
     })
+
+    parallelize(
+      emitEventStep({
+        eventName: CartWorkflowEvents.UPDATED,
+        data: { id: input.cart_id },
+      }),
+      releaseLockStep({
+        key: cart.id,
+        skipOnSubWorkflow: true,
+      })
+    )
 
     return new WorkflowResponse(void 0, {
       hooks: [validate],

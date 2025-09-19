@@ -858,12 +858,22 @@ export const generatedSidebars = [
               {
                 "loaded": true,
                 "isPathHref": true,
+                "type": "link",
+                "path": "/learn/fundamentals/workflows/locks",
+                "title": "Using Locks",
+                "children": [],
+                "chapterTitle": "3.7.15. Using Locks",
+                "number": "3.7.15."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
                 "type": "ref",
                 "path": "/learn/debugging-and-testing/debug-workflows",
                 "title": "Debug Workflows",
                 "children": [],
-                "chapterTitle": "3.7.15. Debug Workflows",
-                "number": "3.7.15."
+                "chapterTitle": "3.7.16. Debug Workflows",
+                "number": "3.7.16."
               }
             ],
             "chapterTitle": "3.7. Workflows",
@@ -916,6 +926,16 @@ export const generatedSidebars = [
                 "children": [],
                 "chapterTitle": "3.9.1. Execution Number",
                 "number": "3.9.1."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/fundamentals/scheduled-jobs/interval",
+                "title": "Set Interval",
+                "children": [],
+                "chapterTitle": "3.9.2. Set Interval",
+                "number": "3.9.2."
               }
             ],
             "chapterTitle": "3.9. Scheduled Jobs",
@@ -1209,9 +1229,41 @@ export const generatedSidebars = [
             "type": "link",
             "path": "/learn/debugging-and-testing/logging",
             "title": "Logging",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/debugging-and-testing/logging/custom-logger",
+                "title": "Override Logger",
+                "children": [],
+                "chapterTitle": "7.6.1. Override Logger",
+                "number": "7.6.1."
+              }
+            ],
             "chapterTitle": "7.6. Logging",
             "number": "7.6."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/learn/debugging-and-testing/feature-flags",
+            "title": "Feature Flags",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/debugging-and-testing/feature-flags/create",
+                "title": "Create Feature Flag",
+                "children": [],
+                "chapterTitle": "7.7.1. Create Feature Flag",
+                "number": "7.7.1."
+              }
+            ],
+            "chapterTitle": "7.7. Feature Flags",
+            "number": "7.7."
           }
         ],
         "chapterTitle": "7. Debugging & Testing",

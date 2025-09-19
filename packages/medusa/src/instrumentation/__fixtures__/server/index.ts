@@ -13,10 +13,10 @@ import {
   ApiLoader,
   container,
   featureFlagsLoader,
-  logger,
   MedusaRequest,
 } from "@medusajs/framework"
 import { configManager } from "@medusajs/framework/config"
+import { logger as defaultLogger } from "@medusajs/framework/logger"
 import { ConfigModule, MedusaContainer } from "@medusajs/types"
 import { config } from "../mocks"
 
@@ -67,10 +67,8 @@ export const createServer = async (rootDir) => {
 
   container.register(ContainerRegistrationKeys.PG_CONNECTION, asValue({}))
   container.register("configModule", asValue(config))
+  container.register(ContainerRegistrationKeys.LOGGER, asValue(defaultLogger))
   container.register({
-    logger: asValue({
-      error: () => {},
-    }),
     manager: asValue({}),
   })
 
@@ -88,7 +86,7 @@ export const createServer = async (rootDir) => {
   })
 
   await featureFlagsLoader()
-  await moduleLoader({ container, moduleResolutions, logger })
+  await moduleLoader({ container, moduleResolutions, logger: defaultLogger })
 
   app.use((req, res, next) => {
     ;(req as MedusaRequest).scope = container.createScope() as MedusaContainer
@@ -98,6 +96,7 @@ export const createServer = async (rootDir) => {
   await new ApiLoader({
     app,
     sourceDir: rootDir,
+    container,
   }).load()
 
   const superRequest = supertest(app)

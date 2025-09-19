@@ -12,6 +12,10 @@ export type UpdateViewConfigurationStepInput = {
 
 export const updateViewConfigurationStepId = "update-view-configuration"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const updateViewConfigurationStep = createStep(
   updateViewConfigurationStepId,
   async (input: UpdateViewConfigurationStepInput, { container }) => {

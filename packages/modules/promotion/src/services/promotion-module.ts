@@ -18,6 +18,7 @@ import {
   CampaignBudgetType,
   ComputedActions,
   deduplicate,
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isDefined,
@@ -61,6 +62,7 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
+import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -139,11 +141,26 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
-  listActivePromotions(
+  async listActivePromotions(
     filters?: FilterablePromotionProps,
     config?: FindConfig<PromotionDTO>,
     sharedContext?: Context
   ): Promise<PromotionDTO[]> {
+    const activePromotions = await this.listActivePromotions_(
+      filters,
+      config,
+      sharedContext
+    )
+
+    return this.baseRepository_.serialize<PromotionDTO[]>(activePromotions)
+  }
+
+  @InjectManager()
+  protected async listActivePromotions_(
+    filters?: FilterablePromotionProps,
+    config?: FindConfig<PromotionDTO>,
+    @MedusaContext() sharedContext?: Context
+  ): Promise<InferEntityType<typeof Promotion>[]> {
     // Ensure we share the same now date across all filters
     const now = new Date()
     const activeFilters = {
@@ -170,10 +187,15 @@ export default class PromotionModuleService
       ],
     }
 
-    return this.listPromotions(activeFilters, config, sharedContext)
+    return await this.promotionService_.list(
+      activeFilters,
+      config,
+      sharedContext
+    )
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   async registerUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
     @MedusaContext() sharedContext: Context = {}
@@ -185,7 +207,7 @@ export default class PromotionModuleService
     const campaignBudgetMap = new Map<string, UpdateCampaignBudgetDTO>()
     const promotionCodeUsageMap = new Map<string, boolean>()
 
-    const existingPromotions = await this.listActivePromotions(
+    const existingPromotions = await this.listActivePromotions_(
       { code: promotionCodes },
       { relations: ["campaign", "campaign.budget"] },
       sharedContext
@@ -200,9 +222,10 @@ export default class PromotionModuleService
       }
     }
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      existingPromotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(existingPromotions.map((promotion) => [promotion.code!, promotion]))
 
     for (let computedAction of computedActions) {
       const promotion = existingPromotionsMap.get(computedAction.code)
@@ -286,6 +309,7 @@ export default class PromotionModuleService
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   async revertUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
     @MedusaContext() sharedContext: Context = {}
@@ -293,7 +317,7 @@ export default class PromotionModuleService
     const promotionCodeUsageMap = new Map<string, boolean>()
     const campaignBudgetMap = new Map<string, UpdateCampaignBudgetDTO>()
 
-    const existingPromotions = await this.listActivePromotions(
+    const existingPromotions = await this.listActivePromotions_(
       {
         code: computedActions
           .map((computedAction) => computedAction.code)
@@ -312,9 +336,10 @@ export default class PromotionModuleService
       }
     }
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      existingPromotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(existingPromotions.map((promotion) => [promotion.code!, promotion]))
 
     for (let computedAction of computedActions) {
       const promotion = existingPromotionsMap.get(computedAction.code)
@@ -433,27 +458,51 @@ export default class PromotionModuleService
 
     const methodIdPromoValueMap = new Map<string, number>()
 
-    const automaticPromotions = preventAutoPromotions
-      ? []
-      : await this.listActivePromotions(
-          { is_automatic: true },
-          { select: ["code"] },
-          sharedContext
-        )
-
-    const automaticPromotionCodes = automaticPromotions.map((p) => p.code!)
-    const promotionCodesToApply = [
-      ...promotionCodes,
-      ...automaticPromotionCodes,
-      ...appliedCodes,
-    ]
+    const promotionCodesToApply = [...promotionCodes, ...appliedCodes]
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    const promotions = await this.listActivePromotions(
-      { code: uniquePromotionCodes },
+    let queryFilter: DAL.FilterQuery<any> = { code: uniquePromotionCodes }
+
+    if (!preventAutoPromotions) {
+      const rulePrefilteringFilters =
+        await buildPromotionRuleQueryFilterFromContext(
+          applicationContext,
+          sharedContext
+        )
+
+      let prefilteredAutomaticPromotionIds: string[] = []
+
+      if (rulePrefilteringFilters) {
+        const promotions = await this.promotionService_.list(
+          {
+            $and: [{ is_automatic: true }, rulePrefilteringFilters],
+          },
+          { select: ["id"] },
+          sharedContext
+        )
+
+        prefilteredAutomaticPromotionIds = promotions.map(
+          (promotion) => promotion.id!
+        )
+      }
+
+      const automaticPromotionFilter = rulePrefilteringFilters
+        ? {
+            id: { $in: prefilteredAutomaticPromotionIds },
+          }
+        : { is_automatic: true }
+
+      queryFilter = automaticPromotionFilter
+        ? {
+            $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
+          }
+        : queryFilter
+    }
+
+    const promotions = await this.listActivePromotions_(
+      queryFilter,
       {
-        take: null,
         order: { application_method: { value: "DESC" } },
         relations: [
           "application_method",
@@ -470,9 +519,18 @@ export default class PromotionModuleService
       sharedContext
     )
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      promotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(promotions.map((promotion) => [promotion.code!, promotion]))
+
+    const automaticPromotionCodes: string[] = []
+
+    for (const promotion of promotions) {
+      if (promotion.is_automatic) {
+        automaticPromotionCodes.push(promotion.code!)
+      }
+    }
 
     for (const [code, adjustments] of codeAdjustmentMap.entries()) {
       for (const adjustment of adjustments.items) {
@@ -492,11 +550,14 @@ export default class PromotionModuleService
       }
     }
 
+    const promotionCodeSet = new Set<string>(promotionCodes)
+    const automaticPromotionCodeSet = new Set<string>(automaticPromotionCodes)
+
     const sortedPromotionsToApply = promotions
       .filter(
         (p) =>
-          promotionCodes.includes(p.code!) ||
-          automaticPromotionCodes.includes(p.code!)
+          promotionCodeSet.has(p.code!) ||
+          automaticPromotionCodeSet.has(p.code!)
       )
       .sort(ComputeActionUtils.sortByBuyGetType)
 
@@ -511,14 +572,14 @@ export default class PromotionModuleService
 
     for (const promotionToApply of sortedPromotionsToApply) {
       const promotion = existingPromotionsMap.get(promotionToApply.code!)!
+      if (!promotion.application_method) {
+        continue
+      }
+
       const {
         application_method: applicationMethod,
         rules: promotionRules = [],
       } = promotion
-
-      if (!applicationMethod) {
-        continue
-      }
 
       const isCurrencyCodeValid =
         !isPresent(applicationMethod.currency_code) ||
@@ -600,6 +661,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createPromotions(
     data:
@@ -1016,6 +1078,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   // @ts-ignore
   async updatePromotionRules(
     data: PromotionTypes.UpdatePromotionRuleDTO[],
@@ -1040,15 +1103,24 @@ export default class PromotionModuleService
   ) {
     const promotionRuleIds = data.map((d) => d.id)
 
-    const promotionRules = await this.listPromotionRules(
+    const promotionRules = await this.promotionRuleService_.list(
       { id: promotionRuleIds },
       { relations: ["values"] },
       sharedContext
     )
 
+    const existingPromotionRuleIds: string[] = []
+    const promotionRulesMap: Map<string, PromotionTypes.PromotionRuleDTO> =
+      new Map()
+
+    for (const promotionRule of promotionRules) {
+      existingPromotionRuleIds.push(promotionRule.id)
+      promotionRulesMap.set(promotionRule.id, promotionRule)
+    }
+
     const invalidRuleId = arrayDifference(
       deduplicate(promotionRuleIds),
-      promotionRules.map((pr) => pr.id)
+      existingPromotionRuleIds
     )
 
     if (invalidRuleId.length) {
@@ -1057,10 +1129,6 @@ export default class PromotionModuleService
         `Promotion rules with id - ${invalidRuleId.join(", ")} not found`
       )
     }
-
-    const promotionRulesMap = new Map<string, PromotionTypes.PromotionRuleDTO>(
-      promotionRules.map((pr) => [pr.id, pr])
-    )
 
     const rulesToUpdate: PromotionTypes.UpdatePromotionRuleDTO[] = []
     const ruleValueIdsToDelete: string[] = []
@@ -1119,6 +1187,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionTargetRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1152,6 +1221,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionBuyRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1248,6 +1318,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePromotionRules(
     promotionId: string,
     ruleIds: string[],
@@ -1275,6 +1346,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePromotionTargetRules(
     promotionId: string,
     ruleIds: string[],
@@ -1349,6 +1421,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.CampaignDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createCampaigns(
     data: PromotionTypes.CreateCampaignDTO | PromotionTypes.CreateCampaignDTO[],
@@ -1460,6 +1533,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.CampaignDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateCampaigns(
     data: PromotionTypes.UpdateCampaignDTO | PromotionTypes.UpdateCampaignDTO[],
@@ -1489,15 +1563,16 @@ export default class PromotionModuleService
     const updateBudgetData: UpdateCampaignBudgetDTO[] = []
     const createBudgetData: CreateCampaignBudgetDTO[] = []
 
-    const existingCampaigns = await this.listCampaigns(
+    const existingCampaigns = await this.campaignService_.list(
       { id: campaignIds },
       { relations: ["budget"] },
       sharedContext
     )
 
-    const existingCampaignsMap = new Map<string, PromotionTypes.CampaignDTO>(
-      existingCampaigns.map((campaign) => [campaign.id, campaign])
-    )
+    const existingCampaignsMap = new Map<
+      string,
+      InferEntityType<typeof Campaign>
+    >(existingCampaigns.map((campaign) => [campaign.id, campaign]))
 
     for (const updateCampaignData of data) {
       const { budget: budgetData, ...campaignData } = updateCampaignData
@@ -1552,9 +1627,10 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionsToCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    sharedContext?: Context
+    @MedusaContext() sharedContext?: Context
   ): Promise<{ ids: string[] }> {
     const ids = await this.addPromotionsToCampaign_(data, sharedContext)
 
@@ -1619,9 +1695,10 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePromotionsFromCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    sharedContext?: Context
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<{ ids: string[] }> {
     const ids = await this.removePromotionsFromCampaign_(data, sharedContext)
 

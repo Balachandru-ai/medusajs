@@ -536,6 +536,18 @@
       "proposed": "Proposed",
       "rejected": "Rejected"
     },
+    "columns": {
+      "product_display": "Product",
+      "variants_count": "Variants",
+      "sales_channels_display": "Sales Channels",
+      "collection": "Collection",
+      "status": "Status",
+      "thumbnail": "Thumbnail",
+      "title": "Title",
+      "handle": "Handle",
+      "created_at": "Created",
+      "updated_at": "Updated"
+    },
     "fields": {
       "title": {
         "label": "Title",
@@ -1067,7 +1079,8 @@
       "itemSubtotal": "Item Subtotal",
       "shippingSubtotal": "Shipping Subtotal",
       "discountSubtotal": "Discount Subtotal",
-      "taxTotal": "Tax Total"
+      "taxTotal": "Tax Total",
+      "totalAfterDiscount": "Total After Discount"
     },
     "transfer": {
       "title": "Transfer ownership",
@@ -1567,6 +1580,10 @@
       "shippingProfiles": {
         "label": "Shipping Profiles",
         "description": "Group products by shipping requirements"
+      },
+      "shippingOptionTypes": {
+        "label": "Shipping Option Types",
+        "description": "Group shipping options by types"
       }
     },
     "salesChannels": {
@@ -2146,7 +2163,8 @@
         "description": "The code your customers will enter during checkout."
       },
       "value": {
-        "title": "Promotion Value"
+        "title": "Promotion Value",
+        "invalid": "Invalid promotion value"
       },
       "value_type": {
         "fixed": {
@@ -2909,7 +2927,9 @@
     "from": "From",
     "to": "To",
     "beaware": "Be aware",
-    "loading": "Loading"
+    "loading": "Loading",
+    "selectValue": "Select Value",
+    "selectValues": "Select Values"
   },
   "fields": {
     "amount": "Amount",
@@ -3090,5 +3110,25 @@
     "minutes_other": "Minutes",
     "seconds_one": "Second",
     "seconds_other": "Seconds"
+  },
+  "views": {
+    "save": "Save",
+    "saveAsNew": "Save as new view",
+    "updateDefaultForEveryone": "Update default for everyone",
+    "updateViewName": "Update view",
+    "prompts": {
+      "updateDefault": {
+        "title": "Update default view",
+        "description": "This will update the default view for all users. Are you sure?",
+        "confirmText": "Update for everyone",
+        "cancelText": "Cancel"
+      },
+      "updateView": {
+        "title": "Update view",
+        "description": "Are you sure you want to update \"{{name}}\"?",
+        "confirmText": "Update",
+        "cancelText": "Cancel"
+      }
+    }
   }
 }

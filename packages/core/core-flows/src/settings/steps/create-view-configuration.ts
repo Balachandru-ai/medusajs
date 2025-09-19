@@ -8,6 +8,10 @@ export type CreateViewConfigurationStepInput = CreateViewConfigurationDTO
 
 export const createViewConfigurationStepId = "create-view-configuration"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const createViewConfigurationStep = createStep(
   createViewConfigurationStepId,
   async (data: CreateViewConfigurationStepInput, { container }) => {

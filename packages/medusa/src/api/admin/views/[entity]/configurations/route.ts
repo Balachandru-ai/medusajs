@@ -7,6 +7,10 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createViewConfigurationWorkflow } from "@medusajs/core-flows"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminGetViewConfigurationsParams>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationListResponse>
@@ -33,6 +37,10 @@ export const GET = async (
   })
 }
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminCreateViewConfigurationType>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationResponse>

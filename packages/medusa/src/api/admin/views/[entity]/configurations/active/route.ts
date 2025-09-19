@@ -9,6 +9,10 @@ import {
 import { HttpTypes } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<AdminGetActiveViewConfigurationParamsType>,
   res: MedusaResponse<
@@ -33,27 +37,18 @@ export const GET = async (
       default_type: "code",
     })
   } else {
-    // Check if the user has an explicit preference
-    const activeViewPref = await settingsService.getUserPreference(
-      req.auth_context.actor_id,
-      `active_view.${req.params.entity}`
-    )
-
-    // If there's no preference and the view is a system default, it means we're falling back to system default
-    const isDefaultActive =
-      !activeViewPref && viewConfiguration.is_system_default
-
     res.json({
       view_configuration: viewConfiguration,
-      is_default_active: isDefaultActive,
-      default_type:
-        isDefaultActive && viewConfiguration.is_system_default
-          ? "system"
-          : undefined,
+      is_default_active: viewConfiguration.is_system_default,
+      default_type: viewConfiguration.is_system_default ? "system" : undefined,
     })
   }
 }
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminSetActiveViewConfigurationType>,
   res: MedusaResponse<{ success: boolean }>

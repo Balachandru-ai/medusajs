@@ -129,6 +129,10 @@ class OasKindGenerator extends FunctionKindGenerator {
       startsWith: "store/store-credit-accounts",
       requiresAuthentication: true,
     },
+    {
+      exact: "store/carts/[id]/customer",
+      requiresAuthentication: true,
+    },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
   readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
@@ -200,6 +204,10 @@ class OasKindGenerator extends FunctionKindGenerator {
       !this.METHOD_NAMES.includes(functionName) ||
       functionNode.parameters.length !== 2
     ) {
+      return false
+    }
+
+    if (this.isIgnored(functionNode)) {
       return false
     }
 
@@ -2653,9 +2661,16 @@ class OasKindGenerator extends FunctionKindGenerator {
         if (
           fnText.includes(`${workflowName}(`) ||
           fnText.includes(`${workflowName} (`) ||
-          fnText.includes(`${workflowName}.`)
+          fnText.includes(`${workflowName}.`) ||
+          fnText.includes(`we.run(${workflowName}`) ||
+          fnText.includes(`we.run (${workflowName}`) ||
+          fnText.includes(`we.run(
+            ${workflowName}
+          )`)
         ) {
-          workflow = workflowName
+          // workaround for API routes that execute a workflow
+          // by its ID. Not very smart but will do for now.
+          workflow = workflowName.replace(/Id$/, "")
         }
       })
     })

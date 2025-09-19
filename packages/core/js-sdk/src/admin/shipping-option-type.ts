@@ -16,7 +16,7 @@ export class ShippingOptionType {
 
   /**
    * This method creates a shipping option type. It sends a request to the
-   * [Create Shipping Option Type](TODO HERE)
+   * [Create Shipping Option Type](https://docs.medusajs.com/api/admin#shipping-option-types_postshippingoptiontypes)
    * API route.
    *
    * @param body - The shipping option type's details.
@@ -52,7 +52,7 @@ export class ShippingOptionType {
 
   /**
    * This method updates a shipping option type. It sends a request to the
-   * [Update Shipping Option Type](TODO HERE)
+   * [Update Shipping Option Type](https://docs.medusajs.com/api/admin#shipping-option-types_postshippingoptiontypesid)
    * API route.
    *
    * @param id - The shipping option type's ID.
@@ -88,7 +88,7 @@ export class ShippingOptionType {
 
   /**
    * This method retrieves a paginated list of shipping option types. It sends a request to the
-   * [List Shipping Option Types](TODO HERE) API route.
+   * [List Shipping Option Types](https://docs.medusajs.com/api/admin#shipping-option-types_getshippingoptiontypes) API route.
    *
    * @param query - Filters and pagination configurations.
    * @param headers - Headers to pass in the request.
@@ -147,7 +147,7 @@ export class ShippingOptionType {
 
   /**
    * This method retrieves a shipping option type by its ID. It sends a request to the
-   * [Get Shipping Option Type](TODO HERE)
+   * [Get Shipping Option Type](https://docs.medusajs.com/api/admin#shipping-option-types_getshippingoptiontypesid)
    * API route.
    *
    * @param id - The shipping option type's ID.
@@ -194,7 +194,7 @@ export class ShippingOptionType {
 
   /**
    * This method deletes a shipping option type. It sends a request to the
-   * [Delete Shipping Option Type](TODO HERE)
+   * [Delete Shipping Option Type](https://docs.medusajs.com/api/admin#shipping-option-types_deleteshippingoptiontypesid)
    * API route.
    *
    * @param id - The shipping option type's ID.

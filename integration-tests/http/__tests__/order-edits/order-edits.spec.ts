@@ -29,11 +29,12 @@ medusaIntegrationTestRunner({
     let inventoryItemExtra
     let location
     let locationTwo
-    let buyRuleProduct
     let productExtra
     let container
     let region
     let salesChannel
+    let buyRuleProduct
+
     const shippingProviderId = "manual_test-provider"
 
     beforeEach(async () => {
@@ -1216,6 +1217,7 @@ medusaIntegrationTestRunner({
 
         orderModule = container.resolve(Modules.ORDER)
 
+        // @ts-ignore
         order = await orderModule.createOrders({
           email: "foo@bar.com",
           region_id: region.id,

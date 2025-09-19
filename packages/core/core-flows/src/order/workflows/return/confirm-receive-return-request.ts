@@ -34,6 +34,7 @@ import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
+import { createOrUpdateOrderPaymentCollectionWorkflow } from "../create-or-update-order-payment-collection"
 
 /**
  * The data to validate that a return receival can be confirmed.
@@ -56,14 +57,14 @@ export type ConfirmReceiveReturnValidationStepInput = {
 /**
  * This step validates that a return receival can be confirmed.
  * If the order or return is canceled, or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, return, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = confirmReceiveReturnValidationStep({
  *   order: {
@@ -182,10 +183,10 @@ export const confirmReturnReceiveWorkflowId = "confirm-return-receive"
 /**
  * This workflow confirms a return receival request. It's used by the
  * [Confirm Return Receival Admin API Route](https://docs.medusajs.com/api/admin#returns_postreturnsidreceiveconfirm).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you
  * to confirm a return receival in your custom flow.
- * 
+ *
  * @example
  * const { result } = await confirmReturnReceiveWorkflow(container)
  * .run({
@@ -193,9 +194,9 @@ export const confirmReturnReceiveWorkflowId = "confirm-return-receive"
  *     return_id: "return_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Confirm a return receival request.
  */
 export const confirmReturnReceiveWorkflow = createWorkflow(
@@ -363,7 +364,15 @@ export const confirmReturnReceiveWorkflow = createWorkflow(
         orderId: order.id,
         confirmed_by: input.confirmed_by,
       }),
-      adjustInventoryLevelsStep(inventoryAdjustment),
+      adjustInventoryLevelsStep(inventoryAdjustment)
+    )
+
+    parallelize(
+      createOrUpdateOrderPaymentCollectionWorkflow.runAsStep({
+        input: {
+          order_id: order.id,
+        },
+      }),
       emitEventStep({
         eventName: OrderWorkflowEvents.RETURN_RECEIVED,
         data: {

@@ -8,6 +8,7 @@ import type { RedisOptions } from "ioredis"
 import { ConnectionOptions } from "node:tls"
 // @ts-ignore
 import type { InlineConfig } from "vite"
+import type { Logger } from "../logger"
 
 /**
  * @interface
@@ -919,7 +920,7 @@ export type ProjectConfigOptions = {
  */
 export type ConfigModule = {
   /**
-   * This property holds essential configurations related to the Medusa application, such as database and CORS configurations.
+   * This property holds essential configurations related to the Medusa application, such as database, CORS configurations and Logger.
    */
   projectConfig: ProjectConfigOptions
 
@@ -1047,6 +1048,11 @@ export type ConfigModule = {
    * :::
    */
   featureFlags: Record<string, boolean | string | Record<string, boolean>>
+
+  /**
+   * The Logger instance to be used by the application.
+   */
+  logger?: Logger
 }
 
 type InternalModuleDeclarationOverride = InternalModuleDeclaration & {

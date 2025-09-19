@@ -44,6 +44,106 @@ You can then use the Workflow Engine Module's service's methods in the step. The
 
 ---
 
+## retryStep
+
+This method retries a step that has temporary failed, such as a step that has `autoRetry` set to `false` or when the machine running the Medusa application shuts down. Learn more about it in the [Retry Failed Steps](!docs!/learn/fundamentals/workflows/retry-failed-steps) guide.
+
+<Note>
+
+This method is available since [Medusa v2.10.2](https://github.com/medusajs/medusa/releases/tag/v2.10.2).
+
+</Note>
+
+### Example
+
+```ts
+// other imports...
+import {
+  TransactionHandlerType,
+} from "@medusajs/framework/utils"
+
+workflowEngine.retryStep({
+  idempotencyKey: {
+    action: TransactionHandlerType.INVOKE,
+    transactionId,
+    stepId: "step-1",
+    workflowId: "hello-world",
+  },
+})
+```
+
+### Parameters
+
+<TypeList types={[
+  {
+    "name": "idempotencyKey",
+    "type": "`object`",
+    "description": "The details of the step to retry.",
+    "optional": false,
+    "defaultValue": "",
+    "expandable": false,
+    "children": [
+      {
+        "name": "action",
+        "type": "`invoke` | `compensate`",
+        "description": "If the step's compensation function is running, use `compensate`. Otherwise, use `invoke`.",
+        "optional": false,
+        "defaultValue": "",
+        "expandable": false,
+        "children": []
+      },
+      {
+        "name": "transactionId",
+        "type": "`string`",
+        "description": "The ID of the workflow execution's transaction.",
+        "optional": false,
+        "defaultValue": "",
+        "expandable": false,
+        "children": []
+      },
+      {
+        "name": "stepId",
+        "type": "`string`",
+        "description": "The ID of the step to change its status. This is the first parameter passed to `createStep` when creating the step.",
+        "optional": false,
+        "defaultValue": "",
+        "expandable": false,
+        "children": []
+      },
+      {
+        "name": "workflowId",
+        "type": "`string`",
+        "description": "The ID of the workflow. This is the first parameter passed to `createWorkflow` when creating the workflow.",
+        "optional": false,
+        "defaultValue": "",
+        "expandable": false,
+        "children": []
+      }
+    ]
+  },
+  {
+    "name": "options",
+    "type": "`object`",
+    "description": "Options to pass to the step.",
+    "optional": true,
+    "defaultValue": "",
+    "expandable": false,
+    "children": [
+      {
+        "name": "container",
+        "type": "`Container`",
+        "description": "An instance of the Medusa container.",
+        "optional": false,
+        "defaultValue": "",
+        "expandable": false,
+        "children": []
+      }
+    ]
+  }
+]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="retryStep"/>
+
+---
+
 ## setStepSuccess
 
 This method sets an async step in a currently-executing [long-running workflow](!docs!/learn/fundamentals/workflows/long-running-workflow) as successful. The workflow will then continue to the next step.
@@ -64,9 +164,6 @@ await workflowEngineModuleService.setStepSuccess({
     workflowId: "hello-world",
   },
   stepResponse: new StepResponse("Done!"),
-  options: {
-    container,
-  },
 })
 ```
 
@@ -132,7 +229,7 @@ await workflowEngineModuleService.setStepSuccess({
     "name": "options",
     "type": "`object`",
     "description": "Options to pass to the step.",
-    "optional": false,
+    "optional": true,
     "defaultValue": "",
     "expandable": false,
     "children": [
@@ -171,9 +268,6 @@ await workflowEngineModuleService.setStepFailure({
     workflowId: "hello-world",
   },
   stepResponse: new StepResponse("Failed!"),
-  options: {
-    container,
-  },
 })
 ```
 
@@ -239,7 +333,7 @@ await workflowEngineModuleService.setStepFailure({
     "name": "options",
     "type": "`object`",
     "description": "Options to pass to the step.",
-    "optional": false,
+    "optional": true,
     "defaultValue": "",
     "expandable": false,
     "children": [

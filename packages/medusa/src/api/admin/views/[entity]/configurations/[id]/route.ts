@@ -7,6 +7,10 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { updateViewConfigurationWorkflow } from "@medusajs/core-flows"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminGetViewConfigurationParams>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationResponse>
@@ -32,6 +36,10 @@ export const GET = async (
   res.json({ view_configuration: viewConfiguration })
 }
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminUpdateViewConfigurationType>,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationResponse>
@@ -63,6 +71,10 @@ export const POST = async (
   res.json({ view_configuration: result })
 }
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminViewConfigurationDeleteResponse>

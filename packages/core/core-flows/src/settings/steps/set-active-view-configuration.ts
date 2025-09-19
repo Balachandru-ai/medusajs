@@ -9,6 +9,10 @@ export type SetActiveViewConfigurationStepInput = {
 
 export const setActiveViewConfigurationStepId = "set-active-view-configuration"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const setActiveViewConfigurationStep = createStep(
   setActiveViewConfigurationStepId,
   async (input: SetActiveViewConfigurationStepInput, { container }) => {

@@ -20,6 +20,10 @@ export type CreateViewConfigurationWorkflowInput =
 
 export const createViewConfigurationWorkflowId = "create-view-configuration"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const createViewConfigurationWorkflow = createWorkflow(
   createViewConfigurationWorkflowId,
   (

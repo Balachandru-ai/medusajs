@@ -2239,6 +2239,40 @@ const generatedgeneratedReferencesSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "category",
+          "title": "Locking",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Steps",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/acquireLockStep",
+                  "title": "acquireLockStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/releaseLockStep",
+                  "title": "releaseLockStep",
+                  "description": "",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "category",
           "title": "Notification",
           "children": [
             {
@@ -2711,6 +2745,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "path": "/references/medusa-workflows/getOrdersListWorkflow",
                   "title": "getOrdersListWorkflow",
                   "description": "Retrieve a list of orders.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/listShippingOptionsForOrderWorkflow",
+                  "title": "listShippingOptionsForOrderWorkflow",
+                  "description": "List a order's shipping options.",
                   "children": []
                 },
                 {
@@ -5873,8 +5916,34 @@ const generatedgeneratedReferencesSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "category",
-          "title": "Shipping Options",
+          "title": "Settings",
           "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Workflows",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/createViewConfigurationWorkflow",
+                  "title": "createViewConfigurationWorkflow",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/updateViewConfigurationWorkflow",
+                  "title": "updateViewConfigurationWorkflow",
+                  "description": "",
+                  "children": []
+                }
+              ]
+            },
             {
               "loaded": true,
               "isPathHref": true,
@@ -5885,8 +5954,113 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/steps/createViewConfigurationStep",
+                  "title": "createViewConfigurationStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/setActiveViewConfigurationStep",
+                  "title": "setActiveViewConfigurationStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/updateViewConfigurationStep",
+                  "title": "updateViewConfigurationStep",
+                  "description": "",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "category",
+          "title": "Shipping Options",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Workflows",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/createShippingOptionTypesWorkflow",
+                  "title": "createShippingOptionTypesWorkflow",
+                  "description": "Create one or more shipping option types.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/deleteShippingOptionTypesWorkflow",
+                  "title": "deleteShippingOptionTypesWorkflow",
+                  "description": "Delete one or more shipping option types.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/updateShippingOptionTypesWorkflow",
+                  "title": "updateShippingOptionTypesWorkflow",
+                  "description": "Update one or more shipping option types.",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Steps",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/createShippingOptionTypesStep",
+                  "title": "createShippingOptionTypesStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/deleteShippingOptionTypesStep",
+                  "title": "deleteShippingOptionTypesStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/steps/listShippingOptionsForContextStep",
                   "title": "listShippingOptionsForContextStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/updateShippingOptionTypesStep",
+                  "title": "updateShippingOptionTypesStep",
                   "description": "",
                   "children": []
                 }
@@ -7149,6 +7323,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/references/workflows/applyStep",
+              "title": "applyStep",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/references/workflows/createHook",
               "title": "createHook",
               "description": "",
@@ -7178,6 +7361,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "type": "link",
               "path": "/references/workflows/parallelize",
               "title": "parallelize",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/workflows/resolveValue",
+              "title": "resolveValue",
               "description": "",
               "children": []
             },

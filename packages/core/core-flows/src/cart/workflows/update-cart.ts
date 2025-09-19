@@ -1,13 +1,5 @@
-import {
-  AdditionalData,
-  CartDTO,
-  UpdateCartWorkflowInputDTO,
-} from "@medusajs/framework/types"
-import {
-  CartWorkflowEvents,
-  isDefined,
-  MedusaError,
-} from "@medusajs/framework/utils"
+import { AdditionalData, CartDTO, UpdateCartWorkflowInputDTO, } from "@medusajs/framework/types"
+import { CartWorkflowEvents, isDefined, MedusaError, } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -19,11 +11,8 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useQueryGraphStep } from "../../common"
 import { deleteLineItemsStep } from "../../line-item"
-import {
-  findOrCreateCustomerStep,
-  findSalesChannelStep,
-  updateCartsStep,
-} from "../steps"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { findOrCreateCustomerStep, findSalesChannelStep, updateCartsStep, } from "../steps"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
@@ -78,8 +67,18 @@ export const updateCartWorkflowId = "update-cart"
  * @property hooks.cartUpdated - This hook is executed after a cart is update. You can consume this hook to perform custom actions on the updated cart.
  */
 export const updateCartWorkflow = createWorkflow(
-  updateCartWorkflowId,
+  {
+    name: updateCartWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<UpdateCartWorkflowInput>) => {
+    acquireLockStep({
+      key: input.id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const { data: cartToUpdate } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.id },
@@ -298,12 +297,18 @@ export const updateCartWorkflow = createWorkflow(
         cart_id: cartInput.id,
         promo_codes: input.promo_codes,
         force_refresh: !!newRegion,
+        additional_data: input.additional_data,
       },
     })
 
     const cartUpdated = createHook("cartUpdated", {
       cart,
       additional_data: input.additional_data,
+    })
+
+    releaseLockStep({
+      key: input.id,
+      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(void 0, {

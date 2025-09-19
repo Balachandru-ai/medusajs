@@ -1,13 +1,13 @@
 import {
+  AdditionalData,
   BigNumberInput,
   CreateOrderShippingMethodDTO,
   FulfillmentWorkflow,
   OrderDTO,
-  ReturnDTO,
   OrderWorkflow,
+  ReturnDTO,
   ShippingOptionDTO,
   WithCalculatedPrice,
-  AdditionalData,
 } from "@medusajs/framework/types"
 import {
   MathBN,
@@ -25,6 +25,7 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
+import { pricingContextResult } from "../../../cart/utils/schemas"
 import {
   createRemoteLinkStep,
   emitEventStep,
@@ -38,7 +39,6 @@ import {
   throwIfOrderIsCancelled,
 } from "../../utils/order-validation"
 import { validateReturnReasons } from "../../utils/validate-return-reason"
-import { pricingContextResult } from "../../../cart/utils/schemas"
 
 function prepareShippingMethodData({
   orderId,
@@ -311,11 +311,11 @@ export const createAndCompleteReturnOrderWorkflowId =
  * @summary
  *
  * Create and complete a return for an order.
- * 
+ *
  * @property hooks.setPricingContext - This hook is executed before the return's shipping method is created. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -323,13 +323,13 @@ export const createAndCompleteReturnOrderWorkflowId =
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { createAndCompleteReturnOrderWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * createAndCompleteReturnOrderWorkflow.hooks.setPricingContext((
  *   { order, additional_data }, { container }
  * ) => {
@@ -338,13 +338,13 @@ export const createAndCompleteReturnOrderWorkflowId =
  *   });
  * });
  * ```
- * 
+ *
  * The price of the shipping method's option will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const createAndCompleteReturnOrderWorkflow = createWorkflow(
@@ -423,6 +423,7 @@ export const createAndCompleteReturnOrderWorkflow = createWorkflow(
 
     const returnCreated = createCompleteReturnStep({
       order_id: input.order_id,
+      location_id: input.location_id,
       items: input.items,
       shipping_method: shippingMethodData,
       created_by: input.created_by,

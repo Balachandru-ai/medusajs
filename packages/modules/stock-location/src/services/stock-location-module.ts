@@ -17,6 +17,7 @@ import {
   UpsertStockLocationInput,
 } from "@medusajs/framework/types"
 import {
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isString,
@@ -86,7 +87,9 @@ export default class StockLocationModuleService
     data: CreateStockLocationInput[],
     context: Context
   ): Promise<StockLocationTypes.StockLocationDTO[]>
+
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createStockLocations(
     data: CreateStockLocationInput | CreateStockLocationInput[],
@@ -101,7 +104,7 @@ export default class StockLocationModuleService
     const serialized = await this.baseRepository_.serialize<
       | StockLocationTypes.StockLocationDTO
       | StockLocationTypes.StockLocationDTO[]
-    >(created, { populate: true })
+    >(created)
 
     return Array.isArray(data) ? serialized : serialized[0]
   }
@@ -124,6 +127,7 @@ export default class StockLocationModuleService
   ): Promise<StockLocationTypes.StockLocationDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async upsertStockLocations(
     data: UpsertStockLocationInput | UpsertStockLocationInput[],
     @MedusaContext() context: Context = {}
@@ -179,6 +183,7 @@ export default class StockLocationModuleService
     input: UpdateStockLocationInput,
     context?: Context
   ): Promise<StockLocationTypes.StockLocationDTO[]>
+
   /**
    * Updates an existing stock location.
    * @param stockLocationId - The ID of the stock location to update.
@@ -187,6 +192,7 @@ export default class StockLocationModuleService
    * @returns The updated stock location.
    */
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateStockLocations(
     idOrSelector: string | FilterableStockLocationProps,
@@ -208,7 +214,7 @@ export default class StockLocationModuleService
     const serialized = await this.baseRepository_.serialize<
       | StockLocationTypes.StockLocationDTO
       | StockLocationTypes.StockLocationDTO[]
-    >(updated, { populate: true })
+    >(updated)
 
     return Array.isArray(data) ? serialized : serialized[0]
   }
@@ -239,6 +245,7 @@ export default class StockLocationModuleService
   ): Promise<StockLocationTypes.StockLocationAddressDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateStockLocationAddresses(
     data:
@@ -253,7 +260,7 @@ export default class StockLocationModuleService
     const serialized = await this.baseRepository_.serialize<
       | StockLocationTypes.StockLocationAddressDTO
       | StockLocationTypes.StockLocationAddressDTO[]
-    >(updated, { populate: true })
+    >(updated)
 
     return Array.isArray(data) ? serialized : serialized[0]
   }
@@ -276,6 +283,7 @@ export default class StockLocationModuleService
   ): Promise<StockLocationTypes.StockLocationAddressDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async upsertStockLocationAddresses(
     data: UpsertStockLocationAddressInput | UpsertStockLocationAddressInput[],
     @MedusaContext() context: Context = {}

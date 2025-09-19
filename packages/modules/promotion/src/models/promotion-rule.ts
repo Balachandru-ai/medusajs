@@ -30,6 +30,13 @@ const PromotionRule = model
       }),
     }
   )
+  .indexes([
+    {
+      on: ["attribute", "operator"],
+      unique: false,
+      where: "deleted_at IS NULL",
+    },
+  ])
   .cascades({
     delete: ["values"],
   })

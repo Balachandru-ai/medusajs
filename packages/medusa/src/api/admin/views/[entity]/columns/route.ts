@@ -9,6 +9,10 @@ import {
 import { generateEntityColumns } from "./helpers"
 import { ENTITY_MAPPINGS } from "./entity-mappings"
 
+/**
+ * @since 2.10.3
+ * @featureFlag view_configurations
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminViewsEntityColumnsResponse>

@@ -1,5 +1,5 @@
-import plugin from "tailwindcss/plugin"
-import presets from "./theme-presets"
+const plugin = require("tailwindcss/plugin")
+const presets = require("./theme-presets")
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

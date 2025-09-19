@@ -9,6 +9,7 @@ import {
   MedusaError,
   OrderStatus,
   arrayDifference,
+  deepFlatMap,
   isPresent,
 } from "@medusajs/framework/utils"
 
@@ -17,6 +18,58 @@ export function throwIfOrderIsCancelled({ order }: { order: OrderDTO }) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       `Order with id ${order.id} has been canceled.`
+    )
+  }
+}
+
+export function throwIfManagedItemsNotStockedAtReturnLocation({
+  order,
+  orderReturn,
+  inputItems,
+}: {
+  order: Pick<OrderDTO, "items">
+  orderReturn: Pick<ReturnDTO, "location_id">
+  inputItems: OrderWorkflow.CreateOrderFulfillmentWorkflowInput["items"]
+}) {
+  if (!orderReturn?.location_id) {
+    return
+  }
+
+  const inputItemIds = new Set(inputItems.map((i) => i.id))
+  const requestedOrderItems = order.items?.filter((oi: any) =>
+    inputItemIds.has(oi.id)
+  )
+
+  const invalidManagedItems: string[] = []
+
+  for (const orderItem of requestedOrderItems ?? []) {
+    const variant = (orderItem as any)?.variant
+    if (!variant?.manage_inventory) {
+      continue
+    }
+
+    let hasStockAtLocation = false
+    deepFlatMap(
+      orderItem,
+      "variant.inventory_items.inventory.location_levels",
+      ({ location_levels }) => {
+        if (location_levels?.location_id === orderReturn.location_id) {
+          hasStockAtLocation = true
+        }
+      }
+    )
+
+    if (!hasStockAtLocation) {
+      invalidManagedItems.push(orderItem.id)
+    }
+  }
+
+  if (invalidManagedItems.length) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      `Cannot request item return at location ${
+        orderReturn.location_id
+      } for managed inventory items: ${invalidManagedItems.join(", ")}`
     )
   }
 }

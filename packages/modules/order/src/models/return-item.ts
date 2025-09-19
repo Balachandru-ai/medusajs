@@ -34,19 +34,19 @@ const _ReturnItem = model
       name: "IDX_return_item_return_id",
       on: ["return_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_return_item_reason_id",
       on: ["reason_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_return_item_item_id",
       on: ["item_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_return_item_deleted_at",
