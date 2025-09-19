@@ -128,6 +128,7 @@ export type AdminPostClaimsAddItemsReqSchemaType = z.infer<
 >
 
 export const AdminPostClaimsRequestReturnItemsReqSchema = z.object({
+  location_id: z.string().optional(),
   items: z.array(
     z.object({
       id: z.string(),

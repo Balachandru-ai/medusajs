@@ -1,7 +1,8 @@
-import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { createWorkflow, WorkflowData } from "@medusajs/framework/workflows-sdk"
 import { refreshCartItemsWorkflow } from "../../cart/workflows/refresh-cart-items"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { deleteLineItemsStep } from "../steps/delete-line-items"
+import { AdditionalData } from "@medusajs/types"
 
 /**
  * The data to delete line items from a cart.
@@ -43,7 +44,7 @@ export const deleteLineItemsWorkflow = createWorkflow(
     name: deleteLineItemsWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<DeleteLineItemsWorkflowInput>) => {
+  (input: WorkflowData<DeleteLineItemsWorkflowInput & AdditionalData>) => {
     acquireLockStep({
       key: input.cart_id,
       timeout: 2,
@@ -54,7 +55,7 @@ export const deleteLineItemsWorkflow = createWorkflow(
     deleteLineItemsStep(input.ids)
 
     refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+      input: { cart_id: input.cart_id, additional_data: input.additional_data },
     })
 
     releaseLockStep({

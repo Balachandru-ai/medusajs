@@ -32,7 +32,35 @@ medusaIntegrationTestRunner({
         adminHeaders
       )
 
-      await api.post(`/admin/claims/${claim.id}/request`, {}, adminHeaders)
+      const createdClaim = await api.post(
+        `/admin/claims/${claim.id}/request`,
+        {},
+        adminHeaders
+      )
+
+      const returnOrder = createdClaim.data.return
+      const returnId = returnOrder.id
+      await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+
+      let lineItem = returnOrder.items[0].item
+      await api.post(
+        `/admin/returns/${returnId}/receive-items`,
+        {
+          items: [
+            {
+              id: lineItem.id,
+              quantity: returnOrder.items[0].quantity,
+            },
+          ],
+        },
+        adminHeaders
+      )
+
+      await api.post(
+        `/admin/returns/${returnId}/receive/confirm`,
+        {},
+        adminHeaders
+      )
     }
 
     beforeEach(async () => {
@@ -64,10 +92,6 @@ medusaIntegrationTestRunner({
     })
 
     describe("with outstanding amount due to claim", () => {
-      beforeEach(async () => {
-        await createClaim({ order })
-      })
-
       it("should capture an authorized payment", async () => {
         const payment = order.payment_collections[0].payments[0]
 
@@ -189,6 +213,8 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        await createClaim({ order })
+
         const refundReason = (
           await api.post(
             `/admin/refund-reasons`,
@@ -253,6 +279,8 @@ medusaIntegrationTestRunner({
           )
         ).data.refund_reason
 
+        await createClaim({ order })
+
         await api.post(
           `/admin/payments/${payment.id}/refund`,
           {
@@ -310,6 +338,8 @@ medusaIntegrationTestRunner({
           undefined,
           adminHeaders
         )
+
+        await createClaim({ order })
 
         await api.post(
           `/admin/payments/${payment.id}/refund`,

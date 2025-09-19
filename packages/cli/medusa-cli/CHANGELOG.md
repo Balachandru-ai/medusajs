@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.10.3
+
+### Patch Changes
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada), [`9563ee446f2b3a2e0cd4a4a33959ed55be5f268a`](https://github.com/medusajs/medusa/commit/9563ee446f2b3a2e0cd4a4a33959ed55be5f268a)]:
+  - @medusajs/utils@2.10.3
+  - @medusajs/telemetry@2.10.3
+
 ## 2.10.2
 
 ### Patch Changes

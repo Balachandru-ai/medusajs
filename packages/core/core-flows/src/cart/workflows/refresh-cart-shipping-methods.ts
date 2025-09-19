@@ -13,6 +13,7 @@ import { acquireLockStep, releaseLockStep } from "../../locking"
 import { removeShippingMethodFromCartStep } from "../steps"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
+import { AdditionalData } from "@medusajs/types"
 
 /**
  * The details of the cart to refresh.
@@ -55,7 +56,7 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
     name: refreshCartShippingMethodsWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
+  (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput & AdditionalData>) => {
     const shouldExecute = transform({ input }, ({ input }) => {
       return (
         !!input.cart_id ||
@@ -133,6 +134,7 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
             options: listShippingOptionsInput,
             cart_id: cart.id,
             is_return: false,
+            additional_data: input.additional_data
           },
         })
 

@@ -8,6 +8,7 @@ import {
   deleteLineItemsStepId,
   deleteLineItemsWorkflow,
   findOrCreateCustomerStepId,
+  listShippingOptionsForCartWithPricingWorkflow,
   listShippingOptionsForCartWorkflow,
   refreshPaymentCollectionForCartWorkflow,
   updateCartWorkflow,
@@ -30,7 +31,13 @@ import {
   ISalesChannelModuleService,
   IStockLocationService,
 } from "@medusajs/types"
-import { ContainerRegistrationKeys, Modules, PriceListStatus, PriceListType, RuleOperator, } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  Modules,
+  PriceListStatus,
+  PriceListType,
+  RuleOperator,
+} from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -65,6 +72,7 @@ medusaIntegrationTestRunner({
       let defaultRegion
       let customer, storeHeadersWithCustomer
       let setPricingContextHook: any
+      let setShippingOptionsContextHook: any
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -104,6 +112,22 @@ medusaIntegrationTestRunner({
           (input) => {
             if (setPricingContextHook) {
               return setPricingContextHook(input)
+            }
+          },
+          () => {}
+        )
+        listShippingOptionsForCartWorkflow.hooks.setShippingOptionsContext(
+          (input) => {
+            if (setShippingOptionsContextHook) {
+              return setShippingOptionsContextHook(input)
+            }
+          },
+          () => {}
+        )
+        listShippingOptionsForCartWithPricingWorkflow.hooks.setShippingOptionsContext(
+          (input) => {
+            if (setShippingOptionsContextHook) {
+              return setShippingOptionsContextHook(input)
             }
           },
           () => {}
@@ -3533,6 +3557,74 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should add shipping method to cart using custom rules to fetch", async () => {
+          const shippingOption = (
+            await api.post(
+              `/admin/shipping-options`,
+              {
+                name: "Test shipping option 1",
+                service_zone_id: fulfillmentSet.service_zones[0].id,
+                shipping_profile_id: shippingProfile.id,
+                provider_id: "manual_test-provider",
+                price_type: "flat",
+                type: {
+                  label: "Test type",
+                  description: "Test description",
+                  code: "test-code",
+                },
+                prices: [{ amount: 3_000, currency_code: "usd" }],
+                rules: [
+                  {
+                    operator: RuleOperator.EQ,
+                    attribute: "is_return",
+                    value: "false",
+                  },
+                  {
+                    operator: RuleOperator.EQ,
+                    attribute: "enabled_in_store",
+                    value: "true",
+                  },
+                  {
+                    operator: RuleOperator.EQ,
+                    attribute: "customer_status",
+                    value: "vip",
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.shipping_option
+
+          setShippingOptionsContextHook = function () {
+            return new StepResponse({
+              customer_status: "vip",
+            })
+          }
+
+          await addShippingMethodToCartWorkflow(appContainer).run({
+            input: {
+              options: [{ id: shippingOption.id }],
+              cart_id: cart.id,
+            },
+          })
+
+          cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
+            .cart
+
+          expect(cart).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              currency_code: "usd",
+              shipping_methods: [
+                expect.objectContaining({
+                  amount: 3_000,
+                  is_tax_inclusive: true,
+                }),
+              ],
+            })
+          )
+        })
+
         it("should throw error when shipping option is not valid", async () => {
           const shippingOption = (
             await api.post(
@@ -4159,6 +4251,76 @@ medusaIntegrationTestRunner({
                 id: shippingOption.id,
               }),
             ])
+          })
+        })
+
+        describe("setShippingOptionsContext hook", () => {
+          it("should use context provided by the hook", async () => {
+            const shippingOption = (
+              await api.post(
+                `/admin/shipping-options`,
+                {
+                  name: "Test shipping option",
+                  service_zone_id: fulfillmentSet.service_zones[0].id,
+                  shipping_profile_id: shippingProfile.id,
+                  provider_id: "manual_test-provider",
+                  price_type: "flat",
+                  type: {
+                    label: "Test type",
+                    description: "Test description",
+                    code: "test-code",
+                  },
+                  prices: [
+                    {
+                      amount: 3000,
+                      currency_code: "usd",
+                    },
+                  ],
+                  rules: [
+                    {
+                      operator: RuleOperator.EQ,
+                      attribute: "is_return",
+                      value: "false",
+                    },
+                    {
+                      operator: RuleOperator.EQ,
+                      attribute: "enabled_in_store",
+                      value: "true",
+                    },
+                    {
+                      operator: RuleOperator.EQ,
+                      attribute: "customer_status",
+                      value: "vip",
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+            ).data.shipping_option
+
+            cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
+              .cart
+
+            setShippingOptionsContextHook = function () {
+              return new StepResponse({
+                customer_status: "vip",
+              })
+            }
+
+            const { result: result1 } = await listShippingOptionsForCartWorkflow(
+              appContainer
+            ).run({ input: { cart_id: cart.id } })
+
+            expect(result1).toHaveLength(1)
+            expect(result1[0].name).toEqual(shippingOption.name)
+
+            setShippingOptionsContextHook = undefined
+
+            const { result: result2 } = await listShippingOptionsForCartWorkflow(
+              appContainer
+            ).run({ input: { cart_id: cart.id } })
+
+            expect(result2).toHaveLength(0)
           })
         })
       })
