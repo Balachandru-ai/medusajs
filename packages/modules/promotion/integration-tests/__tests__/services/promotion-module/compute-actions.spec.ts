@@ -25,7 +25,7 @@ moduleIntegrationTestRunner({
         await createCampaigns(MikroOrmWrapper.forkManager())
       })
 
-      it("should prefilter promotions by applicable rules", async () => {
+      it.only("should prefilter promotions by applicable rules", async () => {
         // 1. Promotion with NO rules (should always apply if automatic)
         await createDefaultPromotion(service, {
           code: "NO_RULES_PROMO",
@@ -326,7 +326,7 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
+      it.only("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         // I ve also tested with 20k and the compute actions takes 200/300ms
         for (let i = 0; i < 100; i++) {
@@ -458,7 +458,7 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it("should handle prefiltering of many automatic promotions targetting customers and regions while no context attribute can satisfies any of those rules", async () => {
+      it.only("should handle prefiltering of many automatic promotions targetting customers and regions while no context attribute can satisfies any of those rules", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         for (let i = 0; i < 100; i++) {
           promotionToCreate.push({

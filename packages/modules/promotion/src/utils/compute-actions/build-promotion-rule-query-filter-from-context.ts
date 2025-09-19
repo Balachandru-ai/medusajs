@@ -165,12 +165,26 @@ export async function buildPromotionRuleQueryFilterFromContext(
   // Handle the case where context has no attributes at all, it means
   // that any promotion that have a rule cant be satisfied by the context
   if (attributeValueMap.size === 0) {
-    // If context has no attributes, exclude all promotions that have any rules
+    // If context has no attributes, exclude all promotions that have any rules (promotion rules, target rules, or buy rules)
     const notExistsSubquery = (alias: string) =>
       `
       NOT EXISTS (
         SELECT 1 FROM promotion_promotion_rule ppr
         WHERE ppr.promotion_id = ${alias}.id
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM promotion p2
+        JOIN promotion_application_method am ON p2.id = am.promotion_id
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        JOIN promotion_rule pr_target ON amtr.promotion_rule_id = pr_target.id
+        WHERE p2.id = ${alias}.id
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM promotion p3
+        JOIN promotion_application_method am2 ON p3.id = am2.promotion_id
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+        JOIN promotion_rule pr_buy ON ambr.promotion_rule_id = pr_buy.id
+        WHERE p3.id = ${alias}.id
       )
     `.trim()
 
@@ -188,18 +202,58 @@ export async function buildPromotionRuleQueryFilterFromContext(
     return null
   }
 
-  const notExistsSubquery = (alias: string) =>
+  // Use efficient CTE-based approach for better performance
+  const attributeKeys = Array.from(attributeValueMap.keys())
+    .map((attr) => `'${attr.replace(/'/g, "''")}'`)
+    .join(",")
+
+  const cteSubquery = (alias: string) =>
     `
-    NOT EXISTS (
-      SELECT 1 FROM promotion_promotion_rule ppr
-      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
-      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
-      WHERE ppr.promotion_id = ${alias}.id
-      AND (${joinedConditions})
+    ${alias}.id IN (
+      WITH promotion_rules_union AS (
+        SELECT ppr.promotion_id as id, pr.id as rule_id, pr.attribute, pr.operator
+        FROM promotion_promotion_rule ppr
+        JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys})
+
+        UNION ALL
+
+        SELECT am.promotion_id as id, pr_target.id as rule_id, pr_target.attribute, pr_target.operator
+        FROM promotion_application_method am
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        JOIN promotion_rule pr_target ON amtr.promotion_rule_id = pr_target.id
+        WHERE pr_target.attribute IN (${attributeKeys})
+
+        UNION ALL
+
+        SELECT am2.promotion_id as id, pr_buy.id as rule_id, pr_buy.attribute, pr_buy.operator
+        FROM promotion_application_method am2
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+        JOIN promotion_rule pr_buy ON ambr.promotion_rule_id = pr_buy.id
+        WHERE pr_buy.attribute IN (${attributeKeys})
+      ),
+      rule_counts AS (
+        SELECT id, COUNT(*) as total_rules
+        FROM promotion_rules_union
+        GROUP BY id
+      ),
+      satisfiable_rules AS (
+        SELECT pru.id, COUNT(*) as satisfiable_count
+        FROM promotion_rules_union pru
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pru.rule_id
+        WHERE NOT (${joinedConditions
+          .replace(/pr\./g, "pru.")
+          .replace(/prv\./g, "prv.")})
+        GROUP BY pru.id
+      )
+      SELECT rc.id
+      FROM rule_counts rc
+      LEFT JOIN satisfiable_rules sr ON rc.id = sr.id
+      WHERE COALESCE(sr.satisfiable_count, 0) = rc.total_rules
     )
   `.trim()
 
   return {
-    [raw((alias) => notExistsSubquery(alias))]: true,
+    [raw((alias) => cteSubquery(alias))]: true,
   }
 }
