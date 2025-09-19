@@ -117,7 +117,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
     // This requires checking that ALL rule values for a given rule are not in context
     if (stringValues.length) {
       sqlConditions.push(
-        `(pru.attribute = ${escapedAttribute} AND pru.operator IN ('in', 'eq') AND pru.rule_id NOT IN (
+        `(pr.attribute = ${escapedAttribute} AND pr.operator IN ('in', 'eq') AND pr.id NOT IN (
         SELECT DISTINCT prv_inner.promotion_rule_id
         FROM promotion_rule_value prv_inner
         WHERE prv_inner.value IN (${stringValues})
@@ -189,56 +189,62 @@ export async function buildPromotionRuleQueryFilterFromContext(
     .map((attr) => `'${attr.replace(/'/g, "''")}'`)
     .join(",")
 
-  // Use efficient CTE approach for better performances overall
-  const cteSubquery = (alias: string) =>
+  // Use NOT IN approach for better performance with large datasets
+  const notInSubquery = (alias: string) =>
     `
-    ${alias}.id IN (
-      WITH promotion_rules_union AS (
-        SELECT ppr.promotion_id as id, pr.id as rule_id, pr.attribute, pr.operator
-        FROM promotion_promotion_rule ppr
-        JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+    ${alias}.id NOT IN (
+      -- Exclude promotions with rules for attributes not in context
+      SELECT DISTINCT ppr.promotion_id
+      FROM promotion_promotion_rule ppr
+      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+      WHERE pr.attribute NOT IN (${attributeKeys})
 
-        UNION ALL
+      UNION
 
-        SELECT am.promotion_id as id, pr_target.id as rule_id, pr_target.attribute, pr_target.operator
-        FROM promotion_application_method am
-        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
-        JOIN promotion_rule pr_target ON amtr.promotion_rule_id = pr_target.id
+      SELECT DISTINCT am.promotion_id
+      FROM promotion_application_method am
+      JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+      JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
+      WHERE pr.attribute NOT IN (${attributeKeys})
 
-        UNION ALL
+      UNION
 
-        SELECT am2.promotion_id as id, pr_buy.id as rule_id, pr_buy.attribute, pr_buy.operator
-        FROM promotion_application_method am2
-        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
-        JOIN promotion_rule pr_buy ON ambr.promotion_rule_id = pr_buy.id
-      ),
-      rule_counts AS (
-        SELECT id, COUNT(*) as total_rules
-        FROM promotion_rules_union
-        GROUP BY id
-      ),
-      promotions_with_unsatisfiable_rules AS (
-        SELECT DISTINCT pru.id
-        FROM promotion_rules_union pru
-        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pru.rule_id
-        WHERE (${joinedConditions
-          .replace(/pr\./g, "pru.")
-          .replace(/prv\./g, "prv.")})
+      SELECT DISTINCT am2.promotion_id
+      FROM promotion_application_method am2
+      JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+      JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
+      WHERE pr.attribute NOT IN (${attributeKeys})
 
-        UNION
+      UNION
 
-        -- Exclude promotions with rules for attributes not in context
-        SELECT DISTINCT pru.id
-        FROM promotion_rules_union pru
-        WHERE pru.attribute NOT IN (${attributeKeys})
-      )
-      SELECT rc.id
-      FROM rule_counts rc
-      WHERE rc.id NOT IN (SELECT id FROM promotions_with_unsatisfiable_rules)
+      -- Exclude promotions with unsatisfiable rules for context attributes
+      SELECT DISTINCT ppr.promotion_id
+      FROM promotion_promotion_rule ppr
+      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+      WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+
+      UNION
+
+      SELECT DISTINCT am.promotion_id
+      FROM promotion_application_method am
+      JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+      JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
+      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+      WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+
+      UNION
+
+      SELECT DISTINCT am2.promotion_id
+      FROM promotion_application_method am2
+      JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+      JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
+      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+      WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
     )
   `.trim()
 
   return {
-    [raw((alias) => cteSubquery(alias))]: true,
+    [raw((alias) => notInSubquery(alias))]: true,
   }
 }

@@ -433,7 +433,89 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it.only("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
+      it("should exclude promotions with rules for attributes not in context", async () => {
+        // Create promotion with mixed attributes - some in context, some not
+        await createDefaultPromotion(service, {
+          code: "MIXED_ATTRIBUTES_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.id",
+              operator: "eq",
+              values: ["customer1"], // This matches context
+            },
+            {
+              attribute: "special_flag", // This attribute NOT in context
+              operator: "eq",
+              values: ["premium"],
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+          },
+        })
+
+        // Create promotion with only context attributes - should be included
+        await createDefaultPromotion(service, {
+          code: "CONTEXT_ONLY_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.id",
+              operator: "eq",
+              values: ["customer1"],
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 50,
+          },
+        })
+
+        // Spy on promotion service to capture prefiltered results
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+          prefilteredPromotions = result
+          return result
+        }
+
+        // Context with limited attributes
+        const testContext = {
+          customer: { id: "customer1" },
+          items: [
+            {
+              id: "item1",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod1" },
+            },
+          ],
+        }
+
+        await service.computeActions([], testContext as any)
+
+        // Restore original method
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // Should only include promotion with context-only attributes
+        expect(prefilteredPromotions).toHaveLength(1)
+        expect(prefilteredPromotions[0].code).toBe("CONTEXT_ONLY_PROMO")
+      })
+
+      it("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         // I ve also tested with 20k and the compute actions takes 200/300ms
         for (let i = 0; i < 100; i++) {
@@ -1794,7 +1876,7 @@ moduleIntegrationTestRunner({
                 value: 400,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -2275,7 +2357,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -2929,7 +3011,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3453,7 +3535,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3996,7 +4078,7 @@ moduleIntegrationTestRunner({
                 value: 200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -4453,7 +4535,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -4549,7 +4631,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
