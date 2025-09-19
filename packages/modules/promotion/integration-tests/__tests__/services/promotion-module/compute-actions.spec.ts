@@ -25,7 +25,114 @@ moduleIntegrationTestRunner({
         await createCampaigns(MikroOrmWrapper.forkManager())
       })
 
-      it.only("should prefilter promotions by applicable rules", async () => {
+      it("edge case: should only return promotions with no rules when context has no attributes", async () => {
+        // Create promotions with different rule configurations
+        const promotionsToCreate: CreatePromotionDTO[] = [
+          // Promotion with no rules - should be returned
+          {
+            code: "NO_RULES_PROMO",
+            is_automatic: true,
+            rules: [], // No global rules
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [], // No target rules
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          },
+          // Promotion with global rules - should NOT be returned
+          {
+            code: "WITH_GLOBAL_RULES",
+            is_automatic: true,
+            rules: [
+              {
+                attribute: "customer.id",
+                operator: "eq",
+                values: ["some_customer"],
+              },
+            ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          },
+          // Promotion with target rules - should NOT be returned
+          {
+            code: "WITH_TARGET_RULES",
+            is_automatic: true,
+            rules: [],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [
+                {
+                  attribute: "product.id",
+                  operator: "eq",
+                  values: ["some_product"],
+                },
+              ],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          },
+        ]
+
+        const promotions = await service.createPromotions(promotionsToCreate)
+        const noRulePromotion = promotions.find(
+          (p) => p.code === "NO_RULES_PROMO"
+        )!
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          // Return nothing to not trigger future context checks
+          return []
+        }
+
+        // Empty context - no attributes at all, should trigger noRulesSubquery
+        const emptyContext = {}
+
+        const actions = await service.computeActions([], emptyContext as any)
+
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // Should only return the promotion with no rules
+        expect(prefilteredPromotions).toHaveLength(1)
+        expect(prefilteredPromotions[0].id).toBe(noRulePromotion.id)
+
+        expect(actions).toHaveLength(0) // No items to apply to
+      })
+
+      it("should prefilter promotions by applicable rules", async () => {
         // 1. Promotion with NO rules (should always apply if automatic)
         await createDefaultPromotion(service, {
           code: "NO_RULES_PROMO",
@@ -39,7 +146,7 @@ moduleIntegrationTestRunner({
             value: 100,
             target_rules: [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "eq",
                 values: ["prod_tshirt0"], // Only applies to product 0
               },
@@ -66,7 +173,7 @@ moduleIntegrationTestRunner({
             value: 100,
             target_rules: [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "eq",
                 values: ["prod_tshirt1"], // Only applies to product 1
               },
@@ -114,7 +221,7 @@ moduleIntegrationTestRunner({
             value: 250, // Different value to distinguish
             target_rules: [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "eq",
                 values: ["prod_tshirt9"], // Only applies to product 9
               },
@@ -141,7 +248,7 @@ moduleIntegrationTestRunner({
             value: 100,
             target_rules: [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "eq",
                 values: ["prod_tshirt0"],
               },
@@ -168,7 +275,7 @@ moduleIntegrationTestRunner({
             value: 100,
             target_rules: [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "eq",
                 values: ["prod_tshirt0"],
               },
@@ -195,7 +302,7 @@ moduleIntegrationTestRunner({
             value: 100,
             target_rules: [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "eq",
                 values: ["prod_tshirt0"],
               },
@@ -326,7 +433,7 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it.only("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
+      it("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         // I ve also tested with 20k and the compute actions takes 200/300ms
         for (let i = 0; i < 100; i++) {
@@ -458,7 +565,7 @@ moduleIntegrationTestRunner({
         ])
       })
 
-      it.only("should handle prefiltering of many automatic promotions targetting customers and regions while no context attribute can satisfies any of those rules", async () => {
+      it("should handle prefiltering of many automatic promotions targetting customers and regions while no context attribute can satisfies any of those rules", async () => {
         const promotionToCreate: CreatePromotionDTO[] = []
         for (let i = 0; i < 100; i++) {
           promotionToCreate.push({

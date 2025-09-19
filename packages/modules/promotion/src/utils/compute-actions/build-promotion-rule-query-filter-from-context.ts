@@ -69,7 +69,6 @@ export async function buildPromotionRuleQueryFilterFromContext(
     })
   })
 
-  // count the number of attributes in the map
   const numberOfAttributes = attributeValueMap.size
   if (numberOfAttributes > 10) {
     const manager = (sharedContext.transactionManager ??
@@ -96,18 +95,9 @@ export async function buildPromotionRuleQueryFilterFromContext(
     })
   }
 
-  // Build conditions for a NOT EXISTS subquery to exclude promotions with unsatisfiable rules
   const sqlConditions: string[] = []
 
-  // First, check for rules where the attribute doesn't exist in context at all
-  // These rules can never be satisfied
-  sqlConditions.push(
-    `pr.attribute NOT IN (${Array.from(attributeValueMap.keys())
-      .map((attr) => `'${attr.replace(/'/g, "''")}'`)
-      .join(",")})`
-  )
-
-  // Then, for attributes that exist in context, check if the values don't satisfy the rules
+  // For each attribute, check if the values don't satisfy the rules
   attributeValueMap.forEach((valueSet, attribute) => {
     const values = Array.from(valueSet)
     const stringValues = values
@@ -121,14 +111,13 @@ export async function buildPromotionRuleQueryFilterFromContext(
       })
       .filter((v) => v !== null) as number[]
 
-    // Escape attribute name to prevent SQL injection
     const escapedAttribute = `'${attribute.replace(/'/g, "''")}'`
 
     // For 'in' and 'eq' operators - rule is unsatisfiable if NO rule values overlap with context
     // This requires checking that ALL rule values for a given rule are not in context
     if (stringValues.length) {
       sqlConditions.push(
-        `(pr.attribute = ${escapedAttribute} AND pr.operator IN ('in', 'eq') AND pr.id NOT IN (
+        `(pru.attribute = ${escapedAttribute} AND pru.operator IN ('in', 'eq') AND pru.rule_id NOT IN (
         SELECT DISTINCT prv_inner.promotion_rule_id
         FROM promotion_rule_value prv_inner
         WHERE prv_inner.value IN (${stringValues})
@@ -166,30 +155,24 @@ export async function buildPromotionRuleQueryFilterFromContext(
   // that any promotion that have a rule cant be satisfied by the context
   if (attributeValueMap.size === 0) {
     // If context has no attributes, exclude all promotions that have any rules (promotion rules, target rules, or buy rules)
-    const notExistsSubquery = (alias: string) =>
+    const noRulesSubquery = (alias: string) =>
       `
-      NOT EXISTS (
-        SELECT 1 FROM promotion_promotion_rule ppr
-        WHERE ppr.promotion_id = ${alias}.id
-      )
-      AND NOT EXISTS (
-        SELECT 1 FROM promotion p2
-        JOIN promotion_application_method am ON p2.id = am.promotion_id
+      ${alias}.id NOT IN (
+        SELECT DISTINCT ppr.promotion_id
+        FROM promotion_promotion_rule ppr
+        UNION
+        SELECT DISTINCT am.promotion_id
+        FROM promotion_application_method am
         JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
-        JOIN promotion_rule pr_target ON amtr.promotion_rule_id = pr_target.id
-        WHERE p2.id = ${alias}.id
-      )
-      AND NOT EXISTS (
-        SELECT 1 FROM promotion p3
-        JOIN promotion_application_method am2 ON p3.id = am2.promotion_id
+        UNION
+        SELECT DISTINCT am2.promotion_id
+        FROM promotion_application_method am2
         JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
-        JOIN promotion_rule pr_buy ON ambr.promotion_rule_id = pr_buy.id
-        WHERE p3.id = ${alias}.id
       )
     `.trim()
 
     return {
-      [raw((alias) => notExistsSubquery(alias))]: true,
+      [raw((alias) => noRulesSubquery(alias))]: true,
     }
   }
 
@@ -207,6 +190,7 @@ export async function buildPromotionRuleQueryFilterFromContext(
     .map((attr) => `'${attr.replace(/'/g, "''")}'`)
     .join(",")
 
+  // Use efficient CTE approach with corrected logic for large datasets
   const cteSubquery = (alias: string) =>
     `
     ${alias}.id IN (
@@ -237,19 +221,17 @@ export async function buildPromotionRuleQueryFilterFromContext(
         FROM promotion_rules_union
         GROUP BY id
       ),
-      satisfiable_rules AS (
-        SELECT pru.id, COUNT(*) as satisfiable_count
+      promotions_with_unsatisfiable_rules AS (
+        SELECT DISTINCT pru.id
         FROM promotion_rules_union pru
         LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pru.rule_id
-        WHERE NOT (${joinedConditions
+        WHERE (${joinedConditions
           .replace(/pr\./g, "pru.")
           .replace(/prv\./g, "prv.")})
-        GROUP BY pru.id
       )
       SELECT rc.id
       FROM rule_counts rc
-      LEFT JOIN satisfiable_rules sr ON rc.id = sr.id
-      WHERE COALESCE(sr.satisfiable_count, 0) = rc.total_rules
+      WHERE rc.id NOT IN (SELECT id FROM promotions_with_unsatisfiable_rules)
     )
   `.trim()
 
