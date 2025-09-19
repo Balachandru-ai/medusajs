@@ -185,7 +185,6 @@ export async function buildPromotionRuleQueryFilterFromContext(
     return null
   }
 
-  // Use efficient CTE-based approach for better performance
   const attributeKeys = Array.from(attributeValueMap.keys())
     .map((attr) => `'${attr.replace(/'/g, "''")}'`)
     .join(",")
