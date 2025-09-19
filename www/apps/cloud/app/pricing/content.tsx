@@ -1,16 +1,18 @@
-"use server"
-
 import { sanityClient } from "../../utils/sanity-client"
 import { PricingQueryResult } from "../../utils/types"
 import HeroPricing from "../../components/Pricing/HeroPricing"
 import { notFound } from "next/navigation"
 import FeatureSections from "../../components/Pricing/FeatureSections"
-import { H2, Hr, Loading } from "docs-ui"
-import { cache, Suspense } from "react"
+import { H2, Hr } from "docs-ui"
 
 export default async function PricingPage() {
-  if (process.env.NEXT_PUBLIC_ENV === "CI") {
-    return <div>Pricing page is not available in the CI environment.</div>
+  if (
+    process.env.NEXT_PUBLIC_ENV === "CI" ||
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+  ) {
+    return (
+      <div>Pricing page is not available in the CI / Preview environment.</div>
+    )
   }
   const data = await loadPricingData()
 
@@ -26,7 +28,7 @@ export default async function PricingPage() {
   }
 
   return (
-    <Suspense fallback={<Loading />}>
+    <div>
       <H2 id="cloud-plans">Cloud Plans</H2>
       <HeroPricing data={heroPricingData.heroPricingFields} />
       <Hr />
@@ -36,11 +38,11 @@ export default async function PricingPage() {
         columnCount={featureTableData.featureTableFields.columnHeaders.length}
         columns={featureTableData.featureTableFields.columnHeaders}
       />
-    </Suspense>
+    </div>
   )
 }
 
-const loadPricingData = cache(async () => {
+const loadPricingData = async () => {
   const data: PricingQueryResult = await sanityClient.fetch(
     `*[
       (_type == "featureTable" && _id == "9cb4e359-786a-4cdb-9334-88ad4ce44f05") ||
@@ -65,4 +67,4 @@ const loadPricingData = cache(async () => {
     }`
   )
   return data
-})
+}
