@@ -102,6 +102,9 @@ export const beginOrderEditOrderWorkflow = createWorkflow(
         created_by: input.created_by,
         description: input.description,
         internal_note: input.internal_note,
+        metadata: {
+          force_expired_promotions: true,
+        },
       }
     })
 

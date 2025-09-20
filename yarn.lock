@@ -6607,7 +6607,7 @@ __metadata:
     "@types/jsonwebtoken": ^8.5.9
     awilix: ^8.0.1
     chokidar: ^3.4.2
-    compression: 1.8.0
+    compression: 1.8.1
     connect-dynamodb: ^3.0.5
     connect-redis: 5.2.0
     cookie-parser: ^1.4.6
@@ -19146,7 +19146,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compression@npm:1.8.0, compression@npm:^1.7.5":
+"compression@npm:1.8.1":
+  version: 1.8.1
+  resolution: "compression@npm:1.8.1"
+  dependencies:
+    bytes: 3.1.2
+    compressible: ~2.0.18
+    debug: 2.6.9
+    negotiator: ~0.6.4
+    on-headers: ~1.1.0
+    safe-buffer: 5.2.1
+    vary: ~1.1.2
+  checksum: 85114b0b91c16594dc8c671cd9b05ef5e465066a60e5a4ed8b4551661303559a896ed17bb72c4234c04064e078f6ca86a34b8690349499a43f6fc4b844475da4
+  languageName: node
+  linkType: hard
+
+"compression@npm:^1.7.5":
   version: 1.8.0
   resolution: "compression@npm:1.8.0"
   dependencies:
@@ -28465,6 +28480,13 @@ __metadata:
   version: 1.0.2
   resolution: "on-headers@npm:1.0.2"
   checksum: f649e65c197bf31505a4c0444875db0258e198292f34b884d73c2f751e91792ef96bb5cf89aa0f4fecc2e4dc662461dda606b1274b0e564f539cae5d2f5fc32f
+  languageName: node
+  linkType: hard
+
+"on-headers@npm:~1.1.0":
+  version: 1.1.0
+  resolution: "on-headers@npm:1.1.0"
+  checksum: 2c3b6b0d68ec9adbd561dc2d61c9b14da8ac03d8a2f0fd9e97bdf0600c887d5d97f664ff3be6876cf40cda6e3c587d73a4745e10b426ac50c7664fc5a0dfc0a1
   languageName: node
   linkType: hard
 

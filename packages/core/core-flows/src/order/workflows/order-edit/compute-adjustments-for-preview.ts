@@ -4,7 +4,7 @@ import {
   OrderDTO,
   PromotionDTO,
 } from "@medusajs/framework/types"
-import { ChangeActionType } from "@medusajs/framework/utils"
+import { ChangeActionType, PromotionStatus } from "@medusajs/framework/utils"
 import {
   createWorkflow,
   transform,
@@ -15,6 +15,7 @@ import {
   getActionsToComputeFromPromotionsStep,
   prepareAdjustmentsFromPromotionActionsStep,
 } from "../../../cart"
+import { useQueryGraphStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 
@@ -65,10 +66,6 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
   function (input: WorkflowData<ComputeAdjustmentsForPreviewWorkflowInput>) {
     const previewedOrder = previewOrderChangeStep(input.order.id)
 
-    const promotions = transform({ order: input.order }, ({ order }) => {
-      return order.promotions.map((p) => p.code).filter((p) => p !== undefined)
-    })
-
     when({ order: input.order }, ({ order }) => !!order.promotions.length).then(
       () => {
         const actionsToComputeItemsInput = transform(
@@ -84,6 +81,40 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
             } as ComputeActionContext
           }
         )
+
+        const orderPromotions = transform(
+          { order: input.order },
+          ({ order }) => {
+            return order.promotions
+              .map((p) => p.code)
+              .filter((p) => p !== undefined)
+          }
+        )
+
+        const promotionFilters = transform(
+          { orderPromotions, orderChange: input.orderChange },
+          ({ orderPromotions, orderChange }) => {
+            const filters = {
+              code: {
+                in: orderPromotions,
+              },
+            }
+
+            if (orderChange.metadata?.force_expired_promotions) {
+              filters.status = {
+                in: [PromotionStatus.ACTIVE, PromotionStatus.ACTIVE],
+              }
+            }
+
+            return filters
+          }
+        )
+
+        const promotions = useQueryGraphStep({
+          entity: "promotion",
+          fields: ["code"],
+          filters: promotionFilters,
+        })
 
         const actions = getActionsToComputeFromPromotionsStep({
           computeActionContext: actionsToComputeItemsInput,

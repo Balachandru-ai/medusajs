@@ -13,9 +13,9 @@ import {
   MedusaError,
   ApplicationMethodTargetType as TargetType,
 } from "@medusajs/framework/utils"
+import { Promotion } from "@models"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
-import { Promotion } from "@models"
 
 function validateContext(
   contextKey: string,

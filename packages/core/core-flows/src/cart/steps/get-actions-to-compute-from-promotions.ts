@@ -54,6 +54,8 @@ export const getActionsToComputeFromPromotionsStep = createStep(
       computeActionContext
     )
 
+    console.log("Actions to compute", actionsToCompute)
+
     return new StepResponse(actionsToCompute)
   }
 )
