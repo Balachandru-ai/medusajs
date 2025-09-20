@@ -1,5 +1,6 @@
 import {
   ComputeActionContext,
+  ComputeActionOptions,
   IPromotionModuleService,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
@@ -17,6 +18,10 @@ export interface GetActionsToComputeFromPromotionsStepInput {
    * The promotion codes applied on the items and shipping methods.
    */
   promotionCodesToApply: string[]
+  /**
+   * The options to configure how the actions are computed.
+   */
+  options?: ComputeActionOptions
 }
 
 export const getActionsToComputeFromPromotionsStepId =
@@ -42,7 +47,7 @@ export const getActionsToComputeFromPromotionsStepId =
 export const getActionsToComputeFromPromotionsStep = createStep(
   getActionsToComputeFromPromotionsStepId,
   async (data: GetActionsToComputeFromPromotionsStepInput, { container }) => {
-    const { computeActionContext, promotionCodesToApply = [] } = data
+    const { computeActionContext, promotionCodesToApply = [], options } = data
 
     
     const promotionService = container.resolve<IPromotionModuleService>(
@@ -51,10 +56,9 @@ export const getActionsToComputeFromPromotionsStep = createStep(
     
     const actionsToCompute = await promotionService.computeActions(
       promotionCodesToApply,
-      computeActionContext
+      computeActionContext,
+      options
     )
-
-    console.log("Actions to compute", actionsToCompute)
 
     return new StepResponse(actionsToCompute)
   }

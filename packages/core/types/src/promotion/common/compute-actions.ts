@@ -262,4 +262,8 @@ export interface ComputeActionOptions {
    * automatically. If not provided, the automatic promotions are applied.
    */
   prevent_auto_promotions?: boolean
+  /**
+   * Whether to apply inactive and expired promotions.
+   */
+  force_all?: boolean
 }
