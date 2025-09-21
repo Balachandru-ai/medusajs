@@ -163,7 +163,7 @@ describe("Entity builder", () => {
           setter: true,
           trackChanges: false,
           type: expect.any(Function),
-          runtimeType: "number",
+          runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
@@ -307,7 +307,7 @@ describe("Entity builder", () => {
           setter: true,
           trackChanges: false,
           type: expect.any(Function),
-          runtimeType: "number",
+          runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
@@ -442,7 +442,7 @@ describe("Entity builder", () => {
           setter: true,
           trackChanges: false,
           type: expect.any(Function),
-          runtimeType: "number",
+          runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
@@ -556,7 +556,7 @@ describe("Entity builder", () => {
           setter: true,
           trackChanges: false,
           type: expect.any(Function),
-          runtimeType: "number",
+          runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
@@ -702,7 +702,7 @@ describe("Entity builder", () => {
           setter: true,
           trackChanges: false,
           type: expect.any(Function),
-          runtimeType: "number",
+          runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
@@ -859,7 +859,7 @@ describe("Entity builder", () => {
           setter: true,
           trackChanges: false,
           type: expect.any(Function),
-          runtimeType: "number",
+          runtimeType: "any",
         },
         created_at: {
           kind: "scalar",

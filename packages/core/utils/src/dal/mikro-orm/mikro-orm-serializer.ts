@@ -72,6 +72,9 @@ function isPopulated(propName: string, populate: string[] | boolean): boolean {
 class RequestScopedSerializationContext {
   readonly propertyNameCache = new Map<string, string>()
   readonly visitedEntities = new WeakSet<object>()
+  //  The buffer essentially replaces what would otherwise be a Set → Array conversion with a more
+  //  efficient pre-allocated array approach, while maintaining the
+  //  deduplication logic via the separate seenKeys Set.
   readonly keyCollectionBuffer = new Array<string>(100) // Pre-allocated buffer for key collection
   keyBufferIndex = 0
 
@@ -96,6 +99,10 @@ class RequestScopedSerializationContext {
   }
 
   getKeys(): string[] {
+    // Avoid slice allocation if buffer is exactly full
+    if (this.keyBufferIndex === this.keyCollectionBuffer.length) {
+      return this.keyCollectionBuffer
+    }
     return this.keyCollectionBuffer.slice(0, this.keyBufferIndex)
   }
 }
@@ -202,28 +209,7 @@ export class EntitySerializer {
     for (let i = 0; i < allKeysLength; i++) {
       const prop = allKeys[i]
 
-      let isPropertyVisible = false
-      if (populate === true) {
-        isPropertyVisible = true
-      } else if (exclude && exclude.includes(prop)) {
-        isPropertyVisible = false
-      } else if (Array.isArray(populate)) {
-        const populateLength = populate.length
-        const propLength = prop.length
-        for (let j = 0; j < populateLength; j++) {
-          const item = populate[j]
-          if (item === WILDCARD || item === prop) {
-            isPropertyVisible = true
-            break
-          }
-          if (item.length > propLength && item[propLength] === DOT) {
-            if (item.slice(0, propLength) === prop) {
-              isPropertyVisible = true
-              break
-            }
-          }
-        }
-      }
+      const isPropertyVisible = isVisible(prop, populate, exclude)
 
       if (!isPropertyVisible) continue
 
@@ -292,33 +278,26 @@ export class EntitySerializer {
       const prop = metaProps[i]
       const propName = prop.name
 
-      if (
-        prop.getter &&
-        !prop.getterName &&
-        entity[propName] !== undefined &&
-        isVisible(propName, populate, exclude)
-      ) {
-        ret[this.propertyName(meta, propName, platform, ctx)] =
-          this.processProperty(
-            propName,
-            entity,
-            populate,
-            exclude,
-            skipNull,
-            preventCircularRef,
-            ignoreSerializers,
-            forceObject,
-            parents,
-            ctx
-          )
+      if (!isVisible(propName, populate, exclude)) continue
+
+      let propertyKey: keyof T & string
+      let shouldProcess = false
+
+      if (prop.getter && !prop.getterName && entity[propName] !== undefined) {
+        propertyKey = propName
+        shouldProcess = true
       } else if (
         prop.getterName &&
-        typeof entity[prop.getterName] === "function" &&
-        isVisible(propName, populate, exclude)
+        typeof entity[prop.getterName] === "function"
       ) {
+        propertyKey = prop.getterName as keyof T & string
+        shouldProcess = true
+      }
+
+      if (shouldProcess) {
         ret[this.propertyName(meta, propName, platform, ctx)] =
           this.processProperty(
-            prop.getterName as keyof T & string,
+            propertyKey!,
             entity,
             populate,
             exclude,
@@ -338,19 +317,9 @@ export class EntitySerializer {
   private static propertyName<T>(
     meta: EntityMetadata<T>,
     prop: string,
-    platform?: Platform,
-    ctx?: RequestScopedSerializationContext
+    platform: Platform,
+    ctx: RequestScopedSerializationContext
   ): string {
-    if (!ctx) {
-      const property = meta.properties[prop]
-      if (property?.serializedName) {
-        return property.serializedName as string
-      } else if (property?.primary && platform) {
-        return platform.getSerializedPrimaryKeyField(prop) as string
-      }
-      return prop
-    }
-
     const cacheKey = `${meta.className}:${prop}:${
       platform?.constructor.name || "none"
     }`

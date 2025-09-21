@@ -1,5 +1,7 @@
 import { EntitySerializer, MikroORM } from "@mikro-orm/core"
 import { defineConfig } from "@mikro-orm/postgresql"
+import express from "express"
+import autocannon, { Result } from "autocannon"
 import {
   Entity1WithUnDecoratedProp,
   Entity2WithUnDecoratedProp,
@@ -205,14 +207,13 @@ describe("mikroOrmSerializer", () => {
     })
   })
 
-  it.skip("should compare the original and new serializer performance", async () => {
+  it.skip("should benchmark serializers with autocannon load testing", async () => {
     const logs: string[] = []
-    logs.push(
-      "🔬 Comparing serializer performance across different dataset sizes..."
-    )
+    logs.push("🚀 Load Testing Serializers with Autocannon")
+    logs.push("=".repeat(80))
 
     // Generate test dataset
-    function generateComparisonProducts(count: number): Product[] {
+    function generateLoadTestProducts(count: number): Product[] {
       const products: Product[] = []
 
       for (let i = 0; i < count; i++) {
@@ -269,254 +270,308 @@ describe("mikroOrmSerializer", () => {
       return products
     }
 
-    // Test configurations
-    const testConfigs = [
-      {
-        name: "Original",
-        serializer: mikroOrmSerializerOld,
-      },
-      {
-        name: "New-optimized",
-        serializer: mikroOrmSerializer,
-      },
-      {
-        name: "MikroOrm",
-        serializer: (products: Product[]) =>
-          products.map((product) =>
-            EntitySerializer.serialize(product, {
-              populate: ["*"],
-              forceObject: true,
-              skipNull: undefined,
-              ignoreSerializers: undefined,
-              exclude: undefined,
-            })
-          ),
-      },
-    ]
-
     // Test different dataset sizes
-    const testSizes = [10, 100, 1000, 10000]
-
-    logs.push("📊 Each dataset contains products with:")
-    logs.push("   - 3 options per product")
-    logs.push("   - 9 option values total (3 per option)")
-    logs.push("   - 2 variants per product")
-    logs.push("   - Complex nested relationships")
-
+    const testSizes = [10, 100, 1000]
     const allResults: Array<{
       size: number
-      results: Array<{ name: string; time: number; speedup: number }>
+      results: Array<{
+        name: string
+        requestsPerSecond: number
+        latency: number
+        latencyP90: number
+        throughput: number
+        errors: number
+      }>
     }> = []
 
     for (const size of testSizes) {
-      logs.push(`\n${"=".repeat(80)}`)
+      logs.push(`\n${"=".repeat(100)}`)
       logs.push(`🎯 TESTING ${size.toLocaleString()} PRODUCTS`)
-      logs.push(`${"=".repeat(80)}`)
+      logs.push(`${"=".repeat(100)}`)
 
-      const testProducts = generateComparisonProducts(size)
-      const sizeResults: Array<{
-        name: string
-        time: number
-        speedup: number
-      }> = []
+      // Create test dataset for this size
+      const testProducts = generateLoadTestProducts(size)
 
-      for (const config of testConfigs) {
-        logs.push(`\n📋 Testing: ${config.name}`)
-        logs.push("-".repeat(50))
+      // Create Express server with serializer endpoints
+      const app = express()
+      app.use(express.json())
 
-        // Run test multiple times for accuracy
-        const times: number[] = []
-        const runs = 5
-
-        for (let run = 0; run < runs; run++) {
-          const start = performance.now()
-          const result = await config.serializer(testProducts)
-          const time = performance.now() - start
-          times.push(time)
-
-          // Verify result is correct
-          expect(result).toHaveLength(size)
-
-          // Only validate structure on first run to save time
-          if (run === 0) {
-            const firstResult = result[0]
-            expect(firstResult).toEqual(
-              expect.objectContaining({
-                id: expect.any(String),
-                name: expect.any(String),
-                options: expect.any(Array),
-                variants: expect.any(Array),
-              })
-            )
-
-            // Validate options array structure (should have 3 options)
-            expect(firstResult.options).toHaveLength(3)
-            expect(firstResult.options[0]).toEqual(
-              expect.objectContaining({
-                id: expect.any(String),
-                name: expect.any(String),
-                values: expect.arrayContaining([
-                  expect.objectContaining({
-                    id: expect.any(String),
-                    name: expect.any(String),
-                    option_id: expect.any(String),
-                    variants: expect.any(Array),
-                  }),
-                ]),
-              })
-            )
-
-            // Validate each option has 3 values
-            firstResult.options.forEach((option: any) => {
-              expect(option.values).toHaveLength(3)
-              option.values.forEach((value: any) => {
-                expect(value).toEqual(
-                  expect.objectContaining({
-                    id: expect.any(String),
-                    name: expect.any(String),
-                    option_id: expect.any(String),
-                    variants: expect.any(Array),
-                  })
-                )
-              })
-            })
-
-            // Validate variants array structure (should have 2 variants)
-            expect(firstResult.variants).toHaveLength(2)
-            expect(firstResult.variants[0]).toEqual(
-              expect.objectContaining({
-                id: expect.any(String),
-                name: expect.any(String),
-                options: expect.arrayContaining([
-                  expect.objectContaining({
-                    id: expect.any(String),
-                    name: expect.any(String),
-                    option_id: expect.any(String),
-                    option: expect.objectContaining({
-                      id: expect.any(String),
-                      name: expect.any(String),
-                    }),
-                  }),
-                ]),
-              })
-            )
-
-            // Validate each variant has exactly 2 option values assigned
-            firstResult.variants.forEach((variant: any) => {
-              expect(variant.options).toHaveLength(2)
-              variant.options.forEach((optionValue: any) => {
-                expect(optionValue).toEqual(
-                  expect.objectContaining({
-                    id: expect.any(String),
-                    name: expect.any(String),
-                    option_id: expect.any(String),
-                    option: expect.objectContaining({
-                      id: expect.any(String),
-                      name: expect.any(String),
-                    }),
-                  })
-                )
-              })
-            })
-          }
-        }
-
-        const avgTime =
-          times.reduce((sum, time) => sum + time, 0) / times.length
-        const minTime = Math.min(...times)
-        const maxTime = Math.max(...times)
-
-        logs.push(`   Average: ${avgTime.toFixed(2)}ms`)
-        logs.push(`   Range: ${minTime.toFixed(2)}ms - ${maxTime.toFixed(2)}ms`)
-        logs.push(
-          `   Throughput: ${(size / (avgTime / 1000)).toFixed(0)} products/sec`
+      app.get("/mikro-orm", (_req, res) => {
+        const result = testProducts.map((product) =>
+          EntitySerializer.serialize(product, {
+            populate: ["*"],
+            forceObject: true,
+            skipNull: undefined,
+            ignoreSerializers: undefined,
+            exclude: undefined,
+          })
         )
+        res.json(result)
+      })
 
-        sizeResults.push({
-          name: config.name,
-          time: avgTime,
-          speedup: 0, // Will calculate after all tests for this size
-        })
+      app.get("/original", (_req, res) => {
+        const result = mikroOrmSerializerOld(testProducts)
+        res.json(result)
+      })
+
+      app.get("/optimized", (_req, res) => {
+        const result = mikroOrmSerializer(testProducts)
+        res.json(result)
+      })
+
+      // Start server
+      const server = app.listen(0) // Use port 0 for automatic port assignment
+      const port = (server.address() as any)?.port
+
+      if (!port) {
+        throw new Error("Failed to start server")
       }
 
-      // Calculate speedups relative to original for this size
-      const baselineTime = sizeResults[0].time
-      sizeResults.forEach((result) => {
-        result.speedup = baselineTime / result.time
-      })
+      logs.push(`🖥️  Server started on port ${port}`)
+      logs.push(`📊 Testing with ${testProducts.length} products per request`)
 
-      logs.push(
-        `\n🎯 Performance Summary for ${size.toLocaleString()} products:`
-      )
-      logs.push("-".repeat(80))
-      logs.push(
-        `${"Configuration".padEnd(30)} ${"Time".padEnd(12)} ${"Speedup".padEnd(
-          12
-        )} ${"Throughput"}`
-      )
-      logs.push("-".repeat(80))
+      try {
+        // Autocannon test configurations
+        const testConfigs = [
+          { name: "MikroOrm", path: "/mikro-orm" },
+          { name: "Original", path: "/original" },
+          { name: "Optimized", path: "/optimized" },
+        ]
 
-      sizeResults.forEach((result) => {
-        const speedupText =
-          result.speedup === 1
-            ? "baseline"
-            : `${result.speedup.toFixed(1)}x faster`
-        const throughput = `${(size / (result.time / 1000)).toFixed(
-          0
-        )} products/sec`
+        const sizeResults: Array<{
+          name: string
+          requestsPerSecond: number
+          latency: number
+          latencyP90: number
+          throughput: number
+          errors: number
+        }> = []
+
+        for (const config of testConfigs) {
+          logs.push(`\n🔥 Load testing: ${config.name}`)
+          logs.push("-".repeat(50))
+
+          const result = await new Promise<Result>((resolve, reject) => {
+            autocannon(
+              {
+                url: `http://localhost:${port}${config.path}`,
+                connections: 10,
+                duration: 20, // 10 seconds
+                pipelining: 1,
+              },
+              (err, result) => {
+                if (err) {
+                  reject(err)
+                } else {
+                  resolve(result!)
+                }
+              }
+            )
+          })
+
+          const requestsPerSecond = result.requests.average
+          const latency = result.latency.average
+          const latencyP90 = result.latency.p90
+          const throughput = result.throughput.average
+          const errors = result.errors
+
+          logs.push(`   Requests/sec: ${requestsPerSecond.toFixed(2)}`)
+          logs.push(`   Avg Latency: ${latency.toFixed(2)}ms`)
+          logs.push(`   P90 Latency: ${latencyP90.toFixed(2)}ms`)
+          logs.push(
+            `   Throughput: ${(throughput / 1024 / 1024).toFixed(2)} MB/s`
+          )
+          logs.push(`   Errors: ${errors}`)
+
+          sizeResults.push({
+            name: config.name,
+            requestsPerSecond,
+            latency,
+            latencyP90,
+            throughput,
+            errors,
+          })
+        }
+
+        // Generate comparison table for this size
         logs.push(
-          `${result.name.padEnd(30)} ${result.time
-            .toFixed(2)
-            .padStart(8)}ms    ${speedupText.padEnd(12)} ${throughput}`
+          `\n📈 Load Testing Performance Comparison for ${size} products:`
         )
-      })
+        logs.push("-".repeat(140))
+        logs.push(
+          `${"Serializer".padEnd(15)} ${"Requests/sec".padEnd(
+            15
+          )} ${"Avg Latency (ms)".padEnd(18)} ${"P90 Latency (ms)".padEnd(
+            18
+          )} ${"Throughput (MB/s)".padEnd(18)} ${"Errors".padEnd(
+            10
+          )} ${"RPS Improvement"}`
+        )
+        logs.push("-".repeat(140))
 
-      allResults.push({ size, results: sizeResults })
+        const baselineRps = sizeResults[0].requestsPerSecond // MikroOrm as baseline
+
+        sizeResults.forEach((result) => {
+          const rpsImprovement = result.requestsPerSecond / baselineRps
+          const improvementText =
+            rpsImprovement === 1 ? "baseline" : `${rpsImprovement.toFixed(1)}x`
+
+          logs.push(
+            `${result.name.padEnd(15)} ${result.requestsPerSecond
+              .toFixed(2)
+              .padEnd(15)} ${result.latency
+              .toFixed(2)
+              .padEnd(18)} ${result.latencyP90.toFixed(2).padEnd(18)} ${(
+              result.throughput /
+              1024 /
+              1024
+            )
+              .toFixed(2)
+              .padEnd(18)} ${result.errors
+              .toString()
+              .padEnd(10)} ${improvementText}`
+          )
+        })
+
+        logs.push(`\n🎯 Key Insights for ${size} products:`)
+        const optimizedResult = sizeResults.find((r) => r.name === "Optimized")
+        const originalResult = sizeResults.find((r) => r.name === "Original")
+        const mikroOrmResult = sizeResults.find((r) => r.name === "MikroOrm")
+
+        if (optimizedResult && originalResult && mikroOrmResult) {
+          const rpsImprovementVsOriginal =
+            optimizedResult.requestsPerSecond / originalResult.requestsPerSecond
+          const rpsImprovementVsMikroOrm =
+            optimizedResult.requestsPerSecond / mikroOrmResult.requestsPerSecond
+          const latencyImprovementVsOriginal =
+            ((originalResult.latency - optimizedResult.latency) /
+              originalResult.latency) *
+            100
+
+          logs.push(
+            `   • Optimized serializer handles ${rpsImprovementVsOriginal.toFixed(
+              1
+            )}x more requests/sec than Original`
+          )
+          logs.push(
+            `   • Optimized serializer handles ${rpsImprovementVsMikroOrm.toFixed(
+              1
+            )}x more requests/sec than MikroOrm`
+          )
+          logs.push(
+            `   • ${latencyImprovementVsOriginal.toFixed(
+              1
+            )}% lower latency compared to Original serializer`
+          )
+        }
+
+        allResults.push({ size, results: sizeResults })
+      } finally {
+        // Clean up server
+        server.close()
+        logs.push(`\n🔴 Server stopped for ${size} products test`)
+      }
     }
 
-    logs.push(`\n\n${"=".repeat(100)}`)
-    logs.push("📊 COMPREHENSIVE PERFORMANCE ANALYSIS")
-    logs.push(`${"=".repeat(100)}`)
+    // Generate comprehensive comparison across all sizes
+    logs.push(`\n\n${"=".repeat(150)}`)
+    logs.push("📊 COMPREHENSIVE AUTOCANNON LOAD TESTING ANALYSIS")
+    logs.push(`${"=".repeat(150)}`)
 
-    // Performance scaling analysis
-    logs.push("\n📈 Performance Scaling Analysis:")
-    logs.push("-".repeat(170))
+    logs.push("\n🚀 Autocannon Load Testing Scaling Analysis:")
+    logs.push("-".repeat(140))
     logs.push(
-      `${"Size".padEnd(12)} ${"MikroOrm (ms)".padEnd(
-        15
-      )} ${"Original (ms)".padEnd(15)} ${"Optimized (ms)".padEnd(
-        16
-      )} ${"Speedup from MikroOrm".padEnd(20)} ${"Speedup from Original".padEnd(
+      `${"Size".padEnd(12)} ${"RPS (M/O/Op)".padEnd(
         20
-      )} ${"Time Saved from MikroOrm".padEnd(23)} ${"Time Saved from Original"}`
+      )} ${"Avg Latency (M/O/Op)".padEnd(22)} ${"P90 Latency (M/O/Op)".padEnd(
+        22
+      )} ${"Throughput MB/s (M/O/Op)".padEnd(
+        25
+      )} ${"Speedup vs M (O/Op)".padEnd(18)} ${"Speedup vs O (Op)"}`
     )
-    logs.push("-".repeat(170))
+    logs.push("-".repeat(140))
 
     allResults.forEach(({ size, results }) => {
       const mikroOrm = results.find((r) => r.name === "MikroOrm")
       const original = results.find((r) => r.name === "Original")
-      const optimized = results.find((r) => r.name === "New-optimized")
+      const optimized = results.find((r) => r.name === "Optimized")
       if (original && optimized && mikroOrm) {
-        const improvementFromOriginal =
-          ((original.time - optimized.time) / original.time) * 100
-        const improvementFromMikroOrm =
-          ((mikroOrm.time - optimized.time) / mikroOrm.time) * 100
-        const speedupFromOriginal = original.time / optimized.time
-        const speedupFromMikroOrm = mikroOrm.time / optimized.time
+        const speedupOptimizedVsMikroOrm =
+          optimized.requestsPerSecond / mikroOrm.requestsPerSecond
+        const speedupOptimizedVsOriginal =
+          optimized.requestsPerSecond / original.requestsPerSecond
+        const speedupOriginalVsMikroOrm =
+          original.requestsPerSecond / mikroOrm.requestsPerSecond
+
+        const rpsValues = `${mikroOrm.requestsPerSecond.toFixed(
+          1
+        )}/${original.requestsPerSecond.toFixed(
+          1
+        )}/${optimized.requestsPerSecond.toFixed(1)}`
+        const avgLatencyValues = `${mikroOrm.latency.toFixed(
+          1
+        )}/${original.latency.toFixed(1)}/${optimized.latency.toFixed(1)}`
+        const p90LatencyValues = `${mikroOrm.latencyP90.toFixed(
+          1
+        )}/${original.latencyP90.toFixed(1)}/${optimized.latencyP90.toFixed(1)}`
+        const throughputValues = `${(mikroOrm.throughput / 1024 / 1024).toFixed(
+          1
+        )}/${(original.throughput / 1024 / 1024).toFixed(1)}/${(
+          optimized.throughput /
+          1024 /
+          1024
+        ).toFixed(1)}`
+        const speedupVsMikroOrm = `${speedupOriginalVsMikroOrm.toFixed(
+          1
+        )}x/${speedupOptimizedVsMikroOrm.toFixed(1)}x`
+        const speedupVsOriginal = `${speedupOptimizedVsOriginal.toFixed(1)}x`
+
         logs.push(
-          `${size.toLocaleString().padEnd(12)} ${mikroOrm.time
-            .toFixed(2)
-            .padEnd(15)} ${original.time.toFixed(2).padEnd(15)} ${optimized.time
-            .toFixed(2)
-            .padEnd(16)} ${(speedupFromMikroOrm.toFixed(1) + "x").padEnd(
+          `${size.toLocaleString().padEnd(12)} ${rpsValues.padEnd(
             20
-          )} ${(speedupFromOriginal.toFixed(1) + "x").padEnd(20)} ${(
-            improvementFromMikroOrm.toFixed(1) + "%"
-          ).padEnd(23)} ${improvementFromOriginal.toFixed(1)}%`
+          )} ${avgLatencyValues.padEnd(22)} ${p90LatencyValues.padEnd(
+            22
+          )} ${throughputValues.padEnd(25)} ${speedupVsMikroOrm.padEnd(
+            18
+          )} ${speedupVsOriginal}`
+        )
+      }
+    })
+
+    logs.push(`\n🎯 Overall Load Testing Performance Summary:`)
+    allResults.forEach(({ size, results }) => {
+      const optimized = results.find((r) => r.name === "Optimized")
+      const original = results.find((r) => r.name === "Original")
+      const mikroOrm = results.find((r) => r.name === "MikroOrm")
+
+      if (optimized && original && mikroOrm) {
+        const rpsGainVsOriginal =
+          ((optimized.requestsPerSecond - original.requestsPerSecond) /
+            original.requestsPerSecond) *
+          100
+        const rpsGainVsMikroOrm =
+          ((optimized.requestsPerSecond - mikroOrm.requestsPerSecond) /
+            mikroOrm.requestsPerSecond) *
+          100
+
+        logs.push(`\n   📈 ${size} products:`)
+        logs.push(
+          `      • +${rpsGainVsOriginal.toFixed(
+            1
+          )}% more requests/sec vs Original (${original.requestsPerSecond.toFixed(
+            1
+          )} → ${optimized.requestsPerSecond.toFixed(1)})`
+        )
+        logs.push(
+          `      • +${rpsGainVsMikroOrm.toFixed(
+            1
+          )}% more requests/sec vs MikroOrm (${mikroOrm.requestsPerSecond.toFixed(
+            1
+          )} → ${optimized.requestsPerSecond.toFixed(1)})`
         )
       }
     })
 
     console.log(logs.join("\n"))
-  }, 6000000)
+  }, 1200000)
 })
