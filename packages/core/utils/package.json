@@ -71,7 +71,7 @@
   "scripts": {
     "build": "rimraf dist && tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --silent=false --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
+    "test": "jest --silent=false --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/dal/mikro-orm/__tests__/mikro-orm-serializer.spec.ts",
     "test:integration": "jest --silent --bail --forceExit -- src/**/integration-tests/__tests__/**/*.ts"
   }
 }

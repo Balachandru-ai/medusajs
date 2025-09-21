@@ -97,7 +97,7 @@ export function MikroOrmBigNumberProperty(
       type: BigNumberNumeric,
       columnType: "numeric",
       trackChanges: false,
-      runtimeType: "number",
+      runtimeType: "any",
       ...options,
     })(target, columnName)
   }

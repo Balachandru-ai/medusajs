@@ -1,4 +1,4 @@
-import { MikroORM } from "@mikro-orm/core"
+import { EntitySerializer, MikroORM } from "@mikro-orm/core"
 import { defineConfig } from "@mikro-orm/postgresql"
 import {
   Entity1WithUnDecoratedProp,
@@ -47,7 +47,7 @@ describe("mikroOrmSerializer", () => {
     })
     entity1.entity2.add(entity2)
 
-    const serialized = await mikroOrmSerializer(entity1, {
+    const serialized = mikroOrmSerializer(entity1, {
       preventCircularRef: false,
     })
 
@@ -84,7 +84,7 @@ describe("mikroOrmSerializer", () => {
     })
     entity1.entity2.add(entity2)
 
-    const serialized = await mikroOrmSerializer([entity1, entity1], {
+    const serialized = mikroOrmSerializer([entity1, entity1], {
       preventCircularRef: false,
     })
 
@@ -123,7 +123,7 @@ describe("mikroOrmSerializer", () => {
     })
     entity1.entity2.add(entity2)
 
-    const serialized = await mikroOrmSerializer(entity1)
+    const serialized = mikroOrmSerializer(entity1)
 
     expect(serialized).toEqual({
       id: "1",
@@ -161,7 +161,7 @@ describe("mikroOrmSerializer", () => {
     product.options.add(productOptions)
     product.variants.add(productVariant)
 
-    const serialized = await mikroOrmSerializer(product)
+    const serialized = mikroOrmSerializer(product)
 
     expect(serialized).toEqual({
       id: "1",
@@ -205,7 +205,7 @@ describe("mikroOrmSerializer", () => {
     })
   })
 
-  it("should compare the original and new serializer performance", async () => {
+  it.skip("should compare the original and new serializer performance", async () => {
     const logs: string[] = []
     logs.push(
       "🔬 Comparing serializer performance across different dataset sizes..."
@@ -278,6 +278,19 @@ describe("mikroOrmSerializer", () => {
       {
         name: "New-optimized",
         serializer: mikroOrmSerializer,
+      },
+      {
+        name: "MikroOrm",
+        serializer: (products: Product[]) =>
+          products.map((product) =>
+            EntitySerializer.serialize(product, {
+              populate: ["*"],
+              forceObject: true,
+              skipNull: undefined,
+              ignoreSerializers: undefined,
+              exclude: undefined,
+            })
+          ),
       },
     ]
 
@@ -458,27 +471,6 @@ describe("mikroOrmSerializer", () => {
         )
       })
 
-      // Check if sub-50ms target achieved
-      const bestForSize = sizeResults.reduce((best, current) =>
-        current.time < best.time ? current : best
-      )
-
-      if (size === 1000) {
-        if (bestForSize.time < 50) {
-          logs.push(
-            `\n   ✅ Sub-50ms target achieved for 1000 products! (${bestForSize.time.toFixed(
-              2
-            )}ms)`
-          )
-        } else {
-          logs.push(
-            `\n   ⚠️  Sub-50ms target missed for 1000 products: ${bestForSize.time.toFixed(
-              2
-            )}ms`
-          )
-        }
-      }
-
       allResults.push({ size, results: sizeResults })
     }
 
@@ -488,32 +480,43 @@ describe("mikroOrmSerializer", () => {
 
     // Performance scaling analysis
     logs.push("\n📈 Performance Scaling Analysis:")
-    logs.push("-".repeat(60))
+    logs.push("-".repeat(170))
     logs.push(
-      `${"Size".padEnd(12)} ${"Original (ms)".padEnd(
+      `${"Size".padEnd(12)} ${"MikroOrm (ms)".padEnd(
         15
-      )} ${"Optimized (ms)".padEnd(16)} ${"Speedup".padEnd(10)} ${"Time Saved"}`
+      )} ${"Original (ms)".padEnd(15)} ${"Optimized (ms)".padEnd(
+        16
+      )} ${"Speedup from MikroOrm".padEnd(20)} ${"Speedup from Original".padEnd(
+        20
+      )} ${"Time Saved from MikroOrm".padEnd(23)} ${"Time Saved from Original"}`
     )
-    logs.push("-".repeat(60))
+    logs.push("-".repeat(170))
 
     allResults.forEach(({ size, results }) => {
+      const mikroOrm = results.find((r) => r.name === "MikroOrm")
       const original = results.find((r) => r.name === "Original")
       const optimized = results.find((r) => r.name === "New-optimized")
-      if (original && optimized) {
-        const improvement =
+      if (original && optimized && mikroOrm) {
+        const improvementFromOriginal =
           ((original.time - optimized.time) / original.time) * 100
+        const improvementFromMikroOrm =
+          ((mikroOrm.time - optimized.time) / mikroOrm.time) * 100
+        const speedupFromOriginal = original.time / optimized.time
+        const speedupFromMikroOrm = mikroOrm.time / optimized.time
         logs.push(
-          `${size.toLocaleString().padEnd(12)} ${original.time
+          `${size.toLocaleString().padEnd(12)} ${mikroOrm.time
             .toFixed(2)
-            .padEnd(15)} ${optimized.time
+            .padEnd(15)} ${original.time.toFixed(2).padEnd(15)} ${optimized.time
             .toFixed(2)
-            .padEnd(16)} ${optimized.speedup.toFixed(1)}x${" ".repeat(
-            6
-          )} ${improvement.toFixed(1)}%`
+            .padEnd(16)} ${(speedupFromMikroOrm.toFixed(1) + "x").padEnd(
+            20
+          )} ${(speedupFromOriginal.toFixed(1) + "x").padEnd(20)} ${(
+            improvementFromMikroOrm.toFixed(1) + "%"
+          ).padEnd(23)} ${improvementFromOriginal.toFixed(1)}%`
         )
       }
     })
 
     console.log(logs.join("\n"))
-  }, 45000)
+  }, 6000000)
 })

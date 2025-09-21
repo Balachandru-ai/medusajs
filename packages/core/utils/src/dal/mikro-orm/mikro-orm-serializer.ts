@@ -252,44 +252,18 @@ export class EntitySerializer {
       const cycle = root.visit(className, prop)
       if (cycle && visited) continue
 
-      const propValue = entity[prop as keyof T]
-
-      let val: any
-
-      if (
-        propValue === null ||
-        propValue === undefined ||
-        typeof propValue === "string" ||
-        typeof propValue === "number" ||
-        typeof propValue === "boolean"
-      ) {
-        const property = wrapped.__meta.properties[prop]
-        if (!ignoreSerializers && property?.serializer) {
-          val = property.serializer(propValue)
-        } else {
-          val = propValue
-        }
-      } else if (typeof propValue === "function") {
-        const returnValue = (propValue as any)()
-        if (!ignoreSerializers && propMeta?.serializer) {
-          val = propMeta.serializer(returnValue)
-        } else {
-          val = returnValue
-        }
-      } else {
-        val = this.processProperty<T>(
-          prop as keyof T & string,
-          entity,
-          populate,
-          exclude,
-          skipNull,
-          preventCircularRef,
-          ignoreSerializers,
-          forceObject,
-          parents,
-          ctx
-        )
-      }
+      const val = this.processProperty<T>(
+        prop as keyof T & string,
+        entity,
+        populate,
+        exclude,
+        skipNull,
+        preventCircularRef,
+        ignoreSerializers,
+        forceObject,
+        parents,
+        ctx
+      )
 
       if (!cycle) root.leave(className, prop)
 
@@ -670,61 +644,58 @@ export const mikroOrmSerializer = <TOutput extends object>(
       populate: string[] | boolean | undefined
     }
   >
-): Promise<TOutput> => {
-  return Promise.resolve().then(() => {
-    const ctx = new RequestScopedSerializationContext()
+): TOutput => {
+  const ctx = new RequestScopedSerializationContext()
 
-    const finalOptions = options
-      ? {
-          populate:
-            Array.isArray(options.populate) &&
-            options.populate?.includes(WILDCARD)
-              ? true
-              : options.populate ?? STATIC_OPTIONS_SHAPE.populate,
-          exclude: options.exclude,
-          preventCircularRef:
-            options.preventCircularRef ??
-            STATIC_OPTIONS_SHAPE.preventCircularRef,
-          skipNull: options.skipNull ?? STATIC_OPTIONS_SHAPE.skipNull,
-          ignoreSerializers:
-            options.ignoreSerializers ?? STATIC_OPTIONS_SHAPE.ignoreSerializers,
-          forceObject: options.forceObject ?? STATIC_OPTIONS_SHAPE.forceObject,
-        }
-      : STATIC_OPTIONS_SHAPE
-
-    if (!Array.isArray(data)) {
-      if (data?.__meta) {
-        return EntitySerializer.serialize(
-          data,
-          finalOptions,
-          EMPTY_ARRAY,
-          ctx
-        ) as TOutput
+  const finalOptions = options
+    ? {
+        populate:
+          Array.isArray(options.populate) &&
+          options.populate?.includes(WILDCARD)
+            ? true
+            : options.populate ?? STATIC_OPTIONS_SHAPE.populate,
+        exclude: options.exclude,
+        preventCircularRef:
+          options.preventCircularRef ?? STATIC_OPTIONS_SHAPE.preventCircularRef,
+        skipNull: options.skipNull ?? STATIC_OPTIONS_SHAPE.skipNull,
+        ignoreSerializers:
+          options.ignoreSerializers ?? STATIC_OPTIONS_SHAPE.ignoreSerializers,
+        forceObject: options.forceObject ?? STATIC_OPTIONS_SHAPE.forceObject,
       }
-      return data as TOutput
+    : STATIC_OPTIONS_SHAPE
+
+  if (!Array.isArray(data)) {
+    if (data?.__meta) {
+      return EntitySerializer.serialize(
+        data,
+        finalOptions,
+        EMPTY_ARRAY,
+        ctx
+      ) as TOutput
     }
+    return data as TOutput
+  }
 
-    const dataLength = data.length
-    if (dataLength === 0) {
-      return [] as unknown as TOutput
+  const dataLength = data.length
+  if (dataLength === 0) {
+    return [] as unknown as TOutput
+  }
+
+  const result = new Array(dataLength)
+
+  for (let i = 0; i < dataLength; i++) {
+    const item = data[i]
+    if (item?.__meta) {
+      result[i] = EntitySerializer.serialize(
+        item,
+        finalOptions,
+        EMPTY_ARRAY,
+        ctx
+      )
+    } else {
+      result[i] = item
     }
+  }
 
-    const result = new Array(dataLength)
-
-    for (let i = 0; i < dataLength; i++) {
-      const item = data[i]
-      if (item?.__meta) {
-        result[i] = EntitySerializer.serialize(
-          item,
-          finalOptions,
-          EMPTY_ARRAY,
-          ctx
-        )
-      } else {
-        result[i] = item
-      }
-    }
-
-    return result as TOutput
-  })
+  return result as TOutput
 }
