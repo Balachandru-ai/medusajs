@@ -123,7 +123,7 @@ const Header = () => {
           ) : (
             <Skeleton className="h-6 w-6 rounded-md" />
           )}
-          <div className="block overflow-hidden text-left">
+          <div className="block overflow-hidden text-start">
             {name ? (
               <Text
                 size="small"
@@ -269,7 +269,7 @@ const Searchbar = () => {
         )}
       >
         <MagnifyingGlass />
-        <div className="flex-1 text-left">
+        <div className="flex-1 text-start">
           <Text size="small" leading="compact" weight="plus">
             {t("app.search.label")}
           </Text>

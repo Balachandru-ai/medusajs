@@ -624,7 +624,8 @@ export const CreatePromotionForm = () => {
                                   </div>
                                   <Form.Control className="mr-2 self-center">
                                     <Switch
-                                      className="mt-[2px]"
+                                      dir="ltr"
+                                      className="mt-[2px] rtl:rotate-180"
                                       checked={!!value}
                                       onCheckedChange={onChange}
                                       {...field}
