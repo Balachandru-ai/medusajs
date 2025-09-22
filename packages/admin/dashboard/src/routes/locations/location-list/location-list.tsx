@@ -73,7 +73,6 @@ export function LocationList() {
             pageSize={PAGE_SIZE}
             getRowId={(row) => row.id}
             rowHref={(row) => `/settings/locations/${row.id}`}
-            isLoading={isLoading}
             enableSearch={true}
             prefix={PREFIX}
             layout="fill"
