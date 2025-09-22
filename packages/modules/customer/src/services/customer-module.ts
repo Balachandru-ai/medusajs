@@ -21,7 +21,6 @@ import {
   MedusaContext,
   MedusaService,
 } from "@medusajs/framework/utils"
-import { EntityManager } from "@medusajs/framework/mikro-orm/core"
 import {
   Customer,
   CustomerAddress,

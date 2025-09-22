@@ -9,10 +9,11 @@ import {
   PerformedActions,
   UpsertWithReplaceConfig,
 } from "@medusajs/types"
-import type {
-  EntityClass,
-  EntityManager,
-  EntitySchema,
+import {
+  EventType,
+  type EntityClass,
+  type EntityManager,
+  type EntitySchema,
 } from "@medusajs/deps/mikro-orm/core"
 import {
   isDefined,
