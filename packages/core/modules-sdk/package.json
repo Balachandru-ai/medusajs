@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/modules-sdk",
-  "version": "2.10.1",
+  "version": "2.10.3",
   "description": "SDK for medusa modules",
   "main": "dist/index.js",
   "export": {
@@ -39,10 +39,10 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@medusajs/deps": "2.10.1",
-    "@medusajs/orchestration": "2.10.1",
-    "@medusajs/types": "2.10.1",
-    "@medusajs/utils": "2.10.1"
+    "@medusajs/deps": "2.10.3",
+    "@medusajs/orchestration": "2.10.3",
+    "@medusajs/types": "2.10.3",
+    "@medusajs/utils": "2.10.3"
   },
   "peerDependencies": {
     "express": "^4.21.0"
