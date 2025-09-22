@@ -172,8 +172,8 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
             calculatedPriceSet = calculatedPriceSets[item_.variant_id!]
           }
 
-          if (!calculatedPriceSet) {
-            priceNotFound.push(item_.variant_id!)
+          if (!calculatedPriceSet && item_.variant_id) {
+            priceNotFound.push(item_.variant_id)
           }
 
           const variant = variantsData.find((v) => v.id === item.variant_id)
@@ -193,7 +193,7 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
             isTaxInclusive:
               item_.is_tax_inclusive ??
               calculatedPriceSet?.is_calculated_price_tax_inclusive,
-            isCustomPrice: item_.is_custom_price ?? isDefined(item?.unit_price),
+            isCustomPrice: isCustomPrice,
           }
 
           if (variant && !isCustomPrice) {
