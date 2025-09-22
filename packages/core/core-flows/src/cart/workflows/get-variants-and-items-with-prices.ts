@@ -105,7 +105,7 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
         const baseContext = {
           ...filterObjectByKeys(cart, cartFieldsForPricingContext),
           ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
-          currency_code: cart.currency_code,
+          currency_code: cart.currency_code ?? cart.region?.currency_code,
           region_id: cart.region_id,
           region: cart.region,
           customer_id: cart.customer_id,

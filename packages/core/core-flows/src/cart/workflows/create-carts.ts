@@ -150,6 +150,7 @@ export const createCartWorkflow = createWorkflow(
       input: {
         cart: {
           currency_code: input.currency_code,
+          region,
           region_id: region.id,
           customer_id: customerData.customer?.id,
         },
