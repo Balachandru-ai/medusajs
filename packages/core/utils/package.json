@@ -26,6 +26,7 @@
   "author": "Medusa",
   "license": "MIT",
   "devDependencies": {
+    "@medusajs/types": "2.10.3",
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",
     "@types/express": "^4.17.21",
@@ -42,7 +43,6 @@
     "@graphql-tools/merge": "^9.0.7",
     "@graphql-tools/schema": "^10.0.6",
     "@medusajs/deps": "2.10.3",
-    "@medusajs/types": "2.10.3",
     "@types/pluralize": "^0.0.33",
     "bignumber.js": "^9.1.2",
     "dotenv": "^16.4.5",
