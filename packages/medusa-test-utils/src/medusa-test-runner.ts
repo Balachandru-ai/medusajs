@@ -335,6 +335,7 @@ export function medusaIntegrationTestRunner({
   testSuite,
   hooks,
   cwd,
+  disableAutoTeardown,
 }: {
   moduleName?: string
   env?: Record<string, any>
@@ -346,6 +347,7 @@ export function medusaIntegrationTestRunner({
   testSuite: (options: MedusaSuiteOptions) => void
   hooks?: TestRunnerConfig["hooks"]
   cwd?: string
+  disableAutoTeardown?: boolean
 }) {
   const runner = new MedusaTestRunner({
     moduleName,
@@ -357,6 +359,7 @@ export function medusaIntegrationTestRunner({
     inApp,
     hooks,
     cwd,
+    disableAutoTeardown,
   })
 
   return describe("", () => {
