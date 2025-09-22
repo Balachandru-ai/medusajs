@@ -207,7 +207,7 @@ describe("mikroOrmSerializer", () => {
     })
   })
 
-  it.only("should benchmark serializers with autocannon load testing", async () => {
+  it.skip("should benchmark serializers with autocannon load testing", async () => {
     const logs: string[] = []
     logs.push("🚀 Load Testing Serializers with Autocannon")
     logs.push("=".repeat(80))
@@ -333,8 +333,8 @@ describe("mikroOrmSerializer", () => {
       try {
         // Autocannon test configurations
         const testConfigs = [
-          // { name: "MikroOrm", path: "/mikro-orm" },
-          // { name: "Original", path: "/original" },
+          { name: "MikroOrm", path: "/mikro-orm" },
+          { name: "Original", path: "/original" },
           { name: "Optimized", path: "/optimized" },
         ]
 
