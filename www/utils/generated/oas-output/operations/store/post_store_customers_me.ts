@@ -55,6 +55,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to update their details
  *       sdk.store.customer.update({
  *         first_name: "John"
  *       })

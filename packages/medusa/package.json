@@ -44,7 +44,7 @@
     "watch": "tsc --build --watch",
     "build": "rimraf dist && tsc --build",
     "serve": "node dist/app.js",
-    "test": "jest --runInBand --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
+    "test": "jest --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
     "test:integration": "jest --forceExit -- src/**/integration-tests/**/__tests__/**/*.ts"
   },
   "devDependencies": {

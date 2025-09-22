@@ -23,7 +23,7 @@ export const ENTITY_MAPPINGS = {
     computedColumns: {
       customer_display: {
         name: "Customer",
-        computation_type: "customer_name",
+        render_type: "customer_name",
         required_fields: [
           "customer.first_name",
           "customer.last_name",
@@ -34,7 +34,7 @@ export const ENTITY_MAPPINGS = {
       },
       shipping_address_display: {
         name: "Shipping Address",
-        computation_type: "address_summary",
+        render_type: "address_summary",
         required_fields: [
           "shipping_address.city",
           "shipping_address.country_code",
@@ -48,7 +48,7 @@ export const ENTITY_MAPPINGS = {
       },
       billing_address_display: {
         name: "Billing Address",
-        computation_type: "address_summary",
+        render_type: "address_summary",
         required_fields: [
           "billing_address.city",
           "billing_address.country_code",
@@ -62,7 +62,7 @@ export const ENTITY_MAPPINGS = {
       },
       country: {
         name: "Country",
-        computation_type: "country_code",
+        render_type: "country_code",
         required_fields: ["shipping_address.country_code"],
         optional_fields: [],
         default_visible: true,
@@ -73,18 +73,47 @@ export const ENTITY_MAPPINGS = {
     serviceName: "product",
     graphqlType: "Product",
     defaultVisibleFields: [
-      "title",
-      "handle",
+      "product_display",
+      "collection.title",
+      "sales_channels_display",
+      "variants_count",
       "status",
-      "created_at",
-      "updated_at",
     ],
     fieldFilters: {
       excludeSuffixes: ["_link"],
       excludePrefixes: ["raw_"],
       excludeFields: [],
     },
-    computedColumns: {},
+    computedColumns: {
+      product_display: {
+        name: "Product",
+        render_type: "product_info",
+        required_fields: [
+          "title",
+          "thumbnail",
+        ],
+        optional_fields: ["handle"],
+        default_visible: true,
+      },
+      variants_count: {
+        name: "Variants",
+        render_type: "count",
+        required_fields: [
+          "variants",
+        ],
+        optional_fields: [],
+        default_visible: true,
+      },
+      sales_channels_display: {
+        name: "Sales Channels",
+        render_type: "sales_channels_list",
+        required_fields: [
+          "sales_channels",
+        ],
+        optional_fields: [],
+        default_visible: true,
+      },
+    },
   },
   customers: {
     serviceName: "customer",

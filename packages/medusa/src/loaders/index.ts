@@ -33,6 +33,7 @@ import apiLoader from "./api"
 type Options = {
   directory: string
   expressApp: Express
+  skipLoadingEntryPoints?: boolean
 }
 
 const isWorkerMode = (configModule) => {
@@ -71,7 +72,7 @@ async function jobsLoader(
 ) {
   const pluginJobSourcePaths = [
     /**
-     * Load jobs from the medusa/medusa package. Remove once the medusa core is  converted to a plugin
+     * Load jobs from the medusa/medusa package. Remove once the medusa core is converted to a plugin
      */
     join(__dirname, "../jobs"),
   ].concat(plugins.map((plugin) => join(plugin.resolve, "jobs")))
@@ -161,6 +162,7 @@ export async function initializeContainer(
 export default async ({
   directory: rootDirectory,
   expressApp,
+  skipLoadingEntryPoints = false,
 }: Options): Promise<{
   container: MedusaContainer
   app: Express
@@ -198,12 +200,9 @@ export default async ({
   const workflowLoader = new WorkflowLoader(workflowsSourcePaths, container)
   await workflowLoader.load()
 
-  const entrypointsShutdown = await loadEntrypoints(
-    plugins,
-    container,
-    expressApp,
-    rootDirectory
-  )
+  const entrypointsShutdown = skipLoadingEntryPoints
+    ? () => {}
+    : await loadEntrypoints(plugins, container, expressApp, rootDirectory)
 
   const { createDefaultsWorkflow } = await import("@medusajs/core-flows")
   await createDefaultsWorkflow(container).run()

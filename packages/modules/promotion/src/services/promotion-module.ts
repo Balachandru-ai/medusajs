@@ -62,6 +62,7 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
+import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -194,6 +195,7 @@ export default class PromotionModuleService
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   async registerUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
     @MedusaContext() sharedContext: Context = {}
@@ -307,6 +309,7 @@ export default class PromotionModuleService
   }
 
   @InjectTransactionManager()
+  @EmitEvents()
   async revertUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
     @MedusaContext() sharedContext: Context = {}
@@ -459,16 +462,47 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    const queryFilter = preventAutoPromotions
-      ? { code: uniquePromotionCodes }
-      : {
-          $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
-        }
+    let queryFilter: DAL.FilterQuery<any> = { code: uniquePromotionCodes }
 
-    const promotions = await this.listActivePromotions(
+    if (!preventAutoPromotions) {
+      const rulePrefilteringFilters =
+        await buildPromotionRuleQueryFilterFromContext(
+          applicationContext,
+          sharedContext
+        )
+
+      let prefilteredAutomaticPromotionIds: string[] = []
+
+      if (rulePrefilteringFilters) {
+        const promotions = await this.promotionService_.list(
+          {
+            $and: [{ is_automatic: true }, rulePrefilteringFilters],
+          },
+          { select: ["id"] },
+          sharedContext
+        )
+
+        prefilteredAutomaticPromotionIds = promotions.map(
+          (promotion) => promotion.id!
+        )
+      }
+
+      const automaticPromotionFilter = rulePrefilteringFilters
+        ? {
+            id: { $in: prefilteredAutomaticPromotionIds },
+          }
+        : { is_automatic: true }
+
+      queryFilter = automaticPromotionFilter
+        ? {
+            $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
+          }
+        : queryFilter
+    }
+
+    const promotions = await this.listActivePromotions_(
       queryFilter,
       {
-        take: null,
         order: { application_method: { value: "DESC" } },
         relations: [
           "application_method",
@@ -485,12 +519,18 @@ export default class PromotionModuleService
       sharedContext
     )
 
-    const existingPromotionsMap = new Map<string, PromotionTypes.PromotionDTO>(
-      promotions.map((promotion) => [promotion.code!, promotion])
-    )
+    const existingPromotionsMap = new Map<
+      string,
+      InferEntityType<typeof Promotion>
+    >(promotions.map((promotion) => [promotion.code!, promotion]))
 
-    const automaticPromotions = promotions.filter((p) => p.is_automatic)
-    const automaticPromotionCodes = automaticPromotions.map((p) => p.code!)
+    const automaticPromotionCodes: string[] = []
+
+    for (const promotion of promotions) {
+      if (promotion.is_automatic) {
+        automaticPromotionCodes.push(promotion.code!)
+      }
+    }
 
     for (const [code, adjustments] of codeAdjustmentMap.entries()) {
       for (const adjustment of adjustments.items) {
@@ -510,11 +550,14 @@ export default class PromotionModuleService
       }
     }
 
+    const promotionCodeSet = new Set<string>(promotionCodes)
+    const automaticPromotionCodeSet = new Set<string>(automaticPromotionCodes)
+
     const sortedPromotionsToApply = promotions
       .filter(
         (p) =>
-          promotionCodes.includes(p.code!) ||
-          automaticPromotionCodes.includes(p.code!)
+          promotionCodeSet.has(p.code!) ||
+          automaticPromotionCodeSet.has(p.code!)
       )
       .sort(ComputeActionUtils.sortByBuyGetType)
 
@@ -529,14 +572,14 @@ export default class PromotionModuleService
 
     for (const promotionToApply of sortedPromotionsToApply) {
       const promotion = existingPromotionsMap.get(promotionToApply.code!)!
+      if (!promotion.application_method) {
+        continue
+      }
+
       const {
         application_method: applicationMethod,
         rules: promotionRules = [],
       } = promotion
-
-      if (!applicationMethod) {
-        continue
-      }
 
       const isCurrencyCodeValid =
         !isPresent(applicationMethod.currency_code) ||
@@ -618,6 +661,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createPromotions(
     data:
@@ -1037,6 +1081,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   // @ts-ignore
   async updatePromotionRules(
     data: PromotionTypes.UpdatePromotionRuleDTO[],
@@ -1067,9 +1112,18 @@ export default class PromotionModuleService
       sharedContext
     )
 
+    const existingPromotionRuleIds: string[] = []
+    const promotionRulesMap: Map<string, PromotionTypes.PromotionRuleDTO> =
+      new Map()
+
+    for (const promotionRule of promotionRules) {
+      existingPromotionRuleIds.push(promotionRule.id)
+      promotionRulesMap.set(promotionRule.id, promotionRule)
+    }
+
     const invalidRuleId = arrayDifference(
       deduplicate(promotionRuleIds),
-      promotionRules.map((pr) => pr.id)
+      existingPromotionRuleIds
     )
 
     if (invalidRuleId.length) {
@@ -1078,10 +1132,6 @@ export default class PromotionModuleService
         `Promotion rules with id - ${invalidRuleId.join(", ")} not found`
       )
     }
-
-    const promotionRulesMap = new Map<string, PromotionTypes.PromotionRuleDTO>(
-      promotionRules.map((pr) => [pr.id, pr])
-    )
 
     const rulesToUpdate: PromotionTypes.UpdatePromotionRuleDTO[] = []
     const ruleValueIdsToDelete: string[] = []
@@ -1141,6 +1191,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionTargetRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1174,6 +1225,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionBuyRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1274,6 +1326,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePromotionRules(
     promotionId: string,
     ruleIds: string[],
@@ -1301,6 +1354,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePromotionTargetRules(
     promotionId: string,
     ruleIds: string[],
@@ -1375,6 +1429,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.CampaignDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createCampaigns(
     data: PromotionTypes.CreateCampaignDTO | PromotionTypes.CreateCampaignDTO[],
@@ -1486,6 +1541,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.CampaignDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateCampaigns(
     data: PromotionTypes.UpdateCampaignDTO | PromotionTypes.UpdateCampaignDTO[],
@@ -1579,6 +1635,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionsToCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
     @MedusaContext() sharedContext: Context = {}
@@ -1646,6 +1703,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async removePromotionsFromCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
     @MedusaContext() sharedContext: Context = {}

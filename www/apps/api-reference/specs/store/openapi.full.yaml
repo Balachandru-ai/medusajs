@@ -1265,13 +1265,13 @@ paths:
   /store/carts/{id}/customer:
     post:
       operationId: PostCartsIdCustomer
-      summary: Set Cart's Customer
-      x-sidebar-summary: Set Customer
-      description: Set the customer of the cart. This is useful when you create the cart for a guest customer, then they log in with their account.
+      summary: Change Cart's Customer to Logged-in Customer
+      x-sidebar-summary: Change Customer
+      description: Change the cart's customer to the currently logged-in customer. This is useful when you create the cart for a guest customer, then they log in with their account.
       externalDocs:
         url: https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
         description: 'Storefront guide: How to set the cart''s customer.'
-      x-authenticated: false
+      x-authenticated: true
       parameters:
         - name: id
           in: path
@@ -1318,6 +1318,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to set the cart's customer
             sdk.store.cart.transferCart("cart_123")
             .then(({ cart }) => {
               console.log(cart)
@@ -1326,6 +1327,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/store/carts/{id}/customer' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Carts
@@ -1361,6 +1363,19 @@ paths:
           description: Emitted when the customer in the cart is transferred.
           deprecated: false
           since: 2.8.0
+      security:
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional additional data to pass to the underlying workflow.
+              properties:
+                additional_data:
+                  type: object
+                  description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
   /store/carts/{id}/gift-cards:
     post:
       operationId: PostCartsIdGiftCards
@@ -1551,7 +1566,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreAddCartLineItem'
+              allOf:
+                - type: object
+                  description: The details of the line item to add.
+                  required:
+                    - variant_id
+                    - quantity
+                  properties:
+                    variant_id:
+                      type: string
+                      title: variant_id
+                      description: The ID of the product variant to add as a line item.
+                    quantity:
+                      type: number
+                      title: quantity
+                      description: The item's quantity.
+                    metadata:
+                      type: object
+                      description: The item's metadata, can hold custom key-value pairs.
+                - type: object
+                  description: The details of the line item to add.
+                  properties:
+                    additional_data:
+                      type: object
+                      description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+              description: The details of the line item to add.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -1665,7 +1704,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreUpdateCartLineItem'
+              allOf:
+                - type: object
+                  description: The details to update in the line item.
+                  required:
+                    - quantity
+                  properties:
+                    quantity:
+                      type: number
+                      title: quantity
+                      description: The item's quantity.
+                    metadata:
+                      type: object
+                      description: The item's metadata, can hold custom key-value pairs.
+                - type: object
+                  description: The details to update in the line item.
+                  properties:
+                    additional_data:
+                      type: object
+                      description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+              description: The details to update in the line item.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -1863,6 +1921,9 @@ paths:
       x-sidebar-summary: Add Promotions
       description: Add a list of promotions to a cart.
       x-authenticated: false
+      externalDocs:
+        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
+        description: 'Storefront guide: How to add a promotion to cart.'
       parameters:
         - name: id
           in: path
@@ -1933,6 +1994,9 @@ paths:
       summary: Remove Promotions from Cart
       description: Remove a list of promotions from a cart.
       x-authenticated: false
+      externalDocs:
+        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
+        description: 'Storefront guide: How to remove a promotion from cart.'
       parameters:
         - name: id
           in: path
@@ -1963,7 +2027,11 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/store/carts/{id}/promotions' \
-            -H 'x-publishable-api-key: {your_publishable_api_key}'
+            -H 'x-publishable-api-key: {your_publishable_api_key}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "promo_codes": ["{value}"]
+            }'
       tags:
         - Carts
       responses:
@@ -2037,7 +2105,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreAddCartShippingMethods'
+              allOf:
+                - type: object
+                  description: The shipping method's details.
+                  required:
+                    - option_id
+                  properties:
+                    option_id:
+                      type: string
+                      title: option_id
+                      description: The ID of the shipping option to create the shipping method from.
+                    data:
+                      type: object
+                      description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
+                      externalDocs:
+                        url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping#data-request-body-parameter
+                        description: Learn more about the data parameter.
+                - type: object
+                  description: The shipping method's details.
+                  properties:
+                    additional_data:
+                      type: object
+                      description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+              description: The shipping method's details.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -3339,6 +3429,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to retrieve their details
             sdk.store.customer.retrieve()
             .then(({ customer }) => {
               console.log(customer)
@@ -3423,6 +3514,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to update their details
             sdk.store.customer.update({
               first_name: "John"
             })
@@ -3613,6 +3705,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to list their addresses
             sdk.store.customer.listAddress()
             .then(({ addresses, count, offset, limit }) => {
               console.log(addresses)
@@ -3698,6 +3791,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to create an address
             sdk.store.customer.createAddress({
               country_code: "us"
             })
@@ -3801,6 +3895,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to retrieve their address
             sdk.store.customer.retrieveAddress(
               "caddr_123"
             )
@@ -3894,6 +3989,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to update their address
             sdk.store.customer.updateAddress(
               "caddr_123",
               {
@@ -3991,6 +4087,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to delete their address
             sdk.store.customer.deleteAddress("caddr_123")
             .then(({ deleted, parent: customer }) => {
               console.log(customer)
@@ -3999,8 +4096,8 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/store/customers/me/addresses/{address_id}' \
-            -H 'x-publishable-api-key: {your_publishable_api_key}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Customers
       responses:
@@ -4333,6 +4430,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to list their orders
             sdk.store.order.list()
             .then(({ orders, count, offset, limit }) => {
               console.log(orders)
@@ -4341,6 +4439,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/store/orders' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Orders
@@ -4633,6 +4732,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to cancel the order transfer
             sdk.store.order.cancelTransfer(
               "order_123",
               {},
@@ -4647,6 +4747,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/store/orders/{id}/transfer/cancel' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Orders
@@ -4834,6 +4935,7 @@ paths:
               publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
             })
 
+            // TODO must be authenticated as the customer to request the order transfer
             sdk.store.order.requestTransfer(
               "order_123",
               {
@@ -4851,6 +4953,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/store/orders/{id}/transfer/request' \
+            -H 'Authorization: Bearer {access_token}' \
             -H 'x-publishable-api-key: {your_publishable_api_key}'
       tags:
         - Orders
@@ -10758,6 +10861,121 @@ components:
       properties:
         collection:
           $ref: '#/components/schemas/AdminCollection'
+    AdminColumn:
+      type: object
+      description: The details of a column in a view configuration.
+      x-schemaName: AdminColumn
+      required:
+        - id
+        - name
+        - field
+        - sortable
+        - hideable
+        - default_visible
+        - data_type
+      properties:
+        id:
+          type: string
+          title: id
+          description: The column's ID.
+        name:
+          type: string
+          title: name
+          description: The column's name. This is displayed in the view header.
+        description:
+          type: string
+          title: description
+          description: The column's description.
+        field:
+          type: string
+          title: field
+          description: The column's field in the entity.
+        sortable:
+          type: boolean
+          title: sortable
+          description: Whether the column is sortable.
+        hideable:
+          type: boolean
+          title: hideable
+          description: Whether the column is hideable.
+        default_visible:
+          type: boolean
+          title: default_visible
+          description: Whether the column is visible by default.
+        data_type:
+          type: string
+          description: The data type of the column's value.
+          enum:
+            - string
+            - number
+            - boolean
+            - object
+            - date
+            - currency
+            - enum
+        semantic_type:
+          type: string
+          title: semantic_type
+          description: The column's semantic type. It can be `computed`, or other primitive types.
+        context:
+          type: string
+          title: context
+          description: The column's context. It can be `display` or `generic`.
+        computed:
+          type: object
+          description: A computed column's details. Only available if the column's `semantic_type` is `computed`.
+          required:
+            - type
+            - required_fields
+            - optional_fields
+          properties:
+            type:
+              type: string
+              title: type
+              description: The computed's type for rendering.
+            required_fields:
+              type: array
+              description: The required fields in the computed column.
+              items:
+                type: string
+                title: required_fields
+                description: A required field in the computed column.
+            optional_fields:
+              type: array
+              description: The optional fields in the computed column.
+              items:
+                type: string
+                title: optional_fields
+                description: An optional field in the computed column.
+        relationship:
+          type: object
+          description: The relationship details. Only available for relationship columns.
+          required:
+            - entity
+            - field
+          properties:
+            entity:
+              type: string
+              title: entity
+              description: The related entity.
+            field:
+              type: string
+              title: field
+              description: The field in the related entity.
+        default_order:
+          type: number
+          title: default_order
+          description: The column's sort order in the default view configuration.
+        category:
+          type: string
+          description: The column's category.
+          enum:
+            - status
+            - metadata
+            - identifier
+            - timestamp
+            - metric
+            - relationship
     AdminCreateApiKey:
       type: object
       description: The API key's details.
@@ -12419,6 +12637,69 @@ components:
           type: string
           title: inventory_item_id
           description: The inventory item's ID.
+    AdminCreateViewConfiguration:
+      type: object
+      description: The details of a view configuration to create.
+      x-schemaName: AdminCreateViewConfiguration
+      properties:
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default. If so, it will be used as the default view for all users that don't have a custom active view set.
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+        name:
+          type: string
+          title: name
+          description: The view's name.
     AdminCreateWorkflowsAsyncResponse:
       type: object
       description: The details of changing a workflow execution's step status.
@@ -13417,6 +13698,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -13430,6 +13712,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -13649,6 +13932,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderListResponse:
       type: object
       description: The list of draft orders with pagination fields.
@@ -13708,6 +13999,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -13721,6 +14013,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -14325,6 +14618,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderPreviewResponse:
       type: object
       description: The details of the preview on the draft order.
@@ -15700,6 +16001,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -15713,6 +16015,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -15931,6 +16234,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderAddress:
       type: object
       description: An order address.
@@ -16167,6 +16478,7 @@ components:
         - return_id
         - exchange_id
         - claim_id
+        - ordering
         - order_change_id
         - reference
         - reference_id
@@ -16253,6 +16565,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the action was updated.
+        ordering:
+          type: number
+          title: ordering
+          description: The action's order in the sequence of actions.
     AdminOrderChangesResponse:
       type: object
       description: The details of an order's changes.
@@ -16658,6 +16974,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -16671,6 +16988,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -17275,6 +17593,14 @@ components:
           type: number
           title: credit_line_total
           description: The order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderPreviewResponse:
       type: object
       description: The preview of an order.
@@ -17981,6 +18307,10 @@ components:
                 externalDocs:
                   url: https://docs.medusajs.com/api/admin#manage-metadata
                   description: Learn how to manage metadata
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location to which outbound items are sent from.
     AdminPostExchangesShippingActionReqSchema:
       type: object
       description: The details of the shipping method to update.
@@ -20883,6 +21213,17 @@ components:
       properties:
         service_zone:
           $ref: '#/components/schemas/AdminServiceZone'
+    AdminSetActiveViewConfiguration:
+      type: object
+      description: The details of a view configuration to set as active for the given entity.
+      x-schemaName: AdminSetActiveViewConfiguration
+      required:
+        - view_configuration_id
+      properties:
+        view_configuration_id:
+          type: string
+          title: view_configuration_id
+          description: The ID of the view configuration to set as active. If `null`, the active view configuration will be cleared, and the `code` or system default view configuration will be used as the active view.
     AdminShippingOption:
       type: object
       description: The shipping option's details.
@@ -23747,6 +24088,66 @@ components:
           type: number
           title: required_quantity
           description: The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the value set for `required_quantity`. When the customer orders the quantity, Medusa reserves the ordered quantity multiplied by the value set for `required_quantity`.
+    AdminUpdateViewConfiguration:
+      type: object
+      description: The details to update in a view configuration.
+      x-schemaName: AdminUpdateViewConfiguration
+      properties:
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        name:
+          type: string
+          title: name
+          description: The view's name.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          properties:
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
     AdminUploadPreSignedUrl:
       type: object
       description: The details of the file to upload.
@@ -23978,6 +24379,116 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/AdminUser'
+    AdminViewConfiguration:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfiguration
+      required:
+        - id
+        - entity
+        - name
+        - user_id
+        - is_system_default
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The view configuration's ID.
+        entity:
+          type: string
+          title: entity
+          description: The entity the view configuration belongs to.
+        name:
+          type: string
+          title: name
+          description: The view configuration's name.
+        user_id:
+          type: string
+          title: user_id
+          description: The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view configuration is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+            search:
+              type: string
+              title: search
+              description: The configuration's search.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The date the view configuration was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the view configuration was updated.
+    AdminViewConfigurationResponse:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfigurationResponse
+      required:
+        - view_configuration
+      properties:
+        view_configuration:
+          $ref: '#/components/schemas/AdminViewConfiguration'
+    AdminViewsEntityColumnsResponse:
+      type: object
+      description: The view's columns.
+      x-schemaName: AdminViewsEntityColumnsResponse
+      required:
+        - columns
+      properties:
+        columns:
+          type: array
+          description: The view's columns.
+          items:
+            $ref: '#/components/schemas/AdminColumn'
     AdminWorkflowExecution:
       type: object
       description: The workflows execution's details.
@@ -24143,6 +24654,14 @@ components:
                     type: number
                     title: timeout
                     description: The maximum time in seconds to wait for this step to complete. If the step exceeds this time, the step's state is changed to `timeout`, but the step continues executing.
+                  autoRetry:
+                    type: boolean
+                    title: autoRetry
+                    description: Whether the step should be automatically retried if it fails.
+                  maxAwaitingRetries:
+                    type: number
+                    title: maxAwaitingRetries
+                    description: The maximum number of times to retry the step while it's in the `waiting_response` state.
               compensate:
                 type: object
                 description: The state of the step's compensation function.
@@ -25216,6 +25735,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -25229,6 +25749,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -25436,6 +25957,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     BaseOrderAddress:
       type: object
       description: An order address.
@@ -28108,6 +28637,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -28123,6 +28653,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -28400,6 +28931,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     OrderAddress:
       type: object
       description: The address's details.
@@ -29949,45 +30488,6 @@ components:
           type: string
           title: token
           description: The order transfer's token issued when the transfer was requested.
-    StoreAddCartLineItem:
-      type: object
-      description: The details of the line item to add.
-      x-schemaName: StoreAddCartLineItem
-      required:
-        - variant_id
-        - quantity
-      properties:
-        variant_id:
-          type: string
-          title: variant_id
-          description: The ID of the product variant to add to the cart.
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
-    StoreAddCartShippingMethods:
-      type: object
-      description: The shipping method's details.
-      required:
-        - option_id
-      properties:
-        option_id:
-          type: string
-          title: option_id
-          description: The ID of the shipping option this method is created from.
-        data:
-          type: object
-          description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
-          externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
-            description: Learn more about the data parameter.
-      x-schemaName: StoreAddCartShippingMethods
     StoreAddGiftCardToCart:
       type: object
       description: The details to add a gift card to the cart.
@@ -30418,17 +30918,6 @@ components:
         - cart
         - title
         - id
-        - item_total
-        - item_subtotal
-        - item_tax_total
-        - original_total
-        - original_subtotal
-        - original_tax_total
-        - total
-        - subtotal
-        - tax_total
-        - discount_total
-        - discount_tax_total
         - requires_shipping
         - is_discountable
         - is_tax_inclusive
@@ -30711,47 +31200,47 @@ components:
         original_total:
           type: number
           title: original_total
-          description: The item's total including taxes, excluding promotions.
+          description: The item's total including taxes, excluding promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         original_subtotal:
           type: number
           title: original_subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         original_tax_total:
           type: number
           title: original_tax_total
-          description: The total taxes of the item excluding promotions.
+          description: The total taxes of the item excluding promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_total:
           type: number
           title: original_tax_total
-          description: The item's total including taxes and promotions.
+          description: The item's total including taxes and promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_subtotal:
           type: number
           title: item_subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_tax_total:
           type: number
           title: item_tax_total
-          description: The total taxes of the item including promotions.
+          description: The total taxes of the item including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         total:
           type: number
           title: total
-          description: The item's total including taxes and promotions.
+          description: The item's total including taxes and promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         subtotal:
           type: number
           title: subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         tax_total:
           type: number
           title: tax_total
-          description: The total taxes of the item including promotions.
+          description: The total taxes of the item including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         discount_total:
           type: number
           title: discount_total
-          description: The total discount of the item.
+          description: The total discount of the item. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         discount_tax_total:
           type: number
           title: discount_tax_total
-          description: The total taxes applied on the discounted amount.
+          description: The total taxes applied on the discounted amount. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
     StoreCartPromotion:
       type: object
       description: The promotion's promotions.
@@ -30828,14 +31317,6 @@ components:
         - is_tax_inclusive
         - created_at
         - updated_at
-        - original_total
-        - original_subtotal
-        - original_tax_total
-        - total
-        - subtotal
-        - tax_total
-        - discount_total
-        - discount_tax_total
       properties:
         id:
           type: string
@@ -31037,35 +31518,35 @@ components:
         original_total:
           type: number
           title: original_total
-          description: The shipping method's total including taxes, excluding promotions.
+          description: The shipping method's total including taxes, excluding promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         original_subtotal:
           type: number
           title: original_subtotal
-          description: The shipping method's total excluding taxes, including promotions.
+          description: The shipping method's total excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         original_tax_total:
           type: number
           title: original_tax_total
-          description: The total taxes applied on the shipping method's amount including promotions.
+          description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         total:
           type: number
           title: total
-          description: The shipping method's total amount including taxes and promotions.
+          description: The shipping method's total amount including taxes and promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         subtotal:
           type: number
           title: subtotal
-          description: The shipping method's total amount excluding taxes, including promotions.
+          description: The shipping method's total amount excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         tax_total:
           type: number
           title: tax_total
-          description: The total taxes applied on the shipping method's amount including promotions.
+          description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         discount_total:
           type: number
           title: discount_total
-          description: The total amount discounted.
+          description: The total amount discounted. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         discount_tax_total:
           type: number
           title: discount_tax_total
-          description: The taxes applied on the discounted amount.
+          description: The taxes applied on the discounted amount. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
     StoreCartShippingOption:
       type: object
       description: The shipping option's details.
@@ -31914,6 +32395,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -31927,6 +32409,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -32133,6 +32616,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     StoreOrderAddress:
       type: object
       description: An order address
@@ -39635,23 +40126,6 @@ components:
             url: https://docs.medusajs.com/api/store#manage-metadata
             description: Learn how to manage metadata
       x-schemaName: StoreTransactionGroup
-    StoreUpdateCartLineItem:
-      type: object
-      description: The details to update in the line item.
-      x-schemaName: StoreUpdateCartLineItem
-      required:
-        - quantity
-      properties:
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
     StoreUpdateCustomer:
       type: object
       description: The details to update in the customer.

@@ -2,50 +2,23 @@ import {
   deleteLineItemsWorkflowId,
   updateLineItemInCartWorkflowId,
 } from "@medusajs/core-flows"
-import { prepareListQuery } from "@medusajs/framework"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
-import { MedusaError, Modules } from "@medusajs/framework/utils"
+import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
+import { Modules } from "@medusajs/framework/utils"
 import { refetchCart } from "../../../helpers"
 import { StoreUpdateCartLineItemType } from "../../../validators"
 
 export const POST = async (
-  req: MedusaRequest<StoreUpdateCartLineItemType>,
+  req: MedusaRequest<StoreUpdateCartLineItemType & AdditionalData>,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
-  // TODO: Move this to the workflow when the query to line item is fixed
-  const cart = await refetchCart(
-    req.params.id,
-    req.scope,
-    prepareListQuery(
-      {},
-      {
-        defaults: [
-          "id",
-          "region_id",
-          "customer_id",
-          "sales_channel_id",
-          "currency_code",
-          "*items",
-        ],
-      }
-    ).remoteQueryConfig.fields
-  )
-
-  const item = cart.items?.find((i) => i.id === req.params.line_id)
-  if (!item) {
-    throw new MedusaError(
-      MedusaError.Types.NOT_FOUND,
-      `Line item with id: ${req.params.line_id} was not found`
-    )
-  }
-
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
   await we.run(updateLineItemInCartWorkflowId, {
     input: {
       cart_id: req.params.id,
-      item_id: item.id,
+      item_id: req.params.line_id,
       update: req.validatedBody,
+      additional_data: req.validatedBody.additional_data,
     },
     transactionId: "cart-update-item-" + req.params.id,
   })
@@ -67,7 +40,10 @@ export const DELETE = async (
 
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
   await we.run(deleteLineItemsWorkflowId, {
-    input: { cart_id: req.params.id, ids: [id] },
+    input: {
+      cart_id: req.params.id,
+      ids: [id],
+    },
     transactionId: "cart-delete-item-" + req.params.id,
   })
 

@@ -7316,7 +7316,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/ui@4.0.21, @medusajs/ui@workspace:packages/design-system/ui":
+"@medusajs/ui@4.0.23, @medusajs/ui@workspace:packages/design-system/ui":
   version: 0.0.0-use.local
   resolution: "@medusajs/ui@workspace:packages/design-system/ui"
   dependencies:

@@ -59,16 +59,15 @@ export class MikroOrmBase {
   async transaction<TManager = unknown>(
     task: (transactionManager: TManager) => Promise<any>,
     options: {
+      manager?: TManager
       isolationLevel?: string
       enableNestedTransactions?: boolean
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    this.manager_.global = true // this prevent mikro orm from synchronising the transaction manager entity map back to the manager. Also, it will save us from always forking the manager for each transaction while the transacation manager will fork it again for transaction purpose
+    const manager = this.getFreshManager()
 
-    return await transactionWrapper(this.manager_, task, options).catch(
-      dbErrorMapper
-    )
+    return await transactionWrapper(manager, task, options).catch(dbErrorMapper)
   }
 
   async serialize<TOutput extends object | object[]>(
@@ -464,6 +463,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
 
       if (!("strategy" in findOptions_.options)) {
         if (findOptions_.options.limit != null || findOptions_.options.offset) {
+          // TODO: from 7+ it will be the default strategy
           Object.assign(findOptions_.options, {
             strategy: LoadStrategy.BALANCED,
           })

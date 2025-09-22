@@ -961,6 +961,13 @@ export class TransactionOrchestrator extends EventEmitter {
 
       if (nextSteps.next.length === 0 || (hasAsyncSteps && !execution.length)) {
         continueExecution = false
+        await transaction.saveCheckpoint().catch((error) => {
+          if (TransactionOrchestrator.isExpectedError(error)) {
+            return
+          }
+
+          throw error
+        })
       }
     }
   }

@@ -20,4 +20,4 @@
 "@medusajs/cli": patch
 ---
 
-chore(): Upgrade mikro orm 6.5.2
+chore(): Upgrade mikro orm 6.5.4

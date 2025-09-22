@@ -25,6 +25,7 @@ import { ProductCategoryService } from "@services"
 
 import {
   arrayDifference,
+  createMedusaMikroOrmEventSubscriber,
   EmitEvents,
   generateEntityId,
   InjectManager,
@@ -37,11 +38,13 @@ import {
   MedusaContext,
   MedusaError,
   MedusaService,
+  MessageAggregator,
   Modules,
   ProductStatus,
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
+import { EntityManager } from "@mikro-orm/core"
 import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
@@ -52,8 +55,8 @@ import {
   UpdateTagInput,
   UpdateTypeInput,
 } from "../types"
-import { eventBuilders } from "../utils"
 import { joinerConfig } from "./../joiner-config"
+import { eventBuilders } from "../utils/events"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -331,11 +334,6 @@ export default class ProductModuleService
       sharedContext
     )
 
-    eventBuilders.createdProductVariant({
-      data: createdVariants,
-      sharedContext,
-    })
-
     return createdVariants
   }
 
@@ -366,11 +364,11 @@ export default class ProductModuleService
       (variant): variant is ProductTypes.CreateProductVariantDTO => !variant.id
     )
 
-    let created: InferEntityType<typeof ProductVariant>[] = []
+    let created: ProductTypes.ProductVariantDTO[] = []
     let updated: InferEntityType<typeof ProductVariant>[] = []
 
     if (forCreate.length) {
-      created = await this.createVariants_(forCreate, sharedContext)
+      created = await this.createProductVariants(forCreate, sharedContext)
     }
     if (forUpdate.length) {
       updated = await this.updateVariants_(forUpdate, sharedContext)
@@ -493,7 +491,7 @@ export default class ProductModuleService
       )
     }
 
-    const { entities: productVariants, performedActions } =
+    const { entities: productVariants } =
       await this.productVariantService_.upsertWithReplace(
         productVariantsWithOptions,
         {
@@ -501,19 +499,6 @@ export default class ProductModuleService
         },
         sharedContext
       )
-
-    eventBuilders.createdProductVariant({
-      data: performedActions.created[ProductVariant.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.updatedProductVariant({
-      data: performedActions.updated[ProductVariant.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.deletedProductVariant({
-      data: performedActions.deleted[ProductVariant.name] ?? [],
-      sharedContext,
-    })
 
     return productVariants
   }
@@ -544,11 +529,6 @@ export default class ProductModuleService
       ProductTypes.ProductTagDTO[]
     >(tags)
 
-    eventBuilders.createdProductTag({
-      data: createdTags,
-      sharedContext,
-    })
-
     return Array.isArray(data) ? createdTags : createdTags[0]
   }
 
@@ -561,12 +541,26 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTagDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductTags(
     data: ProductTypes.UpsertProductTagDTO[] | ProductTypes.UpsertProductTagDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO> {
+    const tags = await this.upsertProductTags_(data, sharedContext)
+
+    const allTags = await this.baseRepository_.serialize<
+      ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO
+    >(Array.isArray(data) ? tags : tags[0])
+
+    return allTags
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductTags_(
+    data: ProductTypes.UpsertProductTagDTO[] | ProductTypes.UpsertProductTagDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductTag>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter((tag): tag is UpdateTagInput => !!tag.id)
     const forCreate = input.filter(
@@ -578,25 +572,12 @@ export default class ProductModuleService
 
     if (forCreate.length) {
       created = await this.productTagService_.create(forCreate, sharedContext)
-      eventBuilders.createdProductTag({
-        data: created,
-        sharedContext,
-      })
     }
     if (forUpdate.length) {
       updated = await this.productTagService_.update(forUpdate, sharedContext)
-      eventBuilders.updatedProductTag({
-        data: updated,
-        sharedContext,
-      })
     }
 
-    const result = [...created, ...updated]
-    const allTags = await this.baseRepository_.serialize<
-      ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO
-    >(result)
-
-    return Array.isArray(data) ? allTags : allTags[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -647,11 +628,6 @@ export default class ProductModuleService
       ProductTypes.ProductTagDTO[]
     >(tags)
 
-    eventBuilders.updatedProductTag({
-      data: updatedTags,
-      sharedContext,
-    })
-
     return isString(idOrSelector) ? updatedTags[0] : updatedTags
   }
 
@@ -667,6 +643,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createProductTypes(
     data:
@@ -694,13 +671,30 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTypeDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async upsertProductTypes(
     data:
       | ProductTypes.UpsertProductTypeDTO[]
       | ProductTypes.UpsertProductTypeDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO> {
+    const types = await this.upsertProductTypes_(data, sharedContext)
+
+    const result = await this.baseRepository_.serialize<
+      ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO
+    >(types)
+
+    return Array.isArray(data) ? result : result[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductTypes_(
+    data:
+      | ProductTypes.UpsertProductTypeDTO
+      | ProductTypes.UpsertProductTypeDTO[],
+    sharedContext?: Context
+  ): Promise<InferEntityType<typeof ProductType>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter((type): type is UpdateTypeInput => !!type.id)
     const forCreate = input.filter(
@@ -717,12 +711,7 @@ export default class ProductModuleService
       updated = await this.productTypeService_.update(forUpdate, sharedContext)
     }
 
-    const result = [...created, ...updated]
-    const allTypes = await this.baseRepository_.serialize<
-      ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO
-    >(result)
-
-    return Array.isArray(data) ? allTypes : allTypes[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -739,6 +728,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductTypes(
     idOrSelector: string | ProductTypes.FilterableProductTypeProps,
@@ -787,6 +777,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createProductOptions(
     data:
@@ -842,6 +833,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectTransactionManager()
+  @EmitEvents()
   async upsertProductOptions(
     data:
       | ProductTypes.UpsertProductOptionDTO[]
@@ -888,6 +880,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductOptions(
     idOrSelector: string | ProductTypes.FilterableProductOptionProps,
@@ -1023,11 +1016,6 @@ export default class ProductModuleService
       ProductTypes.ProductCollectionDTO[]
     >(collections)
 
-    eventBuilders.createdProductCollection({
-      data: collections,
-      sharedContext,
-    })
-
     return Array.isArray(data) ? createdCollections : createdCollections[0]
   }
 
@@ -1061,7 +1049,7 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCollectionDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductCollections(
     data:
@@ -1071,6 +1059,24 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductCollectionDTO[] | ProductTypes.ProductCollectionDTO
   > {
+    const collections = await this.upsertCollections_(data, sharedContext)
+
+    const serializedCollections = await this.baseRepository_.serialize<
+      ProductTypes.ProductCollectionDTO[]
+    >(collections)
+
+    return Array.isArray(data)
+      ? serializedCollections
+      : serializedCollections[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertCollections_(
+    data:
+      | ProductTypes.UpsertProductCollectionDTO[]
+      | ProductTypes.UpsertProductCollectionDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCollection>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (collection): collection is UpdateCollectionInput => !!collection.id
@@ -1091,26 +1097,7 @@ export default class ProductModuleService
       updated = await this.updateCollections_(forUpdate, sharedContext)
     }
 
-    const result = [...created, ...updated]
-    const allCollections = await this.baseRepository_.serialize<
-      ProductTypes.ProductCollectionDTO[] | ProductTypes.ProductCollectionDTO
-    >(result)
-
-    if (created.length) {
-      eventBuilders.createdProductCollection({
-        data: created,
-        sharedContext,
-      })
-    }
-
-    if (updated.length) {
-      eventBuilders.updatedProductCollection({
-        data: updated,
-        sharedContext,
-      })
-    }
-
-    return Array.isArray(data) ? allCollections : allCollections[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -1165,11 +1152,6 @@ export default class ProductModuleService
     const updatedCollections = await this.baseRepository_.serialize<
       ProductTypes.ProductCollectionDTO[]
     >(collections)
-
-    eventBuilders.updatedProductCollection({
-      data: updatedCollections,
-      sharedContext,
-    })
 
     return isString(idOrSelector) ? updatedCollections[0] : updatedCollections
   }
@@ -1283,6 +1265,7 @@ export default class ProductModuleService
       ProductTypes.ProductCategoryDTO[]
     >(categories)
 
+    // TODO: Same as the update categories, for some reason I cant get the tree repository update
     eventBuilders.createdProductCategory({
       data: createdCategories,
       sharedContext,
@@ -1300,7 +1283,7 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCategoryDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductCategories(
     data:
@@ -1310,11 +1293,27 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductCategoryDTO[] | ProductTypes.ProductCategoryDTO
   > {
+    const categories = await this.upsertProductCategories_(data, sharedContext)
+
+    const serializedCategories = await this.baseRepository_.serialize<
+      ProductTypes.ProductCategoryDTO[]
+    >(categories)
+
+    return Array.isArray(data) ? serializedCategories : serializedCategories[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductCategories_(
+    data:
+      | ProductTypes.UpsertProductCategoryDTO[]
+      | ProductTypes.UpsertProductCategoryDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (category): category is UpdateCategoryInput => !!category.id
     )
-    const forCreate = input.filter(
+    let forCreate = input.filter(
       (category): category is ProductTypes.CreateProductCategoryDTO =>
         !category.id
     )
@@ -1323,6 +1322,11 @@ export default class ProductModuleService
     let updated: InferEntityType<typeof ProductCategory>[] = []
 
     if (forCreate.length) {
+      forCreate = forCreate.map((productCategory) => {
+        productCategory.handle ??= kebabCase(productCategory.name)
+        return productCategory
+      })
+
       created = await this.productCategoryService_.create(
         forCreate,
         sharedContext
@@ -1335,25 +1339,22 @@ export default class ProductModuleService
       )
     }
 
-    const createdCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(created)
-    const updatedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(updated)
+    // TODO: Same as the update categories, for some reason I cant get the tree repository update
+    // event. I ll need to investigate this
+    if (created.length) {
+      eventBuilders.createdProductCategory({
+        data: created,
+        sharedContext,
+      })
+    }
+    if (updated.length) {
+      eventBuilders.updatedProductCategory({
+        data: updated,
+        sharedContext,
+      })
+    }
 
-    eventBuilders.createdProductCategory({
-      data: createdCategories,
-      sharedContext,
-    })
-
-    eventBuilders.updatedProductCategory({
-      data: updatedCategories,
-      sharedContext,
-    })
-
-    const result = [...createdCategories, ...updatedCategories]
-    return Array.isArray(data) ? result : result[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -1377,8 +1378,36 @@ export default class ProductModuleService
     data: ProductTypes.UpdateProductCategoryDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<
-    ProductTypes.ProductCategoryDTO[] | ProductTypes.ProductCategoryDTO
+    ProductTypes.ProductCategoryDTO | ProductTypes.ProductCategoryDTO[]
   > {
+    const categories = await this.updateProductCategories_(
+      idOrSelector,
+      data,
+      sharedContext
+    )
+
+    const serializedCategories = await this.baseRepository_.serialize<
+      ProductTypes.ProductCategoryDTO[]
+    >(categories)
+
+    // TODO: for some reason I cant get the tree repository update
+    // event. I ll need to investigate this
+    eventBuilders.updatedProductCategory({
+      data: serializedCategories,
+      sharedContext,
+    })
+
+    return isString(idOrSelector)
+      ? serializedCategories[0]
+      : serializedCategories
+  }
+
+  @InjectTransactionManager()
+  protected async updateProductCategories_(
+    idOrSelector: string | ProductTypes.FilterableProductTypeProps,
+    data: ProductTypes.UpdateProductCategoryDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
     let normalizedInput: UpdateCategoryInput[] = []
     if (isString(idOrSelector)) {
       // Check if the type exists in the first place
@@ -1406,16 +1435,7 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const updatedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(categories)
-
-    eventBuilders.updatedProductCategory({
-      data: updatedCategories,
-      sharedContext,
-    })
-
-    return isString(idOrSelector) ? updatedCategories[0] : updatedCategories
+    return categories
   }
 
   //@ts-expect-error
@@ -1443,11 +1463,6 @@ export default class ProductModuleService
       ProductTypes.ProductDTO[]
     >(products)
 
-    eventBuilders.createdProduct({
-      data: createdProducts,
-      sharedContext,
-    })
-
     return Array.isArray(data) ? createdProducts : createdProducts[0]
   }
 
@@ -1474,11 +1489,11 @@ export default class ProductModuleService
       (product): product is ProductTypes.CreateProductDTO => !product.id
     )
 
-    let created: InferEntityType<typeof Product>[] = []
+    let created: ProductTypes.ProductDTO[] = []
     let updated: InferEntityType<typeof Product>[] = []
 
     if (forCreate.length) {
-      created = await this.createProducts_(forCreate, sharedContext)
+      created = await this.createProducts(forCreate, sharedContext)
     }
     if (forUpdate.length) {
       updated = await this.updateProducts_(forUpdate, sharedContext)
@@ -1488,20 +1503,6 @@ export default class ProductModuleService
     const allProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[] | ProductTypes.ProductDTO
     >(result)
-
-    if (created.length) {
-      eventBuilders.createdProduct({
-        data: created,
-        sharedContext,
-      })
-    }
-
-    if (updated.length) {
-      eventBuilders.updatedProduct({
-        data: updated,
-        sharedContext,
-      })
-    }
 
     return Array.isArray(data) ? allProducts : allProducts[0]
   }
@@ -1551,11 +1552,6 @@ export default class ProductModuleService
     const updatedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
-
-    eventBuilders.updatedProduct({
-      data: updatedProducts,
-      sharedContext,
-    })
 
     return isString(idOrSelector) ? updatedProducts[0] : updatedProducts
   }
@@ -1657,20 +1653,47 @@ export default class ProductModuleService
     data: UpdateProductInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
+    // We have to do that manually because this method is bypassing the product service and goes
+    // directly to the custom product repository
+    const manager = (sharedContext.transactionManager ??
+      sharedContext.manager) as EntityManager
+    const subscriber = createMedusaMikroOrmEventSubscriber(
+      ["updateProducts_"],
+      this as unknown as ReturnType<typeof MedusaService<any>>
+    )
+
+    if (manager && subscriber) {
+      manager
+        .getEventManager()
+        .registerSubscriber(new subscriber(sharedContext))
+    }
+
+    const originalProducts = await this.productService_.list(
+      {
+        id: data.map((d) => d.id),
+      },
+      {
+        relations: ["options", "options.values", "variants", "images", "tags"],
+      },
+      sharedContext
+    )
+
     const normalizedProducts = await this.normalizeUpdateProductInput(
       data,
-      sharedContext
+      originalProducts
     )
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
     }
 
-    return this.productRepository_.deepUpdate(
+    const updatedProducts = await this.productRepository_.deepUpdate(
       normalizedProducts,
       ProductModuleService.validateVariantOptions,
       sharedContext
     )
+
+    return updatedProducts
   }
 
   // @ts-expect-error
@@ -1685,6 +1708,7 @@ export default class ProductModuleService
     data: ProductTypes.UpdateProductOptionValueDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionValueDTO[]>
+
   // @ts-expect-error
   async updateProductOptionValues(
     idOrSelector: string | FilterableProductOptionValueProps,
@@ -1693,6 +1717,11 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {
+    // TODO: There is a missmatch in the API which lead to function with different number of
+    // arguments. Therefore, applying the MedusaContext() decorator to the function will not work
+    // because the context arg index will differ from method to method.
+    sharedContext.messageAggregator ??= new MessageAggregator()
+
     let normalizedInput: ({
       id: string
     } & ProductTypes.UpdateProductOptionValueDTO)[] = []
@@ -1718,7 +1747,7 @@ export default class ProductModuleService
       }))
     }
 
-    const productOptionValues = await super.updateProductOptionValues(
+    const productOptionValues = await this.updateProductOptionValues_(
       normalizedInput,
       sharedContext
     )
@@ -1727,14 +1756,43 @@ export default class ProductModuleService
       ProductTypes.ProductOptionValueDTO[]
     >(productOptionValues)
 
-    eventBuilders.updatedProductOptionValue({
-      data: updatedProductOptionValues,
-      sharedContext: sharedContext,
-    })
+    // TODO: Because of the wrong method override, we have to compensate to prevent breaking
+    // changes right now
+    const groupedEvents = sharedContext.messageAggregator!.getMessages()
+    if (
+      Object.values(groupedEvents).flat().length > 0 &&
+      this.eventBusModuleService_
+    ) {
+      const promises: Promise<void>[] = []
+      for (const group of Object.keys(groupedEvents)) {
+        promises.push(
+          this.eventBusModuleService_!.emit(groupedEvents[group], {
+            internal: true,
+          })
+        )
+      }
+
+      await Promise.all(promises)
+
+      sharedContext.messageAggregator.clearMessages()
+    }
 
     return isString(idOrSelector)
       ? updatedProductOptionValues[0]
       : updatedProductOptionValues
+  }
+
+  @InjectTransactionManager()
+  protected async updateProductOptionValues_(
+    normalizedInput: ({
+      id: string
+    } & ProductTypes.UpdateProductOptionValueDTO)[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductOptionValue>[]> {
+    return await this.productOptionValueService_.update(
+      normalizedInput,
+      sharedContext
+    )
   }
 
   /**
@@ -1805,8 +1863,7 @@ export default class ProductModuleService
     const products_ = Array.isArray(products) ? products : [products]
 
     const normalizedProducts = (await this.normalizeUpdateProductInput(
-      products_ as UpdateProductInput[],
-      sharedContext
+      products_ as UpdateProductInput[]
     )) as ProductTypes.CreateProductDTO[]
 
     for (const productData of normalizedProducts) {
@@ -1854,6 +1911,12 @@ export default class ProductModuleService
     ) as TOutput
   }
 
+  /**
+   * Normalizes the input for the update product input
+   * @param products - The products to normalize
+   * @param originalProducts - The original products to use for the normalization (must include options and option values relations)
+   * @returns The normalized products
+   */
   protected async normalizeUpdateProductInput<
     T extends UpdateProductInput | UpdateProductInput[],
     TOutput = T extends UpdateProductInput[]
@@ -1861,7 +1924,7 @@ export default class ProductModuleService
       : UpdateProductInput
   >(
     products: T,
-    @MedusaContext() sharedContext: Context = {}
+    originalProducts?: InferEntityType<typeof Product>[]
   ): Promise<TOutput> {
     const products_ = Array.isArray(products) ? products : [products]
     const productsIds = products_.map((p) => p.id).filter(Boolean)
@@ -1869,11 +1932,14 @@ export default class ProductModuleService
     let dbOptions: InferEntityType<typeof ProductOption>[] = []
 
     if (productsIds.length) {
-      dbOptions = await this.productOptionService_.list(
-        { product_id: productsIds },
-        { relations: ["values"] },
-        sharedContext
-      )
+      // Re map options to handle non serialized data as well
+      dbOptions =
+        originalProducts
+          ?.map((originalProduct) =>
+            originalProduct.options.map((option) => option)
+          )
+          .flat()
+          .filter(Boolean) ?? []
     }
 
     const normalizedProducts: UpdateProductInput[] = []
@@ -1887,7 +1953,9 @@ export default class ProductModuleService
       if (productData.options?.length) {
         ;(productData as any).options = productData.options?.map((option) => {
           const dbOption = dbOptions.find(
-            (o) => o.title === option.title && o.product_id === productData.id
+            (o) =>
+              (o.title === option.title || o.id === option.id) &&
+              o.product_id === productData.id
           )
           return {
             title: option.title,

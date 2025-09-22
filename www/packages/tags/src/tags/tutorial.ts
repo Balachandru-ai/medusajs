@@ -102,5 +102,13 @@ export const tutorial = [
   {
     "title": "Personalized Products",
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
+  },
+  {
+    "title": "Example",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
+  },
+  {
+    "title": "Storefront Customizations",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront"
   }
 ]
