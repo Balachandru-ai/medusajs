@@ -194,6 +194,7 @@ export const createReturnRequest = async (
   const orderId = formData.get("order_id") as string
   const items = JSON.parse(formData.get("items") as string)
   const returnShippingOptionId = formData.get("return_shipping_option_id") as string
+  const locationId = formData.get("location_id") as string
 
   if (!orderId || !items || !returnShippingOptionId) {
     return { 
@@ -214,6 +215,7 @@ export const createReturnRequest = async (
         return_shipping: {
           option_id: returnShippingOptionId,
         },
+        location_id: locationId
       },
       headers,
     })
@@ -230,7 +232,7 @@ export const createReturnRequest = async (
 }
 ```
 
-You add the `createReturnRequest` function. It sends a `POST` request to the `/store/returns` API route. The function accepts a `FormData` object containing the order ID, the items to be returned, and the selected return shipping option ID.
+You add the `createReturnRequest` function. It sends a `POST` request to the `/store/returns` API route. The function accepts a `FormData` object containing the order ID, the items to be returned, the selected return shipping option ID, and the stock location ID to which the returned items will be sent.
 
 The function returns an object with the following properties:
 
@@ -908,6 +910,9 @@ const ReturnRequestTemplate: React.FC<ReturnRequestTemplateProps> = ({
     formData.append("order_id", order.id)
     formData.append("items", JSON.stringify(selectedItems))
     formData.append("return_shipping_option_id", selectedShippingOption)
+    // @ts-expect-error issue in HTTP types
+    const locationId = shippingOptions.find(opt => opt.id === selectedShippingOption)?.service_zone.fulfillment_set.location.id
+    formData.append("location_id", locationId)
     formAction(formData)
   }
 
