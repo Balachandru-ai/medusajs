@@ -164,7 +164,7 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
         const priceNotFound: string[] = []
 
         const items = (inputItems ?? cart.items ?? []).map((item) => {
-          const item_ = item as Required<PrepareLineItemDataInput>["item"]
+          const item_ = item as any
           const idLike =
             (item as CartLineItemDTO).id ?? simpleHash(JSON.stringify(item))
           let calculatedPriceSet = calculatedPriceSets[idLike]
@@ -180,6 +180,9 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
 
           variant.calculated_price = calculatedPriceSet
 
+          const isCustomPrice =
+            item_.is_custom_price ?? isDefined(item?.unit_price)
+
           const input: PrepareLineItemDataInput = {
             item: item_,
             variant: variant,
@@ -188,11 +191,13 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
             isTaxInclusive:
               item_.is_tax_inclusive ??
               calculatedPriceSet?.is_calculated_price_tax_inclusive,
-            isCustomPrice: isDefined(item?.unit_price),
+            isCustomPrice: item_.is_custom_price ?? isDefined(item?.unit_price),
           }
 
-          if (variant && !isDefined(input.unitPrice)) {
+          if (variant && !isCustomPrice) {
             input.unitPrice = calculatedPriceSet.calculated_amount
+            input.isTaxInclusive =
+              calculatedPriceSet.is_calculated_price_tax_inclusive
           }
 
           const preparedItem = prepareLineItemData(input)
