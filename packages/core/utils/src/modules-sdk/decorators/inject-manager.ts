@@ -23,7 +23,7 @@ export function InjectManager(managerProperty?: string): MethodDecorator {
       const originalContext = args[argIndex] ?? {}
       const copiedContext = {} as Context
       for (const key in originalContext) {
-        if (key === "manager" || key === "transactionManager") {
+        if (key === "transactionManager") {
           continue
         }
 
@@ -51,8 +51,8 @@ export function InjectManager(managerProperty?: string): MethodDecorator {
         )
       }
 
-      copiedContext.manager =
-        originalContext.manager ?? resourceWithManager.getFreshManager()
+      copiedContext.manager ??=
+        resourceWithManager.getFreshManager(originalContext)
 
       if (originalContext?.transactionManager) {
         copiedContext.transactionManager = originalContext?.transactionManager

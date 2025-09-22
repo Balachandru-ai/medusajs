@@ -358,6 +358,7 @@ export default class OrderModuleService
       "discount_tax_total",
       "original_total",
       "original_tax_total",
+      "pending_difference",
       "item_total",
       "item_subtotal",
       "item_tax_total",
@@ -370,9 +371,13 @@ export default class OrderModuleService
       "original_shipping_tax_total",
       "original_shipping_subtotal",
       "original_shipping_total",
+      "original_total",
+      "original_subtotal",
+      "original_tax_total",
       "credit_line_total",
       "credit_line_tax_total",
       "credit_line_subtotal",
+      "refundable_amount",
     ]
 
     const includeTotals = (config?.select ?? []).some((field) =>

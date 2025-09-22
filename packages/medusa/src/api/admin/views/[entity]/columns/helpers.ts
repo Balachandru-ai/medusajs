@@ -255,15 +255,31 @@ export const getTypeInfoFromGraphQLType = (
   }
 }
 
-export const DEFAULT_COLUMN_ORDERS: Record<string, number> = {
-  display_id: 100,
-  created_at: 200,
-  customer_display: 300,
-  "sales_channel.name": 400,
-  fulfillment_status: 500,
-  payment_status: 600,
-  total: 700,
-  country: 800,
+type Entities = keyof typeof ENTITY_MAPPINGS
+
+export const DEFAULT_COLUMN_ORDERS: Record<Entities, Record<string, number>> = {
+  orders: {
+    display_id: 100,
+    created_at: 200,
+    customer_display: 300,
+    "sales_channel.name": 400,
+    fulfillment_status: 500,
+    payment_status: 600,
+    total: 700,
+    country: 800,
+  },
+  products: {
+    product_display: 100,
+    "collection.title": 200,
+    sales_channels_display: 300,
+    variants_count: 400,
+    status: 500,
+  },
+  // Add other entities as needed
+  customers: {},
+  users: {},
+  regions: {},
+  "sales-channels": {},
 }
 
 /**
@@ -274,7 +290,7 @@ export const DEFAULT_COLUMN_ORDERS: Record<string, number> = {
  */
 export const generateEntityColumns = (
   entity: string,
-  entityMapping: typeof ENTITY_MAPPINGS[keyof typeof ENTITY_MAPPINGS]
+  entityMapping: (typeof ENTITY_MAPPINGS)[keyof typeof ENTITY_MAPPINGS]
 ): HttpTypes.AdminColumn[] | null => {
   const joinerConfigs = MedusaModule.getAllJoinerConfigs()
 
@@ -304,8 +320,7 @@ export const generateEntityColumns = (
   const mergedSchemaAST = mergeTypeDefs(allSchemas)
   const mergedSchemaString = print(mergedSchemaAST)
 
-  const { schema: cleanedSchemaString } =
-    cleanGraphQLSchema(mergedSchemaString)
+  const { schema: cleanedSchemaString } = cleanGraphQLSchema(mergedSchemaString)
 
   const schema = makeExecutableSchema({
     typeDefs: cleanedSchemaString,
@@ -393,9 +408,7 @@ export const generateEntityColumns = (
   const directColumns = directFields.map((fieldName) => {
     const displayName = formatFieldName(fieldName)
 
-    const type = schemaTypeMap[
-      entityMapping.graphqlType
-    ] as GraphQLObjectType
+    const type = schemaTypeMap[entityMapping.graphqlType] as GraphQLObjectType
     const fieldDef = type?.getFields()?.[fieldName]
     const typeInfo = fieldDef
       ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
@@ -406,8 +419,8 @@ export const generateEntityColumns = (
 
     const isDefaultField =
       entityMapping.defaultVisibleFields.includes(fieldName)
-    const defaultOrder =
-      DEFAULT_COLUMN_ORDERS[fieldName] || (isDefaultField ? 500 : 850)
+    const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
+    const defaultOrder = entityOrders[fieldName] || (isDefaultField ? 500 : 850)
     const category = getColumnCategory(
       fieldName,
       typeInfo.data_type,
@@ -421,8 +434,7 @@ export const generateEntityColumns = (
       field: fieldName,
       sortable,
       hideable: true,
-      default_visible:
-        entityMapping.defaultVisibleFields.includes(fieldName),
+      default_visible: entityMapping.defaultVisibleFields.includes(fieldName),
       data_type: typeInfo.data_type,
       semantic_type: typeInfo.semantic_type,
       context: typeInfo.context,
@@ -442,9 +454,7 @@ export const generateEntityColumns = (
       )
 
       // Filter out problematic fields from related type
-      const relatedType = schemaTypeMap[
-        relatedTypeName
-      ] as GraphQLObjectType
+      const relatedType = schemaTypeMap[relatedTypeName] as GraphQLObjectType
       const relatedFields = allRelatedFields.filter((fieldName) => {
         const field = relatedType?.getFields()[fieldName]
         if (!field) return true
@@ -466,13 +476,11 @@ export const generateEntityColumns = (
 
       limitedFields.forEach((fieldName) => {
         const fieldPath = `${relationName}.${fieldName}`
-        const displayName = `${formatFieldName(
-          relationName
-        )} ${formatFieldName(fieldName)}`
+        const displayName = `${formatFieldName(relationName)} ${formatFieldName(
+          fieldName
+        )}`
 
-        const relatedType = schemaTypeMap[
-          relatedTypeName
-        ] as GraphQLObjectType
+        const relatedType = schemaTypeMap[relatedTypeName] as GraphQLObjectType
         const fieldDef = relatedType?.getFields()?.[fieldName]
         const typeInfo = fieldDef
           ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
@@ -493,8 +501,9 @@ export const generateEntityColumns = (
         // If field is not in default visible fields, place it after country (850)
         const isDefaultField =
           entityMapping.defaultVisibleFields.includes(fieldPath)
+        const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
         const defaultOrder =
-          DEFAULT_COLUMN_ORDERS[fieldPath] || (isDefaultField ? 700 : 850)
+          entityOrders[fieldPath] || (isDefaultField ? 700 : 850)
         const category = getColumnCategory(
           fieldPath,
           typeInfo.data_type,
@@ -534,8 +543,9 @@ export const generateEntityColumns = (
       // If field is not in default visible fields, place it after country (850)
       const isDefaultField =
         entityMapping.defaultVisibleFields.includes(columnId)
+      const entityOrders = DEFAULT_COLUMN_ORDERS[entity] || {}
       const defaultOrder =
-        DEFAULT_COLUMN_ORDERS[columnId] || (isDefaultField ? 600 : 850)
+        entityOrders[columnId] || (isDefaultField ? 600 : 850)
       const category = getColumnCategory(columnId, "string", "computed")
 
       computedColumns.push({
@@ -545,13 +555,12 @@ export const generateEntityColumns = (
         field: columnId,
         sortable: false, // Computed columns can't be sorted server-side
         hideable: true,
-        default_visible:
-          entityMapping.defaultVisibleFields.includes(columnId),
+        default_visible: entityMapping.defaultVisibleFields.includes(columnId),
         data_type: "string", // Computed columns typically output strings
         semantic_type: "computed",
         context: "display",
         computed: {
-          type: columnConfig.computation_type,
+          type: columnConfig.render_type,
           required_fields: columnConfig.required_fields,
           optional_fields: columnConfig.optional_fields || [],
         },

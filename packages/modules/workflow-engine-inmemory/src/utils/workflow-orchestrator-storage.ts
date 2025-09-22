@@ -29,6 +29,8 @@ import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
 
+const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
+
 function calculateDelayFromExpression(expression: CronExpression): number {
   const nextTime = expression.next().getTime()
   const now = Date.now()
@@ -127,7 +129,7 @@ export class InMemoryDistributedTransactionStorage
       try {
         await this.clearExpiredExecutions()
       } catch {}
-    }, 1000 * 60 * 60)
+    }, THIRTY_MINUTES_IN_MS)
   }
 
   async onApplicationShutdown() {

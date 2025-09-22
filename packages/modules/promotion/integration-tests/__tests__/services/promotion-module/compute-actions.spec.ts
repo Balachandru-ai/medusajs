@@ -1,4 +1,7 @@
-import { IPromotionModuleService } from "@medusajs/framework/types"
+import {
+  CreatePromotionDTO,
+  IPromotionModuleService,
+} from "@medusajs/framework/types"
 import {
   ApplicationMethodType,
   Modules,
@@ -22,6 +25,729 @@ moduleIntegrationTestRunner({
         await createCampaigns(MikroOrmWrapper.forkManager())
       })
 
+      it("edge case: should only return promotions with no rules when context has no attributes", async () => {
+        // Create promotions with different rule configurations
+        const promotionsToCreate: CreatePromotionDTO[] = [
+          // Promotion with no rules - should be returned
+          {
+            code: "NO_RULES_PROMO",
+            is_automatic: true,
+            rules: [], // No global rules
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [], // No target rules
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          },
+          // Promotion with global rules - should NOT be returned
+          {
+            code: "WITH_GLOBAL_RULES",
+            is_automatic: true,
+            rules: [
+              {
+                attribute: "customer.id",
+                operator: "eq",
+                values: ["some_customer"],
+              },
+            ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          },
+          // Promotion with target rules - should NOT be returned
+          {
+            code: "WITH_TARGET_RULES",
+            is_automatic: true,
+            rules: [],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [
+                {
+                  attribute: "items.product.id",
+                  operator: "eq",
+                  values: ["some_product"],
+                },
+              ],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          },
+        ]
+
+        const promotions = await service.createPromotions(promotionsToCreate)
+        const noRulePromotion = promotions.find(
+          (p) => p.code === "NO_RULES_PROMO"
+        )!
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          // Return nothing to not trigger future context checks
+          return []
+        }
+
+        // Empty context - no attributes at all, should trigger noRulesSubquery
+        const emptyContext = {}
+
+        const actions = await service.computeActions([], emptyContext as any)
+
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // Should only return the promotion with no rules
+        expect(prefilteredPromotions).toHaveLength(1)
+        expect(prefilteredPromotions[0].id).toBe(noRulePromotion.id)
+
+        expect(actions).toHaveLength(0) // No items to apply to
+      })
+
+      it("should prefilter promotions by applicable rules", async () => {
+        // 1. Promotion with NO rules (should always apply if automatic)
+        await createDefaultPromotion(service, {
+          code: "NO_RULES_PROMO",
+          is_automatic: true,
+          rules: [], // No global rules - always applicable
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "items.product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"], // Only applies to product 0
+              },
+            ],
+          },
+        })
+
+        // 2. Promotion matching customer group VIP1
+        await createDefaultPromotion(service, {
+          code: "CUSTOMER_GROUP_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP1"], // Matches our test customer
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "items.product.id",
+                operator: "eq",
+                values: ["prod_tshirt1"], // Only applies to product 1
+              },
+            ],
+          },
+        })
+
+        // 3. Promotion with subtotal rule (should match items with subtotal > 50)
+        await createDefaultPromotion(service, {
+          code: "SUBTOTAL_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "items.subtotal",
+              operator: "gt",
+              values: ["50"], // All our items have subtotal > 50
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [], // No target rules - applies to all items
+          },
+        })
+
+        // 4. Promotion matching customer.id
+        await createDefaultPromotion(service, {
+          code: "CUSTOMER_ID_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.id",
+              operator: "in",
+              values: ["customer"], // Matches our test customer
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 250, // Different value to distinguish
+            target_rules: [
+              {
+                attribute: "items.product.id",
+                operator: "eq",
+                values: ["prod_tshirt9"], // Only applies to product 9
+              },
+            ],
+          },
+        })
+
+        // 5. Promotion that should NOT match (different customer group)
+        await createDefaultPromotion(service, {
+          code: "NO_MATCH_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP99"], // Different customer group - won't match
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "items.product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"],
+              },
+            ],
+          },
+        })
+
+        // 6. Non-automatic promotion (should be excluded from automatic processing)
+        await createDefaultPromotion(service, {
+          code: "NON_AUTO_PROMO",
+          is_automatic: false, // Not automatic
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP1"], // Would match but not automatic
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "items.product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"],
+              },
+            ],
+          },
+        })
+
+        // 6. Non-automatic promotion that do not match any rules (should be excluded from automatic processing and internal pre filtering)
+        await createDefaultPromotion(service, {
+          code: "NON_AUTO_PROMO_2",
+          is_automatic: false, // Not automatic
+          rules: [
+            {
+              attribute: "customer.customer_group.id",
+              operator: "in",
+              values: ["VIP99"], // Would not match our customer group
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+            target_rules: [
+              {
+                attribute: "items.product.id",
+                operator: "eq",
+                values: ["prod_tshirt0"],
+              },
+            ],
+          },
+        })
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          return result
+        }
+
+        // Test Context: Customer with specific attributes
+        const testContext = {
+          currency_code: "usd",
+          customer: {
+            id: "customer", // Matches CUSTOMER_ID_PROMO
+            customer_group: {
+              id: "VIP1", // Matches CUSTOMER_GROUP_PROMO
+            },
+          },
+          region_id: "region_1",
+          items: [
+            {
+              id: "item_tshirt0",
+              quantity: 1,
+              subtotal: 100, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_tshirt0" }, // Matches NO_RULES_PROMO target
+            },
+            {
+              id: "item_tshirt1",
+              quantity: 1,
+              subtotal: 100, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_tshirt1" }, // Matches CUSTOMER_GROUP_PROMO target
+            },
+            {
+              id: "item_tshirt9",
+              quantity: 5,
+              subtotal: 750, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_tshirt9" }, // Matches CUSTOMER_ID_PROMO target
+            },
+            {
+              id: "item_unknown",
+              quantity: 1,
+              subtotal: 110, // > 50, matches SUBTOTAL_PROMO
+              product: { id: "prod_unknown" }, // No specific target rules match
+            },
+          ] as any,
+        }
+
+        const actions = await service.computeActions([], testContext)
+
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // 1. Verify prefiltering worked - should include matching promotions
+        expect(prefilteredPromotions).toHaveLength(4)
+        const prefilteredCodes = prefilteredPromotions.map((p) => p.code)
+        expect(prefilteredCodes).toEqual(
+          expect.arrayContaining([
+            "NO_RULES_PROMO", // No rules - always included
+            "CUSTOMER_GROUP_PROMO", // customer.customer_group.id = VIP1
+            "SUBTOTAL_PROMO", // items.subtotal > 50
+            "CUSTOMER_ID_PROMO", // customer.id = customer
+          ])
+        )
+
+        expect(actions).toHaveLength(4)
+
+        const actionsByCode = JSON.parse(JSON.stringify(actions)).reduce(
+          (acc, action) => {
+            if (!acc[action.code]) acc[action.code] = []
+            acc[action.code].push(action)
+            return acc
+          },
+          {} as Record<string, any[]>
+        )
+
+        // NO_RULES_PROMO: Applies to item_tshirt0 (product.id = prod_tshirt0)
+        expect(actionsByCode["NO_RULES_PROMO"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt0",
+            amount: 100,
+            code: "NO_RULES_PROMO",
+          }),
+        ])
+
+        // CUSTOMER_GROUP_PROMO: Applies to item_tshirt1 (product.id = prod_tshirt1)
+        expect(actionsByCode["CUSTOMER_GROUP_PROMO"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt1",
+            amount: 100,
+            code: "CUSTOMER_GROUP_PROMO",
+          }),
+        ])
+
+        // SUBTOTAL_PROMO: (no target rules)
+        expect(actionsByCode["SUBTOTAL_PROMO"]).toHaveLength(1)
+        expect(actionsByCode["SUBTOTAL_PROMO"]).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ item_id: "item_unknown", amount: 100 }),
+          ])
+        )
+
+        // CUSTOMER_ID_PROMO: Applies to item_tshirt9 (product.id = prod_tshirt9)
+        expect(actionsByCode["CUSTOMER_ID_PROMO"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt9",
+            amount: 750,
+            code: "CUSTOMER_ID_PROMO",
+          }),
+        ])
+      })
+
+      it("should exclude promotions with rules for attributes not in context", async () => {
+        // Create promotion with mixed attributes - some in context, some not
+        await createDefaultPromotion(service, {
+          code: "MIXED_ATTRIBUTES_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.id",
+              operator: "eq",
+              values: ["customer1"], // This matches context
+            },
+            {
+              attribute: "special_flag", // This attribute NOT in context
+              operator: "eq",
+              values: ["premium"],
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 100,
+          },
+        })
+
+        // Create promotion with only context attributes - should be included
+        await createDefaultPromotion(service, {
+          code: "CONTEXT_ONLY_PROMO",
+          is_automatic: true,
+          rules: [
+            {
+              attribute: "customer.id",
+              operator: "eq",
+              values: ["customer1"],
+            },
+          ],
+          application_method: {
+            type: "fixed",
+            target_type: "items",
+            allocation: "each",
+            max_quantity: 100000,
+            value: 50,
+          },
+        })
+
+        // Spy on promotion service to capture prefiltered results
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+          prefilteredPromotions = result
+          return result
+        }
+
+        // Context with limited attributes
+        const testContext = {
+          customer: { id: "customer1" },
+          items: [
+            {
+              id: "item1",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod1" },
+            },
+          ],
+        }
+
+        await service.computeActions([], testContext as any)
+
+        // Restore original method
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // Should only include promotion with context-only attributes
+        expect(prefilteredPromotions).toHaveLength(1)
+        expect(prefilteredPromotions[0].code).toBe("CONTEXT_ONLY_PROMO")
+      })
+
+      it("should handle prefiltering of many automatic promotions targetting customers and regions with only one that is relevant", async () => {
+        const promotionToCreate: CreatePromotionDTO[] = []
+        // I ve also tested with 20k and the compute actions takes 200/300ms
+        for (let i = 0; i < 100; i++) {
+          promotionToCreate.push({
+            code: "CUSTOMER_PROMO_" + i,
+            is_automatic: true,
+            rules: [
+              {
+                attribute: "customer.id",
+                operator: "eq",
+                values: ["customer" + i], // Matches our test customer1
+              },
+              {
+                attribute: "region_id",
+                operator: "eq",
+                values: ["region_1"], // matches our region
+              },
+            ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [
+                {
+                  attribute: "items.product.id",
+                  operator: "eq",
+                  values: ["prod_tshirt0"], // Only applies to product 0
+                },
+              ],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          })
+        }
+
+        await service.createPromotions(promotionToCreate)
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          return result
+        }
+
+        // Test Context: Customer with specific attributes
+        const testContext = {
+          currency_code: "usd",
+          customer: {
+            id: "customer1", // Matches CUSTOMER_PROMO_1
+          },
+          region_id: "region_1",
+          items: [
+            {
+              id: "item_tshirt0",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod_tshirt0" }, // Matches CUSTOMER_PROMO_1 target
+            },
+            {
+              id: "item_tshirt1",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod_tshirt1" },
+            },
+            {
+              id: "item_tshirt9",
+              quantity: 5,
+              subtotal: 750,
+              product: { id: "prod_tshirt9" },
+            },
+            {
+              id: "item_unknown",
+              quantity: 1,
+              subtotal: 110,
+              product: { id: "prod_unknown" },
+            },
+          ] as any,
+        }
+
+        const actions = await service.computeActions([], testContext)
+
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // 1. Verify prefiltering worked - should include matching promotion
+        // We expect the prefilter to have return a single promotion that is being satisfied by the
+        // context with the given customer id and region id
+        expect(prefilteredPromotions).toHaveLength(1)
+        const prefilteredCodes = prefilteredPromotions.map((p) => p.code)
+        expect(prefilteredCodes).toEqual(
+          expect.arrayContaining([
+            "CUSTOMER_PROMO_1", // customer.id = customer1
+          ])
+        )
+
+        expect(actions).toHaveLength(1)
+
+        const actionsByCode = JSON.parse(JSON.stringify(actions)).reduce(
+          (acc, action) => {
+            if (!acc[action.code]) acc[action.code] = []
+            acc[action.code].push(action)
+            return acc
+          },
+          {} as Record<string, any[]>
+        )
+
+        // CUSTOMER_PROMO_1: Applies to item_tshirt0 (product.id = prod_tshirt0)
+        expect(actionsByCode["CUSTOMER_PROMO_1"]).toEqual([
+          expect.objectContaining({
+            action: "addItemAdjustment",
+            item_id: "item_tshirt0",
+            amount: 100,
+            code: "CUSTOMER_PROMO_1",
+          }),
+        ])
+      })
+
+      it("should handle prefiltering of many automatic promotions targetting customers and regions while no context attribute can satisfies any of those rules", async () => {
+        const promotionToCreate: CreatePromotionDTO[] = []
+        for (let i = 0; i < 100; i++) {
+          promotionToCreate.push({
+            code: "CUSTOMER_PROMO_" + i,
+            is_automatic: true,
+            rules: [
+              {
+                attribute: "customer.id",
+                operator: "eq",
+                values: ["customer" + i], // Matches our test customer1
+              },
+              {
+                attribute: "region_id",
+                operator: "eq",
+                values: ["region_1"], // matches our region
+              },
+            ],
+            application_method: {
+              type: "fixed",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 100000,
+              value: 100,
+              target_rules: [
+                {
+                  attribute: "items.product.id",
+                  operator: "eq",
+                  values: ["prod_tshirt0"], // Only applies to product 0
+                },
+              ],
+            },
+            type: "standard",
+            status: PromotionStatus.ACTIVE,
+            campaign_id: "campaign-id-1",
+          })
+        }
+
+        await service.createPromotions(promotionToCreate)
+
+        // Spy on the internal promotion service to verify prefiltering
+        let prefilterCallCount = 0
+        let prefilteredPromotions: any[] = []
+        const originalPromotionServiceList = (service as any).promotionService_
+          .list
+
+        ;(service as any).promotionService_.list = async (...args: any[]) => {
+          const result = await originalPromotionServiceList.bind(
+            (service as any).promotionService_
+          )(...args)
+
+          if (prefilterCallCount === 0) {
+            prefilteredPromotions = result
+          }
+          prefilterCallCount++
+
+          return result
+        }
+
+        // Test Context
+        const testContext = {
+          currency_code: "usd",
+          items: [
+            {
+              id: "item_tshirt0",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod_tshirt0" }, // Matches CUSTOMER_PROMO_1 target
+            },
+            {
+              id: "item_tshirt1",
+              quantity: 1,
+              subtotal: 100,
+              product: { id: "prod_tshirt1" },
+            },
+            {
+              id: "item_tshirt9",
+              quantity: 5,
+              subtotal: 750,
+              product: { id: "prod_tshirt9" },
+            },
+            {
+              id: "item_unknown",
+              quantity: 1,
+              subtotal: 110,
+              product: { id: "prod_unknown" },
+            },
+          ] as any,
+        }
+
+        const actions = await service.computeActions([], testContext)
+
+        ;(service as any).promotionService_.list = originalPromotionServiceList
+
+        // 1. Verify prefiltering worked - should include matching promotion
+        // We expect the prefilter to have return 0 promotion that is being satisfied by the
+        expect(prefilteredPromotions).toHaveLength(0)
+
+        expect(actions).toHaveLength(0)
+      })
+
       it("should return empty array when promotion is not active (draft or inactive)", async () => {
         const promotion = await createDefaultPromotion(service, {
           status: PromotionStatus.DRAFT,
@@ -40,7 +766,7 @@ moduleIntegrationTestRunner({
             max_quantity: 1,
             target_rules: [
               {
-                attribute: "product_category.id",
+                attribute: "items.product_category.id",
                 operator: "eq",
                 values: ["catg_cotton"],
               },
@@ -142,7 +868,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -253,7 +979,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -278,7 +1004,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -364,7 +1090,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -389,7 +1115,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -468,7 +1194,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 5,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -527,7 +1253,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 5,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -585,7 +1311,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -661,7 +1387,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -686,7 +1412,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -774,7 +1500,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: ["prod_tshirt"],
                   },
@@ -793,7 +1519,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: ["prod_tshirt"],
                   },
@@ -856,7 +1582,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -881,7 +1607,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -960,7 +1686,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 5,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1013,7 +1739,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 5,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1074,7 +1800,7 @@ moduleIntegrationTestRunner({
                 value: 400,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1150,7 +1876,7 @@ moduleIntegrationTestRunner({
                 value: 400,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1225,7 +1951,7 @@ moduleIntegrationTestRunner({
                 value: 30,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1250,7 +1976,7 @@ moduleIntegrationTestRunner({
                 value: 50,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1342,7 +2068,7 @@ moduleIntegrationTestRunner({
                 value: 1000,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1367,7 +2093,7 @@ moduleIntegrationTestRunner({
                 value: 50,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1445,7 +2171,7 @@ moduleIntegrationTestRunner({
                 value: 1500,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1497,7 +2223,7 @@ moduleIntegrationTestRunner({
                 value: 500,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1555,7 +2281,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1631,7 +2357,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1706,7 +2432,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1730,7 +2456,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -1817,7 +2543,7 @@ moduleIntegrationTestRunner({
                 value: 50,
                 target_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: ["prod_tshirt"],
                   },
@@ -1835,7 +2561,7 @@ moduleIntegrationTestRunner({
                 value: 50,
                 target_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: ["prod_tshirt"],
                   },
@@ -1909,7 +2635,7 @@ moduleIntegrationTestRunner({
                 value: 100,
                 target_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: ["prod_tshirt"],
                   },
@@ -1982,7 +2708,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -2006,7 +2732,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -2098,7 +2824,7 @@ moduleIntegrationTestRunner({
                 value: 100,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -2150,7 +2876,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "product_category.id",
+                    attribute: "items.product_category.id",
                     operator: "eq",
                     values: ["catg_cotton"],
                   },
@@ -2211,7 +2937,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2285,7 +3011,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2359,7 +3085,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2423,7 +3149,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2448,7 +3174,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2530,7 +3256,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2555,7 +3281,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2631,7 +3357,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2680,7 +3406,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2735,7 +3461,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2809,7 +3535,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2865,7 +3591,7 @@ moduleIntegrationTestRunner({
             ])
           })
 
-          it("should compute the correct shipping_method amendments when promotion is automatic and prevent_auto_promotions is false", async () => {
+          it("should compute the correct shipping_method amendments when promotion is automatic and prevent_auto_promotions is true", async () => {
             await createDefaultPromotion(service, {
               rules: [
                 {
@@ -2883,7 +3609,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2947,7 +3673,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -2973,7 +3699,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3061,7 +3787,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3086,7 +3812,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3174,7 +3900,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3223,7 +3949,7 @@ moduleIntegrationTestRunner({
                 max_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3279,7 +4005,7 @@ moduleIntegrationTestRunner({
                 value: 200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3352,7 +4078,7 @@ moduleIntegrationTestRunner({
                 value: 200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3424,7 +4150,7 @@ moduleIntegrationTestRunner({
                 value: 200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3448,7 +4174,7 @@ moduleIntegrationTestRunner({
                 value: 200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3535,7 +4261,7 @@ moduleIntegrationTestRunner({
                 value: 1000,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3559,7 +4285,7 @@ moduleIntegrationTestRunner({
                 value: 200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3634,7 +4360,7 @@ moduleIntegrationTestRunner({
                 value: 1200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3682,7 +4408,7 @@ moduleIntegrationTestRunner({
                 value: 1200,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3736,7 +4462,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3809,7 +4535,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3881,7 +4607,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3905,7 +4631,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -3992,7 +4718,7 @@ moduleIntegrationTestRunner({
                 value: 100,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -4016,7 +4742,7 @@ moduleIntegrationTestRunner({
                 value: 10,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -4092,7 +4818,7 @@ moduleIntegrationTestRunner({
                 value: 100,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -4145,7 +4871,7 @@ moduleIntegrationTestRunner({
                 value: 100,
                 target_rules: [
                   {
-                    attribute: "shipping_option.id",
+                    attribute: "shipping_methods.shipping_option.id",
                     operator: "in",
                     values: ["express", "standard"],
                   },
@@ -4546,7 +5272,7 @@ moduleIntegrationTestRunner({
               max_quantity: 1,
               target_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_cotton"],
                 },
@@ -4639,7 +5365,7 @@ moduleIntegrationTestRunner({
               max_quantity: undefined,
               target_rules: [
                 {
-                  attribute: "shipping_option.id",
+                  attribute: "shipping_methods.shipping_option.id",
                   operator: "in",
                   values: ["express", "standard"],
                 },
@@ -4772,14 +5498,14 @@ moduleIntegrationTestRunner({
               buy_rules_min_quantity: 1,
               target_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_tshirt"],
                 },
               ],
               buy_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_sweater"],
                 },
@@ -4866,14 +5592,14 @@ moduleIntegrationTestRunner({
               buy_rules_min_quantity: 4,
               target_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_tshirt"],
                 },
               ],
               buy_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_sweater"],
                 },
@@ -4954,14 +5680,14 @@ moduleIntegrationTestRunner({
               buy_rules_min_quantity: 1,
               target_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_tshirt"],
                 },
               ],
               buy_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_sweater"],
                 },
@@ -5055,14 +5781,14 @@ moduleIntegrationTestRunner({
               buy_rules_min_quantity: 1,
               target_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_not-found"],
                 },
               ],
               buy_rules: [
                 {
-                  attribute: "product_category.id",
+                  attribute: "items.product_category.id",
                   operator: "eq",
                   values: ["catg_sweater"],
                 },
@@ -5096,14 +5822,14 @@ moduleIntegrationTestRunner({
                 buy_rules_min_quantity: 2,
                 target_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: [product1],
                   },
                 ],
                 buy_rules: [
                   {
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: [product1],
                   },
@@ -5162,14 +5888,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 2,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
@@ -5297,14 +6023,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 2,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
@@ -5329,14 +6055,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 2,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
@@ -5541,14 +6267,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 50,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
@@ -5573,14 +6299,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 10,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
@@ -5639,14 +6365,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 50,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
@@ -5671,14 +6397,14 @@ moduleIntegrationTestRunner({
                   buy_rules_min_quantity: 10,
                   target_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
                   ],
                   buy_rules: [
                     {
-                      attribute: "product.id",
+                      attribute: "items.product.id",
                       operator: "eq",
                       values: [product1],
                     },
