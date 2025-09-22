@@ -310,17 +310,46 @@ export const createOrderWorkflow = createWorkflow(
     )
 
     const lineItems = transform(
-      { input, variants, variantsAndItemsWithCalculatedPrice },
+      {
+        input,
+        variants,
+        variantsWithoutCalculatedPrice,
+        variantsAndItemsWithCalculatedPrice,
+      },
       (data) => {
-        const itemsForVariantWithoutCalculatedPrice = prepareLineItems(data)
         const itemsForVariantWithCalculatedPrice =
           data.variantsAndItemsWithCalculatedPrice?.lineItems?.map(
             (i) => i.data
           ) ?? []
-        return [
-          ...itemsForVariantWithoutCalculatedPrice,
-          ...itemsForVariantWithCalculatedPrice,
-        ]
+
+        // all other items that are not in the itemsForVariantWithCalculatedPrice
+        const itemsForVariantWithoutCalculatedPrice = data.input.items?.filter(
+          (item) => {
+            return !data.variantsAndItemsWithCalculatedPrice?.lineItems?.find(
+              (i) =>
+                i.data.id === (item as any).id ||
+                i.data.variant_id === item.variant_id ||
+                (i.data.title === item.title &&
+                  i.data.subtitle === item.subtitle &&
+                  i.data.thumbnail === item.thumbnail)
+            )
+          }
+        )
+
+        if (!itemsForVariantWithoutCalculatedPrice?.length) {
+          return itemsForVariantWithCalculatedPrice
+        }
+
+        const preparedItemsForVariantWithoutCalculatedPrice = prepareLineItems({
+          input: {
+            items: itemsForVariantWithoutCalculatedPrice,
+          },
+          variants: data.variantsWithoutCalculatedPrice,
+        })
+
+        return preparedItemsForVariantWithoutCalculatedPrice.concat(
+          ...itemsForVariantWithCalculatedPrice
+        )
       }
     )
 
