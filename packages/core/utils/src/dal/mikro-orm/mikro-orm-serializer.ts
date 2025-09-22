@@ -28,7 +28,8 @@ const DOT = "."
 function isVisible(
   propName: string,
   populate: string[] | boolean,
-  exclude: string[] | undefined
+  exclude: string[] | undefined,
+  meta: EntityMetadata["properties"]
 ): boolean {
   if (populate === true) return true
 
@@ -48,7 +49,10 @@ function isVisible(
     }
   }
 
-  return false
+  const prop = meta[propName]
+  const visible = (prop && !prop.hidden) || prop === undefined
+  const prefixed = prop && !prop.primary && propName.charAt(0) === "_"
+  return visible && !prefixed
 }
 
 function isPopulated(propName: string, populate: string[] | boolean): boolean {
@@ -209,7 +213,12 @@ export class EntitySerializer {
     for (let i = 0; i < allKeysLength; i++) {
       const prop = allKeys[i]
 
-      const isPropertyVisible = isVisible(prop, populate, exclude)
+      const isPropertyVisible = isVisible(
+        prop,
+        populate,
+        exclude,
+        metaProperties
+      )
 
       if (!isPropertyVisible) continue
 
@@ -278,7 +287,7 @@ export class EntitySerializer {
       const prop = metaProps[i]
       const propName = prop.name
 
-      if (!isVisible(propName, populate, exclude)) continue
+      if (!isVisible(propName, populate, exclude, meta.properties)) continue
 
       let propertyKey: keyof T & string
       let shouldProcess = false
