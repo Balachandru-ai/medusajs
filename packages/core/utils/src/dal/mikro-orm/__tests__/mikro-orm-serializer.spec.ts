@@ -1,5 +1,5 @@
-import { MikroORM } from "@mikro-orm/core"
-import { defineConfig } from "@mikro-orm/postgresql"
+import { MikroORM } from "@medusajs/deps/mikro-orm/core"
+import { defineConfig } from "@medusajs/deps/mikro-orm/postgresql"
 import {
   Entity1WithUnDecoratedProp,
   Entity2WithUnDecoratedProp,

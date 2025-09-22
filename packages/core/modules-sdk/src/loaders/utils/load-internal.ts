@@ -31,7 +31,7 @@ import {
   stringifyCircular,
   toMikroOrmEntities,
 } from "@medusajs/utils"
-import { asFunction, asValue } from "awilix"
+import { asFunction, asValue } from "@medusajs/deps/awilix"
 import { statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"

@@ -15,7 +15,7 @@ import {
   ReferenceKind,
   SerializationContext,
   Utils,
-} from "@mikro-orm/core"
+} from "@medusajs/deps/mikro-orm/core"
 
 const STATIC_OPTIONS_SHAPE: {
   populate: string[] | boolean | undefined

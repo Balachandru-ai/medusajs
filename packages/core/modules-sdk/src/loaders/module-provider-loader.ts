@@ -7,7 +7,7 @@ import {
   normalizeImportPathWithSource,
   promiseAll,
 } from "@medusajs/utils"
-import { asFunction, Lifetime } from "awilix"
+import { asFunction, Lifetime } from "@medusajs/deps/awilix"
 
 export async function moduleProviderLoader({
   container,

@@ -33,7 +33,7 @@ import {
   promiseAll,
   registerFeatureFlag,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/deps/awilix"
 import { Link } from "./link"
 import {
   MedusaModule,
