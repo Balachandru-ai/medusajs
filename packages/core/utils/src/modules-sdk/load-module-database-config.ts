@@ -112,6 +112,14 @@ export function loadDatabaseConfig(
    * the database
    * driver but rather an internal parameter used by us.
    */
-  database.clientUrl = database.clientUrl?.replace(/[?&]ssl_mode=[^&]*/gi, "")
+  database.clientUrl = database.clientUrl?.replace(
+    /(\?|&)ssl_mode=[^&]*(&|$)/gi,
+    (match, prefix, suffix) => {
+      if (prefix === "?" && suffix === "&") return "?"
+      if (prefix === "?" && suffix === "") return ""
+      if (prefix === "&") return suffix
+      return ""
+    }
+  )
   return database
 }

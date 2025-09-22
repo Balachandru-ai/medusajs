@@ -38,7 +38,15 @@ export async function pgConnectionLoader(): Promise<
 
   delete driverOptions.pool
 
-  const clientUrl = connectionString?.replace(/[?&]ssl_mode=[^&]*/gi, "")
+  const clientUrl = connectionString?.replace(
+    /(\?|&)ssl_mode=[^&]*(&|$)/gi,
+    (match, prefix, suffix) => {
+      if (prefix === "?" && suffix === "&") return "?"
+      if (prefix === "?" && suffix === "") return ""
+      if (prefix === "&") return suffix
+      return ""
+    }
+  )
 
   const pgConnection = ModulesSdkUtils.createPgConnection({
     clientUrl,
