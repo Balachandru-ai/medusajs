@@ -24,6 +24,7 @@ const STATIC_OPTIONS_SHAPE = {
 const EMPTY_ARRAY: readonly string[] = Object.freeze([])
 const WILDCARD = "*"
 const DOT = "."
+const UNDERSCORE = "_"
 
 function isVisible(
   propName: string,
@@ -51,7 +52,7 @@ function isVisible(
 
   const prop = meta[propName]
   const visible = (prop && !prop.hidden) || prop === undefined
-  const prefixed = prop && !prop.primary && propName.charAt(0) === "_"
+  const prefixed = prop && !prop.primary && propName.charAt(0) === UNDERSCORE
   return visible && !prefixed
 }
 
@@ -151,10 +152,13 @@ export class EntitySerializer {
     const seenKeys = new Set<string>()
 
     const primaryKeys = meta.primaryKeys
+    const primaryKeysLength = primaryKeys.length
     const entityKeys = Object.keys(entity)
+    const entityKeysLength = entityKeys.length
     const metaPropertyKeys = Object.keys(meta.properties)
+    const metaPropertyKeysLength = metaPropertyKeys.length
 
-    for (let i = 0; i < primaryKeys.length; i++) {
+    for (let i = 0; i < primaryKeysLength; i++) {
       const key = primaryKeys[i]
       if (!seenKeys.has(key)) {
         seenKeys.add(key)
@@ -162,7 +166,7 @@ export class EntitySerializer {
       }
     }
 
-    for (let i = 0; i < entityKeys.length; i++) {
+    for (let i = 0; i < entityKeysLength; i++) {
       const key = entityKeys[i]
       if (!seenKeys.has(key)) {
         seenKeys.add(key)
@@ -170,7 +174,7 @@ export class EntitySerializer {
       }
     }
 
-    for (let i = 0; i < metaPropertyKeys.length; i++) {
+    for (let i = 0; i < metaPropertyKeysLength; i++) {
       const key = metaPropertyKeys[i]
       if (!seenKeys.has(key)) {
         seenKeys.add(key)
