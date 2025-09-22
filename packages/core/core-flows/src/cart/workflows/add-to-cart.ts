@@ -194,7 +194,7 @@ export const addToCartWorkflow = createWorkflow(
       "fetch-variants",
       { variantsData, variantIds },
       ({ variantsData, variantIds }) => {
-        return !variantsData.length && !!variantIds.length
+        return !variantsData?.length && !!variantIds.length
       }
     ).then(() => {
       return useQueryGraphStep({
