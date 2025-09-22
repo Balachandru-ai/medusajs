@@ -211,7 +211,7 @@ export const createCartWorkflow = createWorkflow(
     const cartToCreate = transform({ lineItems, cartInput }, (data) => {
       return {
         ...data.cartInput,
-        items: data.lineItems,
+        items: data.lineItems.map((i) => i.data),
       } as unknown as CreateCartDTO
     })
 

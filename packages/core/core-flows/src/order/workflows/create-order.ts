@@ -313,7 +313,8 @@ export const createOrderWorkflow = createWorkflow(
       (data) => {
         const itemsForVariantWithoutCalculatedPrice = prepareLineItems(data)
         const itemsForVariantWithCalculatedPrice =
-          variantsAndItemsWithCalculatedPrice?.lineItems ?? []
+          variantsAndItemsWithCalculatedPrice?.lineItems?.map((i) => i.data) ??
+          []
         return [
           ...itemsForVariantWithoutCalculatedPrice,
           ...itemsForVariantWithCalculatedPrice,
