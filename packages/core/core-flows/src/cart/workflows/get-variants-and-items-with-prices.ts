@@ -74,14 +74,16 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
     input: WorkflowData<GetVariantsAndItemsWithPricesWorkflowInput>
   ): WorkflowResponse<GetVariantsAndItemsWithPricesWorkflowOutput> => {
     const variantIds = transform(
-      { cart: input.cart, variantIds: input.variants?.id },
+      { cart: input.cart, items: input.items, variantIds: input.variants?.id },
       (data): string[] => {
         if (data.variantIds) {
           return data.variantIds
         }
 
         return Array.from(
-          new Set((data.cart.items ?? []).map((i) => i.variant_id))
+          new Set(
+            (data.cart.items ?? data.items ?? []).map((i) => i.variant_id)
+          )
         ).filter((v): v is string => !!v)
       }
     )
@@ -147,24 +149,31 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
     })
 
     const variantsItemsWithPrices = transform(
-      { cart: input.cart, variantsData, calculatedPriceSets },
+      {
+        cart: input.cart,
+        items: input.items,
+        variantsData,
+        calculatedPriceSets,
+      },
       ({
         cart,
+        items: inputItems,
         variantsData,
         calculatedPriceSets,
       }): GetVariantsAndItemsWithPricesWorkflowOutput => {
         const priceNotFound: string[] = []
 
-        const items = (cart.items ?? []).map((item) => {
+        const items = (inputItems ?? cart.items ?? []).map((item) => {
+          const item_ = item as Required<PrepareLineItemDataInput>["item"]
           const idLike =
             (item as CartLineItemDTO).id ?? simpleHash(JSON.stringify(item))
           let calculatedPriceSet = calculatedPriceSets[idLike]
           if (!calculatedPriceSet) {
-            calculatedPriceSet = calculatedPriceSets[item.variant_id!]
+            calculatedPriceSet = calculatedPriceSets[item_.variant_id!]
           }
 
           if (!calculatedPriceSet) {
-            priceNotFound.push(item.variant_id!)
+            priceNotFound.push(item_.variant_id!)
           }
 
           const variant = variantsData.find((v) => v.id === item.variant_id)
@@ -172,12 +181,12 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
           variant.calculated_price = calculatedPriceSet
 
           const input: PrepareLineItemDataInput = {
-            item,
+            item: item_,
             variant: variant,
             cartId: cart.id,
-            unitPrice: item.unit_price,
+            unitPrice: item_.unit_price,
             isTaxInclusive:
-              item.is_tax_inclusive ??
+              item_.is_tax_inclusive ??
               calculatedPriceSet?.is_calculated_price_tax_inclusive,
             isCustomPrice: isDefined(item?.unit_price),
           }
@@ -189,7 +198,7 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
           const preparedItem = prepareLineItemData(input)
 
           return {
-            selector: { id: item.id },
+            selector: { id: (item_ as CartLineItemDTO).id },
             data: preparedItem as Partial<UpdateLineItemDTO>,
           }
         })
