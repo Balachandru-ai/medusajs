@@ -51,7 +51,7 @@ export const useLocationListTableColumns = () => {
       })
 
       toast.success(
-        t("shippingProfile.delete.successToast", {
+        t("stockLocations.delete.successToast", {
           name: location.name,
         })
       )
