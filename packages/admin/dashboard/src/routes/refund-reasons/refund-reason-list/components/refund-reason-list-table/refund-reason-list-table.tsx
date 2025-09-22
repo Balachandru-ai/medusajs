@@ -80,7 +80,10 @@ const RefundReasonRowActions = ({
   refundReason,
 }: RefundReasonRowActionsProps) => {
   const { t } = useTranslation()
-  const handleDelete = useDeleteRefundReasonAction(refundReason.id)
+  const handleDelete = useDeleteRefundReasonAction(
+    refundReason.id,
+    refundReason.label
+  )
 
   return (
     <ActionMenu
