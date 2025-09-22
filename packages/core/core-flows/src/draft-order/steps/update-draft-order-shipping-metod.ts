@@ -1,6 +1,9 @@
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { BigNumberInput, IOrderModuleService } from "@medusajs/framework/types"
+import type {
+  BigNumberInput,
+  IOrderModuleService,
+} from "@medusajs/framework/types"
 
 export const updateDraftOrderShippingMethodStepId =
   "update-draft-order-shipping-method"

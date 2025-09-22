@@ -1,4 +1,4 @@
-import { AdditionalData } from "@medusajs/framework/types"
+import type { AdditionalData } from "@medusajs/framework/types"
 import { isDefined, PromotionActions } from "@medusajs/framework/utils"
 import {
   createHook,

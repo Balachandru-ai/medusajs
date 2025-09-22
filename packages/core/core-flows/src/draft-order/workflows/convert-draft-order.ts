@@ -10,7 +10,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
+import type { IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
 

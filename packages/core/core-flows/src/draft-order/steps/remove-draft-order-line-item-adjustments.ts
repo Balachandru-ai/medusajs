@@ -1,6 +1,6 @@
 import { Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { IOrderModuleService } from "@medusajs/framework/types"
+import type { IOrderModuleService } from "@medusajs/framework/types"
 export const removeDraftOrderLineItemAdjustmentsStepId =
   "remove-draft-order-line-item-adjustments"
 

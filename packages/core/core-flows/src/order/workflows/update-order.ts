@@ -1,4 +1,4 @@
-import { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
+import type { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
 import {
   MedusaError,
   OrderWorkflowEvents,

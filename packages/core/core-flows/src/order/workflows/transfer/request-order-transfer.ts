@@ -1,4 +1,4 @@
-import { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
+import type { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -6,7 +6,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { CustomerDTO, OrderPreviewDTO } from "@medusajs/framework/types"
+import type { CustomerDTO, OrderPreviewDTO } from "@medusajs/framework/types"
 import { v4 as uid } from "uuid"
 
 import { emitEventStep, useRemoteQueryStep } from "../../../common"

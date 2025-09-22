@@ -1,4 +1,4 @@
-import { AdditionalData, CreateOrderDTO } from "@medusajs/framework/types"
+import type { AdditionalData, CreateOrderDTO } from "@medusajs/framework/types"
 import {
   PromotionActions,
   deduplicate,

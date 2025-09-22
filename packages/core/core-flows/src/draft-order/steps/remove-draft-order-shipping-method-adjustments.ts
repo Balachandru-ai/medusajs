@@ -1,6 +1,6 @@
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
-import { IOrderModuleService } from "@medusajs/framework/types"
+import type { IOrderModuleService } from "@medusajs/framework/types"
 
 export const removeDraftOrderShippingMethodAdjustmentsStepId =
   "remove-draft-order-shipping-method-adjustments"

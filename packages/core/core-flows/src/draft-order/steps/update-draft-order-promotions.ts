@@ -4,7 +4,7 @@ import {
   PromotionActions,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { IPromotionModuleService } from "@medusajs/framework/types"
+import type { IPromotionModuleService } from "@medusajs/framework/types"
 
 export const updateDraftOrderPromotionsStepId = "update-draft-order-promotions"
 

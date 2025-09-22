@@ -1,5 +1,5 @@
 import { createStep } from "@medusajs/framework/workflows-sdk"
-import { PromotionDTO } from "@medusajs/framework/types"
+import type { PromotionDTO } from "@medusajs/framework/types"
 import {
   throwIfCodesAreInactive,
   throwIfCodesAreMissing,
