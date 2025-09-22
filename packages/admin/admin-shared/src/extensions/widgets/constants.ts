@@ -189,6 +189,11 @@ const RETURN_REASON_INJECTION_ZONES = [
   "return_reason.list.after",
 ] as const
 
+const REFUND_REASON_INJECTION_ZONES = [
+  "refund_reason.list.before",
+  "refund_reason.list.after",
+] as const
+
 const INVENTORY_ITEM_INJECTION_ZONES = [
   "inventory_item.details.before",
   "inventory_item.details.after",
@@ -229,5 +234,6 @@ export const INJECTION_ZONES = [
   ...CAMPAIGN_INJECTION_ZONES,
   ...TAX_INJECTION_ZONES,
   ...RETURN_REASON_INJECTION_ZONES,
+  ...REFUND_REASON_INJECTION_ZONES,
   ...INVENTORY_ITEM_INJECTION_ZONES,
 ] as const
