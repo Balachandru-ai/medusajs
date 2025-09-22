@@ -1,9 +1,9 @@
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ContainerRegistrationKeys,
   Modules,
   RuleOperator,
 } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -476,6 +476,16 @@ medusaIntegrationTestRunner({
             ],
           },
           adminHeaders
+        )
+
+        expect(result.data.order_preview.summary).toEqual(
+          expect.objectContaining({
+            transaction_total: 0,
+            current_order_total: 61,
+            pending_difference: 11,
+            paid_total: 0,
+            refunded_total: 0,
+          })
         )
 
         expect(result.data.order_preview).toEqual(

@@ -273,6 +273,7 @@ This method updates the customer of a cart.
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to set the cart's customer
 sdk.store.cart.transferCart("cart_123")
 .then(({ cart }) => {
   console.log(cart)

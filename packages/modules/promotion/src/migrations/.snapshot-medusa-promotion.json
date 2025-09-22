@@ -851,6 +851,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_attribute_operator\" ON \"promotion_rule\" (attribute, operator) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_promotion_rule_attribute_operator_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_attribute_operator_id\" ON \"promotion_rule\" (operator, attribute, id) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "promotion_rule_pkey",
           "columnNames": [
             "id"

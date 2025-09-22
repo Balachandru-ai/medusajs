@@ -1379,35 +1379,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@medusajs/icons@npm:2.10.2":
-  version: 2.10.2
-  resolution: "@medusajs/icons@npm:2.10.2"
+"@medusajs/icons@npm:2.10.3":
+  version: 2.10.3
+  resolution: "@medusajs/icons@npm:2.10.3"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: d468c1255f7705edf8dffe83fa95a27724c8fe9f1216afe900b195c05d0e80c3c28a4227fd3ff95b90126256af4ba858bfac80606ec8c760ddcfcd5ac220f1c4
+  checksum: 64775cda6c2983ca586a4ace2aa546494d8d065363be13690654ab0027d1876f68feab818db41e79d205f2ea1de5f0cdf47ba71bd85c19779ddb26f7af9fd6a0
   languageName: node
   linkType: hard
 
-"@medusajs/ui-preset@npm:2.10.2":
-  version: 2.10.2
-  resolution: "@medusajs/ui-preset@npm:2.10.2"
+"@medusajs/ui-preset@npm:2.10.3":
+  version: 2.10.3
+  resolution: "@medusajs/ui-preset@npm:2.10.3"
   dependencies:
     "@tailwindcss/forms": ^0.5.3
     tailwindcss-animate: ^1.0.6
   peerDependencies:
     tailwindcss: ">=3.0.0"
-  checksum: 4212aab1aea1065435c7d9f75b2febdd7b09f7f39ab67805d28b0c933a79887f014224a48013cea3f21f2ca5d296d02e9f3f12ce7af197b039d3a4bd4066bac9
+  checksum: c4aece92216471ac54a437416b4b31cc3bd3e0a080e48272012ac38c696caf192ba95019cdf735ba1b5a88055070369e996e7eaa72615168c1f406c1713bd178
   languageName: node
   linkType: hard
 
-"@medusajs/ui@npm:4.0.22":
-  version: 4.0.22
-  resolution: "@medusajs/ui@npm:4.0.22"
+"@medusajs/ui@npm:4.0.23":
+  version: 4.0.23
+  resolution: "@medusajs/ui@npm:4.0.23"
   dependencies:
     "@dnd-kit/core": ^6.0.0
     "@dnd-kit/sortable": ^7.0.0
     "@dnd-kit/utilities": ^3.2.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@radix-ui/react-dialog": 1.1.4
     "@radix-ui/react-dismissable-layer": 1.1.4
     "@tanstack/react-table": 8.20.5
@@ -1425,7 +1425,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 2aee83ae3caeaa8a0f20c17a7a9239eb0887bfaf7296a09effae287df992e3ae61bda6f7317fec1a69f130b20bfd914782d97e732f27e8d753c882b593e04dde
+  checksum: d876ad2229298e2b841ac63158b53456864d28fdc1b94b7971ca08fbdbd018b4e7f09d55883af3b004fe191edb9c9c6a5883adfa6b2f50b6781f6d82f1cead6e
   languageName: node
   linkType: hard
 
@@ -5446,8 +5446,8 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
-    "@medusajs/ui": 4.0.22
+    "@medusajs/icons": 2.10.3
+    "@medusajs/ui": 4.0.23
     "@next/bundle-analyzer": 15.3.5
     "@next/mdx": 15.3.5
     "@react-hook/resize-observer": ^2.0.2
@@ -5819,7 +5819,7 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
     "@types/mdx": ^2.0.13
@@ -6174,7 +6174,7 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/mdx": 15.3.5
     "@sanity/client": ^7.11.0
     "@stefanprobst/rehype-extract-toc": ^3.0.0
@@ -7143,8 +7143,8 @@ __metadata:
   dependencies:
     "@emotion/is-prop-valid": ^1.3.1
     "@kapaai/react-sdk": ^0.3.0
-    "@medusajs/icons": 2.10.2
-    "@medusajs/ui": 4.0.22
+    "@medusajs/icons": 2.10.3
+    "@medusajs/ui": 4.0.23
     "@next/third-parties": 15.3.5
     "@octokit/request": ^8.1.1
     "@react-hook/resize-observer": ^1.2.6
@@ -13322,7 +13322,7 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/bundle-analyzer": ^15.3.5
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
@@ -14347,7 +14347,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tailwind@workspace:packages/tailwind"
   dependencies:
-    "@medusajs/ui-preset": 2.10.2
+    "@medusajs/ui-preset": 2.10.3
     tailwindcss-animate: ^1.0.7
   peerDependencies:
     docs-ui: "*"
@@ -14972,7 +14972,7 @@ turbo@latest:
   version: 0.0.0-use.local
   resolution: "types@workspace:packages/types"
   dependencies:
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@types/node": ^20.11.20
     openapi-types: ^12.1.3
     rimraf: ^5.0.5
@@ -15061,9 +15061,9 @@ turbo@latest:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
-    "@medusajs/ui": 4.0.22
-    "@medusajs/ui-preset": 2.10.2
+    "@medusajs/icons": 2.10.3
+    "@medusajs/ui": 4.0.23
+    "@medusajs/ui-preset": 2.10.3
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
     "@types/mdx": ^2.0.13
@@ -15416,7 +15416,7 @@ turbo@latest:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
     "@types/mdx": ^2.0.13

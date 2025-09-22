@@ -2,11 +2,12 @@ import {
   ComputeActionContext,
   ComputeActionItemLine,
   ComputeActionShippingLine,
+  Context,
   DAL,
   PromotionTypes,
 } from "@medusajs/framework/types"
 import { flattenObjectToKeyValuePairs } from "@medusajs/framework/utils"
-import { raw } from "@mikro-orm/postgresql"
+import { raw, SqlEntityManager } from "@mikro-orm/postgresql"
 
 /**
  * Builds a query filter for promotion rules based on the context.
@@ -17,9 +18,10 @@ import { raw } from "@mikro-orm/postgresql"
  * @param context
  * @returns
  */
-export function buildPromotionRuleQueryFilterFromContext(
-  context: PromotionTypes.ComputeActionContext
-): DAL.FilterQuery<any> | null {
+export async function buildPromotionRuleQueryFilterFromContext(
+  context: PromotionTypes.ComputeActionContext,
+  sharedContext: Context
+): Promise<DAL.FilterQuery<any> | null> {
   const {
     items = [],
     shipping_methods: shippingMethods = [],
@@ -67,18 +69,35 @@ export function buildPromotionRuleQueryFilterFromContext(
     })
   })
 
-  // Build conditions for a NOT EXISTS subquery to exclude promotions with unsatisfiable rules
+  const numberOfAttributes = attributeValueMap.size
+  if (numberOfAttributes > 10) {
+    const manager = (sharedContext.transactionManager ??
+      sharedContext.manager) as SqlEntityManager
+    const knex = manager.getKnex()
+
+    const { rows } = await knex.raw(
+      `
+        SELECT DISTINCT attribute 
+        FROM promotion_rule
+        WHERE deleted_at IS NULL
+      `
+    )
+
+    const dbAvailableAttributes = new Set(
+      rows.map(({ attribute }) => attribute)
+    )
+
+    // update the attribute in the map to remove the one that are not in the db
+    attributeValueMap.forEach((valueSet, attribute) => {
+      if (!dbAvailableAttributes.has(attribute)) {
+        attributeValueMap.delete(attribute)
+      }
+    })
+  }
+
   const sqlConditions: string[] = []
 
-  // First, check for rules where the attribute doesn't exist in context at all
-  // These rules can never be satisfied
-  sqlConditions.push(
-    `pr.attribute NOT IN (${Array.from(attributeValueMap.keys())
-      .map((attr) => `'${attr.replace(/'/g, "''")}'`)
-      .join(",")})`
-  )
-
-  // Then, for attributes that exist in context, check if the values don't satisfy the rules
+  // For each attribute, check if the values don't satisfy the rules
   attributeValueMap.forEach((valueSet, attribute) => {
     const values = Array.from(valueSet)
     const stringValues = values
@@ -92,7 +111,6 @@ export function buildPromotionRuleQueryFilterFromContext(
       })
       .filter((v) => v !== null) as number[]
 
-    // Escape attribute name to prevent SQL injection
     const escapedAttribute = `'${attribute.replace(/'/g, "''")}'`
 
     // For 'in' and 'eq' operators - rule is unsatisfiable if NO rule values overlap with context
@@ -136,17 +154,25 @@ export function buildPromotionRuleQueryFilterFromContext(
   // Handle the case where context has no attributes at all, it means
   // that any promotion that have a rule cant be satisfied by the context
   if (attributeValueMap.size === 0) {
-    // If context has no attributes, exclude all promotions that have any rules
-    const notExistsSubquery = (alias: string) =>
+    // If context has no attributes, exclude all promotions that have any rules (promotion rules, target rules, or buy rules)
+    const noRulesSubquery = (alias: string) =>
       `
-      NOT EXISTS (
-        SELECT 1 FROM promotion_promotion_rule ppr
-        WHERE ppr.promotion_id = ${alias}.id
+      ${alias}.id NOT IN (
+        SELECT DISTINCT ppr.promotion_id
+        FROM promotion_promotion_rule ppr
+        UNION
+        SELECT DISTINCT am.promotion_id
+        FROM promotion_application_method am
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        UNION
+        SELECT DISTINCT am2.promotion_id
+        FROM promotion_application_method am2
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
       )
     `.trim()
 
     return {
-      [raw((alias) => notExistsSubquery(alias))]: true,
+      [raw((alias) => noRulesSubquery(alias))]: true,
     }
   }
 
@@ -159,18 +185,69 @@ export function buildPromotionRuleQueryFilterFromContext(
     return null
   }
 
-  const notExistsSubquery = (alias: string) =>
+  const attributeKeys = Array.from(attributeValueMap.keys())
+    .map((attr) => `'${attr.replace(/'/g, "''")}'`)
+    .join(",")
+
+  // Use anti-join approach for better performance than NOT IN
+  const antiJoinSubquery = (alias: string) =>
     `
     NOT EXISTS (
-      SELECT 1 FROM promotion_promotion_rule ppr
-      JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
-      LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
-      WHERE ppr.promotion_id = ${alias}.id
-      AND (${joinedConditions})
+      SELECT 1 FROM (
+        -- Promotions with rules for attributes not in context
+        SELECT ppr.promotion_id
+        FROM promotion_promotion_rule ppr
+        JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+        WHERE pr.attribute NOT IN (${attributeKeys})
+
+        UNION
+
+        SELECT am.promotion_id
+        FROM promotion_application_method am
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
+        WHERE pr.attribute NOT IN (${attributeKeys})
+
+        UNION
+
+        SELECT am2.promotion_id
+        FROM promotion_application_method am2
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+        JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
+        WHERE pr.attribute NOT IN (${attributeKeys})
+
+        UNION
+
+        -- Promotions with unsatisfiable rules for context attributes
+        SELECT ppr.promotion_id
+        FROM promotion_promotion_rule ppr
+        JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+
+        UNION
+
+        SELECT am.promotion_id
+        FROM promotion_application_method am
+        JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+
+        UNION
+
+        SELECT am2.promotion_id
+        FROM promotion_application_method am2
+        JOIN application_method_buy_rules ambr ON am2.id = ambr.application_method_id
+        JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id
+        LEFT JOIN promotion_rule_value prv ON prv.promotion_rule_id = pr.id
+        WHERE pr.attribute IN (${attributeKeys}) AND (${joinedConditions})
+      ) excluded_promotions
+      WHERE excluded_promotions.promotion_id = ${alias}.id
     )
   `.trim()
 
   return {
-    [raw((alias) => notExistsSubquery(alias))]: true,
+    [raw((alias) => antiJoinSubquery(alias))]: true,
   }
 }

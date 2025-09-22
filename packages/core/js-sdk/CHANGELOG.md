@@ -1,5 +1,16 @@
 # @medusajs/js-sdk
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13516](https://github.com/medusajs/medusa/pull/13516) [`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada) Thanks [@adrien2p](https://github.com/adrien2p)! - test(): test dynamic max workers and improve CI
+
+- [#13460](https://github.com/medusajs/medusa/pull/13460) [`1b30b656b3f9592adaf6288021896ea79ca95df0`](https://github.com/medusajs/medusa/commit/1b30b656b3f9592adaf6288021896ea79ca95df0) Thanks [@leobenzol](https://github.com/leobenzol)! - fix(js-sdk): skip null values in query qs.stringify
+
+- Updated dependencies [[`2a29c6f82c73ff6720cc21e885125c984419226c`](https://github.com/medusajs/medusa/commit/2a29c6f82c73ff6720cc21e885125c984419226c), [`9563ee446f2b3a2e0cd4a4a33959ed55be5f268a`](https://github.com/medusajs/medusa/commit/9563ee446f2b3a2e0cd4a4a33959ed55be5f268a), [`88748ba09d6578608d3d9858718fbbfba956f67b`](https://github.com/medusajs/medusa/commit/88748ba09d6578608d3d9858718fbbfba956f67b)]:
+  - @medusajs/types@2.10.3
+
 ## 2.10.2
 
 ### Patch Changes

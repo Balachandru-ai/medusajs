@@ -31,7 +31,9 @@ function getDefaultDriverOptions(clientUrl: string) {
   }
 
   if (clientUrl) {
-    return clientUrl.match(/localhost|127\.0\.0\.1|ssl_mode=(disable|false)/i)
+    return clientUrl.match(
+      /localhost|127\.0\.0\.1|ssl_mode=(disable|false)|sslmode=(disable)/i
+    )
       ? localOptions
       : remoteOptions
   }
@@ -105,5 +107,19 @@ export function loadDatabaseConfig(
     )
   }
 
+  /**
+   * Remove the ssl_mode parameter since it is not supported by
+   * the database
+   * driver but rather an internal parameter used by us.
+   */
+  database.clientUrl = database.clientUrl?.replace(
+    /(\?|&)ssl_mode=[^&]*(&|$)/gi,
+    (match, prefix, suffix) => {
+      if (prefix === "?" && suffix === "&") return "?"
+      if (prefix === "?" && suffix === "") return ""
+      if (prefix === "&") return suffix
+      return ""
+    }
+  )
   return database
 }

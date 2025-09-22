@@ -1,5 +1,15 @@
 # @medusajs/types
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13509](https://github.com/medusajs/medusa/pull/13509) [`2a29c6f82c73ff6720cc21e885125c984419226c`](https://github.com/medusajs/medusa/commit/2a29c6f82c73ff6720cc21e885125c984419226c) Thanks [@willbouch](https://github.com/willbouch)! - fix(types): cart item totals optional
+
+- [#13497](https://github.com/medusajs/medusa/pull/13497) [`9563ee446f2b3a2e0cd4a4a33959ed55be5f268a`](https://github.com/medusajs/medusa/commit/9563ee446f2b3a2e0cd4a4a33959ed55be5f268a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(utils): subtotal calculation discounting returned items
+
+- [#13461](https://github.com/medusajs/medusa/pull/13461) [`88748ba09d6578608d3d9858718fbbfba956f67b`](https://github.com/medusajs/medusa/commit/88748ba09d6578608d3d9858718fbbfba956f67b) Thanks [@willbouch](https://github.com/willbouch)! - fix(types): pluralize words ending in s like status
+
 ## 2.10.2
 
 ### Patch Changes
