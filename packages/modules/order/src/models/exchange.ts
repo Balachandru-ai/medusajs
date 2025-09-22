@@ -53,7 +53,7 @@ const _OrderExchange = model
       name: "IDX_order_exchange_display_id",
       on: ["display_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_exchange_deleted_at",
@@ -65,13 +65,13 @@ const _OrderExchange = model
       name: "IDX_order_exchange_order_id",
       on: ["order_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_exchange_return_id",
       on: ["return_id"],
       unique: false,
-      where: "return_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "return_id IS NOT NULL AND deleted_at IS NULL",
     },
   ])
 

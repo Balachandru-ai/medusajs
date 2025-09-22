@@ -13,6 +13,11 @@ async function bootstrapApp({
   const app = express()
   applyEnvVarsToProcess(env)
 
+  // Register a health check endpoint
+  app.get("/health", (_, res) => {
+    res.status(200).send("OK")
+  })
+
   const loaders = require("@medusajs/medusa/loaders/index").default
 
   try {

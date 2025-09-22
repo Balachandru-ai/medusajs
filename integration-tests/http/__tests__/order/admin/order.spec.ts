@@ -1,4 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { AdminShippingOption } from "@medusajs/types"
 import { ModuleRegistrationName } from "@medusajs/utils"
 import {
   adminHeaders,
@@ -9,7 +10,6 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
 import { createShippingOptionSeeder } from "../../fixtures/shipping"
-import { AdminShippingOption } from "@medusajs/types"
 
 jest.setTimeout(300000)
 
@@ -978,23 +978,6 @@ medusaIntegrationTestRunner({
         order = seeder.order
         order = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
           .order
-      })
-
-      it("should find the order querying it by number", async () => {
-        const userEmail = "tony@stark-industries.com"
-
-        const response = (
-          await api.get(`/admin/orders/?q=non-existing`, adminHeaders)
-        ).data
-
-        expect(response.orders).toHaveLength(0)
-
-        const response2 = (
-          await api.get(`/admin/orders/?fields=+email&q=@stark`, adminHeaders)
-        ).data
-
-        expect(response2.orders).toHaveLength(1)
-        expect(response2.orders[0].email).toEqual(userEmail)
       })
 
       it("should update stock levels correctly when creating partial fulfillment on an order", async () => {

@@ -252,7 +252,7 @@ export default class LinkModuleService implements ILinkModule {
       source: this.serviceName_,
       eventName: this.entityName_ + "." + CommonEvents.DETACHED,
     })({
-      data: links.map((link) => link.id),
+      data: links.map((link) => ({ id: link.id })),
       sharedContext,
     })
 

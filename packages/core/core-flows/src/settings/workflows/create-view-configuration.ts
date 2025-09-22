@@ -21,11 +21,8 @@ export type CreateViewConfigurationWorkflowInput =
 export const createViewConfigurationWorkflowId = "create-view-configuration"
 
 /**
- * @ignore
- * 
- * @privateRemarks
- * Remove the `ignore` tag once the feature is ready. Otherwise,
- * it will be generated in the documentation.
+ * @since 2.10.3
+ * @featureFlag view_configurations
  */
 export const createViewConfigurationWorkflow = createWorkflow(
   createViewConfigurationWorkflowId,

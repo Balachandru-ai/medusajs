@@ -566,7 +566,11 @@ export class TransactionOrchestrator extends EventEmitter {
       cleaningUp.push(transaction.clearStepTimeout(step))
     }
 
-    await promiseAll(cleaningUp)
+    if (cleaningUp.length) {
+      setImmediate(async () => {
+        await promiseAll(cleaningUp)
+      })
+    }
 
     if (shouldEmit) {
       const eventName = step.isCompensating()
@@ -645,7 +649,11 @@ export class TransactionOrchestrator extends EventEmitter {
       cleaningUp.push(transaction.clearStepTimeout(step))
     }
 
-    await promiseAll(cleaningUp)
+    if (cleaningUp.length) {
+      setImmediate(async () => {
+        await promiseAll(cleaningUp)
+      })
+    }
 
     if (shouldEmit) {
       const eventName = DistributedTransactionEvent.STEP_SKIPPED
@@ -847,7 +855,11 @@ export class TransactionOrchestrator extends EventEmitter {
       cleaningUp.push(transaction.clearRetry(step))
     }
 
-    await promiseAll(cleaningUp)
+    if (cleaningUp.length) {
+      setImmediate(async () => {
+        await promiseAll(cleaningUp)
+      })
+    }
 
     if (!result.stopExecution) {
       const eventName = step.isCompensating()
@@ -949,6 +961,13 @@ export class TransactionOrchestrator extends EventEmitter {
 
       if (nextSteps.next.length === 0 || (hasAsyncSteps && !execution.length)) {
         continueExecution = false
+        await transaction.saveCheckpoint().catch((error) => {
+          if (TransactionOrchestrator.isExpectedError(error)) {
+            return
+          }
+
+          throw error
+        })
       }
     }
   }

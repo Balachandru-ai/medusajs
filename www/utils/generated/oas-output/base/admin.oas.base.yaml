@@ -122,8 +122,8 @@ tags:
       $ref: "#/components/schemas/AdminExchange"
   - name: Feature Flags
     description: >
-      Feature flags are used to enable or disable certain features in your Medusa
-      application.
+      Feature flags are used to enable or disable certain features in your
+      Medusa application.
 
       These API routes allow admin users to view feature flags.
   - name: Fulfillment Providers
@@ -481,8 +481,9 @@ tags:
     x-associatedSchema:
       $ref: "#/components/schemas/AdminShippingOptionType"
     description: >
-      Shipping option types define a group of shipping options with shared shipping characterstics. For example, 
-      you may have "Standard" and "Express" shipping option types.
+      Shipping option types define a group of shipping options with shared
+      shipping characterstics. For example,  you may have "Standard" and
+      "Express" shipping option types.
 
       These API routes allow admins to manage shipping option types.
     externalDocs:
@@ -648,6 +649,7 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: "#/components/schemas/AdminUser"
+  - name: Views
   - name: Workflows Executions
     description: >
       These API routes allow you to track workflow executions in your Medusa

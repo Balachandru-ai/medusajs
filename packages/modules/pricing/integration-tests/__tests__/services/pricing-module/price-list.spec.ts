@@ -461,35 +461,41 @@ moduleIntegrationTestRunner<IPricingModuleService>({
           )
 
           const events = eventBusEmitSpy.mock.calls[0][0]
-          expect(events).toHaveLength(3)
-          expect(events[0]).toEqual(
-            composeMessage(PricingEvents.PRICE_LIST_CREATED, {
-              source: Modules.PRICING,
-              action: CommonEvents.CREATED,
-              object: "price_list",
-              data: { id: priceList.id },
-            })
-          )
-          expect(events[1]).toEqual(
-            composeMessage(PricingEvents.PRICE_LIST_RULE_CREATED, {
-              source: Modules.PRICING,
-              action: CommonEvents.CREATED,
-              object: "price_list_rule",
-              data: {
-                id: [
-                  priceList.price_list_rules?.[0].id,
-                  priceList.price_list_rules?.[1].id,
-                ],
-              },
-            })
-          )
-          expect(events[2]).toEqual(
-            composeMessage(PricingEvents.PRICE_CREATED, {
-              source: Modules.PRICING,
-              action: CommonEvents.CREATED,
-              object: "price",
-              data: { id: priceList.prices![0].id },
-            })
+
+          // 4 events: 1 price list created, 2 price list rules created, 1 price created
+          expect(events).toHaveLength(4)
+
+          expect(events).toEqual(
+            expect.arrayContaining([
+              composeMessage(PricingEvents.PRICE_LIST_CREATED, {
+                source: Modules.PRICING,
+                action: CommonEvents.CREATED,
+                object: "price_list",
+                data: { id: priceList.id },
+              }),
+              composeMessage(PricingEvents.PRICE_LIST_RULE_CREATED, {
+                source: Modules.PRICING,
+                action: CommonEvents.CREATED,
+                object: "price_list_rule",
+                data: {
+                  id: priceList.price_list_rules?.[1].id,
+                },
+              }),
+              composeMessage(PricingEvents.PRICE_LIST_RULE_CREATED, {
+                source: Modules.PRICING,
+                action: CommonEvents.CREATED,
+                object: "price_list_rule",
+                data: {
+                  id: priceList.price_list_rules?.[0].id,
+                },
+              }),
+              composeMessage(PricingEvents.PRICE_CREATED, {
+                source: Modules.PRICING,
+                action: CommonEvents.CREATED,
+                object: "price",
+                data: { id: priceList.prices![0].id },
+              }),
+            ])
           )
         })
 
@@ -789,7 +795,7 @@ moduleIntegrationTestRunner<IPricingModuleService>({
         it("should update a price to a priceList successfully", async () => {
           const [priceSet] = await service.createPriceSets([{}])
 
-          await service.addPriceListPrices([
+          const [priceBeforeUpdate] = await service.addPriceListPrices([
             {
               price_list_id: "price-list-1",
               prices: [
@@ -806,7 +812,9 @@ moduleIntegrationTestRunner<IPricingModuleService>({
             },
           ])
 
-          await service.updatePriceListPrices([
+          eventBusEmitSpy.mockClear()
+
+          const [price] = await service.updatePriceListPrices([
             {
               price_list_id: "price-list-1",
               prices: [
@@ -822,28 +830,37 @@ moduleIntegrationTestRunner<IPricingModuleService>({
             },
           ])
 
-          const events = eventBusEmitSpy.mock.calls[2][0]
+          const events = eventBusEmitSpy.mock.calls[0][0]
+
+          // 4 events: 2 price rules created, 1 price updated, 1 price rule updated, 1 price rule deleted
+          expect(events).toHaveLength(4)
           expect(events).toEqual(
             expect.arrayContaining([
-              expect.objectContaining({
-                name: "pricing.price-rule.created",
-              }),
-              expect.objectContaining({
-                name: "pricing.price-rule.created",
-              }),
-              expect.objectContaining({
-                name: "pricing.price.updated",
-                metadata: {
-                  source: "pricing",
+              expect.objectContaining(
+                composeMessage(PricingEvents.PRICE_UPDATED, {
+                  source: Modules.PRICING,
+                  action: CommonEvents.UPDATED,
                   object: "price",
-                  action: "updated",
-                },
-                data: {
-                  id: "test-price-id",
-                },
+                  data: { id: price.id },
+                })
+              ),
+              composeMessage(PricingEvents.PRICE_RULE_CREATED, {
+                source: Modules.PRICING,
+                action: CommonEvents.CREATED,
+                object: "price_rule",
+                data: { id: price.price_rules![0].id },
               }),
-              expect.objectContaining({
-                name: "pricing.price-rule.deleted",
+              composeMessage(PricingEvents.PRICE_RULE_CREATED, {
+                source: Modules.PRICING,
+                action: CommonEvents.CREATED,
+                object: "price_rule",
+                data: { id: price.price_rules![1].id },
+              }),
+              composeMessage(PricingEvents.PRICE_RULE_DELETED, {
+                source: Modules.PRICING,
+                action: CommonEvents.DELETED,
+                object: "price_rule",
+                data: { id: priceBeforeUpdate.price_rules![0].id },
               }),
             ])
           )

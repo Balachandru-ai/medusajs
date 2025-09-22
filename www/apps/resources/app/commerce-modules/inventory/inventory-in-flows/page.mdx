@@ -4,11 +4,11 @@ export const metadata = {
 
 # {metadata.title}
 
-This document explains how the Inventory Module is used within the Medusa application's flows.
+In this guide, you'll learn how Medusa uses the Inventory Module in its commerce flows, including product variant creation, adding to cart, order placement, order fulfillment, and order return.
 
 ## Product Variant Creation
 
-When a product variant is created and its `manage_inventory` property's value is `true`, the Medusa application creates an inventory item associated with that product variant.
+When a product variant is created and its `manage_inventory` property's value is `true` and the variant's `inventory_items` are set, the Medusa application creates an inventory item associated with that product variant.
 
 <Note title="Tip">
 
@@ -16,13 +16,13 @@ This flow is implemented within the [createProductVariantsWorkflow](/references/
 
 </Note>
 
-![A diagram showcasing how the Inventory Module is used in the product variant creation form](https://res.cloudinary.com/dza7lstvk/image/upload/v1709661511/Medusa%20Resources/inventory-product-create_khz2hk.jpg)
+![A diagram showcasing how the Inventory Module is used in the product variant creation flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1709661511/Medusa%20Resources/inventory-product-create_khz2hk.jpg)
 
 ---
 
 ## Add to Cart
 
-When a product variant with `manage_inventory` set to `true` is added to cart, the Medusa application checks whether there's sufficient stocked quantity. If not, an error is thrown and the product variant won't be added to the cart.
+When a product variant with `manage_inventory` set to `true` is added to the cart, the Medusa application checks whether there's sufficient stocked quantity. If not, an error is thrown and the product variant won't be added to the cart.
 
 <Note title="Tip">
 
@@ -34,7 +34,7 @@ This flow is implemented within the [addToCartWorkflow](/references/medusa-workf
 
 ---
 
-## Order Placed
+## Order is Placed
 
 When an order is placed, the Medusa application creates a reservation item for each product variant with `manage_inventory` set to `true`.
 
@@ -44,7 +44,7 @@ This flow is implemented within the [completeCartWorkflow](/references/medusa-wo
 
 </Note>
 
-![A diagram showcasing how the Inventory Module is used in the order placed flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1709712005/Medusa%20Resources/inventory-order-placed_qdxqdn.jpg)
+![A diagram showcasing how the Inventory Module is used in the order placement flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1709712005/Medusa%20Resources/inventory-order-placed_qdxqdn.jpg)
 
 ---
 

@@ -9,6 +9,7 @@ import {
   isPresent,
   mergeMetadata,
   isDefined,
+  deepCopy,
 } from "@medusajs/framework/utils"
 import { SqlEntityManager, wrap } from "@mikro-orm/postgresql"
 
@@ -80,21 +81,22 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     ) => void,
     context: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
+    const productsToUpdate_ = deepCopy(productsToUpdate)
     const productIdsToUpdate: string[] = []
 
-    productsToUpdate.forEach((productToUpdate) => {
+    productsToUpdate_.forEach((productToUpdate) => {
       ProductRepository.#correctUpdateDTOTypes(productToUpdate)
       productIdsToUpdate.push(productToUpdate.id)
     })
 
     const relationsToLoad =
-      ProductRepository.#getProductDeepUpdateRelationsToLoad(productsToUpdate)
+      ProductRepository.#getProductDeepUpdateRelationsToLoad(productsToUpdate_)
 
     const findOptions = buildQuery(
       { id: productIdsToUpdate },
       {
         relations: relationsToLoad,
-        take: productsToUpdate.length,
+        take: productsToUpdate_.length,
       }
     )
 
@@ -111,7 +113,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       )
     }
 
-    for (const productToUpdate of productsToUpdate) {
+    for (const productToUpdate of productsToUpdate_) {
       const product = productsMap.get(productToUpdate.id)!
       const wrappedProduct = wrap(product)
 
@@ -173,7 +175,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     // Doing this to ensure updates are returned in the same order they were provided,
     // since some core flows rely on this.
     // This is a high level of coupling though.
-    return productsToUpdate.map(
+    return productsToUpdate_.map(
       (productToUpdate) => productsMap.get(productToUpdate.id)!
     )
   }

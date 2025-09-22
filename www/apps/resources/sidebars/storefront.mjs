@@ -181,6 +181,11 @@ export const storefrontDevelopmentSidebar = [
       },
       {
         type: "link",
+        path: "/storefront-development/cart/manage-promotions",
+        title: "Manage Promotions",
+      },
+      {
+        type: "link",
         path: "/storefront-development/cart/totals",
         title: "Show Totals",
       },

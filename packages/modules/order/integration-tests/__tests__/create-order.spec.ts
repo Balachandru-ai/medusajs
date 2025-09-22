@@ -196,9 +196,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
       it("should create an order, shipping method and items. Including taxes and adjustments associated with them", async function () {
         const createdOrder = await service.createOrders(input)
 
-        const serializedOrder = JSON.parse(JSON.stringify(createdOrder))
-
-        expect(serializedOrder).toEqual(expectation)
+        expect(createdOrder).toEqual(expectation)
       })
 
       it("should create an order, shipping method and items. Including taxes and adjustments associated with them and add new transactions", async function () {
@@ -229,7 +227,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
@@ -248,7 +246,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder2 = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
@@ -273,7 +271,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder3 = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
@@ -292,7 +290,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder4 = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
