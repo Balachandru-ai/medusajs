@@ -190,7 +190,7 @@ export class RedisDistributedTransactionStorage
         async () => {
           await this.clearExpiredExecutions()
         },
-        { connection: this.redisClient }
+        workerOptions
       )
 
       await this.cleanerQueue_?.add(
