@@ -43,7 +43,7 @@ function isVisible(
       const item = populate[i]
       if (item === WILDCARD) return true
       if (item === propName) return true
-      if (item.length > propNameLength && item.includes(DOT)) {
+      if (item.length > propNameLength && item[propNameLength] === DOT) {
         if (item.slice(0, propNameLength) === propName) return true
       }
     }
