@@ -7,7 +7,7 @@ import {
   RepositoryService,
 } from "@medusajs/types"
 
-import { asClass } from "awilix"
+import { asClass } from "@medusajs/deps/awilix"
 import { MedusaInternalService } from "../medusa-internal-service"
 import { lowerCaseFirst } from "../../common"
 import {

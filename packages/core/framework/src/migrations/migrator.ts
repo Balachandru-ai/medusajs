@@ -1,5 +1,5 @@
 import { MedusaContainer } from "@medusajs/types"
-import { Knex } from "@mikro-orm/knex"
+import { Knex } from "../deps/mikro-orm-knex"
 import { glob } from "glob"
 import { join } from "path"
 import { logger } from "../logger"

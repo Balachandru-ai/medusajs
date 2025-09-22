@@ -7,7 +7,7 @@ import {
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 import { dbTestUtilFactory, getDatabaseURL } from "./database"
 import {
   applyEnvVarsToProcess,

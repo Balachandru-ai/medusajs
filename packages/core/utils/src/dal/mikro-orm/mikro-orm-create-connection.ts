@@ -1,6 +1,6 @@
 import { ModuleServiceInitializeOptions } from "@medusajs/types"
-import { Filter as MikroORMFilter } from "@mikro-orm/core"
-import { TSMigrationGenerator } from "@mikro-orm/migrations"
+import { Filter as MikroORMFilter } from "@medusajs/deps/mikro-orm/core"
+import { TSMigrationGenerator } from "@medusajs/deps/mikro-orm/migrations"
 import { isString, retryExecution, stringifyCircular } from "../../common"
 import { normalizeMigrationSQL } from "../utils"
 import { CustomDBMigrator } from "./custom-db-migrator"
@@ -83,7 +83,9 @@ export async function mikroOrmCreateConnection(
     schema = database.connection.context?.client?.config?.searchPath
   }
 
-  const { MikroORM, defineConfig } = await import("@mikro-orm/postgresql")
+  const { MikroORM, defineConfig } = await import(
+    "@medusajs/deps/mikro-orm/postgresql"
+  )
   const mikroOrmConfig = defineConfig({
     discovery: { disableDynamicFileAccess: true, warnWhenNoEntities: false },
     entities,

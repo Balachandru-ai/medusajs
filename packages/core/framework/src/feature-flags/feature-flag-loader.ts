@@ -5,7 +5,7 @@ import {
   FeatureFlag,
   FlagRouter,
 } from "@medusajs/utils"
-import { asFunction } from "awilix"
+import { asFunction } from "../deps/awilix"
 import { normalize } from "path"
 import { configManager } from "../config"
 import { container } from "../container"
