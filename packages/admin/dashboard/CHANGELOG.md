@@ -1,5 +1,19 @@
 # @medusajs/dashboard
 
+## 2.10.3
+
+### Patch Changes
+
+- [#11613](https://github.com/medusajs/medusa/pull/11613) [`5e5f628d87a78962978fe105f4c5ef41b1b4f57c`](https://github.com/medusajs/medusa/commit/5e5f628d87a78962978fe105f4c5ef41b1b4f57c) Thanks [@docloulou](https://github.com/docloulou)! - feat(dashboard): update display of tracking/label URLs on order details
+
+- [#13214](https://github.com/medusajs/medusa/pull/13214) [`dcca42ec5105dfc0ca9075bbbfbe14a786ca4955`](https://github.com/medusajs/medusa/commit/dcca42ec5105dfc0ca9075bbbfbe14a786ca4955) Thanks [@tehaulp](https://github.com/tehaulp)! - fix(dashboard): added missing currencies
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada), [`1b30b656b3f9592adaf6288021896ea79ca95df0`](https://github.com/medusajs/medusa/commit/1b30b656b3f9592adaf6288021896ea79ca95df0)]:
+  - @medusajs/js-sdk@2.10.3
+  - @medusajs/admin-shared@2.10.3
+  - @medusajs/icons@2.10.3
+  - @medusajs/ui@4.0.23
+
 ## 2.10.2
 
 ### Patch Changes

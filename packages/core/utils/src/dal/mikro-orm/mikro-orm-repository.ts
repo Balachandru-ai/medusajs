@@ -59,15 +59,15 @@ export class MikroOrmBase {
   async transaction<TManager = unknown>(
     task: (transactionManager: TManager) => Promise<any>,
     options: {
+      manager?: TManager
       isolationLevel?: string
       enableNestedTransactions?: boolean
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    this.manager_.global = true
-    return await transactionWrapper(this.manager_, task, options).catch(
-      dbErrorMapper
-    )
+    const manager = this.getFreshManager()
+
+    return await transactionWrapper(manager, task, options).catch(dbErrorMapper)
   }
 
   async serialize<TOutput extends object | object[]>(
@@ -463,12 +463,9 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
 
       if (!("strategy" in findOptions_.options)) {
         if (findOptions_.options.limit != null || findOptions_.options.offset) {
+          // TODO: from 7+ it will be the default strategy
           Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.SELECT_IN,
-          })
-        } else {
-          Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.JOINED,
+            strategy: LoadStrategy.BALANCED,
           })
         }
       }

@@ -1,20 +1,22 @@
 import React, { useMemo } from "react"
 import { createDataTableColumnHelper } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
-import { getDisplayStrategy, getEntityAccessor } from "../../../lib/table-display-utils"
+import { useTranslation } from "react-i18next"
+import { getCellRenderer, getColumnValue } from "../../../lib/table/cell-renderers"
 
 export interface ColumnAdapter<TData> {
-  getColumnAlignment?: (column: HttpTypes.AdminViewColumn) => "left" | "center" | "right"
-  getCustomAccessor?: (field: string, column: HttpTypes.AdminViewColumn) => any
-  transformCellValue?: (value: any, row: TData, column: HttpTypes.AdminViewColumn) => React.ReactNode
+  getColumnAlignment?: (column: HttpTypes.AdminColumn) => "left" | "center" | "right"
+  getCustomAccessor?: (field: string, column: HttpTypes.AdminColumn) => any
+  transformCellValue?: (value: any, row: TData, column: HttpTypes.AdminColumn) => React.ReactNode
 }
 
 export function useConfigurableTableColumns<TData = any>(
   entity: string,
-  apiColumns: HttpTypes.AdminViewColumn[] | undefined,
+  apiColumns: HttpTypes.AdminColumn[] | undefined,
   adapter?: ColumnAdapter<TData>
 ) {
   const columnHelper = createDataTableColumnHelper<TData>()
+  const { t } = useTranslation()
 
   return useMemo(() => {
     if (!apiColumns?.length) {
@@ -22,37 +24,45 @@ export function useConfigurableTableColumns<TData = any>(
     }
 
     return apiColumns.map(apiColumn => {
-      // Get the display strategy for this column
-      const displayStrategy = getDisplayStrategy(apiColumn)
+      let renderType = apiColumn.computed?.type
 
-      // Get the entity-specific accessor or use adapter's custom accessor
-      const accessor = adapter?.getCustomAccessor
-        ? adapter.getCustomAccessor(apiColumn.field, apiColumn)
-        : getEntityAccessor(entity, apiColumn.field, apiColumn)
+      if (!renderType) {
+        if (apiColumn.semantic_type === 'timestamp') {
+          renderType = 'timestamp'
+        } else if (apiColumn.field === 'display_id') {
+          renderType = 'display_id'
+        } else if (apiColumn.field === 'total') {
+          renderType = 'total'
+        } else if (apiColumn.semantic_type === 'currency') {
+          renderType = 'currency'
+        }
+      }
 
-      // Determine header alignment
+      const renderer = getCellRenderer(
+        renderType,
+        apiColumn.data_type
+      )
+
       const headerAlign = adapter?.getColumnAlignment
         ? adapter.getColumnAlignment(apiColumn)
         : getDefaultColumnAlignment(apiColumn)
 
+      const accessor = (row: TData) => getColumnValue(row, apiColumn)
+
       return columnHelper.accessor(accessor, {
         id: apiColumn.field,
         header: () => apiColumn.name,
-        cell: ({ getValue, row }) => {
+        cell: ({ getValue, row }: { getValue: any, row: any }) => {
           const value = getValue()
 
-          // If the value is already a React element (from computed columns), return it directly
-          if (React.isValidElement(value)) {
-            return value
-          }
-
-          // Allow adapter to transform the value
           if (adapter?.transformCellValue) {
-            return adapter.transformCellValue(value, row.original, apiColumn)
+            const transformed = adapter.transformCellValue(value, row.original, apiColumn)
+            if (transformed !== null) {
+              return transformed
+            }
           }
 
-          // Otherwise, use the display strategy to format the value
-          return displayStrategy(value, row.original)
+          return renderer(value, row.original, apiColumn, t)
         },
         meta: {
           name: apiColumn.name,
@@ -63,21 +73,18 @@ export function useConfigurableTableColumns<TData = any>(
         headerAlign, // Pass the header alignment to the DataTable
       } as any)
     })
-  }, [entity, apiColumns, adapter])
+  }, [entity, apiColumns, adapter, t])
 }
 
-function getDefaultColumnAlignment(column: HttpTypes.AdminViewColumn): "left" | "center" | "right" {
-  // Currency columns should be right-aligned
+function getDefaultColumnAlignment(column: HttpTypes.AdminColumn): "left" | "center" | "right" {
   if (column.semantic_type === "currency" || column.data_type === "currency") {
     return "right"
   }
-  
-  // Number columns should be right-aligned (except identifiers)
+
   if (column.data_type === "number" && column.context !== "identifier") {
     return "right"
   }
-  
-  // Total/amount/price columns should be right-aligned
+
   if (
     column.field.includes("total") ||
     column.field.includes("amount") ||
@@ -87,19 +94,16 @@ function getDefaultColumnAlignment(column: HttpTypes.AdminViewColumn): "left" | 
   ) {
     return "right"
   }
-  
-  // Status columns should be center-aligned
+
   if (column.semantic_type === "status") {
     return "center"
   }
-  
-  // Country columns should be center-aligned
-  if (column.computed?.type === "country_code" || 
-      column.field === "country" || 
-      column.field.includes("country_code")) {
+
+  if (column.computed?.type === "country_code" ||
+    column.field === "country" ||
+    column.field.includes("country_code")) {
     return "center"
   }
-  
-  // Default to left alignment
+
   return "left"
 }

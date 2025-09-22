@@ -1578,7 +1578,7 @@ export interface CreateOrderReturnDTO extends BaseOrderBundledActionsDTO {
   /**
    * The ID of the location to return the items to.
    */
-  location_id?: string
+  location_id?: string | null
 
   /**
    * The items of the return.

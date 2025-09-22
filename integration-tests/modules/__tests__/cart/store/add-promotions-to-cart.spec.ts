@@ -82,7 +82,7 @@ medusaIntegrationTestRunner({
                 currency_code: "usd",
                 target_rules: [
                   {
-                    attribute: "product_id",
+                    attribute: "items.product_id",
                     operator: "eq",
                     values: "prod_mat",
                   },

@@ -40,6 +40,10 @@
  *           externalDocs:
  *             url: https://docs.medusajs.com/api/admin#manage-metadata
  *             description: Learn how to manage metadata
+ *   location_id:
+ *     type: string
+ *     title: location_id
+ *     description: The ID of the location to which outbound items are sent from.
  * 
 */
 
