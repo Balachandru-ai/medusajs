@@ -178,7 +178,9 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
 
           const variant = variantsData.find((v) => v.id === item.variant_id)
 
-          variant.calculated_price = calculatedPriceSet
+          if (variant) {
+            variant.calculated_price = calculatedPriceSet
+          }
 
           const isCustomPrice =
             item_.is_custom_price ?? isDefined(item?.unit_price)
