@@ -1,10 +1,10 @@
 export const generatedEditDates = {
-  "app/page.mdx": "2025-08-26T10:31:10.511Z",
+  "app/page.mdx": "2025-09-11T11:20:20.775Z",
   "app/organization/page.mdx": "2025-06-12T14:43:20.772Z",
-  "app/projects/page.mdx": "2025-09-08T13:02:26.746Z",
+  "app/projects/page.mdx": "2025-09-09T06:45:36.785Z",
   "app/environments/page.mdx": "2025-06-25T08:00:05.550Z",
   "app/deployments/page.mdx": "2025-06-25T07:57:13.059Z",
-  "app/organizations/page.mdx": "2025-08-25T07:15:17.593Z",
+  "app/organizations/page.mdx": "2025-09-11T14:26:31.848Z",
   "app/notifications/page.mdx": "2025-06-25T07:27:37.642Z",
   "app/database/page.mdx": "2025-08-15T15:30:37.814Z",
   "app/redis/page.mdx": "2025-06-25T07:57:23.246Z",
@@ -16,8 +16,9 @@ export const generatedEditDates = {
   "app/environments/environment-variables/page.mdx": "2025-08-15T15:35:24.085Z",
   "app/environments/long-lived/page.mdx": "2025-08-25T07:23:59.858Z",
   "app/environments/preview/page.mdx": "2025-08-20T12:15:33.952Z",
-  "app/faq/page.mdx": "2025-08-15T14:32:23.372Z",
+  "app/faq/page.mdx": "2025-09-11T14:26:01.400Z",
   "app/billing/page.mdx": "2025-09-04T15:25:50.586Z",
   "app/usage/page.mdx": "2025-08-25T07:25:54.703Z",
-  "app/billing/manage/page.mdx": "2025-09-04T14:50:46.747Z"
+  "app/billing/manage/page.mdx": "2025-09-04T14:50:46.747Z",
+  "app/pricing/page.mdx": "2025-09-05T10:31:59.059Z"
 }

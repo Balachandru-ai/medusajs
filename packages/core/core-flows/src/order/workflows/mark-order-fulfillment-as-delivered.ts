@@ -234,6 +234,7 @@ export const markOrderFulfillmentAsDeliveredWorkflow = createWorkflow(
       fields: [
         "id",
         "summary",
+        "total",
         "currency_code",
         "region_id",
         "fulfillments.id",

@@ -77,4 +77,5 @@ export type AdminViewConfigurationListResponse = PaginatedResponse<{
   view_configurations: AdminViewConfiguration[]
 }>
 
-export type AdminViewConfigurationDeleteResponse = DeleteResponse<"view_configuration">
+export type AdminViewConfigurationDeleteResponse =
+  DeleteResponse<"view_configuration">

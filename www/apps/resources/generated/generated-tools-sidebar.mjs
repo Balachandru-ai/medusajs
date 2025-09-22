@@ -744,6 +744,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/views",
+                  "title": "views",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/workflowExecution",
                   "title": "workflowExecution",
                   "description": "",
@@ -858,6 +867,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "ref",
                   "title": "Saved Payment Methods",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Ticket Booking Storefront",
+                  "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront",
                   "children": []
                 }
               ]

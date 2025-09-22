@@ -2,14 +2,17 @@ import { CartWorkflowEvents } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
+  parallelize,
   transform,
   when,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useQueryGraphStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updateCartsStep } from "../steps"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { AdditionalData } from "@medusajs/types"
 
 /**
  * The cart ownership transfer details.
@@ -53,7 +56,7 @@ export const transferCartCustomerWorkflow = createWorkflow(
     name: transferCartCustomerWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<TransferCartCustomerWorkflowInput>) => {
+  (input: WorkflowData<TransferCartCustomerWorkflowInput & AdditionalData>) => {
     const cartQuery = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.id },
@@ -101,6 +104,13 @@ export const transferCartCustomerWorkflow = createWorkflow(
       { shouldTransfer },
       ({ shouldTransfer }) => shouldTransfer
     ).then(() => {
+      acquireLockStep({
+        key: cart.id,
+        timeout: 2,
+        ttl: 10,
+        skipOnSubWorkflow: true,
+      })
+
       const cartInput = transform({ cart, customer }, ({ cart, customer }) => [
         {
           id: cart.id,
@@ -112,16 +122,22 @@ export const transferCartCustomerWorkflow = createWorkflow(
       updateCartsStep(cartInput)
 
       refreshCartItemsWorkflow.runAsStep({
-        input: { cart_id: input.id, force_refresh: true },
+        input: { cart_id: input.id, force_refresh: true, additional_data: input.additional_data },
       })
 
-      emitEventStep({
-        eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
-        data: {
-          id: input.id,
-          customer_id: customer.customer_id,
-        },
-      })
+      parallelize(
+        emitEventStep({
+          eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
+          data: {
+            id: input.id,
+            customer_id: customer.customer_id,
+          },
+        }),
+        releaseLockStep({
+          key: cart.id,
+          skipOnSubWorkflow: true,
+        })
+      )
     })
 
     return new WorkflowResponse(void 0, {
