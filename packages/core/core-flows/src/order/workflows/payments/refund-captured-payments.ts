@@ -29,6 +29,7 @@ export const refundCapturedPaymentsWorkflow = createWorkflow(
         "id",
         "status",
         "summary",
+        "total",
         "payment_collections.payments.id",
         "payment_collections.payments.amount",
         "payment_collections.payments.refunds.id",

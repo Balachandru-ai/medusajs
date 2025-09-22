@@ -298,6 +298,14 @@ const generatedgeneratedStorefrontDevelopmentSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/storefront-development/cart/manage-promotions",
+          "title": "Manage Promotions",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/storefront-development/cart/totals",
           "title": "Show Totals",
           "children": []

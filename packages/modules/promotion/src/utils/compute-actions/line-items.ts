@@ -1,4 +1,9 @@
-import { ApplicationMethodAllocationValues, BigNumberInput, PromotionTypes, } from "@medusajs/framework/types"
+import {
+  ApplicationMethodAllocationValues,
+  BigNumberInput,
+  InferEntityType,
+  PromotionTypes,
+} from "@medusajs/framework/types"
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
@@ -10,6 +15,7 @@ import {
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
+import { Promotion } from "@models"
 
 function validateContext(
   contextKey: string,
@@ -24,7 +30,7 @@ function validateContext(
 }
 
 export function getComputedActionsForItems(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
   appliedPromotionsMap: Map<string, number>,
   allocationOverride?: ApplicationMethodAllocationValues
@@ -40,7 +46,7 @@ export function getComputedActionsForItems(
 }
 
 function applyPromotionToItems(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
   appliedPromotionsMap: Map<string, BigNumberInput>,
   allocationOverride?: ApplicationMethodAllocationValues
@@ -149,7 +155,7 @@ function getValidItemsForPromotion(
   items:
     | PromotionTypes.ComputeActionContext[TargetType.ITEMS]
     | PromotionTypes.ComputeActionContext[TargetType.SHIPPING_METHODS],
-  promotion: PromotionTypes.PromotionDTO
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>
 ) {
   if (!items?.length || !promotion?.application_method) {
     return []

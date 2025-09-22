@@ -1,4 +1,4 @@
-import { StoreCartShippingOption } from "../../fulfillment"
+import { StoreCartShippingOption, StoreCartShippingOptionWithServiceZone, } from "../../fulfillment"
 
 /**
  * The response of listing the shipping options for a cart.
@@ -7,7 +7,7 @@ export interface StoreShippingOptionListResponse {
   /**
    * The shipping options for the cart.
    */
-  shipping_options: StoreCartShippingOption[]
+  shipping_options: StoreCartShippingOptionWithServiceZone[]
 }
 
 /**

@@ -335,6 +335,7 @@ type UncountableRules =
   | "salmon"
   | "scissors"
   | "series"
+  | "settings"
   | "sewage"
   | "shambles"
   | "shrimp"
@@ -355,6 +356,7 @@ type UncountableRules =
   | "deer"
   | "sheep"
   | "info"
+  | "species"
 
 type PluralizationSpecialRules = {
   person: "people"
@@ -380,7 +382,7 @@ export type Pluralize<Singular extends string> =
     : Singular extends `${infer R}is`
     ? `${R}ises`
     : Singular extends `${string}s`
-    ? `${Singular}`
+    ? `${Singular}es`
     : Singular extends `${infer R}ay`
     ? `${R}ays`
     : Singular extends `${infer R}ey`

@@ -35,7 +35,7 @@ The fields that are most commonly used are:
         `subtotal`
       </Table.Cell>
       <Table.Cell>
-        The cart's subtotal excluding taxes, and including total of items, shipping, and discounts.
+        The cart's subtotal excluding taxes and including items, shipping, and discounts.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -75,7 +75,7 @@ The fields that are most commonly used are:
 
 ---
 
-## Example: React Storefront
+## Example: Show Cart Totals in React Storefront
 
 Here's an example of how you can show the cart totals in a React component:
 
@@ -106,7 +106,7 @@ export default function CartTotals() {
   const formatPrice = (amount: number): string => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: cart?.currency_code,
+      currency: cart?.currency_code || "USD",
     })
     .format(amount)
   }
@@ -146,3 +146,129 @@ export default function CartTotals() {
 In the example, you first retrieve the cart using the [Cart Context](../context/page.mdx). Then, you define the [formatPrice](../retrieve/page.mdx#format-prices) function to format the total amounts.
 
 Finally, you render the cart totals in a list, showing the subtotal, discounts, shipping, taxes, and the total amount.
+
+---
+
+## Retrieve and Show Cart Item Totals
+
+You can also show the totals specific to each item in the cart. This is useful when you want to show the price breakdown for each item, such as price before and after discounts.
+
+The cart item totals aren't included by default in the cart object. You need to explicitly expand the `items.*` relation when retrieving the cart. This will add item totals like `total`, `subtotal`, `tax_total`, and `discount_total` to each item object in the cart. You can learn about other total fields in the [Store API reference](!api!/store#carts_cart_schema).
+
+For example, when retrieving the cart, you can expand the `items.*` relation like this:
+
+```ts
+sdk.store.cart.retrieve(cartId, {
+  fields: "+items.*",
+  // TIP: You can also expand both items and shipping methods at the same time
+  // fields: "+items.*, +shipping_methods.*",
+})
+.then(({ cart: dataCart }) => {
+  setCart(dataCart)
+})
+```
+
+Then, you can show the item totals in a React component like this:
+
+```tsx
+"use client" // include with Next.js 13+
+
+import { HttpTypes } from "@medusajs/types"
+
+type CartItemTotalsProps = {
+  cart: HttpTypes.StoreCart
+}
+
+export default function CartItemTotals({
+  cart,
+}: CartItemTotalsProps) {
+  const formatPrice = (amount: number): string => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: cart.currency_code,
+    })
+    .format(amount)
+  }
+
+  return (
+    <ul>
+      {cart.items.map((item) => (
+        <li key={item.id}>
+          <span>{item.title}</span>
+          <span>{formatPrice(item.total!)}</span>
+          <span>(Subtotal: {formatPrice(item.subtotal!)})</span>
+          <span>(Discounts: {formatPrice(item.discount_total!)})</span>
+          <span>(Taxes: {formatPrice(item.tax_total!)})</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+In the example, you receive the cart with the expanded item totals as a prop. Then, you define the [formatPrice](../retrieve/page.mdx#format-prices) function to format the total amounts.
+
+Finally, you render the cart items in a list, showing each item's title, total, subtotal, discounts, and taxes.
+
+---
+
+## Retrieve and Show Shipping Method Totals
+
+You can also show the totals specific to each shipping method in the cart. This is useful when you want to show the price breakdown for each shipping method, such as price before and after discounts.
+
+The cart shipping method totals aren't included by default in the cart response. You need to explicitly expand the `shipping_methods.*` relation when retrieving the cart. This will add shipping method totals like `total`, `subtotal`, `tax_total`, and `discount_total` to each shipping method object in the cart. You can learn about other total fields in the [Store API reference](!api!/store#carts_cart_schema).
+
+For example, when retrieving the cart, you can expand the `shipping_methods.*` relation like this:
+
+```ts
+sdk.store.cart.retrieve(cartId, {
+  fields: "+shipping_methods.*",
+  // TIP: You can also expand both items and shipping methods at the same time
+  // fields: "+items.*, +shipping_methods.*",
+})
+.then(({ cart: dataCart }) => {
+  setCart(dataCart)
+})
+```
+
+Then, you can show the shipping method totals in a React component like this:
+
+```tsx
+"use client" // include with Next.js 13+
+
+import { HttpTypes } from "@medusajs/types"
+
+type CartShippingMethodTotalsProps = {
+  cart: HttpTypes.StoreCart
+}
+
+export default function CartShippingMethodTotals({
+  cart,
+}: CartShippingMethodTotalsProps) {
+  const formatPrice = (amount: number): string => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: cart.currency_code,
+    })
+    .format(amount)
+  }
+
+  return (
+    <ul>
+      {cart.shipping_methods.map((method) => (
+        <li key={method.id}>
+          <span>{method.name}</span>
+          <span>{formatPrice(method.total!)}</span>
+          <span>(Subtotal: {formatPrice(method.subtotal!)})</span>
+          <span>(Discounts: {formatPrice(method.discount_total!)})</span>
+          <span>(Taxes: {formatPrice(method.tax_total!)})</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+In the example, you receive the cart with the expanded shipping method totals as a prop. Then, you define the [formatPrice](../retrieve/page.mdx#format-prices) function to format the total amounts.
+
+Finally, you render the cart shipping methods in a list, showing each method's name, total, subtotal, discounts, and taxes.

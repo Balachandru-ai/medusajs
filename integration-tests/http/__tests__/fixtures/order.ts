@@ -1,3 +1,4 @@
+import { addShippingMethodToCartWorkflow } from "@medusajs/core-flows"
 import {
   AdminInventoryItem,
   AdminProduct,
@@ -5,6 +6,7 @@ import {
   AdminStockLocation,
   MedusaContainer,
 } from "@medusajs/types"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
 import {
   adminHeaders,
   generatePublishableKey,
@@ -174,6 +176,26 @@ export async function createOrderSeeder({
     adminHeaders
   )
 
+  const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+  await remoteLink.create([
+    {
+      [Modules.SALES_CHANNEL]: {
+        sales_channel_id: salesChannel.id,
+      },
+      [Modules.STOCK_LOCATION]: {
+        stock_location_id: stockLocation.id,
+      },
+    },
+    {
+      [Modules.PRODUCT]: {
+        variant_id: product.variants[0].id,
+      },
+      [Modules.INVENTORY]: {
+        inventory_item_id: inventoryItem.id,
+      },
+    },
+  ])
+
   /**
    * Create shipping options for each shipping profile provided
    */
@@ -242,15 +264,12 @@ export async function createOrderSeeder({
 
   if (!withoutShipping) {
     // Create shipping methods for each shipping option so shipping profiles of products in the cart are supported
-    await Promise.all(
-      shippingOptions.map(async (so) => {
-        await api.post(
-          `/store/carts/${cart.id}/shipping-methods`,
-          { option_id: so.id },
-          storeHeaders
-        )
-      })
-    )
+    await addShippingMethodToCartWorkflow(container).run({
+      input: {
+        cart_id: cart.id,
+        options: shippingOptions.map((so) => ({ id: so.id })),
+      },
+    })
   }
 
   const paymentCollection = (

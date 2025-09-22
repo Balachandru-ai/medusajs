@@ -4,30 +4,36 @@ export const metadata = {
 
 # {metadata.title}
 
-In this chapter, you'll learn how to pass contexts when retrieving data with [Query](../query/page.mdx).
+In this chapter, you'll learn how to pass context when retrieving data with [Query](../query/page.mdx).
 
 ## What is Query Context?
 
-Query context is a way to pass additional information when retrieving data with Query. This data can be useful when applying custom transformations to the retrieved data based on the current context.
+Query context is additional information you pass to Query when retrieving data. You can use it to apply custom transformations to the returned data based on the current context.
 
-For example, consider you have a Blog Module with posts and authors. You can accept the user's language as a context and return the posts in the user's language. Another example is how Medusa uses Query Context to [retrieve product variants' prices based on the customer's currency](!resources!/commerce-modules/product/guides/price).
+For example, consider a Blog Module with posts and authors. You can send the user's language as context to Query to retrieve posts in the user's language.
+
+Medusa also uses Query Context to [retrieve product variants' prices based on the customer's currency](!resources!/commerce-modules/product/guides/price).
 
 ---
 
-## How to Use Query Context
+## How to Pass Query Context
 
-The `query.graph` method accepts an optional `context` parameter that can be used to pass additional context either to the data model you're retrieving (for example, `post`), or its related and linked models (for example, `author`).
+The `query.graph` method accepts an optional `context` parameter. You can use this to pass additional context to the data model you're retrieving (for example, `post`) or its related and linked models (for example, `author`).
 
-You initialize a context using `QueryContext` from the Modules SDK. It accepts an object of contexts as an argument.
+You can initialize a context using `QueryContext` from the Modules SDK. It accepts an object of contexts as an argument.
 
-For example, to retrieve posts using Query while passing the user's language as a context:
+For example, to retrieve posts using Query while passing the user's language as context:
 
 export const highlights1 = [
-  ["4", "context", "Pass additional context to the query."],
-  ["4", "QueryContext", "Create a query context."]
+  ["8", "context", "Pass additional context to the query."],
+  ["8", "QueryContext", "Create a query context."]
 ]
 
-```ts
+```ts highlights={highlights1}
+import { QueryContext } from "@medusajs/framework/utils"
+
+// ...
+
 const { data } = await query.graph({
   entity: "post",
   fields: ["*"],
@@ -37,11 +43,13 @@ const { data } = await query.graph({
 })
 ```
 
-In this example, you pass in the context a `lang` property whose value is `es`.
+In this example, you pass a `lang` property with the value `es` in the context. You create the context using `QueryContext`.
 
-Then, to handle the context while retrieving records of the data model, in the associated module's service you override the generated `list` method of the data model.
+### How to Handle Query Context
 
-For example, continuing the example above, you can override the `listPosts` method of the Blog Module's service to handle the context:
+To handle the Query context passed while retrieving records of your data models, override the [generated list method](!resources!/service-factory-reference/methods/list) of the associated module's service.
+
+For example, continuing the example above, you can override the `listPosts` method of the Blog Module's service to handle the Query context:
 
 export const highlights2 = [
   ["11", "listPosts", "Override the generated listPosts method."],
@@ -87,23 +95,17 @@ class BlogModuleService extends MedusaService({
 export default BlogModuleService
 ```
 
-In the above example, you override the generated `listPosts` method. This method receives as a first parameter the filters passed to the query, but it also includes a `context` property that holds the context passed to the query.
+In the above example, you override the generated `listPosts` method. This method receives the filters passed to `query.graph` as its first parameter. The first parameter includes a `context` property that holds the Query context alsopassed to `query.graph`.
 
-You extract the context from `filters`, then retrieve the posts using the parent's `listPosts` method. After that, if the language is set in the context, you transform the titles of the posts.
+You extract the context from `filters`, then retrieve the posts using the parent's `listPosts` method. If the language is set in the context, you transform the post titles.
 
 All posts returned will now have their titles appended with "en español".
 
-<Note title="Tip">
-
-Learn more about the generated `list` method in [this reference](!resources!/service-factory-reference/methods/list).
-
-</Note>
-
 ### Using Pagination with Query
 
-If you pass pagination fields to `query.graph`, you must also override the `listAndCount` method in the service.
+If you pass pagination fields to `query.graph`, you must also override the [generated listAndCount method](!resources!/service-factory-reference/methods/listAndCount) in the service.
 
-For example, following along with the previous example, you must override the `listAndCountPosts` method of the Blog Module's service:
+For example, following the previous example, you must override the `listAndCountPosts` method of the Blog Module's service:
 
 ```ts
 import { MedusaContext, MedusaService } from "@medusajs/framework/utils"
@@ -131,7 +133,7 @@ class BlogModuleService extends MedusaService({
     )
 
     if (context.lang === "es") {
-      result.posts = posts.map((post) => {
+      result[0] = result[0].map((post) => {
         return {
           ...post,
           title: post.title + " en español",
@@ -146,17 +148,17 @@ class BlogModuleService extends MedusaService({
 export default BlogModuleService
 ```
 
-Now, the `listAndCountPosts` method will handle the context passed to `query.graph` when you pass pagination fields. You can also move the logic to transform the posts' titles to a separate method and call it from both `listPosts` and `listAndCountPosts`.
+Now, the `listAndCountPosts` method will handle the context passed to `query.graph` when you pass pagination fields. You can also move the logic to transform the post titles to a separate method and call it from both `listPosts` and `listAndCountPosts`.
 
 ---
 
 ## Passing Query Context to Related Data Models
 
-If you're retrieving a data model and you want to pass context to its associated model in the same module, you can pass them as part of `QueryContext`'s parameter, then handle them in the same `list` method.
+If you're retrieving a data model and want to pass Query context to its associated model in the same module, pass them as part of `QueryContext`'s parameter. Then, you can handle them in the same `list` method.
 
 <Note>
 
-For linked data models, check out the [next section](#passing-query-context-to-linked-data-models).
+To pass Query context to linked data models, check out the [next section](#passing-query-context-to-linked-data-models).
 
 </Note>
 
@@ -229,15 +231,15 @@ class BlogModuleService extends MedusaService({
 export default BlogModuleService
 ```
 
-The context in `filters` will also have the context for `author`, which you can use to make transformations to the post's authors.
+The context in `filters` will also include the context for `author`, which you can use to transform the post's authors.
 
 ---
 
 ## Passing Query Context to Linked Data Models
 
-If you're retrieving a data model and you want to pass context to a linked model in a different module, pass to the `context` property an object instead, where its keys are the linked model's name and the values are the context for that linked model.
+If you're retrieving a data model and want to pass Query context to a linked model in a different module, pass an object to the `context` property instead. The object's keys should be the linked model's name, and the values should be the Query context for that linked model.
 
-For example, consider the Product Module's `Product` data model is linked to the Blog Module's `Post` data model. You can pass context to the `Post` data model while retrieving products like so:
+For example, consider the Product Module's `Product` data model is linked to the Blog Module's `Post` data model. You can pass context to the `Post` data model while retrieving products:
 
 export const highlights5 = [
   ["5", "post", "Pass a context for posts."]
@@ -255,6 +257,6 @@ const { data } = await query.graph({
 })
 ```
 
-In this example, you retrieve products and their associated posts. You also pass a context for `post`, indicating the customer's language.
+In this example, you retrieve products and their associated posts. You also pass Query context for `post`, indicating the customer's language.
 
-To handle the context, you override the generated `listPosts` method of the Blog Module as explained [previously](#how-to-use-query-context).
+To handle the context, override the generated `listPosts` method of the Blog Module as explained [previously](#how-to-handle-query-context).

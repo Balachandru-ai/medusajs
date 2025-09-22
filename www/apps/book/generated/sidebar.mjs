@@ -858,12 +858,22 @@ export const generatedSidebars = [
               {
                 "loaded": true,
                 "isPathHref": true,
+                "type": "link",
+                "path": "/learn/fundamentals/workflows/locks",
+                "title": "Using Locks",
+                "children": [],
+                "chapterTitle": "3.7.15. Using Locks",
+                "number": "3.7.15."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
                 "type": "ref",
                 "path": "/learn/debugging-and-testing/debug-workflows",
                 "title": "Debug Workflows",
                 "children": [],
-                "chapterTitle": "3.7.15. Debug Workflows",
-                "number": "3.7.15."
+                "chapterTitle": "3.7.16. Debug Workflows",
+                "number": "3.7.16."
               }
             ],
             "chapterTitle": "3.7. Workflows",

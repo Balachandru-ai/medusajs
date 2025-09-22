@@ -525,6 +525,7 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: '#/components/schemas/AdminUser'
+  - name: Views
   - name: Workflows Executions
     description: |
       These API routes allow you to track workflow executions in your Medusa application.
@@ -36259,6 +36260,135 @@ paths:
             type: boolean
             title: with_deleted
             description: Whether to include deleted records in the result.
+        - name: id
+          in: query
+          required: false
+          description: Filter by a promotion's ID.
+          schema:
+            oneOf:
+              - type: string
+                title: id
+                description: Filter by a promotion's ID.
+              - type: array
+                description: Filter by promotion IDs.
+                items:
+                  type: string
+                  title: id
+                  description: The promotion's ID.
+              - type: object
+                description: Filter by a promotion's ID.
+                properties:
+                  $and:
+                    type: array
+                    description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+                    items:
+                      type: object
+                    title: $and
+                  $or:
+                    type: array
+                    description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+                    items:
+                      type: object
+                    title: $or
+                  $eq:
+                    oneOf:
+                      - type: string
+                        title: $eq
+                        description: Filter by an exact match.
+                      - type: array
+                        description: Filter by an exact match.
+                        items:
+                          type: string
+                          title: $eq
+                          description: Filter by an exact match.
+                  $ne:
+                    type: string
+                    title: $ne
+                    description: Filter by values not equal to this parameter.
+                  $in:
+                    type: array
+                    description: Filter by values in this array.
+                    items:
+                      type: string
+                      title: $in
+                      description: Filter by values in this array.
+                  $nin:
+                    type: array
+                    description: Filter by values not in this array.
+                    items:
+                      type: string
+                      title: $nin
+                      description: Filter by values not in this array.
+                  $not:
+                    oneOf:
+                      - type: string
+                        title: $not
+                        description: Filter by values not matching the conditions in this parameter.
+                      - type: object
+                        description: Filter by values not matching the conditions in this parameter.
+                      - type: array
+                        description: Filter by values not matching the conditions in this parameter.
+                        items:
+                          type: string
+                          title: $not
+                          description: Filter by values not matching the conditions in this parameter.
+                  $gt:
+                    type: string
+                    title: $gt
+                    description: Filter by values greater than this parameter. Useful for numbers and dates only.
+                  $gte:
+                    type: string
+                    title: $gte
+                    description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
+                  $lt:
+                    type: string
+                    title: $lt
+                    description: Filter by values less than this parameter. Useful for numbers and dates only.
+                  $lte:
+                    type: string
+                    title: $lte
+                    description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+                  $like:
+                    type: string
+                    title: $like
+                    description: Apply a `like` filter. Useful for strings only.
+                  $re:
+                    type: string
+                    title: $re
+                    description: Apply a regex filter. Useful for strings only.
+                  $ilike:
+                    type: string
+                    title: $ilike
+                    description: Apply a case-insensitive `like` filter. Useful for strings only.
+                  $fulltext:
+                    type: string
+                    title: $fulltext
+                    description: Filter to apply on full-text properties.
+                  $overlap:
+                    type: array
+                    description: Filter arrays that have overlapping values with this parameter.
+                    items:
+                      type: string
+                      title: $overlap
+                      description: Filter arrays that have overlapping values with this parameter.
+                  $contains:
+                    type: array
+                    description: Filter arrays that contain some of the values of this parameter.
+                    items:
+                      type: string
+                      title: $contains
+                      description: Filter arrays that contain some of the values of this parameter.
+                  $contained:
+                    type: array
+                    description: Filter arrays that contain all values of this parameter.
+                    items:
+                      type: string
+                      title: $contained
+                      description: Filter arrays that contain all values of this parameter.
+                  $exists:
+                    type: boolean
+                    title: $exists
+                    description: Filter by whether a value for this parameter exists (not `null`).
       security:
         - api_token: []
         - cookie_auth: []
@@ -53930,6 +54060,886 @@ paths:
             ```
           description: Emitted when users are deleted.
           deprecated: false
+  /admin/views/{entity}/columns:
+    get:
+      operationId: GetViewsEntityColumns
+      summary: List Columns in View
+      x-sidebar-summary: List Columns
+      description: Retrieve a list of columns in a view for an entity. The columns are retrieved for the authenticated admin user.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its columns (for example, `orders`)
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/columns' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewsEntityColumnsResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+  /admin/views/{entity}/configurations:
+    get:
+      operationId: GetViewsEntityConfigurations
+      summary: List View Configurations
+      description: Retrieve a list of view configurations of an entity. The configurations can be filtered by fields like `id`. The configurations can also be paginated. An admin user can only retrieve their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its view configurations (for example, `orders`)
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: The number of items to skip when retrieving a list.
+          required: false
+          schema:
+            type: number
+            title: offset
+            description: The number of items to skip when retrieving a list.
+            externalDocs:
+              url: '#pagination'
+        - name: limit
+          in: query
+          description: Limit the number of items returned in the list.
+          required: false
+          schema:
+            type: number
+            title: limit
+            description: Limit the number of items returned in the list.
+            externalDocs:
+              url: '#pagination'
+        - name: order
+          in: query
+          description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+          required: false
+          schema:
+            type: string
+            title: order
+            description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+            externalDocs:
+              url: '#pagination'
+        - name: with_deleted
+          in: query
+          description: Whether to include deleted records in the result.
+          required: false
+          schema:
+            type: boolean
+            title: with_deleted
+            description: Whether to include deleted records in the result.
+        - name: id
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: id
+                description: Filter by a view configuration ID.
+              - type: array
+                description: Filter by view configuration IDs.
+                items:
+                  type: string
+                  title: id
+                  description: The view configuration ID.
+        - name: entity
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: entity
+                description: Filter by an entity.
+              - type: array
+                description: Filter by entities.
+                items:
+                  type: string
+                  title: entity
+                  description: An entity.
+        - name: name
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: name
+                description: Filter by a view's name.
+              - type: array
+                description: Filter by view names.
+                items:
+                  type: string
+                  title: name
+                  description: The view's name.
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: user_id
+                description: Filter by the ID of the user who owns the view.
+              - type: array
+                description: Filter by the IDs of users who own the view.
+                items:
+                  type: string
+                  title: user_id
+                  description: The user ID.
+        - name: is_system_default
+          in: query
+          description: Filter by whether the view is a system default.
+          required: false
+          schema:
+            type: boolean
+            title: is_system_default
+            description: Whether the view is a system default.
+        - name: created_at
+          in: query
+          description: Filter by a view configuration's creation date.
+          required: false
+          schema:
+            type: object
+            description: Filter by a view configuration's creation date.
+            properties:
+              $and:
+                type: array
+                description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $and
+              $or:
+                type: array
+                description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $or
+              $eq:
+                oneOf:
+                  - type: string
+                    title: $eq
+                    description: Filter by an exact match.
+                  - type: array
+                    description: Filter by an exact match.
+                    items:
+                      type: string
+                      title: $eq
+                      description: Filter by an exact match.
+              $ne:
+                type: string
+                title: $ne
+                description: Filter by values not equal to this parameter.
+              $in:
+                type: array
+                description: Filter by values in this array.
+                items:
+                  type: string
+                  title: $in
+                  description: Filter by values in this array.
+              $nin:
+                type: array
+                description: Filter by values not in this array.
+                items:
+                  type: string
+                  title: $nin
+                  description: Filter by values not in this array.
+              $not:
+                oneOf:
+                  - type: string
+                    title: $not
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: object
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: array
+                    description: Filter by values not matching the conditions in this parameter.
+                    items:
+                      type: string
+                      title: $not
+                      description: Filter by values not matching the conditions in this parameter.
+              $gt:
+                type: string
+                title: $gt
+                description: Filter by values greater than this parameter. Useful for numbers and dates only.
+              $gte:
+                type: string
+                title: $gte
+                description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
+              $lt:
+                type: string
+                title: $lt
+                description: Filter by values less than this parameter. Useful for numbers and dates only.
+              $lte:
+                type: string
+                title: $lte
+                description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+              $like:
+                type: string
+                title: $like
+                description: Apply a `like` filter. Useful for strings only.
+              $re:
+                type: string
+                title: $re
+                description: Apply a regex filter. Useful for strings only.
+              $ilike:
+                type: string
+                title: $ilike
+                description: Apply a case-insensitive `like` filter. Useful for strings only.
+              $fulltext:
+                type: string
+                title: $fulltext
+                description: Filter to apply on full-text properties.
+              $overlap:
+                type: array
+                description: Filter arrays that have overlapping values with this parameter.
+                items:
+                  type: string
+                  title: $overlap
+                  description: Filter arrays that have overlapping values with this parameter.
+              $contains:
+                type: array
+                description: Filter arrays that contain some of the values of this parameter.
+                items:
+                  type: string
+                  title: $contains
+                  description: Filter arrays that contain some of the values of this parameter.
+              $contained:
+                type: array
+                description: Filter arrays that contain all values of this parameter.
+                items:
+                  type: string
+                  title: $contained
+                  description: Filter arrays that contain all values of this parameter.
+              $exists:
+                type: boolean
+                title: $exists
+                description: Filter by whether a value for this parameter exists (not `null`).
+        - name: updated_at
+          in: query
+          description: Filter by a view configuration's update date.
+          required: false
+          schema:
+            type: object
+            description: Filter by a view configuration's update date.
+            properties:
+              $and:
+                type: array
+                description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $and
+              $or:
+                type: array
+                description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $or
+              $eq:
+                oneOf:
+                  - type: string
+                    title: $eq
+                    description: Filter by an exact match.
+                  - type: array
+                    description: Filter by an exact match.
+                    items:
+                      type: string
+                      title: $eq
+                      description: Filter by an exact match.
+              $ne:
+                type: string
+                title: $ne
+                description: Filter by values not equal to this parameter.
+              $in:
+                type: array
+                description: Filter by values in this array.
+                items:
+                  type: string
+                  title: $in
+                  description: Filter by values in this array.
+              $nin:
+                type: array
+                description: Filter by values not in this array.
+                items:
+                  type: string
+                  title: $nin
+                  description: Filter by values not in this array.
+              $not:
+                oneOf:
+                  - type: string
+                    title: $not
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: object
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: array
+                    description: Filter by values not matching the conditions in this parameter.
+                    items:
+                      type: string
+                      title: $not
+                      description: Filter by values not matching the conditions in this parameter.
+              $gt:
+                type: string
+                title: $gt
+                description: Filter by values greater than this parameter. Useful for numbers and dates only.
+              $gte:
+                type: string
+                title: $gte
+                description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
+              $lt:
+                type: string
+                title: $lt
+                description: Filter by values less than this parameter. Useful for numbers and dates only.
+              $lte:
+                type: string
+                title: $lte
+                description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+              $like:
+                type: string
+                title: $like
+                description: Apply a `like` filter. Useful for strings only.
+              $re:
+                type: string
+                title: $re
+                description: Apply a regex filter. Useful for strings only.
+              $ilike:
+                type: string
+                title: $ilike
+                description: Apply a case-insensitive `like` filter. Useful for strings only.
+              $fulltext:
+                type: string
+                title: $fulltext
+                description: Filter to apply on full-text properties.
+              $overlap:
+                type: array
+                description: Filter arrays that have overlapping values with this parameter.
+                items:
+                  type: string
+                  title: $overlap
+                  description: Filter arrays that have overlapping values with this parameter.
+              $contains:
+                type: array
+                description: Filter arrays that contain some of the values of this parameter.
+                items:
+                  type: string
+                  title: $contains
+                  description: Filter arrays that contain some of the values of this parameter.
+              $contained:
+                type: array
+                description: Filter arrays that contain all values of this parameter.
+                items:
+                  type: string
+                  title: $contained
+                  description: Filter arrays that contain all values of this parameter.
+              $exists:
+                type: boolean
+                title: $exists
+                description: Filter by whether a value for this parameter exists (not `null`).
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+        - name: $and
+          in: query
+          description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $and
+        - name: $or
+          in: query
+          description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $or
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/configurations' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: The list of view configurations.
+                    required:
+                      - limit
+                      - offset
+                      - count
+                    properties:
+                      limit:
+                        type: number
+                        title: limit
+                        description: The maximum number of returned items.
+                      offset:
+                        type: number
+                        title: offset
+                        description: The number of items skipped before retrieving the returned items.
+                      count:
+                        type: number
+                        title: count
+                        description: The total number of items.
+                      estimate_count:
+                        type: number
+                        title: estimate_count
+                        description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+                        x-featureFlag: index_engine
+                  - type: object
+                    description: The list of view configurations.
+                    required:
+                      - view_configurations
+                    properties:
+                      view_configurations:
+                        type: array
+                        description: The list of view configurations.
+                        items:
+                          $ref: '#/components/schemas/AdminViewConfiguration'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    post:
+      operationId: PostViewsEntityConfigurations
+      summary: Create View Configuration
+      description: Create a new view configuration for an entity. If `is_system_default` is set to true, the created configuration will be set as the system default for the specified entity. Otherwise, it will be a custom configuration for the admin user.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to create its view configuration (for example, `orders`).
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateViewConfiguration'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/views/{entity}/configurations' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "is_system_default": true,
+              "name": "Custom View"
+            }'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewConfigurationResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: createViewConfigurationWorkflow
+      x-events: []
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+  /admin/views/{entity}/configurations/active:
+    get:
+      operationId: GetViewsEntityConfigurationsActive
+      summary: Get Active View Configuration
+      description: Get the active view configurations for an entity. If no active view is set, `null` is returned. An admin user can only retrieve their own active configuration.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its active view configurations (for example, `orders`).
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/configurations/active' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/AdminViewConfigurationResponse'
+                  - type: object
+                    description: Additional properties related to the active view configuration.
+                    properties:
+                      is_default_active:
+                        type: boolean
+                        title: is_default_active
+                        description: Whether the active view configuration is the system default.
+                      default_type:
+                        type: string
+                        description: The type of the default view configuration if the active view is the system default. It will be `system` if the active view is the system default, `code` if no active view is set, or `undefined` if the active view isn't the system default.
+                        enum:
+                          - code
+                          - system
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    post:
+      operationId: PostViewsEntityConfigurationsActive
+      summary: Make View Configuration Active
+      description: Make a view configuration active. This will set the given view configuration as the active one for the specified entity for the admin user. An admin user can only set their own configurations as active. If the view configuration ID is `null`, the active view configuration will be cleared, and the `code` or system default view configuration type will be used as the active view.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to update its view configuration (for example, `orders`).
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminSetActiveViewConfiguration'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/views/{entity}/configurations/active' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "view_configuration_id": "{value}"
+            }'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The details of the operation.
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                    title: success
+                    description: Whether the operation was successful.
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+  /admin/views/{entity}/configurations/{id}:
+    get:
+      operationId: GetViewsEntityConfigurationsId
+      summary: Get View Configuration
+      description: Retrieve a view configuration for an entity. An admin user can only retrieve their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its view configurations (for example, `orders`)
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The ID of the view configuration to retrieve.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/configurations/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewConfigurationResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    post:
+      operationId: PostViewsEntityConfigurationsId
+      summary: Update View Configuration
+      description: Update the view configuration of an entity. An admin user can only update their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to update its view configuration (for example, `orders`).
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The view configuration's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateViewConfiguration'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/views/{entity}/configurations/{id}' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "is_system_default": true
+            }'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewConfigurationResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: updateViewConfigurationWorkflow
+      x-events: []
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    delete:
+      operationId: DeleteViewsEntityConfigurationsId
+      summary: Remove View Configurations
+      description: Remove view configurations of an entity. An admin user can only delete their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to delete its view configuration (for example, `orders`)
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The ID of the view configuration to delete
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X DELETE '{backend_url}/admin/views/{entity}/configurations/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The details of the deletion operation.
+                required:
+                  - id
+                  - object
+                  - deleted
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The ID of the deleted View Configuration.
+                  object:
+                    type: string
+                    title: object
+                    description: The name of the deleted object.
+                    example: view_configuration
+                  deleted:
+                    type: boolean
+                    title: deleted
+                    description: Whether the view was deleted.
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
   /admin/workflows-executions:
     get:
       operationId: GetWorkflowsExecutions
@@ -56396,6 +57406,121 @@ components:
       properties:
         collection:
           $ref: '#/components/schemas/AdminCollection'
+    AdminColumn:
+      type: object
+      description: The details of a column in a view configuration.
+      x-schemaName: AdminColumn
+      required:
+        - id
+        - name
+        - field
+        - sortable
+        - hideable
+        - default_visible
+        - data_type
+      properties:
+        id:
+          type: string
+          title: id
+          description: The column's ID.
+        name:
+          type: string
+          title: name
+          description: The column's name. This is displayed in the view header.
+        description:
+          type: string
+          title: description
+          description: The column's description.
+        field:
+          type: string
+          title: field
+          description: The column's field in the entity.
+        sortable:
+          type: boolean
+          title: sortable
+          description: Whether the column is sortable.
+        hideable:
+          type: boolean
+          title: hideable
+          description: Whether the column is hideable.
+        default_visible:
+          type: boolean
+          title: default_visible
+          description: Whether the column is visible by default.
+        data_type:
+          type: string
+          description: The data type of the column's value.
+          enum:
+            - string
+            - number
+            - boolean
+            - object
+            - date
+            - currency
+            - enum
+        semantic_type:
+          type: string
+          title: semantic_type
+          description: The column's semantic type. It can be `computed`, or other primitive types.
+        context:
+          type: string
+          title: context
+          description: The column's context. It can be `display` or `generic`.
+        computed:
+          type: object
+          description: A computed column's details. Only available if the column's `semantic_type` is `computed`.
+          required:
+            - type
+            - required_fields
+            - optional_fields
+          properties:
+            type:
+              type: string
+              title: type
+              description: The computed's type for rendering.
+            required_fields:
+              type: array
+              description: The required fields in the computed column.
+              items:
+                type: string
+                title: required_fields
+                description: A required field in the computed column.
+            optional_fields:
+              type: array
+              description: The optional fields in the computed column.
+              items:
+                type: string
+                title: optional_fields
+                description: An optional field in the computed column.
+        relationship:
+          type: object
+          description: The relationship details. Only available for relationship columns.
+          required:
+            - entity
+            - field
+          properties:
+            entity:
+              type: string
+              title: entity
+              description: The related entity.
+            field:
+              type: string
+              title: field
+              description: The field in the related entity.
+        default_order:
+          type: number
+          title: default_order
+          description: The column's sort order in the default view configuration.
+        category:
+          type: string
+          description: The column's category.
+          enum:
+            - status
+            - metadata
+            - identifier
+            - timestamp
+            - metric
+            - relationship
     AdminCreateApiKey:
       type: object
       description: The API key's details.
@@ -58057,6 +59182,69 @@ components:
           type: string
           title: inventory_item_id
           description: The inventory item's ID.
+    AdminCreateViewConfiguration:
+      type: object
+      description: The details of a view configuration to create.
+      x-schemaName: AdminCreateViewConfiguration
+      properties:
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default. If so, it will be used as the default view for all users that don't have a custom active view set.
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+        name:
+          type: string
+          title: name
+          description: The view's name.
     AdminCreateWorkflowsAsyncResponse:
       type: object
       description: The details of changing a workflow execution's step status.
@@ -59055,6 +60243,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -59068,6 +60257,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -59287,6 +60477,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderListResponse:
       type: object
       description: The list of draft orders with pagination fields.
@@ -59346,6 +60544,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -59359,6 +60558,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -59963,6 +61163,14 @@ components:
           type: number
           title: credit_line_total
           description: The draft order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the draft order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the draft order's shipping.
     AdminDraftOrderPreviewResponse:
       type: object
       description: The details of the preview on the draft order.
@@ -61338,6 +62546,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -61351,6 +62560,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -61569,6 +62779,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderAddress:
       type: object
       description: An order address.
@@ -61805,6 +63023,7 @@ components:
         - return_id
         - exchange_id
         - claim_id
+        - ordering
         - order_change_id
         - reference
         - reference_id
@@ -61891,6 +63110,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the action was updated.
+        ordering:
+          type: number
+          title: ordering
+          description: The action's order in the sequence of actions.
     AdminOrderChangesResponse:
       type: object
       description: The details of an order's changes.
@@ -62296,6 +63519,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -62309,6 +63533,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -62913,6 +64138,14 @@ components:
           type: number
           title: credit_line_total
           description: The order preview's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     AdminOrderPreviewResponse:
       type: object
       description: The preview of an order.
@@ -63619,6 +64852,10 @@ components:
                 externalDocs:
                   url: https://docs.medusajs.com/api/admin#manage-metadata
                   description: Learn how to manage metadata
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location to which outbound items are sent from.
     AdminPostExchangesShippingActionReqSchema:
       type: object
       description: The details of the shipping method to update.
@@ -66521,6 +67758,17 @@ components:
       properties:
         service_zone:
           $ref: '#/components/schemas/AdminServiceZone'
+    AdminSetActiveViewConfiguration:
+      type: object
+      description: The details of a view configuration to set as active for the given entity.
+      x-schemaName: AdminSetActiveViewConfiguration
+      required:
+        - view_configuration_id
+      properties:
+        view_configuration_id:
+          type: string
+          title: view_configuration_id
+          description: The ID of the view configuration to set as active. If `null`, the active view configuration will be cleared, and the `code` or system default view configuration will be used as the active view.
     AdminShippingOption:
       type: object
       description: The shipping option's details.
@@ -69385,6 +70633,66 @@ components:
           type: number
           title: required_quantity
           description: The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the value set for `required_quantity`. When the customer orders the quantity, Medusa reserves the ordered quantity multiplied by the value set for `required_quantity`.
+    AdminUpdateViewConfiguration:
+      type: object
+      description: The details to update in a view configuration.
+      x-schemaName: AdminUpdateViewConfiguration
+      properties:
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        name:
+          type: string
+          title: name
+          description: The view's name.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          properties:
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
     AdminUploadPreSignedUrl:
       type: object
       description: The details of the file to upload.
@@ -69616,6 +70924,116 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/AdminUser'
+    AdminViewConfiguration:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfiguration
+      required:
+        - id
+        - entity
+        - name
+        - user_id
+        - is_system_default
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The view configuration's ID.
+        entity:
+          type: string
+          title: entity
+          description: The entity the view configuration belongs to.
+        name:
+          type: string
+          title: name
+          description: The view configuration's name.
+        user_id:
+          type: string
+          title: user_id
+          description: The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view configuration is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+            search:
+              type: string
+              title: search
+              description: The configuration's search.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The date the view configuration was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the view configuration was updated.
+    AdminViewConfigurationResponse:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfigurationResponse
+      required:
+        - view_configuration
+      properties:
+        view_configuration:
+          $ref: '#/components/schemas/AdminViewConfiguration'
+    AdminViewsEntityColumnsResponse:
+      type: object
+      description: The view's columns.
+      x-schemaName: AdminViewsEntityColumnsResponse
+      required:
+        - columns
+      properties:
+        columns:
+          type: array
+          description: The view's columns.
+          items:
+            $ref: '#/components/schemas/AdminColumn'
     AdminWorkflowExecution:
       type: object
       description: The workflows execution's details.
@@ -69781,6 +71199,14 @@ components:
                     type: number
                     title: timeout
                     description: The maximum time in seconds to wait for this step to complete. If the step exceeds this time, the step's state is changed to `timeout`, but the step continues executing.
+                  autoRetry:
+                    type: boolean
+                    title: autoRetry
+                    description: Whether the step should be automatically retried if it fails.
+                  maxAwaitingRetries:
+                    type: number
+                    title: maxAwaitingRetries
+                    description: The maximum number of times to retry the step while it's in the `waiting_response` state.
               compensate:
                 type: object
                 description: The state of the step's compensation function.
@@ -70854,6 +72280,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -70867,6 +72294,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -71074,6 +72502,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     BaseOrderAddress:
       type: object
       description: An order address.
@@ -73746,6 +75182,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -73761,6 +75198,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -74038,6 +75476,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     OrderAddress:
       type: object
       description: The address's details.
@@ -75587,45 +77033,6 @@ components:
           type: string
           title: token
           description: The order transfer's token issued when the transfer was requested.
-    StoreAddCartLineItem:
-      type: object
-      description: The details of the line item to add.
-      x-schemaName: StoreAddCartLineItem
-      required:
-        - variant_id
-        - quantity
-      properties:
-        variant_id:
-          type: string
-          title: variant_id
-          description: The ID of the product variant to add to the cart.
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
-    StoreAddCartShippingMethods:
-      type: object
-      description: The shipping method's details.
-      required:
-        - option_id
-      properties:
-        option_id:
-          type: string
-          title: option_id
-          description: The ID of the shipping option this method is created from.
-        data:
-          type: object
-          description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
-          externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
-            description: Learn more about the data parameter.
-      x-schemaName: StoreAddCartShippingMethods
     StoreAddGiftCardToCart:
       type: object
       description: The details to add a gift card to the cart.
@@ -76056,17 +77463,6 @@ components:
         - cart
         - title
         - id
-        - item_total
-        - item_subtotal
-        - item_tax_total
-        - original_total
-        - original_subtotal
-        - original_tax_total
-        - total
-        - subtotal
-        - tax_total
-        - discount_total
-        - discount_tax_total
         - requires_shipping
         - is_discountable
         - is_tax_inclusive
@@ -76349,47 +77745,47 @@ components:
         original_total:
           type: number
           title: original_total
-          description: The item's total including taxes, excluding promotions.
+          description: The item's total including taxes, excluding promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         original_subtotal:
           type: number
           title: original_subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         original_tax_total:
           type: number
           title: original_tax_total
-          description: The total taxes of the item excluding promotions.
+          description: The total taxes of the item excluding promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_total:
           type: number
           title: original_tax_total
-          description: The item's total including taxes and promotions.
+          description: The item's total including taxes and promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_subtotal:
           type: number
           title: item_subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         item_tax_total:
           type: number
           title: item_tax_total
-          description: The total taxes of the item including promotions.
+          description: The total taxes of the item including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         total:
           type: number
           title: total
-          description: The item's total including taxes and promotions.
+          description: The item's total including taxes and promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         subtotal:
           type: number
           title: subtotal
-          description: The item's total excluding taxes, including promotions.
+          description: The item's total excluding taxes, including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         tax_total:
           type: number
           title: tax_total
-          description: The total taxes of the item including promotions.
+          description: The total taxes of the item including promotions. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         discount_total:
           type: number
           title: discount_total
-          description: The total discount of the item.
+          description: The total discount of the item. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
         discount_tax_total:
           type: number
           title: discount_tax_total
-          description: The total taxes applied on the discounted amount.
+          description: The total taxes applied on the discounted amount. This field is only available if you expand the `items.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals) guide.
     StoreCartPromotion:
       type: object
       description: The promotion's promotions.
@@ -76466,14 +77862,6 @@ components:
         - is_tax_inclusive
         - created_at
         - updated_at
-        - original_total
-        - original_subtotal
-        - original_tax_total
-        - total
-        - subtotal
-        - tax_total
-        - discount_total
-        - discount_tax_total
       properties:
         id:
           type: string
@@ -76675,35 +78063,35 @@ components:
         original_total:
           type: number
           title: original_total
-          description: The shipping method's total including taxes, excluding promotions.
+          description: The shipping method's total including taxes, excluding promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         original_subtotal:
           type: number
           title: original_subtotal
-          description: The shipping method's total excluding taxes, including promotions.
+          description: The shipping method's total excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         original_tax_total:
           type: number
           title: original_tax_total
-          description: The total taxes applied on the shipping method's amount including promotions.
+          description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         total:
           type: number
           title: total
-          description: The shipping method's total amount including taxes and promotions.
+          description: The shipping method's total amount including taxes and promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         subtotal:
           type: number
           title: subtotal
-          description: The shipping method's total amount excluding taxes, including promotions.
+          description: The shipping method's total amount excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         tax_total:
           type: number
           title: tax_total
-          description: The total taxes applied on the shipping method's amount including promotions.
+          description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         discount_total:
           type: number
           title: discount_total
-          description: The total amount discounted.
+          description: The total amount discounted. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
         discount_tax_total:
           type: number
           title: discount_tax_total
-          description: The taxes applied on the discounted amount.
+          description: The taxes applied on the discounted amount. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
     StoreCartShippingOption:
       type: object
       description: The shipping option's details.
@@ -77552,6 +78940,7 @@ components:
         - item_total
         - item_subtotal
         - item_tax_total
+        - item_discount_total
         - original_total
         - original_subtotal
         - original_tax_total
@@ -77565,6 +78954,7 @@ components:
         - shipping_total
         - shipping_subtotal
         - shipping_tax_total
+        - shipping_discount_total
         - original_shipping_total
         - original_shipping_subtotal
         - original_shipping_tax_total
@@ -77771,6 +79161,14 @@ components:
           type: number
           title: credit_line_total
           description: The order's credit line total.
+        item_discount_total:
+          type: number
+          title: item_discount_total
+          description: The total discount amount applied on the order's items.
+        shipping_discount_total:
+          type: number
+          title: shipping_discount_total
+          description: The total discount amount applied on the order's shipping.
     StoreOrderAddress:
       type: object
       description: An order address
@@ -85273,23 +86671,6 @@ components:
             url: https://docs.medusajs.com/api/store#manage-metadata
             description: Learn how to manage metadata
       x-schemaName: StoreTransactionGroup
-    StoreUpdateCartLineItem:
-      type: object
-      description: The details to update in the line item.
-      x-schemaName: StoreUpdateCartLineItem
-      required:
-        - quantity
-      properties:
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
     StoreUpdateCustomer:
       type: object
       description: The details to update in the customer.

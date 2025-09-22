@@ -113,11 +113,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(results.length).toBe(1)
@@ -171,11 +167,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(results.length).toBe(1)

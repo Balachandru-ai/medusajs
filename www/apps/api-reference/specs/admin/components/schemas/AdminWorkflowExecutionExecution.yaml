@@ -123,6 +123,16 @@ properties:
                 The maximum time in seconds to wait for this step to complete.
                 If the step exceeds this time, the step's state is changed to
                 `timeout`, but the step continues executing.
+            autoRetry:
+              type: boolean
+              title: autoRetry
+              description: Whether the step should be automatically retried if it fails.
+            maxAwaitingRetries:
+              type: number
+              title: maxAwaitingRetries
+              description: >-
+                The maximum number of times to retry the step while it's in the
+                `waiting_response` state.
         compensate:
           type: object
           description: The state of the step's compensation function.

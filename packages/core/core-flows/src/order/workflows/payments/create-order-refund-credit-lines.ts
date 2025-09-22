@@ -42,7 +42,7 @@ export const createOrderRefundCreditLinesWorkflow = createWorkflow(
   ) {
     const orderQuery = useQueryGraphStep({
       entity: "orders",
-      fields: ["id", "status", "summary", "payment_collections.id"],
+      fields: ["id", "status", "summary", "total", "payment_collections.id"],
       filters: { id: input.order_id },
       options: { throwIfKeyNotFound: true },
     }).config({ name: "get-order" })

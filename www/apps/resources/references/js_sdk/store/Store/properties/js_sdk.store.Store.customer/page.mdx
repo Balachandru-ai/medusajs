@@ -68,6 +68,7 @@ Related guide: [How to edit customer's profile in the storefront](https://docs.m
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to update their details
 sdk.store.customer.update({
   first_name: "John"
 })
@@ -97,6 +98,7 @@ API route.
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to retrieve their details
 sdk.store.customer.retrieve()
 .then(({ customer }) => {
   console.log(customer)
@@ -126,6 +128,7 @@ Related guides: [How to manage customer's addresses in the storefront](https://d
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to create an address
 sdk.store.customer.createAddress({
   country_code: "us"
 })
@@ -157,6 +160,7 @@ Related guides: [How to manage customer's addresses in the storefront](https://d
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to update their address
 sdk.store.customer.updateAddress(
   "caddr_123",
   {
@@ -193,6 +197,7 @@ Related guides: [How to manage customer's addresses in the storefront](https://d
 To retrieve the list of addresses:
 
 ```ts
+// TODO must be authenticated as the customer to list their addresses
 sdk.store.customer.listAddress()
 .then(({ addresses, count, offset, limit }) => {
   console.log(addresses)
@@ -204,6 +209,7 @@ To configure the pagination, pass the `limit` and `offset` query parameters.
 For example, to retrieve only 10 items and skip 10 items:
 
 ```ts
+// TODO must be authenticated as the customer to list their addresses
 sdk.store.customer.listAddress({
   limit: 10,
   offset: 10
@@ -217,6 +223,7 @@ Using the `fields` query parameter, you can specify the fields and relations to 
 in each address:
 
 ```ts
+// TODO must be authenticated as the customer to list their addresses
 sdk.store.customer.listAddress({
   fields: "id,country_code"
 })
@@ -252,6 +259,7 @@ Related guides: [How to manage customer's addresses in the storefront](https://d
 To retrieve an address by its ID:
 
 ```ts
+// TODO must be authenticated as the customer to retrieve their address
 sdk.store.customer.retrieveAddress(
   "caddr_123"
 )
@@ -263,6 +271,7 @@ sdk.store.customer.retrieveAddress(
 To specify the fields and relations to retrieve:
 
 ```ts
+// TODO must be authenticated as the customer to retrieve their address
 sdk.store.customer.retrieveAddress(
   "caddr_123",
   {
@@ -299,6 +308,7 @@ Related guides: [How to manage customer's addresses in the storefront](https://d
 ### Example
 
 ```ts
+// TODO must be authenticated as the customer to delete their address
 sdk.store.customer.deleteAddress("caddr_123")
 .then(({ deleted, parent: customer }) => {
   console.log(customer)

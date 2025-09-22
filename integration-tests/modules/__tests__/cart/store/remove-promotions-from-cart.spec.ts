@@ -60,7 +60,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_id",
+                    attribute: "items.product_id",
                     operator: "eq",
                     values: "prod_tshirt",
                   },
@@ -83,7 +83,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_id",
+                    attribute: "items.product_id",
                     operator: "eq",
                     values: "prod_tshirt",
                   },

@@ -1,4 +1,8 @@
-import { BigNumberInput, PromotionTypes } from "@medusajs/framework/types"
+import {
+  BigNumberInput,
+  InferEntityType,
+  PromotionTypes,
+} from "@medusajs/framework/types"
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
@@ -9,9 +13,10 @@ import {
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
+import { Promotion } from "@models"
 
 export function getComputedActionsForShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   shippingMethodApplicationContext: PromotionTypes.ComputeActionContext[ApplicationMethodTargetType.SHIPPING_METHODS],
   methodIdPromoValueMap: Map<string, number>
 ): PromotionTypes.ComputeActions[] {
@@ -47,7 +52,7 @@ export function getComputedActionsForShippingMethods(
 }
 
 export function applyPromotionToShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   shippingMethods: PromotionTypes.ComputeActionContext[ApplicationMethodTargetType.SHIPPING_METHODS],
   methodIdPromoValueMap: Map<string, BigNumberInput>
 ): PromotionTypes.ComputeActions[] {
@@ -126,10 +131,16 @@ export function applyPromotionToShippingMethods(
       const appliedPromoValue = methodIdPromoValueMap.get(method.id) ?? 0
       const applicableTotal = MathBN.sub(method.subtotal, appliedPromoValue)
 
-      let applicablePromotionValue = MathBN.mult(MathBN.div(applicableTotal, totalApplicableValue), promotionValue)
+      let applicablePromotionValue = MathBN.mult(
+        MathBN.div(applicableTotal, totalApplicableValue),
+        promotionValue
+      )
 
       if (applicationMethod?.type === ApplicationMethodType.PERCENTAGE) {
-        applicablePromotionValue = MathBN.mult(MathBN.div(promotionValue, 100), applicableTotal)
+        applicablePromotionValue = MathBN.mult(
+          MathBN.div(promotionValue, 100),
+          applicableTotal
+        )
       }
 
       const amount = MathBN.min(applicablePromotionValue, applicableTotal)

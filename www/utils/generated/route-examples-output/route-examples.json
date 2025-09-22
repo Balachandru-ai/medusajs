@@ -1008,7 +1008,7 @@
     "js-sdk": "sdk.store.cart.complete(\"cart_123\")\n.then((data) => {\n  if(data.type === \"cart\") {\n    // an error occurred\n    console.log(data.error, data.cart)\n  } else {\n    // order placed successfully\n    console.log(data.order)\n  }\n})"
   },
   "POST /store/carts/{id}/customer": {
-    "js-sdk": "sdk.store.cart.transferCart(\"cart_123\")\n.then(({ cart }) => {\n  console.log(cart)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to set the cart's customer\nsdk.store.cart.transferCart(\"cart_123\")\n.then(({ cart }) => {\n  console.log(cart)\n})"
   },
   "GET /store/shipping-options": {
     "js-sdk": "sdk.store.fulfillment.listCartOptions({\n  cart_id: \"cart_123\"\n})\n.then(({ shipping_options }) => {\n  console.log(shipping_options)\n})"
@@ -1023,16 +1023,16 @@
     "js-sdk": "sdk.store.payment.initiatePaymentSession(\n  cart, // assuming you already have the cart object.\n  {\n    provider_id: \"pp_stripe_stripe\",\n    data: {\n      // any data relevant for the provider.\n    }\n  }\n)\n.then(({ payment_collection }) => {\n  console.log(payment_collection)\n})"
   },
   "GET /store/orders": {
-    "js-sdk": "sdk.store.order.list()\n.then(({ orders, count, offset, limit }) => {\n  console.log(orders)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to list their orders\nsdk.store.order.list()\n.then(({ orders, count, offset, limit }) => {\n  console.log(orders)\n})"
   },
   "GET /store/orders/{id}": {
     "js-sdk": "sdk.store.order.retrieve(\"order_123\")\n.then(({ order }) => {\n  console.log(order)\n})"
   },
   "POST /store/orders/{id}/transfer/request": {
-    "js-sdk": "sdk.store.order.requestTransfer(\n  \"order_123\",\n  {\n    description: \"I want to transfer this order to my friend.\"\n  },\n  {},\n  {\n    Authorization: `Bearer ${token}`\n  }\n)\n.then(({ order }) => {\n  console.log(order)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to request the order transfer\nsdk.store.order.requestTransfer(\n  \"order_123\",\n  {\n    description: \"I want to transfer this order to my friend.\"\n  },\n  {},\n  {\n    Authorization: `Bearer ${token}`\n  }\n)\n.then(({ order }) => {\n  console.log(order)\n})"
   },
   "POST /store/orders/{id}/transfer/cancel": {
-    "js-sdk": "sdk.store.order.cancelTransfer(\n  \"order_123\",\n  {},\n  {\n    Authorization: `Bearer ${token}`\n  }\n)\n.then(({ order }) => {\n  console.log(order)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to cancel the order transfer\nsdk.store.order.cancelTransfer(\n  \"order_123\",\n  {},\n  {\n    Authorization: `Bearer ${token}`\n  }\n)\n.then(({ order }) => {\n  console.log(order)\n})"
   },
   "POST /store/orders/{id}/transfer/accept": {
     "js-sdk": "sdk.store.order.acceptTransfer(\n  \"order_123\",\n  {\n    token: \"transfer_token\"\n  },\n  {\n    Authorization: `Bearer ${token}`\n  }\n)\n.then(({ order }) => {\n  console.log(order)\n})"
@@ -1044,24 +1044,24 @@
     "js-sdk": "const token = await sdk.auth.register(\"customer\", \"emailpass\", {\n  \"email\": \"customer@gmail.com\",\n  \"password\": \"supersecret\"\n})\n\nsdk.store.customer.create(\n  {\n    \"email\": \"customer@gmail.com\"\n  },\n  {},\n  {\n    Authorization: `Bearer ${token}`\n  }\n)\n.then(({ customer }) => {\n  console.log(customer)\n})"
   },
   "POST /store/customers/me": {
-    "js-sdk": "sdk.store.customer.update({\n  first_name: \"John\"\n})\n.then(({ customer }) => {\n  console.log(customer)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to update their details\nsdk.store.customer.update({\n  first_name: \"John\"\n})\n.then(({ customer }) => {\n  console.log(customer)\n})"
   },
   "GET /store/customers/me": {
-    "js-sdk": "sdk.store.customer.retrieve()\n.then(({ customer }) => {\n  console.log(customer)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to retrieve their details\nsdk.store.customer.retrieve()\n.then(({ customer }) => {\n  console.log(customer)\n})"
   },
   "POST /store/customers/me/addresses": {
-    "js-sdk": "sdk.store.customer.createAddress({\n  country_code: \"us\"\n})\n.then(({ customer }) => {\n  console.log(customer)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to create an address\nsdk.store.customer.createAddress({\n  country_code: \"us\"\n})\n.then(({ customer }) => {\n  console.log(customer)\n})"
   },
   "POST /store/customers/me/addresses/{addressid}": {
-    "js-sdk": "sdk.store.customer.updateAddress(\n  \"caddr_123\",\n  {\n    country_code: \"us\"\n  }\n)\n.then(({ customer }) => {\n  console.log(customer)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to update their address\nsdk.store.customer.updateAddress(\n  \"caddr_123\",\n  {\n    country_code: \"us\"\n  }\n)\n.then(({ customer }) => {\n  console.log(customer)\n})"
   },
   "GET /store/customers/me/addresses": {
-    "js-sdk": "sdk.store.customer.listAddress()\n.then(({ addresses, count, offset, limit }) => {\n  console.log(addresses)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to list their addresses\nsdk.store.customer.listAddress()\n.then(({ addresses, count, offset, limit }) => {\n  console.log(addresses)\n})"
   },
   "GET /store/customers/me/addresses/{addressid}": {
-    "js-sdk": "sdk.store.customer.retrieveAddress(\n  \"caddr_123\"\n)\n.then(({ address }) => {\n  console.log(address)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to retrieve their address\nsdk.store.customer.retrieveAddress(\n  \"caddr_123\"\n)\n.then(({ address }) => {\n  console.log(address)\n})"
   },
   "DELETE /store/customers/me/addresses/{addressid}": {
-    "js-sdk": "sdk.store.customer.deleteAddress(\"caddr_123\")\n.then(({ deleted, parent: customer }) => {\n  console.log(customer)\n})"
+    "js-sdk": "// TODO must be authenticated as the customer to delete their address\nsdk.store.customer.deleteAddress(\"caddr_123\")\n.then(({ deleted, parent: customer }) => {\n  console.log(customer)\n})"
   }
 }

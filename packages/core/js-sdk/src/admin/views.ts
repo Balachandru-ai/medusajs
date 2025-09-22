@@ -6,7 +6,10 @@ import { ClientHeaders } from "../types"
 export class Views {
   constructor(private client: Client) {}
 
-  // Generic method to get columns for any entity
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async columns(
     entity: string,
     query?: SelectParams,
@@ -19,6 +22,10 @@ export class Views {
     })
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async listConfigurations(
     entity: string,
     query?: HttpTypes.AdminGetViewConfigurationsParams,
@@ -31,6 +38,10 @@ export class Views {
     })
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async createConfiguration(
     entity: string,
     body: HttpTypes.AdminCreateViewConfiguration,
@@ -43,6 +54,10 @@ export class Views {
     })
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async retrieveConfiguration(
     entity: string,
     id: string,
@@ -59,6 +74,10 @@ export class Views {
     )
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async updateConfiguration(
     entity: string,
     id: string,
@@ -75,6 +94,10 @@ export class Views {
     )
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async deleteConfiguration(
     entity: string,
     id: string,
@@ -89,6 +112,10 @@ export class Views {
     )
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async retrieveActiveConfiguration(
     entity: string,
     headers?: ClientHeaders
@@ -106,6 +133,10 @@ export class Views {
     )
   }
 
+  /**
+   * @since 2.10.3
+   * @featureFlag view_configurations
+   */
   async setActiveConfiguration(
     entity: string,
     body: { view_configuration_id: string | null },

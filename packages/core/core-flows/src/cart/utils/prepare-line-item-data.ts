@@ -12,6 +12,7 @@ import {
   isDefined,
   isPresent,
   MathBN,
+  MedusaError,
   PriceListType,
 } from "@medusajs/framework/utils"
 
@@ -91,7 +92,17 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
   } = data
 
   if (variant && !variant.product) {
-    throw new Error("Variant does not have a product")
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "Variant does not have a product"
+    )
+  }
+
+  if (item && MathBN.lte(item.quantity, 0)) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "Item quantity must be greater than 0"
+    )
   }
 
   let compareAtUnitPrice = item?.compare_at_unit_price
@@ -196,6 +207,6 @@ export function prepareAdjustmentsData(data: CreateOrderAdjustmentDTO[]) {
     description: d.description,
     promotion_id: d.promotion_id,
     provider_id: d.provider_id,
-    is_tax_inclusive: d.is_tax_inclusive
+    is_tax_inclusive: d.is_tax_inclusive,
   }))
 }

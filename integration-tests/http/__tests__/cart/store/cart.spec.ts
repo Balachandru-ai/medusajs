@@ -140,7 +140,7 @@ medusaIntegrationTestRunner({
                 currency_code: "usd",
                 target_rules: [
                   {
-                    attribute: "product_id",
+                    attribute: "items.product_id",
                     operator: "in",
                     values: [product.id],
                   },
@@ -2571,7 +2571,7 @@ medusaIntegrationTestRunner({
                   apply_to_quantity: 1,
                   target_rules: [
                     {
-                      attribute: "product_id",
+                      attribute: "items.product_id",
                       operator: PromotionRuleOperator.IN,
                       values: [product.id],
                     },
@@ -4353,7 +4353,7 @@ medusaIntegrationTestRunner({
                     currency_code: "eur",
                     target_rules: [
                       {
-                        attribute: "product_id",
+                        attribute: "items.product_id",
                         operator: "in",
                         values: [product.id],
                       },

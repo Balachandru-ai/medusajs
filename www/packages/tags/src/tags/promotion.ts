@@ -28,6 +28,10 @@ export const promotion = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
   },
   {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
+  },
+  {
     "title": "getActionsToComputeFromPromotionsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getActionsToComputeFromPromotionsStep"
   },
