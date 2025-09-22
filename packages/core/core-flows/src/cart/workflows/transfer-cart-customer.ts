@@ -12,6 +12,7 @@ import { emitEventStep, useQueryGraphStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updateCartsStep } from "../steps"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { AdditionalData } from "@medusajs/types"
 
 /**
  * The cart ownership transfer details.
@@ -55,7 +56,7 @@ export const transferCartCustomerWorkflow = createWorkflow(
     name: transferCartCustomerWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<TransferCartCustomerWorkflowInput>) => {
+  (input: WorkflowData<TransferCartCustomerWorkflowInput & AdditionalData>) => {
     const cartQuery = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.id },
@@ -121,7 +122,7 @@ export const transferCartCustomerWorkflow = createWorkflow(
       updateCartsStep(cartInput)
 
       refreshCartItemsWorkflow.runAsStep({
-        input: { cart_id: input.id, force_refresh: true },
+        input: { cart_id: input.id, force_refresh: true, additional_data: input.additional_data },
       })
 
       parallelize(

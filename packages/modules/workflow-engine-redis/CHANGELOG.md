@@ -1,5 +1,14 @@
 # @medusajs/workflow-engine-redis
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13457](https://github.com/medusajs/medusa/pull/13457) [`ebf33bea43bb6fe03a60a3099b2bc62608f0d13b`](https://github.com/medusajs/medusa/commit/ebf33bea43bb6fe03a60a3099b2bc62608f0d13b) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): pipeline missing suites
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
 ## 2.10.2
 
 ### Patch Changes

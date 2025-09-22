@@ -6,7 +6,12 @@ import {
   OrderWorkflow,
   ReturnDTO,
 } from "@medusajs/framework/types"
-import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
+import {
+  ChangeActionType,
+  OrderChangeStatus,
+  deepFlatMap,
+  isDefined,
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -23,6 +28,7 @@ import { updateOrderChangesStep } from "../../steps/update-order-changes"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInOrder,
+  throwIfManagedItemsNotStockedAtReturnLocation,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
@@ -105,6 +111,11 @@ export const orderClaimRequestItemReturnValidationStep = createStep(
     throwIfIsCancelled(orderReturn, "Return")
     throwIfOrderChangeIsNotActive({ orderChange })
     throwIfItemsDoesNotExistsInOrder({ order, inputItems: items })
+    throwIfManagedItemsNotStockedAtReturnLocation({
+      order,
+      orderReturn,
+      inputItems: items,
+    })
   }
 )
 
@@ -154,34 +165,23 @@ export const orderClaimRequestItemReturnWorkflow = createWorkflow(
     }).then(() => {
       return useRemoteQueryStep({
         entry_point: "return",
-        fields: ["id", "status", "order_id", "canceled_at"],
+        fields: ["id", "status", "order_id", "location_id", "canceled_at"],
         variables: { id: orderClaim.return_id },
         list: false,
         throw_if_key_not_found: true,
       }).config({ name: "return-query" }) as ReturnDTO
     })
 
-    const createdReturn = when({ orderClaim }, ({ orderClaim }) => {
-      return !orderClaim.return_id
-    }).then(() => {
-      return createReturnsStep([
-        {
-          order_id: orderClaim.order_id,
-          claim_id: orderClaim.id,
-        },
-      ])
-    })
-
-    const orderReturn: ReturnDTO = transform(
-      { createdReturn, existingOrderReturn },
-      ({ createdReturn, existingOrderReturn }) => {
-        return existingOrderReturn ?? (createdReturn?.[0] as ReturnDTO)
-      }
-    )
-
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
-      fields: ["id", "status", "items.*"],
+      fields: [
+        "id",
+        "status",
+        "items.*",
+        "items.variant.manage_inventory",
+        "items.variant.inventory_items.inventory_item_id",
+        "items.variant.inventory_items.inventory.location_levels.location_id",
+      ],
       variables: { id: orderClaim.order_id },
       list: false,
       throw_if_key_not_found: true,
@@ -201,6 +201,51 @@ export const orderClaimRequestItemReturnWorkflow = createWorkflow(
     }).config({
       name: "order-change-query",
     })
+
+    const pickItemLocationId = transform(
+      { order, input },
+      ({ order, input }) => {
+        if (input.location_id) {
+          return input.location_id
+        }
+
+        // pick the first item location
+        const item = order?.items?.find(
+          (item) => item.id === input.items[0].id
+        ) as any
+
+        let locationId: string | undefined
+        deepFlatMap(
+          item,
+          "variant.inventory_items.inventory.location_levels",
+          ({ location_levels }) => {
+            if (!locationId && isDefined(location_levels?.location_id)) {
+              locationId = location_levels.location_id
+            }
+          }
+        )
+        return locationId
+      }
+    )
+
+    const createdReturn = when({ orderClaim }, ({ orderClaim }) => {
+      return !orderClaim.return_id
+    }).then(() => {
+      return createReturnsStep([
+        {
+          order_id: orderClaim.order_id,
+          claim_id: orderClaim.id,
+          location_id: pickItemLocationId,
+        },
+      ])
+    })
+
+    const orderReturn: ReturnDTO = transform(
+      { createdReturn, existingOrderReturn },
+      ({ createdReturn, existingOrderReturn }) => {
+        return existingOrderReturn ?? (createdReturn?.[0] as ReturnDTO)
+      }
+    )
 
     when({ createdReturn }, ({ createdReturn }) => {
       return !!createdReturn?.length

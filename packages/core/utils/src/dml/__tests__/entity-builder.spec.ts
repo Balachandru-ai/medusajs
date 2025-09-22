@@ -162,7 +162,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -306,7 +306,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -441,7 +441,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -555,7 +555,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -701,7 +701,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -858,7 +858,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         created_at: {

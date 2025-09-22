@@ -1,13 +1,5 @@
-import {
-  AdditionalData,
-  CartDTO,
-  UpdateCartWorkflowInputDTO,
-} from "@medusajs/framework/types"
-import {
-  CartWorkflowEvents,
-  isDefined,
-  MedusaError,
-} from "@medusajs/framework/utils"
+import { AdditionalData, CartDTO, UpdateCartWorkflowInputDTO, } from "@medusajs/framework/types"
+import { CartWorkflowEvents, isDefined, MedusaError, } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -20,11 +12,7 @@ import {
 import { emitEventStep, useQueryGraphStep } from "../../common"
 import { deleteLineItemsStep } from "../../line-item"
 import { acquireLockStep, releaseLockStep } from "../../locking"
-import {
-  findOrCreateCustomerStep,
-  findSalesChannelStep,
-  updateCartsStep,
-} from "../steps"
+import { findOrCreateCustomerStep, findSalesChannelStep, updateCartsStep, } from "../steps"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
@@ -309,6 +297,7 @@ export const updateCartWorkflow = createWorkflow(
         cart_id: cartInput.id,
         promo_codes: input.promo_codes,
         force_refresh: !!newRegion,
+        additional_data: input.additional_data,
       },
     })
 

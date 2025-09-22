@@ -1366,6 +1366,16 @@ paths:
       security:
         - cookie_auth: []
         - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional additional data to pass to the underlying workflow.
+              properties:
+                additional_data:
+                  type: object
+                  description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
   /store/carts/{id}/gift-cards:
     post:
       operationId: PostCartsIdGiftCards
@@ -1556,7 +1566,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreAddCartLineItem'
+              allOf:
+                - type: object
+                  description: The details of the line item to add.
+                  required:
+                    - variant_id
+                    - quantity
+                  properties:
+                    variant_id:
+                      type: string
+                      title: variant_id
+                      description: The ID of the product variant to add as a line item.
+                    quantity:
+                      type: number
+                      title: quantity
+                      description: The item's quantity.
+                    metadata:
+                      type: object
+                      description: The item's metadata, can hold custom key-value pairs.
+                - type: object
+                  description: The details of the line item to add.
+                  properties:
+                    additional_data:
+                      type: object
+                      description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+              description: The details of the line item to add.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -1670,7 +1704,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreUpdateCartLineItem'
+              allOf:
+                - type: object
+                  description: The details to update in the line item.
+                  required:
+                    - quantity
+                  properties:
+                    quantity:
+                      type: number
+                      title: quantity
+                      description: The item's quantity.
+                    metadata:
+                      type: object
+                      description: The item's metadata, can hold custom key-value pairs.
+                - type: object
+                  description: The details to update in the line item.
+                  properties:
+                    additional_data:
+                      type: object
+                      description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+              description: The details to update in the line item.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -2052,7 +2105,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreAddCartShippingMethods'
+              allOf:
+                - type: object
+                  description: The shipping method's details.
+                  required:
+                    - option_id
+                  properties:
+                    option_id:
+                      type: string
+                      title: option_id
+                      description: The ID of the shipping option to create the shipping method from.
+                    data:
+                      type: object
+                      description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
+                      externalDocs:
+                        url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping#data-request-body-parameter
+                        description: Learn more about the data parameter.
+                - type: object
+                  description: The shipping method's details.
+                  properties:
+                    additional_data:
+                      type: object
+                      description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+              description: The shipping method's details.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -10786,6 +10861,121 @@ components:
       properties:
         collection:
           $ref: '#/components/schemas/AdminCollection'
+    AdminColumn:
+      type: object
+      description: The details of a column in a view configuration.
+      x-schemaName: AdminColumn
+      required:
+        - id
+        - name
+        - field
+        - sortable
+        - hideable
+        - default_visible
+        - data_type
+      properties:
+        id:
+          type: string
+          title: id
+          description: The column's ID.
+        name:
+          type: string
+          title: name
+          description: The column's name. This is displayed in the view header.
+        description:
+          type: string
+          title: description
+          description: The column's description.
+        field:
+          type: string
+          title: field
+          description: The column's field in the entity.
+        sortable:
+          type: boolean
+          title: sortable
+          description: Whether the column is sortable.
+        hideable:
+          type: boolean
+          title: hideable
+          description: Whether the column is hideable.
+        default_visible:
+          type: boolean
+          title: default_visible
+          description: Whether the column is visible by default.
+        data_type:
+          type: string
+          description: The data type of the column's value.
+          enum:
+            - string
+            - number
+            - boolean
+            - object
+            - date
+            - currency
+            - enum
+        semantic_type:
+          type: string
+          title: semantic_type
+          description: The column's semantic type. It can be `computed`, or other primitive types.
+        context:
+          type: string
+          title: context
+          description: The column's context. It can be `display` or `generic`.
+        computed:
+          type: object
+          description: A computed column's details. Only available if the column's `semantic_type` is `computed`.
+          required:
+            - type
+            - required_fields
+            - optional_fields
+          properties:
+            type:
+              type: string
+              title: type
+              description: The computed's type for rendering.
+            required_fields:
+              type: array
+              description: The required fields in the computed column.
+              items:
+                type: string
+                title: required_fields
+                description: A required field in the computed column.
+            optional_fields:
+              type: array
+              description: The optional fields in the computed column.
+              items:
+                type: string
+                title: optional_fields
+                description: An optional field in the computed column.
+        relationship:
+          type: object
+          description: The relationship details. Only available for relationship columns.
+          required:
+            - entity
+            - field
+          properties:
+            entity:
+              type: string
+              title: entity
+              description: The related entity.
+            field:
+              type: string
+              title: field
+              description: The field in the related entity.
+        default_order:
+          type: number
+          title: default_order
+          description: The column's sort order in the default view configuration.
+        category:
+          type: string
+          description: The column's category.
+          enum:
+            - status
+            - metadata
+            - identifier
+            - timestamp
+            - metric
+            - relationship
     AdminCreateApiKey:
       type: object
       description: The API key's details.
@@ -12447,6 +12637,69 @@ components:
           type: string
           title: inventory_item_id
           description: The inventory item's ID.
+    AdminCreateViewConfiguration:
+      type: object
+      description: The details of a view configuration to create.
+      x-schemaName: AdminCreateViewConfiguration
+      properties:
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default. If so, it will be used as the default view for all users that don't have a custom active view set.
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+        name:
+          type: string
+          title: name
+          description: The view's name.
     AdminCreateWorkflowsAsyncResponse:
       type: object
       description: The details of changing a workflow execution's step status.
@@ -18054,6 +18307,10 @@ components:
                 externalDocs:
                   url: https://docs.medusajs.com/api/admin#manage-metadata
                   description: Learn how to manage metadata
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location to which outbound items are sent from.
     AdminPostExchangesShippingActionReqSchema:
       type: object
       description: The details of the shipping method to update.
@@ -20956,6 +21213,17 @@ components:
       properties:
         service_zone:
           $ref: '#/components/schemas/AdminServiceZone'
+    AdminSetActiveViewConfiguration:
+      type: object
+      description: The details of a view configuration to set as active for the given entity.
+      x-schemaName: AdminSetActiveViewConfiguration
+      required:
+        - view_configuration_id
+      properties:
+        view_configuration_id:
+          type: string
+          title: view_configuration_id
+          description: The ID of the view configuration to set as active. If `null`, the active view configuration will be cleared, and the `code` or system default view configuration will be used as the active view.
     AdminShippingOption:
       type: object
       description: The shipping option's details.
@@ -23820,6 +24088,66 @@ components:
           type: number
           title: required_quantity
           description: The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the value set for `required_quantity`. When the customer orders the quantity, Medusa reserves the ordered quantity multiplied by the value set for `required_quantity`.
+    AdminUpdateViewConfiguration:
+      type: object
+      description: The details to update in a view configuration.
+      x-schemaName: AdminUpdateViewConfiguration
+      properties:
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        name:
+          type: string
+          title: name
+          description: The view's name.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          properties:
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
     AdminUploadPreSignedUrl:
       type: object
       description: The details of the file to upload.
@@ -24051,6 +24379,116 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/AdminUser'
+    AdminViewConfiguration:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfiguration
+      required:
+        - id
+        - entity
+        - name
+        - user_id
+        - is_system_default
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The view configuration's ID.
+        entity:
+          type: string
+          title: entity
+          description: The entity the view configuration belongs to.
+        name:
+          type: string
+          title: name
+          description: The view configuration's name.
+        user_id:
+          type: string
+          title: user_id
+          description: The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view configuration is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+            search:
+              type: string
+              title: search
+              description: The configuration's search.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The date the view configuration was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the view configuration was updated.
+    AdminViewConfigurationResponse:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfigurationResponse
+      required:
+        - view_configuration
+      properties:
+        view_configuration:
+          $ref: '#/components/schemas/AdminViewConfiguration'
+    AdminViewsEntityColumnsResponse:
+      type: object
+      description: The view's columns.
+      x-schemaName: AdminViewsEntityColumnsResponse
+      required:
+        - columns
+      properties:
+        columns:
+          type: array
+          description: The view's columns.
+          items:
+            $ref: '#/components/schemas/AdminColumn'
     AdminWorkflowExecution:
       type: object
       description: The workflows execution's details.
@@ -30050,45 +30488,6 @@ components:
           type: string
           title: token
           description: The order transfer's token issued when the transfer was requested.
-    StoreAddCartLineItem:
-      type: object
-      description: The details of the line item to add.
-      x-schemaName: StoreAddCartLineItem
-      required:
-        - variant_id
-        - quantity
-      properties:
-        variant_id:
-          type: string
-          title: variant_id
-          description: The ID of the product variant to add to the cart.
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
-    StoreAddCartShippingMethods:
-      type: object
-      description: The shipping method's details.
-      required:
-        - option_id
-      properties:
-        option_id:
-          type: string
-          title: option_id
-          description: The ID of the shipping option this method is created from.
-        data:
-          type: object
-          description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
-          externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
-            description: Learn more about the data parameter.
-      x-schemaName: StoreAddCartShippingMethods
     StoreAddGiftCardToCart:
       type: object
       description: The details to add a gift card to the cart.
@@ -39727,23 +40126,6 @@ components:
             url: https://docs.medusajs.com/api/store#manage-metadata
             description: Learn how to manage metadata
       x-schemaName: StoreTransactionGroup
-    StoreUpdateCartLineItem:
-      type: object
-      description: The details to update in the line item.
-      x-schemaName: StoreUpdateCartLineItem
-      required:
-        - quantity
-      properties:
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
     StoreUpdateCustomer:
       type: object
       description: The details to update in the customer.

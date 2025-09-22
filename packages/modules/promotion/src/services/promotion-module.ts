@@ -64,6 +64,7 @@ import {
 } from "@utils"
 import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
+import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -623,11 +624,43 @@ export default class PromotionModuleService
 
     const uniquePromotionCodes = Array.from(new Set(promotionCodesToApply))
 
-    const queryFilter = preventAutoPromotions
-      ? { code: uniquePromotionCodes }
-      : {
-          $or: [{ code: uniquePromotionCodes }, { is_automatic: true }],
-        }
+    let queryFilter: DAL.FilterQuery<any> = { code: uniquePromotionCodes }
+
+    if (!preventAutoPromotions) {
+      const rulePrefilteringFilters =
+        await buildPromotionRuleQueryFilterFromContext(
+          applicationContext,
+          sharedContext
+        )
+
+      let prefilteredAutomaticPromotionIds: string[] = []
+
+      if (rulePrefilteringFilters) {
+        const promotions = await this.promotionService_.list(
+          {
+            $and: [{ is_automatic: true }, rulePrefilteringFilters],
+          },
+          { select: ["id"] },
+          sharedContext
+        )
+
+        prefilteredAutomaticPromotionIds = promotions.map(
+          (promotion) => promotion.id!
+        )
+      }
+
+      const automaticPromotionFilter = rulePrefilteringFilters
+        ? {
+            id: { $in: prefilteredAutomaticPromotionIds },
+          }
+        : { is_automatic: true }
+
+      queryFilter = automaticPromotionFilter
+        ? {
+            $or: [{ code: uniquePromotionCodes }, automaticPromotionFilter],
+          }
+        : queryFilter
+    }
 
     const promotions = await this.listActivePromotions_(
       queryFilter,
@@ -860,7 +893,9 @@ export default class PromotionModuleService
       sharedContext
     )
 
-    return Array.isArray(data) ? promotions : promotions[0]
+    return await this.baseRepository_.serialize<
+      PromotionTypes.PromotionDTO | PromotionTypes.PromotionDTO[]
+    >(Array.isArray(data) ? promotions : promotions[0])
   }
 
   @InjectTransactionManager()
@@ -1119,6 +1154,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updatePromotions(
     data:
@@ -1335,6 +1371,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1458,6 +1495,8 @@ export default class PromotionModuleService
 
     validatePromotionRuleAttributes(rulesData)
 
+    const promotionRuleValuesDataToCreate: CreatePromotionRuleValueDTO[] = []
+
     for (const ruleData of rulesData) {
       const { values, ...rest } = ruleData
       const promotionRuleData: CreatePromotionRuleDTO = {
@@ -1478,11 +1517,13 @@ export default class PromotionModuleService
         promotion_rule: createdPromotionRule,
       }))
 
-      await this.promotionRuleValueService_.create(
-        promotionRuleValuesData,
-        sharedContext
-      )
+      promotionRuleValuesDataToCreate.push(...promotionRuleValuesData)
     }
+
+    await this.promotionRuleValueService_.create(
+      promotionRuleValuesDataToCreate,
+      sharedContext
+    )
 
     return createdPromotionRules
   }
@@ -1800,7 +1841,7 @@ export default class PromotionModuleService
   @EmitEvents()
   async addPromotionsToCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    @MedusaContext() sharedContext?: Context
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<{ ids: string[] }> {
     const ids = await this.addPromotionsToCampaign_(data, sharedContext)
 
