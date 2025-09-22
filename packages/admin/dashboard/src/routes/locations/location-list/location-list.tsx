@@ -1,7 +1,6 @@
 import { ShoppingBag, TruckFast } from "@medusajs/icons"
-import { Button, Container, Heading, Text } from "@medusajs/ui"
+import { Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
 
 import { useStockLocations } from "../../../hooks/api/stock-locations"
 import { LOCATION_LIST_FIELDS } from "./constants"
@@ -12,7 +11,6 @@ import { DataTable } from "../../../components/data-table"
 import { SidebarLink } from "../../../components/common/sidebar-link/sidebar-link"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useExtension } from "../../../providers/extension-provider"
-import { keepPreviousData } from "@tanstack/react-query"
 
 const PAGE_SIZE = 20
 const PREFIX = "loc"
@@ -28,9 +26,9 @@ export function LocationList() {
   const {
     stock_locations: stockLocations = [],
     count,
-    isPending: isLoading,
     isError,
     error,
+    isLoading,
   } = useStockLocations({
     fields: LOCATION_LIST_FIELDS,
     ...searchParams,
@@ -55,23 +53,31 @@ export function LocationList() {
     >
       <TwoColumnPage.Main>
         <Container className="flex flex-col divide-y p-0">
-          <div className="flex flex-row items-center justify-between px-6 py-4">
-            <div>
-              <Heading>{t("stockLocations.domain")}</Heading>
-              <Text className="text-ui-fg-subtle txt-small">
-                {t("stockLocations.list.description")}
-              </Text>
-            </div>
-            <Button size="small" className="h-fit" variant="secondary" asChild>
-              <Link to="create">{t("actions.create")}</Link>
-            </Button>
-          </div>
           <DataTable
             data={stockLocations}
             columns={columns}
             rowCount={count}
             pageSize={PAGE_SIZE}
             getRowId={(row) => row.id}
+            heading={t("stockLocations.domain")}
+            subHeading={t("stockLocations.list.description")}
+            emptyState={{
+              empty: {
+                heading: t("stockLocations.list.noRecordsMessage"),
+                description: t("stockLocations.list.noRecordsMessageEmpty"),
+              },
+              filtered: {
+                heading: t("stockLocations.list.noRecordsMessage"),
+                description: t("stockLocations.list.noRecordsMessageFiltered"),
+              },
+            }}
+            actions={[
+              {
+                label: t("actions.create"),
+                to: "create",
+              },
+            ]}
+            isLoading={isLoading}
             rowHref={(row) => `/settings/locations/${row.id}`}
             enableSearch={true}
             prefix={PREFIX}

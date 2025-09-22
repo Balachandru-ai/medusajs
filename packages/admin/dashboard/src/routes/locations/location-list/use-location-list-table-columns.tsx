@@ -11,13 +11,13 @@ import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { FetchError } from "@medusajs/js-sdk"
 
-import { BadgeListSummary } from "../../../components/common/badge-list-summary"
 import { PlaceholderCell } from "../../../components/table/table-cells/common/placeholder-cell"
 import { getFormattedAddress } from "../../../lib/addresses"
 import { FulfillmentSetType } from "../common/constants"
 import { queryClient } from "../../../lib/query-client"
 import { stockLocationsQueryKeys } from "../../../hooks/api/stock-locations"
 import { sdk } from "../../../lib/client"
+import { ListSummary } from "../../../components/common/list-summary"
 
 const columnHelper = createDataTableColumnHelper<HttpTypes.AdminStockLocation>()
 
@@ -147,8 +147,7 @@ export const useLocationListTableColumns = () => {
 
           return (
             <div className="flex items-center">
-              <BadgeListSummary
-                rounded
+              <ListSummary
                 inline
                 n={1}
                 list={salesChannels.map((s) => s.name)}
