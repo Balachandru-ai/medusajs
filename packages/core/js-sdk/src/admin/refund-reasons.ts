@@ -83,7 +83,7 @@ export class RefundReason {
    * @param id - The refund reason's ID.
    * @param query - Configure the fields and relations to retrieve in the refund reason.
    * @param headers - Headers to pass in the request.
-   * @refunds The refund reason's details.
+   * @returns The refund reason's details.
    *
    * @example
    * To retrieve a refund reason by its ID:
@@ -130,7 +130,7 @@ export class RefundReason {
    * @param body - The details of the refund reason to create.
    * @param query - Configure the fields and relations to retrieve in the refund reason.
    * @param headers - Headers to pass in the request.
-   * @refunds The refund reason's details.
+   * @returns The refund reason's details.
    *
    * @example
    * sdk.admin.refundReason.create({
@@ -166,7 +166,7 @@ export class RefundReason {
    * @param body - The details of the refund reason to update.
    * @param query - Configure the fields and relations to retrieve in the refund reason.
    * @param headers - Headers to pass in the request.
-   * @refunds The refund reason's details.
+   * @returns The refund reason's details.
    *
    * @example
    * sdk.admin.refundReason.update("ret_123", {
@@ -202,7 +202,7 @@ export class RefundReason {
    * @param id - The refund reason's ID.
    * @param query - Query parameters to pass to the request.
    * @param headers - Headers to pass in the request.
-   * @refunds The deletion's details.
+   * @returns The deletion's details.
    *
    * @example
    * sdk.admin.refundReason.delete("ret_123")
