@@ -2130,12 +2130,14 @@ describe("buildSchemaObjectRepresentation", () => {
         street: String!
         city: String!
         zip_code: String!
+        orders: [Order!]
       }
 
       type Order {
         id: ID!
         display_id: String!
         currency_code: String!
+        shipping_address_id: ID!
         shipping_address: OrderAddress!
       }
     `
@@ -2288,6 +2290,9 @@ describe("buildSchemaObjectRepresentation", () => {
             zip_code: expect.objectContaining({
               name: "zip_code",
             }),
+            orders: expect.objectContaining({
+              name: "orders",
+            }),
           },
         }),
         Order: expect.objectContaining({
@@ -2373,6 +2378,7 @@ describe("buildSchemaObjectRepresentation", () => {
       "street",
       "city",
       "zip_code",
+      "orders.id",
     ])
 
     expect(objectRepresentation["Order"]).toBeDefined()
@@ -2390,6 +2396,7 @@ describe("buildSchemaObjectRepresentation", () => {
       "id",
       "display_id",
       "currency_code",
+      "shipping_address.id",
       "vendor_link.id",
     ])
 

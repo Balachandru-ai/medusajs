@@ -7,7 +7,7 @@ const link =
     ? defineLink(
         {
           linkable: ProductModule.linkable.product.id,
-          filterable: ["description", "material"],
+          filterable: ["description", "material", "type"],
           isList: true,
         },
         {

@@ -28,6 +28,16 @@ async function populateData(api: any) {
     )
   ).data.shipping_profile
 
+  const type = (
+    await api.post(
+      "/admin/product-types",
+      {
+        value: "test-type",
+      },
+      adminHeaders
+    )
+  ).data.product_type
+
   const payload = [
     {
       title: "Test Product",
@@ -64,6 +74,7 @@ async function populateData(api: any) {
       shipping_profile_id: shippingProfile.id,
       options: [{ title: "Colors", values: ["Red"] }],
       material: "extra-material",
+      type_id: type.id,
       variants: new Array(2).fill(0).map((_, i) => ({
         title: `extra variant ${i}`,
         sku: `extra-variant-${i}`,
@@ -333,6 +344,163 @@ medusaIntegrationTestRunner({
                 ],
               },
             ],
+          },
+        ])
+      })
+
+      it("should use query.index to query the index module filtered by a filterable internal relation and hydrate the data", async () => {
+        const products = await populateData(api)
+
+        const brandModule = appContainer.resolve("brand")
+        const link = appContainer.resolve(ContainerRegistrationKeys.LINK)
+        const brand = await brandModule.createBrands({
+          name: "Medusa Brand",
+        })
+
+        await link.create({
+          [Modules.PRODUCT]: {
+            product_id: products.find((p) => p.title === "Extra product").id,
+          },
+          brand: {
+            brand_id: brand.id,
+          },
+        })
+
+        await setTimeout(1000)
+
+        const query = appContainer.resolve(
+          ContainerRegistrationKeys.QUERY
+        ) as RemoteQueryFunction
+
+        const productWithType = products.find((p) => !!p.type_id)!
+
+        const resultset = await fetchAndRetry(
+          async () =>
+            await query.index({
+              entity: "product",
+              fields: [
+                "id",
+                "description",
+                "status",
+                "title",
+                "type.value",
+                "brand.name",
+                "brand.id",
+                "variants.sku",
+                "variants.barcode",
+                "variants.material",
+                "variants.options.value",
+                "variants.prices.amount",
+                "variants.prices.currency_code",
+                "variants.inventory_items.inventory.sku",
+                "variants.inventory_items.inventory.description",
+              ],
+              filters: {
+                $and: [
+                  { status: "published" },
+                  { material: { $ilike: "%material%" } },
+                  { type: { value: productWithType.type.value } },
+                ],
+              },
+              pagination: {
+                take: 10,
+                skip: 0,
+                order: {
+                  "variants.prices.amount": "DESC",
+                },
+              },
+            }),
+          ({ data }) => data.length > 0
+        )
+
+        expect(resultset.metadata).toEqual({
+          estimate_count: expect.any(Number),
+          skip: 0,
+          take: 10,
+        })
+        expect(resultset.data).toEqual([
+          {
+            id: expect.any(String),
+            description: "extra description",
+            title: "Extra product",
+            type: {
+              value: productWithType.type.value,
+            },
+            status: "published",
+            brand: {
+              id: expect.any(String),
+              name: "Medusa Brand",
+            },
+            variants: expect.arrayContaining([
+              {
+                sku: "extra-variant-0",
+                barcode: null,
+                material: null,
+                id: expect.any(String),
+                options: [
+                  {
+                    value: "Red",
+                  },
+                ],
+                inventory_items: [
+                  {
+                    variant_id: expect.any(String),
+                    inventory_item_id: expect.any(String),
+                    inventory: {
+                      sku: "extra-variant-0",
+                      description: "extra variant 0",
+                      id: expect.any(String),
+                    },
+                  },
+                ],
+                prices: expect.arrayContaining([
+                  {
+                    currency_code: "CAD",
+                    amount: 20,
+                    id: expect.any(String),
+                  },
+                  {
+                    currency_code: "USD",
+                    amount: 80,
+                    id: expect.any(String),
+                  },
+                ]),
+              },
+              {
+                sku: "extra-variant-1",
+                barcode: null,
+                material: null,
+                id: expect.any(String),
+                options: [
+                  {
+                    value: "Red",
+                  },
+                ],
+                prices: expect.arrayContaining([
+                  {
+                    amount: 20,
+                    currency_code: "CAD",
+                    id: expect.any(String),
+                  },
+                  {
+                    amount: 80,
+                    currency_code: "USD",
+                    id: expect.any(String),
+                  },
+                ]),
+                inventory_items: [
+                  {
+                    variant_id: expect.any(String),
+                    inventory_item_id: expect.any(String),
+                    inventory: {
+                      sku: "extra-variant-1",
+                      description: "extra variant 1",
+                      id: expect.any(String),
+                    },
+                  },
+                ],
+              },
+            ]),
           },
         ])
       })

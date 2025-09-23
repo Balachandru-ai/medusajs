@@ -111,6 +111,7 @@ type ProductType {
   created_at: DateTime!
   updated_at: DateTime!
   deleted_at: DateTime
+  products: [Product]
 }
 
 type ProductOption {
