@@ -10,7 +10,7 @@ import {
 } from "@medusajs/framework/utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreCollectionFilters>,
+  req: AuthenticatedMedusaRequest<HttpTypes.StoreCollectionListParams>,
   res: MedusaResponse<HttpTypes.StoreCollectionListResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

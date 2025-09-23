@@ -184,7 +184,7 @@ export class Store {
      * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
      */
     list: async (
-      query?: FindParams & HttpTypes.StoreCollectionFilters,
+      query?: FindParams & HttpTypes.StoreCollectionListParams,
       headers?: ClientHeaders
     ) => {
       return this.client.fetch<HttpTypes.StoreCollectionListResponse>(
@@ -478,7 +478,7 @@ export class Store {
 
   /**
    * Related guides: [How to implement carts in the storefront](https://docs.medusajs.com/resources/storefront-development/cart).
-   * 
+   *
    * @tags cart
    */
   public cart = {
