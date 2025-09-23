@@ -1,10 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import {
-  useMutation,
-  UseMutationOptions,
-  useQuery,
-  UseQueryOptions,
-} from "@tanstack/react-query"
+import { useMutation, UseMutationOptions, useQuery, UseQueryOptions, } from "@tanstack/react-query"
 
 import { FetchError } from "@medusajs/js-sdk"
 import { sdk } from "../../lib/client"
@@ -78,7 +73,6 @@ export const useCreateRefundReason = (
 
 export const useUpdateRefundReason = (
   id: string,
-  query?: HttpTypes.AdminRefundReasonParams,
   options?: UseMutationOptions<
     HttpTypes.AdminRefundReasonResponse,
     FetchError,
@@ -86,13 +80,13 @@ export const useUpdateRefundReason = (
   >
 ) => {
   return useMutation({
-    mutationFn: async (data) => sdk.admin.refundReason.update(id, data, query),
+    mutationFn: async (data) => sdk.admin.refundReason.update(id, data),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: refundReasonsQueryKeys.lists(),
       })
       queryClient.invalidateQueries({
-        queryKey: refundReasonsQueryKeys.detail(data.refund_reason.id, query),
+        queryKey: refundReasonsQueryKeys.detail(data.refund_reason.id),
       })
 
       options?.onSuccess?.(data, variables, context)
@@ -115,10 +109,6 @@ export const useDeleteRefundReason = (
       queryClient.invalidateQueries({
         queryKey: refundReasonsQueryKeys.lists(),
       })
-      queryClient.invalidateQueries({
-        queryKey: refundReasonsQueryKeys.detail(id),
-      })
-
       queryClient.invalidateQueries({
         queryKey: refundReasonsQueryKeys.details(),
       })
