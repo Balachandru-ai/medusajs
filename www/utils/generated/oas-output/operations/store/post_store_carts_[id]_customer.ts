@@ -103,6 +103,16 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
- * 
+ * requestBody:
+ *   content:
+ *     application/json:
+ *       schema:
+ *         type: object
+ *         description: Optional additional data to pass to the underlying workflow.
+ *         properties:
+ *           additional_data:
+ *             type: object
+ *             description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+ *
 */
 

@@ -1,6 +1,6 @@
 import { join } from "path"
 import { setTimeout } from "timers/promises"
-import { MetadataStorage } from "@mikro-orm/core"
+import { MetadataStorage } from "@medusajs/deps/mikro-orm/core"
 
 import { Migrations } from "../../index"
 import { FileSystem } from "../../../common"

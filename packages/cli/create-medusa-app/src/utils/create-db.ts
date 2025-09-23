@@ -1,5 +1,5 @@
 import { EOL } from "os"
-import pg from "pg"
+import type pg from "@medusajs/deps/pg"
 import postgresClient, {
   DEFAULT_HOST,
   DEFAULT_PORT,

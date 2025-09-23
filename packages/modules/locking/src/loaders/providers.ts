@@ -14,7 +14,12 @@ import {
   LockingIdentifiersRegistrationName,
   LockingProviderRegistrationPrefix,
 } from "@types"
-import { Lifetime, aliasTo, asFunction, asValue } from "awilix"
+import {
+  Lifetime,
+  aliasTo,
+  asFunction,
+  asValue,
+} from "@medusajs/framework/awilix"
 import { InMemoryLockingProvider } from "../providers/in-memory"
 
 const registrationFn = async (klass, container, { id }) => {

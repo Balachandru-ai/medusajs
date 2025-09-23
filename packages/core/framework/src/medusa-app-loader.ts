@@ -25,8 +25,8 @@ import {
   upperCaseFirst,
 } from "@medusajs/utils"
 
-import type { Knex } from "@mikro-orm/knex"
-import { aliasTo, asValue } from "awilix"
+import type { Knex } from "@medusajs/framework/mikro-orm/knex"
+import { aliasTo, asValue } from "./deps/awilix"
 import { configManager } from "./config"
 import {
   container,

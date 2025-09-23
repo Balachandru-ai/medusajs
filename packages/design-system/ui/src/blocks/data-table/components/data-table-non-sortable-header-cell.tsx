@@ -35,7 +35,6 @@ export const DataTableNonSortableHeaderCell = React.forwardRef<
     ...propStyle,
     transform: transformStyle ? CSS.Transform.toString(transformStyle) : undefined,
     transition,
-    position: 'relative' as const,
   }
 
   const combineRefs = (element: HTMLTableCellElement | null) => {
