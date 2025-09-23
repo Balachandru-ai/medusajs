@@ -1,25 +1,20 @@
 import { PencilSquare, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import { Button, Container, Heading, Text } from "@medusajs/ui"
+import { Container, createDataTableColumnHelper, toast, usePrompt, } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useRefundReasons } from "../../../../../hooks/api"
+import { useNavigate } from "react-router-dom"
+import { DataTable } from "../../../../../components/data-table"
+import { useDeleteRefundReasonLazy, useRefundReasons, } from "../../../../../hooks/api"
 import { useRefundReasonTableColumns } from "../../../../../hooks/table/columns"
 import { useRefundReasonTableQuery } from "../../../../../hooks/table/query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
-import { useDeleteRefundReasonAction } from "../../../common/hooks/use-delete-refund-reason-action"
 
 const PAGE_SIZE = 20
 
 export const RefundReasonListTable = () => {
   const { t } = useTranslation()
-  const { searchParams, raw } = useRefundReasonTableQuery({
+  const { searchParams } = useRefundReasonTableQuery({
     pageSize: PAGE_SIZE,
   })
 
@@ -32,100 +27,104 @@ export const RefundReasonListTable = () => {
 
   const columns = useColumns()
 
-  const { table } = useDataTable({
-    data: refund_reasons,
-    columns,
-    count,
-    getRowId: (row) => row.id,
-    pageSize: PAGE_SIZE,
-  })
-
   if (isError) {
     throw error
   }
 
   return (
     <Container className="divide-y px-0 py-0">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div>
-          <Heading>{t("refundReasons.domain")}</Heading>
-          <Text className="text-ui-fg-subtle" size="small">
-            {t("refundReasons.subtitle")}
-          </Text>
-        </div>
-        <Button variant="secondary" size="small" asChild>
-          <Link to="create">{t("actions.create")}</Link>
-        </Button>
-      </div>
-      <_DataTable
-        table={table}
-        queryObject={raw}
-        count={count}
-        isLoading={isPending}
+      <DataTable
+        data={refund_reasons}
         columns={columns}
+        rowCount={count}
         pageSize={PAGE_SIZE}
-        noHeader={true}
-        pagination
-        search
+        getRowId={(row) => row.id}
+        heading={t("refundReasons.domain")}
+        subHeading={t("refundReasons.subtitle")}
+        emptyState={{
+          empty: {
+            heading: t("general.noRecordsMessage"),
+          },
+          filtered: {
+            heading: t("general.noRecordsMessage"),
+            description: t("general.noRecordsMessageFiltered"),
+          },
+        }}
+        actions={[
+          {
+            label: t("actions.create"),
+            to: "create",
+          },
+        ]}
+        isLoading={isPending}
+        enableSearch={true}
       />
     </Container>
   )
 }
 
-type RefundReasonRowActionsProps = {
-  refundReason: HttpTypes.AdminRefundReason
-}
-
-const RefundReasonRowActions = ({
-  refundReason,
-}: RefundReasonRowActionsProps) => {
-  const { t } = useTranslation()
-  const handleDelete = useDeleteRefundReasonAction(
-    refundReason.id,
-    refundReason.label
-  )
-
-  return (
-    <ActionMenu
-      groups={[
-        {
-          actions: [
-            {
-              icon: <PencilSquare />,
-              label: t("actions.edit"),
-              to: `${refundReason.id}/edit`,
-            },
-          ],
-        },
-        {
-          actions: [
-            {
-              icon: <Trash />,
-              label: t("actions.delete"),
-              onClick: handleDelete,
-            },
-          ],
-        },
-      ]}
-    />
-  )
-}
-
-const columnHelper = createColumnHelper<HttpTypes.AdminRefundReason>()
+const columnHelper = createDataTableColumnHelper<HttpTypes.AdminRefundReason>()
 
 const useColumns = () => {
+  const { t } = useTranslation()
+  const prompt = usePrompt()
+  const navigate = useNavigate()
   const base = useRefundReasonTableColumns()
+
+  const { mutateAsync } = useDeleteRefundReasonLazy()
+
+  const handleDelete = useCallback(
+    async (refundReason: HttpTypes.AdminRefundReason) => {
+      const confirm = await prompt({
+        title: t("general.areYouSure"),
+        description: t("refundReasons.delete.confirmation", {
+          label: refundReason.label,
+        }),
+        confirmText: t("actions.delete"),
+        cancelText: t("actions.cancel"),
+      })
+
+      if (!confirm) {
+        return
+      }
+
+      await mutateAsync(refundReason.id, {
+        onSuccess: () => {
+          toast.success(t("refundReasons.delete.successToast"))
+        },
+        onError: (e) => {
+          toast.error(e.message)
+        },
+      })
+    },
+    [t, prompt, mutateAsync]
+  )
 
   return useMemo(
     () => [
       ...base,
-      columnHelper.display({
-        id: "actions",
-        cell: ({ row }) => (
-          <RefundReasonRowActions refundReason={row.original} />
-        ),
+      columnHelper.action({
+        actions: (ctx) => [
+          [
+            {
+              icon: <PencilSquare />,
+              label: t("actions.edit"),
+              onClick: () =>
+                navigate(
+                  `/settings/refund-reasons/${ctx.row.original.id}/edit`
+                ),
+            },
+          ],
+          [
+            {
+              icon: <Trash />,
+              label: t("actions.delete"),
+              onClick: () => handleDelete(ctx.row.original),
+            },
+          ],
+        ],
       }),
     ],
-    [base]
+    [base, handleDelete, navigate, t]
   )
 }

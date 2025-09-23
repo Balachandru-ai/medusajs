@@ -161,6 +161,9 @@
         "noRecordsMessage": {
           "type": "string"
         },
+        "noRecordsMessageFiltered": {
+          "type": "string"
+        },
         "unsavedChangesTitle": {
           "type": "string"
         },
@@ -229,6 +232,7 @@
         "noSearchResultsFor",
         "noRecordsTitle",
         "noRecordsMessage",
+        "noRecordsMessageFiltered",
         "unsavedChangesTitle",
         "unsavedChangesDescription",
         "includesTaxTooltip",

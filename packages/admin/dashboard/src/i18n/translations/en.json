@@ -52,6 +52,7 @@
     "noSearchResultsFor": "No search results for <0>'{{query}}'</0>",
     "noRecordsTitle": "No records",
     "noRecordsMessage": "There are no records to show",
+    "noRecordsMessageFiltered": "There are no records to show matching the filters",
     "unsavedChangesTitle": "Are you sure you want to leave this form?",
     "unsavedChangesDescription": "You have unsaved changes that will be lost if you exit this form.",
     "includesTaxTooltip": "Prices in this column are tax inclusive.",
