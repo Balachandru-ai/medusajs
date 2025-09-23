@@ -45,6 +45,7 @@ interface TestRunnerConfig {
   env?: Record<string, any>
   dbName?: string
   medusaConfigFile?: string
+  disableAutoTeardown?: boolean
   schema?: string
   debug?: boolean
   inApp?: boolean
@@ -58,6 +59,7 @@ class MedusaTestRunner {
   private dbName: string
   private schema: string
   private modulesConfigPath: string
+  private disableAutoTeardown: boolean
   private cwd: string
   private env: Record<string, any>
   private debug: boolean
@@ -92,6 +94,7 @@ class MedusaTestRunner {
     this.env = config.env ?? {}
     this.debug = config.debug ?? false
     this.inApp = config.inApp ?? false
+    this.disableAutoTeardown = config?.disableAutoTeardown ?? false
 
     this.dbUtils = dbTestUtilFactory()
     this.dbConfig = {
@@ -290,7 +293,11 @@ class MedusaTestRunner {
   public async afterEach(): Promise<void> {
     try {
       await waitWorkflowExecutions(this.globalContainer as MedusaContainer)
-      await this.dbUtils.teardown({ schema: this.schema })
+
+      if (!this.disableAutoTeardown) {
+        // Perform automatic teardown
+        await this.dbUtils.teardown({ schema: this.schema })
+      }
     } catch (error) {
       logger.error("Error tearing down database:", error?.message)
       throw error
@@ -328,6 +335,7 @@ export function medusaIntegrationTestRunner({
   testSuite,
   hooks,
   cwd,
+  disableAutoTeardown,
 }: {
   moduleName?: string
   env?: Record<string, any>
@@ -339,6 +347,7 @@ export function medusaIntegrationTestRunner({
   testSuite: (options: MedusaSuiteOptions) => void
   hooks?: TestRunnerConfig["hooks"]
   cwd?: string
+  disableAutoTeardown?: boolean
 }) {
   const runner = new MedusaTestRunner({
     moduleName,
@@ -350,6 +359,7 @@ export function medusaIntegrationTestRunner({
     inApp,
     hooks,
     cwd,
+    disableAutoTeardown,
   })
 
   return describe("", () => {
