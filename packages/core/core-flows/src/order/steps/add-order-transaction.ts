@@ -31,24 +31,43 @@ export const addOrderTransactionStep = createStep(
       return new StepResponse(null)
     }
 
+    const existingQuery: any[] = []
     for (const trx of trxsData) {
-      const existing = await service.listOrderTransactions(
-        {
-          order_id: trx.order_id,
-          reference: trx.reference,
-          reference_id: trx.reference_id,
-        },
-        {
-          select: ["id"],
-        }
-      )
+      existingQuery.push({
+        order_id: trx.order_id,
+        reference: trx.reference,
+        reference_id: trx.reference_id,
+      })
+    }
 
-      if (existing.length) {
-        return new StepResponse(null)
+    const existing = await service.listOrderTransactions(
+      {
+        $or: existingQuery,
+      },
+      {
+        select: ["order_id", "reference", "reference_id"],
+      }
+    )
+    const existingSet = new Set<string>(
+      existing.map(
+        (trx) => `${trx.order_id}-${trx.reference}-${trx.reference_id}`
+      )
+    )
+
+    const selectedData: CreateOrderTransactionDTO[] = []
+    for (const trx of trxsData) {
+      if (
+        !existingSet.has(`${trx.order_id}-${trx.reference}-${trx.reference_id}`)
+      ) {
+        selectedData.push(trx)
       }
     }
 
-    const created = await service.addOrderTransactions(trxsData)
+    if (!selectedData.length) {
+      return new StepResponse(null)
+    }
+
+    const created = await service.addOrderTransactions(selectedData)
 
     return new StepResponse(
       (Array.isArray(data)

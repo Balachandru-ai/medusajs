@@ -469,7 +469,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 100,
                 target_rules: [
                   {
-                    attribute: "variant_id",
+                    attribute: "items.variant_id",
                     operator: "in",
                     values: [product.variants[0].id, product_2.variants[0].id],
                   },
@@ -877,7 +877,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 100,
                 target_rules: [
                   {
-                    attribute: "variant_id",
+                    attribute: "items.variant_id",
                     operator: "in",
                     values: [product.variants[0].id],
                   },

@@ -1,4 +1,8 @@
-import { ArrayType, EntityMetadata, MetadataStorage } from "@mikro-orm/core"
+import {
+  ArrayType,
+  EntityMetadata,
+  MetadataStorage,
+} from "@medusajs/deps/mikro-orm/core"
 import { expectTypeOf } from "expect-type"
 import { DmlEntity } from "../entity"
 import { model } from "../entity-builder"
@@ -162,7 +166,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -306,7 +310,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -441,7 +445,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -555,7 +559,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -701,7 +705,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -858,7 +862,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         created_at: {

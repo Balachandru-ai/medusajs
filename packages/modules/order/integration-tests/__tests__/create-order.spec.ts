@@ -227,7 +227,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
@@ -246,7 +246,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder2 = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
@@ -271,7 +271,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder3 = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )
@@ -290,7 +290,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const serializedOrder4 = JSON.parse(
           JSON.stringify(
             await service.retrieveOrder(created.id, {
-              select: ["id", "summary"],
+              select: ["id", "summary", "total"],
             })
           )
         )

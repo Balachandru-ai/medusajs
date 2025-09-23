@@ -536,6 +536,18 @@
       "proposed": "Proposed",
       "rejected": "Rejected"
     },
+    "columns": {
+      "product_display": "Product",
+      "variants_count": "Variants",
+      "sales_channels_display": "Sales Channels",
+      "collection": "Collection",
+      "status": "Status",
+      "thumbnail": "Thumbnail",
+      "title": "Title",
+      "handle": "Handle",
+      "created_at": "Created",
+      "updated_at": "Updated"
+    },
     "fields": {
       "title": {
         "label": "Title",

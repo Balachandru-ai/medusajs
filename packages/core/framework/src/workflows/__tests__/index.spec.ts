@@ -3,7 +3,7 @@ import {
   ContainerRegistrationKeys,
   createMedusaContainer,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "../../deps/awilix"
 import { join } from "path"
 import { logger } from "../../logger"
 import { productWorkflowId } from "../__fixtures__/workflows/deep-workflows/product-updater"
