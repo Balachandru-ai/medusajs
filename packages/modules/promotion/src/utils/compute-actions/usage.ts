@@ -68,8 +68,6 @@ export function getBudgetUsageContextFromComputeActionContext(
       (computeActionContext.customer as any)?.id ??
       null,
     customer_email:
-      computeActionContext.email ??
-      (computeActionContext.customer as any)?.email ??
-      null,
+      (computeActionContext.email as string | undefined | null) ?? null,
   }
 }
