@@ -5,7 +5,7 @@ import {
   isString,
   unflattenObjectKeys,
 } from "@medusajs/framework/utils"
-import { Knex } from "@mikro-orm/knex"
+import { Knex } from "@medusajs/framework/mikro-orm/knex"
 import { OrderBy, QueryFormat, QueryOptions, Select } from "@types"
 import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 

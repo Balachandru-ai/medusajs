@@ -74,6 +74,10 @@ export interface OrderExchangeRequestItemReturnWorkflowInput {
    */
   return_id: string
   /**
+   * The ID of the location to return the items to.
+   */
+  location_id?: string
+  /**
    * The ID of the exchange to add the inbound items to.
    */
   exchange_id: string
@@ -95,6 +99,10 @@ export interface OrderClaimRequestItemReturnWorkflowInput {
    * The ID of the return that's associated with the claim.
    */
   return_id: string
+  /**
+   * The ID of the location to return the items to.
+   */
+  location_id?: string
   /**
    * The ID of the claim to add the items to.
    */
@@ -124,11 +132,11 @@ export interface DeleteRequestItemReturnWorkflowInput {
 
 /**
  * The details of the received item to be removed.
- * 
+ *
  * @property return_id - The ID of the return to remove the item from.
  * @property action_id - The ID of the action associated with the item to remove.
- * Every item has an `actions` property, whose value is an array of actions. 
- * You can find an action with the name `RECEIVE_RETURN_ITEM` using its `action` property, 
+ * Every item has an `actions` property, whose value is an array of actions.
+ * You can find an action with the name `RECEIVE_RETURN_ITEM` using its `action` property,
  * and use the value of its `id` property.
  */
 export interface DeleteRequestItemReceiveReturnWorkflowInput

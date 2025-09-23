@@ -6,17 +6,9 @@ export const metadata = {
 
 # {metadata.title}
 
-In this document, you’ll learn about the Google Auth Module Provider and how to install and use it in the Auth Module.
+In this guide, you’ll learn about the Google Auth Module Provider and how to install and use it in the Auth Module.
 
-The Google Auth Module Provider authenticates users with their Google account.
-
-<Note title="Tip">
-
-Learn about the authentication flow for third-party providers in [this guide](../../authentication-route/page.mdx#2-third-party-service-authenticate-flow).
-
-</Note>
-
----
+The Google Auth Module Provider allows you to authenticate users with their Google account.
 
 ## Register the Google Auth Module Provider
 
@@ -27,13 +19,13 @@ Learn about the authentication flow for third-party providers in [this guide](..
       link: "https://cloud.google.com/resource-manager/docs/creating-managing-projects"
     },
     {
-      text: "Create authorization credentials. When setting the Redirect Uri, set it to a URL in your frontend that later uses Medusa's callback route to validate the authentication.",
+      text: "Create Oauth client ID credentials. When setting the Redirect Uri, set it to a URL in your frontend (for example, storefront) that later uses Medusa's callback route to validate the authentication.",
       link: "https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred"
     }
   ]}
 />
 
-Add the module to the array of providers passed to the Auth Module:
+To use the Google Auth Module Provider, add the module to the array of providers passed to the Auth Module in your `medusa-config.ts`:
 
 ```ts title="medusa-config.ts"
 import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
@@ -43,25 +35,27 @@ import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 module.exports = defineConfig({
   // ...
   modules: [
+    // ...
     {
-      // ...
-      [Modules.AUTH]: {
-        resolve: "@medusajs/medusa/auth",
-        dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
-        options: {
-          providers: [
-            // other providers...
-            {
-              resolve: "@medusajs/medusa/auth-google",
-              id: "google",
-              options: {
-                clientId: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackUrl: process.env.GOOGLE_CALLBACK_URL,
-              },
+      resolve: "@medusajs/medusa/auth",
+      dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
+      options: {
+        providers: [
+          // other providers...
+          {
+            resolve: "@medusajs/medusa/auth-emailpass",
+            id: "emailpass",
+          },
+          {
+            resolve: "@medusajs/medusa/auth-google",
+            id: "google",
+            options: {
+              clientId: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              callbackUrl: process.env.GOOGLE_CALLBACK_URL,
             },
-          ],
-        },
+          },
+        ],
       },
     },
   ],
@@ -147,11 +141,9 @@ GOOGLE_CALLBACK_URL=<YOUR_GOOGLE_CALLBACK_URL>
 
 ---
 
----
-
 ## Override Callback URL During Authentication
 
-In many cases, you may have different callback URL for actor types. For example, you may redirect admin users to a different URL than customers after authentication.
+In many cases, you may have different callback URLs for actor types. For example, you may redirect admin users to a different URL than customers after authentication.
 
 The [Authenticate or Login API Route](../../authentication-route/page.mdx#login-route) can accept a `callback_url` body parameter to override the provider's `callbackUrl` option. Learn more in [this documentation](../../authentication-route/page.mdx#login-route).
 
@@ -159,4 +151,4 @@ The [Authenticate or Login API Route](../../authentication-route/page.mdx#login-
 
 ## Examples
 
-- [How to implement Google social login in the storefront](../../../../storefront-development/customers/third-party-login/page.mdx).
+- [How to implement Google social login in the storefront](../../../../storefront-development/customers/third-party-login/page.mdx)

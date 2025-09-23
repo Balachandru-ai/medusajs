@@ -56,7 +56,7 @@ The Payment section of the order details page includes details related to the or
 
 ![Payments Section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739544008/User%20Guide/Screenshot_2025-02-14_at_4.39.51_PM_vufzzu.png)
 
-## Unfulfilled Items Section
+### Unfulfilled Items Section
 
 The Unfulfilled Items section of the order details page includes the details of items that haven't been fulfilled yet. Use this section to view the items that need to be fulfilled and [create their fulfillments](../fulfillments/page.mdx).
 
@@ -82,7 +82,7 @@ If Medusa manages the inventory of an ordered item, it reserves or allocates the
 
 Medusa allocates the ordered quantity from the stock location of the chosen shipping option in the order. For example, if the customer chooses a shipping option that uses a stock location in the US, Medusa allocates the ordered quantity from that stock location.
 
-However, in some cases you may need to allocate an item manually, such as if you [edit the order](../edit/page.mdx) if you changed the inventory management configurations of the item's product variant. You'll find next to the item's name in the Summary section a "Not allocated" badge.
+However, in some cases you may need to allocate an item manually, such as if you [edit the order](../edit/page.mdx) or if you changed the inventory management configurations of the item's product variant. You'll find next to the item's name in the Summary section a "Not allocated" badge.
 
 ![Not Allocated Badge](https://res.cloudinary.com/dza7lstvk/image/upload/v1739546156/User%20Guide/Screenshot_2025-02-14_at_5.14.59_PM_fgc2d2.png)
 
@@ -129,7 +129,7 @@ To edit the billing address used for an order:
 
 ## Edit Email Address
 
-You can edit the email address of an order to send order-update notifications to a new email address. This doesn't update the associated customer's address or transfer the order to a new customer. To transfer the order to a new customer, see the [Transfer Customer Ownership](#transfer-customer-ownership) section.
+You can edit the email address of an order to send order-update notifications to a new email address. This doesn't update the associated customer's email address or transfer the order to a new customer. To transfer the order to a new customer, see the [Transfer Customer Ownership](#transfer-customer-ownership) section.
 
 To edit the email address associated with an order:
 
@@ -161,7 +161,7 @@ To transfer the ownership of an order to another customer:
 2. Click on the <InlineIcon Icon={EllipsisHorizontal} alt="three-dot" /> icon at the top right of the Customer section.
 3. Click on "Transfer ownership" from the dropdown.
 4. In the side window that opens, choose the new customer from the dropdown under the "New owner" section.
-5. Once done, click on the Save button.
+5. Once you're done, click on the Save button.
 
 The original customer will then receive a notification requesting their approval for the transfer.
 
@@ -177,7 +177,12 @@ If a notification isn't sent, check with your technical team to debug the [integ
 
 ## Cancel an Order
 
-You can cancel an order if no actions have been performed on it, such as payment captured or items fulfilled. Canceling an order will change its status to canceled and notify the customer about the cancellation.
+You can cancel an order if no items have been fulfilled. Canceling an order will:
+
+- Change the order's status to canceled.
+- Refund any captured payments.
+- Cancel any authorized payment.
+- Notify the customer about the cancellation.
 
 <Note type="warning">
 

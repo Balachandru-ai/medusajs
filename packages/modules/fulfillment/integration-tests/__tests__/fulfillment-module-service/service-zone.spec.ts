@@ -371,7 +371,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
 
             expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(4)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
-              [
+              expect.arrayContaining([
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.GEO_ZONE_DELETED,
                   action: "deleted",
@@ -396,7 +396,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   object: "geo_zone",
                   data: { id: usGeoZone.id },
                 }),
-              ],
+              ]),
               {
                 internal: true,
               }
@@ -510,7 +510,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
 
             expect(updatedServiceZones).toHaveLength(2)
 
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(3) // Since the update only calls create and update which are already tested, only check the length
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(6) // Since the update only calls create and update which are already tested, only check the length
 
             for (const data_ of updateData) {
               const expectedServiceZone = updatedServiceZones.find(

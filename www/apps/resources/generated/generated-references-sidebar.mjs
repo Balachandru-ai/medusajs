@@ -2239,6 +2239,40 @@ const generatedgeneratedReferencesSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "category",
+          "title": "Locking",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Steps",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/acquireLockStep",
+                  "title": "acquireLockStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/releaseLockStep",
+                  "title": "releaseLockStep",
+                  "description": "",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "category",
           "title": "Notification",
           "children": [
             {
@@ -7289,6 +7323,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/references/workflows/applyStep",
+              "title": "applyStep",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/references/workflows/createHook",
               "title": "createHook",
               "description": "",
@@ -7318,6 +7361,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "type": "link",
               "path": "/references/workflows/parallelize",
               "title": "parallelize",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/workflows/resolveValue",
+              "title": "resolveValue",
               "description": "",
               "children": []
             },

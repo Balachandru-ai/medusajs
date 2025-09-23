@@ -21,6 +21,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { emitEventStep } from "../../common/steps/emit-event"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import {
   createLineItemsStep,
   getLineItemActionsStep,
@@ -119,6 +120,13 @@ export const addToCartWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<AddToCartWorkflowInputDTO & AdditionalData>) => {
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+      skipOnSubWorkflow: true,
+    })
+
     const cartQuery = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.cart_id },
@@ -305,13 +313,19 @@ export const addToCartWorkflow = createWorkflow(
     )
 
     refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: cart.id, items: allItems },
+      input: { cart_id: cart.id, items: allItems, additional_data: input.additional_data },
     })
 
-    emitEventStep({
-      eventName: CartWorkflowEvents.UPDATED,
-      data: { id: cart.id },
-    })
+    parallelize(
+      emitEventStep({
+        eventName: CartWorkflowEvents.UPDATED,
+        data: { id: cart.id },
+      }),
+      releaseLockStep({
+        key: cart.id,
+        skipOnSubWorkflow: true,
+      })
+    )
 
     return new WorkflowResponse(void 0, {
       hooks: [validate, setPricingContext] as const,

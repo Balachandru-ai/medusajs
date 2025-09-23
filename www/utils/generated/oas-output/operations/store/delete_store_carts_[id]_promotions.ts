@@ -4,6 +4,9 @@
  * summary: Remove Promotions from Cart
  * description: Remove a list of promotions from a cart.
  * x-authenticated: false
+ * externalDocs:
+ *   url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
+ *   description: "Storefront guide: How to remove a promotion from cart."
  * parameters:
  *   - name: id
  *     in: path
@@ -36,7 +39,11 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/store/carts/{id}/promotions' \
- *       -H 'x-publishable-api-key: {your_publishable_api_key}'
+ *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
+ *       -H 'Content-Type: application/json' \
+ *       --data-raw '{
+ *         "promo_codes": ["{value}"]
+ *       }'
  * tags:
  *   - Carts
  * responses:

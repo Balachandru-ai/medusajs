@@ -1,5 +1,6 @@
 import {
   ApplicationMethodTargetTypeValues,
+  InferEntityType,
   PromotionRuleDTO,
   PromotionRuleOperatorValues,
 } from "@medusajs/framework/types"
@@ -12,6 +13,7 @@ import {
   isString,
   pickValueFromObject,
 } from "@medusajs/framework/utils"
+import { PromotionRule } from "@models"
 import { CreatePromotionRuleDTO } from "@types"
 
 export function validatePromotionRuleAttributes(
@@ -51,7 +53,7 @@ export function validatePromotionRuleAttributes(
 }
 
 export function areRulesValidForContext(
-  rules: PromotionRuleDTO[],
+  rules: PromotionRuleDTO[] | InferEntityType<typeof PromotionRule>[],
   context: Record<string, any>,
   contextScope: ApplicationMethodTargetTypeValues
 ): boolean {
@@ -63,14 +65,17 @@ export function areRulesValidForContext(
   const isShippingScope =
     contextScope === ApplicationMethodTargetType.SHIPPING_METHODS
 
-  return rules.every((rule) => {
+  return ("initialized" in rules ? [...rules] : rules).every((rule) => {
     if (!rule.attribute || !rule.values?.length) {
       return false
     }
 
-    const validRuleValues = rule.values
-      .filter((v) => isString(v.value))
-      .map((v) => v.value as string)
+    const validRuleValues: string[] = []
+    for (const value of rule.values) {
+      if (isString(value.value)) {
+        validRuleValues.push(value.value as string)
+      }
+    }
 
     if (!validRuleValues.length) {
       return false

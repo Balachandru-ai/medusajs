@@ -14,13 +14,13 @@ import {
 } from "@medusajs/framework/types"
 
 import {
+  EmitEvents,
   InjectManager,
   InjectTransactionManager,
   isString,
   MedusaContext,
   MedusaService,
 } from "@medusajs/framework/utils"
-import { EntityManager } from "@mikro-orm/core"
 import {
   Customer,
   CustomerAddress,
@@ -101,6 +101,7 @@ export default class CustomerModuleService
   ): Promise<CustomerTypes.CustomerDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   async createCustomers(
     dataOrArray:
       | CustomerTypes.CreateCustomerDTO
@@ -124,7 +125,7 @@ export default class CustomerModuleService
       | CustomerTypes.CreateCustomerDTO
       | CustomerTypes.CreateCustomerDTO[],
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<CustomerTypes.CustomerDTO[]> {
+  ): Promise<InferEntityType<typeof Customer>[]> {
     const data = Array.isArray(dataOrArray) ? dataOrArray : [dataOrArray]
     const customerAttributes = data.map(({ addresses, ...rest }) => {
       return rest
@@ -153,7 +154,7 @@ export default class CustomerModuleService
       sharedContext
     )
 
-    return customers as unknown as CustomerTypes.CustomerDTO[]
+    return customers
   }
 
   // @ts-expect-error
@@ -175,13 +176,33 @@ export default class CustomerModuleService
     sharedContext?: Context
   ): Promise<CustomerTypes.CustomerDTO[]>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateCustomers(
     idsOrSelector: string | string[] | CustomerTypes.FilterableCustomerProps,
     data: CustomerTypes.CustomerUpdatableFields,
     @MedusaContext() sharedContext: Context = {}
-  ) {
+  ): Promise<CustomerTypes.CustomerDTO | CustomerTypes.CustomerDTO[]> {
+    const customers = await this.updateCustomers_(
+      idsOrSelector,
+      data,
+      sharedContext
+    )
+
+    return await this.baseRepository_.serialize<
+      CustomerTypes.CustomerDTO | CustomerTypes.CustomerDTO[]
+    >(customers)
+  }
+
+  @InjectTransactionManager()
+  protected async updateCustomers_(
+    idsOrSelector: string | string[] | CustomerTypes.FilterableCustomerProps,
+    data: CustomerTypes.CustomerUpdatableFields,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    InferEntityType<typeof Customer>[] | InferEntityType<typeof Customer>
+  > {
     let updateData:
       | CustomerTypes.UpdateCustomerDTO
       | CustomerTypes.UpdateCustomerDTO[]
@@ -212,13 +233,7 @@ export default class CustomerModuleService
       sharedContext
     )
 
-    const serialized = await this.baseRepository_.serialize<
-      CustomerTypes.CustomerDTO | CustomerTypes.CustomerDTO[]
-    >(customers, {
-      populate: true,
-    })
-
-    return serialized
+    return customers
   }
 
   // @ts-expect-error
@@ -233,24 +248,43 @@ export default class CustomerModuleService
     sharedContext?: Context
   ): Promise<CustomerTypes.CustomerGroupDTO[]>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createCustomerGroups(
     dataOrArrayOfData:
       | CustomerTypes.CreateCustomerGroupDTO
       | CustomerTypes.CreateCustomerGroupDTO[],
     @MedusaContext() sharedContext: Context = {}
-  ) {
-    const groups = await this.customerGroupService_.create(
+  ): Promise<
+    CustomerTypes.CustomerGroupDTO | CustomerTypes.CustomerGroupDTO[]
+  > {
+    const groups = await this.createCustomerGroups_(
       dataOrArrayOfData,
       sharedContext
     )
 
     return await this.baseRepository_.serialize<
       CustomerTypes.CustomerGroupDTO | CustomerTypes.CustomerGroupDTO[]
-    >(groups, {
-      populate: true,
-    })
+    >(groups)
+  }
+
+  @InjectTransactionManager()
+  protected async createCustomerGroups_(
+    dataOrArrayOfData:
+      | CustomerTypes.CreateCustomerGroupDTO
+      | CustomerTypes.CreateCustomerGroupDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | InferEntityType<typeof CustomerGroup>[]
+    | InferEntityType<typeof CustomerGroup>
+  > {
+    const groups = await this.customerGroupService_.create(
+      dataOrArrayOfData,
+      sharedContext
+    )
+
+    return groups
   }
 
   // @ts-expect-error
@@ -272,7 +306,8 @@ export default class CustomerModuleService
     sharedContext?: Context
   ): Promise<CustomerTypes.CustomerGroupDTO[]>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateCustomerGroups(
     groupIdOrSelector:
@@ -281,7 +316,32 @@ export default class CustomerModuleService
       | CustomerTypes.FilterableCustomerGroupProps,
     data: CustomerTypes.CustomerGroupUpdatableFields,
     @MedusaContext() sharedContext: Context = {}
-  ) {
+  ): Promise<
+    CustomerTypes.CustomerGroupDTO | CustomerTypes.CustomerGroupDTO[]
+  > {
+    const groups = await this.updateCustomerGroups_(
+      groupIdOrSelector,
+      data,
+      sharedContext
+    )
+
+    return await this.baseRepository_.serialize<
+      CustomerTypes.CustomerGroupDTO | CustomerTypes.CustomerGroupDTO[]
+    >(groups)
+  }
+
+  @InjectTransactionManager()
+  protected async updateCustomerGroups_(
+    groupIdOrSelector:
+      | string
+      | string[]
+      | CustomerTypes.FilterableCustomerGroupProps,
+    data: CustomerTypes.CustomerGroupUpdatableFields,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | InferEntityType<typeof CustomerGroup>[]
+    | InferEntityType<typeof CustomerGroup>
+  > {
     let updateData:
       | CustomerTypes.UpdateCustomerGroupDTO
       | CustomerTypes.UpdateCustomerGroupDTO[]
@@ -311,15 +371,10 @@ export default class CustomerModuleService
     )
 
     if (isString(groupIdOrSelector)) {
-      return await this.baseRepository_.serialize<CustomerTypes.CustomerGroupDTO>(
-        groups[0],
-        { populate: true }
-      )
+      return groups[0]
     }
 
-    return await this.baseRepository_.serialize<
-      CustomerTypes.CustomerGroupDTO[]
-    >(groups, { populate: true })
+    return groups
   }
 
   async addCustomerToGroup(
@@ -332,8 +387,19 @@ export default class CustomerModuleService
     sharedContext?: Context
   ): Promise<{ id: string }[]>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async addCustomerToGroup(
+    data: CustomerTypes.GroupCustomerPair | CustomerTypes.GroupCustomerPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    const groupCustomers = await this.addCustomerToGroup_(data, sharedContext)
+
+    return groupCustomers
+  }
+
+  @InjectTransactionManager()
+  protected async addCustomerToGroup_(
     data: CustomerTypes.GroupCustomerPair | CustomerTypes.GroupCustomerPair[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<{ id: string } | { id: string }[]> {
@@ -365,6 +431,7 @@ export default class CustomerModuleService
   ): Promise<CustomerTypes.CustomerAddressDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createCustomerAddresses(
     data:
@@ -419,7 +486,8 @@ export default class CustomerModuleService
     sharedContext?: Context
   ): Promise<CustomerTypes.CustomerAddressDTO[]>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateCustomerAddresses(
     addressIdOrSelector:
@@ -428,7 +496,32 @@ export default class CustomerModuleService
       | CustomerTypes.FilterableCustomerAddressProps,
     data: CustomerTypes.UpdateCustomerAddressDTO,
     @MedusaContext() sharedContext: Context = {}
-  ) {
+  ): Promise<
+    CustomerTypes.CustomerAddressDTO | CustomerTypes.CustomerAddressDTO[]
+  > {
+    const addresses = await this.updateCustomerAddresses_(
+      addressIdOrSelector,
+      data,
+      sharedContext
+    )
+
+    return await this.baseRepository_.serialize<
+      CustomerTypes.CustomerAddressDTO | CustomerTypes.CustomerAddressDTO[]
+    >(addresses)
+  }
+
+  @InjectTransactionManager()
+  protected async updateCustomerAddresses_(
+    addressIdOrSelector:
+      | string
+      | string[]
+      | CustomerTypes.FilterableCustomerAddressProps,
+    data: CustomerTypes.UpdateCustomerAddressDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | InferEntityType<typeof CustomerAddress>[]
+    | InferEntityType<typeof CustomerAddress>
+  > {
     let updateData:
       | CustomerTypes.UpdateCustomerAddressDTO[]
       | {
@@ -459,17 +552,11 @@ export default class CustomerModuleService
       sharedContext
     )
 
-    await this.flush(sharedContext)
-
-    const serialized = await this.baseRepository_.serialize<
-      CustomerTypes.CustomerAddressDTO[]
-    >(addresses, { populate: true })
-
     if (isString(addressIdOrSelector)) {
-      return serialized[0]
+      return addresses[0]
     }
 
-    return serialized
+    return addresses
   }
 
   async removeCustomerFromGroup(
@@ -481,8 +568,17 @@ export default class CustomerModuleService
     sharedContext?: Context
   ): Promise<void>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async removeCustomerFromGroup(
+    data: CustomerTypes.GroupCustomerPair | CustomerTypes.GroupCustomerPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.removeCustomerFromGroup_(data, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async removeCustomerFromGroup_(
     data: CustomerTypes.GroupCustomerPair | CustomerTypes.GroupCustomerPair[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
@@ -494,10 +590,5 @@ export default class CustomerModuleService
       groupCustomers.map((gc) => gc.id),
       sharedContext
     )
-  }
-
-  private async flush(context: Context) {
-    const em = (context.manager ?? context.transactionManager) as EntityManager
-    await em.flush()
   }
 }

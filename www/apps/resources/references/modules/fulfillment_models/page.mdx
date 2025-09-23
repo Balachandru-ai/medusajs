@@ -15,12 +15,14 @@ This documentation provides a reference to the data models in the Fulfillment Mo
 erDiagram
 	Fulfillment ||--|| FulfillmentItem : items
 	Fulfillment ||--|| FulfillmentLabel : labels
+	Fulfillment ||--|| FulfillmentProvider : provider
+	Fulfillment ||--|| FulfillmentAddress : delivery_address
 	FulfillmentSet ||--|| ServiceZone : service_zones
 	ServiceZone ||--|| GeoZone : geo_zones
 	ServiceZone ||--|| ShippingOption : shipping_options
+	ShippingOption ||--|| ShippingOptionType : type
 	ShippingOption ||--|| ShippingOptionRule : rules
 	ShippingOption ||--|| Fulfillment : fulfillments
-	ShippingOptionType ||--|| ShippingOption : shipping_option
 	ShippingProfile ||--|| ShippingOption : shipping_options
 
 ```

@@ -34,6 +34,7 @@ export const POST = async (
     input: {
       ...req.validatedBody,
       id: req.params.id,
+      additional_data: req.validatedBody.additional_data,
     },
     transactionId: "cart-update-" + req.params.id,
   })

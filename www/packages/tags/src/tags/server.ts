@@ -88,6 +88,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
   },
   {
+    "title": "Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
     "title": "Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },
@@ -146,6 +150,10 @@ export const server = [
   {
     "title": "Personalized Products",
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
+  },
+  {
+    "title": "Example",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
   },
   {
     "title": "Use Analytics Module",

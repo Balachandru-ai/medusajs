@@ -1,13 +1,28 @@
 ---
 slug: /references/medusa-workflows/steps/updateViewConfigurationStep
 sidebar_label: updateViewConfigurationStep
+tags:
+  - settings
+  - step
 ---
 
 import { TypeList, WorkflowDiagram } from "docs-ui"
 
 # updateViewConfigurationStep - Medusa Core Workflows Reference
 
+:::note
+
+To use this resource, make sure to [enable its feature flag: view_configurations](https://docs.medusajs.com/development/feature-flags/toggle)
+
+:::
+
 This documentation provides a reference to the `updateViewConfigurationStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+:::note
+
+This is available starting from Medusa `v2.10.3`.
+
+:::
 
 ```ts title="src/workflows/my-workflow.ts"
 import { createWorkflow } from "@medusajs/framework/workflows-sdk"
@@ -17,7 +32,7 @@ const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
     const data = updateViewConfigurationStep({
-      "id": "id_JBSWdoQMx978jk",
+      "id": "id_j0S7hz5FxdotJy3Nw8fd",
       "data": {}
     })
   }

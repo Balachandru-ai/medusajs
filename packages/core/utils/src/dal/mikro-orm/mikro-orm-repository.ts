@@ -21,8 +21,8 @@ import {
   FilterQuery as MikroFilterQuery,
   FindOptions as MikroOptions,
   ReferenceKind,
-} from "@mikro-orm/core"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+} from "@medusajs/deps/mikro-orm/core"
+import { SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
 import {
   arrayDifference,
   isString,
@@ -59,18 +59,15 @@ export class MikroOrmBase {
   async transaction<TManager = unknown>(
     task: (transactionManager: TManager) => Promise<any>,
     options: {
+      manager?: TManager
       isolationLevel?: string
       enableNestedTransactions?: boolean
       transaction?: TManager
     } = {}
   ): Promise<any> {
-    const freshManager = this.getFreshManager
-      ? this.getFreshManager()
-      : this.manager_
+    const manager = this.getFreshManager()
 
-    return await transactionWrapper(freshManager, task, options).catch(
-      dbErrorMapper
-    )
+    return await transactionWrapper(manager, task, options).catch(dbErrorMapper)
   }
 
   async serialize<TOutput extends object | object[]>(
@@ -466,12 +463,9 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
 
       if (!("strategy" in findOptions_.options)) {
         if (findOptions_.options.limit != null || findOptions_.options.offset) {
+          // TODO: from 7+ it will be the default strategy
           Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.SELECT_IN,
-          })
-        } else {
-          Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.JOINED,
+            strategy: LoadStrategy.BALANCED,
           })
         }
       }

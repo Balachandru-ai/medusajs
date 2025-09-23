@@ -1,13 +1,13 @@
 /**
  * @oas [post] /store/carts/{id}/customer
  * operationId: PostCartsIdCustomer
- * summary: Set Cart's Customer
- * x-sidebar-summary: Set Customer
- * description: Set the customer of the cart. This is useful when you create the cart for a guest customer, then they log in with their account.
+ * summary: Change Cart's Customer to Logged-in Customer
+ * x-sidebar-summary: Change Customer
+ * description: Change the cart's customer to the currently logged-in customer. This is useful when you create the cart for a guest customer, then they log in with their account.
  * externalDocs:
  *   url: https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
  *   description: "Storefront guide: How to set the cart's customer."
- * x-authenticated: false
+ * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
@@ -55,6 +55,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to set the cart's customer
  *       sdk.store.cart.transferCart("cart_123")
  *       .then(({ cart }) => {
  *         console.log(cart)
@@ -63,6 +64,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/carts/{id}/customer' \
+ *       -H 'Authorization: Bearer {access_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Carts
@@ -98,6 +100,19 @@
  *     description: Emitted when the customer in the cart is transferred.
  *     deprecated: false
  *     since: 2.8.0
- * 
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
+ * requestBody:
+ *   content:
+ *     application/json:
+ *       schema:
+ *         type: object
+ *         description: Optional additional data to pass to the underlying workflow.
+ *         properties:
+ *           additional_data:
+ *             type: object
+ *             description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+ *
 */
 

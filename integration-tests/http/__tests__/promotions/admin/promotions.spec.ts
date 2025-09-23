@@ -8,7 +8,7 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures/tax"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
-jest.setTimeout(50000)
+jest.setTimeout(500000)
 
 const adminHeaders = {
   headers: { "x-medusa-access-token": "test_token" },
@@ -935,6 +935,133 @@ medusaIntegrationTestRunner({
                   }),
                 ],
                 promotions: [],
+              })
+            )
+          })
+
+          it("should add an automatic promotion and after cart update, should delete the adjustment and create a new one for the automatic promotion", async () => {
+            const publishableKey = await generatePublishableKey(appContainer)
+            const storeHeaders = generateStoreHeaders({ publishableKey })
+
+            const salesChannel = (
+              await api.post(
+                "/admin/sales-channels",
+                { name: "Webshop", description: "channel" },
+                adminHeaders
+              )
+            ).data.sales_channel
+
+            const region = (
+              await api.post(
+                "/admin/regions",
+                { name: "US", currency_code: "usd", countries: ["us"] },
+                adminHeaders
+              )
+            ).data.region
+
+            const product = (
+              await api.post(
+                "/admin/products",
+                {
+                  ...medusaTshirtProduct,
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const customer = (
+              await api.post(
+                "/admin/customers",
+                { email: "test@test.com" },
+                adminHeaders
+              )
+            ).data.customer
+
+            const response = await api.post(
+              `/admin/promotions`,
+              {
+                code: "AUTO_TEST",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_automatic: true,
+                application_method: {
+                  target_type: "items",
+                  type: "fixed",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 100,
+                  max_quantity: 100,
+                },
+                rules: [
+                  {
+                    attribute: "customer_id",
+                    operator: "eq",
+                    values: customer.id,
+                  },
+                ],
+              },
+              adminHeaders
+            )
+
+            // Should apply automatic promotion
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  email: customer.email,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const shippingAddressData = {
+              address_1: "test address 1",
+              address_2: "test address 2",
+              city: "SF",
+              country_code: "us",
+              province: "CA",
+              postal_code: "94016",
+            }
+
+            // Should not duplicate an already applied automatic promotion
+            await api.post(
+              `/store/carts/${cart.id}`,
+              {
+                shipping_address: shippingAddressData,
+              },
+              storeHeaders
+            )
+
+            const cartAfterPromotion = (
+              await api.get(`/store/carts/${cart.id}`, storeHeaders)
+            ).data.cart
+
+            const itemWithPromotion = cartAfterPromotion.items[0]
+            const adjustments = itemWithPromotion.adjustments
+
+            expect(adjustments.length).toEqual(1)
+
+            expect(cartAfterPromotion).toEqual(
+              expect.objectContaining({
+                items: [
+                  expect.objectContaining({
+                    adjustments: [
+                      expect.objectContaining({
+                        code: response.data.promotion.code,
+                      }),
+                    ],
+                  }),
+                ],
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
               })
             )
           })

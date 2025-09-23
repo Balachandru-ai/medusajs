@@ -10,7 +10,11 @@ export const GET = async (
 
   const workflow = listShippingOptionsForCartWorkflow(req.scope)
   const { result: shipping_options } = await workflow.run({
-    input: { cart_id, is_return: !!is_return },
+    input: { 
+      cart_id, 
+      is_return: !!is_return,
+      fields: req.queryConfig.fields
+    },
   })
 
   res.json({ shipping_options })

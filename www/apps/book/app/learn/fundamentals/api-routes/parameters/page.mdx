@@ -13,7 +13,7 @@ To create an API route that accepts a path parameter, create a directory within 
 For example, to create an API Route at the path `/hello-world/:id`, where `:id` is a path parameter, create the file `src/api/hello-world/[id]/route.ts` with the following content:
 
 export const singlePathHighlights = [
-  ["11", "req.params.id", "Access the path parameter `id`"]
+  ["11", "req.params.id", "Access the path parameter `id`."]
 ]
 
 ```ts title="src/api/hello-world/[id]/route.ts" highlights={singlePathHighlights}
@@ -41,8 +41,8 @@ To create an API route that accepts multiple path parameters, create within the 
 For example, to create an API route at `/hello-world/:id/name/:name`, create the file `src/api/hello-world/[id]/name/[name]/route.ts` with the following content:
 
 export const multiplePathHighlights = [
-  ["12", "req.params.id", "Access the path parameter `id`"],
-  ["13", "req.params.name", "Access the path parameter `name`"]
+  ["12", "req.params.id", "Access the path parameter `id`."],
+  ["13", "req.params.name", "Access the path parameter `name`."]
 ]
 
 ```ts title="src/api/hello-world/[id]/name/[name]/route.ts" highlights={multiplePathHighlights}
@@ -74,7 +74,7 @@ You can access all query parameters in the `query` property of the `MedusaReques
 For example:
 
 export const queryHighlights = [
-  ["11", "req.query.name", "Access the query parameter `name`"],
+  ["11", "req.query.name", "Access the query parameter `name`."],
 ]
 
 ```ts title="src/api/hello-world/route.ts" highlights={queryHighlights}
@@ -99,17 +99,17 @@ The value of `req.query.name` is the value passed in `?name=John`, for example.
 
 You can apply validation rules on received query parameters to ensure they match specified rules and types.
 
-Learn more in [this documentation](../validation/page.mdx#how-to-validate-request-query-paramters).
+Learn more in the [API Route Validation](../validation/page.mdx#how-to-validate-request-query-parameters) chapter.
 
 ---
 
 ## Request Body Parameters
 
-The Medusa application parses the body of any request having a JSON, URL-encoded, or text request content types. The request body parameters are set in the `MedusaRequest`'s `body` property.
+The Medusa application parses the body of any request with JSON, URL-encoded, or text content types. The request body parameters are set in the `MedusaRequest`'s `body` property.
 
 <Note title="Tip">
 
-Learn more about configuring body parsing in [this guide](../parse-body/page.mdx).
+Learn more about configuring body parsing in the [Body Parsing](../parse-body/page.mdx) chapter.
 
 </Note>
 
@@ -117,7 +117,7 @@ For example:
 
 export const bodyHighlights = [
   ["11", "HelloWorldReq", "Specify the type of the request body parameters."],
-  ["15", "req.body.name", "Access the request body parameter `name`"],
+  ["15", "req.body.name", "Access the request body parameter `name`."],
 ]
 
 ```ts title="src/api/hello-world/route.ts" highlights={bodyHighlights}
@@ -170,4 +170,4 @@ This returns the following JSON object:
 
 You can apply validation rules on received body parameters to ensure they match specified rules and types.
 
-Learn more in [this documentation](../validation/page.mdx#how-to-validate-request-body).
+Learn more in the [Body Validation](../validation/page.mdx#how-to-validate-request-body) chapter.

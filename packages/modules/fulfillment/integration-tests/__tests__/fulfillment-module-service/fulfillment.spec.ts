@@ -152,12 +152,18 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               })
             )
 
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(4)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(5)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
-              [
+              expect.arrayContaining([
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.FULFILLMENT_CREATED,
                   action: "created",
+                  object: "fulfillment",
+                  data: { id: fulfillment.id },
+                }),
+                buildExpectedEventMessageShape({
+                  eventName: FulfillmentEvents.FULFILLMENT_UPDATED,
+                  action: "updated",
                   object: "fulfillment",
                   data: { id: fulfillment.id },
                 }),
@@ -179,7 +185,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   object: "fulfillment_label",
                   data: { id: fulfillment.labels[0].id },
                 }),
-              ],
+              ]),
               {
                 internal: true,
               }
@@ -244,12 +250,18 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               })
             )
 
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(4)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(5)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
-              [
+              expect.arrayContaining([
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.FULFILLMENT_CREATED,
                   action: "created",
+                  object: "fulfillment",
+                  data: { id: fulfillment.id },
+                }),
+                buildExpectedEventMessageShape({
+                  eventName: FulfillmentEvents.FULFILLMENT_UPDATED,
+                  action: "updated",
                   object: "fulfillment",
                   data: { id: fulfillment.id },
                 }),
@@ -271,7 +283,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   object: "fulfillment_label",
                   data: { id: fulfillment.labels[0].id },
                 }),
-              ],
+              ]),
               {
                 internal: true,
               }
@@ -383,15 +395,9 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
               })
             )
 
-            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(4)
+            expect(eventBusEmitSpy.mock.calls[0][0]).toHaveLength(3)
             expect(eventBusEmitSpy).toHaveBeenCalledWith(
-              [
-                buildExpectedEventMessageShape({
-                  eventName: FulfillmentEvents.FULFILLMENT_UPDATED,
-                  action: "updated",
-                  object: "fulfillment",
-                  data: { id: updatedFulfillment.id },
-                }),
+              expect.arrayContaining([
                 buildExpectedEventMessageShape({
                   eventName: FulfillmentEvents.FULFILLMENT_LABEL_DELETED,
                   action: "deleted",
@@ -410,7 +416,7 @@ moduleIntegrationTestRunner<IFulfillmentModuleService>({
                   object: "fulfillment_label",
                   data: { id: label4.id },
                 }),
-              ],
+              ]),
               {
                 internal: true,
               }
