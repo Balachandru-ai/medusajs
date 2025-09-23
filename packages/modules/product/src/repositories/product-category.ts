@@ -179,6 +179,7 @@ export class ProductCategoryRepository extends DALUtils.MikroOrmBaseTreeReposito
     } as MikroOptions<any>
 
     delete where.id
+    delete where.handle
     delete where.mpath
     delete where.parent_category_id
 
