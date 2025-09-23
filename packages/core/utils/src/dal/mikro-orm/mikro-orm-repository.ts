@@ -765,7 +765,9 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       })
     }
 
-    // PERFORMANCE OPTIMIZATION: Batch processing for multiple entities with same relation
+    /**
+     * Batch processing for multiple entities with same relation
+     */
     protected async assignCollectionRelationBatch_(
       manager: SqlEntityManager,
       entitiesData: Array<{ entity: T; index: number }>,
@@ -813,6 +815,9 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       return { performedActions, entitiesResults }
     }
 
+    /**
+     * Batch processing for many-to-many relations
+     */
     private async assignManyToManyRelationBatch_(
       manager: SqlEntityManager,
       entitiesData: Array<{ entity: T; index: number }>,
@@ -898,6 +903,9 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       }
     }
 
+    /**
+     * Batch processing for one-to-many relations
+     */
     private async assignOneToManyRelationBatch_(
       manager: SqlEntityManager,
       entitiesData: Array<{ entity: T; index: number }>,
@@ -977,7 +985,6 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       }
     }
 
-    // FUTURE: We can make this performant by only aggregating the operations, but only executing them at the end.
     protected async assignCollectionRelation_(
       manager: SqlEntityManager,
       data: T,
