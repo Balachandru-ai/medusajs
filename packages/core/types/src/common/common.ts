@@ -335,7 +335,6 @@ type UncountableRules =
   | "salmon"
   | "scissors"
   | "series"
-  | "settings"
   | "sewage"
   | "shambles"
   | "shrimp"

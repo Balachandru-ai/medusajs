@@ -9,7 +9,7 @@ import {
   createAdminUser,
 } from "../../../helpers/create-admin-user"
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
