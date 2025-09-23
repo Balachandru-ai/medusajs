@@ -598,7 +598,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("filters based on handle and retrieves descendants tree", async () => {
+      it("should filter by handle and retrieve descendants tree", async () => {
         const response = await api.get(
           `/admin/product-categories?handle=${productCategoryParent.handle}&include_descendants_tree=true`,
           adminHeaders
