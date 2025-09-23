@@ -16,8 +16,8 @@ import { getFormattedAddress } from "../../../lib/addresses"
 import { FulfillmentSetType } from "../common/constants"
 import { queryClient } from "../../../lib/query-client"
 import { stockLocationsQueryKeys } from "../../../hooks/api/stock-locations"
-import { sdk } from "../../../lib/client"
 import { ListSummary } from "../../../components/common/list-summary"
+import { sdk } from "../../../lib/client"
 
 const columnHelper = createDataTableColumnHelper<HttpTypes.AdminStockLocation>()
 
@@ -180,6 +180,6 @@ export const useLocationListTableColumns = () => {
         },
       }),
     ],
-    [t, navigate, prompt, handleDelete]
+    []
   )
 }
