@@ -1,8 +1,6 @@
-import { BaseFilterable } from "../../../dal"
 import { BaseCollectionListParams, BaseCollectionParams } from "../common"
 
 export interface StoreCollectionListParams
-  extends BaseCollectionListParams,
-    BaseFilterable<StoreCollectionListParams> {}
+  extends Omit<BaseCollectionListParams, "deleted_at"> {}
 
 export interface StoreCollectionParams extends BaseCollectionParams {}
