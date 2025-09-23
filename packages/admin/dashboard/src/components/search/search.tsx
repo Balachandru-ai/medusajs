@@ -434,7 +434,7 @@ const CommandInput = forwardRef<
             )}
             {...props}
           />
-          <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center justify-end gap-x-2">
+          <div className="absolute end-4 top-1/2 flex -translate-y-1/2 items-center justify-end gap-x-2">
             {isFetching && (
               <Spinner className="text-ui-fg-muted animate-spin" />
             )}
