@@ -20,7 +20,7 @@ import {
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   ProductCategoryService,
   ProductModuleService,

@@ -35,8 +35,8 @@
     "bignumber.js": "^9.1.2"
   },
   "devDependencies": {
+    "@medusajs/deps": "2.10.3",
     "@types/jsonwebtoken": "^8.5.9",
-    "awilix": "^8.0.1",
     "expect-type": "^0.20.0",
     "ioredis": "^5.4.1",
     "rimraf": "^5.0.1",
@@ -44,7 +44,6 @@
     "vite": "^5.4.14"
   },
   "peerDependencies": {
-    "awilix": "^8.0.1",
     "ioredis": "^5.4.1",
     "vite": "^5 || ^6"
   },

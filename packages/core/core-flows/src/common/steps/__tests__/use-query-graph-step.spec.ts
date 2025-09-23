@@ -3,7 +3,7 @@ import { expectTypeOf } from "expect-type"
 import { FixtureEntryPoints } from "../__fixtures__/remote-query"
 import { useQueryGraphStep } from "../use-query-graph"
 import { MedusaContainer } from "@medusajs/framework"
-import { asFunction, createContainer } from "awilix"
+import { asFunction, createContainer } from "@medusajs/framework/awilix"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 describe("useQueryGraphStep", () => {

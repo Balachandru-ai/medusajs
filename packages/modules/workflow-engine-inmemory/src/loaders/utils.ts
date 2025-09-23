@@ -1,4 +1,4 @@
-import { asClass } from "awilix"
+import { asClass } from "@medusajs/framework/awilix"
 import { InMemoryDistributedTransactionStorage } from "../utils"
 
 export default async ({ container }): Promise<void> => {

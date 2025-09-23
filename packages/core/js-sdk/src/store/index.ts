@@ -698,12 +698,14 @@ export class Store {
     deleteLineItem: async (
       cartId: string,
       lineItemId: string,
+      query?: SelectParams,
       headers?: ClientHeaders
     ) => {
       return this.client.fetch<HttpTypes.StoreLineItemDeleteResponse>(
         `/store/carts/${cartId}/line-items/${lineItemId}`,
         {
           method: "DELETE",
+          query,
           headers,
         }
       )

@@ -1,4 +1,8 @@
-import { ArrayType, EntityMetadata, MetadataStorage } from "@mikro-orm/core"
+import {
+  ArrayType,
+  EntityMetadata,
+  MetadataStorage,
+} from "@medusajs/deps/mikro-orm/core"
 import { expectTypeOf } from "expect-type"
 import { DmlEntity } from "../entity"
 import { model } from "../entity-builder"
