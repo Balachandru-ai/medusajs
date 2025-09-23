@@ -2742,7 +2742,7 @@
   },
   "refundReasons": {
     "domain": "Refund Reasons",
-    "subtitle": "Manage reasons for refunded items.",
+    "subtitle": "Manage reasons for issuing refunds.",
     "calloutHint": "Manage the reasons to categorize refunds.",
     "editReason": "Edit Refund Reason",
     "create": {

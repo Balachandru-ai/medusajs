@@ -1,6 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
 import {
-  QueryKey,
   useMutation,
   UseMutationOptions,
   useQuery,
@@ -21,8 +20,7 @@ export const useRefundReasons = (
     UseQueryOptions<
       HttpTypes.AdminRefundReasonListResponse,
       FetchError,
-      HttpTypes.AdminRefundReasonListResponse,
-      QueryKey
+      HttpTypes.AdminRefundReasonListResponse
     >,
     "queryFn" | "queryKey"
   >
@@ -43,8 +41,7 @@ export const useRefundReason = (
     UseQueryOptions<
       HttpTypes.AdminRefundReasonResponse,
       FetchError,
-      HttpTypes.AdminRefundReasonResponse,
-      QueryKey
+      HttpTypes.AdminRefundReasonResponse
     >,
     "queryFn" | "queryKey"
   >
