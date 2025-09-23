@@ -252,12 +252,14 @@ describe("mikroOrmRepository", () => {
   const manager3 = () => {
     return new Entity3Repository({ manager: manager.fork() })
   }
+  // @ts-expect-error
   const manager4 = () => {
     return new Entity4Repository({ manager: manager.fork() })
   }
   const manager5 = () => {
     return new Entity5Repository({ manager: manager.fork() })
   }
+  // @ts-expect-error
   const manager6 = () => {
     return new Entity6Repository({ manager: manager.fork() })
   }

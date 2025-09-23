@@ -1208,7 +1208,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       if (orderedUniqueEntries.some((e) => e.id)) {
         const existingEntities: any[] = await manager
           .qb(entityName)
-          .select("*")
+          .select("id")
           .where({
             id: { $in: orderedUniqueEntries.map((d) => d.id).filter(Boolean) },
           })
