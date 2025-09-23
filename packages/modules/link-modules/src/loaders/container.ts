@@ -13,7 +13,7 @@ import {
   simpleHash,
   toPascalCase,
 } from "@medusajs/framework/utils"
-import { asClass, asValue } from "awilix"
+import { asClass, asValue } from "@medusajs/framework/awilix"
 export function containerLoader(entity, joinerConfig: ModuleJoinerConfig) {
   return async (
     {

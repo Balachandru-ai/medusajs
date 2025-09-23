@@ -15,7 +15,7 @@ import {
   NotificationIdentifiersRegistrationName,
   NotificationProviderRegistrationPrefix,
 } from "@types"
-import { Lifetime, asFunction, asValue } from "awilix"
+import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
 
 const registrationFn = async (klass, container, pluginOptions) => {
   container.register({

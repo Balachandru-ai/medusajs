@@ -1,7 +1,7 @@
 import { InternalModuleDeclaration } from "@medusajs/types"
 import { MODULE_SCOPE } from "../../types"
 
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/deps/awilix"
 import { MedusaModule } from "../../medusa-module"
 
 const mockRegisterMedusaModule = jest.fn().mockImplementation(() => {

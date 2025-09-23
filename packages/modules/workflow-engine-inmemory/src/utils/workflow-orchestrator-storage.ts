@@ -24,7 +24,7 @@ import {
   TransactionStepState,
   isPresent,
 } from "@medusajs/framework/utils"
-import { raw } from "@mikro-orm/core"
+import { raw } from "@medusajs/framework/mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"

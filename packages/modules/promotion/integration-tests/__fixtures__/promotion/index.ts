@@ -8,7 +8,7 @@ import {
   PromotionStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { Promotion } from "@models"
 import { defaultPromotionsData } from "./data"
 

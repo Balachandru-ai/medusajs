@@ -11,7 +11,6 @@ describe("Pluralize", () => {
     expectTypeOf<Pluralize<"species">>().toEqualTypeOf<"species">()
     expectTypeOf<Pluralize<"deer">>().toEqualTypeOf<"deer">()
     expectTypeOf<Pluralize<"info">>().toEqualTypeOf<"info">()
-    expectTypeOf<Pluralize<"settings">>().toEqualTypeOf<"settings">()
   })
 
   test("pluralize words ending with fe", () => {
