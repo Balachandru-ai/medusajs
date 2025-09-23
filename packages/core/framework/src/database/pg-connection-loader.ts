@@ -4,7 +4,7 @@ import {
   retryExecution,
   stringifyCircular,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "../deps/awilix"
 import { configManager } from "../config"
 import { container } from "../container"
 import { logger } from "../logger"

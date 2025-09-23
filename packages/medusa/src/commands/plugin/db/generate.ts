@@ -7,8 +7,8 @@ import {
   isFileSkipped,
   toUnixSlash,
 } from "@medusajs/framework/utils"
-import { MetadataStorage } from "@mikro-orm/core"
-import { MikroORM } from "@mikro-orm/postgresql"
+import { MetadataStorage } from "@medusajs/framework/mikro-orm/core"
+import { MikroORM } from "@medusajs/framework/mikro-orm/postgresql"
 import { glob } from "glob"
 import { dirname, join } from "path"
 

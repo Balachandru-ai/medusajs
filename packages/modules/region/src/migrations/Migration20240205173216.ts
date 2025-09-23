@@ -1,5 +1,5 @@
 import { generatePostgresAlterColummnIfExistStatement } from "@medusajs/framework/utils"
-import { Migration } from "@mikro-orm/migrations"
+import { Migration } from "@medusajs/framework/mikro-orm/migrations"
 
 export class RegionModuleSetup20240205173216 extends Migration {
   async up(): Promise<void> {

@@ -6,7 +6,7 @@ import {
   MikroORM,
   Options,
   SqlEntityManager,
-} from "@mikro-orm/postgresql"
+} from "@medusajs/framework/mikro-orm/postgresql"
 import { createDatabase, dropDatabase } from "pg-god"
 import { execOrTimeout } from "./medusa-test-runner-utils"
 

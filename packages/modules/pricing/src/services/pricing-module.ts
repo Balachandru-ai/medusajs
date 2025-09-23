@@ -52,7 +52,7 @@ import {
   PriceSet,
 } from "@models"
 
-import { Collection } from "@mikro-orm/core"
+import { Collection } from "@medusajs/framework/mikro-orm/core"
 import { ServiceTypes } from "@types"
 import { validatePriceListDates } from "@utils"
 import { joinerConfig } from "../joiner-config"

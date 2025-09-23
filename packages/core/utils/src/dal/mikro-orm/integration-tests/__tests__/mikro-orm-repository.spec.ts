@@ -13,8 +13,8 @@ import {
   Property,
   Unique,
   wrap,
-} from "@mikro-orm/core"
-import { defineConfig } from "@mikro-orm/postgresql"
+} from "@medusajs/deps/mikro-orm/core"
+import { defineConfig } from "@medusajs/deps/mikro-orm/postgresql"
 import BigNumber from "bignumber.js"
 import { dropDatabase } from "pg-god"
 import { MikroOrmBigNumberProperty } from "../../big-number-field"

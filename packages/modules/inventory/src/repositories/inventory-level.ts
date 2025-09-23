@@ -4,7 +4,7 @@ import {
   MathBN,
   mikroOrmBaseRepositoryFactory,
 } from "@medusajs/framework/utils"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { InventoryLevel } from "@models"
 
 export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
