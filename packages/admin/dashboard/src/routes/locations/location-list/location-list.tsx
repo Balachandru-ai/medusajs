@@ -11,6 +11,7 @@ import { DataTable } from "../../../components/data-table"
 import { SidebarLink } from "../../../components/common/sidebar-link/sidebar-link"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useExtension } from "../../../providers/extension-provider"
+import { keepPreviousData } from "@tanstack/react-query"
 
 const PAGE_SIZE = 20
 const PREFIX = "loc"
@@ -29,10 +30,15 @@ export function LocationList() {
     isError,
     error,
     isLoading,
-  } = useStockLocations({
-    fields: LOCATION_LIST_FIELDS,
-    ...searchParams,
-  })
+  } = useStockLocations(
+    {
+      fields: LOCATION_LIST_FIELDS,
+      ...searchParams,
+    },
+    {
+      placeholderData: keepPreviousData,
+    }
+  )
 
   const columns = useLocationListTableColumns()
   const { getWidgets } = useExtension()
