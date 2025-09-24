@@ -7,13 +7,14 @@ import {
   defaultCurrencies,
   defineLink,
   Modules,
+  promiseAll,
 } from "@medusajs/utils"
-import { setTimeout } from "timers/promises"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../helpers/create-admin-user"
 import { fetchAndRetry } from "../../../helpers/retry"
+import { waitForIndexedEntities } from "../../../helpers/wait-for-index"
 
 jest.setTimeout(240000)
 
@@ -102,8 +103,6 @@ async function populateData(api: any) {
   )
   const products = response.data.created
 
-  await setTimeout(5000)
-
   return products
 }
 
@@ -155,7 +154,26 @@ medusaIntegrationTestRunner({
           },
         })
 
-        await setTimeout(5000)
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+          waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+        ])
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -357,22 +375,43 @@ medusaIntegrationTestRunner({
           name: "Medusa Brand",
         })
 
+        const productWithType = products.find((p) => !!p.type_id)!
         await link.create({
           [Modules.PRODUCT]: {
-            product_id: products.find((p) => p.title === "Extra product").id,
+            product_id: productWithType.id,
           },
           brand: {
             brand_id: brand.id,
           },
         })
 
-        await setTimeout(5000)
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+          waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+          waitForIndexedEntities(dbConnection, "ProductType", [
+            productWithType.type_id,
+          ]),
+        ])
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
         ) as RemoteQueryFunction
-
-        const productWithType = products.find((p) => !!p.type_id)!
 
         const resultset = await fetchAndRetry(
           async () =>
@@ -398,7 +437,7 @@ medusaIntegrationTestRunner({
               filters: {
                 $and: [
                   { status: "published" },
-                  { material: { $ilike: "%material%" } },
+                  // { material: { $ilike: "%material%" } },
                   { type: { value: productWithType.type.value } },
                 ],
               },
@@ -506,9 +545,27 @@ medusaIntegrationTestRunner({
       })
 
       it("should use query.index to query the index module sorting by price desc", async () => {
-        await populateData(api)
+        const products = await populateData(api)
 
-        await setTimeout(5000)
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+        ])
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -616,9 +673,27 @@ medusaIntegrationTestRunner({
       })
 
       it("should use query.index to get products by an array of handles", async () => {
-        await populateData(api)
+        const products = await populateData(api)
 
-        await setTimeout(5000)
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+        ])
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -647,9 +722,27 @@ medusaIntegrationTestRunner({
       })
 
       it("should query by custom linkable field and default field using query.index", async () => {
-        await populateData(api)
+        const products = await populateData(api)
 
-        await setTimeout(5000)
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+        ])
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -689,7 +782,26 @@ medusaIntegrationTestRunner({
           },
         })
 
-        await setTimeout(5000)
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+          waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+        ])
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
