@@ -1780,6 +1780,42 @@ export function getRouteMap({
                 },
               ],
             },
+            {
+              path: "refund-reasons",
+              element: <Outlet />,
+              handle: {
+                breadcrumb: () => t("refundReasons.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/refund-reasons/refund-reason-list"),
+                  children: [
+                    {
+                      path: "create",
+                      lazy: () =>
+                        import(
+                          "../../routes/refund-reasons/refund-reason-create"
+                        ),
+                    },
+
+                    {
+                      path: ":id",
+                      children: [
+                        {
+                          path: "edit",
+                          lazy: () =>
+                            import(
+                              "../../routes/refund-reasons/refund-reason-edit"
+                            ),
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
             ...(settingsRoutes?.[0]?.children || []),
           ],
         },

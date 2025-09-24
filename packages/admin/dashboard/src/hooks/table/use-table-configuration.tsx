@@ -68,7 +68,7 @@ export function useTableConfiguration({
   })
 
   const queryParams = useQueryParams(
-    ["q", "order", ...filters.map(f => f.id)],
+    ["q", "order", "offset", "limit", ...filters.map(f => f.id)],
     queryPrefix
   )
 

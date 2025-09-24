@@ -76,7 +76,7 @@ export const ProvinceSelect = forwardRef<
       <div className="relative">
         <TrianglesMini
           className={clx(
-            "text-ui-fg-muted transition-fg pointer-events-none absolute right-2 top-1/2 -translate-y-1/2",
+            "text-ui-fg-muted transition-fg pointer-events-none absolute end-2 top-1/2 -translate-y-1/2",
             {
               "text-ui-fg-disabled": disabled,
             }
