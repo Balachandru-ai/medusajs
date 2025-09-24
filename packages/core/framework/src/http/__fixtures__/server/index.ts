@@ -5,7 +5,7 @@ import {
 } from "@medusajs/modules-sdk"
 import { MedusaContainer } from "@medusajs/types"
 import { ContainerRegistrationKeys, generateJwtToken } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "../../../deps/awilix"
 import express from "express"
 import querystring from "querystring"
 import supertest from "supertest"

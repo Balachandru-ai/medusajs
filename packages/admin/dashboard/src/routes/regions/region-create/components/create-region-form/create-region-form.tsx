@@ -37,6 +37,7 @@ import { formatProvider } from "../../../../../lib/format-provider"
 import { useCountries } from "../../../common/hooks/use-countries"
 import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
 import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 type CreateRegionFormProps = {
   currencies: CurrencyInfo[]
@@ -64,7 +65,7 @@ export const CreateRegionForm = ({
   const { setIsOpen } = useStackedModal()
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const { handleSuccess } = useRouteModal()
-
+  const direction = useDocumentDirection()
   const form = useForm<zod.infer<typeof CreateRegionSchema>>({
     defaultValues: {
       name: "",
@@ -226,7 +227,11 @@ export const CreateRegionForm = ({
                         <Form.Item>
                           <Form.Label>{t("fields.currency")}</Form.Label>
                           <Form.Control>
-                            <Select {...field} onValueChange={onChange}>
+                            <Select
+                              dir={direction}
+                              {...field}
+                              onValueChange={onChange}
+                            >
                               <Select.Trigger ref={ref}>
                                 <Select.Value />
                               </Select.Trigger>
@@ -260,6 +265,8 @@ export const CreateRegionForm = ({
                           <Form.Label>{t("fields.automaticTaxes")}</Form.Label>
                           <Form.Control>
                             <Switch
+                              dir="ltr"
+                              className="rtl:rotate-180"
                               {...field}
                               checked={value}
                               onCheckedChange={onChange}
@@ -287,6 +294,8 @@ export const CreateRegionForm = ({
                           </Form.Label>
                           <Form.Control>
                             <Switch
+                              className="rtl:rotate-180"
+                              dir="ltr"
                               {...field}
                               checked={value}
                               onCheckedChange={onChange}

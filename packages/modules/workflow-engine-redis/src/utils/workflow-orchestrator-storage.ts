@@ -21,7 +21,7 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
-import { raw } from "@mikro-orm/core"
+import { raw } from "@medusajs/framework/mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"

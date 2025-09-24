@@ -17,7 +17,7 @@
     "@medusajs/currency": "workspace:^",
     "@medusajs/customer": "workspace:^",
     "@medusajs/event-bus-local": "workspace:*",
-    "@medusajs/framework": "workspace:^",
+    "@medusajs/framework": "workspace:*",
     "@medusajs/fulfillment": "workspace:^",
     "@medusajs/fulfillment-manual": "workspace:^",
     "@medusajs/inventory": "workspace:^",

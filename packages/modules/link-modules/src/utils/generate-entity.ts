@@ -10,7 +10,7 @@ import {
   SoftDeletableFilterKey,
 } from "@medusajs/framework/utils"
 
-import { EntitySchema } from "@mikro-orm/core"
+import { EntitySchema } from "@medusajs/framework/mikro-orm/core"
 
 function getClass(...properties) {
   return class LinkModel {

@@ -1,5 +1,5 @@
 import { BigNumberInput } from "@medusajs/types"
-import { EntityProperty, Platform, Property, Type } from "@mikro-orm/core"
+import { EntityProperty, Platform, Property, Type } from "@medusajs/deps/mikro-orm/core"
 import { isDefined, isObject, isPresent, trimZeros } from "../../common"
 import { BigNumber } from "../../totals/big-number"
 
@@ -109,12 +109,12 @@ class BigNumberNumeric extends Type<string | number, string> {
   }
 
   override convertToJSValue(value: string): number | string {
-    if ((this.mode ?? this.prop?.runtimeType) === "number") {
-      return +value
-    }
-
     if (isObject(value)) {
       return value // Special case for BigNumberRawValue because the setter will manage the dispatch automatically at a later stage
+    }
+
+    if ((this.mode ?? this.prop?.runtimeType) === "number") {
+      return +value
     }
 
     return String(value)

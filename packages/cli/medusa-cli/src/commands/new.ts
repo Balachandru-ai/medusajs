@@ -11,7 +11,7 @@ import isValid from "is-valid-path"
 import sysPath from "path"
 import path from "path"
 import prompts from "prompts"
-import { Pool } from "pg"
+import { Pool } from "@medusajs/deps/pg"
 import url from "url"
 import { track } from "@medusajs/telemetry"
 // @ts-ignore

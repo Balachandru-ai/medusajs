@@ -14,7 +14,7 @@ import {
   type EntityClass,
   type EntityManager,
   type EntitySchema,
-} from "@mikro-orm/core"
+} from "@medusajs/deps/mikro-orm/core"
 import {
   isDefined,
   isObject,

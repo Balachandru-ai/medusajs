@@ -15,14 +15,14 @@ export const CampaignBudget = ({ campaign }: CampaignBudgetProps) => {
     <Container className="flex flex-col gap-y-4 px-6 py-4">
       <div className="flex justify-between">
         <div className="flex-grow">
-          <div className="bg-ui-bg-base shadow-borders-base float-left flex size-7 items-center justify-center rounded-md">
+          <div className="bg-ui-bg-base shadow-borders-base float-start flex size-7 items-center justify-center rounded-md">
             <div className="bg-ui-bg-component flex size-6 items-center justify-center rounded-[4px]">
               <ChartPie className="text-ui-fg-subtle" />
             </div>
           </div>
 
           <Heading
-            className="text-ui-fg-subtle ml-10 mt-[1.5px] font-normal"
+            className="text-ui-fg-subtle ms-10 mt-[1.5px] font-normal"
             level="h3"
           >
             {campaign.budget?.type === "use_by_attribute"
@@ -50,7 +50,7 @@ export const CampaignBudget = ({ campaign }: CampaignBudgetProps) => {
 
       <div>
         <Text
-          className="text-ui-fg-subtle border-ui-border-strong border-l-4 pl-3"
+          className="text-ui-fg-subtle border-ui-border-strong border-l-4 ps-3"
           size="small"
           leading="compact"
         >
