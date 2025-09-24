@@ -229,6 +229,7 @@ export class Admin {
   public plugin: Plugin
   /**
    * @tags views
+   * @featureFlag view_configurations
    */
   public views: Views
 

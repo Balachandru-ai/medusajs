@@ -1,4 +1,4 @@
-import { Button, Text, Tooltip, clx, usePrompt } from "@medusajs/ui"
+import { Button, Text, Tooltip, clx, toast, usePrompt } from "@medusajs/ui"
 import { Collapsible as RadixCollapsible } from "radix-ui"
 
 import { PropsWithChildren, ReactNode, useMemo, useState } from "react"
@@ -785,7 +785,9 @@ const ReturnBody = ({
       return
     }
 
-    await cancelReturnRequest()
+    await cancelReturnRequest().catch((error) => {
+      toast.error(error.message)
+    })
   }
 
   const numberOfItems = orderReturn.items.reduce((acc, item) => {
@@ -842,7 +844,9 @@ const ClaimBody = ({
       return
     }
 
-    await cancelClaim()
+    await cancelClaim().catch((error) => {
+      toast.error(error.message)
+    })
   }
 
   const outboundItems = (claim.additional_items || []).reduce(
@@ -916,7 +920,9 @@ const ExchangeBody = ({
       return
     }
 
-    await cancelExchange()
+    await cancelExchange().catch((error) => {
+      toast.error(error.message)
+    })
   }
 
   const outboundItems = (exchange.additional_items || []).reduce(
@@ -1015,7 +1021,9 @@ const TransferOrderRequestBody = ({
       return
     }
 
-    await cancelTransfer()
+    await cancelTransfer().catch((error) => {
+      toast.error(error.message)
+    })
   }
 
   /**

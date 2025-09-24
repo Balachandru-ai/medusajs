@@ -1,5 +1,6 @@
-import { BaseCollectionListParams } from "../common"
+import { BaseCollectionListParams, BaseCollectionParams } from "../common"
 
-export interface StoreCollectionFilters
-  extends Omit<BaseCollectionListParams, "id"> {
-}
+export interface StoreCollectionListParams
+  extends Omit<BaseCollectionListParams, "deleted_at"> {}
+
+export interface StoreCollectionParams extends BaseCollectionParams {}

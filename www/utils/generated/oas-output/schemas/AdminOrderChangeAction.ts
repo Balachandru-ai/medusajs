@@ -14,6 +14,7 @@
  *   - return_id
  *   - exchange_id
  *   - claim_id
+ *   - ordering
  *   - order_change_id
  *   - reference
  *   - reference_id
@@ -100,6 +101,10 @@
  *     format: date-time
  *     title: updated_at
  *     description: The date the action was updated.
+ *   ordering:
+ *     type: number
+ *     title: ordering
+ *     description: The action's order in the sequence of actions.
  * 
 */
 

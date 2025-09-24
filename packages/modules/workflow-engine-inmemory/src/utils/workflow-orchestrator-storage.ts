@@ -24,10 +24,12 @@ import {
   TransactionStepState,
   isPresent,
 } from "@medusajs/framework/utils"
-import { raw } from "@mikro-orm/core"
+import { raw } from "@medusajs/framework/mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
+
+const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 
 function calculateDelayFromExpression(expression: CronExpression): number {
   const nextTime = expression.next().getTime()
@@ -127,7 +129,7 @@ export class InMemoryDistributedTransactionStorage
       try {
         await this.clearExpiredExecutions()
       } catch {}
-    }, 1000 * 60 * 60)
+    }, THIRTY_MINUTES_IN_MS)
   }
 
   async onApplicationShutdown() {

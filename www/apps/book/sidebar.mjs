@@ -449,6 +449,11 @@ export const sidebars = [
                 title: "Multiple Step Usage",
               },
               {
+                type: "link",
+                path: "/learn/fundamentals/workflows/locks",
+                title: "Using Locks",
+              },
+              {
                 type: "ref",
                 path: "/learn/debugging-and-testing/debug-workflows",
                 title: "Debug Workflows",

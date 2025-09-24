@@ -26,8 +26,8 @@ import {
   useQueryGraphStep,
   useRemoteQueryStep,
 } from "../../common"
-import { acquireLockStep } from "../../locking/acquire-lock"
-import { releaseLockStep } from "../../locking/release-lock"
+import { acquireLockStep } from "../../locking/steps/acquire-lock"
+import { releaseLockStep } from "../../locking/steps/release-lock"
 import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
 import { createOrdersStep } from "../../order/steps/create-orders"
 import { authorizePaymentSessionStep } from "../../payment/steps/authorize-payment-session"

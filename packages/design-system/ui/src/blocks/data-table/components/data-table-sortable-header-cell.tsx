@@ -38,9 +38,7 @@ export const DataTableSortableHeaderCell = React.forwardRef<
     transform: transformStyle ? CSS.Transform.toString(transformStyle) : undefined,
     transition,
     opacity: isDragging ? 0.8 : 1,
-    zIndex: isDragging ? 50 : undefined,
-    backgroundColor: "white",
-    position: 'relative' as const,
+    zIndex: isDragging ? 50 : isFirstColumn ? 1 : undefined,
   }
 
   const combineRefs = (element: HTMLTableCellElement | null) => {
@@ -58,7 +56,7 @@ export const DataTableSortableHeaderCell = React.forwardRef<
     <Table.HeaderCell
       ref={combineRefs}
       style={style}
-      className={clx(className, "group/header-cell relative")}
+      className={clx(className, "group/header-cell bg-ui-bg-base")}
       {...attributes}
       {...listeners}
       {...props}

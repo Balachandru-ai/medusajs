@@ -4,8 +4,52 @@ export const locking = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/reserveInventoryStep"
   },
   {
+    "title": "addShippingMethodToCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addShippingMethodToCartWorkflow"
+  },
+  {
+    "title": "addToCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addToCartWorkflow"
+  },
+  {
     "title": "completeCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow"
+  },
+  {
+    "title": "createCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createCartWorkflow"
+  },
+  {
+    "title": "createPaymentCollectionForCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createPaymentCollectionForCartWorkflow"
+  },
+  {
+    "title": "refreshCartItemsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refreshCartItemsWorkflow"
+  },
+  {
+    "title": "refreshCartShippingMethodsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refreshCartShippingMethodsWorkflow"
+  },
+  {
+    "title": "refreshPaymentCollectionForCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refreshPaymentCollectionForCartWorkflow"
+  },
+  {
+    "title": "transferCartCustomerWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/transferCartCustomerWorkflow"
+  },
+  {
+    "title": "updateCartPromotionsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartPromotionsWorkflow"
+  },
+  {
+    "title": "updateCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartWorkflow"
+  },
+  {
+    "title": "updateLineItemInCartWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateLineItemInCartWorkflow"
   },
   {
     "title": "confirmDraftOrderEditWorkflow",
@@ -14,6 +58,18 @@ export const locking = [
   {
     "title": "adjustInventoryLevelsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/adjustInventoryLevelsStep"
+  },
+  {
+    "title": "deleteLineItemsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteLineItemsWorkflow"
+  },
+  {
+    "title": "acquireLockStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/acquireLockStep"
+  },
+  {
+    "title": "releaseLockStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/releaseLockStep"
   },
   {
     "title": "cancelOrderFulfillmentWorkflow",

@@ -313,7 +313,7 @@ export const addToCartWorkflow = createWorkflow(
     )
 
     refreshCartItemsWorkflow.runAsStep({
-      input: { cart_id: cart.id, items: allItems },
+      input: { cart_id: cart.id, items: allItems, additional_data: input.additional_data },
     })
 
     parallelize(

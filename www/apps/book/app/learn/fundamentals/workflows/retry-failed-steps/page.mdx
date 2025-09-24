@@ -4,21 +4,23 @@ export const metadata = {
 
 # {metadata.title}
 
-In this chapter, you’ll learn how to configure steps to allow retrial on failure.
+In this chapter, you’ll learn how to configure steps to allow retry on failure.
 
-## What is a Step Retrial?
+## What is a Step Retry?
 
-A step retrial is a mechanism that allows a step to be retried automatically when it fails. This is useful for handling transient errors, such as network issues or temporary unavailability of a service.
+A step retry is a mechanism that allows a step to be retried automatically when it fails. This is useful for handling transient errors, such as network issues or temporary unavailability of a service.
 
-When a step fails, the workflow engine can automatically retry the step a specified number of times before marking the workflow as failed. This can help improve the reliability and resilience of your workflows.
+By default, when a step fails, the workflow execution stops, and the workflow is marked as failed. However, you can configure a step to retry on failure.
 
-You can also configure the interval between retries, allowing you to wait for a certain period before attempting the step again. This is useful when the failure is due to a temporary issue that may resolve itself after some time.
+When a step fails, you can configure the workflow engine to automatically retry the step a specified number of times before marking the workflow as failed. This can help improve the reliability and resilience of your workflows.
 
-For example, if a step captures a payment, you may want to retry it the next day until the payment is successful or the maximum number of retries is reached.
+You can also configure the interval between retries, awllowing you to wait for a certain period before attempting the step again. This is useful when the failure is due to a temporary issue that may resolve itself after some time.
+
+For example, if a step captures a payment, you may want to retry it daily until the payment is successful or the maximum number of retries is reached.
 
 ---
 
-## Configure a Step’s Retrial
+## Configure a Step’s Retry
 
 By default, when an error occurs in a step, the step and the workflow fail, and the execution stops.
 
@@ -72,6 +74,37 @@ Error: Oops! Something happened.
 
 The first line indicates the first time the step was executed, and the next two lines indicate the times the step was retried. After that, the step and workflow fail.
 
+### Disable Automatic Retries
+
+By default, a step configured with the `maxRetries` property will be retried automatically when it fails.
+
+You can disable automatic retries by setting the `autoRetry` property to `false` in the step's configuration object. Then, when the step fails, its status will be set to temporary failure, and you'll need to manually retry it using the [Workflow Engine Module Service](!resources!/infrastructure-modules/workflow-engine).
+
+<Note>
+
+The `autoRetry` property is available since [Medusa v2.10.2](https://github.com/medusajs/medusa/releases/tag/v2.10.2).
+
+</Note>
+
+For example, to disable automatic retries:
+
+```ts title="src/workflows/hello-world.ts" highlights={[["5"]]}
+const step1 = createStep(
+  {
+    name: "step-1",
+    maxRetries: 2,
+    autoRetry: false, // Disable automatic retries
+  },
+  async () => {
+    console.log("Executing step 1")
+
+    throw new Error("Oops! Something happened.")
+  }
+)
+```
+
+This step will not be retried automatically when it fails. Instead, you'll need to manually retry it, as explained in the [Manually Retry a Step](#manually-retry-a-step) section.
+
 ---
 
 ## Step Retry Intervals
@@ -88,7 +121,9 @@ const step1 = createStep(
     retryInterval: 2, // 2 seconds
   },
   async () => {
-    // ...
+    console.log("Executing step 1")
+
+    throw new Error("Oops! Something happened.")
   }
 )
 ```
@@ -109,7 +144,9 @@ const step1 = createStep(
     retryInterval: 86400, // 1 day
   },
   async () => {
-    // ...
+    console.log("Executing step 1")
+
+    throw new Error("Oops! Something happened.")
   }
 )
 ```
@@ -122,4 +159,56 @@ By setting `retryInterval` on a step, a workflow that uses that step becomes a [
 
 However, since the long-running workflow runs in the background, you won't receive its result or errors immediately when you execute the workflow.
 
-Instead, you must subscribe to the workflow's execution using the Workflow Engine Module Service. Learn more about it in [this chapter](../long-running-workflow/page.mdx#access-long-running-workflow-status-and-result).
+Instead, you must subscribe to the workflow's execution using the Workflow Engine Module's service. Learn more about this in the [Long-Running Workflows](../long-running-workflow/page.mdx#access-long-running-workflow-status-and-result) chapter.
+
+---
+
+## Manually Retry a Step
+
+In some cases, you may need to manually retry a step. For example:
+
+- If a step's `autoRetry` property is set to `false`.
+- If the machine running the Medusa application in development or [worker mode](../../../configurations/medusa-config/page.mdx#workermode) dies or shuts down.
+- If the step takes longer than expected to complete.
+
+To retry a step manually, resolve the Workflow Engine Module's service from the Medusa container and call its `retryStep` method.
+
+<Note>
+
+The `retryStep` method is available since [Medusa v2.10.2](https://github.com/medusajs/medusa/releases/tag/v2.10.2).
+
+</Note>
+
+For example, to do it in an API route:
+
+export const retryHighlights = [
+  ["8", "workflowEngine", "Resolve the Workflow Engine Module's service from the Medusa container."],
+  ["10", "retryStep", "Retry the step."],
+]
+
+```ts title="src/api/retry-step/route.ts" highlights={retryHighlights}
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { TransactionHandlerType } from "@medusajs/framework/utils"
+
+export async function GET(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const workflowEngine = req.scope.resolve("workflows")
+
+  workflowEngine.retryStep({
+    idempotencyKey: {
+      action: TransactionHandlerType.INVOKE,
+      transactionId: req.validatedQuery.transaction_id as string,
+      stepId: "step-1",
+      workflowId: "hello-world",
+    },
+  })
+
+  res.json({ message: "Step retry initiated" })
+}
+```
+
+When you send a request to the API route, the workflow execution will resume, retrying the specified step.
+
+Learn more about the `retryStep` method in the [Workflow Engine Module Service reference](!resources!/infrastructure-modules/workflow-engine/how-to-use#retryStep).

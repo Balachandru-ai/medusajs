@@ -261,7 +261,7 @@ const Preview = ({
         type="button"
         onClick={prev}
       >
-        <TriangleLeftMini />
+        <TriangleLeftMini className="rtl:rotate-180" />
       </IconButton>
       <div className="flex items-center gap-x-2">
         {visibleItems.map((item) => {
@@ -292,7 +292,7 @@ const Preview = ({
         type="button"
         onClick={next}
       >
-        <TriangleRightMini />
+        <TriangleRightMini className="rtl:rotate-180" />
       </IconButton>
     </div>
   )

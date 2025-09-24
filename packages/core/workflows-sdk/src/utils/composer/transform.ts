@@ -167,6 +167,7 @@ export function transform(
   const ret = {
     __id: uniqId,
     __type: OrchestrationUtils.SymbolWorkflowStepTransformer,
+    __temporary_storage_key: null as { key: string } | null,
   }
 
   const returnFn = async function (
@@ -175,9 +176,16 @@ export function transform(
   ): Promise<any> {
     if ("transaction" in transactionContext) {
       const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
+      ret.__temporary_storage_key ??= { key: temporaryDataKey }
 
-      if (transactionContext.transaction.hasTemporaryData(temporaryDataKey)) {
-        return transactionContext.transaction.getTemporaryData(temporaryDataKey)
+      if (
+        transactionContext.transaction.hasTemporaryData(
+          ret.__temporary_storage_key
+        )
+      ) {
+        return transactionContext.transaction.getTemporaryData(
+          ret.__temporary_storage_key
+        )
       }
     }
 
@@ -195,7 +203,10 @@ export function transform(
     }
 
     if ("transaction" in transactionContext) {
-      const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
+      const temporaryDataKey = ret.__temporary_storage_key!
+      if (!temporaryDataKey) {
+        return finalResult
+      }
 
       transactionContext.transaction.setTemporaryData(
         temporaryDataKey,

@@ -17,7 +17,7 @@ import {
   OnInit,
   Property,
   rel,
-} from "@mikro-orm/core"
+} from "@medusajs/deps/mikro-orm/core"
 import { camelToSnakeCase, pluralize } from "../../../common"
 import { DmlEntity } from "../../entity"
 import { BelongsTo } from "../../relations"

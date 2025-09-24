@@ -1,10 +1,13 @@
-import { MikroORM, MikroORMOptions } from "@mikro-orm/core"
+import { MikroORM, MikroORMOptions } from "@medusajs/deps/mikro-orm/core"
 import {
   MigrateOptions,
   MigrationResult,
   UmzugMigration,
-} from "@mikro-orm/migrations"
-import { defineConfig, PostgreSqlDriver } from "@mikro-orm/postgresql"
+} from "@medusajs/deps/mikro-orm/migrations"
+import {
+  defineConfig,
+  PostgreSqlDriver,
+} from "@medusajs/deps/mikro-orm/postgresql"
 import { EventEmitter } from "events"
 import { access, mkdir, rename, writeFile } from "fs/promises"
 import { dirname, join } from "path"

@@ -35,3 +35,59 @@ When the conditions are met, the prices in the price list can override the defau
 A price list has optional `start_date` and `end_date` properties that indicate the date range in which a price list can be applied.
 
 Its associated prices are represented by the [Price data model](#price-data-model).
+
+---
+
+## Multi-Currency Support for Prices
+
+The `Price` data model has a `currency_code` property that represents the currency of the price. For example, `usd` for US Dollars and `eur` for Euros.
+
+This adds support for multi-currency pricing, allowing you to associate a resource with a price set that contains prices in multiple currencies.
+
+For example, Medusa links a product variant from the [Product Module](../../product/page.mdx) to a price set that contains prices in multiple currencies. A variant's price set would be similar to the following:
+
+```json title="Example Price Set with Multiple Currencies"
+{
+  "id": "pset_123",
+  "prices": [
+    {
+      "id": "price_123",
+      "amount": 20,
+      "currency_code": "usd"
+    },
+    {
+      "id": "price_124",
+      "amount": 18,
+      "currency_code": "eur"
+    }
+  ]
+}
+```
+
+When the customer views and purchases a product, Medusa selects the price based on the customer's currency.
+
+---
+
+## Multi-Region Support for Prices
+
+The `Price` data model has a relation to the [PriceRule](/references/pricing/models/PriceRule) data model that allows you to define prices that are applied based on specific conditions, such as the customer's region.
+
+For example, Medusa allows you to specify prices for a product variant that are applied only when the customer is in a specific region. The price would be similar to the following:
+
+```json title="Example Price with Region Rule"
+{
+  "id": "price_123",
+  "amount": 25,
+  "currency_code": "usd",
+  "price_rules": [
+    {
+      "id": "pricerule_123",
+      "attribute": "region_id",
+      "value": "reg_123",
+      "operator": "eq"
+    }
+  ]
+}
+```
+
+When the customer views and purchases a product, Medusa selects the price based on the customer's region.
