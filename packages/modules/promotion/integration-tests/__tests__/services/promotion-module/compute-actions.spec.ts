@@ -3041,6 +3041,7 @@ moduleIntegrationTestRunner({
 
             let result = await service.computeActions(["PROMOTION_TEST"], {
               currency_code: "usd",
+              email: "test@test.com",
               customer: {
                 email: "test@test.com",
               },
@@ -3118,8 +3119,9 @@ moduleIntegrationTestRunner({
 
             result = await service.computeActions(["PROMOTION_TEST"], {
               currency_code: "usd",
+              email: "another@test.com", // another email can sucessfully use the promotion
               customer: {
-                email: "another@test.com", // another email can sucessfully use the promotion
+                email: "another@test.com",
               },
               items: [
                 {
