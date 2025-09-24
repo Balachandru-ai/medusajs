@@ -128,9 +128,29 @@ export const processPaymentWorkflow = createWorkflow(
       })
     })
 
-    when({ cartPaymentCollection }, ({ cartPaymentCollection }) => {
+    const cartToComplete = when({ cartPaymentCollection }, ({ cartPaymentCollection }) => {
       return !!cartPaymentCollection.data.length
     }).then(() => {
+      // Check cart completion status before attempting to complete
+      return useQueryGraphStep({
+        entity: "cart",
+        fields: ["id", "completed_at"],
+        filters: { id: cartPaymentCollection.data[0].cart_id },
+        options: { isList: false }
+      }).config({
+        name: "cart-status-check",
+      })
+    })
+
+    when(
+      { cartPaymentCollection, cartToComplete }, 
+      ({ cartPaymentCollection, cartToComplete }) => {
+        return (
+          !!cartPaymentCollection.data.length && 
+          !cartToComplete?.data?.completed_at
+        )
+      }
+    ).then(() => {
       completeCartAfterPaymentStep({
         cart_id: cartPaymentCollection.data[0].cart_id,
       }).config({
