@@ -14,8 +14,7 @@ export class Migration20250924135437 extends Migration {
         VALUES 
           ('refr_${ulid()}', 'Shipping Issue', 'Refund due to lost, delayed, or misdelivered shipment'),
           ('refr_${ulid()}', 'Customer Care Adjustment', 'Refund given as goodwill or compensation for inconvenience'),
-          ('refr_${ulid()}', 'Pricing Error', 'Refund to correct an overcharge, missing discount, or incorrect price'),
-        ;
+          ('refr_${ulid()}', 'Pricing Error', 'Refund to correct an overcharge, missing discount, or incorrect price');
       `)
     }
   }
