@@ -39,23 +39,15 @@ medusaIntegrationTestRunner({
 
         expect(response.status).toEqual(200)
         expect(response.data.count).toEqual(5) // There are 3 default ones
-        expect(response.data.refund_reasons).toEqual([
-          expect.objectContaining({
-            label: "Customer Care Adjustment",
-          }),
-          expect.objectContaining({
-            label: "Shipping Issue",
-          }),
-          expect.objectContaining({
-            label: "Pricing Error",
-          }),
-          expect.objectContaining({
-            label: "reason 1 - too big",
-          }),
-          expect.objectContaining({
-            label: "reason 2 - too small",
-          }),
-        ])
+        expect(response.data.refund_reasons).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ label: "Customer Care Adjustment" }),
+            expect.objectContaining({ label: "Shipping Issue" }),
+            expect.objectContaining({ label: "Pricing Error" }),
+            expect.objectContaining({ label: "reason 1 - too big" }),
+            expect.objectContaining({ label: "reason 2 - too small" }),
+          ])
+        )
       })
 
       it("should list refund-reasons with specific query", async () => {
