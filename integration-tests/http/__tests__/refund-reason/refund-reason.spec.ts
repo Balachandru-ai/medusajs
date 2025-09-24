@@ -1,8 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../helpers/create-admin-user"
+import { adminHeaders, createAdminUser, } from "../../../helpers/create-admin-user"
 
 jest.setTimeout(30000)
 
@@ -41,7 +38,7 @@ medusaIntegrationTestRunner({
           })
 
         expect(response.status).toEqual(200)
-        expect(response.data.count).toEqual(2)
+        expect(response.data.count).toEqual(5) // There are 3 default ones
         expect(response.data.refund_reasons).toEqual([
           expect.objectContaining({
             label: "reason 1 - too big",
