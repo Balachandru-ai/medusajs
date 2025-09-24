@@ -1,3 +1,5 @@
+import { MedusaContainer } from "../common"
+
 type Providers =
   | string[]
   | { id: string; ttl?: number }
@@ -79,6 +81,10 @@ export interface ICachingModuleService {
     }
     providers?: string | string[]
   }): Promise<void>
+
+  computeKey(input: object): Promise<string>
+
+  computeTags(input: object, options?: Record<string, any>): Promise<string[]>
 }
 
 export interface ICachingProviderService {
@@ -105,4 +111,34 @@ export interface ICachingProviderService {
     tags?: string[]
     options?: { noAutoInvalidation?: boolean }
   }): Promise<void>
+}
+
+export interface EntityReference {
+  type: string
+  id: string | number
+  field?: string
+}
+
+export interface ICachingStrategy {
+  /**
+   * This method is called when the application starts. It can be useful to set up some auto
+   * invalidation logic that reacts to something.
+   *
+   * @param container MedusaContainer
+   * @param schema GraphQLSchema
+   * @param cacheModule ICachingModuleService
+   */
+  onApplicationStart?(
+    container: MedusaContainer["cradle"],
+    schema: any,
+    cacheModule: ICachingModuleService
+  ): Promise<void>
+
+  onApplcationPrepareShutdown?(): Promise<void>
+
+  onApplicationShutdown?(): Promise<void>
+
+  computeKey(input: object): Promise<string>
+
+  computeTags(input: object, options?: Record<string, any>): Promise<string[]>
 }

@@ -1,40 +1,40 @@
+import type {
+  Event,
+  ICachingModuleService,
+  ICachingStrategy,
+} from "@medusajs/framework/types"
 import {
   type GraphQLSchema,
   Modules,
   toCamelCase,
   upperCaseFirst,
 } from "@medusajs/framework/utils"
-import type { Event, ICachingModuleService } from "@medusajs/framework/types"
-import type { InjectedDependencies } from "@types"
+import { type CachingModuleService } from "@services"
+import type { ModuleInjectedDependencies } from "@types"
 import crypto from "crypto"
 import stringify from "fast-json-stable-stringify"
 import { CacheInvalidationParser, EntityReference } from "./parser"
-import { type CachingModuleService } from "@services"
 
 export function objectHash(input: any): string {
   const str = stringify(input)
   return crypto.createHash("sha1").update(str).digest("hex")
 }
 
-export class DefaultCacheStrategy {
+export class DefaultCacheStrategy implements ICachingStrategy {
   #cacheInvalidationParser: CacheInvalidationParser
-  #container: InjectedDependencies
   #cacheModule: ICachingModuleService
 
   constructor(
-    container: InjectedDependencies,
+    _: ModuleInjectedDependencies,
     schema: GraphQLSchema,
     cacheModule: CachingModuleService
   ) {
     this.#cacheInvalidationParser = new CacheInvalidationParser(schema)
-    this.#container = container
     this.#cacheModule = cacheModule
-
-    this.applyReactiveInvalidation()
   }
 
-  applyReactiveInvalidation() {
-    const eventBus = this.#container[Modules.EVENT_BUS]
+  async onApplicationStart(container: ModuleInjectedDependencies) {
+    const eventBus = container[Modules.EVENT_BUS]
 
     eventBus.subscribe("*", async (data: Event) => {
       try {
@@ -70,10 +70,10 @@ export class DefaultCacheStrategy {
               tags.push(...tags_)
             }
 
-            console.log(tags)
-            // TODO: remove expect error once implemented
-            // @ts-expect-error
-            this.#cacheModule.clear({ tags, noAutoInvalidation: false })
+            await this.#cacheModule.clear({
+              tags,
+              options: { noAutoInvalidation: false },
+            })
           }
         } else {
           const ids = Array.isArray(eventData.id)
@@ -94,36 +94,26 @@ export class DefaultCacheStrategy {
             tags.push(...tags_)
           }
 
-          console.log(tags)
-          // TODO: remove expect error once implemented
-          // @ts-expect-error
-          this.#cacheModule.clear({ tags, noAutoInvalidation: false })
+          await this.#cacheModule.clear({
+            tags,
+            options: { noAutoInvalidation: false },
+          })
         }
       }
     })
   }
 
-  async computeCacheKey(
-    input: object | ((input: object) => string | Promise<string>)
-  ) {
-    if (typeof input === "function") {
-      return await input(input)
-    }
-
+  async computeKey(input: object) {
     return objectHash(input)
   }
 
   async computeTags(
-    input: object | ((input: object) => string[] | Promise<string[]>),
+    input: object,
     options?: {
       entities?: EntityReference[]
       operation?: "created" | "updated" | "deleted"
     }
   ): Promise<string[]> {
-    if (typeof input === "function") {
-      return await input(input)
-    }
-
     // Parse the input object to identify entities
     const entities_ =
       options?.entities ||
@@ -134,7 +124,7 @@ export class DefaultCacheStrategy {
     }
 
     // Generate cache key for this input
-    const cacheKey = await this.computeCacheKey(input)
+    const cacheKey = await this.computeKey(input)
 
     // Build invalidation events to get comprehensive cache keys
     const events = this.#cacheInvalidationParser.buildInvalidationEvents(

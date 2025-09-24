@@ -1,9 +1,5 @@
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
-import {
-  LoaderOptions,
-  ModuleProvider,
-  ModulesSdkTypes,
-} from "@medusajs/framework/types"
+import { LoaderOptions, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   getProviderRegistrationKey,
@@ -12,9 +8,11 @@ import { CachingProviderService } from "@services"
 import {
   CachingDefaultProvider,
   CachingIdentifiersRegistrationName,
+  CachingModuleOptions,
   CachingProviderRegistrationPrefix,
 } from "@types"
 import { aliasTo, asValue } from "awilix"
+import { DefaultCacheStrategy } from "../utils/strategy"
 
 const registrationFn = async (klass, container, { id }) => {
   const key = CachingProviderService.getRegistrationIdentifier(klass)
@@ -42,10 +40,14 @@ export default async ({
   (
     | ModulesSdkTypes.ModuleServiceInitializeOptions
     | ModulesSdkTypes.ModuleServiceInitializeCustomDataLayerOptions
-  ) & { providers: ModuleProvider[] }
+  ) &
+    CachingModuleOptions
 >): Promise<void> => {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   container.registerAdd(CachingIdentifiersRegistrationName, asValue(undefined))
+
+  const strategy = options?.strategy ?? DefaultCacheStrategy
+  container.register("strategy", asValue(strategy))
 
   // Load other providers
   await moduleProviderLoader({

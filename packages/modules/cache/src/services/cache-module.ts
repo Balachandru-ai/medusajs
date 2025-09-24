@@ -1,29 +1,35 @@
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
+import type {
+  ICachingModuleService,
+  ICachingStrategy,
+} from "@medusajs/framework/types"
 import { GraphQLUtils, MedusaError } from "@medusajs/framework/utils"
-import { CachingDefaultProvider, InjectedDependencies } from "@types"
-import type CachingProviderService from "./cache-provider"
-import type { ICachingModuleService } from "@medusajs/framework/types"
-import { DefaultCacheStrategy } from "../utils/strategy"
+import { CachingDefaultProvider, ModuleInjectedDependencies } from "@types"
+import CacheProviderService from "./cache-provider"
 
 const ONE_HOUR_IN_SECOND = 60 * 60 * 100
 
 export default class CachingModuleService implements ICachingModuleService {
-  #container: InjectedDependencies
-  #providerService: CachingProviderService
-  #defaultStrategy: DefaultCacheStrategy
+  #container: ModuleInjectedDependencies
+  #providerService: CacheProviderService
+  #defaultStrategyCtr: new (...args: any[]) => ICachingStrategy
+  #defaultStrategy: ICachingStrategy
   #defaultProviderId: string
 
   #ttl: number
 
   constructor(
-    container: InjectedDependencies,
+    container: ModuleInjectedDependencies,
     protected readonly moduleDeclaration:
       | { options: { ttl?: number } }
       | { ttl?: number }
   ) {
     this.#container = container
-    this.#providerService = container.cachingProviderService
+    this.#providerService = container.cacheProviderService
     this.#defaultProviderId = container[CachingDefaultProvider]
+    this.#defaultStrategyCtr = container.strategy as new (
+      ...args: any[]
+    ) => ICachingStrategy
 
     const moduleOptions =
       "options" in moduleDeclaration
@@ -40,6 +46,12 @@ export default class CachingModuleService implements ICachingModuleService {
   }
 
   #onApplicationStart() {
+    this.#defaultStrategy = new this.#defaultStrategyCtr(
+      this.#container,
+      MedusaModule.getAllJoinerConfigs(),
+      this
+    )
+
     const loadedSchema = MedusaModule.getAllJoinerConfigs()
       .map((joinerConfig) => joinerConfig?.schema ?? "")
       .join("\n")
@@ -58,11 +70,7 @@ export default class CachingModuleService implements ICachingModuleService {
       typeDefs: mergedSchema,
     })
 
-    this.#defaultStrategy = new DefaultCacheStrategy(
-      this.#container,
-      schema,
-      this
-    )
+    this.#defaultStrategy.onApplicationStart?.(this.#container, schema, this)
   }
 
   #normalizeProviders(
@@ -122,7 +130,7 @@ export default class CachingModuleService implements ICachingModuleService {
       noAutoInvalidation?: boolean
     }
   }) {
-    const key_ = key ?? this.#defaultStrategy.computeCacheKey(data)
+    const key_ = key ?? this.#defaultStrategy.computeKey(data)
     const tags_ = tags ?? (await this.#defaultStrategy.computeTags(data))
 
     let providers_: string[] | { id: string; ttl?: number }[] = [
@@ -176,5 +184,14 @@ export default class CachingModuleService implements ICachingModuleService {
     }
   }
 
-  // TODO: add compute tags and compute key methods
+  async computeKey(input: object): Promise<string> {
+    return await this.#defaultStrategy.computeKey(input)
+  }
+
+  async computeTags(
+    input: object,
+    options?: Record<string, any>
+  ): Promise<string[]> {
+    return await this.#defaultStrategy.computeTags(input, options)
+  }
 }

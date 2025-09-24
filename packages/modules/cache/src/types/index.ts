@@ -1,4 +1,6 @@
 import type {
+  Constructor,
+  ICachingStrategy,
   IEventBusModuleService,
   Logger,
   ModuleProviderExports,
@@ -6,6 +8,7 @@ import type {
 } from "@medusajs/framework/types"
 import CachingProviderService from "../services/cache-provider"
 import { Modules } from "@medusajs/framework/utils"
+import CacheProviderService from "../services/cache-provider"
 
 export const CachingDefaultProvider = "default_provider"
 export const CachingIdentifiersRegistrationName = "caching_providers_identifier"
@@ -19,7 +22,16 @@ export type InjectedDependencies = {
   [Modules.EVENT_BUS]: IEventBusModuleService
 }
 
+export type ModuleInjectedDependencies = InjectedDependencies & {
+  cacheProviderService: CacheProviderService
+  strategy: Constructor<ICachingStrategy>
+}
+
 export type CachingModuleOptions = Partial<ModuleServiceInitializeOptions> & {
+  /**
+   * The strategy to be used. Default to the inbuilt default strategy.
+   */
+  strategy?: ICachingStrategy
   /**
    * Providers to be registered
    */

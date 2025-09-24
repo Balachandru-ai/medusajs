@@ -11,7 +11,7 @@ type InjectedDependencies = {
   logger?: Logger
 }
 
-export default class CachingProviderService {
+export default class CacheProviderService {
   #container: InjectedDependencies
   #logger: Logger
 
