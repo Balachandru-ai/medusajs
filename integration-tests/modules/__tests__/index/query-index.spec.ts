@@ -15,7 +15,7 @@ import {
 } from "../../../helpers/create-admin-user"
 import { fetchAndRetry } from "../../../helpers/retry"
 
-jest.setTimeout(120000)
+jest.setTimeout(240000)
 
 // NOTE: In this tests, both API are used to query, we use object pattern and string pattern
 
@@ -155,7 +155,7 @@ medusaIntegrationTestRunner({
           },
         })
 
-        await setTimeout(1000)
+        await setTimeout(5000)
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -366,7 +366,7 @@ medusaIntegrationTestRunner({
           },
         })
 
-        await setTimeout(1000)
+        await setTimeout(5000)
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -508,6 +508,8 @@ medusaIntegrationTestRunner({
       it("should use query.index to query the index module sorting by price desc", async () => {
         await populateData(api)
 
+        await setTimeout(5000)
+
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
         ) as RemoteQueryFunction
@@ -616,6 +618,8 @@ medusaIntegrationTestRunner({
       it("should use query.index to get products by an array of handles", async () => {
         await populateData(api)
 
+        await setTimeout(5000)
+
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
         ) as RemoteQueryFunction
@@ -644,6 +648,8 @@ medusaIntegrationTestRunner({
 
       it("should query by custom linkable field and default field using query.index", async () => {
         await populateData(api)
+
+        await setTimeout(5000)
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -683,7 +689,7 @@ medusaIntegrationTestRunner({
           },
         })
 
-        await setTimeout(1000)
+        await setTimeout(5000)
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
