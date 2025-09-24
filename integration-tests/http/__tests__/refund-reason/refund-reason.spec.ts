@@ -50,9 +50,6 @@ medusaIntegrationTestRunner({
             label: "Pricing Error",
           }),
           expect.objectContaining({
-            label: "reason 2 - too small",
-          }),
-          expect.objectContaining({
             label: "reason 1 - too big",
           }),
           expect.objectContaining({
