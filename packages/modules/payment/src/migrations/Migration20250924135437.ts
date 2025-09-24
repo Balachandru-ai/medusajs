@@ -10,7 +10,7 @@ export class Migration20250924135437 extends Migration {
     if (existingReasonIds.length === 0) {
       // 2. Create default shipping option type
       await this.execute(`
-        INSERT INTO "shipping_option_type" (id, label, description)
+        INSERT INTO "refund_reason" (id, label, description)
         VALUES 
           ('refr_${ulid()}', 'Shipping Issue', 'Refund due to lost, delayed, or misdelivered shipment'),
           ('refr_${ulid()}', 'Customer Care Adjustment', 'Refund given as goodwill or compensation for inconvenience'),
@@ -29,6 +29,6 @@ export class Migration20250924135437 extends Migration {
         ('Customer Care Adjustment', 'Refund given as goodwill or compensation for inconvenience'),
         ('Pricing Error', 'Refund to correct an overcharge, missing discount, or incorrect price')
       )
-    `);
+    `)
   }
 }
