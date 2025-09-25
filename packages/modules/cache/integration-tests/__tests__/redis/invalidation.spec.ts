@@ -2,9 +2,10 @@ import { Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { ICachingModuleService } from "@medusajs/framework/types"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
-import { EventBusServiceMock } from "../__fixtures__/event-bus-mock"
+import { EventBusServiceMock } from "../../__fixtures__/event-bus-mock"
+import { setTimeout } from "timers/promises"
 
-jest.setTimeout(30000)
+jest.setTimeout(300000)
 
 jest.spyOn(MedusaModule, "getAllJoinerConfigs").mockReturnValue([
   {
@@ -61,10 +62,21 @@ moduleIntegrationTestRunner<ICachingModuleService>({
   injectedDependencies: {
     [Modules.EVENT_BUS]: mockEventBus,
   },
+  moduleOptions: {
+    providers: [
+      {
+        id: "cache-redis",
+        resolve: require.resolve("../../../../providers/cache-redis/src"),
+        is_default: true,
+        options: {
+          redisUrl: "localhost:6379",
+        },
+      },
+    ],
+  },
   testSuite: ({ service }) => {
     describe("Cache Invalidation with Entity Relationships", () => {
       afterEach(async () => {
-        // Clear all cache data before each test
         await service.clear({ tags: ["*"] }).catch(() => {})
       })
 
@@ -86,6 +98,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: product,
           })
 
+          await setTimeout(5)
+
           const cachedProduct = await service.get({ key: productKey })
           expect(cachedProduct).toEqual(product)
         })
@@ -104,10 +118,14 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: product,
           })
 
+          await setTimeout(5)
+
           await mockEventBus.emit(
             [{ name: "product.updated", data: { id: product.id } }],
             {}
           )
+
+          await setTimeout(5)
 
           const result = await service.get({ key: productKey })
           expect(result).toBeNull()
@@ -128,11 +146,15 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             options: { autoInvalidate: false },
           })
 
+          await setTimeout(5)
+
           // Emit domain event that should trigger strategy invalidation
           await mockEventBus.emit(
             [{ name: "product.updated", data: { id: product.id } }],
             {}
           )
+
+          await setTimeout(5)
 
           const result = await service.get({ key: productKey })
           expect(result).toEqual(product)
@@ -178,6 +200,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: allProducts,
           })
 
+          await setTimeout(5)
+
           // Retrieve cached lists
           const cachedPublished = await service.get({
             key: publishedProductsKey,
@@ -207,6 +231,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: products,
           })
 
+          await setTimeout(5)
+
           await mockEventBus.emit(
             [
               {
@@ -216,6 +242,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             ],
             {}
           )
+
+          await setTimeout(5)
 
           const cachedList = await service.get({ key: listKey })
 
@@ -256,7 +284,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
                   {
                     id: "price_3",
                     variant_id: "var_2",
-                    amount: 1200,
+                    amount: 1500,
                     currency_code: "USD",
                   },
                 ],
@@ -270,6 +298,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             key: productKey,
             data: productWithVariants,
           })
+
+          await setTimeout(5)
 
           const cached = await service.get<typeof productWithVariants>({
             key: productKey,
@@ -293,6 +323,9 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: productWithVariants,
           })
 
+          await setTimeout(5)
+
+          // Emit event and wait for strategy to process completely
           await mockEventBus.emit(
             [
               {
@@ -306,6 +339,9 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             ],
             {}
           )
+
+          // Wait for all async operations to complete
+          await setTimeout(5)
 
           const result = await service.get({ key: productKey })
           expect(result).toBeNull()
@@ -349,6 +385,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: product,
           })
 
+          await setTimeout(5)
+
           await mockEventBus.emit(
             [
               {
@@ -358,6 +396,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             ],
             {}
           )
+
+          await setTimeout(5)
 
           const cachedPrice = await service.get({ key: priceKey })
           const cachedVariant = await service.get({ key: variantKey })
@@ -412,6 +452,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: queryResult,
           })
 
+          await setTimeout(5)
+
           const cached = await service.get({ key: queryKey })
           expect(cached).toEqual(queryResult)
 
@@ -424,6 +466,8 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             ],
             {}
           )
+
+          await setTimeout(5)
 
           const cachedAfterUpdate = await service.get({ key: queryKey })
           expect(cachedAfterUpdate).toBeNull()

@@ -79,7 +79,7 @@ export class MemoryCachingProvider implements ICachingProviderService {
       return this.cacheClient.get(key) ?? null
     }
 
-    if (tags && tags.length > 0) {
+    if (tags && tags.length) {
       const allKeys = new Set<string>()
 
       tags.forEach((tag) => {
@@ -127,7 +127,7 @@ export class MemoryCachingProvider implements ICachingProviderService {
     this.cacheClient.set(key, data, effectiveTTL)
 
     // Handle tags if provided
-    if (tags && tags.length > 0) {
+    if (tags && tags.length) {
       // Clean up any existing tag references for this key
       this.cleanupTagReferences(key)
 
@@ -165,7 +165,16 @@ export class MemoryCachingProvider implements ICachingProviderService {
       return
     }
 
-    if (tags && tags.length > 0) {
+    if (tags && tags.length) {
+      // Handle wildcard tag to clear all cache data
+      if (tags.includes("*")) {
+        this.cacheClient.flushAll()
+        this.tagIndex.clear()
+        this.keyTags.clear()
+        this.entryOptions.clear()
+        return
+      }
+
       const allKeys = new Set<string>()
 
       tags.forEach((tag) => {
@@ -175,10 +184,16 @@ export class MemoryCachingProvider implements ICachingProviderService {
         }
       })
 
-      if (allKeys.size > 0) {
+      if (allKeys.size) {
         // If no options provided (user explicit call), clear everything
         if (!options) {
-          this.cacheClient.del(Array.from(allKeys))
+          const keysToDelete = Array.from(allKeys)
+          this.cacheClient.del(keysToDelete)
+
+          // Clean up ALL tag references for deleted keys
+          keysToDelete.forEach((key) => {
+            this.cleanupTagReferences(key)
+          })
           return
         }
 
@@ -195,8 +210,13 @@ export class MemoryCachingProvider implements ICachingProviderService {
             }
           })
 
-          if (keysToDelete.length > 0) {
+          if (keysToDelete.length) {
             this.cacheClient.del(keysToDelete)
+
+            // Clean up ALL tag references for deleted keys
+            keysToDelete.forEach((key) => {
+              this.cleanupTagReferences(key)
+            })
           }
         }
       }

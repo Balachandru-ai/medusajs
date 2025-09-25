@@ -10,6 +10,7 @@ export default async (
   {
     container,
     logger,
+    options,
   }: LoaderOptions<
     (
       | ModulesSdkTypes.ModuleServiceInitializeOptions
@@ -20,13 +21,14 @@ export default async (
 ): Promise<void> => {
   const logger_ = logger || console
 
-  const moduleOptions = (moduleDeclaration?.options ??
+  const moduleOptions = (options ??
+    moduleDeclaration?.options ??
     {}) as RedisCacheModuleOptions & {
     redisUrl?: string
   }
 
   if (!moduleOptions.redisUrl) {
-    throw new Error("[caching-redis]redisUrl is required")
+    throw new Error("[caching-redis] redisUrl is required")
   }
 
   let redisClient: Redis
@@ -36,6 +38,7 @@ export default async (
       connectTimeout: 10000,
       lazyConnect: true,
       retryDelayOnFailover: 100,
+      connectionName: "medusa-cache-redis",
       ...moduleOptions,
     })
 
