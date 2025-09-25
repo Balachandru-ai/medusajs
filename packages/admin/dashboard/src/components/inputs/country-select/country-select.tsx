@@ -25,6 +25,7 @@ export const CountrySelect = forwardRef<
     <div className="relative">
       <Select
         {...field}
+        value={field.value ? field.value?.toLowerCase() : undefined}
         onValueChange={onChange}
         defaultValue={defaultValue ? defaultValue.toLowerCase() : undefined}
         disabled={disabled}
