@@ -112,6 +112,17 @@ export default class CachingModuleService implements ICachingModuleService {
     return `${keyPart}|${tagsPart}|${providersPart}`
   }
 
+  #getClearRequestKey(
+    key?: string,
+    tags?: string[],
+    providers?: string[]
+  ): string {
+    const keyPart = key || ""
+    const tagsPart = tags?.sort().join(",") || ""
+    const providersPart = providers?.join(",") || this.#defaultProviderId
+    return `clear:${keyPart}|${tagsPart}|${providersPart}`
+  }
+
   async get({
     key,
     tags,
@@ -130,14 +141,11 @@ export default class CachingModuleService implements ICachingModuleService {
 
     const requestKey = this.#getRequestKey(key, tags, providers)
 
-    // Check if there's already an ongoing request for this exact cache lookup
-    // prevent cache stampedes
     const existingRequest = this.#ongoingRequests.get(requestKey)
     if (existingRequest) {
       return await existingRequest
     }
 
-    // Create and store the new request promise
     const requestPromise = this.#performCacheGet(key, tags, providers)
     this.#ongoingRequests.set(requestKey, requestPromise)
 
@@ -242,6 +250,37 @@ export default class CachingModuleService implements ICachingModuleService {
       )
     }
 
+    const requestKey = this.#getClearRequestKey(key, tags, providers)
+
+    const existingRequest = this.#ongoingRequests.get(requestKey)
+    if (existingRequest) {
+      return await existingRequest
+    }
+
+    const requestPromise = this.#performCacheClear(
+      key,
+      tags,
+      options,
+      providers
+    )
+    this.#ongoingRequests.set(requestKey, requestPromise)
+
+    try {
+      await requestPromise
+    } finally {
+      // Clean up the completed request
+      this.#ongoingRequests.delete(requestKey)
+    }
+  }
+
+  async #performCacheClear(
+    key?: string,
+    tags?: string[],
+    options?: {
+      noAutoInvalidation?: boolean
+    },
+    providers?: string[]
+  ): Promise<void> {
     let providerIds_: string[] = [this.#defaultProviderId]
     if (providers) {
       providerIds_ = Array.isArray(providers) ? providers : [providers]
