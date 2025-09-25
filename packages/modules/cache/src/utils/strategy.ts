@@ -141,7 +141,7 @@ export class DefaultCacheStrategy implements ICachingStrategy {
 
       // Also add entity-specific tags
       tags.add(`${event.entityType}:${event.entityId}`)
-      tags.add(`${event.entityType}:*`)
+      tags.add(`${event.entityType}:list:*`)
     })
 
     return Array.from(tags)

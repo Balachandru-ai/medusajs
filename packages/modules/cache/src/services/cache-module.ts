@@ -2,6 +2,7 @@ import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import type {
   ICachingModuleService,
   ICachingStrategy,
+  Logger,
 } from "@medusajs/framework/types"
 import { GraphQLUtils, MedusaError } from "@medusajs/framework/utils"
 import { CachingDefaultProvider, ModuleInjectedDependencies } from "@types"
@@ -12,9 +13,11 @@ const ONE_HOUR_IN_SECOND = 60 * 60 * 100
 export default class CachingModuleService implements ICachingModuleService {
   #container: ModuleInjectedDependencies
   #providerService: CacheProviderService
-  #defaultStrategyCtr: new (...args: any[]) => ICachingStrategy
-  #defaultStrategy: ICachingStrategy
+  strategyCtr: new (...args: any[]) => ICachingStrategy
+  #strategy: ICachingStrategy
   #defaultProviderId: string
+
+  #logger: Logger
 
   #ttl: number
 
@@ -27,7 +30,7 @@ export default class CachingModuleService implements ICachingModuleService {
     this.#container = container
     this.#providerService = container.cacheProviderService
     this.#defaultProviderId = container[CachingDefaultProvider]
-    this.#defaultStrategyCtr = container.strategy as new (
+    this.strategyCtr = container.strategy as new (
       ...args: any[]
     ) => ICachingStrategy
 
@@ -37,16 +40,24 @@ export default class CachingModuleService implements ICachingModuleService {
         : moduleDeclaration
 
     this.#ttl = moduleOptions.ttl ?? ONE_HOUR_IN_SECOND
+
+    this.#logger = container.logger ?? (console as unknown as Logger)
   }
 
   __hooks = {
     onApplicationStart: async () => {
       this.#onApplicationStart()
     },
+    onApplicationShutdown: async () => {
+      this.#onApplicationShutdown()
+    },
+    onApplicationPrepareShutdown: async () => {
+      this.#onApplicationPrepareShutdown()
+    },
   }
 
   #onApplicationStart() {
-    this.#defaultStrategy = new this.#defaultStrategyCtr(
+    this.#strategy = new this.strategyCtr(
       this.#container,
       MedusaModule.getAllJoinerConfigs(),
       this
@@ -70,7 +81,15 @@ export default class CachingModuleService implements ICachingModuleService {
       typeDefs: mergedSchema,
     })
 
-    this.#defaultStrategy.onApplicationStart?.(this.#container, schema, this)
+    this.#strategy.onApplicationStart?.(this.#container, schema, this)
+  }
+
+  #onApplicationShutdown() {
+    this.#strategy.onApplicationShutdown?.()
+  }
+
+  #onApplicationPrepareShutdown() {
+    this.#strategy.onApplicationPrepareShutdown?.()
   }
 
   #normalizeProviders(
@@ -88,11 +107,11 @@ export default class CachingModuleService implements ICachingModuleService {
   async get({
     key,
     tags,
-    provider,
+    providers,
   }: {
     key?: string
     tags?: string[]
-    provider?: string
+    providers?: string[]
   }) {
     if (!key && !tags) {
       throw new MedusaError(
@@ -101,10 +120,25 @@ export default class CachingModuleService implements ICachingModuleService {
       )
     }
 
-    const provider_ = this.#providerService.retrieveProvider(
-      provider ?? this.#defaultProviderId
-    )
-    return await provider_.get({ key, tags })
+    const providersToCheck = providers ?? [this.#defaultProviderId]
+
+    for (const providerId of providersToCheck) {
+      try {
+        const provider_ = this.#providerService.retrieveProvider(providerId)
+        const result = await provider_.get({ key, tags })
+
+        if (result != null) {
+          return result
+        }
+      } catch (error) {
+        this.#logger.warn(
+          `Cache provider ${providerId} failed: ${error.message}\n${error.stack}`
+        )
+        continue
+      }
+    }
+
+    return null
   }
 
   async set({
@@ -130,8 +164,8 @@ export default class CachingModuleService implements ICachingModuleService {
       noAutoInvalidation?: boolean
     }
   }) {
-    const key_ = key ?? this.#defaultStrategy.computeKey(data)
-    const tags_ = tags ?? (await this.#defaultStrategy.computeTags(data))
+    const key_ = key ?? this.#strategy.computeKey(data)
+    const tags_ = tags ?? (await this.#strategy.computeTags(data))
 
     let providers_: string[] | { id: string; ttl?: number }[] = [
       { id: this.#defaultProviderId },
@@ -143,7 +177,7 @@ export default class CachingModuleService implements ICachingModuleService {
       const provider = this.#providerService.retrieveProvider(
         providerOptions.id
       )
-      await provider.set({
+      void provider.set({
         key: key_,
         tags: tags_,
         data,
@@ -164,7 +198,7 @@ export default class CachingModuleService implements ICachingModuleService {
     options?: {
       noAutoInvalidation?: boolean
     }
-    providers?: string | string[]
+    providers?: string[]
   }) {
     if (!key && !tags) {
       throw new MedusaError(
@@ -180,18 +214,18 @@ export default class CachingModuleService implements ICachingModuleService {
 
     for (const providerId of providerIds_) {
       const provider = this.#providerService.retrieveProvider(providerId)
-      await provider.clear({ key, tags, options })
+      void provider.clear({ key, tags, options })
     }
   }
 
   async computeKey(input: object): Promise<string> {
-    return await this.#defaultStrategy.computeKey(input)
+    return await this.#strategy.computeKey(input)
   }
 
   async computeTags(
     input: object,
     options?: Record<string, any>
   ): Promise<string[]> {
-    return await this.#defaultStrategy.computeTags(input, options)
+    return await this.#strategy.computeTags(input, options)
   }
 }

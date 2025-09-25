@@ -33,6 +33,10 @@ export type CachingModuleOptions = Partial<ModuleServiceInitializeOptions> & {
    */
   strategy?: ICachingStrategy
   /**
+   * Time to keep data in cache (in seconds)
+   */
+  ttl?: number
+  /**
    * Providers to be registered
    */
   providers?: {

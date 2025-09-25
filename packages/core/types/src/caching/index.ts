@@ -11,21 +11,21 @@ export interface ICachingModuleService {
    *
    * @param key - The key of the item to retrieve.
    * @param tags - The tags of the items to retrieve.
-   * @param provider - The provider from which to retrieve the item(s). if not provided, the
-   * default provider will be used.
+   * @param providers - Array of providers to check in order of priority. If not provided,
+   * only the default provider will be used.
    *
-   *  @returns The item(s) that was stored in the cache. If the item(s) was not found, void will
+   *  @returns The item(s) that was stored in the cache. If the item(s) was not found, null will
    *  be returned.
    *
    */
   get<T>({
     key,
     tags,
-    provider,
+    providers,
   }: {
     key?: string
     tags?: string[]
-    provider?: string
+    providers?: string[]
   }): Promise<T | null>
 
   /**
@@ -79,7 +79,7 @@ export interface ICachingModuleService {
     options?: {
       noAutoInvalidation?: boolean
     }
-    providers?: string | string[]
+    providers?: string[]
   }): Promise<void>
 
   computeKey(input: object): Promise<string>
@@ -134,7 +134,7 @@ export interface ICachingStrategy {
     cacheModule: ICachingModuleService
   ): Promise<void>
 
-  onApplcationPrepareShutdown?(): Promise<void>
+  onApplicationPrepareShutdown?(): Promise<void>
 
   onApplicationShutdown?(): Promise<void>
 

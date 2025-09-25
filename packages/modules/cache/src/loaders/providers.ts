@@ -1,8 +1,8 @@
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
 import { LoaderOptions, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
-  ContainerRegistrationKeys,
   getProviderRegistrationKey,
+  MedusaError,
 } from "@medusajs/framework/utils"
 import { CachingProviderService } from "@services"
 import {
@@ -43,7 +43,6 @@ export default async ({
   ) &
     CachingModuleOptions
 >): Promise<void> => {
-  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   container.registerAdd(CachingIdentifiersRegistrationName, asValue(undefined))
 
   const strategy = options?.strategy ?? DefaultCacheStrategy
@@ -68,8 +67,9 @@ export default async ({
   }
 
   if (!hasDefaultProvider) {
-    logger.info(
-      `[caching-module]: no default provider specified. the configured provider will be used as default.`
+    throw new MedusaError(
+      MedusaError.Types.INVALID_ARGUMENT,
+      "[caching-module]: No default provider specified. You must specify a default provider."
     )
   }
 }
