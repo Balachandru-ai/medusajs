@@ -163,26 +163,20 @@ export const refundPaymentWorkflow = createWorkflow(
 
     // validateRefundStep({ order, payment, amount: input.amount })
 
-    const { pendingDifference, amountToRefund } = transform({ order, payment, input }, ({ order, payment, input }) => {
-      return {
-        pendingDifference:  order.summary?.raw_pending_difference! ?? order.summary?.pending_difference! ?? 0,
-        amountToRefund: input.amount ?? payment.raw_amount ?? payment.amount
-      }
+    const pendingDifferenceAfterRefund = transform({ order, payment, input }, ({ order, payment, input }) => {
+      const pendingDifference =  order.summary?.raw_pending_difference! ?? order.summary?.pending_difference! ?? 0
+      const amountToRefund = input.amount ?? payment.raw_amount ?? payment.amount
+
+      return MathBN.sub(amountToRefund, pendingDifference)
     })
 
     when(
-      {pendingDifference}, ({pendingDifference}) => MathBN.gte(pendingDifference, 0)
+      { pendingDifferenceAfterRefund }, ({ pendingDifferenceAfterRefund }) => MathBN.gte(pendingDifferenceAfterRefund, 0)
     ).then(() => {
-      const creditLineAmount = transform(
-        { pendingDifference, amountToRefund },
-        ({ pendingDifference, amountToRefund }) => {
-          return MathBN.sub(amountToRefund, pendingDifference)
-        }
-      )
       createOrderRefundCreditLinesWorkflow.runAsStep({
         input: {
           order_id: order.id,
-          amount: creditLineAmount,
+          amount: pendingDifferenceAfterRefund,
         },
       })
     })
