@@ -173,7 +173,12 @@ export const refundPaymentWorkflow = createWorkflow(
     when(
       {pendingDifference}, ({pendingDifference}) => MathBN.gte(pendingDifference, 0)
     ).then(() => {
-      const creditLineAmount = MathBN.sub(amountToRefund, pendingDifference)
+      const creditLineAmount = transform(
+        { pendingDifference, amountToRefund },
+        ({ pendingDifference, amountToRefund }) => {
+          return MathBN.sub(amountToRefund, pendingDifference)
+        }
+      )
       createOrderRefundCreditLinesWorkflow.runAsStep({
         input: {
           order_id: order.id,
