@@ -26,6 +26,32 @@ const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
 const INSTRUMENTATION_FILE = "instrumentation"
 
+function parseValueOrPercentage(value: string, base: number): number {
+  if (typeof value !== "string") {
+    throw new Error(`Invalid value: ${value}. Must be a string.`)
+  }
+
+  const trimmed = value.trim()
+  if (trimmed.endsWith("%")) {
+    const percent = parseFloat(trimmed.slice(0, -1))
+    if (isNaN(percent)) {
+      throw new Error(`Invalid percentage: ${value}`)
+    }
+    if (percent < 0 || percent > 100) {
+      throw new Error(`Percentage must be between 0 and 100: ${value}`)
+    }
+    return Math.round((percent / 100) * base)
+  } else {
+    const num = parseInt(trimmed, 10)
+    if (isNaN(num) || num < 0) {
+      throw new Error(
+        `Invalid number: ${value}. Must be a non-negative integer.`
+      )
+    }
+    return num
+  }
+}
+
 /**
  * Imports the "instrumentation.js" file from the root of the
  * directory and invokes the register function. The existence
@@ -142,9 +168,9 @@ async function start(args: {
   host?: string
   port?: number
   types?: boolean
-  cluster?: number
-  workers?: number
-  servers?: number
+  cluster?: string
+  workers?: string
+  servers?: string
 }) {
   const {
     port = 9000,
@@ -155,6 +181,17 @@ async function start(args: {
     workers,
     servers,
   } = args
+
+  const maxCpus = os.cpus().length
+  const clusterSizeNum = clusterSize
+    ? parseValueOrPercentage(clusterSize, maxCpus)
+    : maxCpus
+  const serversCount = servers
+    ? parseValueOrPercentage(servers, clusterSizeNum)
+    : 0
+  const workersCount = workers
+    ? parseValueOrPercentage(workers, clusterSizeNum)
+    : 0
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")
@@ -271,21 +308,17 @@ async function start(args: {
    * cluster mode
    */
   if ("cluster" in args) {
-    const maxCpus = os.cpus().length
-    const cpus = clusterSize ?? maxCpus
+    const cpus = clusterSizeNum
+    const numCPUs = Math.min(maxCpus, cpus)
+
+    if (serversCount + workersCount > numCPUs) {
+      throw new Error(
+        `Sum of servers (${serversCount}) and workers (${workersCount}) cannot exceed cluster size (${numCPUs})`
+      )
+    }
 
     if (cluster.isPrimary) {
       let isShuttingDown = false
-      const numCPUs = Math.min(maxCpus, cpus)
-      const serversCount = servers ?? 0
-      const workersCount = workers ?? 0
-
-      if (serversCount + workersCount > numCPUs) {
-        throw new Error(
-          `Sum of servers (${serversCount}) and workers (${workersCount}) cannot exceed cluster size (${numCPUs})`
-        )
-      }
-
       const killMainProccess = () => process.exit(0)
       const gracefulShutDown = () => {
         isShuttingDown = true
