@@ -424,11 +424,8 @@ export const CreateRegionForm = ({ currencies }: CreateRegionFormProps) => {
                           </Form.Label>
                           <Form.Control>
                             <Combobox
+                              forceHideInput
                               options={comboboxProviders.options}
-                              searchValue={comboboxProviders.searchValue}
-                              onSearchValueChange={
-                                comboboxProviders.onSearchValueChange
-                              }
                               fetchNextPage={comboboxProviders.fetchNextPage}
                               {...field}
                             />
