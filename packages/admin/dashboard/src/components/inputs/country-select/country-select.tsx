@@ -4,9 +4,6 @@ import {
   useImperativeHandle,
   useRef,
 } from "react"
-
-import { TrianglesMini } from "@medusajs/icons"
-import { clx } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { countries } from "../../../lib/data/countries"
 import { Select } from "@medusajs/ui"
@@ -15,11 +12,10 @@ export const CountrySelect = forwardRef<
   HTMLButtonElement,
   ComponentPropsWithoutRef<typeof Select> & {
     placeholder?: string
-    value?: string
     defaultValue?: string
     onChange?: (value: string) => void
   }
->(({ disabled, placeholder, value, defaultValue, onChange }, ref) => {
+>(({ disabled, placeholder, defaultValue, onChange, ...field }, ref) => {
   const { t } = useTranslation()
   const innerRef = useRef<HTMLButtonElement>(null)
 
@@ -27,16 +23,8 @@ export const CountrySelect = forwardRef<
 
   return (
     <div className="relative">
-      <TrianglesMini
-        className={clx(
-          "text-ui-fg-muted transition-fg pointer-events-none absolute right-2 top-1/2 -translate-y-1/2",
-          {
-            "text-ui-fg-disabled": disabled,
-          }
-        )}
-      />
       <Select
-        value={value ? value.toLowerCase() : undefined}
+        {...field}
         onValueChange={onChange}
         defaultValue={defaultValue ? defaultValue.toLowerCase() : undefined}
         disabled={disabled}
