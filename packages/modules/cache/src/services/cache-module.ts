@@ -18,6 +18,7 @@ export default class CachingModuleService implements ICachingModuleService {
   #defaultProviderId: string
 
   #logger: Logger
+  #ongoingRequests: Map<string, Promise<any>> = new Map()
 
   #ttl: number
 
@@ -104,6 +105,13 @@ export default class CachingModuleService implements ICachingModuleService {
     })
   }
 
+  #getRequestKey(key?: string, tags?: string[], providers?: string[]): string {
+    const keyPart = key || ""
+    const tagsPart = tags?.sort().join(",") || ""
+    const providersPart = providers?.join(",") || this.#defaultProviderId
+    return `${keyPart}|${tagsPart}|${providersPart}`
+  }
+
   async get({
     key,
     tags,
@@ -120,6 +128,33 @@ export default class CachingModuleService implements ICachingModuleService {
       )
     }
 
+    const requestKey = this.#getRequestKey(key, tags, providers)
+
+    // Check if there's already an ongoing request for this exact cache lookup
+    // prevent cache stampedes
+    const existingRequest = this.#ongoingRequests.get(requestKey)
+    if (existingRequest) {
+      return await existingRequest
+    }
+
+    // Create and store the new request promise
+    const requestPromise = this.#performCacheGet(key, tags, providers)
+    this.#ongoingRequests.set(requestKey, requestPromise)
+
+    try {
+      const result = await requestPromise
+      return result
+    } finally {
+      // Clean up the completed request
+      this.#ongoingRequests.delete(requestKey)
+    }
+  }
+
+  async #performCacheGet(
+    key?: string,
+    tags?: string[],
+    providers?: string[]
+  ): Promise<any> {
     const providersToCheck = providers ?? [this.#defaultProviderId]
 
     for (const providerId of providersToCheck) {
