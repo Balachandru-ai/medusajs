@@ -29,7 +29,7 @@ export const usePaymentProviders = (
 ) => {
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.payment.listPaymentProviders(query),
-    queryKey: [],
+    queryKey: paymentQueryKeys.list(query),
     ...options,
   })
 
