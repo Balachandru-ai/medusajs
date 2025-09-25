@@ -51,7 +51,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
   testSuite: ({ service }) => {
     describe("Caching Module Service", () => {
       beforeEach(async () => {
-        // Clear all cache data before each test
         await service.clear({ tags: ["*"] }).catch(() => {})
       })
 
@@ -137,8 +136,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
 
       describe("Provider Priority", () => {
         it("should check providers in order of priority when specified", async () => {
-          // Since we only have memory provider in this test, we'll simulate
-          // the behavior by using the providers array
           const testData = { id: "priority-test", name: "Priority Test" }
 
           await service.set({
@@ -174,14 +171,12 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: testData,
           })
 
-          // Make multiple concurrent requests for the same key
           const promises = Array.from({ length: 5 }, () =>
             service.get<any>({ key: "concurrent-key" })
           )
 
           const results = await Promise.all(promises)
 
-          // All should return the same result
           results.forEach((result) => {
             expect(result).toEqual(testData)
           })
@@ -196,14 +191,12 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             tags: ["concurrent-tag"],
           })
 
-          // Make multiple concurrent requests for the same tags
           const promises = Array.from({ length: 5 }, () =>
             service.get<any[]>({ tags: ["concurrent-tag"] })
           )
 
           const results = await Promise.all(promises)
 
-          // All should return the same result
           results.forEach((result) => {
             expect(result).toHaveLength(1)
             expect(result?.[0]).toEqual(testData)
@@ -211,7 +204,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
         })
 
         it("should deduplicate concurrent clear requests", async () => {
-          // Set up test data
           await service.set({
             key: "clear-test-1",
             data: { id: "1" },
@@ -224,14 +216,12 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             tags: ["clear-tag"],
           })
 
-          // Make multiple concurrent clear requests
           const promises = Array.from({ length: 3 }, () =>
             service.clear({ tags: ["clear-tag"] })
           )
 
           await Promise.all(promises)
 
-          // Verify data was cleared
           const result1 = await service.get({ key: "clear-test-1" })
           const result2 = await service.get({ key: "clear-test-2" })
 
@@ -246,7 +236,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
           await service.set({ key: "key-1", data: testData1 })
           await service.set({ key: "key-2", data: testData2 })
 
-          // Make concurrent requests for different keys
           const promises = [
             service.get({ key: "key-1" }),
             service.get({ key: "key-1" }),
@@ -267,18 +256,15 @@ moduleIntegrationTestRunner<ICachingModuleService>({
         it("should respect TTL settings", async () => {
           const testData = { id: "ttl-test", name: "TTL Test" }
 
-          // Set with very short TTL (1 second)
           await service.set({
             key: "ttl-key",
             data: testData,
             ttl: 1,
           })
 
-          // Should be available immediately
           let result = await service.get({ key: "ttl-key" })
           expect(result).toEqual(testData)
 
-          // Wait for expiry and check
           await new Promise((resolve) => setTimeout(resolve, 1100))
 
           result = await service.get({ key: "ttl-key" })
@@ -295,7 +281,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             options: { autoInvalidate: false },
           })
 
-          // Try to clear by tag (should not clear due to autoInvalidate)
           await service.clear({
             tags: ["no-auto-tag"],
             options: { autoInvalidate: true },
@@ -304,7 +289,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
           const result = await service.get({ key: "no-auto-key" })
           expect(result).toEqual(testData)
 
-          // Force clear should work
           await service.clear({
             tags: ["no-auto-tag"],
           })

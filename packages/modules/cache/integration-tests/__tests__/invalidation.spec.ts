@@ -64,7 +64,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
   testSuite: ({ service }) => {
     describe("Cache Invalidation with Entity Relationships", () => {
       afterEach(async () => {
-        // Clear all cache data before each test
         await service.clear({ tags: ["*"] }).catch(() => {})
       })
 
@@ -128,7 +127,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             options: { autoInvalidate: false },
           })
 
-          // Emit domain event that should trigger strategy invalidation
           await mockEventBus.emit(
             [{ name: "product.updated", data: { id: product.id } }],
             {}
@@ -178,7 +176,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: allProducts,
           })
 
-          // Retrieve cached lists
           const cachedPublished = await service.get({
             key: publishedProductsKey,
           })
@@ -371,7 +368,6 @@ moduleIntegrationTestRunner<ICachingModuleService>({
 
       describe("Complex Query Caching", () => {
         it("should cache complex queries and invalidate based on entity relationships", async () => {
-          // Complex query that joins multiple entities
           const complexQuery = {
             entity: "product",
             filters: { status: "published", collection_id: "col_1" },
