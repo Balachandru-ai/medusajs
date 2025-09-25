@@ -23,18 +23,20 @@ export function objectHash(input: any): string {
 export class DefaultCacheStrategy implements ICachingStrategy {
   #cacheInvalidationParser: CacheInvalidationParser
   #cacheModule: ICachingModuleService
+  #container: ModuleInjectedDependencies
 
   constructor(
-    _: ModuleInjectedDependencies,
-    schema: GraphQLSchema,
+    container: ModuleInjectedDependencies,
     cacheModule: CachingModuleService
   ) {
-    this.#cacheInvalidationParser = new CacheInvalidationParser(schema)
     this.#cacheModule = cacheModule
+    this.#container = container
   }
 
-  async onApplicationStart(container: ModuleInjectedDependencies) {
-    const eventBus = container[Modules.EVENT_BUS]
+  async onApplicationStart(schema: GraphQLSchema) {
+    this.#cacheInvalidationParser = new CacheInvalidationParser(schema)
+
+    const eventBus = this.#container[Modules.EVENT_BUS]
 
     eventBus.subscribe("*", async (data: Event) => {
       try {
@@ -72,7 +74,7 @@ export class DefaultCacheStrategy implements ICachingStrategy {
 
             await this.#cacheModule.clear({
               tags,
-              options: { noAutoInvalidation: false },
+              options: { autoInvalidate: true },
             })
           }
         } else {
@@ -96,7 +98,7 @@ export class DefaultCacheStrategy implements ICachingStrategy {
 
           await this.#cacheModule.clear({
             tags,
-            options: { noAutoInvalidation: false },
+            options: { autoInvalidate: true },
           })
         }
       }

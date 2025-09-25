@@ -11,16 +11,16 @@ import CacheProviderService from "./cache-provider"
 const ONE_HOUR_IN_SECOND = 60 * 60 * 100
 
 export default class CachingModuleService implements ICachingModuleService {
-  #container: ModuleInjectedDependencies
-  #providerService: CacheProviderService
-  strategyCtr: new (...args: any[]) => ICachingStrategy
-  #strategy: ICachingStrategy
-  #defaultProviderId: string
+  protected container: ModuleInjectedDependencies
+  protected providerService: CacheProviderService
+  protected strategyCtr: new (...args: any[]) => ICachingStrategy
+  protected strategy: ICachingStrategy
+  protected defaultProviderId: string
 
-  #logger: Logger
-  #ongoingRequests: Map<string, Promise<any>> = new Map()
+  protected logger: Logger
+  protected ongoingRequests: Map<string, Promise<any>> = new Map()
 
-  #ttl: number
+  protected ttl: number
 
   constructor(
     container: ModuleInjectedDependencies,
@@ -28,42 +28,37 @@ export default class CachingModuleService implements ICachingModuleService {
       | { options: { ttl?: number } }
       | { ttl?: number }
   ) {
-    this.#container = container
-    this.#providerService = container.cacheProviderService
-    this.#defaultProviderId = container[CachingDefaultProvider]
+    this.container = container
+    this.providerService = container.cacheProviderService
+    this.defaultProviderId = container[CachingDefaultProvider]
     this.strategyCtr = container.strategy as new (
       ...args: any[]
     ) => ICachingStrategy
+    this.strategy = new this.strategyCtr(this.container, this)
 
     const moduleOptions =
       "options" in moduleDeclaration
         ? moduleDeclaration.options
         : moduleDeclaration
 
-    this.#ttl = moduleOptions.ttl ?? ONE_HOUR_IN_SECOND
+    this.ttl = moduleOptions.ttl ?? ONE_HOUR_IN_SECOND
 
-    this.#logger = container.logger ?? (console as unknown as Logger)
+    this.logger = container.logger ?? (console as unknown as Logger)
   }
 
   __hooks = {
     onApplicationStart: async () => {
-      this.#onApplicationStart()
+      this.onApplicationStart()
     },
     onApplicationShutdown: async () => {
-      this.#onApplicationShutdown()
+      this.onApplicationShutdown()
     },
     onApplicationPrepareShutdown: async () => {
-      this.#onApplicationPrepareShutdown()
+      this.onApplicationPrepareShutdown()
     },
   }
 
-  #onApplicationStart() {
-    this.#strategy = new this.strategyCtr(
-      this.#container,
-      MedusaModule.getAllJoinerConfigs(),
-      this
-    )
-
+  protected onApplicationStart() {
     const loadedSchema = MedusaModule.getAllJoinerConfigs()
       .map((joinerConfig) => joinerConfig?.schema ?? "")
       .join("\n")
@@ -82,18 +77,18 @@ export default class CachingModuleService implements ICachingModuleService {
       typeDefs: mergedSchema,
     })
 
-    this.#strategy.onApplicationStart?.(this.#container, schema, this)
+    this.strategy.onApplicationStart?.(schema)
   }
 
-  #onApplicationShutdown() {
-    this.#strategy.onApplicationShutdown?.()
+  protected onApplicationShutdown() {
+    this.strategy.onApplicationShutdown?.()
   }
 
-  #onApplicationPrepareShutdown() {
-    this.#strategy.onApplicationPrepareShutdown?.()
+  protected onApplicationPrepareShutdown() {
+    this.strategy.onApplicationPrepareShutdown?.()
   }
 
-  #normalizeProviders(
+  protected static normalizeProviders(
     providers:
       | string[]
       | { id: string; ttl?: number }
@@ -105,21 +100,25 @@ export default class CachingModuleService implements ICachingModuleService {
     })
   }
 
-  #getRequestKey(key?: string, tags?: string[], providers?: string[]): string {
-    const keyPart = key || ""
-    const tagsPart = tags?.sort().join(",") || ""
-    const providersPart = providers?.join(",") || this.#defaultProviderId
-    return `${keyPart}|${tagsPart}|${providersPart}`
-  }
-
-  #getClearRequestKey(
+  protected getRequestKey(
     key?: string,
     tags?: string[],
     providers?: string[]
   ): string {
     const keyPart = key || ""
     const tagsPart = tags?.sort().join(",") || ""
-    const providersPart = providers?.join(",") || this.#defaultProviderId
+    const providersPart = providers?.join(",") || this.defaultProviderId
+    return `${keyPart}|${tagsPart}|${providersPart}`
+  }
+
+  protected getClearRequestKey(
+    key?: string,
+    tags?: string[],
+    providers?: string[]
+  ): string {
+    const keyPart = key || ""
+    const tagsPart = tags?.sort().join(",") || ""
+    const providersPart = providers?.join(",") || this.defaultProviderId
     return `clear:${keyPart}|${tagsPart}|${providersPart}`
   }
 
@@ -139,42 +138,42 @@ export default class CachingModuleService implements ICachingModuleService {
       )
     }
 
-    const requestKey = this.#getRequestKey(key, tags, providers)
+    const requestKey = this.getRequestKey(key, tags, providers)
 
-    const existingRequest = this.#ongoingRequests.get(requestKey)
+    const existingRequest = this.ongoingRequests.get(requestKey)
     if (existingRequest) {
       return await existingRequest
     }
 
-    const requestPromise = this.#performCacheGet(key, tags, providers)
-    this.#ongoingRequests.set(requestKey, requestPromise)
+    const requestPromise = this.performCacheGet(key, tags, providers)
+    this.ongoingRequests.set(requestKey, requestPromise)
 
     try {
       const result = await requestPromise
       return result
     } finally {
       // Clean up the completed request
-      this.#ongoingRequests.delete(requestKey)
+      this.ongoingRequests.delete(requestKey)
     }
   }
 
-  async #performCacheGet(
+  protected async performCacheGet(
     key?: string,
     tags?: string[],
     providers?: string[]
   ): Promise<any> {
-    const providersToCheck = providers ?? [this.#defaultProviderId]
+    const providersToCheck = providers ?? [this.defaultProviderId]
 
     for (const providerId of providersToCheck) {
       try {
-        const provider_ = this.#providerService.retrieveProvider(providerId)
+        const provider_ = this.providerService.retrieveProvider(providerId)
         const result = await provider_.get({ key, tags })
 
         if (result != null) {
           return result
         }
       } catch (error) {
-        this.#logger.warn(
+        this.logger.warn(
           `Cache provider ${providerId} failed: ${error.message}\n${error.stack}`
         )
         continue
@@ -204,22 +203,22 @@ export default class CachingModuleService implements ICachingModuleService {
         }
       | { id: string; ttl?: number }[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
   }) {
-    const key_ = key ?? this.#strategy.computeKey(data)
-    const tags_ = tags ?? (await this.#strategy.computeTags(data))
+    const key_ = key ?? this.strategy.computeKey(data)
+    const tags_ = tags ?? (await this.strategy.computeTags(data))
 
     let providers_: string[] | { id: string; ttl?: number }[] = [
-      { id: this.#defaultProviderId },
+      this.defaultProviderId,
     ]
-    providers_ = this.#normalizeProviders(providers ?? providers_)
+    providers_ = CachingModuleService.normalizeProviders(
+      providers ?? providers_
+    )
 
     for (const providerOptions of providers_) {
-      const ttl_ = providerOptions.ttl ?? ttl ?? this.#ttl
-      const provider = this.#providerService.retrieveProvider(
-        providerOptions.id
-      )
+      const ttl_ = providerOptions.ttl ?? ttl ?? this.ttl
+      const provider = this.providerService.retrieveProvider(providerOptions.id)
       void provider.set({
         key: key_,
         tags: tags_,
@@ -239,7 +238,7 @@ export default class CachingModuleService implements ICachingModuleService {
     key?: string
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
     providers?: string[]
   }) {
@@ -250,56 +249,51 @@ export default class CachingModuleService implements ICachingModuleService {
       )
     }
 
-    const requestKey = this.#getClearRequestKey(key, tags, providers)
+    const requestKey = this.getClearRequestKey(key, tags, providers)
 
-    const existingRequest = this.#ongoingRequests.get(requestKey)
+    const existingRequest = this.ongoingRequests.get(requestKey)
     if (existingRequest) {
       return await existingRequest
     }
 
-    const requestPromise = this.#performCacheClear(
-      key,
-      tags,
-      options,
-      providers
-    )
-    this.#ongoingRequests.set(requestKey, requestPromise)
+    const requestPromise = this.performCacheClear(key, tags, options, providers)
+    this.ongoingRequests.set(requestKey, requestPromise)
 
     try {
       await requestPromise
     } finally {
       // Clean up the completed request
-      this.#ongoingRequests.delete(requestKey)
+      this.ongoingRequests.delete(requestKey)
     }
   }
 
-  async #performCacheClear(
+  protected async performCacheClear(
     key?: string,
     tags?: string[],
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     },
     providers?: string[]
   ): Promise<void> {
-    let providerIds_: string[] = [this.#defaultProviderId]
+    let providerIds_: string[] = [this.defaultProviderId]
     if (providers) {
       providerIds_ = Array.isArray(providers) ? providers : [providers]
     }
 
     for (const providerId of providerIds_) {
-      const provider = this.#providerService.retrieveProvider(providerId)
+      const provider = this.providerService.retrieveProvider(providerId)
       void provider.clear({ key, tags, options })
     }
   }
 
   async computeKey(input: object): Promise<string> {
-    return await this.#strategy.computeKey(input)
+    return await this.strategy.computeKey(input)
   }
 
   async computeTags(
     input: object,
     options?: Record<string, any>
   ): Promise<string[]> {
-    return await this.#strategy.computeTags(input, options)
+    return await this.strategy.computeTags(input, options)
   }
 }

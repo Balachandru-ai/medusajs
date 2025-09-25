@@ -8,8 +8,7 @@ export class MemoryCachingProvider implements ICachingProviderService {
   protected cacheClient: NodeCache
   protected tagIndex: Map<string, Set<string>> = new Map() // tag -> keys
   protected keyTags: Map<string, Set<string>> = new Map() // key -> tags
-  protected entryOptions: Map<string, { noAutoInvalidation?: boolean }> =
-    new Map() // key -> options
+  protected entryOptions: Map<string, { autoInvalidate?: boolean }> = new Map() // key -> options
   protected options: MemoryCacheModuleOptions
 
   constructor({
@@ -95,7 +94,7 @@ export class MemoryCachingProvider implements ICachingProviderService {
     ttl?: number
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
   }): Promise<void> {
     // Set the cache entry
@@ -133,7 +132,7 @@ export class MemoryCachingProvider implements ICachingProviderService {
     key?: string
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
   }): Promise<void> {
     if (key) {
@@ -152,21 +151,21 @@ export class MemoryCachingProvider implements ICachingProviderService {
       })
 
       if (allKeys.size > 0) {
-        // If clear method has noAutoInvalidation=false, respect individual entry settings
-        // If clear method has noAutoInvalidation=true, force clear all keys
-        const forceInvalidation = options?.noAutoInvalidation === false
-
-        if (forceInvalidation) {
-          // Force invalidation - clear all keys regardless of their individual settings
+        // If no options provided (user explicit call), clear everything
+        if (!options) {
           this.cacheClient.del(Array.from(allKeys))
-        } else {
-          // Respect individual entry noAutoInvalidation settings
+          return
+        }
+
+        // If autoInvalidate is true (strategy call), only clear entries with autoInvalidate=true (default)
+        if (options.autoInvalidate === true) {
           const keysToDelete: string[] = []
 
           allKeys.forEach((key) => {
             const entryOptions = this.entryOptions.get(key)
-            // Only delete if entry doesn't have noAutoInvalidation set to true
-            if (!entryOptions?.noAutoInvalidation) {
+            // Delete if entry has autoInvalidate=true or no setting (default true)
+            const shouldAutoInvalidate = entryOptions?.autoInvalidate ?? true
+            if (shouldAutoInvalidate) {
               keysToDelete.push(key)
             }
           })

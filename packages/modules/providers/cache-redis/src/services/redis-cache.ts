@@ -94,7 +94,7 @@ export class RedisCachingProvider {
     ttl?: number
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
   }): Promise<void> {
     const keyName = this.#getKeyName(key)
@@ -106,18 +106,6 @@ export class RedisCachingProvider {
       await this.redisClient.setex(keyName, effectiveTTL, serializedData)
     } else {
       await this.redisClient.set(keyName, serializedData)
-    }
-
-    // Store options if provided
-    if (options) {
-      const optionsKey = this.#getOptionsKey(key)
-      const optionsData = JSON.stringify(options)
-
-      if (effectiveTTL > 0) {
-        await this.redisClient.setex(optionsKey, effectiveTTL + 60, optionsData) // +1 minute buffer
-      } else {
-        await this.redisClient.set(optionsKey, optionsData)
-      }
     }
 
     // Handle tags if provided
@@ -136,6 +124,18 @@ export class RedisCachingProvider {
 
       await pipeline.exec()
     }
+
+    // Store options if provided
+    if (options) {
+      const optionsKey = this.#getOptionsKey(key)
+      const optionsData = JSON.stringify(options)
+
+      if (effectiveTTL > 0) {
+        await this.redisClient.setex(optionsKey, effectiveTTL + 60, optionsData) // +1 minute buffer
+      } else {
+        await this.redisClient.set(optionsKey, optionsData)
+      }
+    }
   }
 
   async clear({
@@ -146,7 +146,7 @@ export class RedisCachingProvider {
     key?: string
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
   }): Promise<void> {
     if (key) {
@@ -174,12 +174,8 @@ export class RedisCachingProvider {
       })
 
       if (allKeys.size > 0) {
-        // If clear method has noAutoInvalidation=false, force clear all keys
-        // Otherwise, respect individual entry noAutoInvalidation settings
-        const forceInvalidation = options?.noAutoInvalidation === false
-
-        if (forceInvalidation) {
-          // Force invalidation - clear all keys regardless of their individual settings
+        // If no options provided (user explicit call), clear everything
+        if (!options) {
           const deletePipeline = this.redisClient.pipeline()
 
           Array.from(allKeys).forEach((key) => {
@@ -195,8 +191,11 @@ export class RedisCachingProvider {
           })
 
           await deletePipeline.exec()
-        } else {
-          // Respect individual entry noAutoInvalidation settings
+          return
+        }
+
+        // If autoInvalidate is true (strategy call), only clear entries with autoInvalidate=true (default)
+        if (options.autoInvalidate === true) {
           const optionsPipeline = this.redisClient.pipeline()
 
           Array.from(allKeys).forEach((key) => {
@@ -215,16 +214,17 @@ export class RedisCachingProvider {
             if (optionsResult && optionsResult[1]) {
               try {
                 const entryOptions = JSON.parse(optionsResult[1] as string)
-                // Only delete if entry doesn't have noAutoInvalidation set to true
-                if (!entryOptions.noAutoInvalidation) {
+                // Delete if entry has autoInvalidate=true or no setting (default true)
+                const shouldAutoInvalidate = entryOptions.autoInvalidate ?? true
+                if (shouldAutoInvalidate) {
                   keysToDelete.push(key)
                 }
               } catch (e) {
-                // If can't parse options, assume it's safe to delete
+                // If can't parse options, assume it's safe to delete (default true)
                 keysToDelete.push(key)
               }
             } else {
-              // No options stored, safe to delete
+              // No options stored, default to true
               keysToDelete.push(key)
             }
           })

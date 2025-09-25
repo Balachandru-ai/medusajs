@@ -1,5 +1,3 @@
-import { MedusaContainer } from "../common"
-
 type Providers =
   | string[]
   | { id: string; ttl?: number }
@@ -53,7 +51,7 @@ export interface ICachingModuleService {
     ttl?: number
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
     providers?: Providers
   }): Promise<void>
@@ -64,7 +62,7 @@ export interface ICachingModuleService {
    * @param key - The key of the item to clear.
    * @param tags - The tags of the items to clear.
    * @param options - if specified, invalidate the item(s) that has the value of the given
-   * options stored. e.g you can invalidate the tags X if their options.noAutoInvalidation is true.
+   * options stored. e.g you can invalidate the tags X if their options.autoInvalidate is false or not present.
    * @param providers - The providers from which to clear the item(s).
    *
    */
@@ -77,7 +75,7 @@ export interface ICachingModuleService {
     key?: string
     tags?: string[]
     options?: {
-      noAutoInvalidation?: boolean
+      autoInvalidate?: boolean
     }
     providers?: string[]
   }): Promise<void>
@@ -100,7 +98,7 @@ export interface ICachingProviderService {
     data: object
     ttl?: number
     tags?: string[]
-    options?: { noAutoInvalidation?: boolean }
+    options?: { autoInvalidate?: boolean }
   }): Promise<void>
   clear({
     key,
@@ -109,7 +107,7 @@ export interface ICachingProviderService {
   }: {
     key?: string
     tags?: string[]
-    options?: { noAutoInvalidation?: boolean }
+    options?: { autoInvalidate?: boolean }
   }): Promise<void>
 }
 
@@ -128,11 +126,7 @@ export interface ICachingStrategy {
    * @param schema GraphQLSchema
    * @param cacheModule ICachingModuleService
    */
-  onApplicationStart?(
-    container: MedusaContainer["cradle"],
-    schema: any,
-    cacheModule: ICachingModuleService
-  ): Promise<void>
+  onApplicationStart?(schema: any): Promise<void>
 
   onApplicationPrepareShutdown?(): Promise<void>
 

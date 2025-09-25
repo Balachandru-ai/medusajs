@@ -1,8 +1,8 @@
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
 import { LoaderOptions, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
+  ContainerRegistrationKeys,
   getProviderRegistrationKey,
-  MedusaError,
 } from "@medusajs/framework/utils"
 import { CachingProviderService } from "@services"
 import {
@@ -11,9 +11,9 @@ import {
   CachingModuleOptions,
   CachingProviderRegistrationPrefix,
 } from "@types"
-import { aliasTo, asFunction, asValue } from "awilix"
-import { DefaultCacheStrategy } from "../utils/strategy"
+import { aliasTo, asFunction, asValue, Lifetime } from "awilix"
 import { MemoryCachingProvider } from "../providers/memory-cache"
+import { DefaultCacheStrategy } from "../utils/strategy"
 
 const registrationFn = async (klass, container, { id }) => {
   const key = CachingProviderService.getRegistrationIdentifier(klass)
@@ -52,7 +52,9 @@ export default async ({
   // MemoryCachingProvider - default provider
   container.register({
     [CachingProviderRegistrationPrefix + MemoryCachingProvider.identifier]:
-      asFunction((cradle) => new MemoryCachingProvider()),
+      asFunction(() => new MemoryCachingProvider(), {
+        lifetime: Lifetime.SINGLETON,
+      }),
   })
   container.registerAdd(
     CachingIdentifiersRegistrationName,
@@ -81,10 +83,12 @@ export default async ({
     }
   }
 
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   if (!hasDefaultProvider) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_ARGUMENT,
-      "[caching-module]: No default provider specified. You must specify a default provider."
+    logger.warn(
+      `[caching-module]: No default caching provider explicit defined. Using "${container.resolve(
+        CachingDefaultProvider
+      )}" as default.`
     )
   }
 }
