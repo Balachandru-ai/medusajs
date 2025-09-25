@@ -21,7 +21,6 @@ import { sdk } from "../../../../../lib/client/index.ts"
 type EditRegionFormProps = {
   region: HttpTypes.AdminRegion
   currencies: CurrencyInfo[]
-  paymentProviders: PaymentProviderDTO[]
   pricePreferences: HttpTypes.AdminPricePreference[]
 }
 
