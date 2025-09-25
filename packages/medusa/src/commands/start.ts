@@ -143,8 +143,18 @@ async function start(args: {
   port?: number
   types?: boolean
   cluster?: number
+  workers?: number
+  servers?: number
 }) {
-  const { port = 9000, host, directory, types } = args
+  const {
+    port = 9000,
+    host,
+    directory,
+    types,
+    cluster: clusterSize,
+    workers,
+    servers,
+  } = args
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")
@@ -262,11 +272,20 @@ async function start(args: {
    */
   if ("cluster" in args) {
     const maxCpus = os.cpus().length
-    const cpus = args.cluster ?? maxCpus
+    const cpus = clusterSize ?? maxCpus
 
     if (cluster.isPrimary) {
       let isShuttingDown = false
       const numCPUs = Math.min(maxCpus, cpus)
+      const serversCount = servers ?? 0
+      const workersCount = workers ?? 0
+
+      if (serversCount + workersCount > numCPUs) {
+        throw new Error(
+          `Sum of servers (${serversCount}) and workers (${workersCount}) cannot exceed cluster size (${numCPUs})`
+        )
+      }
+
       const killMainProccess = () => process.exit(0)
       const gracefulShutDown = () => {
         isShuttingDown = true
@@ -274,8 +293,14 @@ async function start(args: {
 
       for (let index = 0; index < numCPUs; index++) {
         const worker = cluster.fork()
+        let workerMode: "server" | "worker" | "shared" = "shared"
+        if (index < serversCount) {
+          workerMode = "server"
+        } else if (index < serversCount + workersCount) {
+          workerMode = "worker"
+        }
         worker.on("online", () => {
-          worker.send({ index })
+          worker.send({ index, workerMode })
         })
       }
 
@@ -291,6 +316,10 @@ async function start(args: {
       process.on("SIGINT", gracefulShutDown)
     } else {
       process.on("message", async (msg: any) => {
+        if (msg.workerMode) {
+          process.env.MEDUSA_WORKER_MODE = msg.workerMode
+        }
+
         if (msg.index > 0) {
           process.env.PLUGIN_ADMIN_UI_SKIP_CACHE = "true"
         }

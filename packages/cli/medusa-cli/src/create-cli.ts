@@ -419,6 +419,16 @@ function buildLocalCommands(cli, isLocalProject) {
             type: `number`,
             describe:
               "Start the Node.js server in cluster mode. You can specify the number of cpus to use, which defaults to (env.CPUS)",
+          })
+          .option("workers", {
+            type: "number",
+            default: 0,
+            describe: "Number of worker processes in cluster mode",
+          })
+          .option("servers", {
+            type: "number",
+            default: 0,
+            describe: "Number of server processes in cluster mode",
           }),
       handler: handlerP(
         getCommandHandler(`start`, (args, cmd) => {
