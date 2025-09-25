@@ -3,11 +3,13 @@ import { ulid } from "ulid"
 
 export class Migration20250924135437 extends Migration {
   override async up(): Promise<void> {
-    const existingReasonIds = await this.execute(`
-      SELECT id FROM "refund_reason"
+    const [existingReason] = await this.execute(`
+      SELECT 1 as exists
+      FROM "refund_reason"
+      LIMIT 1
     `)
 
-    if (existingReasonIds.length === 0) {
+    if (!existingReason) {
       // 2. Create default shipping option type
       await this.execute(`
         INSERT INTO "refund_reason" (id, label, description)
