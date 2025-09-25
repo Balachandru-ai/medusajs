@@ -11,8 +11,9 @@ import {
   CachingModuleOptions,
   CachingProviderRegistrationPrefix,
 } from "@types"
-import { aliasTo, asValue } from "awilix"
+import { aliasTo, asFunction, asValue } from "awilix"
 import { DefaultCacheStrategy } from "../utils/strategy"
+import { MemoryCachingProvider } from "../providers/memory-cache"
 
 const registrationFn = async (klass, container, { id }) => {
   const key = CachingProviderService.getRegistrationIdentifier(klass)
@@ -47,6 +48,20 @@ export default async ({
 
   const strategy = options?.strategy ?? DefaultCacheStrategy
   container.register("strategy", asValue(strategy))
+
+  // MemoryCachingProvider - default provider
+  container.register({
+    [CachingProviderRegistrationPrefix + MemoryCachingProvider.identifier]:
+      asFunction((cradle) => new MemoryCachingProvider()),
+  })
+  container.registerAdd(
+    CachingIdentifiersRegistrationName,
+    asValue(MemoryCachingProvider.identifier)
+  )
+  container.register(
+    CachingDefaultProvider,
+    asValue(MemoryCachingProvider.identifier)
+  )
 
   // Load other providers
   await moduleProviderLoader({
