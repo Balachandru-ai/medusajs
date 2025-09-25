@@ -55,10 +55,6 @@ module.exports = defineConfig({
       resolve: "__tests__/__fixtures__/testing-module",
     },
     {
-      key: Modules.LOCKING,
-      resolve: "@medusajs/locking",
-    },
-    {
       key: "auth",
       resolve: "@medusajs/auth",
       options: {
