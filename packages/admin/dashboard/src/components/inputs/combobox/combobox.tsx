@@ -154,7 +154,7 @@ const ComboboxImpl = <T extends Value = string>(
       return []
     }
 
-    // do not use mather if input is hidden and no search value can be entered
+    // do not use `matcher` if the input is hidden
     if (forceHideInput) {
       return options
     }
