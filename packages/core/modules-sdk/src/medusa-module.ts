@@ -18,7 +18,7 @@ import {
   simpleHash,
   stringifyCircular,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/deps/awilix"
 import { EOL } from "os"
 import {
   moduleLoader,

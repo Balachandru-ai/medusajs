@@ -4,7 +4,7 @@ import {
   registerMedusaModule,
 } from "@medusajs/modules-sdk"
 import { ContainerRegistrationKeys, generateJwtToken } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 import express from "express"
 import querystring from "querystring"
 import supertest from "supertest"

@@ -1,7 +1,12 @@
-import { Prettify } from "../common"
+import { Prettify as CorePrettify } from "../common"
 import { OperatorMap } from "../dal"
 import { RemoteQueryEntryPoints } from "./remote-query-entry-points"
 
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+type Prettify<T> = DeepPartial<CorePrettify<T>>
 type ExcludedProps = "__typename"
 type Depth = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 type CleanupObject<T> = Prettify<Omit<Exclude<T, symbol>, ExcludedProps>>
@@ -83,16 +88,20 @@ export type RemoteQueryFilters<
   Exclusion extends string[] = [],
   Lim extends number = Depth[3]
 > = RemoteQueryFilterOperators<
-  InternalRemoteQueryFilters<
-    TEntry,
-    RemoteQueryEntryPointsLevel,
-    Exclusion,
-    Lim
+  DeepPartial<
+    InternalRemoteQueryFilters<
+      TEntry,
+      RemoteQueryEntryPointsLevel,
+      Exclusion,
+      Lim
+    >
   >
 > &
-  InternalRemoteQueryFilters<
-    TEntry,
-    RemoteQueryEntryPointsLevel,
-    Exclusion,
-    Lim
+  DeepPartial<
+    InternalRemoteQueryFilters<
+      TEntry,
+      RemoteQueryEntryPointsLevel,
+      Exclusion,
+      Lim
+    >
   >
