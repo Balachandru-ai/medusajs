@@ -175,7 +175,7 @@ export const refundPaymentWorkflow = createWorkflow(
     })
 
     when(
-      { creditLineAmount }, ({ creditLineAmount }) => MathBN.gte(creditLineAmount, 0)
+      { creditLineAmount }, ({ creditLineAmount }) => MathBN.gt(creditLineAmount, 0)
     ).then(() => {
       createOrderRefundCreditLinesWorkflow.runAsStep({
         input: {
