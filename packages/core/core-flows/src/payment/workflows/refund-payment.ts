@@ -1,86 +1,10 @@
-import { BigNumberInput, OrderDTO, PaymentDTO } from "@medusajs/framework/types"
-import { MathBN, MedusaError, PaymentEvents } from "@medusajs/framework/utils"
-import {
-  createStep,
-  createWorkflow,
-  transform,
-  when,
-  WorkflowData,
-  WorkflowResponse,
-} from "@medusajs/framework/workflows-sdk"
+import { BigNumberInput } from "@medusajs/framework/types"
+import { MathBN, PaymentEvents } from "@medusajs/framework/utils"
+import { createWorkflow, transform, when, WorkflowData, WorkflowResponse, } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
 import { refundPaymentStep } from "../steps/refund-payment"
 import { createOrderRefundCreditLinesWorkflow } from "../../order/workflows/payments/create-order-refund-credit-lines"
-
-/**
- * The data to validate whether the refund is valid for the order.
- */
-export type ValidateRefundStepInput = {
-  /**
-   * The order's details.
-   */
-  order: OrderDTO
-  /**
-   * The order's payment details.
-   */
-  payment: PaymentDTO
-  /**
-   * The amound to refund.
-   */
-  amount?: BigNumberInput
-}
-
-/**
- * This step validates that the refund is valid for the order.
- * If the order does not have an outstanding balance to refund, the step throws an error.
- *
- * :::note
- *
- * You can retrieve an order or payment's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
- * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- *
- * :::
- *
- * @example
- * const data = validateRefundStep({
- *   order: {
- *     id: "order_123",
- *     // other order details...
- *   },
- *   payment: {
- *     id: "payment_123",
- *     // other payment details...
- *   },
- *   amount: 10
- * })
- */
-export const validateRefundStep = createStep(
-  "validate-refund-step",
-  async function ({ order, payment, amount }: ValidateRefundStepInput) {
-    const pendingDifference =
-      order.summary?.raw_pending_difference! ??
-      order.summary?.pending_difference! ??
-      0
-
-    if (MathBN.gte(pendingDifference, 0)) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Order does not have an outstanding balance to refund`
-      )
-    }
-
-    const amountPending = MathBN.mult(pendingDifference, -1)
-    const amountToRefund = amount ?? payment.raw_amount ?? payment.amount
-
-    if (MathBN.gt(amountToRefund, amountPending)) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Cannot refund more than pending difference - ${amountPending}`
-      )
-    }
-  }
-)
 
 /**
  * The data to refund a payment.
