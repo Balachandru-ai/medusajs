@@ -4,7 +4,7 @@ import type {
   RemoteJoinerOptions,
   RemoteQueryFunctionReturnPagination,
 } from "../../types"
-import { ContainerRegistrationKeys, isString, QueryContext } from "../../utils"
+import { ContainerRegistrationKeys, isString } from "../../utils"
 import type { MedusaRequest } from "../types"
 
 export const refetchEntities = async <TEntry extends string>(
