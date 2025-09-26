@@ -77,7 +77,10 @@ export default class CachingModuleService implements ICachingModuleService {
       typeDefs: mergedSchema,
     })
 
-    this.strategy.onApplicationStart?.(schema)
+    this.strategy.onApplicationStart?.(
+      schema,
+      MedusaModule.getAllJoinerConfigs()
+    )
   }
 
   protected onApplicationShutdown() {

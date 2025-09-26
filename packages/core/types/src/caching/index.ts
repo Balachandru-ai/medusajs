@@ -1,3 +1,5 @@
+import { ModuleJoinerConfig } from "../modules-sdk"
+
 type Providers =
   | string[]
   | { id: string; ttl?: number }
@@ -126,7 +128,10 @@ export interface ICachingStrategy {
    * @param schema GraphQLSchema
    * @param cacheModule ICachingModuleService
    */
-  onApplicationStart?(schema: any): Promise<void>
+  onApplicationStart?(
+    schema: any,
+    joinerConfigs: ModuleJoinerConfig[]
+  ): Promise<void>
 
   onApplicationPrepareShutdown?(): Promise<void>
 

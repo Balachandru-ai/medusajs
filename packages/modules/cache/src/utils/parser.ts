@@ -1,3 +1,4 @@
+import { ModuleJoinerConfig } from "@medusajs/framework/types"
 import {
   GraphQLObjectType,
   GraphQLSchema,
@@ -21,8 +22,9 @@ export interface InvalidationEvent {
 
 export class CacheInvalidationParser {
   private typeMap: Map<string, GraphQLObjectType>
+  private idPrefixToEntityName: Record<string, string>
 
-  constructor(schema: GraphQLSchema) {
+  constructor(schema: GraphQLSchema, joinerConfigs: ModuleJoinerConfig[]) {
     this.typeMap = new Map()
 
     // Build type map for quick lookups
@@ -33,6 +35,17 @@ export class CacheInvalidationParser {
         this.typeMap.set(typeName, type)
       }
     })
+
+    this.idPrefixToEntityName = joinerConfigs.reduce((acc, joinerConfig) => {
+      if (joinerConfig.idPrefixToEntityName) {
+        Object.entries(joinerConfig.idPrefixToEntityName).forEach(
+          ([idPrefix, entityName]) => {
+            acc[idPrefix] = entityName
+          }
+        )
+      }
+      return acc
+    }, {} as Record<string, string>)
   }
 
   /**
@@ -84,6 +97,16 @@ export class CacheInvalidationParser {
    * Detect entity type based on object structure and GraphQL type map
    */
   private detectEntityType(obj: any, suggestedType?: string): string | null {
+    if (obj.id) {
+      const idParts = obj.id.split("_")
+      if (idParts.length > 1) {
+        const idPrefix = idParts[0]
+        if (idPrefix && this.idPrefixToEntityName[idPrefix]) {
+          return this.idPrefixToEntityName[idPrefix]
+        }
+      }
+    }
+
     if (suggestedType && this.typeMap.has(suggestedType)) {
       const type = this.typeMap.get(suggestedType)!
       if (this.objectMatchesType(obj, type)) {

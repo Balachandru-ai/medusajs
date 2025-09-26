@@ -46,8 +46,10 @@ export function defineJoinerConfig(
     models,
     linkableKeys,
     primaryKeys,
+    idPrefixToEntityName,
   }: {
     alias?: JoinerServiceConfigAlias[]
+    idPrefixToEntityName?: Record<string, string>
     schema?: string
     models?: DmlEntity<any, any>[] | { name: string }[]
     linkableKeys?: ModuleJoinerConfig["linkableKeys"]
@@ -150,6 +152,12 @@ export function defineJoinerConfig(
     schema = toGraphQLSchema([...modelDefinitions.values()])
   }
 
+  if (!idPrefixToEntityName) {
+    idPrefixToEntityName = buildIdPrefixToEntityNameFromDmlObjects([
+      ...modelDefinitions.values(),
+    ])
+  }
+
   const linkableKeysFromDml = buildLinkableKeysFromDmlObjects([
     ...modelDefinitions.values(),
   ])
@@ -199,6 +207,7 @@ export function defineJoinerConfig(
     serviceName,
     primaryKeys,
     schema,
+    idPrefixToEntityName,
     linkableKeys: linkableKeys,
     alias: [
       ...[...(alias ?? ([] as any))].map((alias) => ({
@@ -228,6 +237,22 @@ export function defineJoinerConfig(
         })),
     ],
   }
+}
+
+/**
+ * Build the id prefix to entity name map from the DML objects
+ * @param models
+ */
+export function buildIdPrefixToEntityNameFromDmlObjects(
+  models: DmlEntity<any, any>[]
+): Record<string, string> {
+  return models.reduce((acc, model) => {
+    const id = model.parse().schema.id as IdProperty
+    if (id.dataType.options.prefix) {
+      acc[id.dataType.options.prefix] = model.name
+    }
+    return acc
+  }, {})
 }
 
 /**

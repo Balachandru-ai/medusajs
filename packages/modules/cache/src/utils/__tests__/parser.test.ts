@@ -85,7 +85,17 @@ describe("CacheInvalidationParser", () => {
     `
 
     schema = buildSchema(schemaDefinition)
-    parser = new CacheInvalidationParser(schema)
+    parser = new CacheInvalidationParser(schema, [
+      // Partially populate this record ro force the test to match from both id prefix or type
+      // detection
+      {
+        idPrefixToEntityName: {
+          prod: "Product",
+          col: "ProductCollection",
+          cat: "ProductCategory",
+        },
+      },
+    ])
   })
 
   describe("parseObjectForEntities", () => {

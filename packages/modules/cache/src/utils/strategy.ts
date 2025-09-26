@@ -2,6 +2,7 @@ import type {
   Event,
   ICachingModuleService,
   ICachingStrategy,
+  ModuleJoinerConfig,
 } from "@medusajs/framework/types"
 import {
   type GraphQLSchema,
@@ -33,8 +34,14 @@ export class DefaultCacheStrategy implements ICachingStrategy {
     this.#container = container
   }
 
-  async onApplicationStart(schema: GraphQLSchema) {
-    this.#cacheInvalidationParser = new CacheInvalidationParser(schema)
+  async onApplicationStart(
+    schema: GraphQLSchema,
+    joinerConfigs: ModuleJoinerConfig[]
+  ) {
+    this.#cacheInvalidationParser = new CacheInvalidationParser(
+      schema,
+      joinerConfigs
+    )
 
     const eventBus = this.#container[Modules.EVENT_BUS]
 
