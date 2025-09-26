@@ -49,3 +49,53 @@ export async function useCache<T>(
 
   return result
 }
+
+export function cached(options: {
+  key?: string | ((...args: any[]) => string | Promise<string>)
+  tags?: string[] | ((...args: any[]) => string[] | Promise<string[]>)
+  ttl?: number
+  autoInvalidate?: boolean
+  providers?: string[]
+}) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value
+
+    if (typeof originalMethod !== "function") {
+      throw new Error("@cached can only be applied to methods")
+    }
+
+    descriptor.value = async function (...args: any[]) {
+      // Resolve dynamic options
+      const resolvedKey =
+        typeof options.key === "function"
+          ? await options.key(...args)
+          : options.key
+
+      const resolvedTags =
+        typeof options.tags === "function"
+          ? await options.tags(...args)
+          : options.tags
+
+      // Create cache options
+      const cacheOptions = {
+        key: resolvedKey,
+        tags: resolvedTags,
+        ttl: options.ttl,
+        autoInvalidate: options.autoInvalidate,
+        providers: options.providers,
+      }
+
+      // Use the existing useCache function with the original method bound to this context
+      return await useCache(
+        () => originalMethod.apply(this, args),
+        cacheOptions
+      )
+    }
+
+    return descriptor
+  }
+}
