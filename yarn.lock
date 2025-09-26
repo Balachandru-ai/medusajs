@@ -6217,7 +6217,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/caching-redis@workspace:packages/modules/providers/cache-redis":
+"@medusajs/caching-redis@2.10.3, @medusajs/caching-redis@workspace:packages/modules/providers/cache-redis":
   version: 0.0.0-use.local
   resolution: "@medusajs/caching-redis@workspace:packages/modules/providers/cache-redis"
   dependencies:
@@ -6233,7 +6233,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/caching@workspace:*, @medusajs/caching@workspace:packages/modules/cache":
+"@medusajs/caching@2.10.3, @medusajs/caching@workspace:*, @medusajs/caching@workspace:packages/modules/cache":
   version: 0.0.0-use.local
   resolution: "@medusajs/caching@workspace:packages/modules/cache"
   dependencies:
@@ -6868,6 +6868,8 @@ __metadata:
     "@medusajs/auth-google": 2.10.3
     "@medusajs/cache-inmemory": 2.10.3
     "@medusajs/cache-redis": 2.10.3
+    "@medusajs/caching": 2.10.3
+    "@medusajs/caching-redis": 2.10.3
     "@medusajs/cart": 2.10.3
     "@medusajs/core-flows": 2.10.3
     "@medusajs/currency": 2.10.3

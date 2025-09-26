@@ -12,7 +12,6 @@ export * from "./workflows"
 export * from "./telemetry"
 export * from "./zod"
 export * from "./migrations"
-export * from "./caching"
 
 export const MEDUSA_CLI_PATH = require.resolve("@medusajs/cli")
 

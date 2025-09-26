@@ -1,6 +1,6 @@
-import { FeatureFlag, Modules } from "../utils"
-import { container } from "../container"
-import type { ICachingModuleService } from "../types"
+import { ICachingModuleService, MedusaContainer } from "@medusajs/types"
+import { Modules } from "../modules-sdk"
+import { FeatureFlag } from "../feature-flags"
 
 /**
  * This function is used to cache the result of a function call.
@@ -20,13 +20,17 @@ export async function useCache<T>(
      */
     autoInvalidate?: boolean
     providers?: string[]
+    container: MedusaContainer
   }
 ): Promise<T> {
-  const cachingModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
+  const cachingModule = options.container.resolve<ICachingModuleService>(
+    Modules.CACHING,
+    {
+      allowUnregistered: true,
+    }
+  )
 
-  if (!FeatureFlag.isFeatureEnabled("cachhing") || !cachingModule) {
+  if (!FeatureFlag.isFeatureEnabled("caching") || !cachingModule) {
     return await cb()
   }
 
@@ -113,6 +117,8 @@ export function Cached<
   providers?:
     | string[]
     | ((args: TargetMethodArgs<Target, PropertyKey>) => string[] | undefined)
+
+  container: MedusaContainer | ((this: Target) => MedusaContainer)
 }) {
   return function (
     target: Target,
@@ -125,10 +131,6 @@ export function Cached<
       throw new Error("@cached can only be applied to methods")
     }
 
-    const cachingModule = container.resolve(Modules.CACHING, {
-      allowUnregistered: true,
-    })
-
     descriptor.value = async function (
       ...args: Target[PropertyKey & keyof Target] extends (
         ...args: any[]
@@ -136,28 +138,50 @@ export function Cached<
         ? Parameters<Target[PropertyKey & keyof Target]>
         : never
     ) {
-      if (!FeatureFlag.isFeatureEnabled("cachhing") || !cachingModule) {
+      const cachingModule =
+        typeof options.container === "function"
+          ? options.container.call(this)
+          : options.container.resolve<ICachingModuleService>(Modules.CACHING, {
+              allowUnregistered: true,
+            })
+
+      if (!FeatureFlag.isFeatureEnabled("caching") || !cachingModule) {
         return await originalMethod.apply(this, args)
       }
 
-      const cacheOptions = await [
+      const resolvableKeys = [
         "key",
         "tags",
         "ttl",
         "autoInvalidate",
         "providers",
-      ].reduce(async (acc, option) => {
-        const resolvedOption =
-          typeof options[option] === "function"
-            ? await options[option](args)
-            : options[option]
-        acc[option] = resolvedOption
-        return acc
-      }, {})
+        "container",
+      ]
+      const cacheOptions = {} as Parameters<typeof useCache>[1]
+
+      const promises: Promise<any>[] = []
+      for (const key of resolvableKeys) {
+        if (typeof options[key] === "function") {
+          const res = options[key](args, cachingModule)
+          if (res instanceof Promise) {
+            promises.push(
+              res.then((value) => {
+                cacheOptions[key] = value
+              })
+            )
+          } else {
+            cacheOptions[key] = res
+          }
+        } else {
+          cacheOptions[key] = options[key]
+        }
+      }
+
+      await Promise.all(promises)
 
       return await useCache(
         () => originalMethod.apply(this, args),
-        cacheOptions
+        cacheOptions as Parameters<typeof useCache>[1]
       )
     }
 

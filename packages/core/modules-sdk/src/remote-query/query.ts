@@ -1,6 +1,7 @@
 import {
   GraphResultSet,
   IIndexService,
+  MedusaContainer,
   RemoteJoinerOptions,
   RemoteJoinerQuery,
   RemoteQueryFilters,
@@ -11,6 +12,7 @@ import {
   RemoteQueryObjectFromStringResult,
 } from "@medusajs/types"
 import {
+  Cached,
   MedusaError,
   isObject,
   remoteQueryObjectFromString,
@@ -18,6 +20,13 @@ import {
 } from "@medusajs/utils"
 import { RemoteQuery } from "./remote-query"
 import { toRemoteQuery } from "./to-remote-query"
+
+function extractCacheOptions<T>(
+  options: { cache?: Record<string, any> },
+  key: string
+) {
+  return options.cache?.[key]
+}
 
 /**
  * API wrapper around the remoteQuery
@@ -266,10 +275,80 @@ export class Query {
 export function createQuery({
   remoteQuery,
   indexModule,
+  container,
 }: {
   remoteQuery: RemoteQuery
   indexModule: IIndexService
+  container: MedusaContainer
 }) {
+  Query.prototype.graph = Cached<Query, "graph">({
+    key: async (args, cachingModule) => {
+      const queryOptions = args[0]
+      const remoteJoinerOptions = args[1] ?? {}
+      const { initialData, cache, ...restOptions } = remoteJoinerOptions
+
+      const keyInput = {
+        queryOptions,
+        options: restOptions,
+      }
+      return await cachingModule.computeKey(keyInput)
+    },
+    enable: (args) => {
+      return !!extractCacheOptions(args[1] ?? {}, "enable")
+    },
+    ttl: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "ttl")
+    },
+    tags: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "tags")
+    },
+    autoInvalidate: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "autoInvalidate")
+    },
+    providers: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "providers")
+    },
+    container,
+  })(
+    Query.prototype,
+    "graph",
+    Object.getOwnPropertyDescriptor(Query.prototype, "graph")!
+  ).value
+
+  Query.prototype.index = Cached<Query, "index">({
+    key: async (args, cachingModule) => {
+      const queryOptions = args[0]
+      const remoteJoinerOptions = args[1] ?? {}
+      const { initialData, cache, ...restOptions } = remoteJoinerOptions
+
+      const keyInput = {
+        queryOptions,
+        options: restOptions,
+      }
+      return await cachingModule.computeKey(keyInput)
+    },
+    enable: (args) => {
+      return !!extractCacheOptions(args[1] ?? {}, "enable")
+    },
+    ttl: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "ttl")
+    },
+    tags: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "tags")
+    },
+    autoInvalidate: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "autoInvalidate")
+    },
+    providers: (args) => {
+      return extractCacheOptions(args[1] ?? {}, "providers")
+    },
+    container,
+  })(
+    Query.prototype,
+    "index",
+    Object.getOwnPropertyDescriptor(Query.prototype, "index")!
+  ).value
+
   const query = new Query({
     remoteQuery,
     indexModule,
