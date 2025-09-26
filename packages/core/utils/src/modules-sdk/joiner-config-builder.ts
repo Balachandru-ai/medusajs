@@ -247,10 +247,19 @@ export function buildIdPrefixToEntityNameFromDmlObjects(
   models: DmlEntity<any, any>[]
 ): Record<string, string> {
   return models.reduce((acc, model) => {
-    const id = model.parse().schema.id as IdProperty
-    if (id.dataType.options.prefix) {
+    const id = model.parse().schema.id as
+      | IdProperty
+      | PrimaryKeyModifier<any, any>
+
+    if (
+      PrimaryKeyModifier.isPrimaryKeyModifier(id) &&
+      id.schema.dataType.options.prefix
+    ) {
+      acc[id.schema.dataType.options.prefix] = model.name
+    } else if (IdProperty.isIdProperty(id) && id.dataType.options.prefix) {
       acc[id.dataType.options.prefix] = model.name
     }
+
     return acc
   }, {})
 }
