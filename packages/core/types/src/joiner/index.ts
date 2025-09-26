@@ -1,3 +1,5 @@
+import { MedusaContainer } from "../common"
+
 export type JoinerRelationship = {
   alias: string
   foreignKey: string
@@ -92,6 +94,39 @@ export interface RemoteJoinerOptions {
   throwIfRelationNotFound?: boolean | string[]
   initialData?: object | object[]
   initialDataOnly?: boolean
+  cache?: {
+    /**
+     * If any other options are provided, the cache will be enabled.
+     * if you want to disable the cache, you can set this to false.
+     * if you want to enable the cache, without altering the default options, you can set this to
+     * true.
+     */
+    enable?: boolean
+    /**
+     * The key to use for the cache.
+     * If a function is provided, it will be called with the arguments as the first argument and the
+     * container as the second argument.
+     */
+    key?:
+      | string
+      | ((args: any[], container: MedusaContainer) => string | Promise<string>)
+    /**
+     * The tags to use for the cache.
+     */
+    tags?: string[]
+    /**
+     * The time-to-live (TTL) value in seconds.
+     */
+    ttl?: number
+    /**
+     * Whether to auto invalidate the cache whenever it is possible.
+     */
+    autoInvalidate?: boolean
+    /**
+     * The providers to use for the cache.
+     */
+    providers?: string[]
+  }
 }
 
 export interface RemoteNestedExpands {

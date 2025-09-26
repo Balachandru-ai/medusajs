@@ -1,6 +1,14 @@
 import { Modules } from "@medusajs/utils"
 import { container } from "../container"
+import { ICachingModuleService } from "../types"
 
+/**
+ * This function is used to cache the result of a function call.
+ *
+ * @param cb - The callback to execute.
+ * @param options - The options for the cache.
+ * @returns The result of the callback.
+ */
 export async function useCache<T>(
   cb: (...args: any[]) => Promise<T>,
   options: {
@@ -19,9 +27,7 @@ export async function useCache<T>(
   })
 
   if (!cachingModule) {
-    throw new Error(
-      "Caching module not found. The caching module must be configured in your medusa config.."
-    )
+    return await cb()
   }
 
   const key = options.key ?? (await cachingModule.computeKey(options))
@@ -50,16 +56,67 @@ export async function useCache<T>(
   return result
 }
 
-export function cached(options: {
-  key?: string | ((...args: any[]) => string | Promise<string>)
-  tags?: string[] | ((...args: any[]) => string[] | Promise<string[]>)
-  ttl?: number
-  autoInvalidate?: boolean
-  providers?: string[]
+type TargetMethodArgs<Target, PropertyKey> = Target[PropertyKey &
+  keyof Target] extends (...args: any[]) => any
+  ? Parameters<Target[PropertyKey & keyof Target]>
+  : never
+
+/**
+ * This function is used to cache the result of a method call.
+ *
+ * @param options - The options for the cache.
+ * @returns The original method with the cache applied.
+ */
+export function Cached<
+  const Target extends object,
+  const PropertyKey extends keyof Target
+>(options: {
+  /**
+   * The key to use for the cache.
+   * If a function is provided, it will be called with the arguments as the first argument and the
+   * container as the second argument.
+   */
+  key?:
+    | string
+    | ((
+        args: TargetMethodArgs<Target, PropertyKey>,
+        cachingModule: ICachingModuleService
+      ) => string | Promise<string>)
+  /**
+   * Whether to enable the cache. This is only useful if you want to enable without providing any
+   * other options.
+   */
+  enable?:
+    | boolean
+    | ((args: TargetMethodArgs<Target, PropertyKey>) => boolean | undefined)
+  /**
+   * The tags to use for the cache.
+   */
+  tags?:
+    | string[]
+    | ((args: TargetMethodArgs<Target, PropertyKey>) => string[] | undefined)
+  /**
+   * The time-to-live (TTL) value in seconds.
+   */
+  ttl?:
+    | number
+    | ((args: TargetMethodArgs<Target, PropertyKey>) => number | undefined)
+  /**
+   * Whether to auto invalidate the cache whenever it is possible.
+   */
+  autoInvalidate?:
+    | boolean
+    | ((args: TargetMethodArgs<Target, PropertyKey>) => boolean | undefined)
+  /**
+   * The providers to use for the cache.
+   */
+  providers?:
+    | string[]
+    | ((args: TargetMethodArgs<Target, PropertyKey>) => string[] | undefined)
 }) {
   return function (
-    target: any,
-    propertyKey: string,
+    target: Target,
+    propertyKey: PropertyKey,
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value
@@ -68,28 +125,36 @@ export function cached(options: {
       throw new Error("@cached can only be applied to methods")
     }
 
-    descriptor.value = async function (...args: any[]) {
-      // Resolve dynamic options
-      const resolvedKey =
-        typeof options.key === "function"
-          ? await options.key(...args)
-          : options.key
+    const cachingModule = container.resolve(Modules.CACHING, {
+      allowUnregistered: true,
+    })
 
-      const resolvedTags =
-        typeof options.tags === "function"
-          ? await options.tags(...args)
-          : options.tags
-
-      // Create cache options
-      const cacheOptions = {
-        key: resolvedKey,
-        tags: resolvedTags,
-        ttl: options.ttl,
-        autoInvalidate: options.autoInvalidate,
-        providers: options.providers,
+    descriptor.value = async function (
+      ...args: Target[PropertyKey & keyof Target] extends (
+        ...args: any[]
+      ) => any
+        ? Parameters<Target[PropertyKey & keyof Target]>
+        : never
+    ) {
+      if (!cachingModule) {
+        return await originalMethod.apply(this, args)
       }
 
-      // Use the existing useCache function with the original method bound to this context
+      const cacheOptions = await [
+        "key",
+        "tags",
+        "ttl",
+        "autoInvalidate",
+        "providers",
+      ].reduce(async (acc, option) => {
+        const resolvedOption =
+          typeof options[option] === "function"
+            ? await options[option](args)
+            : options[option]
+        acc[option] = resolvedOption
+        return acc
+      }, {})
+
       return await useCache(
         () => originalMethod.apply(this, args),
         cacheOptions
