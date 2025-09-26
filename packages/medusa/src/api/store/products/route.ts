@@ -110,9 +110,8 @@ async function getProducts(
   }
 
   if (isPresent(req.pricingContext)) {
-    context["variants.calculated_price"] = {
-      context: req.pricingContext,
-    }
+    context["variants"] ??= {}
+    context["variants"]["calculated_price"] = QueryContext(req.pricingContext!)
   }
 
   const { data: products = [], metadata } = await query.graph(

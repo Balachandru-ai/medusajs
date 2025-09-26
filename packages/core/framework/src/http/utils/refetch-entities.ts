@@ -4,7 +4,7 @@ import type {
   RemoteJoinerOptions,
   RemoteQueryFunctionReturnPagination,
 } from "../../types"
-import { ContainerRegistrationKeys, isString } from "../../utils"
+import { ContainerRegistrationKeys, isString, QueryContext } from "../../utils"
 import type { MedusaRequest } from "../types"
 
 export const refetchEntities = async <TEntry extends string>(
@@ -22,27 +22,29 @@ export const refetchEntities = async <TEntry extends string>(
 > => {
   const query = scope.resolve(ContainerRegistrationKeys.QUERY)
   const filters = isString(idOrFilter) ? { id: idOrFilter } : idOrFilter
-  let context: object = {}
+  let context: Record<string, unknown> = {}
 
   if ("context" in filters) {
     if (filters.context) {
-      context = filters.context!
+      context = filters.context! as Record<string, unknown>
     }
 
     delete filters.context
   }
 
-  return (await query.graph(
-    {
-      entity: entryPoint as string,
-      fields,
-      filters,
-      context,
-      pagination,
-      withDeleted,
-    },
-    options
-  )) as Omit<GraphResultSet<TEntry>, "metadata"> & {
+  const graphOptions: Parameters<typeof query.graph>[0] = {
+    entity: entryPoint as string,
+    fields,
+    filters,
+    pagination,
+    withDeleted,
+    context,
+  }
+
+  return (await query.graph(graphOptions, options)) as Omit<
+    GraphResultSet<TEntry>,
+    "metadata"
+  > & {
     metadata: RemoteQueryFunctionReturnPagination
   }
 }
