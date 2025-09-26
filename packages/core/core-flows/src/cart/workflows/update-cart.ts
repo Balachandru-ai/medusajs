@@ -1,4 +1,4 @@
-import type {
+import {
   AdditionalData,
   CartDTO,
   UpdateCartWorkflowInputDTO,
@@ -88,7 +88,6 @@ export const updateCartWorkflow = createWorkflow(
       key: input.id,
       timeout: 2,
       ttl: 10,
-      skipOnSubWorkflow: true,
     })
 
     const { data: cartToUpdate } = useQueryGraphStep({
@@ -320,7 +319,6 @@ export const updateCartWorkflow = createWorkflow(
 
     releaseLockStep({
       key: input.id,
-      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(void 0, {

@@ -126,7 +126,6 @@ export const refreshCartItemsWorkflow = createWorkflow(
       key: input.cart_id,
       timeout: 2,
       ttl: 10,
-      skipOnSubWorkflow: true,
     })
 
     const setPricingContext = createHook(
@@ -240,7 +239,6 @@ export const refreshCartItemsWorkflow = createWorkflow(
 
     releaseLockStep({
       key: input.cart_id,
-      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(refetchedCart, {

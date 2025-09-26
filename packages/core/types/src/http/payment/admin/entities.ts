@@ -4,7 +4,6 @@ import {
   BasePaymentProvider,
   BasePaymentSession,
   BaseRefund,
-  RefundReason,
 } from "../common"
 
 export interface AdminPaymentProvider extends BasePaymentProvider {
@@ -49,4 +48,3 @@ export interface AdminPaymentSession extends BasePaymentSession {
   payment_collection?: AdminPaymentCollection
 }
 export interface AdminRefund extends BaseRefund {}
-export interface AdminRefundReason extends RefundReason {}

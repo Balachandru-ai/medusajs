@@ -1,10 +1,10 @@
+import { MedusaContainer } from "@medusajs/framework"
+import { asFunction, createContainer } from "@medusajs/framework/awilix"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createWorkflow, WorkflowResponse } from "@medusajs/workflows-sdk"
 import { expectTypeOf } from "expect-type"
 import { FixtureEntryPoints } from "../__fixtures__/remote-query"
 import { useQueryGraphStep } from "../use-query-graph"
-import { MedusaContainer } from "@medusajs/framework"
-import { asFunction, createContainer } from "@medusajs/framework/awilix"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 describe("useQueryGraphStep", () => {
   let container!: MedusaContainer
@@ -28,6 +28,9 @@ describe("useQueryGraphStep", () => {
         fields: ["*"],
         filters: {
           id: "123",
+          variants: {
+            id: "123",
+          },
         },
         options: {
           isList: false,

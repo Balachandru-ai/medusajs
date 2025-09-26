@@ -121,7 +121,6 @@ export const addToCartWorkflow = createWorkflow(
       key: input.cart_id,
       timeout: 2,
       ttl: 10,
-      skipOnSubWorkflow: true,
     })
 
     const { data: cart } = useQueryGraphStep({
@@ -321,7 +320,6 @@ export const addToCartWorkflow = createWorkflow(
       }),
       releaseLockStep({
         key: cart.id,
-        skipOnSubWorkflow: true,
       })
     )
 
