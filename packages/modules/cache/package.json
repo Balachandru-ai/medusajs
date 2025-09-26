@@ -25,7 +25,7 @@
     "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
     "build": "rimraf dist && tsc --build && npm run resolve:aliases",
     "test": "jest --passWithNoTests --runInBand --bail --forceExit -- src/",
-    "test:integration": "jest --forceExit -- integration-tests/__tests__/**/*.ts"
+    "test:integration": "jest --runInBand --forceExit -- integration-tests/__tests__/**/*.ts"
   },
   "devDependencies": {
     "@medusajs/framework": "2.10.3",

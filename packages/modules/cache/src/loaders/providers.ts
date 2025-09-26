@@ -86,7 +86,7 @@ export default async ({
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   if (!hasDefaultProvider) {
     logger.warn(
-      `[caching-module]: No default caching provider explicit defined. Using "${container.resolve(
+      `[caching-module]: No default caching provider defined. Using "${container.resolve(
         CachingDefaultProvider
       )}" as default.`
     )
