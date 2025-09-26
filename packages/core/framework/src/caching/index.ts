@@ -1,4 +1,4 @@
-import { Modules } from "@medusajs/utils"
+import { FeatureFlag, Modules } from "@medusajs/utils"
 import { container } from "../container"
 import { ICachingModuleService } from "../types"
 
@@ -26,7 +26,7 @@ export async function useCache<T>(
     allowUnregistered: true,
   })
 
-  if (!cachingModule) {
+  if (!FeatureFlag.isFeatureEnabled("cachhing") || !cachingModule) {
     return await cb()
   }
 
@@ -136,7 +136,7 @@ export function Cached<
         ? Parameters<Target[PropertyKey & keyof Target]>
         : never
     ) {
-      if (!cachingModule) {
+      if (!FeatureFlag.isFeatureEnabled("cachhing") || !cachingModule) {
         return await originalMethod.apply(this, args)
       }
 
