@@ -330,7 +330,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should throw if refund exceeds captured total", async () => {
+      it("should create credit lines if issuing a refund when outstanding amount if >= 0", async () => {
         const payment = order.payment_collections[0].payments[0]
 
         await api.post(
@@ -339,48 +339,20 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
-        await createClaim({ order })
-
         await api.post(
           `/admin/payments/${payment.id}/refund`,
-          { amount: 25 },
+          {
+            amount: 50,
+          },
           adminHeaders
         )
 
-        const e = await api
-          .post(
-            `/admin/payments/${payment.id}/refund`,
-            { amount: 1000 },
-            adminHeaders
-          )
-          .catch((e) => e)
+        const updatedOrder = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
 
-        expect(e.response.data.message).toEqual(
-          "Cannot refund more than pending difference - 75"
-        )
+        expect(updatedOrder.credit_line_total).toEqual(50)
       })
-    })
-
-    it("should throw if outstanding amount is not present", async () => {
-      const payment = order.payment_collections[0].payments[0]
-
-      await api.post(
-        `/admin/payments/${payment.id}/capture`,
-        undefined,
-        adminHeaders
-      )
-
-      const e = await api
-        .post(
-          `/admin/payments/${payment.id}/refund`,
-          { amount: 10 },
-          adminHeaders
-        )
-        .catch((e) => e)
-
-      expect(e.response.data.message).toEqual(
-        "Order does not have an outstanding balance to refund"
-      )
     })
   },
 })
