@@ -21,7 +21,9 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<AdminProductCategoryParamsType>,
   res: MedusaResponse<AdminProductCategoryResponse>
 ) => {
-  const [category] = await refetchEntities(
+  const {
+    data: [category],
+  } = await refetchEntities(
     "product_category",
     { id: req.params.id, ...req.filterableFields },
     req.scope,
@@ -48,7 +50,9 @@ export const POST = async (
     input: { selector: { id }, update: req.validatedBody },
   })
 
-  const [category] = await refetchEntities(
+  const {
+    data: [category],
+  } = await refetchEntities(
     "product_category",
     { id, ...req.filterableFields },
     req.scope,

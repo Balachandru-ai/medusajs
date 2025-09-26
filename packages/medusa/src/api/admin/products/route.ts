@@ -41,7 +41,7 @@ async function getProducts(
 ) {
   const selectFields = remapKeysForProduct(req.queryConfig.fields ?? [])
 
-  const { rows: products, metadata } = await refetchEntities(
+  const { data: products, metadata } = await refetchEntities(
     "product",
     req.filterableFields,
     req.scope,

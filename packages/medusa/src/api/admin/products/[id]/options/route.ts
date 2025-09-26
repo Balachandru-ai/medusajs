@@ -14,7 +14,7 @@ export const GET = async (
   res: MedusaResponse<HttpTypes.AdminProductOptionListResponse>
 ) => {
   const productId = req.params.id
-  const { rows: product_options, metadata } = await refetchEntities(
+  const { data: product_options, metadata } = await refetchEntities(
     "product_option",
     { ...req.filterableFields, product_id: productId },
     req.scope,

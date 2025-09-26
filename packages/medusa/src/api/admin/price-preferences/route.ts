@@ -11,7 +11,7 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminPricePreferenceListParams>,
   res: MedusaResponse<HttpTypes.AdminPricePreferenceListResponse>
 ) => {
-  const { rows: price_preferences, metadata } = await refetchEntities(
+  const { data: price_preferences, metadata } = await refetchEntities(
     "price_preference",
     req.filterableFields,
     req.scope,

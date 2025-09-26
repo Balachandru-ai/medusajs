@@ -17,7 +17,7 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.RefundReasonFilters>,
   res: MedusaResponse<PaginatedResponse<RefundReasonsResponse>>
 ) => {
-  const { rows: refund_reasons, metadata } = await refetchEntities(
+  const { data: refund_reasons, metadata } = await refetchEntities(
     "refund_reasons",
     req.filterableFields,
     req.scope,

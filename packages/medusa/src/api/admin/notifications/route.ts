@@ -9,7 +9,7 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminNotificationListParams>,
   res: MedusaResponse<HttpTypes.AdminNotificationListResponse>
 ) => {
-  const { rows: notifications, metadata } = await refetchEntities(
+  const { data: notifications, metadata } = await refetchEntities(
     "notification",
     req.filterableFields,
     req.scope,

@@ -47,7 +47,7 @@ export function setPricingContext() {
 
     // Find all the customer groups the customer is a part of and set
     if (req.auth_context?.actor_id) {
-      const customerGroups = await refetchEntities(
+      const { data: customerGroups } = await refetchEntities(
         "customer_group",
         { customers: { id: req.auth_context.actor_id } },
         req.scope,

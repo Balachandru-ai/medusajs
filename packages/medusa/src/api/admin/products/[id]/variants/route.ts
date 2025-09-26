@@ -29,7 +29,7 @@ export const GET = async (
     )
   }
 
-  const { rows: variants, metadata } = await refetchEntities(
+  const { data: variants, metadata } = await refetchEntities(
     "variant",
     { ...req.filterableFields, product_id: productId },
     req.scope,

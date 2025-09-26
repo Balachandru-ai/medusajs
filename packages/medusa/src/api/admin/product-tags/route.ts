@@ -12,7 +12,7 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductTagListParams>,
   res: MedusaResponse<HttpTypes.AdminProductTagListResponse>
 ) => {
-  const { rows: product_tags, metadata } = await refetchEntities(
+  const { data: product_tags, metadata } = await refetchEntities(
     "product_tag",
     req.filterableFields,
     req.scope,
