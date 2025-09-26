@@ -58,8 +58,9 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const eventListenersCount = this.eventEmitter_.listenerCount(
         eventData.name
       )
+      const startSubscribersCount = this.eventEmitter_.listenerCount("*")
 
-      if (eventListenersCount === 0) {
+      if (eventListenersCount === 0 && startSubscribersCount === 0) {
         continue
       }
 
@@ -91,9 +92,10 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const options_ = eventData.options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
-      delay(options_?.delay).then(() =>
+      delay(options_?.delay).then(() => {
         this.eventEmitter_.emit(eventData.name, eventBody)
-      )
+        this.eventEmitter_.emit("*", eventBody)
+      })
     }
   }
 
@@ -119,9 +121,10 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const options_ = options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
-      delay(options_?.delay).then(() =>
+      delay(options_?.delay).then(() => {
         this.eventEmitter_.emit(event.name, eventBody)
-      )
+        this.eventEmitter_.emit("*", eventBody)
+      })
     }
 
     await this.clearGroupedEvents(eventGroupId)
