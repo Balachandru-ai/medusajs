@@ -54,15 +54,7 @@ import {
   PaymentSessionStatus,
   promiseAll,
 } from "@medusajs/framework/utils"
-import {
-  AccountHolder,
-  Capture,
-  Payment,
-  PaymentCollection,
-  PaymentSession,
-  Refund,
-  RefundReason,
-} from "@models"
+import { AccountHolder, Capture, Payment, PaymentCollection, PaymentSession, Refund, RefundReason, } from "@models"
 import { joinerConfig } from "../joiner-config"
 import PaymentProviderService from "./payment-provider"
 
@@ -863,7 +855,7 @@ export default class PaymentModuleService
         amount: data.amount,
         created_by: data.created_by,
         note: data.note,
-        refund_reason_id: data.refund_reason_id,
+        refund_reason_id: data.refund_reason_id || null,
       },
       sharedContext
     )
