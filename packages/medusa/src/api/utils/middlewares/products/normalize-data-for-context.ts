@@ -43,12 +43,7 @@ export function normalizeDataForContext() {
         "cart",
         req.filterableFields.cart_id,
         req.scope,
-        ["region_id", "shipping_address.*"],
-        {
-          cache: {
-            enable: true,
-          },
-        }
+        ["region_id", "shipping_address.*"]
       )
 
       if (cart?.region_id) {
@@ -67,7 +62,7 @@ export function normalizeDataForContext() {
         "store",
         {},
         req.scope,
-        ["default_region_id"],
+        ["id", "default_region_id"],
         undefined,
         undefined,
         {

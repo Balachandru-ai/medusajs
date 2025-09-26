@@ -42,12 +42,7 @@ const getTaxInclusivityInfo = async (req: MedusaRequest) => {
     "region",
     req.filterableFields.region_id as string,
     req.scope,
-    ["automatic_taxes"],
-    {
-      cache: {
-        enable: true,
-      },
-    }
+    ["automatic_taxes"]
   )
 
   if (!region) {
