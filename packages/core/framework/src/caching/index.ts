@@ -1,6 +1,6 @@
-import { FeatureFlag, Modules } from "@medusajs/utils"
+import { FeatureFlag, Modules } from "../utils"
 import { container } from "../container"
-import { ICachingModuleService } from "../types"
+import type { ICachingModuleService } from "../types"
 
 /**
  * This function is used to cache the result of a function call.

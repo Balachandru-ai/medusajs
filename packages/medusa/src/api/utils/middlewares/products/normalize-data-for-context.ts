@@ -43,7 +43,12 @@ export function normalizeDataForContext() {
         "cart",
         req.filterableFields.cart_id,
         req.scope,
-        ["region_id", "shipping_address.*"]
+        ["region_id", "shipping_address.*"],
+        {
+          cache: {
+            enable: true,
+          },
+        }
       )
 
       if (cart?.region_id) {
@@ -58,9 +63,19 @@ export function normalizeDataForContext() {
 
     // Finally, try to get it from the store defaults if not available
     if (!regionId) {
-      const stores = await refetchEntities("store", {}, req.scope, [
-        "default_region_id",
-      ])
+      const stores = await refetchEntities(
+        "store",
+        {},
+        req.scope,
+        ["default_region_id"],
+        undefined,
+        undefined,
+        {
+          cache: {
+            enable: true,
+          },
+        }
+      )
       regionId = stores[0]?.default_region_id
     }
 

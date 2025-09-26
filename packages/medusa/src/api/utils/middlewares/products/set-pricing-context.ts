@@ -21,7 +21,12 @@ export function setPricingContext() {
       "region",
       req.filterableFields.region_id!,
       req.scope,
-      ["id", "currency_code"]
+      ["id", "currency_code"],
+      {
+        cache: {
+          enable: true,
+        },
+      }
     )
 
     if (!region) {

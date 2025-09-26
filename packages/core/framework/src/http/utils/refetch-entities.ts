@@ -1,9 +1,5 @@
-import { MedusaContainer } from "@medusajs/types"
-import {
-  ContainerRegistrationKeys,
-  isString,
-  remoteQueryObjectFromString,
-} from "@medusajs/utils"
+import type { MedusaContainer, RemoteJoinerOptions } from "../../types"
+import { ContainerRegistrationKeys, isString } from "../../utils"
 import { MedusaRequest } from "../types"
 
 export const refetchEntities = async (
@@ -12,9 +8,10 @@ export const refetchEntities = async (
   scope: MedusaContainer,
   fields: string[],
   pagination?: MedusaRequest["queryConfig"]["pagination"],
-  withDeleted?: boolean
+  withDeleted?: boolean,
+  options?: RemoteJoinerOptions
 ) => {
-  const remoteQuery = scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
+  const query = scope.resolve(ContainerRegistrationKeys.QUERY)
   const filters = isString(idOrFilter) ? { id: idOrFilter } : idOrFilter
   let context: object = {}
 
@@ -26,24 +23,37 @@ export const refetchEntities = async (
     delete filters.context
   }
 
-  const variables = { filters, ...context, ...pagination, withDeleted }
+  const { data } = await query.graph(
+    {
+      entity: entryPoint,
+      fields,
+      filters,
+      context,
+      pagination,
+      withDeleted,
+    },
+    options
+  )
 
-  const queryObject = remoteQueryObjectFromString({
-    entryPoint,
-    variables,
-    fields,
-  })
-
-  return await remoteQuery(queryObject)
+  return data
 }
 
 export const refetchEntity = async (
   entryPoint: string,
   idOrFilter: string | object,
   scope: MedusaContainer,
-  fields: string[]
+  fields: string[],
+  options?: RemoteJoinerOptions
 ) => {
-  const [entity] = await refetchEntities(entryPoint, idOrFilter, scope, fields)
+  const data = await refetchEntities(
+    entryPoint,
+    idOrFilter,
+    scope,
+    fields,
+    undefined,
+    undefined,
+    options
+  )
 
-  return entity
+  return Array.isArray(data) ? data[0] : data
 }
