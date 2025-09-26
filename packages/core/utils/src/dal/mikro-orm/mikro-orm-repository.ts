@@ -74,7 +74,7 @@ export class MikroOrmBase {
     data: any,
     options?: any
   ): Promise<TOutput> {
-    return mikroOrmSerializer<TOutput>(data, options)
+    return await mikroOrmSerializer<TOutput>(data, options)
   }
 }
 

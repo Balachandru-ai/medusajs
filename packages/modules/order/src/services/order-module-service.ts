@@ -151,14 +151,14 @@ const generateMethodForModels = {
       this.order_id ??= this.order_change.order_id ?? null
       this.claim_id ??= this.order_change.claim_id ?? null
       this.exchange_id ??= this.order_change.exchange_id ?? null
+    }
 
-      if (
-        !this.claim_id &&
-        !this.exchange_id &&
-        (this.return || this.order_change)
-      ) {
-        this.return_id = this.return?.id ?? this.order_change?.return_id ?? null
-      }
+    if (
+      !this.claim_id &&
+      !this.exchange_id &&
+      (this.return || this.order_change)
+    ) {
+      this.return_id = this.return?.id ?? this.order_change?.return_id ?? null
     }
   }
   OnInit()(MikroORMEntity.prototype, "onInit_OrderChangeAction")
@@ -178,13 +178,7 @@ const generateMethodForModels = {
   const MikroORMEntity = toMikroORMEntity(OrderItem)
   MikroORMEntity.prototype["onInit_OrderItem"] = function () {
     if (this.order) {
-      this.version ??= this.order?.version ?? null
-
-      this.order ??= rel(toMikroORMEntity(Order), this.order?.id ?? null)
-    }
-
-    if (this.item) {
-      this.item ??= rel(toMikroORMEntity(OrderLineItem), this.item?.id ?? null)
+      this.version ??= this.order.version ?? null
     }
   }
   OnInit()(MikroORMEntity.prototype, "onInit_OrderItem")
