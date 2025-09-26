@@ -243,6 +243,11 @@ export interface ComputeActionContext extends Record<string, unknown> {
   currency_code: string
 
   /**
+   * The cart's email
+   */
+  email?: string
+
+  /**
    * The cart's line items.
    */
   items?: ComputeActionItemLine[]

@@ -3090,6 +3090,7 @@ moduleIntegrationTestRunner({
 
             result = await service.computeActions(["PROMOTION_TEST"], {
               currency_code: "usd",
+              email: "test@test.com",
               customer: {
                 email: "test@test.com",
               },
