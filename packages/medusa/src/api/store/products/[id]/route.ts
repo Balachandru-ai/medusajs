@@ -31,7 +31,7 @@ export const GET = async (
   if (isPresent(req.pricingContext)) {
     filters["context"] ??= {}
     filters["context"]["variants"] ??= {}
-    filters["context"]["variants"]["calculated_price"] = QueryContext(
+    filters["context"]["variants"]["calculated_price"] ??= QueryContext(
       req.pricingContext!
     )
   }

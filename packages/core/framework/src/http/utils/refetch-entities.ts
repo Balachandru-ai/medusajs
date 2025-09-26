@@ -21,15 +21,15 @@ export const refetchEntities = async <TEntry extends string>(
   }
 > => {
   const query = scope.resolve(ContainerRegistrationKeys.QUERY)
-  const filters = isString(idOrFilter) ? { id: idOrFilter } : idOrFilter
-  let context: Record<string, unknown> = {}
+  let filters = isString(idOrFilter) ? { id: idOrFilter } : idOrFilter
+  let context!: Record<string, unknown>
 
   if ("context" in filters) {
-    if (filters.context) {
-      context = filters.context! as Record<string, unknown>
+    const { context: context_, ...rest } = filters
+    if (context_) {
+      context = context_! as Record<string, unknown>
     }
-
-    delete filters.context
+    filters = rest
   }
 
   const graphOptions: Parameters<typeof query.graph>[0] = {
@@ -38,7 +38,7 @@ export const refetchEntities = async <TEntry extends string>(
     filters,
     pagination,
     withDeleted,
-    context,
+    context: context,
   }
 
   return (await query.graph(graphOptions, options)) as Omit<

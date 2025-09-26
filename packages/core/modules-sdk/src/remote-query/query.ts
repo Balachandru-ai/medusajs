@@ -14,6 +14,7 @@ import {
 import {
   Cached,
   MedusaError,
+  isDefined,
   isObject,
   remoteQueryObjectFromString,
   unflattenObjectKeys,
@@ -26,6 +27,21 @@ function extractCacheOptions<T>(
   key: string
 ) {
   return options.cache?.[key]
+}
+
+function isCacheEnabled(args: any[]) {
+  const isEnabled = extractCacheOptions(args[1] ?? {}, "enable")
+  if (isEnabled === false) {
+    return false
+  }
+
+  return (
+    extractCacheOptions(args[1] ?? {}, "key") ||
+    extractCacheOptions(args[1] ?? {}, "ttl") ||
+    extractCacheOptions(args[1] ?? {}, "tags") ||
+    extractCacheOptions(args[1] ?? {}, "autoInvalidate") ||
+    extractCacheOptions(args[1] ?? {}, "providers")
+  )
 }
 
 /**
@@ -282,16 +298,7 @@ export function createQuery({
   container: MedusaContainer
 }) {
   Query.prototype.graph = Cached<Query, "graph">({
-    enable: (args) => {
-      const isEnabled =
-        !!extractCacheOptions(args[1] ?? {}, "enable") ||
-        extractCacheOptions(args[1] ?? {}, "key") ||
-        extractCacheOptions(args[1] ?? {}, "ttl") ||
-        extractCacheOptions(args[1] ?? {}, "tags") ||
-        extractCacheOptions(args[1] ?? {}, "autoInvalidate") ||
-        extractCacheOptions(args[1] ?? {}, "providers")
-      return isEnabled
-    },
+    enable: isCacheEnabled,
     key: async (args, cachingModule) => {
       const key = extractCacheOptions(args[1] ?? {}, "key")
       if (key) {
@@ -328,16 +335,7 @@ export function createQuery({
   ).value
 
   Query.prototype.index = Cached<Query, "index">({
-    enable: (args) => {
-      const isEnabled =
-        !!extractCacheOptions(args[1] ?? {}, "enable") ||
-        extractCacheOptions(args[1] ?? {}, "key") ||
-        extractCacheOptions(args[1] ?? {}, "ttl") ||
-        extractCacheOptions(args[1] ?? {}, "tags") ||
-        extractCacheOptions(args[1] ?? {}, "autoInvalidate") ||
-        extractCacheOptions(args[1] ?? {}, "providers")
-      return isEnabled
-    },
+    enable: isCacheEnabled,
     key: async (args, cachingModule) => {
       const key = extractCacheOptions(args[1] ?? {}, "key")
       if (key) {

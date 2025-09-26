@@ -48,7 +48,9 @@ async function getProductsWithIndexEngine(
 
   if (isPresent(req.pricingContext)) {
     context["variants"] ??= {}
-    context["variants"]["calculated_price"] = QueryContext(req.pricingContext!)
+    context["variants"]["calculated_price"] ??= QueryContext(
+      req.pricingContext!
+    )
   }
 
   const filters: Record<string, any> = req.filterableFields
@@ -111,7 +113,9 @@ async function getProducts(
 
   if (isPresent(req.pricingContext)) {
     context["variants"] ??= {}
-    context["variants"]["calculated_price"] = QueryContext(req.pricingContext!)
+    context["variants"]["calculated_price"] ??= QueryContext(
+      req.pricingContext!
+    )
   }
 
   const { data: products = [], metadata } = await query.graph(
