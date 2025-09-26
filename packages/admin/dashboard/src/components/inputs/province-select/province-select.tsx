@@ -22,6 +22,7 @@ export const ProvinceSelect = forwardRef<
     {
       disabled,
       placeholder,
+      defaultValue,
       country_code,
       valueAs = "iso_2",
       onChange,
@@ -43,7 +44,10 @@ export const ProvinceSelect = forwardRef<
     const options = Object.entries(provinceObject?.options ?? {}).map(
       ([iso2, name]) => {
         return (
-          <Select.Item key={iso2} value={valueAs === "iso_2" ? iso2 : name}>
+          <Select.Item
+            key={iso2}
+            value={valueAs === "iso_2" ? iso2.toLowerCase() : name}
+          >
             {name}
           </Select.Item>
         )
@@ -56,7 +60,25 @@ export const ProvinceSelect = forwardRef<
 
     return (
       <div className="relative">
-        <Select {...field} onValueChange={onChange} disabled={disabled}>
+        <Select
+          {...field}
+          value={
+            field.value
+              ? valueAs === "iso_2"
+                ? field.value.toLowerCase()
+                : field.value
+              : undefined
+          }
+          defaultValue={
+            defaultValue
+              ? valueAs === "iso_2"
+                ? defaultValue.toLowerCase()
+                : defaultValue
+              : undefined
+          }
+          onValueChange={onChange}
+          disabled={disabled}
+        >
           <Select.Trigger ref={innerRef} className="w-full">
             <Select.Value placeholder={placeholder || placeholderText} />
           </Select.Trigger>
