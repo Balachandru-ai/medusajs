@@ -127,9 +127,9 @@ export class RedisCachingProvider {
     }
 
     // Store options if provided
-    if (options) {
+    if (Object.keys(options ?? {}).length) {
       const optionsKey = this.#getOptionsKey(key)
-      const optionsData = JSON.stringify(options)
+      const optionsData = JSON.stringify(options!)
 
       if (effectiveTTL) {
         await this.redisClient.setex(optionsKey, effectiveTTL + 60, optionsData) // +1 minute buffer
