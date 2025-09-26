@@ -14,35 +14,12 @@ import {
 import {
   Cached,
   MedusaError,
-  isDefined,
   isObject,
   remoteQueryObjectFromString,
   unflattenObjectKeys,
 } from "@medusajs/utils"
 import { RemoteQuery } from "./remote-query"
 import { toRemoteQuery } from "./to-remote-query"
-
-function extractCacheOptions<T>(
-  options: { cache?: Record<string, any> },
-  key: string
-) {
-  return options.cache?.[key]
-}
-
-function isCacheEnabled(args: any[]) {
-  const isEnabled = extractCacheOptions(args[1] ?? {}, "enable")
-  if (isEnabled === false) {
-    return false
-  }
-
-  return (
-    extractCacheOptions(args[1] ?? {}, "key") ||
-    extractCacheOptions(args[1] ?? {}, "ttl") ||
-    extractCacheOptions(args[1] ?? {}, "tags") ||
-    extractCacheOptions(args[1] ?? {}, "autoInvalidate") ||
-    extractCacheOptions(args[1] ?? {}, "providers")
-  )
-}
 
 /**
  * API wrapper around the remoteQuery
@@ -284,6 +261,27 @@ export class Query {
   }
 }
 
+function extractCacheOptions(option: string) {
+  return function extractKey(args: any[]) {
+    return args[1]?.cache?.[option]
+  }
+}
+
+function isCacheEnabled(args: any[]) {
+  const isEnabled = extractCacheOptions("enable")(args)
+  if (isEnabled === false) {
+    return false
+  }
+
+  return (
+    extractCacheOptions("key")(args) ||
+    extractCacheOptions("ttl")(args) ||
+    extractCacheOptions("tags")(args) ||
+    extractCacheOptions("autoInvalidate")(args) ||
+    extractCacheOptions("providers")(args)
+  )
+}
+
 /**
  * API wrapper around the remoteQuery with backward compatibility support
  * @param remoteQuery
@@ -300,7 +298,7 @@ export function createQuery({
   Query.prototype.graph = Cached<Query, "graph">({
     enable: isCacheEnabled,
     key: async (args, cachingModule) => {
-      const key = extractCacheOptions(args[1] ?? {}, "key")
+      const key = extractCacheOptions("key")(args)
       if (key) {
         return key
       }
@@ -315,18 +313,10 @@ export function createQuery({
       }
       return await cachingModule.computeKey(keyInput)
     },
-    ttl: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "ttl")
-    },
-    tags: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "tags")
-    },
-    autoInvalidate: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "autoInvalidate")
-    },
-    providers: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "providers")
-    },
+    ttl: extractCacheOptions("ttl"),
+    tags: extractCacheOptions("tags"),
+    autoInvalidate: extractCacheOptions("autoInvalidate"),
+    providers: extractCacheOptions("providers"),
     container,
   })(
     Query.prototype,
@@ -337,7 +327,7 @@ export function createQuery({
   Query.prototype.index = Cached<Query, "index">({
     enable: isCacheEnabled,
     key: async (args, cachingModule) => {
-      const key = extractCacheOptions(args[1] ?? {}, "key")
+      const key = extractCacheOptions("key")(args)
       if (key) {
         return key
       }
@@ -352,18 +342,10 @@ export function createQuery({
       }
       return await cachingModule.computeKey(keyInput)
     },
-    ttl: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "ttl")
-    },
-    tags: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "tags")
-    },
-    autoInvalidate: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "autoInvalidate")
-    },
-    providers: (args) => {
-      return extractCacheOptions(args[1] ?? {}, "providers")
-    },
+    ttl: extractCacheOptions("ttl"),
+    tags: extractCacheOptions("tags"),
+    autoInvalidate: extractCacheOptions("autoInvalidate"),
+    providers: extractCacheOptions("providers"),
     container,
   })(
     Query.prototype,

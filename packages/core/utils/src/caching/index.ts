@@ -143,12 +143,17 @@ export function Cached<
         ? Parameters<Target[PropertyKey & keyof Target]>
         : never
     ) {
-      const cachingModule =
+      const container: MedusaContainer =
         typeof options.container === "function"
           ? options.container.call(this)
-          : options.container.resolve<ICachingModuleService>(Modules.CACHING, {
-              allowUnregistered: true,
-            })
+          : options.container
+
+      const cachingModule = container.resolve<ICachingModuleService>(
+        Modules.CACHING,
+        {
+          allowUnregistered: true,
+        }
+      )
 
       if (!FeatureFlag.isFeatureEnabled("caching") || !cachingModule) {
         return await originalMethod.apply(this, args)
@@ -161,7 +166,6 @@ export function Cached<
         "ttl",
         "autoInvalidate",
         "providers",
-        "container",
       ]
       const cacheOptions = {} as Parameters<typeof useCache>[1]
 
@@ -188,6 +192,10 @@ export function Cached<
       if (!cacheOptions.enable) {
         return await originalMethod.apply(this, args)
       }
+
+      Object.assign(cacheOptions, {
+        container,
+      })
 
       return await useCache(
         () => originalMethod.apply(this, args),
