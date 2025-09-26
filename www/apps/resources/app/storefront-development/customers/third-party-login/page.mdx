@@ -434,7 +434,7 @@ The `validateCallback` function uses the functions added earlier to implement th
 2. Decode the token to check if it has an `actor_id` property.
   - If the property exists, the customer is already registered. The authentication token can be used for subsequent authenticated requests.
   - If the property doesn't exist, this is the first time the customer is authenticating with the third-party service. So:
-      1. Create a customer using the relevant information from `user_metadata` (in this case the `email` field)
+      1. Create a customer. The `user_metadata` in the decoded token will hold the customer's information in the third-party provider, such as their `email`. You can use this value as the customer's email in Medusa.
       2. Refetch the customer's authentication token.
       3. Use the token for subsequent authenticated requests.
 3. Retrieve the customer's details as an example of testing authentication.
