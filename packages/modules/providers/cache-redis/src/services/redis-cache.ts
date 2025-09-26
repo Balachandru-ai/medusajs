@@ -127,7 +127,10 @@ export class RedisCachingProvider {
     }
 
     // Store options if provided
-    if (Object.keys(options ?? {}).length) {
+    if (
+      Object.keys(options ?? {}).length &&
+      !Object.values(options ?? {}).every((value) => value === undefined)
+    ) {
       const optionsKey = this.#getOptionsKey(key)
       const optionsData = JSON.stringify(options!)
 

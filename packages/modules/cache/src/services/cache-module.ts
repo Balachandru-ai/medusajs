@@ -8,7 +8,7 @@ import { GraphQLUtils, MedusaError } from "@medusajs/framework/utils"
 import { CachingDefaultProvider, ModuleInjectedDependencies } from "@types"
 import CacheProviderService from "./cache-provider"
 
-const ONE_HOUR_IN_SECOND = 60 * 60 * 100
+const ONE_HOUR_IN_SECOND = 60 * 60
 
 export default class CachingModuleService implements ICachingModuleService {
   protected container: ModuleInjectedDependencies

@@ -282,7 +282,22 @@ export function createQuery({
   container: MedusaContainer
 }) {
   Query.prototype.graph = Cached<Query, "graph">({
+    enable: (args) => {
+      const isEnabled =
+        !!extractCacheOptions(args[1] ?? {}, "enable") ||
+        extractCacheOptions(args[1] ?? {}, "key") ||
+        extractCacheOptions(args[1] ?? {}, "ttl") ||
+        extractCacheOptions(args[1] ?? {}, "tags") ||
+        extractCacheOptions(args[1] ?? {}, "autoInvalidate") ||
+        extractCacheOptions(args[1] ?? {}, "providers")
+      return isEnabled
+    },
     key: async (args, cachingModule) => {
+      const key = extractCacheOptions(args[1] ?? {}, "key")
+      if (key) {
+        return key
+      }
+
       const queryOptions = args[0]
       const remoteJoinerOptions = args[1] ?? {}
       const { initialData, cache, ...restOptions } = remoteJoinerOptions
@@ -292,9 +307,6 @@ export function createQuery({
         options: restOptions,
       }
       return await cachingModule.computeKey(keyInput)
-    },
-    enable: (args) => {
-      return !!extractCacheOptions(args[1] ?? {}, "enable")
     },
     ttl: (args) => {
       return extractCacheOptions(args[1] ?? {}, "ttl")
@@ -316,7 +328,22 @@ export function createQuery({
   ).value
 
   Query.prototype.index = Cached<Query, "index">({
+    enable: (args) => {
+      const isEnabled =
+        !!extractCacheOptions(args[1] ?? {}, "enable") ||
+        extractCacheOptions(args[1] ?? {}, "key") ||
+        extractCacheOptions(args[1] ?? {}, "ttl") ||
+        extractCacheOptions(args[1] ?? {}, "tags") ||
+        extractCacheOptions(args[1] ?? {}, "autoInvalidate") ||
+        extractCacheOptions(args[1] ?? {}, "providers")
+      return isEnabled
+    },
     key: async (args, cachingModule) => {
+      const key = extractCacheOptions(args[1] ?? {}, "key")
+      if (key) {
+        return key
+      }
+
       const queryOptions = args[0]
       const remoteJoinerOptions = args[1] ?? {}
       const { initialData, cache, ...restOptions } = remoteJoinerOptions
@@ -326,9 +353,6 @@ export function createQuery({
         options: restOptions,
       }
       return await cachingModule.computeKey(keyInput)
-    },
-    enable: (args) => {
-      return !!extractCacheOptions(args[1] ?? {}, "enable")
     },
     ttl: (args) => {
       return extractCacheOptions(args[1] ?? {}, "ttl")

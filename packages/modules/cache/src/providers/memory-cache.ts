@@ -144,7 +144,10 @@ export class MemoryCachingProvider implements ICachingProviderService {
     }
 
     // Store entry options if provided
-    if (Object.keys(options ?? {}).length) {
+    if (
+      Object.keys(options ?? {}).length &&
+      !Object.values(options ?? {}).every((value) => value === undefined)
+    ) {
       this.entryOptions.set(key, options!)
     }
   }

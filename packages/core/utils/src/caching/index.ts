@@ -12,6 +12,7 @@ import { FeatureFlag } from "../feature-flags"
 export async function useCache<T>(
   cb: (...args: any[]) => Promise<T>,
   options: {
+    enable?: boolean
     key?: string
     tags?: string[]
     ttl?: number
@@ -30,7 +31,11 @@ export async function useCache<T>(
     }
   )
 
-  if (!FeatureFlag.isFeatureEnabled("caching") || !cachingModule) {
+  if (
+    !options.enable ||
+    !FeatureFlag.isFeatureEnabled("caching") ||
+    !cachingModule
+  ) {
     return await cb()
   }
 
@@ -150,6 +155,7 @@ export function Cached<
       }
 
       const resolvableKeys = [
+        "enable",
         "key",
         "tags",
         "ttl",
@@ -178,6 +184,10 @@ export function Cached<
       }
 
       await Promise.all(promises)
+
+      if (!cacheOptions.enable) {
+        return await originalMethod.apply(this, args)
+      }
 
       return await useCache(
         () => originalMethod.apply(this, args),
