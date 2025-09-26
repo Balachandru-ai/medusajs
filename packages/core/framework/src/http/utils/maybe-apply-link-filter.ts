@@ -45,18 +45,11 @@ export function maybeApplyLinkFilter({
       filters[resourceId] = existingFilters
     }
 
-    const { data: resources } = await query.graph(
-      {
-        entity: entryPoint,
-        fields: [resourceId],
-        filters,
-      },
-      {
-        cache: {
-          enable: true,
-        },
-      }
-    )
+    const { data: resources } = await query.graph({
+      entity: entryPoint,
+      fields: [resourceId],
+      filters,
+    })
 
     filterableFields[filterByField] = resources.map((p) => p[resourceId])
 
