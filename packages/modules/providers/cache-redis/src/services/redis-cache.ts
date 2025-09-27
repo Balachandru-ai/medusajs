@@ -54,7 +54,7 @@ export class RedisCachingProvider {
         return `0:${data}`
       }
     } catch (error) {
-      throw new Error(`Failed to compress data: ${error}`)
+      return `0:${data}`
     }
   }
 
@@ -394,11 +394,8 @@ export class RedisCachingProvider {
               const tagsData = await this.redisClient.get(tagsKey)
               return { key, tagsKey, tagsData }
             })
-
-            // Wait for all tag data fetches
             const tagResults = await Promise.all(tagDataPromises)
 
-            // Build single pipeline for all tag cleanup operations
             const tagCleanupPipeline = this.redisClient.pipeline()
 
             tagResults.forEach(({ key, tagsKey, tagsData }) => {
@@ -412,20 +409,17 @@ export class RedisCachingProvider {
                       const tagKey = this.#getTagKey(tag)
                       tagCleanupPipeline.srem(tagKey, key)
                     })
-                    tagCleanupPipeline.unlink(tagsKey) // Delete the tags key
+                    tagCleanupPipeline.unlink(tagsKey)
                   }
                 } catch (e) {
-                  throw new Error(`Failed to clear tags for key ${key}: ${e}`)
+                  // noop
                 }
               }
             })
 
-            // Execute all tag cleanup operations in single pipeline
             await tagCleanupPipeline.exec()
-
             await deletePipeline.exec()
 
-            // Clean up empty tag sets
             const allTagKeys = await this.redisClient.keys(
               `${this.keyNamePrefix}tag:*`
             )
@@ -438,7 +432,7 @@ export class RedisCachingProvider {
 
               const cardinalityResults = await cleanupPipeline.exec()
 
-              // Delete tag keys that are now empty
+              // Delete tag keys that are empty
               const emptyTagDeletePipeline = this.redisClient.pipeline()
               cardinalityResults?.forEach((result, index) => {
                 if (result && result[1] === 0) {
