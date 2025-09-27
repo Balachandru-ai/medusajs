@@ -274,6 +274,7 @@ function isCacheEnabled(args: any[]) {
   }
 
   return (
+    isEnabled === true ||
     extractCacheOptions("key")(args) ||
     extractCacheOptions("ttl")(args) ||
     extractCacheOptions("tags")(args) ||
