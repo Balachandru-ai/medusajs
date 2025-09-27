@@ -9,15 +9,21 @@ export class RedisCachingProvider {
   protected keyNamePrefix: string
   protected defaultTTL: number
   protected compressionThreshold: number
+  protected hasher: (key: string) => string
 
   constructor(
-    { redisClient, prefix }: { redisClient: Redis; prefix: string },
+    {
+      redisClient,
+      prefix,
+      hasher,
+    }: { redisClient: Redis; prefix: string; hasher: (key: string) => string },
     options?: RedisCacheModuleOptions
   ) {
     this.redisClient = redisClient
     this.keyNamePrefix = prefix
     this.defaultTTL = options?.ttl ?? 3600 // 1 hour default
     this.compressionThreshold = options?.compressionThreshold ?? 1024 // 1KB default
+    this.hasher = hasher
   }
 
   #getKeyName(key: string): string {
@@ -25,15 +31,11 @@ export class RedisCachingProvider {
   }
 
   #getTagKey(tag: string): string {
-    return `${this.keyNamePrefix}tag:${tag}`
+    return `${this.keyNamePrefix}tag:${this.hasher(tag)}`
   }
 
   #getTagsKey(key: string): string {
     return `${this.keyNamePrefix}tags:${key}`
-  }
-
-  #getOptionsKey(key: string): string {
-    return `${this.keyNamePrefix}options:${key}`
   }
 
   #compressData(data: string): string {
@@ -52,14 +54,17 @@ export class RedisCachingProvider {
         return `0:${data}`
       }
     } catch (error) {
-      return `0:${data}`
+      throw new Error(`Failed to compress data: ${error}`)
     }
   }
 
   #decompressData(data: string): string {
-    const [compressedFlag, content] = data.split(":", 2)
+    if (data.charAt(0) === "0") {
+      return data.substring(2)
+    }
 
-    if (compressedFlag === "1") {
+    if (data.charAt(0) === "1") {
+      const content = data.substring(2)
       try {
         const compressedBuffer = Buffer.from(content, "base64")
         const decompressed = decompress(new Uint8Array(compressedBuffer))
@@ -69,14 +74,19 @@ export class RedisCachingProvider {
       }
     }
 
-    return content
+    return data
   }
 
   async get({ key, tags }: { key?: string; tags?: string[] }): Promise<any> {
     if (key) {
       const keyName = this.#getKeyName(key)
-      const result = await this.redisClient.get(keyName)
-      return result ? JSON.parse(result) : null
+      const data = await this.redisClient.hget(keyName, "data")
+      if (!data) {
+        return null
+      }
+
+      const finalData = this.#decompressData(data)
+      return JSON.parse(finalData)
     }
 
     if (tags?.length) {
@@ -100,10 +110,10 @@ export class RedisCachingProvider {
         return []
       }
 
-      // Get all values for the keys
+      // Get all hash data for the keys
       const valuePipeline = this.redisClient.pipeline()
       Array.from(allKeys).forEach((key) => {
-        valuePipeline.get(key)
+        valuePipeline.hget(key, "data")
       })
 
       const valueResults = await valuePipeline.exec()
@@ -111,10 +121,15 @@ export class RedisCachingProvider {
 
       valueResults?.forEach((result, index) => {
         if (result && result[1]) {
+          const data = result[1] as string
+
+          const finalData = this.#decompressData(data)
+
           try {
-            results.push(JSON.parse(result[1] as string))
+            results.push(JSON.parse(finalData))
           } catch (e) {
-            // Skip invalid JSON
+            // If JSON parsing fails, skip this entry (corrupted data)
+            console.warn(`Skipping corrupted cache entry: ${e.message}`)
           }
         }
       })
@@ -144,11 +159,18 @@ export class RedisCachingProvider {
     const serializedData = JSON.stringify(data)
     const effectiveTTL = ttl ?? this.defaultTTL
 
-    // Set the main cache entry
+    const finalData = this.#compressData(serializedData)
+    const hashData: Record<string, string> = {
+      data: finalData,
+    }
+
+    if (options && Object.keys(options).length) {
+      hashData.options = JSON.stringify(options)
+    }
+
+    await this.redisClient.hset(keyName, hashData)
     if (effectiveTTL) {
-      await this.redisClient.setex(keyName, effectiveTTL, serializedData)
-    } else {
-      await this.redisClient.set(keyName, serializedData)
+      await this.redisClient.expire(keyName, effectiveTTL)
     }
 
     // Store tags in a separate key for inverted index lookup
@@ -181,21 +203,6 @@ export class RedisCachingProvider {
 
       await pipeline.exec()
     }
-
-    // Store options if provided
-    if (
-      Object.keys(options ?? {}).length &&
-      !Object.values(options ?? {}).every((value) => value === undefined)
-    ) {
-      const optionsKey = this.#getOptionsKey(key)
-      const optionsData = JSON.stringify(options!)
-
-      if (effectiveTTL) {
-        await this.redisClient.setex(optionsKey, effectiveTTL + 60, optionsData) // +1 minute buffer
-      } else {
-        await this.redisClient.set(optionsKey, optionsData)
-      }
-    }
   }
 
   async clear({
@@ -211,7 +218,6 @@ export class RedisCachingProvider {
   }): Promise<void> {
     if (key) {
       const keyName = this.#getKeyName(key)
-      const optionsKey = this.#getOptionsKey(key)
 
       // Get tags for this key to clean up tag sets
       const tagsKey = this.#getTagsKey(key)
@@ -219,6 +225,7 @@ export class RedisCachingProvider {
 
       if (tagsData) {
         try {
+          console.log("tagsData", tagsData)
           const finalTagsData = this.#decompressData(tagsData)
           const entryTags: string[] = JSON.parse(finalTagsData)
 
@@ -233,10 +240,12 @@ export class RedisCachingProvider {
             tagCleanupPipeline.unlink(tagsKey)
             await tagCleanupPipeline.exec()
           }
-        } catch (e) {}
+        } catch (e) {
+          throw new Error(`Failed to clear tags for key ${keyName}: ${e}`)
+        }
       }
 
-      await this.redisClient.unlink(keyName, optionsKey)
+      await this.redisClient.unlink(keyName)
       return
     }
 
@@ -271,32 +280,55 @@ export class RedisCachingProvider {
         if (!options) {
           const deletePipeline = this.redisClient.pipeline()
 
+          // Delete main keys and options
           Array.from(allKeys).forEach((key) => {
-            const optionsKey = this.#getOptionsKey(
-              key.replace(this.keyNamePrefix, "")
-            )
-            deletePipeline.unlink(key, optionsKey)
+            deletePipeline.unlink(key)
           })
 
-          // Find and delete ALL tags that reference the deleted keys
+          // Clean up tag references for each key
+          const tagDataPromises = Array.from(allKeys).map(async (key) => {
+            const keyWithoutPrefix = key.replace(this.keyNamePrefix, "")
+            const tagsKey = this.#getTagsKey(keyWithoutPrefix)
+            const tagsData = await this.redisClient.get(tagsKey)
+            return { key, tagsKey, tagsData }
+          })
+
+          const tagResults = await Promise.all(tagDataPromises)
+
+          // Build single pipeline for all tag cleanup operations
+          const tagCleanupPipeline = this.redisClient.pipeline()
+          tagResults.forEach(({ key, tagsKey, tagsData }) => {
+            if (tagsData) {
+              try {
+                const finalTagsData = this.#decompressData(tagsData)
+                const entryTags: string[] = JSON.parse(finalTagsData)
+
+                if (entryTags.length) {
+                  entryTags.forEach((tag) => {
+                    const tagKey = this.#getTagKey(tag)
+                    tagCleanupPipeline.srem(tagKey, key)
+                  })
+                  tagCleanupPipeline.unlink(tagsKey)
+                }
+              } catch (e) {
+                throw new Error(`Failed to clear tags for key ${key}: ${e}`)
+              }
+            }
+          })
+
+          await tagCleanupPipeline.exec()
+          await deletePipeline.exec()
+
+          // Clean up empty tag sets
           const allTagKeys = await this.redisClient.keys(
             `${this.keyNamePrefix}tag:*`
           )
-
           if (allTagKeys.length) {
-            allTagKeys.forEach((tagKey) => {
-              Array.from(allKeys).forEach((key) => {
-                deletePipeline.srem(tagKey, key)
-              })
-            })
-
-            // Check which tag sets are empty and delete them
             const cardinalityPipeline = this.redisClient.pipeline()
             allTagKeys.forEach((tagKey) => {
               cardinalityPipeline.scard(tagKey)
             })
 
-            await deletePipeline.exec()
             const cardinalityResults = await cardinalityPipeline.exec()
 
             // Delete empty tag keys
@@ -308,9 +340,8 @@ export class RedisCachingProvider {
             })
 
             await emptyTagPipeline.exec()
-          } else {
-            await deletePipeline.exec()
           }
+
           return
         }
 
@@ -319,10 +350,7 @@ export class RedisCachingProvider {
           const optionsPipeline = this.redisClient.pipeline()
 
           Array.from(allKeys).forEach((key) => {
-            const optionsKey = this.#getOptionsKey(
-              key.replace(this.keyNamePrefix, "")
-            )
-            optionsPipeline.get(optionsKey)
+            optionsPipeline.hget(key, "options")
           })
 
           const optionsResults = await optionsPipeline.exec()
@@ -342,6 +370,7 @@ export class RedisCachingProvider {
                   keysToDelete.push(key)
                 }
               } catch (e) {
+                throw new Error(`Failed to clear tags for key ${key}: ${e}`)
                 // If can't parse options, assume it's safe to delete (default true)
                 keysToDelete.push(key)
               }
@@ -355,29 +384,54 @@ export class RedisCachingProvider {
             const deletePipeline = this.redisClient.pipeline()
 
             keysToDelete.forEach((key) => {
-              const optionsKey = this.#getOptionsKey(
-                key.replace(this.keyNamePrefix, "")
-              )
-
-              deletePipeline.unlink(key, optionsKey)
+              deletePipeline.unlink(key)
             })
 
-            // Find and delete ALL tags that reference the deleted keys
-            // We need to scan for all tag keys and remove references to deleted keys
+            // Clean up tag references for each key to delete
+            const tagDataPromises = keysToDelete.map(async (key) => {
+              const keyWithoutPrefix = key.replace(this.keyNamePrefix, "")
+              const tagsKey = this.#getTagsKey(keyWithoutPrefix)
+              const tagsData = await this.redisClient.get(tagsKey)
+              return { key, tagsKey, tagsData }
+            })
+
+            // Wait for all tag data fetches
+            const tagResults = await Promise.all(tagDataPromises)
+
+            // Build single pipeline for all tag cleanup operations
+            const tagCleanupPipeline = this.redisClient.pipeline()
+
+            tagResults.forEach(({ key, tagsKey, tagsData }) => {
+              if (tagsData) {
+                try {
+                  const finalTagsData = this.#decompressData(tagsData)
+                  const entryTags: string[] = JSON.parse(finalTagsData)
+
+                  if (entryTags.length) {
+                    entryTags.forEach((tag) => {
+                      const tagKey = this.#getTagKey(tag)
+                      tagCleanupPipeline.srem(tagKey, key)
+                    })
+                    tagCleanupPipeline.unlink(tagsKey) // Delete the tags key
+                  }
+                } catch (e) {
+                  throw new Error(`Failed to clear tags for key ${key}: ${e}`)
+                }
+              }
+            })
+
+            // Execute all tag cleanup operations in single pipeline
+            await tagCleanupPipeline.exec()
+
+            await deletePipeline.exec()
+
+            // Clean up empty tag sets
             const allTagKeys = await this.redisClient.keys(
               `${this.keyNamePrefix}tag:*`
             )
-
             if (allTagKeys.length) {
               const cleanupPipeline = this.redisClient.pipeline()
 
-              allTagKeys.forEach((tagKey) => {
-                keysToDelete.forEach((key) => {
-                  cleanupPipeline.srem(tagKey, key)
-                })
-              })
-
-              // Remove empty tag sets
               allTagKeys.forEach((tagKey) => {
                 cleanupPipeline.scard(tagKey)
               })
@@ -395,8 +449,6 @@ export class RedisCachingProvider {
               await emptyTagDeletePipeline.exec()
             }
 
-            await deletePipeline.exec()
-
             return
           }
         }
@@ -406,7 +458,7 @@ export class RedisCachingProvider {
 
   async flush(): Promise<void> {
     // Use SCAN to find ALL keys with our prefix and delete them
-    // This includes main cache keys, tag keys (tag:*), tags keys (tags:*), and option keys (options:*)
+    // This includes main cache keys, tag keys (tag:*), and tags keys (tags:*)
     const pattern = `${this.keyNamePrefix}*`
     let cursor = "0"
 
