@@ -6,9 +6,11 @@ import type {
   ModuleProviderExports,
   ModuleServiceInitializeOptions,
 } from "@medusajs/framework/types"
-import CachingProviderService from "../services/cache-provider"
 import { Modules } from "@medusajs/framework/utils"
-import CacheProviderService from "../services/cache-provider"
+import {
+  default as CacheProviderService,
+  default as CachingProviderService,
+} from "../services/cache-provider"
 
 export const CachingDefaultProvider = "default_provider"
 export const CachingIdentifiersRegistrationName = "caching_providers_identifier"
@@ -25,6 +27,7 @@ export type InjectedDependencies = {
 export type ModuleInjectedDependencies = InjectedDependencies & {
   cacheProviderService: CacheProviderService
   strategy: Constructor<ICachingStrategy>
+  hasher: (data: string) => string
 }
 
 export type CachingModuleOptions = Partial<ModuleServiceInitializeOptions> & {

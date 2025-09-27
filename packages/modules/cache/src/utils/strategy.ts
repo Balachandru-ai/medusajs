@@ -12,19 +12,14 @@ import {
 } from "@medusajs/framework/utils"
 import { type CachingModuleService } from "@services"
 import type { ModuleInjectedDependencies } from "@types"
-import crypto from "crypto"
 import stringify from "fast-json-stable-stringify"
 import { CacheInvalidationParser, EntityReference } from "./parser"
-
-export function objectHash(input: any): string {
-  const str = stringify(input)
-  return crypto.createHash("sha1").update(str).digest("hex")
-}
 
 export class DefaultCacheStrategy implements ICachingStrategy {
   #cacheInvalidationParser: CacheInvalidationParser
   #cacheModule: ICachingModuleService
   #container: ModuleInjectedDependencies
+  #hasher: (data: string) => string
 
   constructor(
     container: ModuleInjectedDependencies,
@@ -32,6 +27,12 @@ export class DefaultCacheStrategy implements ICachingStrategy {
   ) {
     this.#cacheModule = cacheModule
     this.#container = container
+    this.#hasher = container.hasher
+  }
+
+  objectHash(input: any): string {
+    const str = stringify(input)
+    return this.#hasher(str)
   }
 
   async onApplicationStart(
@@ -113,7 +114,7 @@ export class DefaultCacheStrategy implements ICachingStrategy {
   }
 
   async computeKey(input: object) {
-    return objectHash(input)
+    return this.objectHash(input)
   }
 
   async computeTags(

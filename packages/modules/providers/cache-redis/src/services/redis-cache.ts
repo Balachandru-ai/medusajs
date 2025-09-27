@@ -1,5 +1,6 @@
-import { Redis } from "ioredis"
 import { RedisCacheModuleOptions } from "@types"
+import { Redis } from "ioredis"
+import { compress, decompress } from "lz4-wasm-nodejs"
 
 export class RedisCachingProvider {
   static identifier = "cache-redis"
@@ -7,6 +8,7 @@ export class RedisCachingProvider {
   protected redisClient: Redis
   protected keyNamePrefix: string
   protected defaultTTL: number
+  protected compressionThreshold: number
 
   constructor(
     { redisClient, prefix }: { redisClient: Redis; prefix: string },
@@ -15,6 +17,7 @@ export class RedisCachingProvider {
     this.redisClient = redisClient
     this.keyNamePrefix = prefix
     this.defaultTTL = options?.ttl ?? 3600 // 1 hour default
+    this.compressionThreshold = options?.compressionThreshold ?? 1024 // 1KB default
   }
 
   #getKeyName(key: string): string {
@@ -25,8 +28,48 @@ export class RedisCachingProvider {
     return `${this.keyNamePrefix}tag:${tag}`
   }
 
+  #getTagsKey(key: string): string {
+    return `${this.keyNamePrefix}tags:${key}`
+  }
+
   #getOptionsKey(key: string): string {
     return `${this.keyNamePrefix}options:${key}`
+  }
+
+  #compressData(data: string): string {
+    if (data.length <= this.compressionThreshold) {
+      return `0:${data}`
+    }
+
+    try {
+      const inputBuffer = new Uint8Array(Buffer.from(data, "utf8"))
+      const compressed = compress(inputBuffer)
+
+      if (compressed.length < data.length) {
+        const compressedData = Buffer.from(compressed).toString("base64")
+        return `1:${compressedData}`
+      } else {
+        return `0:${data}`
+      }
+    } catch (error) {
+      return `0:${data}`
+    }
+  }
+
+  #decompressData(data: string): string {
+    const [compressedFlag, content] = data.split(":", 2)
+
+    if (compressedFlag === "1") {
+      try {
+        const compressedBuffer = Buffer.from(content, "base64")
+        const decompressed = decompress(new Uint8Array(compressedBuffer))
+        return Buffer.from(decompressed).toString("utf8")
+      } catch (error) {
+        return content
+      }
+    }
+
+    return content
   }
 
   async get({ key, tags }: { key?: string; tags?: string[] }): Promise<any> {
@@ -36,7 +79,7 @@ export class RedisCachingProvider {
       return result ? JSON.parse(result) : null
     }
 
-    if (tags && tags.length) {
+    if (tags?.length) {
       // Get all keys associated with the tags
       const pipeline = this.redisClient.pipeline()
       tags.forEach((tag) => {
@@ -108,6 +151,19 @@ export class RedisCachingProvider {
       await this.redisClient.set(keyName, serializedData)
     }
 
+    // Store tags in a separate key for inverted index lookup
+    if (tags && tags.length) {
+      const tagsKey = this.#getTagsKey(key)
+      const tagsJson = JSON.stringify(tags)
+      const finalTagsData = this.#compressData(tagsJson)
+
+      if (effectiveTTL) {
+        await this.redisClient.setex(tagsKey, effectiveTTL + 60, finalTagsData) // +1 minute buffer
+      } else {
+        await this.redisClient.set(tagsKey, finalTagsData)
+      }
+    }
+
     // Handle tags if provided
     if (tags && tags.length) {
       const pipeline = this.redisClient.pipeline()
@@ -156,7 +212,31 @@ export class RedisCachingProvider {
     if (key) {
       const keyName = this.#getKeyName(key)
       const optionsKey = this.#getOptionsKey(key)
-      await this.redisClient.del(keyName, optionsKey)
+
+      // Get tags for this key to clean up tag sets
+      const tagsKey = this.#getTagsKey(key)
+      const tagsData = await this.redisClient.get(tagsKey)
+
+      if (tagsData) {
+        try {
+          const finalTagsData = this.#decompressData(tagsData)
+          const entryTags: string[] = JSON.parse(finalTagsData)
+
+          // Remove this key from all its tag sets
+          if (entryTags.length) {
+            const tagCleanupPipeline = this.redisClient.pipeline()
+            entryTags.forEach((tag) => {
+              const tagKey = this.#getTagKey(tag)
+              tagCleanupPipeline.srem(tagKey, keyName)
+            })
+            // Also delete the tags key
+            tagCleanupPipeline.unlink(tagsKey)
+            await tagCleanupPipeline.exec()
+          }
+        } catch (e) {}
+      }
+
+      await this.redisClient.unlink(keyName, optionsKey)
       return
     }
 
@@ -195,7 +275,7 @@ export class RedisCachingProvider {
             const optionsKey = this.#getOptionsKey(
               key.replace(this.keyNamePrefix, "")
             )
-            deletePipeline.del(key, optionsKey)
+            deletePipeline.unlink(key, optionsKey)
           })
 
           // Find and delete ALL tags that reference the deleted keys
@@ -223,7 +303,7 @@ export class RedisCachingProvider {
             const emptyTagPipeline = this.redisClient.pipeline()
             cardinalityResults?.forEach((result, index) => {
               if (result && result[1] === 0) {
-                emptyTagPipeline.del(allTagKeys[index])
+                emptyTagPipeline.unlink(allTagKeys[index])
               }
             })
 
@@ -279,7 +359,7 @@ export class RedisCachingProvider {
                 key.replace(this.keyNamePrefix, "")
               )
 
-              deletePipeline.del(key, optionsKey)
+              deletePipeline.unlink(key, optionsKey)
             })
 
             // Find and delete ALL tags that reference the deleted keys
@@ -308,7 +388,7 @@ export class RedisCachingProvider {
               const emptyTagDeletePipeline = this.redisClient.pipeline()
               cardinalityResults?.forEach((result, index) => {
                 if (result && result[1] === 0) {
-                  emptyTagDeletePipeline.del(allTagKeys[index])
+                  emptyTagDeletePipeline.unlink(allTagKeys[index])
                 }
               })
 
@@ -326,7 +406,7 @@ export class RedisCachingProvider {
 
   async flush(): Promise<void> {
     // Use SCAN to find ALL keys with our prefix and delete them
-    // This includes main cache keys, tag keys (tag:*), and option keys (options:*)
+    // This includes main cache keys, tag keys (tag:*), tags keys (tags:*), and option keys (options:*)
     const pattern = `${this.keyNamePrefix}*`
     let cursor = "0"
 
@@ -342,7 +422,7 @@ export class RedisCachingProvider {
       const keys = result[1]
 
       if (keys.length) {
-        await this.redisClient.del(...keys)
+        await this.redisClient.unlink(...keys)
       }
     } while (cursor !== "0")
   }

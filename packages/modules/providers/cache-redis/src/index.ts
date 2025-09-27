@@ -1,9 +1,10 @@
 import { ModuleProvider, Modules } from "@medusajs/framework/utils"
-import Loader from "./loaders"
+import Connection from "./loaders/connection"
+import Hash from "./loaders/hash"
 import { RedisCachingProvider } from "./services/redis-cache"
 
 const services = [RedisCachingProvider]
-const loaders = [Loader]
+const loaders = [Connection, Hash]
 
 export default ModuleProvider(Modules.CACHING, {
   services,

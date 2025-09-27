@@ -1,10 +1,10 @@
 import type {
-  ModulesSdkTypes,
   InternalModuleDeclaration,
   LoaderOptions,
+  ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import Redis from "ioredis"
 import { RedisCacheModuleOptions } from "@types"
+import Redis from "ioredis"
 
 export default async (
   {
@@ -60,7 +60,7 @@ export default async (
       resolve: () => redisClient,
     },
     prefix: {
-      resolve: () => moduleOptions.prefix ?? "medusa_cache:",
+      resolve: () => moduleOptions.prefix ?? "mc:",
     },
   })
 }

@@ -1,9 +1,9 @@
+import { MedusaModule } from "@medusajs/framework/modules-sdk"
+import { ICachingModuleService } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { ICachingModuleService } from "@medusajs/framework/types"
-import { MedusaModule } from "@medusajs/framework/modules-sdk"
-import { EventBusServiceMock } from "../../__fixtures__/event-bus-mock"
 import { setTimeout } from "timers/promises"
+import { EventBusServiceMock } from "../../__fixtures__/event-bus-mock"
 
 jest.setTimeout(300000)
 
@@ -55,6 +55,7 @@ jest.spyOn(MedusaModule, "getAllJoinerConfigs").mockReturnValue([
   },
 ])
 
+const DEFAULT_WAIT_INTERVAL = 50
 const mockEventBus = new EventBusServiceMock()
 
 moduleIntegrationTestRunner<ICachingModuleService>({
@@ -98,7 +99,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: product,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cachedProduct = await service.get({ key: productKey })
           expect(cachedProduct).toEqual(product)
@@ -118,14 +119,14 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: product,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           await mockEventBus.emit(
             [{ name: "product.updated", data: { id: product.id } }],
             {}
           )
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const result = await service.get({ key: productKey })
           expect(result).toBeNull()
@@ -146,14 +147,14 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             options: { autoInvalidate: false },
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           await mockEventBus.emit(
             [{ name: "product.updated", data: { id: product.id } }],
             {}
           )
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const result = await service.get({ key: productKey })
           expect(result).toEqual(product)
@@ -199,7 +200,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: allProducts,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cachedPublished = await service.get({
             key: publishedProductsKey,
@@ -229,7 +230,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: products,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           await mockEventBus.emit(
             [
@@ -241,7 +242,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             {}
           )
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cachedList = await service.get({ key: listKey })
 
@@ -297,7 +298,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: productWithVariants,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cached = await service.get<typeof productWithVariants>({
             key: productKey,
@@ -321,7 +322,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: productWithVariants,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           await mockEventBus.emit(
             [
@@ -337,7 +338,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             {}
           )
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const result = await service.get({ key: productKey })
           expect(result).toBeNull()
@@ -381,7 +382,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: product,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           await mockEventBus.emit(
             [
@@ -393,7 +394,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             {}
           )
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cachedPrice = await service.get({ key: priceKey })
           const cachedVariant = await service.get({ key: variantKey })
@@ -447,7 +448,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             data: queryResult,
           })
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cached = await service.get({ key: queryKey })
           expect(cached).toEqual(queryResult)
@@ -462,7 +463,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             {}
           )
 
-          await setTimeout(5)
+          await setTimeout(DEFAULT_WAIT_INTERVAL)
 
           const cachedAfterUpdate = await service.get({ key: queryKey })
           expect(cachedAfterUpdate).toBeNull()
