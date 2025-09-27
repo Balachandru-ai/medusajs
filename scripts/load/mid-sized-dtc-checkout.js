@@ -36,8 +36,8 @@ export const options = {
       exec: "browseCatalog",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 200 },
-        { duration: "8m", target: 200 },
+        { duration: "2m", target: 100 },
+        { duration: "6m", target: 100 },
         { duration: "2m", target: 0 },
       ],
       gracefulRampDown: "30s",
@@ -48,8 +48,8 @@ export const options = {
       exec: "addBrowseAddAbandon",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 15 },
-        { duration: "8m", target: 15 },
+        { duration: "2m", target: 10 },
+        { duration: "6m", target: 10 },
         { duration: "2m", target: 0 },
       ],
       gracefulRampDown: "30s",
@@ -61,7 +61,7 @@ export const options = {
       startTime: "0s",
       stages: [
         { duration: "2m", target: 10 },
-        { duration: "8m", target: 10 },
+        { duration: "6m", target: 10 },
         { duration: "2m", target: 0 },
       ],
       gracefulRampDown: "30s",
@@ -72,8 +72,8 @@ export const options = {
       exec: "addMultipleAbandon",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 15 },
-        { duration: "8m", target: 15 },
+        { duration: "2m", target: 10 },
+        { duration: "6m", target: 10 },
         { duration: "2m", target: 0 },
       ],
       gracefulRampDown: "30s",
@@ -85,7 +85,7 @@ export const options = {
       startTime: "0s",
       stages: [
         { duration: "2m", target: 10 },
-        { duration: "8m", target: 10 },
+        { duration: "6m", target: 10 },
         { duration: "2m", target: 0 },
       ],
       gracefulRampDown: "30s",
@@ -96,8 +96,8 @@ export const options = {
       exec: "addToCart",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 20 },
-        { duration: "8m", target: 20 },
+        { duration: "2m", target: 10 },
+        { duration: "6m", target: 10 },
         { duration: "2m", target: 0 },
       ],
       gracefulRampDown: "30s",
