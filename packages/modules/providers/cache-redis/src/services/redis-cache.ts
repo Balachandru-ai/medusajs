@@ -39,7 +39,7 @@ export class RedisCachingProvider {
   }
 
   #compressData(data: string): string {
-    if (data.length <= this.compressionThreshold) {
+    if (true || data.length <= this.compressionThreshold) {
       return `0:${data}`
     }
 
