@@ -6217,7 +6217,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/caching-redis@2.10.3, @medusajs/caching-redis@workspace:packages/modules/providers/cache-redis":
+"@medusajs/caching-redis@2.10.3, @medusajs/caching-redis@workspace:*, @medusajs/caching-redis@workspace:packages/modules/providers/cache-redis":
   version: 0.0.0-use.local
   resolution: "@medusajs/caching-redis@workspace:packages/modules/providers/cache-redis"
   dependencies:
@@ -6226,7 +6226,6 @@ __metadata:
     "@swc/jest": ^0.2.36
     ioredis: ^5.4.1
     jest: ^29.7.0
-    lz4-wasm-nodejs: ^0.9.2
     rimraf: ^5.0.1
     typescript: ^5.6.2
     xxhash-wasm: ^1.1.0
@@ -24254,6 +24253,7 @@ __metadata:
     "@medusajs/auth": "workspace:*"
     "@medusajs/cache-inmemory": "workspace:*"
     "@medusajs/caching": "workspace:*"
+    "@medusajs/caching-redis": "workspace:*"
     "@medusajs/core-flows": "workspace:^"
     "@medusajs/currency": "workspace:^"
     "@medusajs/customer": "workspace:^"
@@ -26745,13 +26745,6 @@ __metadata:
   bin:
     lz-string: bin/bin.js
   checksum: 36128e4de34791838abe979b19927c26e67201ca5acf00880377af7d765b38d1c60847e01c5ec61b1a260c48029084ab3893a3925fd6e48a04011364b089991b
-  languageName: node
-  linkType: hard
-
-"lz4-wasm-nodejs@npm:^0.9.2":
-  version: 0.9.2
-  resolution: "lz4-wasm-nodejs@npm:0.9.2"
-  checksum: d3c49a0bfe17253a35bd3de7cb62d7d0712eda5e2d03b1311de057d6990f356caeb0ce97e7e30d42ffab0a36055dfc595a4d8be420696c19bba4602a1d1d54b6
   languageName: node
   linkType: hard
 

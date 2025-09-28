@@ -1,6 +1,6 @@
 import { RedisCacheModuleOptions } from "@types"
 import { Redis } from "ioredis"
-import { compress, decompress } from "lz4-wasm-nodejs"
+import { createGunzip, createGzip } from "zlib"
 
 export class RedisCachingProvider {
   static identifier = "cache-redis"
@@ -38,54 +38,81 @@ export class RedisCachingProvider {
     return `${this.keyNamePrefix}tags:${key}`
   }
 
-  #compressData(data: string): string {
-    if (true || data.length <= this.compressionThreshold) {
-      return `0:${data}`
+  async #compressData(data: string): Promise<Buffer> {
+    if (data.length <= this.compressionThreshold) {
+      const buffer = Buffer.from(data, "utf8")
+      const prefix = Buffer.from([0]) // 0 = uncompressed
+      return Buffer.concat([prefix, buffer])
     }
 
-    try {
-      const inputBuffer = new Uint8Array(Buffer.from(data, "utf8"))
-      const compressed = compress(inputBuffer)
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = []
+      const gzip = createGzip()
 
-      if (compressed.length < data.length) {
-        const compressedData = Buffer.from(compressed).toString("base64")
-        return `1:${compressedData}`
-      } else {
-        return `0:${data}`
-      }
-    } catch (error) {
-      return `0:${data}`
-    }
+      gzip.on("data", (chunk) => chunks.push(chunk))
+      gzip.on("end", () => {
+        const compressedBuffer = Buffer.concat(chunks)
+        const prefix = Buffer.from([1]) // 1 = compressed
+        resolve(Buffer.concat([prefix, compressedBuffer]))
+      })
+      gzip.on("error", (error) => {
+        const buffer = Buffer.from(data, "utf8")
+        const prefix = Buffer.from([0])
+        resolve(Buffer.concat([prefix, buffer]))
+      })
+
+      gzip.write(data, "utf8")
+      gzip.end()
+    })
   }
 
-  #decompressData(data: string): string {
-    if (data.charAt(0) === "0") {
-      return data.substring(2)
+  async #decompressData(buffer: Buffer): Promise<string> {
+    if (buffer.length === 0) {
+      return ""
     }
 
-    if (data.charAt(0) === "1") {
-      const content = data.substring(2)
-      try {
-        const compressedBuffer = Buffer.from(content, "base64")
-        const decompressed = decompress(new Uint8Array(compressedBuffer))
-        return Buffer.from(decompressed).toString("utf8")
-      } catch (error) {
-        return content
-      }
+    const formatByte = buffer[0]
+    const dataBuffer = buffer.subarray(1)
+
+    if (formatByte === 0) {
+      // Uncompressed
+      return dataBuffer.toString("utf8")
     }
 
-    return data
+    if (formatByte === 1) {
+      // Compressed with gzip
+      return new Promise((resolve, reject) => {
+        const chunks: Buffer[] = []
+        const gunzip = createGunzip()
+
+        gunzip.on("data", (chunk) => chunks.push(chunk))
+        gunzip.on("end", () => {
+          const decompressed = Buffer.concat(chunks).toString("utf8")
+          resolve(decompressed)
+        })
+        gunzip.on("error", (error) => {
+          // Fallback: return as-is if decompression fails
+          resolve(dataBuffer.toString("utf8"))
+        })
+
+        gunzip.write(dataBuffer)
+        gunzip.end()
+      })
+    }
+
+    // Unknown format, return as UTF-8
+    return buffer.toString("utf8")
   }
 
   async get({ key, tags }: { key?: string; tags?: string[] }): Promise<any> {
     if (key) {
       const keyName = this.#getKeyName(key)
-      const data = await this.redisClient.hget(keyName, "data")
-      if (!data) {
+      const buffer = await this.redisClient.hgetBuffer(keyName, "data")
+      if (!buffer) {
         return null
       }
 
-      const finalData = this.#decompressData(data)
+      const finalData = await this.#decompressData(buffer)
       return JSON.parse(finalData)
     }
 
@@ -113,26 +140,25 @@ export class RedisCachingProvider {
       // Get all hash data for the keys
       const valuePipeline = this.redisClient.pipeline()
       Array.from(allKeys).forEach((key) => {
-        valuePipeline.hget(key, "data")
+        valuePipeline.hgetBuffer(key, "data")
       })
 
       const valueResults = await valuePipeline.exec()
       const results: any[] = []
 
-      valueResults?.forEach((result, index) => {
+      for (const result of valueResults || []) {
         if (result && result[1]) {
-          const data = result[1] as string
-
-          const finalData = this.#decompressData(data)
+          const buffer = result[1] as Buffer
 
           try {
+            const finalData = await this.#decompressData(buffer)
             results.push(JSON.parse(finalData))
           } catch (e) {
             // If JSON parsing fails, skip this entry (corrupted data)
             console.warn(`Skipping corrupted cache entry: ${e.message}`)
           }
         }
-      })
+      }
 
       return results
     }
@@ -159,8 +185,9 @@ export class RedisCachingProvider {
     const serializedData = JSON.stringify(data)
     const effectiveTTL = ttl ?? this.defaultTTL
 
-    const finalData = this.#compressData(serializedData)
-    const hashData: Record<string, string> = {
+    const finalData = await this.#compressData(serializedData)
+
+    const hashData: Record<string, string | Buffer> = {
       data: finalData,
     }
 
@@ -177,7 +204,7 @@ export class RedisCachingProvider {
     if (tags && tags.length) {
       const tagsKey = this.#getTagsKey(key)
       const tagsJson = JSON.stringify(tags)
-      const finalTagsData = this.#compressData(tagsJson)
+      const finalTagsData = await this.#compressData(tagsJson)
 
       if (effectiveTTL) {
         await this.redisClient.setex(tagsKey, effectiveTTL + 60, finalTagsData) // +1 minute buffer
@@ -221,12 +248,11 @@ export class RedisCachingProvider {
 
       // Get tags for this key to clean up tag sets
       const tagsKey = this.#getTagsKey(key)
-      const tagsData = await this.redisClient.get(tagsKey)
+      const tagsBuffer = await this.redisClient.getBuffer(tagsKey)
 
-      if (tagsData) {
+      if (tagsBuffer) {
         try {
-          console.log("tagsData", tagsData)
-          const finalTagsData = this.#decompressData(tagsData)
+          const finalTagsData = await this.#decompressData(tagsBuffer)
           const entryTags: string[] = JSON.parse(finalTagsData)
 
           // Remove this key from all its tag sets
@@ -241,7 +267,7 @@ export class RedisCachingProvider {
             await tagCleanupPipeline.exec()
           }
         } catch (e) {
-          throw new Error(`Failed to clear tags for key ${keyName}: ${e}`)
+          // noop - corrupted tag data, skip cleanup
         }
       }
 
@@ -257,11 +283,9 @@ export class RedisCachingProvider {
       }
 
       // Get all keys associated with the tags
-
       const pipeline = this.redisClient.pipeline()
       tags.forEach((tag) => {
         const tagKey = this.#getTagKey(tag)
-
         pipeline.smembers(tagKey)
       })
 
@@ -289,7 +313,7 @@ export class RedisCachingProvider {
           const tagDataPromises = Array.from(allKeys).map(async (key) => {
             const keyWithoutPrefix = key.replace(this.keyNamePrefix, "")
             const tagsKey = this.#getTagsKey(keyWithoutPrefix)
-            const tagsData = await this.redisClient.get(tagsKey)
+            const tagsData = await this.redisClient.getBuffer(tagsKey)
             return { key, tagsKey, tagsData }
           })
 
@@ -297,25 +321,28 @@ export class RedisCachingProvider {
 
           // Build single pipeline for all tag cleanup operations
           const tagCleanupPipeline = this.redisClient.pipeline()
-          tagResults.forEach(({ key, tagsKey, tagsData }) => {
-            if (tagsData) {
-              try {
-                const finalTagsData = this.#decompressData(tagsData)
-                const entryTags: string[] = JSON.parse(finalTagsData)
+          const cleanupPromises = tagResults.map(
+            async ({ key, tagsKey, tagsData }) => {
+              if (tagsData) {
+                try {
+                  const finalTagsData = await this.#decompressData(tagsData)
+                  const entryTags: string[] = JSON.parse(finalTagsData)
 
-                if (entryTags.length) {
-                  entryTags.forEach((tag) => {
-                    const tagKey = this.#getTagKey(tag)
-                    tagCleanupPipeline.srem(tagKey, key)
-                  })
-                  tagCleanupPipeline.unlink(tagsKey)
+                  if (entryTags.length) {
+                    entryTags.forEach((tag) => {
+                      const tagKey = this.#getTagKey(tag)
+                      tagCleanupPipeline.srem(tagKey, key)
+                    })
+                    tagCleanupPipeline.unlink(tagsKey)
+                  }
+                } catch (e) {
+                  // noop
                 }
-              } catch (e) {
-                throw new Error(`Failed to clear tags for key ${key}: ${e}`)
               }
             }
-          })
+          )
 
+          await Promise.all(cleanupPromises)
           await tagCleanupPipeline.exec()
           await deletePipeline.exec()
 
@@ -370,7 +397,6 @@ export class RedisCachingProvider {
                   keysToDelete.push(key)
                 }
               } catch (e) {
-                throw new Error(`Failed to clear tags for key ${key}: ${e}`)
                 // If can't parse options, assume it's safe to delete (default true)
                 keysToDelete.push(key)
               }
@@ -391,35 +417,43 @@ export class RedisCachingProvider {
             const tagDataPromises = keysToDelete.map(async (key) => {
               const keyWithoutPrefix = key.replace(this.keyNamePrefix, "")
               const tagsKey = this.#getTagsKey(keyWithoutPrefix)
-              const tagsData = await this.redisClient.get(tagsKey)
+              const tagsData = await this.redisClient.getBuffer(tagsKey)
               return { key, tagsKey, tagsData }
             })
+
+            // Wait for all tag data fetches
             const tagResults = await Promise.all(tagDataPromises)
 
+            // Build single pipeline for all tag cleanup operations
             const tagCleanupPipeline = this.redisClient.pipeline()
 
-            tagResults.forEach(({ key, tagsKey, tagsData }) => {
-              if (tagsData) {
-                try {
-                  const finalTagsData = this.#decompressData(tagsData)
-                  const entryTags: string[] = JSON.parse(finalTagsData)
+            const cleanupPromises = tagResults.map(
+              async ({ key, tagsKey, tagsData }) => {
+                if (tagsData) {
+                  try {
+                    const finalTagsData = await this.#decompressData(tagsData)
+                    const entryTags: string[] = JSON.parse(finalTagsData)
 
-                  if (entryTags.length) {
-                    entryTags.forEach((tag) => {
-                      const tagKey = this.#getTagKey(tag)
-                      tagCleanupPipeline.srem(tagKey, key)
-                    })
-                    tagCleanupPipeline.unlink(tagsKey)
+                    if (entryTags.length) {
+                      entryTags.forEach((tag) => {
+                        const tagKey = this.#getTagKey(tag)
+                        tagCleanupPipeline.srem(tagKey, key)
+                      })
+                      tagCleanupPipeline.unlink(tagsKey) // Delete the tags key
+                    }
+                  } catch (e) {
+                    // noop
                   }
-                } catch (e) {
-                  // noop
                 }
               }
-            })
+            )
 
+            await Promise.all(cleanupPromises)
             await tagCleanupPipeline.exec()
+
             await deletePipeline.exec()
 
+            // Clean up empty tag sets
             const allTagKeys = await this.redisClient.keys(
               `${this.keyNamePrefix}tag:*`
             )
@@ -432,7 +466,7 @@ export class RedisCachingProvider {
 
               const cardinalityResults = await cleanupPipeline.exec()
 
-              // Delete tag keys that are empty
+              // Delete tag keys that are now empty
               const emptyTagDeletePipeline = this.redisClient.pipeline()
               cardinalityResults?.forEach((result, index) => {
                 if (result && result[1] === 0) {
