@@ -17,12 +17,13 @@ import * as zod from "zod"
 import { Form } from "../../../../../components/common/form"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useRefundPayment } from "../../../../../hooks/api"
+import { useRefundPayment, useRefundReasons } from "../../../../../hooks/api"
 import { currencies } from "../../../../../lib/data/currencies"
 import { formatCurrency } from "../../../../../lib/format-currency"
 import { formatProvider } from "../../../../../lib/format-provider"
 import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
 import { getPaymentsFromOrder } from "../../../../../lib/orders"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 type CreateRefundFormProps = {
   order: HttpTypes.AdminOrder
@@ -34,11 +35,13 @@ const CreateRefundSchema = zod.object({
     float: zod.number().or(zod.null()),
   }),
   note: zod.string().optional(),
+  refund_reason_id: zod.string().optional(),
 })
 
 export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
+  const { refund_reasons } = useRefundReasons()
 
   const [searchParams] = useSearchParams()
   const [paymentId, setPaymentId] = useState<string | undefined>(
@@ -53,6 +56,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
     [order.currency_code]
   )
 
+  const direction = useDocumentDirection()
   const form = useForm<zod.infer<typeof CreateRefundSchema>>({
     defaultValues: {
       amount: {
@@ -60,6 +64,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
         float: paymentAmount,
       },
       note: "",
+      refund_reason_id: "",
     },
     resolver: zodResolver(CreateRefundSchema),
   })
@@ -88,6 +93,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
       {
         amount: data.amount.float!,
         note: data.note,
+        refund_reason_id: data.refund_reason_id,
       },
       {
         onSuccess: () => {
@@ -118,6 +124,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
         <RouteDrawer.Body className="flex-1 overflow-auto">
           <div className="flex flex-col gap-y-4">
             <Select
+              dir={direction}
               value={paymentId}
               onValueChange={(value) => {
                 setPaymentId(value)
@@ -191,12 +198,46 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
                         value={field.value.value}
                         onValueChange={(_value, _name, values) =>
                           onChange({
-                            value: values?.value,
-                            float: values?.float || null,
+                            value: values?.value ?? "",
+                            float: values?.float ?? null,
                           })
                         }
                         autoFocus
                       />
+                    </Form.Control>
+
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )
+              }}
+            />
+
+            <Form.Field
+              control={form.control}
+              name="refund_reason_id"
+              render={({ field }) => {
+                return (
+                  <Form.Item>
+                    <Form.Label>{t("fields.refundReason")}</Form.Label>
+
+                    <Form.Control>
+                      <Select
+                        dir={direction}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <Select.Trigger>
+                          <Select.Value />
+                        </Select.Trigger>
+
+                        <Select.Content>
+                          {refund_reasons?.map((reason) => (
+                            <Select.Item key={reason.id} value={reason.id}>
+                              {reason.label}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select>
                     </Form.Control>
 
                     <Form.ErrorMessage />

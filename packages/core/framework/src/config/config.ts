@@ -1,6 +1,6 @@
-import { ConfigModule } from "./types"
 import { deepCopy, isDefined } from "@medusajs/utils"
 import { logger } from "../logger"
+import { ConfigModule } from "./types"
 
 export class ConfigManager {
   /**
@@ -124,21 +124,23 @@ export class ConfigManager {
 
   /**
    * Normalizes the project config object and assign the defaults if needed
-   * @param projectConfig
+   * @param config
    * @protected
    */
   protected normalizeProjectConfig(
-    projectConfig: Partial<ConfigModule["projectConfig"]>
+    config: Partial<ConfigModule>
   ): ConfigModule["projectConfig"] {
-    const outputConfig = deepCopy(
-      projectConfig
-    ) as ConfigModule["projectConfig"]
+    const projConfig = config?.projectConfig ?? {}
+    const outputConfig = deepCopy(projConfig) as ConfigModule["projectConfig"]
 
     if (!outputConfig?.redisUrl) {
-      console.log(`redisUrl not found. A fake redis instance will be used.`)
+      const customLogger = config?.logger ?? logger
+      customLogger.log(
+        `redisUrl not found. A fake redis instance will be used.`
+      )
     }
 
-    outputConfig.http = this.buildHttpConfig(projectConfig)
+    outputConfig.http = this.buildHttpConfig(projConfig)
 
     let workerMode = outputConfig?.workerMode!
 
@@ -172,9 +174,7 @@ export class ConfigManager {
   }): ConfigModule {
     this.#baseDir = baseDir
 
-    const normalizedProjectConfig = this.normalizeProjectConfig(
-      projectConfig.projectConfig ?? {}
-    )
+    const normalizedProjectConfig = this.normalizeProjectConfig(projectConfig)
 
     this.#config = {
       projectConfig: normalizedProjectConfig,
@@ -184,6 +184,7 @@ export class ConfigManager {
       modules: projectConfig.modules ?? {},
       featureFlags: projectConfig.featureFlags ?? {},
       plugins: projectConfig.plugins ?? [],
+      logger: projectConfig.logger ?? logger,
     }
 
     return this.#config

@@ -1,10 +1,10 @@
+import { logger } from "@medusajs/framework/logger"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { GracefulShutdownServer, promiseAll } from "@medusajs/framework/utils"
 import express from "express"
 import getPort from "get-port"
 import { resolve } from "path"
-import { MedusaContainer } from "@medusajs/framework/types"
 import { applyEnvVarsToProcess, execOrTimeout } from "./utils"
-import { promiseAll, GracefulShutdownServer } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
 async function bootstrapApp({
   cwd,
@@ -12,6 +12,11 @@ async function bootstrapApp({
 }: { cwd?: string; env?: Record<any, any> } = {}) {
   const app = express()
   applyEnvVarsToProcess(env)
+
+  // Register a health check endpoint
+  app.get("/health", (_, res) => {
+    res.status(200).send("OK")
+  })
 
   const loaders = require("@medusajs/medusa/loaders/index").default
 

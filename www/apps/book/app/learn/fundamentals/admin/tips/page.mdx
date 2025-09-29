@@ -6,7 +6,7 @@ export const metadata = {
 
 # {metadata.title}
 
-In this chapter, you'll find some tips for your admin development.
+In this chapter, you'll find some tips for developing your admin.
 
 ## Send Requests to API Routes
 
@@ -18,12 +18,12 @@ Do not install Tanstack Query as that will cause unexpected errors in your devel
 
 </Note>
 
-First, create the file `src/admin/lib/config.ts` to setup the SDK for use in your customizations:
+First, create the file `src/admin/lib/sdk.ts` to set up the SDK for use in your customizations:
 
 <CodeTabs>
   <CodeTab label="Medusa Project" value="medusa-project">
 
-```ts title="src/admin/lib/config.ts"
+```ts title="src/admin/lib/sdk.ts"
 import Medusa from "@medusajs/js-sdk"
 
 export const sdk = new Medusa({
@@ -38,7 +38,7 @@ export const sdk = new Medusa({
   </CodeTab>
   <CodeTab label="Medusa Plugin" value="medusa-plugin">
 
-```ts title="src/admin/lib/config.ts"
+```ts title="src/admin/lib/sdk.ts"
 import Medusa from "@medusajs/js-sdk"
 
 export const sdk = new Medusa({
@@ -52,15 +52,17 @@ export const sdk = new Medusa({
   </CodeTab>
 </CodeTabs>
 
-Notice that you use `import.meta.env` in a Medusa project to access environment variables in your customizations, whereas in a plugin you use the global variable `__BACKEND_URL__` to access the backend URL. You can learn more in the [Admin Environment Variables](../environment-variables/page.mdx) chapter.
+
+Notice that in a Medusa project, you use `import.meta.env` to access environment variables in your customizations, whereas in a plugin you use the global variable `__BACKEND_URL__` to access the backend URL. You can learn more in the [Admin Environment Variables](../environment-variables/page.mdx) chapter.
 
 <Note>
 
-Learn more about the JS SDK's configurations [this documentation](!resources!/js-sdk#js-sdk-configurations).
+Refer to the [JS SDK](!resources!/js-sdk#js-sdk-configurations) reference for more details on the SDK's configurations.
 
 </Note>
 
-Then, use the configured SDK with the `useQuery` Tanstack Query hook to send `GET` requests, and `useMutation` hook to send `POST` or `DELETE` requests.
+
+Then, use the configured SDK with the `useQuery` Tanstack Query hook to send `GET` requests, and the `useMutation` hook to send `POST` or `DELETE` requests.
 
 For example:
 
@@ -68,17 +70,16 @@ For example:
   <CodeTab label="Query" value="query">
 
 export const queryHighlights = [
-  ["8", "useQuery", "Use Tanstack Query's `useQuery` to send a `GET` request."],
-  ["9", "sdk.admin.product.list", "Use the SDK to send the request."],
-  ["10", "queryKey", "Specify the key used to cache data."]
+  ["7", "useQuery", "Use Tanstack Query's `useQuery` to send a `GET` request."],
+  ["8", "sdk.admin.product.list", "Use the SDK to send the request."],
+  ["9", "queryKey", "Specify the key used to cache data."]
 ]
 
-```tsx title="src/admin/widgets/product-widget.ts" highlights={queryHighlights}
+```tsx title="src/admin/widgets/product-widget.tsx" highlights={queryHighlights}
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
-import { Button, Container } from "@medusajs/ui"
+import { Container } from "@medusajs/ui"
 import { useQuery } from "@tanstack/react-query"
-import { sdk } from "../lib/config"
-import { DetailWidgetProps, HttpTypes } from "@medusajs/framework/types"
+import { sdk } from "../lib/sdk"
 
 const ProductWidget = () => {
   const { data, isLoading } = useQuery({
@@ -115,11 +116,11 @@ export const mutationHighlights = [
   ["12", "sdk.admin.product.update", "Use the configured SDK to send the request."],
 ]
 
-```tsx title="src/admin/widgets/product-widget.ts" highlights={mutationHighlights}
+```tsx title="src/admin/widgets/product-widget.tsx" highlights={mutationHighlights}
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { Button, Container } from "@medusajs/ui"
 import { useMutation } from "@tanstack/react-query"
-import { sdk } from "../lib/config"
+import { sdk } from "../lib/sdk"
 import { DetailWidgetProps, HttpTypes } from "@medusajs/framework/types"
 
 const ProductWidget = ({ 
@@ -128,7 +129,7 @@ const ProductWidget = ({
   const { mutateAsync } = useMutation({
     mutationFn: (payload: HttpTypes.AdminUpdateProduct) => 
       sdk.admin.product.update(productData.id, payload),
-    onSuccess: () => alert("updated product"),
+    onSuccess: () => alert("Product updated"),
   })
 
   const handleUpdate = () => {
@@ -154,7 +155,7 @@ export default ProductWidget
   </CodeTab>
 </CodeTabs>
 
-You can also send requests to custom routes as explained in the [JS SDK reference](!resources!/js-sdk).
+You can also send requests to custom routes, as explained in the [JS SDK reference](!resources!/js-sdk).
 
 ### Use Route Loaders for Initial Data
 
@@ -170,7 +171,7 @@ In your admin customizations, you can use the following global variables:
 - `__BACKEND_URL__`: The URL to the Medusa backend, as set in the [admin.backendUrl](../../../configurations/medusa-config/page.mdx#backendurl) configuration in `medusa-config.ts`.
 - `__STOREFRONT_URL__`: The URL to the storefront, as set in the [admin.storefrontUrl](../../../configurations/medusa-config/page.mdx#storefrontUrl) configuration in `medusa-config.ts`.
 
-If you get type errors while using these variables, you can create the file `src/admin/vite-env.d.ts` with the following content:
+If you get type errors while using these variables, create the file `src/admin/vite-env.d.ts` with the following content:
 
 ```ts title="src/admin/vite-env.d.ts"
 /// <reference types="vite/client" />

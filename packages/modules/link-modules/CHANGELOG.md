@@ -1,5 +1,50 @@
 # @medusajs/link-modules
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13516](https://github.com/medusajs/medusa/pull/13516) [`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada) Thanks [@adrien2p](https://github.com/adrien2p)! - test(): test dynamic max workers and improve CI
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- [#13459](https://github.com/medusajs/medusa/pull/13459) [`de9a21a9da38b82c6de28bd6272c9e87ca72bccc`](https://github.com/medusajs/medusa/commit/de9a21a9da38b82c6de28bd6272c9e87ca72bccc) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Improve link indexes
+
+- [#13465](https://github.com/medusajs/medusa/pull/13465) [`8e849074e44fe3b967dbfb3bbbef527f4aed3eed`](https://github.com/medusajs/medusa/commit/8e849074e44fe3b967dbfb3bbbef527f4aed3eed) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): missing events
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13137](https://github.com/medusajs/medusa/pull/13137) [`9725bff25d321011da7ba5096fe0946c5a8f0059`](https://github.com/medusajs/medusa/commit/9725bff25d321011da7ba5096fe0946c5a8f0059) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): handle $and and $or operators
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
 ## 2.8.8
 
 ### Patch Changes

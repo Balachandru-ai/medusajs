@@ -1,4 +1,4 @@
-import { PaymentDTO } from "@medusajs/framework/types"
+import type { PaymentDTO } from "@medusajs/framework/types"
 import { deepFlatMap, MathBN } from "@medusajs/framework/utils"
 import {
   createWorkflow,
@@ -29,6 +29,7 @@ export const refundCapturedPaymentsWorkflow = createWorkflow(
         "id",
         "status",
         "summary",
+        "total",
         "payment_collections.payments.id",
         "payment_collections.payments.amount",
         "payment_collections.payments.refunds.id",

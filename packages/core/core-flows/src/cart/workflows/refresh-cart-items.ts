@@ -1,8 +1,5 @@
-import {
-  filterObjectByKeys,
-  isDefined,
-  PromotionActions,
-} from "@medusajs/framework/utils"
+import type { AdditionalData } from "@medusajs/framework/types"
+import { isDefined, PromotionActions } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -11,25 +8,18 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { useQueryGraphStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updateLineItemsStep } from "../steps"
-import { validateVariantPricesStep } from "../steps/validate-variant-prices"
-import {
-  cartFieldsForPricingContext,
-  cartFieldsForRefreshSteps,
-  productVariantsFields,
-} from "../utils/fields"
-import {
-  prepareLineItemData,
-  PrepareLineItemDataInput,
-} from "../utils/prepare-line-item-data"
+import { cartFieldsForRefreshSteps } from "../utils/fields"
+import { pricingContextResult } from "../utils/schemas"
+import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
 import { refreshCartShippingMethodsWorkflow } from "./refresh-cart-shipping-methods"
 import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
 import { updateTaxLinesWorkflow } from "./update-tax-lines"
 import { upsertTaxLinesWorkflow } from "./upsert-tax-lines"
-import { AdditionalData } from "@medusajs/types"
-import { pricingContextResult } from "../utils/schemas"
 
 /**
  * The details of the cart to refresh.
@@ -127,8 +117,17 @@ export const refreshCartItemsWorkflowId = "refresh-cart-items"
  *
  */
 export const refreshCartItemsWorkflow = createWorkflow(
-  refreshCartItemsWorkflowId,
+  {
+    name: refreshCartItemsWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const setPricingContext = createHook(
       "setPricingContext",
       {
@@ -142,79 +141,26 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-calculate-prices", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
-      const cart = useRemoteQueryStep({
-        entry_point: "cart",
+      const { data: cart } = useQueryGraphStep({
+        entity: "cart",
         fields: cartFieldsForRefreshSteps,
-        variables: { id: input.cart_id },
-        list: false,
-      })
-
-      const variantIds = transform({ cart }, (data) => {
-        return (data.cart.items ?? []).map((i) => i.variant_id).filter(Boolean)
-      })
-
-      const cartPricingContext = transform(
-        { cart, setPricingContextResult },
-        (data) => {
-          return {
-            ...filterObjectByKeys(data.cart, cartFieldsForPricingContext),
-            ...(data.setPricingContextResult
-              ? data.setPricingContextResult
-              : {}),
-            currency_code: data.cart.currency_code,
-            region_id: data.cart.region_id,
-            region: data.cart.region,
-            customer_id: data.cart.customer_id,
-            customer: data.cart.customer,
-          }
-        }
-      )
-
-      const variants = useRemoteQueryStep({
-        entry_point: "variants",
-        fields: productVariantsFields,
-        variables: {
-          id: variantIds,
-          calculated_price: {
-            context: cartPricingContext,
-          },
+        filters: { id: input.cart_id },
+        pagination: {
+          take: 1,
         },
-      }).config({ name: "fetch-variants" })
+        options: {
+          isList: false,
+        },
+      })
 
-      validateVariantPricesStep({ variants })
-
-      const lineItems = transform({ cart, variants }, ({ cart, variants }) => {
-        const items = cart.items.map((item) => {
-          const variant = (variants ?? []).find(
-            (v) => v.id === item.variant_id
-          )!
-
-          const input: PrepareLineItemDataInput = {
-            item,
-            variant: variant,
-            cartId: cart.id,
-            unitPrice: item.unit_price,
-            isTaxInclusive: item.is_tax_inclusive,
-          }
-
-          if (variant && !item.is_custom_price) {
-            input.unitPrice = variant.calculated_price?.calculated_amount
-            input.isTaxInclusive =
-              variant.calculated_price?.is_calculated_price_tax_inclusive
-          }
-
-          const preparedItem = prepareLineItemData(input)
-
-          return {
-            selector: { id: item.id },
-            data: preparedItem,
-          }
-        })
-
-        return items
+      const { lineItems } = getVariantsAndItemsWithPrices.runAsStep({
+        input: {
+          cart,
+          setPricingContextResult: setPricingContextResult!,
+        },
       })
 
       updateLineItemsStep({
@@ -230,29 +176,19 @@ export const refreshCartItemsWorkflow = createWorkflow(
       list: false,
     }).config({ name: "refetch–cart" })
 
-    const refreshCartInput = transform(
-      { refetchedCart, input },
-      ({ refetchedCart, input }) => {
-        return {
-          cart: !input.force_refresh ? refetchedCart : undefined,
-          cart_id: !!input.force_refresh ? input.cart_id : undefined,
-        }
-      }
-    )
-
     refreshCartShippingMethodsWorkflow.runAsStep({
-      input: refreshCartInput,
+      input: { cart: refetchedCart, additional_data: input.additional_data },
     })
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-update-tax-lines", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       updateTaxLinesWorkflow.runAsStep({
-        input: refreshCartInput,
+        input: { cart_id: input.cart_id },
       })
     })
 
-    when({ input }, ({ input }) => {
+    when("force-refresh-upsert-tax-lines", { input }, ({ input }) => {
       return (
         !input.force_refresh &&
         (!!input.items?.length || !!input.shipping_methods?.length)
@@ -298,7 +234,11 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
 
     refreshPaymentCollectionForCartWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+      input: { cart: refetchedCart },
+    })
+
+    releaseLockStep({
+      key: input.cart_id,
     })
 
     return new WorkflowResponse(refetchedCart, {

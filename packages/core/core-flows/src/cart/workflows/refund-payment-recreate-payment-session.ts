@@ -1,4 +1,7 @@
-import { BigNumberInput, PaymentSessionDTO } from "@medusajs/framework/types"
+import type {
+  BigNumberInput,
+  PaymentSessionDTO,
+} from "@medusajs/framework/types"
 import {
   createWorkflow,
   WorkflowData,
@@ -62,7 +65,9 @@ export const refundPaymentAndRecreatePaymentSessionWorkflowId =
  * Refund a payment and create a new payment session.
  */
 export const refundPaymentAndRecreatePaymentSessionWorkflow = createWorkflow(
-  refundPaymentAndRecreatePaymentSessionWorkflowId,
+  {
+    name: refundPaymentAndRecreatePaymentSessionWorkflowId,
+  },
   (
     input: WorkflowData<refundPaymentAndRecreatePaymentSessionWorkflowInput>
   ): WorkflowResponse<PaymentSessionDTO> => {

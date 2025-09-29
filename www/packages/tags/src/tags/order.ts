@@ -4,6 +4,18 @@ export const order = [
     "path": "https://docs.medusajs.com/user-guide/orders/claims"
   },
   {
+    "title": "Create Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/create"
+  },
+  {
+    "title": "Manage Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage"
+  },
+  {
+    "title": "Draft Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders"
+  },
+  {
     "title": "Edit Order Items",
     "path": "https://docs.medusajs.com/user-guide/orders/edit"
   },
@@ -62,6 +74,10 @@ export const order = [
   {
     "title": "Implement Re-Order",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/re-order"
+  },
+  {
+    "title": "Return Request - Order #",
+    "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/storefront-returns"
   },
   {
     "title": "Checkout Step 5: Complete Cart",

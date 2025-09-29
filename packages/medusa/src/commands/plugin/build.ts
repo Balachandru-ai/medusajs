@@ -1,5 +1,6 @@
 import { Compiler } from "@medusajs/framework/build-tools"
 import { logger } from "@medusajs/framework/logger"
+
 export default async function build({ directory }: { directory: string }) {
   logger.info("Starting build...")
   const compiler = new Compiler(directory, logger)

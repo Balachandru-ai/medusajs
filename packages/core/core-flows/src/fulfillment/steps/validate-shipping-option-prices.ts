@@ -1,10 +1,11 @@
-import { FulfillmentWorkflow } from "@medusajs/framework/types"
+import type { FulfillmentWorkflow } from "@medusajs/framework/types"
 import {
   MedusaError,
   Modules,
   ShippingOptionPriceType,
 } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import type { CreateShippingOptionDTO } from "@medusajs/framework/types"
 
 /**
  * The data to validate shipping option prices.
@@ -96,7 +97,7 @@ export const validateShippingOptionPricesStep = createStep(
 
     const validation =
       await fulfillmentModuleService.validateShippingOptionsForPriceCalculation(
-        calculatedOptions as FulfillmentWorkflow.CreateShippingOptionsWorkflowInput[]
+        calculatedOptions as CreateShippingOptionDTO[]
       )
 
     if (validation.some((v) => !v)) {

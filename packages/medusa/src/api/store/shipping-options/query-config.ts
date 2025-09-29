@@ -6,6 +6,7 @@ export const defaultStoreShippingOptionsFields = [
   "shipping_profile_id",
   "fulfillment_provider_id",
   "shipping_option_type_id",
+  "metadata",
 ]
 
 export const listTransformQueryConfig = {

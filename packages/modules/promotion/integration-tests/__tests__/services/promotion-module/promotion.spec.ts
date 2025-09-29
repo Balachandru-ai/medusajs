@@ -266,7 +266,7 @@ moduleIntegrationTestRunner({
           const createdPromotion = await createDefaultPromotion(service, {
             rules: [
               {
-                attribute: "customer_group_id",
+                attribute: "customer.customer_group.id",
                 operator: "in",
                 values: ["VIP", "top100"],
               },
@@ -285,7 +285,7 @@ moduleIntegrationTestRunner({
               type: "standard",
               rules: [
                 expect.objectContaining({
-                  attribute: "customer_group_id",
+                  attribute: "customer.customer_group.id",
                   operator: "in",
                   values: expect.arrayContaining([
                     expect.objectContaining({
@@ -305,7 +305,7 @@ moduleIntegrationTestRunner({
           const createdPromotion = await createDefaultPromotion(service, {
             rules: [
               {
-                attribute: "customer_group_id",
+                attribute: "customer.customer_group.id",
                 operator: "eq",
                 values: "VIP",
               },
@@ -324,7 +324,7 @@ moduleIntegrationTestRunner({
               type: "standard",
               rules: [
                 expect.objectContaining({
-                  attribute: "customer_group_id",
+                  attribute: "customer.customer_group.id",
                   operator: "eq",
                   values: expect.arrayContaining([
                     expect.objectContaining({
@@ -388,6 +388,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -424,6 +426,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
@@ -445,6 +449,8 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
             } as any,
           }).catch((e) => e)
@@ -458,17 +464,19 @@ moduleIntegrationTestRunner({
           const error = await createDefaultPromotion(service, {
             type: PromotionType.BUYGET,
             application_method: {
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
-                  attribute: "product_collection.id",
+                  attribute: "items.product_collection.id",
                   operator: "eq",
                   values: ["pcol_towel"],
                 },
               ],
               target_rules: [
                 {
-                  attribute: "product.id",
+                  attribute: "items.product.id",
                   operator: "eq",
                   values: ["prod_mat"],
                 },
@@ -486,16 +494,18 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules: [
                 {
-                  attribute: "product_collection.id",
+                  attribute: "items.product_collection.id",
                   operator: "eq",
                   values: ["pcol_towel"],
                 },
               ],
               target_rules: [
                 {
-                  attribute: "product.id",
+                  attribute: "items.product.id",
                   operator: "eq",
                   values: ["prod_mat"],
                 },
@@ -513,17 +523,19 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
-                  attribute: "product_collection.id",
+                  attribute: "items.product_collection.id",
                   operator: "eq",
                   values: ["pcol_towel"],
                 },
               ],
               target_rules: [
                 {
-                  attribute: "product.id",
+                  attribute: "items.product.id",
                   operator: "eq",
                   values: "prod_mat",
                 },
@@ -539,14 +551,14 @@ moduleIntegrationTestRunner({
                 buy_rules_min_quantity: 1,
                 target_rules: [
                   expect.objectContaining({
-                    attribute: "product.id",
+                    attribute: "items.product.id",
                     operator: "eq",
                     values: [expect.objectContaining({ value: "prod_mat" })],
                   }),
                 ],
                 buy_rules: [
                   expect.objectContaining({
-                    attribute: "product_collection.id",
+                    attribute: "items.product_collection.id",
                     operator: "eq",
                     values: [expect.objectContaining({ value: "pcol_towel" })],
                   }),
@@ -968,7 +980,7 @@ moduleIntegrationTestRunner({
         it("should successfully add rules to a promotion", async () => {
           const promotionRules = await service.addPromotionRules(promotion.id, [
             {
-              attribute: "customer_group_id",
+              attribute: "customer.customer_group.id",
               operator: "in",
               values: ["VIP", "top100"],
             },
@@ -977,7 +989,7 @@ moduleIntegrationTestRunner({
           expect(promotionRules).toEqual([
             expect.objectContaining({
               id: promotionRules[0].id,
-              attribute: "customer_group_id",
+              attribute: "customer.customer_group.id",
               operator: "in",
               values: expect.arrayContaining([
                 expect.objectContaining({ value: "VIP" }),
@@ -1029,7 +1041,7 @@ moduleIntegrationTestRunner({
             promotion.id,
             [
               {
-                attribute: "customer_group_id",
+                attribute: "customer.customer_group.id",
                 operator: "in",
                 values: ["VIP", "top100"],
               },
@@ -1039,7 +1051,7 @@ moduleIntegrationTestRunner({
           expect(promotionRules).toEqual([
             expect.objectContaining({
               id: promotionRules[0].id,
-              attribute: "customer_group_id",
+              attribute: "customer.customer_group.id",
               operator: "in",
               values: expect.arrayContaining([
                 expect.objectContaining({ value: "VIP" }),
@@ -1058,17 +1070,19 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               buy_rules: [
                 {
-                  attribute: "product_collection.id",
+                  attribute: "items.product_collection.id",
                   operator: "eq",
                   values: ["pcol_towel"],
                 },
               ],
               target_rules: [
                 {
-                  attribute: "product.id",
+                  attribute: "items.product.id",
                   operator: "in",
                   values: ["prod_1", "prod_2"],
                 },
@@ -1111,7 +1125,7 @@ moduleIntegrationTestRunner({
             promotion.id,
             [
               {
-                attribute: "product.id",
+                attribute: "items.product.id",
                 operator: "in",
                 values: ["prod_3", "prod_4"],
               },
@@ -1121,7 +1135,7 @@ moduleIntegrationTestRunner({
           expect(promotionRules).toEqual([
             expect.objectContaining({
               id: promotionRules[0].id,
-              attribute: "product.id",
+              attribute: "items.product.id",
               operator: "in",
               values: expect.arrayContaining([
                 expect.objectContaining({ value: "prod_3" }),
@@ -1139,7 +1153,7 @@ moduleIntegrationTestRunner({
           promotion = await createDefaultPromotion(service, {
             rules: [
               {
-                attribute: "customer_group_id",
+                attribute: "customer.customer_group.id",
                 operator: "in",
                 values: ["VIP", "top100"],
               },
@@ -1205,7 +1219,7 @@ moduleIntegrationTestRunner({
             application_method: {
               target_rules: [
                 {
-                  attribute: "customer_group_id",
+                  attribute: "customer.customer_group.id",
                   operator: "in",
                   values: ["VIP", "top100"],
                 },
@@ -1276,17 +1290,19 @@ moduleIntegrationTestRunner({
             type: PromotionType.BUYGET,
             application_method: {
               apply_to_quantity: 1,
+              max_quantity: 1,
+              allocation: "each",
               buy_rules_min_quantity: 1,
               target_rules: [
                 {
-                  attribute: "product.id",
+                  attribute: "items.product.id",
                   operator: "in",
                   values: ["prod_1", "prod_2"],
                 },
               ],
               buy_rules: [
                 {
-                  attribute: "product_collection",
+                  attribute: "items.product_collection.id",
                   operator: "eq",
                   values: ["pcol_towel"],
                 },

@@ -1,5 +1,58 @@
 # @medusajs/promotion
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13524](https://github.com/medusajs/medusa/pull/13524) [`57897c232e23db042f523cbe83b6318b97de519d`](https://github.com/medusajs/medusa/commit/57897c232e23db042f523cbe83b6318b97de519d) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat(): promo prepare top level rules filter
+
+- [#13540](https://github.com/medusajs/medusa/pull/13540) [`4736c58da5de67f6868b4552351a093e67715e4b`](https://github.com/medusajs/medusa/commit/4736c58da5de67f6868b4552351a093e67715e4b) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Prevent promotion filtering to exceed psql limits
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- [#13446](https://github.com/medusajs/medusa/pull/13446) [`ac09b3cbeffc11c76b8e5972ee25688b17e5fa58`](https://github.com/medusajs/medusa/commit/ac09b3cbeffc11c76b8e5972ee25688b17e5fa58) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/localised improvement to promotion module
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- [#13294](https://github.com/medusajs/medusa/pull/13294) [`338a42f72808052f8d4dcbda8e070b97048bac87`](https://github.com/medusajs/medusa/commit/338a42f72808052f8d4dcbda8e070b97048bac87) Thanks [@willbouch](https://github.com/willbouch)! - chore(promotion): cleanup old unused promotion codebase
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13078](https://github.com/medusajs/medusa/pull/13078) [`93d7a93b2806d7e7660a6702c9e9b60d01dfe936`](https://github.com/medusajs/medusa/commit/93d7a93b2806d7e7660a6702c9e9b60d01dfe936) Thanks [@mikkel-lindstrom](https://github.com/mikkel-lindstrom)! - chore(promotion): in operator work as In insted of equal logic
+
+- [#12960](https://github.com/medusajs/medusa/pull/12960) [`1bdf602f1c1da181e2839858d2f7e8aea503573a`](https://github.com/medusajs/medusa/commit/1bdf602f1c1da181e2839858d2f7e8aea503573a) Thanks [@scherddel](https://github.com/scherddel)! - This fixes the discount\_ calculation logic and promotion tax inclusiveness calculation
+
+- [#13084](https://github.com/medusajs/medusa/pull/13084) [`75320e744f680afba06d8ad852f169242736fb19`](https://github.com/medusajs/medusa/commit/75320e744f680afba06d8ad852f169242736fb19) Thanks [@riqwan](https://github.com/riqwan)! - fix(promotion): check currency when computing actions for promotions
+
+- [#13106](https://github.com/medusajs/medusa/pull/13106) [`9766570827ebf50d49d8daf956deecce6666a8cc`](https://github.com/medusajs/medusa/commit/9766570827ebf50d49d8daf956deecce6666a8cc) Thanks [@scherddel](https://github.com/scherddel)! - Moved calculation logic from total to original_total to ensure consistent base values
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
 ## 2.8.8
 
 ### Patch Changes

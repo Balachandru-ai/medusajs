@@ -663,6 +663,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/shippingOptionType",
+                  "title": "shippingOptionType",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/shippingProfile",
                   "title": "shippingProfile",
                   "description": "",
@@ -735,6 +744,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/views",
+                  "title": "views",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/workflowExecution",
                   "title": "workflowExecution",
                   "description": "",
@@ -780,14 +798,6 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
-                  "path": "/nextjs-starter/guides/customize-stripe",
-                  "title": "Use Stripe's Payment Element",
-                  "children": []
-                },
-                {
-                  "loaded": true,
-                  "isPathHref": true,
-                  "type": "link",
                   "path": "/nextjs-starter/guides/revalidate-cache",
                   "title": "Revalidate Cache",
                   "children": []
@@ -809,6 +819,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "ref",
                   "title": "Add Gift Message",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/nextjs-starter/guides/storefront-returns",
+                  "title": "Create Order Returns",
                   "children": []
                 },
                 {
@@ -839,8 +857,32 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
+                  "title": "Implement Product Builder",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
                   "title": "Saved Payment Methods",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Ticket Booking Storefront",
+                  "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/nextjs-starter/guides/customize-stripe",
+                  "title": "Use Stripe's Payment Element",
                   "children": []
                 }
               ]

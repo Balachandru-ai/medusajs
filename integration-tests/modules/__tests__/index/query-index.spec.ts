@@ -91,7 +91,7 @@ async function populateData(api: any) {
   )
   const products = response.data.created
 
-  await setTimeout(4000)
+  await setTimeout(5000)
 
   return products
 }
@@ -143,6 +143,8 @@ medusaIntegrationTestRunner({
             brand_id: brand.id,
           },
         })
+
+        await setTimeout(1000)
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -200,11 +202,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(resultset.metadata).toEqual({
@@ -366,11 +364,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         // Limiting to 1 on purpose to keep it simple and check the correct order is maintained
@@ -424,11 +418,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         // Limiting to 1 on purpose to keep it simple and check the correct order is maintained
@@ -478,11 +468,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(resultset.data.length).toEqual(2)
@@ -504,15 +490,56 @@ medusaIntegrationTestRunner({
                 origin_country: ["USA"],
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(resultset.data.length).toEqual(1)
         expect(resultset.data[0].origin_country).toEqual("USA")
+      })
+
+      it("should use query.index to filter enum field", async () => {
+        const products = await populateData(api)
+
+        const brandModule = appContainer.resolve("brand")
+        const link = appContainer.resolve(ContainerRegistrationKeys.LINK)
+        const brand = await brandModule.createBrands({
+          name: "Medusa Brand",
+        })
+
+        await link.create({
+          [Modules.PRODUCT]: {
+            product_id: products.find((p) => p.title === "Extra product").id,
+          },
+          brand: {
+            brand_id: brand.id,
+          },
+        })
+
+        await setTimeout(1000)
+
+        const query = appContainer.resolve(
+          ContainerRegistrationKeys.QUERY
+        ) as RemoteQueryFunction
+
+        const resultset = await fetchAndRetry(
+          async () =>
+            await query.index({
+              entity: "product",
+              fields: ["id"],
+              filters: {
+                status: "published",
+                brand: {
+                  status: "active",
+                },
+              },
+            }),
+          ({ data }) => data.length > 0,
+          {
+            retries: 5,
+            waitSeconds: 1.5,
+          }
+        )
+        expect(resultset.data.length).toEqual(1)
       })
     })
   },

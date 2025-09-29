@@ -7,7 +7,6 @@ required:
   - shipping_profile_id
   - price_type
   - provider_id
-  - type
   - prices
 properties:
   name:
@@ -86,3 +85,7 @@ properties:
     description: The shipping option's rules.
     items:
       $ref: ./AdminCreateShippingOptionRule.yaml
+  type_id:
+    type: string
+    title: type_id
+    description: The ID of the shipping option type that this shipping option belongs to.

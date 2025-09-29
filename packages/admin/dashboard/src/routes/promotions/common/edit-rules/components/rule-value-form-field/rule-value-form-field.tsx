@@ -1,9 +1,16 @@
-import { HttpTypes } from "@medusajs/types"
+import {
+  ApplicationMethodTargetTypeValues,
+  HttpTypes,
+  RuleTypeValues,
+} from "@medusajs/types"
 import { Input } from "@medusajs/ui"
 import { useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { useEffect } from "react"
+
 import { Form } from "../../../../../../components/common/form"
 import { Combobox } from "../../../../../../components/inputs/combobox"
-import { useStore } from "../../../../../../hooks/api/store"
+import { useStore } from "../../../../../../hooks/api"
 import { useComboboxData } from "../../../../../../hooks/use-combobox-data"
 import { sdk } from "../../../../../../lib/client"
 
@@ -18,7 +25,8 @@ type RuleValueFormFieldType = {
   operator: string
   fieldRule: any
   attributes: HttpTypes.AdminRuleAttributeOption[]
-  ruleType: "rules" | "target-rules" | "buy-rules"
+  ruleType: RuleTypeValues
+  applicationMethodTargetType: ApplicationMethodTargetTypeValues | undefined
 }
 
 const buildFilters = (attribute?: string, store?: HttpTypes.AdminStore) => {
@@ -44,7 +52,10 @@ export const RuleValueFormField = ({
   fieldRule,
   attributes,
   ruleType,
+  applicationMethodTargetType,
 }: RuleValueFormFieldType) => {
+  const { t } = useTranslation()
+
   const attribute = attributes?.find(
     (attr) => attr.value === fieldRule.attribute
   )
@@ -59,6 +70,7 @@ export const RuleValueFormField = ({
         {
           ...params,
           ...buildFilters(attribute?.id, store!),
+          application_method_target_type: applicationMethodTargetType,
         }
       )
     },
@@ -74,6 +86,23 @@ export const RuleValueFormField = ({
     control: form.control,
     name: operator,
   })
+
+  useEffect(() => {
+    const hasDirtyRules = Object.keys(form.formState.dirtyFields).length > 0
+
+    /**
+     * Don't reset values if fileds didn't change - this is to prevent reset of form on initial render when editing an existing rule
+     */
+    if (!hasDirtyRules) {
+      return
+    }
+
+    if (watchOperator === "eq") {
+      form.setValue(name, "")
+    } else {
+      form.setValue(name, [])
+    }
+  }, [watchOperator])
 
   return (
     <Form.Field
@@ -119,11 +148,13 @@ export const RuleValueFormField = ({
                 <Combobox
                   {...field}
                   {...comboboxData}
-                  multiple={watchOperator !== "eq"}
                   ref={ref}
                   placeholder={
-                    watchOperator === "eq" ? "Select Value" : "Select Values"
+                    watchOperator === "eq"
+                      ? t("labels.selectValue")
+                      : t("labels.selectValues")
                   }
+                  disabled={!watchOperator}
                   onChange={onChange}
                 />
               </Form.Control>

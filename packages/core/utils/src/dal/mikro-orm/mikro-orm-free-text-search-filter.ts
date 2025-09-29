@@ -3,9 +3,10 @@ import type {
   EntityProperty,
   FindOneOptions,
   FindOptions,
-} from "@mikro-orm/core"
-import { EntityMetadata, raw, ReferenceKind } from "@mikro-orm/core"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+  EntityMetadata,
+} from "@medusajs/deps/mikro-orm/core"
+import { raw, ReferenceKind } from "@medusajs/deps/mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
 
 export const FreeTextSearchFilterKeyPrefix = "freeTextSearch_"
 

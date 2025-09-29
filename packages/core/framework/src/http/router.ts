@@ -1,31 +1,31 @@
-import logger from "@medusajs/cli/dist/reporter"
+import { ContainerRegistrationKeys, parseCorsOrigins } from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
-import { parseCorsOrigins } from "@medusajs/utils"
-import type { Express, RequestHandler, ErrorRequestHandler } from "express"
+import type { ErrorRequestHandler, Express, RequestHandler } from "express"
 import type {
+  AdditionalDataValidatorRoute,
+  BodyParserConfigRoute,
+  MedusaNextFunction,
   MedusaRequest,
   MedusaResponse,
+  MiddlewareDescriptor,
+  MiddlewareFunction,
   MiddlewareVerb,
   RouteDescriptor,
-  MiddlewareFunction,
-  MedusaNextFunction,
-  MiddlewareDescriptor,
-  BodyParserConfigRoute,
   RouteHandler,
-  AdditionalDataValidatorRoute,
 } from "./types"
 
-import { RoutesLoader } from "./routes-loader"
-import { RoutesFinder } from "./routes-finder"
-import { RoutesSorter } from "./routes-sorter"
-import { wrapHandler } from "./utils/wrap-handler"
-import { authenticate, AuthType } from "./middlewares"
-import { errorHandler } from "./middlewares/error-handler"
-import { RestrictedFields } from "./utils/restricted-fields"
+import { Logger, MedusaContainer } from "@medusajs/types"
+import { configManager } from "../config"
 import { MiddlewareFileLoader } from "./middleware-file-loader"
+import { authenticate, AuthType } from "./middlewares"
 import { createBodyParserMiddlewaresStack } from "./middlewares/bodyparser"
 import { ensurePublishableApiKeyMiddleware } from "./middlewares/ensure-publishable-api-key"
-import { configManager } from "../config"
+import { errorHandler } from "./middlewares/error-handler"
+import { RoutesFinder } from "./routes-finder"
+import { RoutesLoader } from "./routes-loader"
+import { RoutesSorter } from "./routes-sorter"
+import { RestrictedFields } from "./utils/restricted-fields"
+import { wrapHandler } from "./utils/wrap-handler"
 
 export class ApiLoader {
   /**
@@ -58,18 +58,23 @@ export class ApiLoader {
    */
   readonly #sourceDirs: string[]
 
+  readonly #logger: Logger
+
   constructor({
     app,
     sourceDir,
     baseRestrictedFields = [],
+    container,
   }: {
     app: Express
     sourceDir: string | string[]
     baseRestrictedFields?: string[]
+    container: MedusaContainer
   }) {
     this.#app = app
     this.#sourceDirs = Array.isArray(sourceDir) ? sourceDir : [sourceDir]
     this.#assignRestrictedFields(baseRestrictedFields ?? [])
+    this.#logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   }
 
   /**
@@ -105,7 +110,7 @@ export class ApiLoader {
     route: MiddlewareDescriptor | RouteDescriptor | RouteDescriptor
   ) {
     if ("isRoute" in route) {
-      logger.debug(`registering route ${route.method} ${route.matcher}`)
+      this.#logger.debug(`registering route ${route.method} ${route.matcher}`)
       const handler = ApiLoader.traceRoute
         ? ApiLoader.traceRoute(route.handler, {
             route: route.matcher,
@@ -118,7 +123,7 @@ export class ApiLoader {
     }
 
     if (!route.methods) {
-      logger.debug(`registering global middleware for ${route.matcher}`)
+      this.#logger.debug(`registering global middleware for ${route.matcher}`)
       const handler = ApiLoader.traceMiddleware
         ? (ApiLoader.traceMiddleware(route.handler, {
             route: route.matcher,
@@ -133,7 +138,9 @@ export class ApiLoader {
       ? route.methods
       : [route.methods]
     methods.forEach((method) => {
-      logger.debug(`registering route middleware ${method} ${route.matcher}`)
+      this.#logger.debug(
+        `registering route middleware ${method} ${route.matcher}`
+      )
       const handler = ApiLoader.traceMiddleware
         ? (ApiLoader.traceMiddleware(wrapHandler(route.handler), {
             route: route.matcher,
@@ -192,6 +199,7 @@ export class ApiLoader {
       | "shouldAppendStoreCors",
     corsOptions: CorsOptions
   ) {
+    const logger = this.#logger
     const corsFn = cors(corsOptions)
     const corsMiddleware: RequestHandler = function corsMiddleware(
       req,
@@ -234,6 +242,7 @@ export class ApiLoader {
     authType: AuthType | AuthType[],
     options?: { allowUnauthenticated?: boolean; allowUnregistered?: boolean }
   ) {
+    const logger = this.#logger
     logger.debug(`Registering auth middleware for prefix ${namespace}`)
 
     const originalFn = authenticate(actorType, authType, options)
@@ -273,7 +282,9 @@ export class ApiLoader {
     namespace: string,
     routesFinder: RoutesFinder<BodyParserConfigRoute>
   ): void {
-    logger.debug(`Registering bodyparser middleware for prefix ${namespace}`)
+    this.#logger.debug(
+      `Registering bodyparser middleware for prefix ${namespace}`
+    )
     this.#app.use(
       namespace,
       createBodyParserMiddlewaresStack(
@@ -292,6 +303,7 @@ export class ApiLoader {
     namespace: string,
     routesFinder: RoutesFinder<AdditionalDataValidatorRoute>
   ) {
+    const logger = this.#logger
     logger.debug(
       `Registering assignAdditionalDataValidator middleware for prefix ${namespace}`
     )
@@ -329,7 +341,7 @@ export class ApiLoader {
    * a `x-publishable-key` header
    */
   #applyStorePublishableKeyMiddleware(namespace: string) {
-    logger.debug(
+    this.#logger.debug(
       `Registering publishable key middleware for namespace ${namespace}`
     )
     let middleware = ApiLoader.traceMiddleware

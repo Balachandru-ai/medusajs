@@ -8,7 +8,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { AdditionalData } from "@medusajs/types"
 import { useRemoteQueryStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { removeShippingMethodFromCartStep } from "../steps"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
@@ -50,11 +52,33 @@ export const refreshCartShippingMethodsWorkflowId =
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const refreshCartShippingMethodsWorkflow = createWorkflow(
-  refreshCartShippingMethodsWorkflowId,
-  (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
-      return !input.cart
-    }).then(() => {
+  {
+    name: refreshCartShippingMethodsWorkflowId,
+    idempotent: false,
+  },
+  (
+    input: WorkflowData<
+      RefreshCartShippingMethodsWorkflowInput & AdditionalData
+    >
+  ) => {
+    const shouldExecute = transform({ input }, ({ input }) => {
+      return (
+        !!input.cart_id ||
+        (!!input.cart && !!input.cart.shipping_methods?.length)
+      )
+    })
+
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
+    const fetchCart = when(
+      "fetch-cart",
+      { shouldExecute },
+      ({ shouldExecute }) => {
+        return shouldExecute
+      }
+    ).then(() => {
       return useRemoteQueryStep({
         entry_point: "cart",
         fields: [
@@ -70,14 +94,20 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
           "shipping_methods.data",
           "total",
         ],
-        variables: { id: input.cart_id },
+        variables: { id: cartId },
         throw_if_key_not_found: true,
         list: false,
       }).config({ name: "get-cart" })
     })
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
-      return input.cart ?? fetchCart
+      return fetchCart ?? input.cart
+    })
+
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
     })
 
     const listShippingOptionsInput = transform({ cart }, ({ cart }) =>
@@ -94,15 +124,20 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
       cart,
     })
 
-    when({ listShippingOptionsInput }, ({ listShippingOptionsInput }) => {
-      return !!listShippingOptionsInput?.length
-    }).then(() => {
+    when(
+      "should-prepare-shipping-methods",
+      { listShippingOptionsInput },
+      ({ listShippingOptionsInput }) => {
+        return !!listShippingOptionsInput?.length
+      }
+    ).then(() => {
       const shippingOptions =
         listShippingOptionsForCartWithPricingWorkflow.runAsStep({
           input: {
             options: listShippingOptionsInput,
             cart_id: cart.id,
             is_return: false,
+            additional_data: input.additional_data,
           },
         })
 
@@ -171,6 +206,10 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
         }),
         updateShippingMethodsStep(shippingMethodsData.shippingMethodsToUpdate)
       )
+
+      releaseLockStep({
+        key: cart.id,
+      })
     })
 
     return new WorkflowResponse(void 0, {

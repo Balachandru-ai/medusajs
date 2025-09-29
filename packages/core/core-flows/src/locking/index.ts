@@ -1,2 +1,2 @@
-export * from "./acquire-lock"
-export * from "./release-lock"
+export * from "./steps/acquire-lock"
+export * from "./steps/release-lock"

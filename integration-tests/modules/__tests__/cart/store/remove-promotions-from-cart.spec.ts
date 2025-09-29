@@ -16,7 +16,7 @@ import {
 
 jest.setTimeout(50000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
@@ -60,7 +60,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_id",
+                    attribute: "items.product_id",
                     operator: "eq",
                     values: "prod_tshirt",
                   },
@@ -83,7 +83,7 @@ medusaIntegrationTestRunner({
                 max_quantity: 1,
                 target_rules: [
                   {
-                    attribute: "product_id",
+                    attribute: "items.product_id",
                     operator: "eq",
                     values: "prod_tshirt",
                   },

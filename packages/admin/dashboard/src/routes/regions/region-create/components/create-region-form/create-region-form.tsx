@@ -17,7 +17,7 @@ import { useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
-import { PaymentProviderDTO, RegionCountryDTO } from "@medusajs/types"
+import { RegionCountryDTO } from "@medusajs/types"
 
 import { Form } from "../../../../../components/common/form"
 import { Combobox } from "../../../../../components/inputs/combobox"
@@ -37,10 +37,12 @@ import { formatProvider } from "../../../../../lib/format-provider"
 import { useCountries } from "../../../common/hooks/use-countries"
 import { useCountryTableColumns } from "../../../common/hooks/use-country-table-columns"
 import { useCountryTableQuery } from "../../../common/hooks/use-country-table-query"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+import { useComboboxData } from "../../../../../hooks/use-combobox-data"
+import { sdk } from "../../../../../lib/client"
 
 type CreateRegionFormProps = {
   currencies: CurrencyInfo[]
-  paymentProviders: PaymentProviderDTO[]
 }
 
 const CreateRegionSchema = zod.object({
@@ -57,14 +59,11 @@ const PAGE_SIZE = 50
 
 const STACKED_MODAL_ID = "countries-modal"
 
-export const CreateRegionForm = ({
-  currencies,
-  paymentProviders,
-}: CreateRegionFormProps) => {
+export const CreateRegionForm = ({ currencies }: CreateRegionFormProps) => {
   const { setIsOpen } = useStackedModal()
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const { handleSuccess } = useRouteModal()
-
+  const direction = useDocumentDirection()
   const form = useForm<zod.infer<typeof CreateRegionSchema>>({
     defaultValues: {
       name: "",
@@ -180,24 +179,24 @@ export const CreateRegionForm = ({
     setRowSelection({})
   }
 
+  const comboboxProviders = useComboboxData({
+    queryFn: (params) =>
+      sdk.admin.payment.listPaymentProviders({ ...params, is_enabled: true }),
+    queryKey: ["payment_providers"],
+    getOptions: (data) =>
+      data.payment_providers.map((pp) => ({
+        label: formatProvider(pp.id),
+        value: pp.id,
+      })),
+  })
+
   return (
     <RouteFocusModal.Form form={form}>
       <KeyboundForm
         className="flex h-full flex-col overflow-hidden"
         onSubmit={handleSubmit}
       >
-        <RouteFocusModal.Header>
-          <div className="flex items-center justify-end gap-x-2">
-            <RouteFocusModal.Close asChild>
-              <Button size="small" variant="secondary">
-                {t("actions.cancel")}
-              </Button>
-            </RouteFocusModal.Close>
-            <Button size="small" type="submit" isLoading={isPendingRegion}>
-              {t("actions.save")}
-            </Button>
-          </div>
-        </RouteFocusModal.Header>
+        <RouteFocusModal.Header />
         <RouteFocusModal.Body className="flex overflow-hidden">
           <div
             className={clx(
@@ -237,7 +236,11 @@ export const CreateRegionForm = ({
                         <Form.Item>
                           <Form.Label>{t("fields.currency")}</Form.Label>
                           <Form.Control>
-                            <Select {...field} onValueChange={onChange}>
+                            <Select
+                              dir={direction}
+                              {...field}
+                              onValueChange={onChange}
+                            >
                               <Select.Trigger ref={ref}>
                                 <Select.Value />
                               </Select.Trigger>
@@ -271,6 +274,8 @@ export const CreateRegionForm = ({
                           <Form.Label>{t("fields.automaticTaxes")}</Form.Label>
                           <Form.Control>
                             <Switch
+                              dir="ltr"
+                              className="rtl:rotate-180"
                               {...field}
                               checked={value}
                               onCheckedChange={onChange}
@@ -298,6 +303,8 @@ export const CreateRegionForm = ({
                           </Form.Label>
                           <Form.Control>
                             <Switch
+                              className="rtl:rotate-180"
+                              dir="ltr"
                               {...field}
                               checked={value}
                               onCheckedChange={onChange}
@@ -417,10 +424,9 @@ export const CreateRegionForm = ({
                           </Form.Label>
                           <Form.Control>
                             <Combobox
-                              options={paymentProviders.map((pp) => ({
-                                label: formatProvider(pp.id),
-                                value: pp.id,
-                              }))}
+                              forceHideInput
+                              options={comboboxProviders.options}
+                              fetchNextPage={comboboxProviders.fetchNextPage}
                               {...field}
                             />
                           </Form.Control>
@@ -434,6 +440,16 @@ export const CreateRegionForm = ({
             </div>
           </div>
         </RouteFocusModal.Body>
+        <RouteFocusModal.Footer>
+          <RouteFocusModal.Close asChild>
+            <Button size="small" variant="secondary">
+              {t("actions.cancel")}
+            </Button>
+          </RouteFocusModal.Close>
+          <Button size="small" type="submit" isLoading={isPendingRegion}>
+            {t("actions.save")}
+          </Button>
+        </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
   )

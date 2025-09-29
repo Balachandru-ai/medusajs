@@ -760,9 +760,37 @@ By default, only the selected fields and relations are returned in the response.
 Before every field or relation, you can pass one of the following operators to change the default behavior:
 
 - `+`: Add the field to the fields returned by default. For example, `+title` returns the `title` field along with the fields returned by default.
-- `-`: Remove the field from the fields returned by default. For example, `-title` removes the `title` field from the fields returned by default.
+- `-`: Remove the field from the fields returned by default. For example, `-handle` removes the `handle` field from the fields returned by default.
 
 </DividedMarkdownContent>
+
+<DividedMarkdownCode>
+
+<CodeTabs group="request-examples">
+
+<CodeTab label="JS SDK" value="js-sdk">
+
+```js title="Select relations"
+sdk.admin.product.list({
+  fields: "+title,-handle"
+})
+```
+
+</CodeTab>
+
+<CodeTab label="cURL" value="curl">
+
+```bash title="Select relations"
+curl 'localhost:9000/admin/products?fields=+title,-handle'
+```
+
+</CodeTab>
+
+</CodeTabs>
+
+This returns the products, each of them having their `title` field, but without the `handle` field.
+
+</DividedMarkdownCode>
 
 </DividedMarkdownLayout>
 
@@ -810,6 +838,44 @@ This returns the variants of each product.
 
 <DividedMarkdownContent>
 
+To select multiple relations, pass each of the relations with the `*` prefix, separated by a comma.
+
+</DividedMarkdownContent>
+
+<DividedMarkdownCode>
+
+<CodeTabs group="request-examples">
+
+<CodeTab label="JS SDK" value="js-sdk">
+
+```js title="Select relation's fields"
+sdk.admin.product.list({
+  fields: "*variants,*options"
+})
+```
+
+</CodeTab>
+
+<CodeTab label="cURL" value="curl">
+
+```bash title="Select relation's fields"
+curl 'localhost:9000/admin/products?fields=*variants,*options'
+```
+
+</CodeTab>
+
+</CodeTabs>
+
+This returns the variants and options of each product.
+
+</DividedMarkdownCode>
+
+</DividedMarkdownLayout>
+
+<DividedMarkdownLayout addYSpacing>
+
+<DividedMarkdownContent>
+
 ### Select Fields in a Relation
 
 The `*` prefix selects all fields of the relation's data model.
@@ -824,7 +890,7 @@ The `*` prefix selects all fields of the relation's data model.
 
 To select a specific field, pass a `.<field>` suffix instead of the `*` prefix. For example, `variants.title`.
 
-To specify multiple fields, pass each of the fields with the `<relation>.<field>` format, separated by a comma.
+To specify multiple fields, pass each of the fields with the `<relation>.<field>` format, separated by a comma. You can do the same for multiple relations.
 
 </DividedMarkdownContent>
 
@@ -836,7 +902,7 @@ To specify multiple fields, pass each of the fields with the `<relation>.<field>
 
 ```js title="Select relation's fields"
 sdk.admin.product.list({
-  fields: "variants.title,variants.sku"
+  fields: "variants.title,variants.sku,options.title"
 })
 ```
 
@@ -845,7 +911,7 @@ sdk.admin.product.list({
 <CodeTab label="cURL" value="curl">
 
 ```bash title="Select relation's fields"
-curl 'localhost:9000/admin/products?fields=variants.title,variants.sku' \
+curl 'localhost:9000/admin/products?fields=variants.title,variants.sku,options.title' \
 -H 'Authorization: Bearer {jwt_token}'
 ```
 
@@ -853,7 +919,7 @@ curl 'localhost:9000/admin/products?fields=variants.title,variants.sku' \
 
 </CodeTabs>
 
-This returns the variants of each product, but the variants only have their `id`, `title`, and `sku` fields. The `id` is always included.
+This returns the variants and options of each product, but the variants only have their `id`, `title`, and `sku` fields, and the options only have their `id` and `title` fields. The `id` is always included.
 
 </DividedMarkdownCode>
 

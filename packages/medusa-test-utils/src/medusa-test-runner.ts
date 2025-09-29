@@ -7,7 +7,7 @@ import {
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 import { dbTestUtilFactory, getDatabaseURL } from "./database"
 import {
   applyEnvVarsToProcess,
@@ -45,17 +45,21 @@ interface TestRunnerConfig {
   env?: Record<string, any>
   dbName?: string
   medusaConfigFile?: string
+  disableAutoTeardown?: boolean
   schema?: string
   debug?: boolean
   inApp?: boolean
   hooks?: {
     beforeServerStart?: (container: MedusaContainer) => Promise<void>
   }
+  cwd?: string
 }
 
 class MedusaTestRunner {
   private dbName: string
   private schema: string
+  private modulesConfigPath: string
+  private disableAutoTeardown: boolean
   private cwd: string
   private env: Record<string, any>
   private debug: boolean
@@ -85,10 +89,12 @@ class MedusaTestRunner {
       config.dbName ??
       `medusa-${moduleName.toLowerCase()}-integration-${tempName}`
     this.schema = config.schema ?? "public"
-    this.cwd = config.medusaConfigFile ?? process.cwd()
+    this.cwd = config.cwd ?? config.medusaConfigFile ?? process.cwd()
+    this.modulesConfigPath = config.medusaConfigFile ?? this.cwd
     this.env = config.env ?? {}
     this.debug = config.debug ?? false
     this.inApp = config.inApp ?? false
+    this.disableAutoTeardown = config?.disableAutoTeardown ?? false
 
     this.dbUtils = dbTestUtilFactory()
     this.dbConfig = {
@@ -150,7 +156,10 @@ class MedusaTestRunner {
 
   private async setupApplication(): Promise<void> {
     const { container, MedusaAppLoader } = await import("@medusajs/framework")
-    const appLoader = new MedusaAppLoader()
+    const appLoader = new MedusaAppLoader({
+      medusaConfigPath: this.modulesConfigPath,
+      cwd: this.cwd,
+    })
 
     // Load plugins modules
     const configModule = container.resolve(
@@ -173,7 +182,7 @@ class MedusaTestRunner {
       `Migrating database with core migrations and links ${this.dbName}`
     )
     await migrateDatabase(appLoader)
-    await syncLinks(appLoader, this.cwd, container, logger)
+    await syncLinks(appLoader, this.modulesConfigPath, container, logger)
     await clearInstances()
 
     this.loadedApplication = await appLoader.load()
@@ -184,7 +193,7 @@ class MedusaTestRunner {
         container: appContainer,
         port,
       } = await startApp({
-        cwd: this.cwd,
+        cwd: this.modulesConfigPath,
         env: this.env,
       })
 
@@ -270,6 +279,8 @@ class MedusaTestRunner {
       const { MedusaAppLoader } = await import("@medusajs/framework")
       const medusaAppLoader = new MedusaAppLoader({
         container: copiedContainer,
+        medusaConfigPath: this.modulesConfigPath,
+        cwd: this.cwd,
       })
       await medusaAppLoader.runModulesLoader()
     } catch (error) {
@@ -282,7 +293,11 @@ class MedusaTestRunner {
   public async afterEach(): Promise<void> {
     try {
       await waitWorkflowExecutions(this.globalContainer as MedusaContainer)
-      await this.dbUtils.teardown({ schema: this.schema })
+
+      if (!this.disableAutoTeardown) {
+        // Perform automatic teardown
+        await this.dbUtils.teardown({ schema: this.schema })
+      }
     } catch (error) {
       logger.error("Error tearing down database:", error?.message)
       throw error
@@ -319,6 +334,8 @@ export function medusaIntegrationTestRunner({
   inApp = false,
   testSuite,
   hooks,
+  cwd,
+  disableAutoTeardown,
 }: {
   moduleName?: string
   env?: Record<string, any>
@@ -329,6 +346,8 @@ export function medusaIntegrationTestRunner({
   inApp?: boolean
   testSuite: (options: MedusaSuiteOptions) => void
   hooks?: TestRunnerConfig["hooks"]
+  cwd?: string
+  disableAutoTeardown?: boolean
 }) {
   const runner = new MedusaTestRunner({
     moduleName,
@@ -339,6 +358,8 @@ export function medusaIntegrationTestRunner({
     debug,
     inApp,
     hooks,
+    cwd,
+    disableAutoTeardown,
   })
 
   return describe("", () => {

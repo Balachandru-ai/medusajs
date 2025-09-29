@@ -1,4 +1,4 @@
-import { FulfillmentWorkflow } from "@medusajs/framework/types"
+import type { FulfillmentWorkflow } from "@medusajs/framework/types"
 import {
   createWorkflow,
   parallelize,
@@ -17,27 +17,28 @@ import { validateShippingOptionPricesStep } from "../steps/validate-shipping-opt
 /**
  * The data to create the shipping options.
  */
-export type CreateShippingOptionsWorkflowInput = FulfillmentWorkflow.CreateShippingOptionsWorkflowInput[]
+export type CreateShippingOptionsWorkflowInput =
+  FulfillmentWorkflow.CreateShippingOptionsWorkflowInput[]
 
 export const createShippingOptionsWorkflowId =
   "create-shipping-options-workflow"
 /**
- * This workflow creates one or more shipping options. It's used by the 
+ * This workflow creates one or more shipping options. It's used by the
  * [Create Shipping Option Admin API Route](https://docs.medusajs.com/api/admin#shipping-options_postshippingoptions).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * create shipping options within your custom flows.
- * 
+ *
  * @example
  * To calculate a shipping option with flat rate prices:
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the shipping option's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the shipping option's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
- * 
+ *
  * ```ts
  * const { result } = await createShippingOptionsWorkflow(container)
  * .run({
@@ -63,15 +64,15 @@ export const createShippingOptionsWorkflowId =
  *   ]
  * })
  * ```
- * 
+ *
  * To calculate shipping option with calculated prices, set `price_type` to `calculated` and don't pass a `prices` array:
- * 
+ *
  * :::note
- * 
+ *
  * You can calculate the shipping option's price for a cart using the [calculateShippingOptionsPricesWorkflow](https://docs.medusajs.com/resources/references/medusa-workflows/calculateShippingOptionsPricesWorkflow).
- * 
+ *
  * :::
- * 
+ *
  * ```ts
  * const { result } = await createShippingOptionsWorkflow(container)
  * .run({
@@ -91,9 +92,9 @@ export const createShippingOptionsWorkflowId =
  *   ]
  * })
  * ```
- * 
+ *
  * @summary
- * 
+ *
  * Create shipping options.
  */
 export const createShippingOptionsWorkflow = createWorkflow(

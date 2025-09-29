@@ -4,7 +4,7 @@ export const metadata = {
 
 # {metadata.title}
 
-In this document, you’ll learn about order claims.
+In this guide, you'll learn about order claims.
 
 <Note title="Looking for no-code docs?">
 
@@ -14,51 +14,53 @@ Refer to this [Medusa Admin User Guide](!user-guide!/orders/claims) to learn how
 
 ## What is a Claim?
 
-When a customer receives a defective or incorrect item, the merchant can create a claim to refund or replace the item.
+When a customer receives a defective or incorrect item, the merchant can create a claim to refund or replace that item.
 
-The [OrderClaim data model](/references/order/models/OrderClaim) represents a claim.
+A claim is represented by the [OrderClaim data model](/references/order/models/OrderClaim).
 
 ---
 
 ## Claim Type
 
-The `Claim` data model has a `type` property whose value indicates the type of the claim:
+The `Claim` data model has a `type` property that indicates the type of claim:
 
-- `refund`: the items are returned, and the customer is refunded.
-- `replace`: the items are returned, and the customer receives new items.
+- `refund`: The items are returned and the customer receives a refund.
+- `replace`: The items are returned and the customer receives new items.
 
 ---
 
 ## Old and Replacement Items
 
-When the claim is created, a return, represented by the [Return data model](/references/order/models/Return), is also created to handle receiving the old items from the customer.
+When you create a claim, a return is also created to handle receiving the old items from the customer. The return is represented by the [Return data model](/references/order/models/Return).
 
 <Note>
 
-Learn more about returns in [this guide](../return/page.mdx).
+Refer to the [Returns](../return/page.mdx) guide to learn more about returns.
 
 </Note>
 
-If the claim’s type is `replace`, replacement items are represented by the [ClaimItem data model](/references/order/models/OrderClaimItem).
+If the claim's type is `replace`, the replacement items are represented by the [ClaimItem data model](/references/order/models/OrderClaimItem).
 
 ---
 
 ## Claim Shipping Methods
 
-A claim uses shipping methods to send the replacement items to the customer. These methods are represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
+A claim uses shipping methods to send replacement items to the customer. These methods are represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
 
-The shipping methods for the returned items are associated with the claim's return, as explained in [this guide](../return/page.mdx#return-shipping-methods).
+The shipping methods for returned items are linked to the claim's return, as explained in the [Returns](../return/page.mdx#return-shipping-methods) guide.
 
 ---
 
 ## Claim Refund
 
-If the claim’s type is `refund`, the amount to be refunded is stored in the `refund_amount` property.
+If the claim's type is `refund`, the refund amount is stored in the `refund_amount` property.
 
 The [Transaction data model](/references/order/models/OrderTransaction) represents the refunds made for the claim.
 
 ---
 
-## How Claims Impact an Order’s Version
+## How Claims Impact an Order's Version
 
-When a claim is confirmed, the order’s version is incremented.
+When you confirm a claim, the order's version increases.
+
+Learn more about order versions in the [Order Versioning](../order-versioning/page.mdx) guide.

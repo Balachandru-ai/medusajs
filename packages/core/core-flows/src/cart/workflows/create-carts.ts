@@ -1,11 +1,12 @@
 import {
   AdditionalData,
+  ConfirmVariantInventoryWorkflowInputDTO,
+  CreateCartDTO,
   CreateCartWorkflowInputDTO,
 } from "@medusajs/framework/types"
 import {
   CartWorkflowEvents,
   deduplicate,
-  isDefined,
   MedusaError,
 } from "@medusajs/framework/utils"
 import {
@@ -13,29 +14,22 @@ import {
   createWorkflow,
   parallelize,
   transform,
-  when,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 import {
   createCartsStep,
   findOneOrAnyRegionStep,
   findOrCreateCustomerStep,
   findSalesChannelStep,
 } from "../steps"
-import { validateLineItemPricesStep } from "../steps/validate-line-item-prices"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
-import { validateVariantPricesStep } from "../steps/validate-variant-prices"
 import { productVariantsFields } from "../utils/fields"
 import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-confirm-inventory-input"
-import {
-  prepareLineItemData,
-  PrepareLineItemDataInput,
-} from "../utils/prepare-line-item-data"
 import { pricingContextResult } from "../utils/schemas"
 import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
+import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
 import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
 import { updateTaxLinesWorkflow } from "./update-tax-lines"
@@ -118,7 +112,9 @@ export const createCartWorkflow = createWorkflow(
   createCartWorkflowId,
   (input: WorkflowData<CreateCartWorkflowInput>) => {
     const variantIds = transform({ input }, (data) => {
-      return (data.input.items ?? []).map((i) => i.variant_id).filter(Boolean)
+      return (data.input.items ?? [])
+        .map((i) => i.variant_id)
+        .filter((v): v is string => !!v)
     })
 
     const [salesChannel, region, customerData] = parallelize(
@@ -150,47 +146,31 @@ export const createCartWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
-    // TODO: This is on par with the context used in v1.*, but we can be more flexible.
-    const pricingContext = transform(
-      { input, region, customerData, setPricingContextResult },
-      (data) => {
-        if (!data.region) {
-          throw new MedusaError(MedusaError.Types.NOT_FOUND, "No regions found")
-        }
-
-        return {
-          ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
-          currency_code: data.input.currency_code ?? data.region.currency_code,
-          region_id: data.region.id,
-          customer_id: data.customerData.customer?.id,
-        }
-      }
-    )
-
-    const variants = when({ variantIds }, ({ variantIds }) => {
-      return !!variantIds.length
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "variants",
-        fields: deduplicate([
-          ...productVariantsFields,
-          ...requiredVariantFieldsForInventoryConfirmation,
-        ]),
-        variables: {
-          id: variantIds,
-          calculated_price: {
-            context: pricingContext,
-          },
+    const { variants, lineItems } = getVariantsAndItemsWithPrices.runAsStep({
+      input: {
+        cart: {
+          currency_code: input.currency_code,
+          region,
+          region_id: region.id,
+          customer_id: customerData.customer?.id,
         },
-      })
+        items: input.items,
+        setPricingContextResult: setPricingContextResult!,
+        variants: {
+          id: variantIds,
+          fields: deduplicate([
+            ...productVariantsFields,
+            ...requiredVariantFieldsForInventoryConfirmation,
+          ]),
+        },
+      },
     })
-
-    validateVariantPricesStep({ variants })
 
     confirmVariantInventoryWorkflow.runAsStep({
       input: {
         sales_channel_id: salesChannel.id,
-        variants,
+        variants:
+          variants as unknown as ConfirmVariantInventoryWorkflowInputDTO["variants"],
         items: input.items!,
       },
     })
@@ -229,39 +209,11 @@ export const createCartWorkflow = createWorkflow(
       }
     )
 
-    const lineItems = transform({ input, variants }, (data) => {
-      const items = (data.input.items ?? []).map((item) => {
-        const variant = (data.variants ?? []).find(
-          (v) => v.id === item.variant_id
-        )!
-
-        const input: PrepareLineItemDataInput = {
-          item,
-          variant: variant,
-          unitPrice: item.unit_price,
-          isTaxInclusive:
-            item.is_tax_inclusive ??
-            variant?.calculated_price?.is_calculated_price_tax_inclusive,
-          isCustomPrice: isDefined(item?.unit_price),
-        }
-
-        if (variant && !input.unitPrice) {
-          input.unitPrice = variant.calculated_price?.calculated_amount
-        }
-
-        return prepareLineItemData(input)
-      })
-
-      return items
-    })
-
-    validateLineItemPricesStep({ items: lineItems })
-
     const cartToCreate = transform({ lineItems, cartInput }, (data) => {
       return {
         ...data.cartInput,
-        items: data.lineItems,
-      }
+        items: data.lineItems.map((i) => i.data),
+      } as unknown as CreateCartDTO
     })
 
     const validate = createHook("validate", {
@@ -288,7 +240,7 @@ export const createCartWorkflow = createWorkflow(
     parallelize(
       refreshPaymentCollectionForCartWorkflow.runAsStep({
         input: {
-          cart_id: cart.id,
+          cart: cart,
         },
       }),
       emitEventStep({

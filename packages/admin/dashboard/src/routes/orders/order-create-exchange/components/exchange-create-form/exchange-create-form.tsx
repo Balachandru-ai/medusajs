@@ -397,8 +397,8 @@ export const ExchangeCreateForm = ({
                       code={order.currency_code}
                       onValueChange={(value, name, values) =>
                         setCustomInboundShippingAmount({
-                          value: values?.value || "",
-                          float: values?.float || null,
+                          value: values?.value ?? "",
+                          float: values?.float ?? null,
                         })
                       }
                       value={customInboundShippingAmount.value}
@@ -470,8 +470,8 @@ export const ExchangeCreateForm = ({
                       code={order.currency_code}
                       onValueChange={(value, name, values) =>
                         setCustomOutboundShippingAmount({
-                          value: values?.value || "",
-                          float: values?.float || null,
+                          value: values?.value ?? "",
+                          float: values?.float ?? null,
                         })
                       }
                       value={customOutboundShippingAmount.value}
@@ -509,7 +509,8 @@ export const ExchangeCreateForm = ({
                       <div className="flex items-center">
                         <Form.Control className="mr-4 self-start">
                           <Switch
-                            className="mt-[2px]"
+                            dir="ltr"
+                            className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}

@@ -16,7 +16,15 @@ export const nextjs = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
   },
   {
+    "title": "Implement Product Builder",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
     "title": "Saved Payment Methods",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods"
+  },
+  {
+    "title": "Ticket Booking Storefront",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront"
   }
 ]

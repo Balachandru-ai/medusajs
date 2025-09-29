@@ -1,4 +1,4 @@
-import { OrderWorkflowDTO } from "@medusajs/framework/types"
+import type { OrderWorkflowDTO } from "@medusajs/framework/types"
 import {
   WorkflowData,
   createWorkflow,
@@ -24,6 +24,7 @@ const completeOrderFields = [
   "items.product_description",
   "items.product_subtitle",
   "items.product_type",
+  "items.product_type_id",
   "items.product_collection",
   "items.product_handle",
   "items.variant_sku",
@@ -107,6 +108,7 @@ const lineItemFields = [
   "product_description",
   "product_subtitle",
   "product_type",
+  "product_type_id",
   "product_collection",
   "product_handle",
   "variant_sku",

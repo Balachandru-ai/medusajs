@@ -1,6 +1,6 @@
 import { BigNumberInput } from "@medusajs/types"
 import { isDefined } from "../../common"
-import { BigNumber } from "../big-number"
+import { BigNumber, MEDUSA_EPSILON } from "../big-number"
 import { MathBN } from "../math"
 
 export function calculateCreditLinesTotal({
@@ -46,9 +46,10 @@ export function calculateCreditLinesTotal({
     }
   }
 
+  const isZero = MathBN.lte(creditLinesTotal, MEDUSA_EPSILON)
   return {
-    creditLinesTotal,
-    creditLinesSubtotal,
-    creditLinesTaxTotal,
+    creditLinesTotal: isZero ? MathBN.convert(0) : creditLinesTotal,
+    creditLinesSubtotal: isZero ? MathBN.convert(0) : creditLinesSubtotal,
+    creditLinesTaxTotal: isZero ? MathBN.convert(0) : creditLinesTaxTotal,
   }
 }

@@ -12,10 +12,10 @@ import {
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { initDb, TestDatabaseUtils } from "@medusajs/test-utils"
-import { EntityManager } from "@mikro-orm/postgresql"
+import { EntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { IndexData, IndexRelation } from "@models"
 import { DataSynchronizer } from "@services"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 import * as path from "path"
 import { setTimeout } from "timers/promises"
 import { EventBusServiceMock } from "../__fixtures__"

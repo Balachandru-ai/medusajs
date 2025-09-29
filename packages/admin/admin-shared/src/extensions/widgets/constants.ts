@@ -55,6 +55,13 @@ const PRODUCT_CATEGORY_INJECTION_ZONES = [
   "product_category.list.after",
 ] as const
 
+const SHIPPING_OPTION_TYPE_INJECTION_ZONES = [
+  "shipping_option_type.details.before",
+  "shipping_option_type.details.after",
+  "shipping_option_type.list.before",
+  "shipping_option_type.list.after",
+] as const
+
 const PRODUCT_TYPE_INJECTION_ZONES = [
   "product_type.details.before",
   "product_type.details.after",
@@ -182,6 +189,11 @@ const RETURN_REASON_INJECTION_ZONES = [
   "return_reason.list.after",
 ] as const
 
+const REFUND_REASON_INJECTION_ZONES = [
+  "refund_reason.list.before",
+  "refund_reason.list.after",
+] as const
+
 const INVENTORY_ITEM_INJECTION_ZONES = [
   "inventory_item.details.before",
   "inventory_item.details.after",
@@ -204,6 +216,7 @@ export const INJECTION_ZONES = [
   ...PRODUCT_COLLECTION_INJECTION_ZONES,
   ...PRODUCT_CATEGORY_INJECTION_ZONES,
   ...PRODUCT_TYPE_INJECTION_ZONES,
+  ...SHIPPING_OPTION_TYPE_INJECTION_ZONES,
   ...PRODUCT_TAG_INJECTION_ZONES,
   ...PRICE_LIST_INJECTION_ZONES,
   ...PROMOTION_INJECTION_ZONES,
@@ -221,5 +234,6 @@ export const INJECTION_ZONES = [
   ...CAMPAIGN_INJECTION_ZONES,
   ...TAX_INJECTION_ZONES,
   ...RETURN_REASON_INJECTION_ZONES,
+  ...REFUND_REASON_INJECTION_ZONES,
   ...INVENTORY_ITEM_INJECTION_ZONES,
 ] as const
