@@ -50,6 +50,10 @@ export class RedisCachingProvider {
     return `${this.keyNamePrefix}tag:refs`
   }
 
+  #getTagReverseDictionaryKey(): string {
+    return `${this.keyNamePrefix}tag:reverse_dict`
+  }
+
   async #internTags(tags: string[]): Promise<number[]> {
     const pipeline = this.redisClient.pipeline()
     const dictionaryKey = this.#getTagDictionaryKey()
@@ -76,12 +80,16 @@ export class RedisCachingProvider {
     // Create IDs for new tags
     if (newTags.length) {
       const nextIdKey = this.#getTagNextIdKey()
+      const reverseDictKey = this.#getTagReverseDictionaryKey()
       const startId = await this.redisClient.incrby(nextIdKey, newTags.length)
 
       const newTagPipeline = this.redisClient.pipeline()
       newTags.forEach((tag, index) => {
         const newId = startId - newTags.length + index + 1
+
+        // Store in both forward and reverse dictionaries
         newTagPipeline.hset(dictionaryKey, tag, newId.toString())
+        newTagPipeline.hset(reverseDictKey, newId.toString(), tag)
 
         // Update the tagIds array
         const originalIndex = tags.indexOf(tag)
@@ -105,17 +113,16 @@ export class RedisCachingProvider {
   async #resolveTagIds(tagIds: number[]): Promise<string[]> {
     if (tagIds.length === 0) return []
 
-    const dictionaryKey = this.#getTagDictionaryKey()
+    const reverseDictKey = this.#getTagReverseDictionaryKey()
+    const pipeline = this.redisClient.pipeline()
 
-    // We need to reverse lookup: get all dictionary entries and find matches
-    const allTags = await this.redisClient.hgetall(dictionaryKey)
-    const idToTag: Record<number, string> = {}
-
-    Object.entries(allTags).forEach(([tag, id]) => {
-      idToTag[parseInt(id)] = tag
+    // Direct lookup using reverse dictionary - much more efficient!
+    tagIds.forEach(id => {
+      pipeline.hget(reverseDictKey, id.toString())
     })
 
-    return tagIds.map((id) => idToTag[id]).filter(Boolean)
+    const results = await pipeline.exec()
+    return results?.map(result => result?.[1] as string).filter(Boolean) || []
   }
 
   async #decrementTagRefs(tagIds: number[]): Promise<void> {
@@ -143,14 +150,19 @@ export class RedisCachingProvider {
     // Clean up tags with zero references
     if (tagsToCleanup.length > 0) {
       const cleanupPipeline = this.redisClient.pipeline()
+      const reverseDictKey = this.#getTagReverseDictionaryKey()
 
       // Get tag names before deleting them
       const tagNames = await this.#resolveTagIds(tagsToCleanup)
 
       tagsToCleanup.forEach((id, index) => {
+        const idStr = id.toString()
+
         // Remove from reference count hash
-        cleanupPipeline.hdel(refCountKey, id.toString())
-        // Remove from dictionary
+        cleanupPipeline.hdel(refCountKey, idStr)
+        // Remove from reverse dictionary
+        cleanupPipeline.hdel(reverseDictKey, idStr)
+        // Remove from forward dictionary
         if (tagNames[index]) {
           cleanupPipeline.hdel(dictionaryKey, tagNames[index])
         }
