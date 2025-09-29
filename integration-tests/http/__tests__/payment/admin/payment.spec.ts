@@ -218,7 +218,7 @@ medusaIntegrationTestRunner({
         const refundReason = (
           await api.post(
             `/admin/refund-reasons`,
-            { label: "test" },
+            { label: "test", code: "test" },
             adminHeaders
           )
         ).data.refund_reason
@@ -254,6 +254,7 @@ medusaIntegrationTestRunner({
                 refund_reason_id: refundReason.id,
                 refund_reason: expect.objectContaining({
                   label: "test",
+                  code: "test"
                 }),
               }),
             ],
@@ -274,7 +275,7 @@ medusaIntegrationTestRunner({
         const refundReason = (
           await api.post(
             `/admin/refund-reasons`,
-            { label: "test" },
+            { label: "test", code: "test" },
             adminHeaders
           )
         ).data.refund_reason
