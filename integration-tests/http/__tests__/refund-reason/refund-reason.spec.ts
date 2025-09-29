@@ -1,8 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../helpers/create-admin-user"
+import { adminHeaders, createAdminUser, } from "../../../helpers/create-admin-user"
 
 jest.setTimeout(30000)
 
@@ -77,6 +74,7 @@ medusaIntegrationTestRunner({
           "/admin/refund-reasons",
           {
             label: "reason test",
+            code: "reason_test",
             description: "test description",
           },
           adminHeaders
@@ -86,6 +84,7 @@ medusaIntegrationTestRunner({
         expect(response.data.refund_reason).toEqual(
           expect.objectContaining({
             label: "reason test",
+            code: "reason_test",
             description: "test description",
           })
         )
@@ -98,6 +97,7 @@ medusaIntegrationTestRunner({
           `/admin/refund-reasons/${refundReason1.id}`,
           {
             label: "reason test",
+            code: "reason_test",
             description: "test description",
           },
           adminHeaders
@@ -107,6 +107,7 @@ medusaIntegrationTestRunner({
         expect(response.data.refund_reason).toEqual(
           expect.objectContaining({
             label: "reason test",
+            code: "reason_test",
             description: "test description",
           })
         )
