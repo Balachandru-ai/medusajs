@@ -34,7 +34,7 @@ describe("LocalEventBusService", () => {
           data: { hi: "1234" },
         })
 
-        expect(eventEmitter.emit).toHaveBeenCalledTimes(2)
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(1)
         expect(eventEmitter.emit).toHaveBeenCalledWith("eventName", {
           data: { hi: "1234" },
           name: "eventName",
@@ -57,7 +57,7 @@ describe("LocalEventBusService", () => {
           },
         })
 
-        expect(eventEmitter.emit).toHaveBeenCalledTimes(2)
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(1)
         expect(eventEmitter.emit).toHaveBeenCalledWith("eventName", {
           data: { hi: "1234" },
           name: "eventName",
@@ -75,7 +75,7 @@ describe("LocalEventBusService", () => {
           }
         )
 
-        expect(eventEmitter.emit).toHaveBeenCalledTimes(4)
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(2)
         expect(eventEmitter.emit).toHaveBeenCalledWith("eventName", {
           data: { hi: "1234" },
           name: "eventName",
@@ -92,7 +92,7 @@ describe("LocalEventBusService", () => {
           { name: "event-2", data: { hi: "5678" } },
         ])
 
-        expect(eventEmitter.emit).toHaveBeenCalledTimes(4)
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(2)
         expect(eventEmitter.emit).toHaveBeenCalledWith("event-1", {
           data: { hi: "1234" },
           name: "event-1",
@@ -188,7 +188,7 @@ describe("LocalEventBusService", () => {
           { name: "event-1", data: { test: "1" } },
         ])
 
-        expect(eventEmitter.emit).toHaveBeenCalledTimes(2)
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(1)
         expect(eventEmitter.emit).toHaveBeenCalledWith("event-1", {
           data: { test: "1" },
           name: "event-1",

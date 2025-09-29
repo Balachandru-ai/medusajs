@@ -21,12 +21,62 @@ import {
 import { RemoteQuery } from "./remote-query"
 import { toRemoteQuery } from "./to-remote-query"
 
+function extractCacheOptions(option: string) {
+  return function extractKey(args: any[]) {
+    return args[1]?.cache?.[option]
+  }
+}
+
+function isCacheEnabled(args: any[]) {
+  const isEnabled = extractCacheOptions("enable")(args)
+  if (isEnabled === false) {
+    return false
+  }
+
+  return (
+    isEnabled === true ||
+    extractCacheOptions("key")(args) ||
+    extractCacheOptions("ttl")(args) ||
+    extractCacheOptions("tags")(args) ||
+    extractCacheOptions("autoInvalidate")(args) ||
+    extractCacheOptions("providers")(args)
+  )
+}
+
+const cacheDecoratorOptions = {
+  enable: isCacheEnabled,
+  key: async (args, cachingModule) => {
+    const key = extractCacheOptions("key")(args)
+    if (key) {
+      return key
+    }
+
+    const queryOptions = args[0]
+    const remoteJoinerOptions = args[1] ?? {}
+    const { initialData, cache, ...restOptions } = remoteJoinerOptions
+
+    const keyInput = {
+      queryOptions,
+      options: restOptions,
+    }
+    return await cachingModule.computeKey(keyInput)
+  },
+  ttl: extractCacheOptions("ttl"),
+  tags: extractCacheOptions("tags"),
+  autoInvalidate: extractCacheOptions("autoInvalidate"),
+  providers: extractCacheOptions("providers"),
+  container: function (this: Query) {
+    return this.container
+  },
+}
+
 /**
  * API wrapper around the remoteQuery
  */
 export class Query {
   #remoteQuery: RemoteQuery
   #indexModule: IIndexService
+  protected container: MedusaContainer
 
   /**
    * Method to wrap execution of the graph query for instrumentation
@@ -63,12 +113,15 @@ export class Query {
   constructor({
     remoteQuery,
     indexModule,
+    container,
   }: {
     remoteQuery: RemoteQuery
     indexModule: IIndexService
+    container: MedusaContainer
   }) {
     this.#remoteQuery = remoteQuery
     this.#indexModule = indexModule
+    this.container = container
   }
 
   #unwrapQueryConfig(
@@ -153,6 +206,7 @@ export class Query {
    * Graph function uses the remoteQuery under the hood and
    * returns a result set
    */
+  @Cached(cacheDecoratorOptions)
   async graph<const TEntry extends string>(
     queryOptions: RemoteQueryInput<TEntry>,
     options?: RemoteJoinerOptions
@@ -191,6 +245,7 @@ export class Query {
    * Index function uses the Index module to query and hydrates the data with query.graph
    * returns a result set
    */
+  @Cached(cacheDecoratorOptions)
   async index<const TEntry extends string>(
     queryOptions: RemoteQueryInput<TEntry> & {
       joinFilters?: RemoteQueryFilters<TEntry>
@@ -261,28 +316,6 @@ export class Query {
   }
 }
 
-function extractCacheOptions(option: string) {
-  return function extractKey(args: any[]) {
-    return args[1]?.cache?.[option]
-  }
-}
-
-function isCacheEnabled(args: any[]) {
-  const isEnabled = extractCacheOptions("enable")(args)
-  if (isEnabled === false) {
-    return false
-  }
-
-  return (
-    isEnabled === true ||
-    extractCacheOptions("key")(args) ||
-    extractCacheOptions("ttl")(args) ||
-    extractCacheOptions("tags")(args) ||
-    extractCacheOptions("autoInvalidate")(args) ||
-    extractCacheOptions("providers")(args)
-  )
-}
-
 /**
  * API wrapper around the remoteQuery with backward compatibility support
  * @param remoteQuery
@@ -296,67 +329,10 @@ export function createQuery({
   indexModule: IIndexService
   container: MedusaContainer
 }) {
-  Query.prototype.graph = Cached<Query, "graph">({
-    enable: isCacheEnabled,
-    key: async (args, cachingModule) => {
-      const key = extractCacheOptions("key")(args)
-      if (key) {
-        return key
-      }
-
-      const queryOptions = args[0]
-      const remoteJoinerOptions = args[1] ?? {}
-      const { initialData, cache, ...restOptions } = remoteJoinerOptions
-
-      const keyInput = {
-        queryOptions,
-        options: restOptions,
-      }
-      return await cachingModule.computeKey(keyInput)
-    },
-    ttl: extractCacheOptions("ttl"),
-    tags: extractCacheOptions("tags"),
-    autoInvalidate: extractCacheOptions("autoInvalidate"),
-    providers: extractCacheOptions("providers"),
-    container,
-  })(
-    Query.prototype,
-    "graph",
-    Object.getOwnPropertyDescriptor(Query.prototype, "graph")!
-  ).value
-
-  Query.prototype.index = Cached<Query, "index">({
-    enable: isCacheEnabled,
-    key: async (args, cachingModule) => {
-      const key = extractCacheOptions("key")(args)
-      if (key) {
-        return key
-      }
-
-      const queryOptions = args[0]
-      const remoteJoinerOptions = args[1] ?? {}
-      const { initialData, cache, ...restOptions } = remoteJoinerOptions
-
-      const keyInput = {
-        queryOptions,
-        options: restOptions,
-      }
-      return await cachingModule.computeKey(keyInput)
-    },
-    ttl: extractCacheOptions("ttl"),
-    tags: extractCacheOptions("tags"),
-    autoInvalidate: extractCacheOptions("autoInvalidate"),
-    providers: extractCacheOptions("providers"),
-    container,
-  })(
-    Query.prototype,
-    "index",
-    Object.getOwnPropertyDescriptor(Query.prototype, "index")!
-  ).value
-
   const query = new Query({
     remoteQuery,
     indexModule,
+    container,
   })
 
   function backwardCompatibleQuery(...args: any[]) {

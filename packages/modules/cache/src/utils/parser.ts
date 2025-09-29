@@ -99,11 +99,8 @@ export class CacheInvalidationParser {
   private detectEntityType(obj: any, suggestedType?: string): string | null {
     if (obj.id) {
       const idParts = obj.id.split("_")
-      if (idParts.length > 1) {
-        const idPrefix = idParts[0]
-        if (idPrefix && this.idPrefixToEntityName[idPrefix]) {
-          return this.idPrefixToEntityName[idPrefix]
-        }
+      if (idParts.length > 1 && this.idPrefixToEntityName[idParts[0]]) {
+        this.idPrefixToEntityName[idParts[0]]
       }
     }
 

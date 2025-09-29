@@ -1,9 +1,6 @@
 import { ModuleJoinerConfig } from "../modules-sdk"
 
-type Providers =
-  | string[]
-  | { id: string; ttl?: number }
-  | { id: string; ttl?: number }[]
+type Providers = string[] | { id: string; ttl?: number }[]
 
 export interface ICachingModuleService {
   /**

@@ -85,6 +85,7 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   private async groupOrEmitEvent<T = unknown>(eventData: Message<T>) {
     const { options, ...eventBody } = eventData
     const eventGroupId = eventBody.metadata?.eventGroupId
+    const hasStarSubscriber = this.eventEmitter_.listenerCount("*") > 0
 
     if (eventGroupId) {
       await this.groupEvent(eventGroupId, eventData)
@@ -94,7 +95,9 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
       delay(options_?.delay).then(() => {
         this.eventEmitter_.emit(eventData.name, eventBody)
-        this.eventEmitter_.emit("*", eventBody)
+        if (hasStarSubscriber) {
+          this.eventEmitter_.emit("*", eventBody)
+        }
       })
     }
   }
@@ -114,6 +117,7 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   async releaseGroupedEvents(eventGroupId: string) {
     let groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
     groupedEvents = JSON.parse(JSON.stringify(groupedEvents))
+    const hasStarSubscriber = this.eventEmitter_.listenerCount("*") > 0
 
     for (const event of groupedEvents) {
       const { options, ...eventBody } = event
@@ -123,7 +127,9 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
       delay(options_?.delay).then(() => {
         this.eventEmitter_.emit(event.name, eventBody)
-        this.eventEmitter_.emit("*", eventBody)
+        if (hasStarSubscriber) {
+          this.eventEmitter_.emit("*", eventBody)
+        }
       })
     }
 

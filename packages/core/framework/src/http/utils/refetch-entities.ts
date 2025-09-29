@@ -2,6 +2,7 @@ import type {
   GraphResultSet,
   MedusaContainer,
   RemoteJoinerOptions,
+  RemoteQueryEntryPoints,
   RemoteQueryFunctionReturnPagination,
 } from "../../types"
 import { ContainerRegistrationKeys, isString } from "../../utils"
@@ -41,11 +42,12 @@ export const refetchEntities = async <TEntry extends string>(
     context: context,
   }
 
-  return (await query.graph(graphOptions, options)) as Omit<
-    GraphResultSet<TEntry>,
-    "metadata"
-  > & {
-    metadata: RemoteQueryFunctionReturnPagination
+  const result = await query.graph(graphOptions, options)
+  return {
+    data: result.data as TEntry extends keyof RemoteQueryEntryPoints
+      ? RemoteQueryEntryPoints[TEntry][]
+      : any[],
+    metadata: result.metadata ?? ({} as RemoteQueryFunctionReturnPagination),
   }
 }
 

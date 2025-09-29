@@ -5,13 +5,13 @@ import type {
   Logger,
 } from "@medusajs/framework/types"
 import { GraphQLUtils, MedusaError } from "@medusajs/framework/utils"
-import { CachingDefaultProvider, ModuleInjectedDependencies } from "@types"
+import { CachingDefaultProvider, InjectedDependencies } from "@types"
 import CacheProviderService from "./cache-provider"
 
 const ONE_HOUR_IN_SECOND = 60 * 60
 
 export default class CachingModuleService implements ICachingModuleService {
-  protected container: ModuleInjectedDependencies
+  protected container: InjectedDependencies
   protected providerService: CacheProviderService
   protected strategyCtr: new (...args: any[]) => ICachingStrategy
   protected strategy: ICachingStrategy
@@ -23,7 +23,7 @@ export default class CachingModuleService implements ICachingModuleService {
   protected ttl: number
 
   constructor(
-    container: ModuleInjectedDependencies,
+    container: InjectedDependencies,
     protected readonly moduleDeclaration:
       | { options: { ttl?: number } }
       | { ttl?: number }
@@ -92,10 +92,7 @@ export default class CachingModuleService implements ICachingModuleService {
   }
 
   protected static normalizeProviders(
-    providers:
-      | string[]
-      | { id: string; ttl?: number }
-      | { id: string; ttl?: number }[]
+    providers: string[] | { id: string; ttl?: number }[]
   ): { id: string; ttl?: number }[] {
     const providers_ = Array.isArray(providers) ? providers : [providers]
     return providers_.map((provider) => {
@@ -198,13 +195,7 @@ export default class CachingModuleService implements ICachingModuleService {
     data: object
     tags?: string[]
     ttl?: number
-    providers?:
-      | string[]
-      | {
-          id: string
-          ttl?: number
-        }
-      | { id: string; ttl?: number }[]
+    providers?: string[] | { id: string; ttl?: number }[]
     options?: {
       autoInvalidate?: boolean
     }

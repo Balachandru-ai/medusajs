@@ -11,18 +11,18 @@ import {
   upperCaseFirst,
 } from "@medusajs/framework/utils"
 import { type CachingModuleService } from "@services"
-import type { ModuleInjectedDependencies } from "@types"
+import type { InjectedDependencies } from "@types"
 import stringify from "fast-json-stable-stringify"
 import { CacheInvalidationParser, EntityReference } from "./parser"
 
 export class DefaultCacheStrategy implements ICachingStrategy {
   #cacheInvalidationParser: CacheInvalidationParser
   #cacheModule: ICachingModuleService
-  #container: ModuleInjectedDependencies
+  #container: InjectedDependencies
   #hasher: (data: string) => string
 
   constructor(
-    container: ModuleInjectedDependencies,
+    container: InjectedDependencies,
     cacheModule: CachingModuleService
   ) {
     this.#cacheModule = cacheModule
@@ -62,45 +62,24 @@ export class DefaultCacheStrategy implements ICachingStrategy {
           | { id: string | string[] }
           | { id: string | string[] }[]
 
-        // We expect event data to be either { id: string | string[] } or { id: string | string[] }[]
-        if (Array.isArray(eventData)) {
-          for (const item of eventData) {
-            const ids = Array.isArray(item.id) ? item.id : [item.id]
-            const tags: string[] = []
-            for (const id of ids) {
-              const entityReference: EntityReference = {
-                type: upperCaseFirst(toCamelCase(entityType)),
-                id,
-              }
+        const normalizedEventData = Array.isArray(eventData)
+          ? eventData
+          : [eventData]
 
-              const tags_ = await this.computeTags(item, {
-                entities: [entityReference],
-                operation,
-              })
-              tags.push(...tags_)
-            }
+        const tags: string[] = []
+        for (const item of normalizedEventData) {
+          const ids = Array.isArray(item.id) ? item.id : [item.id]
 
-            await this.#cacheModule.clear({
-              tags,
-              options: { autoInvalidate: true },
-            })
-          }
-        } else {
-          const ids = Array.isArray(eventData.id)
-            ? eventData.id
-            : [eventData.id]
-          const tags: string[] = []
           for (const id of ids) {
             const entityReference: EntityReference = {
               type: upperCaseFirst(toCamelCase(entityType)),
               id,
             }
 
-            const tags_ = await this.computeTags(eventData, {
+            const tags_ = await this.computeTags(item, {
               entities: [entityReference],
               operation,
             })
-
             tags.push(...tags_)
           }
 
@@ -109,6 +88,11 @@ export class DefaultCacheStrategy implements ICachingStrategy {
             options: { autoInvalidate: true },
           })
         }
+
+        await this.#cacheModule.clear({
+          tags,
+          options: { autoInvalidate: true },
+        })
       }
     })
   }
