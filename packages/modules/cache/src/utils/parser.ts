@@ -1,4 +1,5 @@
 import { ModuleJoinerConfig } from "@medusajs/framework/types"
+import { isObject } from "@medusajs/framework/utils"
 import {
   GraphQLObjectType,
   GraphQLSchema,
@@ -87,7 +88,7 @@ export class CacheInvalidationParser {
             )
           )
         })
-      } else if (value && typeof value === "object") {
+      } else if (isObject(value)) {
         entities.push(
           ...this.parseObjectForEntities(
             value,
@@ -108,7 +109,7 @@ export class CacheInvalidationParser {
     if (obj.id) {
       const idParts = obj.id.split("_")
       if (idParts.length > 1 && this.idPrefixToEntityName[idParts[0]]) {
-        this.idPrefixToEntityName[idParts[0]]
+        return this.idPrefixToEntityName[idParts[0]]
       }
     }
 
