@@ -855,7 +855,7 @@ export default class PaymentModuleService
         amount: data.amount,
         created_by: data.created_by,
         note: data.note,
-        refund_reason_id: data.refund_reason_id || null,
+        refund_reason_id: data.refund_reason_id,
       },
       sharedContext
     )

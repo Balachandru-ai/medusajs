@@ -63,8 +63,6 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
         value: paymentAmount.toFixed(currency.decimal_digits),
         float: paymentAmount,
       },
-      note: "",
-      refund_reason_id: "",
     },
     resolver: zodResolver(CreateRefundSchema),
   })
