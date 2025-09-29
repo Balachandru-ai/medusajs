@@ -202,12 +202,10 @@ export class CacheInvalidationParser {
       }
       processedEntities.add(entityKey)
 
-      // Get related entities for this entity type
       const relatedEntities = entities.filter(
         (e) => e.type !== entity.type || e.id !== entity.id
       )
 
-      // Build cache keys that might be affected
       const affectedKeys = this.buildAffectedCacheKeys(entity, operation)
 
       events.push({
@@ -230,10 +228,10 @@ export class CacheInvalidationParser {
   ): string[] {
     const keys = new Set<string>()
 
-    // Add entity-specific key
     keys.add(`${entity.type}:${entity.id}`)
 
-    // Add list key only if entity was found in an array context
+    // Add list key only if entity was found in an array context or if an event of type created or
+    // deleted is triggered
     if (entity.isInArray || ["created", "deleted"].includes(operation)) {
       keys.add(`${entity.type}:list:*`)
     }
