@@ -46,6 +46,10 @@ export class RedisCachingProvider {
     return `${this.keyNamePrefix}tag:next_id`
   }
 
+  #getTagRefCountKey(): string {
+    return `${this.keyNamePrefix}tag:refs`
+  }
+
   async #internTags(tags: string[]): Promise<number[]> {
     const pipeline = this.redisClient.pipeline()
     const dictionaryKey = this.#getTagDictionaryKey()
@@ -87,6 +91,14 @@ export class RedisCachingProvider {
       await newTagPipeline.exec()
     }
 
+    // Increment reference count for all tags (existing and new)
+    const refCountKey = this.#getTagRefCountKey()
+    const refPipeline = this.redisClient.pipeline()
+    tagIds.forEach(id => {
+      refPipeline.hincrby(refCountKey, id.toString(), 1)
+    })
+    await refPipeline.exec()
+
     return tagIds
   }
 
@@ -104,6 +116,48 @@ export class RedisCachingProvider {
     })
 
     return tagIds.map((id) => idToTag[id]).filter(Boolean)
+  }
+
+  async #decrementTagRefs(tagIds: number[]): Promise<void> {
+    if (tagIds.length === 0) return
+
+    const refCountKey = this.#getTagRefCountKey()
+    const dictionaryKey = this.#getTagDictionaryKey()
+
+    // Decrement reference counts and collect tags with zero refs
+    const pipeline = this.redisClient.pipeline()
+    tagIds.forEach(id => {
+      pipeline.hincrby(refCountKey, id.toString(), -1)
+    })
+
+    const results = await pipeline.exec()
+    const tagsToCleanup: number[] = []
+
+    // Find tags that now have zero references
+    results?.forEach((result, index) => {
+      if (result && result[1] === 0) {
+        tagsToCleanup.push(tagIds[index])
+      }
+    })
+
+    // Clean up tags with zero references
+    if (tagsToCleanup.length > 0) {
+      const cleanupPipeline = this.redisClient.pipeline()
+
+      // Get tag names before deleting them
+      const tagNames = await this.#resolveTagIds(tagsToCleanup)
+
+      tagsToCleanup.forEach((id, index) => {
+        // Remove from reference count hash
+        cleanupPipeline.hdel(refCountKey, id.toString())
+        // Remove from dictionary
+        if (tagNames[index]) {
+          cleanupPipeline.hdel(dictionaryKey, tagNames[index])
+        }
+      })
+
+      await cleanupPipeline.exec()
+    }
   }
 
   async #compressData(data: string): Promise<Buffer> {
@@ -336,6 +390,8 @@ export class RedisCachingProvider {
 
           if (tagIds.length) {
             const entryTags = await this.#resolveTagIds(tagIds)
+
+            // Clean up tag indexes
             const tagCleanupPipeline = this.redisClient.pipeline()
             entryTags.forEach((tag) => {
               const tagKey = this.#getTagKey(tag)
@@ -343,6 +399,9 @@ export class RedisCachingProvider {
             })
             tagCleanupPipeline.unlink(tagsKey)
             await tagCleanupPipeline.exec()
+
+            // Decrement reference counts and cleanup unused tags
+            await this.#decrementTagRefs(tagIds)
           }
         } catch (e) {
           // noop - corrupted tag data, skip cleanup
@@ -416,6 +475,9 @@ export class RedisCachingProvider {
                       tagCleanupPipeline.srem(tagKey, key)
                     })
                     tagCleanupPipeline.unlink(tagsKey)
+
+                    // Decrement reference counts and cleanup unused tags
+                    await this.#decrementTagRefs(tagIds)
                   }
                 } catch (e) {
                   // noop
@@ -526,6 +588,9 @@ export class RedisCachingProvider {
                         tagCleanupPipeline.srem(tagKey, key)
                       })
                       tagCleanupPipeline.unlink(tagsKey) // Delete the tags key
+
+                      // Decrement reference counts and cleanup unused tags
+                      await this.#decrementTagRefs(tagIds)
                     }
                   } catch (e) {
                     // noop
