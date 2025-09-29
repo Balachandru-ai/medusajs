@@ -89,14 +89,15 @@ export class RedisCachingProvider {
 
       const newTagPipeline = this.redisClient.pipeline()
       newTags.forEach((tag, index) => {
+        const hashedTag = this.hasher(tag)
         const newId = startId - newTags.length + index + 1
 
         // Store in both forward and reverse dictionaries
-        newTagPipeline.hset(dictionaryKey, tag, newId.toString())
-        newTagPipeline.hset(reverseDictKey, newId.toString(), tag)
+        newTagPipeline.hset(dictionaryKey, hashedTag, newId.toString())
+        newTagPipeline.hset(reverseDictKey, newId.toString(), hashedTag)
 
         // Update the tagIds array
-        const originalIndex = tags.indexOf(tag)
+        const originalIndex = tags.indexOf(hashedTag)
         tagIds[originalIndex] = newId
       })
 
