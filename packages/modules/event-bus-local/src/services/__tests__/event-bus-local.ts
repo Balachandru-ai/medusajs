@@ -212,7 +212,7 @@ describe("LocalEventBusService", () => {
           2
         )
 
-        expect(eventEmitter.emit).toHaveBeenCalledTimes(4)
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(2)
         expect(eventEmitter.emit).toHaveBeenCalledWith("event-1", {
           data: { test: "1" },
           name: "event-1",

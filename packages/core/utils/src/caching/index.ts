@@ -1,6 +1,7 @@
-import { ICachingModuleService, MedusaContainer } from "@medusajs/types"
+import { ICachingModuleService, Logger, MedusaContainer } from "@medusajs/types"
 import { Modules } from "../modules-sdk"
 import { FeatureFlag } from "../feature-flags"
+import { ContainerRegistrationKeys } from "../common"
 
 /**
  * This function is used to cache the result of a function call.
@@ -53,14 +54,24 @@ export async function useCache<T>(
 
   const result = await cb()
 
-  await cachingModule.set({
-    key,
-    tags: options.tags,
-    ttl: options.ttl,
-    data: result as object,
-    options: { autoInvalidate: options.autoInvalidate },
-    providers: options.providers,
-  })
+  void cachingModule
+    .set({
+      key,
+      tags: options.tags,
+      ttl: options.ttl,
+      data: result as object,
+      options: { autoInvalidate: options.autoInvalidate },
+      providers: options.providers,
+    })
+    .catch((e) => {
+      const logger =
+        options.container.resolve<Logger>(ContainerRegistrationKeys.LOGGER, {
+          allowUnregistered: true,
+        }) ?? (console as unknown as Logger)
+      logger.error(
+        `An error occured while setting cache for key: ${key}\n${e.message}\n${e.stack}`
+      )
+    })
 
   return result
 }
