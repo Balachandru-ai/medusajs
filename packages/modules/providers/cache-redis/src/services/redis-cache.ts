@@ -76,7 +76,8 @@ export class RedisCachingProvider {
       if (result && result[1]) {
         tagIds[i] = parseInt(result[1] as string)
       } else {
-        newTags.push(tags[i])
+        const hashedTag = this.hasher(tags[i])
+        newTags.push(hashedTag)
         tagIds[i] = -1 // Placeholder for new tags
       }
     }
