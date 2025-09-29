@@ -8,6 +8,7 @@
 "@medusajs/event-bus-local": patch
 "@medusajs/event-bus-redis": patch
 "@medusajs/caching-redis": patch
+"@medusajs/core-flows": patch
 ---
 
 Feat(): distributed caching
