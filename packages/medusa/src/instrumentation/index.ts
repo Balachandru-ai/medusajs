@@ -272,7 +272,7 @@ export function instrumentCache() {
 
   const CacheTracer = new Tracer("@medusajs/caching", "2.0.0")
   const cacheModule_ = CacheModule as any
-  cacheModule_.traceGet = async function (cacheGetFn, key, tags) {
+  cacheModule_.service.traceGet = async function (cacheGetFn, key, tags) {
     return await CacheTracer.trace(`cache.get`, async (span) => {
       span.setAttributes({
         "cache.key": key,
@@ -293,7 +293,12 @@ export function instrumentCache() {
     })
   }
 
-  cacheModule_.traceSet = async function (cacheSetFn, key, tags, options = {}) {
+  cacheModule_.service.traceSet = async function (
+    cacheSetFn,
+    key,
+    tags,
+    options = {}
+  ) {
     return await CacheTracer.trace(`cache.set`, async (span) => {
       span.setAttributes({
         "cache.key": key,
@@ -315,7 +320,7 @@ export function instrumentCache() {
     })
   }
 
-  cacheModule_.traceClear = async function (
+  cacheModule_.service.traceClear = async function (
     cacheClearFn,
     key,
     tags,
