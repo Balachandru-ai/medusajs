@@ -1,30 +1,29 @@
-import { ModuleJoinerConfig } from "../modules-sdk"
+import { IModuleService, ModuleJoinerConfig } from "../modules-sdk"
 
 type Providers = string[] | { id: string; ttl?: number }[]
 
-export interface IStaticCacheModuleService {
-  traceGet?: (
-    cacheGetFn: () => Promise<any>,
-    key: string,
-    tags: string[]
-  ) => Promise<any>
-  traceSet?: (
-    cacheSetFn: () => Promise<any>,
-    key: string,
-    tags: string[],
-    options: { autoInvalidate?: boolean }
-  ) => Promise<any>
-  traceClear?: (
-    cacheClearFn: () => Promise<any>,
-    key: string,
-    tags: string[],
-    options: { autoInvalidate?: boolean }
-  ) => Promise<any>
+export interface ICachingModuleService extends IModuleService {
+  // Static trace methods
+  // traceGet: (
+  //   cacheGetFn: () => Promise<any>,
+  //   key: string,
+  //   tags: string[]
+  // ) => Promise<any>
 
-  new (...args: any[]): ICachingModuleService
-}
+  // traceSet?: (
+  //   cacheSetFn: () => Promise<any>,
+  //   key: string,
+  //   tags: string[],
+  //   options: { autoInvalidate?: boolean }
+  // ) => Promise<any>
 
-export interface ICachingModuleService {
+  // traceClear?: (
+  //   cacheClearFn: () => Promise<any>,
+  //   key: string,
+  //   tags: string[],
+  //   options: { autoInvalidate?: boolean }
+  // ) => Promise<any>
+
   /**
    * This method retrieves data from the cache.
    *

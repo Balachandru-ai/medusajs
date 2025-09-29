@@ -27,12 +27,14 @@ export default class CachingModuleService implements ICachingModuleService {
     key: string,
     tags: string[]
   ) => Promise<any>
+
   static traceSet?: (
     cacheSetFn: () => Promise<any>,
     key: string,
     tags: string[],
     options: { autoInvalidate?: boolean }
   ) => Promise<any>
+
   static traceClear?: (
     cacheClearFn: () => Promise<any>,
     key: string,
