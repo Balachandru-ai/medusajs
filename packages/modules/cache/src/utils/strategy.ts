@@ -46,7 +46,7 @@ export class DefaultCacheStrategy implements ICachingStrategy {
 
     const eventBus = this.#container[Modules.EVENT_BUS]
 
-    eventBus.subscribe("*", async (data: Event) => {
+    const handleEvent = async (data: Event) => {
       try {
         // We dont have to await anything here and the rest can be done in the background
         return
@@ -84,12 +84,15 @@ export class DefaultCacheStrategy implements ICachingStrategy {
           }
         }
 
-        await this.#cacheModule.clear({
+        void this.#cacheModule.clear({
           tags,
           options: { autoInvalidate: true },
         })
       }
-    })
+    }
+
+    eventBus.subscribe("*", handleEvent)
+    eventBus.addInterceptor?.(handleEvent)
   }
 
   async computeKey(input: object) {
