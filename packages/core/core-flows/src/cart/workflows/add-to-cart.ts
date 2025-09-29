@@ -230,7 +230,7 @@ export const addToCartWorkflow = createWorkflow(
             (v) => v.id === item.variant_id
           )!
           if ((item.variant_id && !variant) || // variant specified but doesn't exist
-            (variant && variant.product.status !== ProductStatus.PUBLISHED) // variant exists but product is not published
+            (variant?.product && variant.product.status !== ProductStatus.PUBLISHED) // variant exists but product is not published
           ) {
             throw new MedusaError(
               MedusaError.Types.INVALID_DATA,
