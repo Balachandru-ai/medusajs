@@ -2136,7 +2136,7 @@ export interface IProductModuleService extends IModuleService {
    *
    * @param {DataTransferItemsFilter} data - Image variant pairs.
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
-   * @returns {Promise<{ id: string } | { id: string }[]>} The IDs of the image variant pairs.
+   * @returns {Promise<{ id: string }[]>} The IDs of the image variant pairs.
    *
    * @example
    * await productModuleService.addImageToVariant([
