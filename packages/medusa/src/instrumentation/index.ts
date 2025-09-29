@@ -271,7 +271,28 @@ export function instrumentCache() {
   }
 
   const CacheTracer = new Tracer("@medusajs/caching", "2.0.0")
-  const cacheModule_ = CacheModule as any
+  const cacheModule_ = CacheModule as unknown as {
+    service: ICachingModuleService & {
+      traceGet: (
+        cacheGetFn: () => Promise<any>,
+        key: string,
+        tags: string[]
+      ) => Promise<any>
+      traceSet: (
+        cacheSetFn: () => Promise<any>,
+        key: string,
+        tags: string[],
+        options: { autoInvalidate?: boolean }
+      ) => Promise<any>
+      traceClear: (
+        cacheClearFn: () => Promise<any>,
+        key: string,
+        tags: string[],
+        options: { autoInvalidate?: boolean }
+      ) => Promise<any>
+    }
+  }
+
   cacheModule_.service.traceGet = async function (cacheGetFn, key, tags) {
     return await CacheTracer.trace(`cache.get`, async (span) => {
       span.setAttributes({
