@@ -235,6 +235,12 @@ export interface ProductVariantDTO {
    */
   options: ProductOptionValueDTO[]
   /**
+   * The associated product images.
+   *
+   * @expandable
+   */
+  images: ProductImageDTO[]
+  /**
    * Holds custom data in key-value pairs.
    */
   metadata: Record<string, unknown> | null

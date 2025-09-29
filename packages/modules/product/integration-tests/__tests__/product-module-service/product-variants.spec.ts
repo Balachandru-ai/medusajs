@@ -6,21 +6,14 @@ import {
   ProductVariantDTO,
   UpdateProductVariantDTO,
 } from "@medusajs/framework/types"
-import {
-  Modules,
-  ProductStatus,
-} from "@medusajs/framework/utils"
-
-import {
-  moduleIntegrationTestRunner,
-} from "@medusajs/test-utils"
+import { Modules, ProductStatus } from "@medusajs/framework/utils"
+import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(30000)
 
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
   testSuite: ({ service }) => {
-
     describe("ProductModuleService product variants", () => {
       let variantOne: ProductVariantDTO
       let variantTwo: ProductVariantDTO
@@ -78,6 +71,75 @@ moduleIntegrationTestRunner<IProductModuleService>({
               id: variantOne.id,
             }),
           ])
+        })
+
+        it("should retreive variants with images", async () => {
+          const productOneWithImages = await service.createProducts({
+            id: "product-with-images-1",
+            title: "product with image 1",
+            status: ProductStatus.PUBLISHED,
+            options: [
+              {
+                title: "size",
+                values: ["large", "small"],
+              },
+              {
+                title: "color",
+                values: ["red", "blue"],
+              },
+            ],
+            images: [
+              {
+                url: "https://via.placeholder.com/150",
+              },
+              {
+                url: "https://via.placeholder.com/250",
+              },
+              {
+                url: "https://via.placeholder.com/350",
+              },
+            ],
+          } as CreateProductDTO)
+
+          const variantOneWithImages = await service.createProductVariants({
+            id: "test-1-with-images",
+            title: "variant with image 1",
+            product_id: productOneWithImages.id,
+            options: { size: "large", color: "red" },
+          } as CreateProductVariantDTO)
+
+          await service.addImageToVariant([
+            {
+              image_id: productOneWithImages.images[0].id,
+              variant_id: variantOneWithImages.id,
+            },
+          ])
+
+          const results = await service.listProductVariants(
+            {
+              id: variantOneWithImages.id,
+            },
+            {
+              relations: ["images"],
+            }
+          )
+
+          expect(results[0]).toEqual(
+            expect.objectContaining({
+              id: variantOneWithImages.id,
+              images: expect.arrayContaining([
+                expect.objectContaining({
+                  url: "https://via.placeholder.com/150",
+                }),
+                expect.objectContaining({
+                  url: "https://via.placeholder.com/250",
+                }),
+                expect.objectContaining({
+                  url: "https://via.placeholder.com/350",
+                }),
+              ]),
+            })
+          )
         })
 
         it("should return variants and count based on the options and filter parameter", async () => {
@@ -198,7 +260,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             variantOne.id
           )
           expect(productVariant.title).toEqual("new test")
-
         })
 
         it("should do a partial update on the options of a variant successfully", async () => {
@@ -266,7 +327,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
               ]),
             })
           )
-
         })
 
         it("should correctly associate variants with own product options", async () => {

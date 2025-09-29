@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import { Product, ProductOptionValue } from "@models"
+import { Product, ProductImage, ProductOptionValue } from "@models"
+import ProductVariantProductImage from "./product-variant-product-image"
 
 const ProductVariant = model
   .define("ProductVariant", {
@@ -27,6 +28,10 @@ const ProductVariant = model
       })
       .searchable()
       .nullable(),
+    images: model.manyToMany(() => ProductImage, {
+      mappedBy: "variants",
+      pivotEntity: () => ProductVariantProductImage,
+    }),
     options: model.manyToMany(() => ProductOptionValue, {
       pivotTable: "product_variant_option",
       mappedBy: "variants",

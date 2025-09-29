@@ -20,6 +20,7 @@ import {
   ProductTag,
   ProductType,
   ProductVariant,
+  ProductVariantProductImage,
 } from "@models"
 import { ProductCategoryService } from "@services"
 
@@ -71,6 +72,7 @@ type InjectedDependencies = {
   productTypeService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionValueService: ModulesSdkTypes.IMedusaInternalService<any>
+  productVariantProductImageService: ModulesSdkTypes.IMedusaInternalService<any>
   [Modules.EVENT_BUS]?: IEventBusModuleService
 }
 
@@ -143,6 +145,9 @@ export default class ProductModuleService
   protected readonly productOptionValueService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ProductOptionValue>
   >
+  protected readonly productVariantProductImageService_: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof ProductVariantProductImage>
+  >
   protected readonly eventBusModuleService_?: IEventBusModuleService
 
   constructor(
@@ -158,6 +163,7 @@ export default class ProductModuleService
       productTypeService,
       productOptionService,
       productOptionValueService,
+      productVariantProductImageService,
       [Modules.EVENT_BUS]: eventBusModuleService,
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
@@ -177,6 +183,7 @@ export default class ProductModuleService
     this.productTypeService_ = productTypeService
     this.productOptionService_ = productOptionService
     this.productOptionValueService_ = productOptionValueService
+    this.productVariantProductImageService_ = productVariantProductImageService
     this.eventBusModuleService_ = eventBusModuleService
   }
 
@@ -2187,5 +2194,146 @@ export default class ProductModuleService
         }
       }
     }
+  }
+
+  /**
+   * Helper method to combine variant images with product images and deduplicate
+   */
+  private combineVariantImages(
+    variant: InferEntityType<typeof ProductVariant>
+  ) {
+    const imageMap = new Map()
+
+    const productImages = variant.product?.images || []
+    const variantImages = variant.images || []
+
+    /**
+     * TODO: we need to filter out the images that are already assigned to the other variants.
+     *
+     * on trick would be to filter out all images that have any variants, and then only add the current variant pictures
+     */
+    for (const img of [...productImages, ...variantImages]) {
+      imageMap.set(img.id, img)
+    }
+
+    const uniqueImages = Array.from(imageMap.values())
+
+    return {
+      ...variant,
+      images: uniqueImages as any,
+    }
+  }
+
+  @InjectManager()
+  // @ts-ignore
+  async listProductVariants(
+    filters?: any,
+    config?: FindConfig<any>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<any[]> {
+    const shouldLoadImages = config?.relations?.includes("images")
+
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadImages) {
+      relations.push("product.images")
+    }
+
+    const variants = await this.productVariantService_.list(
+      filters,
+      {
+        ...config,
+        relations,
+      },
+      sharedContext
+    )
+
+    // Combine variant images with product images if images were loaded
+    const variantsWithImages = shouldLoadImages
+      ? variants.map((variant) => this.combineVariantImages(variant)) // TODO solve cyclycal serialization
+      : variants
+
+    return this.baseRepository_.serialize(variantsWithImages)
+  }
+
+  @InjectManager()
+  // @ts-ignore
+  async retrieveProductVariant(
+    id: string,
+    config?: FindConfig<any>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<any> {
+    const shouldLoadImages = config?.relations?.includes("images")
+
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadImages) {
+      relations.push("images", "product", "product.images")
+    }
+
+    const variant = await this.productVariantService_.retrieve(
+      id,
+      {
+        ...config,
+        relations,
+      },
+      sharedContext
+    )
+
+    // Combine variant images with product images if images were loaded
+    const variantWithImages = shouldLoadImages
+      ? this.combineVariantImages(variant)
+      : variant
+
+    return this.baseRepository_.serialize(variantWithImages)
+  }
+
+  @InjectManager()
+  async addImageToVariant(
+    data: { image_id: string; variant_id: string }[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string }[]> {
+    const productVariantProductImage = await this.addImageToVariant_(
+      data,
+      sharedContext
+    )
+
+    return productVariantProductImage as { id: string }[]
+  }
+
+  @InjectTransactionManager()
+  protected async addImageToVariant_(
+    data: { image_id: string; variant_id: string }[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    const productVariantProductImage =
+      await this.productVariantProductImageService_.create(data, sharedContext)
+
+    return (
+      productVariantProductImage as unknown as InferEntityType<
+        typeof ProductVariantProductImage
+      >[]
+    ).map((vi) => ({ id: vi.id }))
+  }
+
+  @InjectManager()
+  async removeImageFromVariant(
+    data: { image_id: string; variant_id: string }[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.removeImageFromVariant_(data, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async removeImageFromVariant_(
+    data: { image_id: string; variant_id: string }[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    const pairs = Array.isArray(data) ? data : [data]
+    const productVariantProductImages =
+      await this.productVariantProductImageService_.list(pairs)
+
+    await this.productVariantProductImageService_.delete(
+      productVariantProductImages.map((p) => p.id as string),
+      sharedContext
+    )
   }
 }
