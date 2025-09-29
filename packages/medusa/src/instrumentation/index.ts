@@ -13,7 +13,7 @@ import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node"
 import type { SpanExporter } from "@opentelemetry/sdk-trace-node"
 import { snakeCase } from "lodash"
 import CacheModule from "../modules/caching"
-import { IStaticCacheModuleService } from "@medusajs/framework/types"
+import { ICachingModuleService } from "@medusajs/framework/types"
 
 const EXCLUDED_RESOURCES = [".vite", "virtual:"]
 
@@ -271,7 +271,7 @@ export function instrumentCache() {
   }
 
   const CacheTracer = new Tracer("@medusajs/caching", "2.0.0")
-  const cacheModule_ = CacheModule as unknown as IStaticCacheModuleService
+  const cacheModule_ = CacheModule as any
   cacheModule_.traceGet = async function (cacheGetFn, key, tags) {
     return await CacheTracer.trace(`cache.get`, async (span) => {
       span.setAttributes({
