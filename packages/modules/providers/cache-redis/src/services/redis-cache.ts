@@ -38,6 +38,74 @@ export class RedisCachingProvider {
     return `${this.keyNamePrefix}tags:${key}`
   }
 
+  #getTagDictionaryKey(): string {
+    return `${this.keyNamePrefix}tag:dictionary`
+  }
+
+  #getTagNextIdKey(): string {
+    return `${this.keyNamePrefix}tag:next_id`
+  }
+
+  async #internTags(tags: string[]): Promise<number[]> {
+    const pipeline = this.redisClient.pipeline()
+    const dictionaryKey = this.#getTagDictionaryKey()
+
+    // Get existing tag IDs
+    tags.forEach((tag) => {
+      pipeline.hget(dictionaryKey, tag)
+    })
+
+    const results = await pipeline.exec()
+    const tagIds: number[] = []
+    const newTags: string[] = []
+
+    for (let i = 0; i < tags.length; i++) {
+      const result = results?.[i]
+      if (result && result[1]) {
+        tagIds[i] = parseInt(result[1] as string)
+      } else {
+        newTags.push(tags[i])
+        tagIds[i] = -1 // Placeholder for new tags
+      }
+    }
+
+    // Create IDs for new tags
+    if (newTags.length) {
+      const nextIdKey = this.#getTagNextIdKey()
+      const startId = await this.redisClient.incrby(nextIdKey, newTags.length)
+
+      const newTagPipeline = this.redisClient.pipeline()
+      newTags.forEach((tag, index) => {
+        const newId = startId - newTags.length + index + 1
+        newTagPipeline.hset(dictionaryKey, tag, newId.toString())
+
+        // Update the tagIds array
+        const originalIndex = tags.indexOf(tag)
+        tagIds[originalIndex] = newId
+      })
+
+      await newTagPipeline.exec()
+    }
+
+    return tagIds
+  }
+
+  async #resolveTagIds(tagIds: number[]): Promise<string[]> {
+    if (tagIds.length === 0) return []
+
+    const dictionaryKey = this.#getTagDictionaryKey()
+
+    // We need to reverse lookup: get all dictionary entries and find matches
+    const allTags = await this.redisClient.hgetall(dictionaryKey)
+    const idToTag: Record<number, string> = {}
+
+    Object.entries(allTags).forEach(([tag, id]) => {
+      idToTag[parseInt(id)] = tag
+    })
+
+    return tagIds.map((id) => idToTag[id]).filter(Boolean)
+  }
+
   async #compressData(data: string): Promise<Buffer> {
     if (data.length <= this.compressionThreshold) {
       const buffer = Buffer.from(data, "utf8")
@@ -197,22 +265,27 @@ export class RedisCachingProvider {
       }
     }
 
-    // Store tags in a separate key for inverted index lookup
+    // Store tag IDs in a separate key for inverted index lookup (much more space efficient)
     if (tags && tags.length) {
+      const tagIds = await this.#internTags(tags)
       const tagsKey = this.#getTagsKey(key)
-      const tagsJson = JSON.stringify(tags)
-      const finalTagsData = await this.#compressData(tagsJson)
+
+      // Store as binary array of 32-bit integers instead of JSON strings
+      const buffer = Buffer.alloc(tagIds.length * 4)
+      tagIds.forEach((id, index) => {
+        buffer.writeUInt32LE(id, index * 4)
+      })
 
       if (effectiveTTL) {
         await this.redisClient.set(
           tagsKey,
-          finalTagsData,
+          buffer,
           "EX",
           effectiveTTL + 60,
           "NX"
         ) // +1 minute buffer
       } else {
-        await this.redisClient.setnx(tagsKey, finalTagsData)
+        await this.redisClient.setnx(tagsKey, buffer)
       }
     }
 
@@ -255,17 +328,19 @@ export class RedisCachingProvider {
 
       if (tagsBuffer) {
         try {
-          const finalTagsData = await this.#decompressData(tagsBuffer)
-          const entryTags: string[] = JSON.parse(finalTagsData)
+          // Binary format: array of 32-bit integers
+          const tagIds: number[] = []
+          for (let i = 0; i < tagsBuffer.length; i += 4) {
+            tagIds.push(tagsBuffer.readUInt32LE(i))
+          }
 
-          // Remove this key from all its tag sets
-          if (entryTags.length) {
+          if (tagIds.length) {
+            const entryTags = await this.#resolveTagIds(tagIds)
             const tagCleanupPipeline = this.redisClient.pipeline()
             entryTags.forEach((tag) => {
               const tagKey = this.#getTagKey(tag)
               tagCleanupPipeline.srem(tagKey, keyName)
             })
-            // Also delete the tags key
             tagCleanupPipeline.unlink(tagsKey)
             await tagCleanupPipeline.exec()
           }
@@ -328,10 +403,14 @@ export class RedisCachingProvider {
             async ({ key, tagsKey, tagsData }) => {
               if (tagsData) {
                 try {
-                  const finalTagsData = await this.#decompressData(tagsData)
-                  const entryTags: string[] = JSON.parse(finalTagsData)
+                  // Binary format: array of 32-bit integers
+                  const tagIds: number[] = []
+                  for (let i = 0; i < tagsData.length; i += 4) {
+                    tagIds.push(tagsData.readUInt32LE(i))
+                  }
 
-                  if (entryTags.length) {
+                  if (tagIds.length) {
+                    const entryTags = await this.#resolveTagIds(tagIds)
                     entryTags.forEach((tag) => {
                       const tagKey = this.#getTagKey(tag)
                       tagCleanupPipeline.srem(tagKey, key)
@@ -434,10 +513,14 @@ export class RedisCachingProvider {
               async ({ key, tagsKey, tagsData }) => {
                 if (tagsData) {
                   try {
-                    const finalTagsData = await this.#decompressData(tagsData)
-                    const entryTags: string[] = JSON.parse(finalTagsData)
+                    // Binary format: array of 32-bit integers
+                    const tagIds: number[] = []
+                    for (let i = 0; i < tagsData.length; i += 4) {
+                      tagIds.push(tagsData.readUInt32LE(i))
+                    }
 
-                    if (entryTags.length) {
+                    if (tagIds.length) {
+                      const entryTags = await this.#resolveTagIds(tagIds)
                       entryTags.forEach((tag) => {
                         const tagKey = this.#getTagKey(tag)
                         tagCleanupPipeline.srem(tagKey, key)
