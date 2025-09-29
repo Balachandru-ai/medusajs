@@ -30,8 +30,11 @@ export class RedisCachingProvider {
     return `${this.keyNamePrefix}${key}`
   }
 
-  #getTagKey(tag: string): string {
-    return `${this.keyNamePrefix}tag:${this.hasher(tag)}`
+  #getTagKey(
+    tag: string,
+    { isHashed = false }: { isHashed?: boolean } = {}
+  ): string {
+    return `${this.keyNamePrefix}tag:${isHashed ? tag : this.hasher(tag)}`
   }
 
   #getTagsKey(key: string): string {
@@ -60,7 +63,8 @@ export class RedisCachingProvider {
 
     // Get existing tag IDs
     tags.forEach((tag) => {
-      pipeline.hget(dictionaryKey, tag)
+      const hashedTag = this.hasher(tag)
+      pipeline.hget(dictionaryKey, hashedTag)
     })
 
     const results = await pipeline.exec()
@@ -102,7 +106,7 @@ export class RedisCachingProvider {
     // Increment reference count for all tags (existing and new)
     const refCountKey = this.#getTagRefCountKey()
     const refPipeline = this.redisClient.pipeline()
-    tagIds.forEach(id => {
+    tagIds.forEach((id) => {
       refPipeline.hincrby(refCountKey, id.toString(), 1)
     })
     await refPipeline.exec()
@@ -117,12 +121,12 @@ export class RedisCachingProvider {
     const pipeline = this.redisClient.pipeline()
 
     // Direct lookup using reverse dictionary - much more efficient!
-    tagIds.forEach(id => {
+    tagIds.forEach((id) => {
       pipeline.hget(reverseDictKey, id.toString())
     })
 
     const results = await pipeline.exec()
-    return results?.map(result => result?.[1] as string).filter(Boolean) || []
+    return results?.map((result) => result?.[1] as string).filter(Boolean) || []
   }
 
   async #decrementTagRefs(tagIds: number[]): Promise<void> {
@@ -133,7 +137,7 @@ export class RedisCachingProvider {
 
     // Decrement reference counts and collect tags with zero refs
     const pipeline = this.redisClient.pipeline()
-    tagIds.forEach(id => {
+    tagIds.forEach((id) => {
       pipeline.hincrby(refCountKey, id.toString(), -1)
     })
 
@@ -148,7 +152,7 @@ export class RedisCachingProvider {
     })
 
     // Clean up tags with zero references
-    if (tagsToCleanup.length > 0) {
+    if (tagsToCleanup.length) {
       const cleanupPipeline = this.redisClient.pipeline()
       const reverseDictKey = this.#getTagReverseDictionaryKey()
 
@@ -332,7 +336,7 @@ export class RedisCachingProvider {
     }
 
     // Store tag IDs in a separate key for inverted index lookup (much more space efficient)
-    if (tags && tags.length) {
+    if (tags?.length) {
       const tagIds = await this.#internTags(tags)
       const tagsKey = this.#getTagsKey(key)
 
@@ -406,7 +410,7 @@ export class RedisCachingProvider {
             // Clean up tag indexes
             const tagCleanupPipeline = this.redisClient.pipeline()
             entryTags.forEach((tag) => {
-              const tagKey = this.#getTagKey(tag)
+              const tagKey = this.#getTagKey(tag, { isHashed: true })
               tagCleanupPipeline.srem(tagKey, keyName)
             })
             tagCleanupPipeline.unlink(tagsKey)
@@ -424,7 +428,7 @@ export class RedisCachingProvider {
       return
     }
 
-    if (tags && tags.length) {
+    if (tags?.length) {
       // Handle wildcard tag to clear all cache data
       if (tags.includes("*")) {
         await this.flush()
@@ -442,7 +446,7 @@ export class RedisCachingProvider {
 
       const allKeys = new Set<string>()
 
-      tagResults?.forEach((result, index) => {
+      tagResults?.forEach((result) => {
         if (result && result[1]) {
           ;(result[1] as string[]).forEach((key) => allKeys.add(key))
         }
@@ -483,7 +487,7 @@ export class RedisCachingProvider {
                   if (tagIds.length) {
                     const entryTags = await this.#resolveTagIds(tagIds)
                     entryTags.forEach((tag) => {
-                      const tagKey = this.#getTagKey(tag)
+                      const tagKey = this.#getTagKey(tag, { isHashed: true })
                       tagCleanupPipeline.srem(tagKey, key)
                     })
                     tagCleanupPipeline.unlink(tagsKey)
@@ -596,7 +600,7 @@ export class RedisCachingProvider {
                     if (tagIds.length) {
                       const entryTags = await this.#resolveTagIds(tagIds)
                       entryTags.forEach((tag) => {
-                        const tagKey = this.#getTagKey(tag)
+                        const tagKey = this.#getTagKey(tag, { isHashed: true })
                         tagCleanupPipeline.srem(tagKey, key)
                       })
                       tagCleanupPipeline.unlink(tagsKey) // Delete the tags key
