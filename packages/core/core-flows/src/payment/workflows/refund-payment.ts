@@ -85,6 +85,20 @@ export const refundPaymentWorkflow = createWorkflow(
       list: false,
     }).config({ name: "order" })
 
+    const refundReason = when(
+      "fetch-refund-reason",
+      { input }, ({ input }) =>
+        !!input.refund_reason_id
+    ).then(() => {
+      return useRemoteQueryStep({
+        entry_point: "refund_reason",
+        fields: ["id", "label", "code"],
+        variables: { id: input.refund_reason_id },
+        list: false,
+        throw_if_key_not_found: true,
+      }).config({ name: "refund-reason" })
+    })
+
     const creditLineAmount = transform({ order, payment, input }, ({ order, payment, input }) => {
       const pendingDifference = order.summary?.raw_pending_difference! ?? order.summary?.pending_difference! ?? 0
       const amountToRefund = input.amount ?? payment.raw_amount ?? payment.amount
@@ -99,12 +113,14 @@ export const refundPaymentWorkflow = createWorkflow(
     })
 
     when(
-      { creditLineAmount }, ({ creditLineAmount }) => MathBN.gt(creditLineAmount, 0)
+      { creditLineAmount, refundReason }, ({ creditLineAmount, refundReason }) => MathBN.gt(creditLineAmount, 0)
     ).then(() => {
       createOrderRefundCreditLinesWorkflow.runAsStep({
         input: {
           order_id: order.id,
           amount: creditLineAmount,
+          reference: refundReason?.label,
+          referenceId: refundReason?.code
         },
       })
     })

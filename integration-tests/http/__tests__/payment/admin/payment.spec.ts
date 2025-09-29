@@ -1,9 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { ClaimType } from "@medusajs/utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../../helpers/create-admin-user"
+import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
 import { createOrderSeeder } from "../../fixtures/order"
 
 jest.setTimeout(50000)
@@ -334,6 +331,14 @@ medusaIntegrationTestRunner({
       it("should create credit lines if issuing a refund when outstanding amount if >= 0", async () => {
         const payment = order.payment_collections[0].payments[0]
 
+        const refundReason = (
+          await api.post(
+            `/admin/refund-reasons`,
+            { label: "Test", code: "test" },
+            adminHeaders
+          )
+        ).data.refund_reason
+
         await api.post(
           `/admin/payments/${payment.id}/capture`,
           undefined,
@@ -344,6 +349,7 @@ medusaIntegrationTestRunner({
           `/admin/payments/${payment.id}/refund`,
           {
             amount: 50,
+            refund_reason_id: refundReason.id,
           },
           adminHeaders
         )
@@ -353,6 +359,12 @@ medusaIntegrationTestRunner({
         ).data.order
 
         expect(updatedOrder.credit_line_total).toEqual(50)
+        expect(updatedOrder.credit_lines).toEqual([
+          expect.objectContaining({
+            reference: "Test",
+            reference_id: "test",
+          }),
+        ])
       })
     })
   },
