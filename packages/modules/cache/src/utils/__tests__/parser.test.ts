@@ -112,6 +112,7 @@ describe("CacheInvalidationParser", () => {
       expect(entities[0]).toEqual({
         type: "Product",
         id: "prod_123",
+        isInArray: false,
       })
     })
 
@@ -131,10 +132,12 @@ describe("CacheInvalidationParser", () => {
       expect(entities).toContainEqual({
         type: "Product",
         id: "prod_123",
+        isInArray: false,
       })
       expect(entities).toContainEqual({
         type: "ProductCollection",
         id: "col_456",
+        isInArray: false,
       })
     })
 
@@ -162,14 +165,17 @@ describe("CacheInvalidationParser", () => {
       expect(entities).toContainEqual({
         type: "Product",
         id: "prod_123",
+        isInArray: false,
       })
       expect(entities).toContainEqual({
         type: "ProductVariant",
         id: "var_789",
+        isInArray: true,
       })
       expect(entities).toContainEqual({
         type: "ProductVariant",
         id: "var_790",
+        isInArray: true,
       })
     })
 
@@ -205,15 +211,36 @@ describe("CacheInvalidationParser", () => {
       const entities = parser.parseObjectForEntities(order)
 
       expect(entities).toHaveLength(6)
-      expect(entities).toContainEqual({ type: "Order", id: "order_123" })
-      expect(entities).toContainEqual({ type: "OrderItem", id: "item_456" })
-      expect(entities).toContainEqual({ type: "ProductVariant", id: "var_789" })
-      expect(entities).toContainEqual({ type: "Product", id: "prod_123" })
+      expect(entities).toContainEqual({
+        type: "Order",
+        id: "order_123",
+        isInArray: false,
+      })
+      expect(entities).toContainEqual({
+        type: "OrderItem",
+        id: "item_456",
+        isInArray: true,
+      })
+      expect(entities).toContainEqual({
+        type: "ProductVariant",
+        id: "var_789",
+        isInArray: false,
+      })
+      expect(entities).toContainEqual({
+        type: "Product",
+        id: "prod_123",
+        isInArray: false,
+      })
       expect(entities).toContainEqual({
         type: "ProductCollection",
         id: "col_456",
+        isInArray: false,
       })
-      expect(entities).toContainEqual({ type: "Customer", id: "cus_789" })
+      expect(entities).toContainEqual({
+        type: "Customer",
+        id: "cus_789",
+        isInArray: false,
+      })
     })
 
     it("should return empty array for null or primitive values", () => {
@@ -247,6 +274,7 @@ describe("CacheInvalidationParser", () => {
       expect(entities[0]).toEqual({
         type: "Product",
         id: "prod_123",
+        isInArray: false,
       })
     })
   })
@@ -255,10 +283,7 @@ describe("CacheInvalidationParser", () => {
     it("should build invalidation events for a single entity", () => {
       const entities: EntityReference[] = [{ type: "Product", id: "prod_123" }]
 
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:product:prod_123"
-      )
+      const events = parser.buildInvalidationEvents(entities)
 
       expect(events).toHaveLength(1)
       expect(events[0]).toMatchObject({
@@ -267,16 +292,7 @@ describe("CacheInvalidationParser", () => {
         relatedEntities: [],
       })
 
-      expect(events[0].cacheKeys).toContain("cache:product:prod_123")
-      expect(events[0].cacheKeys).toContain("Product:prod_123")
-      expect(events[0].cacheKeys).toContain("Product:*")
-      expect(events[0].cacheKeys).toContain("*:prod_123")
-      // Should always contain collection keys since product changes can impact collections
-      expect(events[0].cacheKeys).toContain("Product:collection")
-      expect(events[0].cacheKeys).toContain("Product:list:*")
-      // Should contain operation-specific keys (defaults to 'updated')
-      expect(events[0].cacheKeys).toContain("Product:updated")
-      expect(events[0].cacheKeys).toContain("Product:prod_123:updated")
+      expect(events[0].cacheKeys).toEqual(["Product:prod_123"])
     })
 
     it("should build invalidation events with related entities", () => {
@@ -286,22 +302,14 @@ describe("CacheInvalidationParser", () => {
         { type: "ProductVariant", id: "var_789" },
       ]
 
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:product:prod_123:full"
-      )
+      const events = parser.buildInvalidationEvents(entities)
 
       expect(events).toHaveLength(3)
 
       const productEvent = events.find((e) => e.entityType === "Product")
       expect(productEvent).toBeDefined()
       expect(productEvent!.relatedEntities).toHaveLength(2)
-      expect(productEvent!.cacheKeys).toContain(
-        "Product:prod_123:ProductCollection:col_456"
-      )
-      expect(productEvent!.cacheKeys).toContain(
-        "Product:prod_123:ProductVariant:var_789"
-      )
+      expect(productEvent!.cacheKeys).toEqual(["Product:prod_123"])
     })
 
     it("should avoid duplicate entities in events", () => {
@@ -311,7 +319,7 @@ describe("CacheInvalidationParser", () => {
         { type: "ProductCollection", id: "col_456" },
       ]
 
-      const events = parser.buildInvalidationEvents(entities, "cache:test")
+      const events = parser.buildInvalidationEvents(entities)
 
       expect(events).toHaveLength(2) // Should only have Product and ProductCollection events
       expect(events.map((e) => e.entityType).sort()).toEqual([
@@ -326,48 +334,10 @@ describe("CacheInvalidationParser", () => {
         { type: "ProductCollection", id: "col_456" },
       ]
 
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "original:cache:key"
-      )
+      const events = parser.buildInvalidationEvents(entities)
       const productEvent = events.find((e) => e.entityType === "Product")!
 
-      const expectedKeys = [
-        "original:cache:key",
-        "Product:prod_123",
-        "Product:*",
-        "*:prod_123",
-        "Product:prod_123:ProductCollection:col_456",
-        "ProductCollection:col_456:Product:prod_123",
-        "Product:collection",
-        "Product:list:*",
-      ]
-
-      expectedKeys.forEach((key) => {
-        expect(productEvent.cacheKeys).toContain(key)
-      })
-    })
-  })
-
-  describe("generateInvalidationEventName", () => {
-    it("should generate event names for different operations", () => {
-      expect(parser.generateInvalidationEventName("Product", "created")).toBe(
-        "cache.invalidate.Product.created"
-      )
-
-      expect(parser.generateInvalidationEventName("Product", "updated")).toBe(
-        "cache.invalidate.Product.updated"
-      )
-
-      expect(parser.generateInvalidationEventName("Product", "deleted")).toBe(
-        "cache.invalidate.Product.deleted"
-      )
-    })
-
-    it("should default to updated operation", () => {
-      expect(parser.generateInvalidationEventName("Product")).toBe(
-        "cache.invalidate.Product.updated"
-      )
+      expect(productEvent.cacheKeys).toEqual(["Product:prod_123"])
     })
   })
 
@@ -394,10 +364,7 @@ describe("CacheInvalidationParser", () => {
       }
 
       const entities = parser.parseObjectForEntities(productData)
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:product:prod_123:details"
-      )
+      const events = parser.buildInvalidationEvents(entities)
 
       // Should identify all nested entities
       expect(entities).toHaveLength(6) // Product, Collection, 2 Categories, Variant, Price
@@ -405,14 +372,38 @@ describe("CacheInvalidationParser", () => {
       // Should created events for each entity type
       expect(events).toHaveLength(6)
 
-      // Product event should have all related entities
+      // Validate cache keys for each entity type
       const productEvent = events.find((e) => e.entityType === "Product")!
-      expect(productEvent.relatedEntities).toHaveLength(5)
+      expect(productEvent.cacheKeys).toEqual(["Product:prod_123"])
 
-      // Event names should be generated correctly
-      expect(parser.generateInvalidationEventName("Product", "updated")).toBe(
-        "cache.invalidate.Product.updated"
+      const collectionEvent = events.find(
+        (e) => e.entityType === "ProductCollection"
+      )!
+      expect(collectionEvent.cacheKeys).toEqual(["ProductCollection:col_456"])
+
+      const categoryEvents = events.filter(
+        (e) => e.entityType === "ProductCategory"
       )
+      expect(categoryEvents).toHaveLength(2)
+      expect(categoryEvents[0].cacheKeys).toEqual([
+        "ProductCategory:cat_789",
+        "ProductCategory:list:*",
+      ])
+      expect(categoryEvents[1].cacheKeys).toEqual([
+        "ProductCategory:cat_790",
+        "ProductCategory:list:*",
+      ])
+
+      const variantEvent = events.find(
+        (e) => e.entityType === "ProductVariant"
+      )!
+      expect(variantEvent.cacheKeys).toEqual([
+        "ProductVariant:var_111",
+        "ProductVariant:list:*",
+      ])
+
+      const priceEvent = events.find((e) => e.entityType === "Price")!
+      expect(priceEvent.cacheKeys).toEqual(["Price:price_222", "Price:list:*"])
     })
 
     it("should handle order with customer and items scenario", () => {
@@ -436,68 +427,61 @@ describe("CacheInvalidationParser", () => {
       }
 
       const entities = parser.parseObjectForEntities(orderData)
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:order:order_123"
-      )
+      const events = parser.buildInvalidationEvents(entities)
 
       expect(entities).toHaveLength(4) // Order, Customer, OrderItem, ProductVariant
       expect(events).toHaveLength(4)
 
-      // Check that customer cache would be invalidated when order changes
+      // Validate cache keys for each entity type
+      const orderEvent = events.find((e) => e.entityType === "Order")!
+      expect(orderEvent.cacheKeys).toEqual(["Order:order_123"])
+
       const customerEvent = events.find((e) => e.entityType === "Customer")!
-      expect(customerEvent.cacheKeys).toContain("Customer:cus_456")
-      // Customer event should include collection keys since it has related entities
-      expect(customerEvent.cacheKeys).toContain("Customer:collection")
+      expect(customerEvent.cacheKeys).toEqual(["Customer:cus_456"])
+
+      const itemEvent = events.find((e) => e.entityType === "OrderItem")!
+      expect(itemEvent.cacheKeys).toEqual([
+        "OrderItem:item_789",
+        "OrderItem:list:*",
+      ])
+
+      const variantEvent = events.find(
+        (e) => e.entityType === "ProductVariant"
+      )!
+      expect(variantEvent.cacheKeys).toEqual(["ProductVariant:var_111"])
     })
 
-    it("should include created-specific cache keys for created operation", () => {
+    it("should include simplified cache keys for created operation", () => {
       const entities: EntityReference[] = [{ type: "Product", id: "prod_123" }]
 
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:product:prod_123",
-        "created"
-      )
+      const events = parser.buildInvalidationEvents(entities, "created")
 
       const productEvent = events[0]
-      expect(productEvent.cacheKeys).toContain("Product:created")
-      expect(productEvent.cacheKeys).toContain("Product:prod_123:created")
-      expect(productEvent.cacheKeys).toContain("Product:count")
-      expect(productEvent.cacheKeys).toContain("Product:total:*")
+      expect(productEvent.cacheKeys).toEqual([
+        "Product:prod_123",
+        "Product:list:*",
+      ])
     })
 
-    it("should include deleted-specific cache keys for deleted operation", () => {
+    it("should include simplified cache keys for deleted operation", () => {
       const entities: EntityReference[] = [{ type: "Product", id: "prod_123" }]
 
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:product:prod_123",
-        "deleted"
-      )
+      const events = parser.buildInvalidationEvents(entities, "deleted")
 
       const productEvent = events[0]
-      expect(productEvent.cacheKeys).toContain("Product:deleted")
-      expect(productEvent.cacheKeys).toContain("Product:prod_123:deleted")
-      expect(productEvent.cacheKeys).toContain("Product:exists:prod_123")
-      expect(productEvent.cacheKeys).toContain("Product:active:*")
+      expect(productEvent.cacheKeys).toEqual([
+        "Product:prod_123",
+        "Product:list:*",
+      ])
     })
 
-    it("should include updated-specific cache keys for updated operation", () => {
+    it("should include simplified cache keys for updated operation", () => {
       const entities: EntityReference[] = [{ type: "Product", id: "prod_123" }]
 
-      const events = parser.buildInvalidationEvents(
-        entities,
-        "cache:product:prod_123",
-        "updated"
-      )
+      const events = parser.buildInvalidationEvents(entities, "updated")
 
       const productEvent = events[0]
-      expect(productEvent.cacheKeys).toContain("Product:updated")
-      expect(productEvent.cacheKeys).toContain("Product:prod_123:updated")
-      // Update should not include created/deleted specific keys
-      expect(productEvent.cacheKeys).not.toContain("Product:count")
-      expect(productEvent.cacheKeys).not.toContain("Product:exists:prod_123")
+      expect(productEvent.cacheKeys).toEqual(["Product:prod_123"])
     })
   })
 })

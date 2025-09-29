@@ -11,6 +11,7 @@ export interface EntityReference {
   type: string
   id: string | number
   field?: string
+  isInArray?: boolean
 }
 
 export interface InvalidationEvent {
@@ -51,7 +52,11 @@ export class CacheInvalidationParser {
   /**
    * Parse an object to identify entities and their relationships
    */
-  parseObjectForEntities(obj: any, parentType?: string): EntityReference[] {
+  parseObjectForEntities(
+    obj: any,
+    parentType?: string,
+    isInArray: boolean = false
+  ): EntityReference[] {
     const entities: EntityReference[] = []
 
     if (!obj || typeof obj !== "object") {
@@ -64,6 +69,7 @@ export class CacheInvalidationParser {
       entities.push({
         type: detectedType,
         id: obj.id,
+        isInArray,
       })
     }
 
@@ -76,7 +82,8 @@ export class CacheInvalidationParser {
           entities.push(
             ...this.parseObjectForEntities(
               item,
-              this.getRelationshipType(detectedType, key)
+              this.getRelationshipType(detectedType, key),
+              true
             )
           )
         })
@@ -84,7 +91,8 @@ export class CacheInvalidationParser {
         entities.push(
           ...this.parseObjectForEntities(
             value,
-            this.getRelationshipType(detectedType, key)
+            this.getRelationshipType(detectedType, key),
+            false
           )
         )
       }
@@ -181,7 +189,6 @@ export class CacheInvalidationParser {
    */
   buildInvalidationEvents(
     entities: EntityReference[],
-    cacheKey: string,
     operation: "created" | "updated" | "deleted" = "updated"
   ): InvalidationEvent[] {
     const events: InvalidationEvent[] = []
@@ -201,12 +208,7 @@ export class CacheInvalidationParser {
       )
 
       // Build cache keys that might be affected
-      const affectedKeys = this.buildAffectedCacheKeys(
-        entity,
-        relatedEntities,
-        cacheKey,
-        operation
-      )
+      const affectedKeys = this.buildAffectedCacheKeys(entity, operation)
 
       events.push({
         entityType: entity.type,
@@ -224,53 +226,18 @@ export class CacheInvalidationParser {
    */
   private buildAffectedCacheKeys(
     entity: EntityReference,
-    relatedEntities: EntityReference[],
-    originalKey: string,
     operation: "created" | "updated" | "deleted" = "updated"
   ): string[] {
-    const keys = new Set<string>([originalKey])
+    const keys = new Set<string>()
 
-    // Add keys based on entity type and ID
+    // Add entity-specific key
     keys.add(`${entity.type}:${entity.id}`)
-    keys.add(`${entity.type}:*`)
-    keys.add(`*:${entity.id}`)
 
-    // Add keys for related entities
-    relatedEntities.forEach((related) => {
-      keys.add(`${entity.type}:${entity.id}:${related.type}:${related.id}`)
-      keys.add(`${related.type}:${related.id}:${entity.type}:${entity.id}`)
-    })
-
-    // Always add collection keys since entity changes can impact collections
-    keys.add(`${entity.type}:collection`)
-    keys.add(`${entity.type}:list:*`)
-
-    // Add operation-specific keys
-    keys.add(`${entity.type}:${operation}`)
-    keys.add(`${entity.type}:${entity.id}:${operation}`)
-
-    // For delete operations, also invalidate existence checks
-    if (operation === "deleted") {
-      keys.add(`${entity.type}:exists:${entity.id}`)
-      keys.add(`${entity.type}:active:*`)
-    }
-
-    // For create operations, invalidate count caches
-    if (operation === "created") {
-      keys.add(`${entity.type}:count`)
-      keys.add(`${entity.type}:total:*`)
+    // Add list key only if entity was found in an array context
+    if (entity.isInArray || ["created", "deleted"].includes(operation)) {
+      keys.add(`${entity.type}:list:*`)
     }
 
     return Array.from(keys)
-  }
-
-  /**
-   * Generate event name for cache invalidation
-   */
-  generateInvalidationEventName(
-    entityType: string,
-    operation: "created" | "updated" | "deleted" = "updated"
-  ): string {
-    return `cache.invalidate.${entityType}.${operation}`
   }
 }

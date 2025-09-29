@@ -82,11 +82,6 @@ export class DefaultCacheStrategy implements ICachingStrategy {
             })
             tags.push(...tags_)
           }
-
-          await this.#cacheModule.clear({
-            tags,
-            options: { autoInvalidate: true },
-          })
         }
 
         await this.#cacheModule.clear({
@@ -117,13 +112,9 @@ export class DefaultCacheStrategy implements ICachingStrategy {
       return []
     }
 
-    // Generate cache key for this input
-    const cacheKey = await this.computeKey(input)
-
     // Build invalidation events to get comprehensive cache keys
     const events = this.#cacheInvalidationParser.buildInvalidationEvents(
       entities_,
-      cacheKey,
       options?.operation
     )
 
@@ -132,10 +123,6 @@ export class DefaultCacheStrategy implements ICachingStrategy {
 
     events.forEach((event) => {
       event.cacheKeys.forEach((key) => tags.add(key))
-
-      // Also add entity-specific tags
-      tags.add(`${event.entityType}:${event.entityId}`)
-      tags.add(`${event.entityType}:list:*`)
     })
 
     return Array.from(tags)

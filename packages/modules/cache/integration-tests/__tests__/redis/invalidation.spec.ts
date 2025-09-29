@@ -469,6 +469,72 @@ moduleIntegrationTestRunner<ICachingModuleService>({
           expect(cachedAfterUpdate).toBeNull()
         })
       })
+
+      it("should cache complex queries and return the correct cached data", async () => {
+        const complexQuery = {
+          entity: "product",
+          filters: { status: "published", collection_id: "col_1" },
+          includes: {
+            variants: {
+              include: {
+                prices: true,
+              },
+            },
+            collection: true,
+          },
+          pagination: { limit: 10, offset: 0 },
+        }
+
+        const queryResult = {
+          data: [
+            {
+              id: "prod_1",
+              title: "Product 1",
+              collection_id: "col_1",
+              variants: [
+                {
+                  id: "var_1",
+                  product_id: "prod_1",
+                  prices: [{ id: "price_1", amount: 1000 }],
+                },
+              ],
+              collection: { id: "col_1", title: "Collection 1" },
+            },
+          ],
+          pagination: { total: 1, limit: 10, offset: 0 },
+        }
+
+        const queryKey = await service.computeKey(complexQuery)
+
+        await service.set({
+          key: queryKey,
+          data: queryResult,
+        })
+
+        await setTimeout(DEFAULT_WAIT_INTERVAL)
+
+        const cached = await service.get({ key: queryKey })
+        expect(cached).toEqual(queryResult)
+
+        const complexQueryOffset = {
+          entity: "product",
+          filters: { status: "published", collection_id: "col_1" },
+          includes: {
+            variants: {
+              include: {
+                prices: true,
+              },
+            },
+            collection: true,
+          },
+          pagination: { limit: 10, offset: 10 },
+        }
+
+        const queryKeyOffset = await service.computeKey(complexQueryOffset)
+
+        const cachedOffset = await service.get({ key: queryKeyOffset })
+        expect(cachedOffset).toEqual(null)
+      })
     })
   },
 })
