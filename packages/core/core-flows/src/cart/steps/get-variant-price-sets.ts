@@ -76,11 +76,18 @@ async function fetchVariantPriceSets(
   variantIds: string[]
 ): Promise<VariantPriceSetData[]> {
   return (
-    await query.graph({
-      entity: "variant",
-      fields: ["id", "price_set.id"],
-      filters: { id: variantIds },
-    })
+    await query.graph(
+      {
+        entity: "variant",
+        fields: ["id", "price_set.id"],
+        filters: { id: variantIds },
+      },
+      {
+        cache: {
+          enable: true,
+        },
+      }
+    )
   ).data
 }
 
