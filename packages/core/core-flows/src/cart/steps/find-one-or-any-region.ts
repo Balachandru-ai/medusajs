@@ -1,8 +1,9 @@
 import {
   IRegionModuleService,
   IStoreModuleService,
+  MedusaContainer,
 } from "@medusajs/framework/types"
-import { MedusaError, Modules } from "@medusajs/framework/utils"
+import { MedusaError, Modules, useCache } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
 /**
@@ -15,6 +16,72 @@ export type FindOneOrAnyRegionStepInput = {
   regionId?: string
 }
 
+async function fetchRegionById(regionId: string, container: MedusaContainer) {
+  const service = container.resolve<IRegionModuleService>(Modules.REGION)
+  const cacheModule = container.resolve(Modules.CACHING, {
+    allowUnregistered: true,
+  })
+
+  return await useCache(
+    async () =>
+      service.retrieveRegion(regionId, {
+        relations: ["countries"],
+      }),
+    {
+      container,
+      key:
+        cacheModule &&
+        (await cacheModule.computeKey([
+          "find-one-or-any-region-by-id",
+          regionId,
+        ])),
+    }
+  )
+}
+
+async function fetchDefaultStore(container: MedusaContainer) {
+  const storeModule = container.resolve<IStoreModuleService>(Modules.STORE)
+  const cacheModule = container.resolve(Modules.CACHING, {
+    allowUnregistered: true,
+  })
+
+  return await useCache(async () => storeModule.listStores(), {
+    container,
+    key:
+      cacheModule &&
+      (await cacheModule.computeKey(["find-one-or-any-region-default-store"])),
+  })
+}
+
+async function fetchDefaultRegion(
+  defaultRegionId: string,
+  container: MedusaContainer
+) {
+  const service = container.resolve<IRegionModuleService>(Modules.REGION)
+  const cacheModule = container.resolve(Modules.CACHING, {
+    allowUnregistered: true,
+  })
+
+  return await useCache(
+    async () =>
+      service.listRegions(
+        {
+          id: defaultRegionId,
+        },
+        { relations: ["countries"] }
+      ),
+    {
+      container,
+      key:
+        cacheModule &&
+        (await cacheModule.computeKey([
+          "find-one-or-any-region-default",
+          defaultRegionId,
+        ])),
+    }
+  )
+}
+
 export const findOneOrAnyRegionStepId = "find-one-or-any-region"
 /**
  * This step retrieves a region either by the provided ID or the first region in the first store.
@@ -22,32 +89,24 @@ export const findOneOrAnyRegionStepId = "find-one-or-any-region"
 export const findOneOrAnyRegionStep = createStep(
   findOneOrAnyRegionStepId,
   async (data: FindOneOrAnyRegionStepInput, { container }) => {
-    const service = container.resolve<IRegionModuleService>(Modules.REGION)
-
-    const storeModule = container.resolve<IStoreModuleService>(Modules.STORE)
-
     if (data.regionId) {
       try {
-        const region = await service.retrieveRegion(data.regionId, {
-          relations: ["countries"],
-        })
+        const region = await fetchRegionById(data.regionId, container)
         return new StepResponse(region)
       } catch (error) {
         return new StepResponse(null)
       }
     }
 
-    const [store] = await storeModule.listStores()
+    const [store] = await fetchDefaultStore(container)
 
     if (!store) {
       throw new MedusaError(MedusaError.Types.NOT_FOUND, "Store not found")
     }
 
-    const [region] = await service.listRegions(
-      {
-        id: store.default_region_id,
-      },
-      { relations: ["countries"] }
+    const [region] = await fetchDefaultRegion(
+      store.default_region_id!,
+      container
     )
 
     if (!region) {

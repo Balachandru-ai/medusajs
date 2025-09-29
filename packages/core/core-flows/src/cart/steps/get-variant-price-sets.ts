@@ -1,4 +1,4 @@
-import { Query } from "@medusajs/framework"
+import { MedusaContainer, Query } from "@medusajs/framework"
 import {
   CalculatedPriceSet,
   IPricingModuleService,
@@ -7,6 +7,7 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
   Modules,
+  useCache,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
@@ -108,20 +109,39 @@ function validateVariantPriceSets(
  */
 async function processVariantPriceSets(
   pricingService: IPricingModuleService,
-  items: PriceCalculationItem[]
+  items: PriceCalculationItem[],
+  container: MedusaContainer
 ): Promise<GetVariantPriceSetsStepOutput> {
   const result: GetVariantPriceSetsStepOutput = {}
 
   // Group items by their context to minimize API calls
   const contextGroups = groupItemsByContext(items)
+  const cachingModule = container.resolve(Modules.CACHING, {
+    allowUnregistered: true,
+  })
 
   for (const [, groupItems] of contextGroups) {
     const priceSetIds = groupItems.map((item) => item.priceSetId)
     const context = groupItems[0].context // All items in group have same context
 
-    const calculatedPriceSets = await pricingService.calculatePrices(
+    const calculatedPriceSetsArgs = [
       { id: priceSetIds },
-      { context: context as Record<string, string | number> }
+      { context: context as Record<string, string | number> },
+    ]
+
+    const calculatedPriceSets = await useCache<CalculatedPriceSet[]>(
+      async () =>
+        await pricingService.calculatePrices(
+          ...(calculatedPriceSetsArgs as Parameters<
+            typeof pricingService.calculatePrices
+          >)
+        ),
+      {
+        container,
+        key:
+          cachingModule &&
+          (await cachingModule.computeKey(calculatedPriceSetsArgs)),
+      }
     )
 
     // Map calculated prices back to variants
@@ -298,7 +318,8 @@ export const getVariantPriceSetsStep = createStep(
     // Use unified processing logic for both input types
     const result = await processVariantPriceSets(
       pricingModuleService,
-      calculationItems
+      calculationItems,
+      container
     )
 
     return new StepResponse(result)
