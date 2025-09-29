@@ -185,6 +185,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -423,6 +424,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -539,6 +541,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -688,6 +691,7 @@ medusaIntegrationTestRunner({
             const [product] = await productModule.createProducts([
               {
                 title: "Test product",
+                status: ProductStatus.PUBLISHED,
                 variants: [
                   {
                     title: "Test variant",
@@ -856,6 +860,7 @@ medusaIntegrationTestRunner({
             const [product] = await productModule.createProducts([
               {
                 title: "Test product",
+                status: ProductStatus.PUBLISHED,
                 variants: [
                   {
                     title: "Test variant",
@@ -1913,11 +1918,11 @@ medusaIntegrationTestRunner({
 
           expect(errors).toEqual([
             {
-              action: "validate-line-item-prices",
+              action: "get-variant-items-with-prices-workflow-as-step",
               handlerType: "invoke",
               error: expect.objectContaining({
                 message: expect.stringContaining(
-                  `Variant ${product.variants[0].id} doesn't exist or belongs to a product that is not published`
+                  `Variants ${product.variants[0].id} do not exist or belong to a product that is not published`
                 ),
               }),
             },
@@ -1949,11 +1954,11 @@ medusaIntegrationTestRunner({
 
           expect(errors).toEqual([
             {
-              action: "validate-line-item-prices",
+              action: "get-variant-items-with-prices-workflow-as-step",
               handlerType: "invoke",
               error: expect.objectContaining({
                 message: expect.stringContaining(
-                  `Variant var_1234 doesn't exist or belongs to a product that is not published`
+                  `Variants var_1234 do not exist or belong to a product that is not published`
                 ),
               }),
             },

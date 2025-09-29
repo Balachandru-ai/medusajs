@@ -2223,6 +2223,7 @@ medusaIntegrationTestRunner({
                   "/admin/products",
                   {
                     title: `Test fixture ${shippingProfile.id}`,
+                    status: ProductStatus.PUBLISHED,
                     shipping_profile_id: shippingProfile.id,
                     options: [
                       { title: "pack", values: ["1-pack", "2-pack", "3-pack"] },
@@ -2542,6 +2543,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "test product",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {
@@ -3447,6 +3449,7 @@ medusaIntegrationTestRunner({
                 "/admin/products",
                 {
                   title: "Medusa T-Shirt not discountable",
+                  status: ProductStatus.PUBLISHED,
                   handle: "t-shirt-not-discountable",
                   discountable: false,
                   options: [
@@ -4466,6 +4469,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "Product for free",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {

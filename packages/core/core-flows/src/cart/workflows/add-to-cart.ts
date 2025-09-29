@@ -8,8 +8,6 @@ import {
   CartWorkflowEvents,
   deduplicate,
   isDefined,
-  MedusaError,
-  ProductStatus,
 } from "@medusajs/framework/utils"
 import {
   createHook,
@@ -229,14 +227,6 @@ export const addToCartWorkflow = createWorkflow(
           const variant = (variants ?? []).find(
             (v) => v.id === item.variant_id
           )!
-          if ((item.variant_id && !variant) || // variant specified but doesn't exist
-            (variant?.product && variant.product.status !== ProductStatus.PUBLISHED) // variant exists but product is not published
-          ) {
-            throw new MedusaError(
-              MedusaError.Types.INVALID_DATA,
-              `Variant ${item.variant_id} doesn't exist or belongs to a product that is not published`
-            )
-          }
 
           const input: PrepareLineItemDataInput = {
             item,
