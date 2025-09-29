@@ -24,6 +24,11 @@ export const sidebar = [
             path: "/faq",
             title: "FAQ",
           },
+          {
+            type: "link",
+            path: "/comparison",
+            title: "Cloud vs Self Hosting",
+          },
         ],
       },
       {
