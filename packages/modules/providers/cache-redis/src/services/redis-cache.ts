@@ -61,22 +61,23 @@ export class RedisCachingProvider {
     const pipeline = this.redisClient.pipeline()
     const dictionaryKey = this.#getTagDictionaryKey()
 
+    const hashedTags = tags.map((tag) => this.hasher(tag))
+
     // Get existing tag IDs
-    tags.forEach((tag) => {
-      const hashedTag = this.hasher(tag)
-      pipeline.hget(dictionaryKey, hashedTag)
+    hashedTags.forEach((tag) => {
+      pipeline.hget(dictionaryKey, tag)
     })
 
     const results = await pipeline.exec()
     const tagIds: number[] = []
     const newTags: string[] = []
 
-    for (let i = 0; i < tags.length; i++) {
+    for (let i = 0; i < hashedTags.length; i++) {
       const result = results?.[i]
       if (result && result[1]) {
         tagIds[i] = parseInt(result[1] as string)
       } else {
-        const hashedTag = this.hasher(tags[i])
+        const hashedTag = hashedTags[i]
         newTags.push(hashedTag)
         tagIds[i] = -1 // Placeholder for new tags
       }
@@ -97,7 +98,7 @@ export class RedisCachingProvider {
         newTagPipeline.hset(reverseDictKey, newId.toString(), tag)
 
         // Update the tagIds array
-        const originalIndex = tags.indexOf(tag)
+        const originalIndex = hashedTags.indexOf(tag)
         tagIds[originalIndex] = newId
       })
 
