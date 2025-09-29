@@ -210,12 +210,41 @@ export default class CachingModuleService implements ICachingModuleService {
       providers ?? providers_
     )
 
-    for (const providerOptions of providers_) {
+    const providerIds = providers_.map(p => p.id)
+    const requestKey = this.getRequestKey(key_, tags_, providerIds)
+
+    const existingRequest = this.ongoingRequests.get(requestKey)
+    if (existingRequest) {
+      return await existingRequest
+    }
+
+    const requestPromise = this.performCacheSet(key_, tags_, data, ttl, providers_, options)
+    this.ongoingRequests.set(requestKey, requestPromise)
+
+    try {
+      await requestPromise
+    } finally {
+      // Clean up the completed request
+      this.ongoingRequests.delete(requestKey)
+    }
+  }
+
+  protected async performCacheSet(
+    key: string,
+    tags: string[],
+    data: object,
+    ttl?: number,
+    providers?: { id: string; ttl?: number }[],
+    options?: {
+      autoInvalidate?: boolean
+    }
+  ): Promise<void> {
+    for (const providerOptions of providers || []) {
       const ttl_ = providerOptions.ttl ?? ttl ?? this.ttl
       const provider = this.providerService.retrieveProvider(providerOptions.id)
       void provider.set({
-        key: key_,
-        tags: tags_,
+        key,
+        tags,
         data,
         ttl: ttl_,
         options,

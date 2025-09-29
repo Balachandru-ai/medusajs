@@ -187,17 +187,14 @@ export class RedisCachingProvider {
 
     const finalData = await this.#compressData(serializedData)
 
-    const hashData: Record<string, string | Buffer> = {
-      data: finalData,
-    }
-
-    if (options && Object.keys(options).length) {
-      hashData.options = JSON.stringify(options)
-    }
-
-    await this.redisClient.hset(keyName, hashData)
-    if (effectiveTTL) {
-      await this.redisClient.expire(keyName, effectiveTTL)
+    const res = await this.redisClient.hsetnx(keyName, "data", finalData)
+    if (res === 1) {
+      if (options && Object.keys(options).length) {
+        await this.redisClient.hset(keyName, "options", JSON.stringify(options))
+      }
+      if (effectiveTTL) {
+        await this.redisClient.expire(keyName, effectiveTTL)
+      }
     }
 
     // Store tags in a separate key for inverted index lookup
@@ -207,9 +204,15 @@ export class RedisCachingProvider {
       const finalTagsData = await this.#compressData(tagsJson)
 
       if (effectiveTTL) {
-        await this.redisClient.setex(tagsKey, effectiveTTL + 60, finalTagsData) // +1 minute buffer
+        await this.redisClient.set(
+          tagsKey,
+          finalTagsData,
+          "EX",
+          effectiveTTL + 60,
+          "NX"
+        ) // +1 minute buffer
       } else {
-        await this.redisClient.set(tagsKey, finalTagsData)
+        await this.redisClient.setnx(tagsKey, finalTagsData)
       }
     }
 
