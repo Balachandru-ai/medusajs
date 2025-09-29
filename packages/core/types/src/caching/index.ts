@@ -2,6 +2,28 @@ import { ModuleJoinerConfig } from "../modules-sdk"
 
 type Providers = string[] | { id: string; ttl?: number }[]
 
+export interface IStaticCacheModuleService {
+  traceGet?: (
+    cacheGetFn: () => Promise<any>,
+    key: string,
+    tags: string[]
+  ) => Promise<any>
+  traceSet?: (
+    cacheSetFn: () => Promise<any>,
+    key: string,
+    tags: string[],
+    options: { autoInvalidate?: boolean }
+  ) => Promise<any>
+  traceClear?: (
+    cacheClearFn: () => Promise<any>,
+    key: string,
+    tags: string[],
+    options: { autoInvalidate?: boolean }
+  ) => Promise<any>
+
+  new (...args: any[]): ICachingModuleService
+}
+
 export interface ICachingModuleService {
   /**
    * This method retrieves data from the cache.

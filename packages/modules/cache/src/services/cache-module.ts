@@ -22,6 +22,24 @@ export default class CachingModuleService implements ICachingModuleService {
 
   protected ttl: number
 
+  static traceGet?: (
+    cacheGetFn: () => Promise<any>,
+    key: string,
+    tags: string[]
+  ) => Promise<any>
+  static traceSet?: (
+    cacheSetFn: () => Promise<any>,
+    key: string,
+    tags: string[],
+    options: { autoInvalidate?: boolean }
+  ) => Promise<any>
+  static traceClear?: (
+    cacheClearFn: () => Promise<any>,
+    key: string,
+    tags: string[],
+    options: { autoInvalidate?: boolean }
+  ) => Promise<any>
+
   constructor(
     container: InjectedDependencies,
     protected readonly moduleDeclaration:
@@ -122,7 +140,19 @@ export default class CachingModuleService implements ICachingModuleService {
     return `clear:${keyPart}|${tagsPart}|${providersPart}`
   }
 
-  async get({
+  async get(options: { key?: string; tags?: string[]; providers?: string[] }) {
+    if (CachingModuleService.traceGet) {
+      return await CachingModuleService.traceGet(
+        () => this.get_(options),
+        options.key ?? "",
+        options.tags ?? []
+      )
+    }
+
+    return await this.get_(options)
+  }
+
+  private async get_({
     key,
     tags,
     providers,
@@ -183,7 +213,27 @@ export default class CachingModuleService implements ICachingModuleService {
     return null
   }
 
-  async set({
+  async set(options: {
+    key: string
+    data: object
+    ttl?: number
+    tags?: string[]
+    providers?: string[]
+    options?: { autoInvalidate?: boolean }
+  }) {
+    if (CachingModuleService.traceSet) {
+      return await CachingModuleService.traceSet(
+        () => this.set_(options),
+        options.key,
+        options.tags ?? [],
+        options.options ?? {}
+      )
+    }
+
+    return await this.set_(options)
+  }
+
+  private async set_({
     key,
     data,
     ttl,
@@ -210,7 +260,7 @@ export default class CachingModuleService implements ICachingModuleService {
       providers ?? providers_
     )
 
-    const providerIds = providers_.map(p => p.id)
+    const providerIds = providers_.map((p) => p.id)
     const requestKey = this.getRequestKey(key_, tags_, providerIds)
 
     const existingRequest = this.ongoingRequests.get(requestKey)
@@ -218,7 +268,14 @@ export default class CachingModuleService implements ICachingModuleService {
       return await existingRequest
     }
 
-    const requestPromise = this.performCacheSet(key_, tags_, data, ttl, providers_, options)
+    const requestPromise = this.performCacheSet(
+      key_,
+      tags_,
+      data,
+      ttl,
+      providers_,
+      options
+    )
     this.ongoingRequests.set(requestKey, requestPromise)
 
     try {
@@ -252,7 +309,25 @@ export default class CachingModuleService implements ICachingModuleService {
     }
   }
 
-  async clear({
+  async clear(options: {
+    key?: string
+    tags?: string[]
+    options?: { autoInvalidate?: boolean }
+    providers?: string[]
+  }) {
+    if (CachingModuleService.traceClear) {
+      return await CachingModuleService.traceClear(
+        () => this.clear_(options),
+        options.key ?? "",
+        options.tags ?? [],
+        options.options ?? {}
+      )
+    }
+
+    return await this.clear_(options)
+  }
+
+  private async clear_({
     key,
     tags,
     options,
