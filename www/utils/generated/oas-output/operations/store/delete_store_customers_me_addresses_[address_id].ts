@@ -58,6 +58,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to delete their address
  *       sdk.store.customer.deleteAddress("caddr_123")
  *       .then(({ deleted, parent: customer }) => {
  *         console.log(customer)
@@ -66,8 +67,8 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/store/customers/me/addresses/{address_id}' \
- *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Customers
  * responses:

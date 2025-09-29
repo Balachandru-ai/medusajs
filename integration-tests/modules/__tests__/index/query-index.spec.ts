@@ -91,7 +91,7 @@ async function populateData(api: any) {
   )
   const products = response.data.created
 
-  await setTimeout(10000)
+  await setTimeout(5000)
 
   return products
 }
@@ -143,6 +143,8 @@ medusaIntegrationTestRunner({
             brand_id: brand.id,
           },
         })
+
+        await setTimeout(1000)
 
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
@@ -200,11 +202,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(resultset.metadata).toEqual({
@@ -366,11 +364,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         // Limiting to 1 on purpose to keep it simple and check the correct order is maintained
@@ -424,11 +418,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         // Limiting to 1 on purpose to keep it simple and check the correct order is maintained
@@ -478,11 +468,7 @@ medusaIntegrationTestRunner({
                 },
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(resultset.data.length).toEqual(2)
@@ -504,11 +490,7 @@ medusaIntegrationTestRunner({
                 origin_country: ["USA"],
               },
             }),
-          ({ data }) => data.length > 0,
-          {
-            retries: 3,
-            waitSeconds: 3,
-          }
+          ({ data }) => data.length > 0
         )
 
         expect(resultset.data.length).toEqual(1)
@@ -533,6 +515,8 @@ medusaIntegrationTestRunner({
           },
         })
 
+        await setTimeout(1000)
+
         const query = appContainer.resolve(
           ContainerRegistrationKeys.QUERY
         ) as RemoteQueryFunction
@@ -551,8 +535,8 @@ medusaIntegrationTestRunner({
             }),
           ({ data }) => data.length > 0,
           {
-            retries: 3,
-            waitSeconds: 3,
+            retries: 5,
+            waitSeconds: 1.5,
           }
         )
         expect(resultset.data.length).toEqual(1)

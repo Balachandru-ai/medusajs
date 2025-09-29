@@ -7,7 +7,7 @@ export const StoreGetCartsCart = createSelectParams()
 
 const ItemSchema = z.object({
   variant_id: z.string(),
-  quantity: z.number(),
+  quantity: z.number().gt(0),
   metadata: z.record(z.unknown()).nullish(),
 })
 
@@ -65,7 +65,7 @@ export const StoreCalculateCartTaxes = createSelectParams()
 export type StoreAddCartLineItemType = z.infer<typeof StoreAddCartLineItem>
 export const StoreAddCartLineItem = z.object({
   variant_id: z.string(),
-  quantity: z.number(),
+  quantity: z.number().gt(0),
   metadata: z.record(z.unknown()).nullish(),
 })
 
@@ -73,7 +73,7 @@ export type StoreUpdateCartLineItemType = z.infer<
   typeof StoreUpdateCartLineItem
 >
 export const StoreUpdateCartLineItem = z.object({
-  quantity: z.number(),
+  quantity: z.number().gte(0), // can be 0 to remove the item from the cart
   metadata: z.record(z.unknown()).nullish(),
 })
 

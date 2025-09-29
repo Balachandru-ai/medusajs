@@ -21,7 +21,7 @@ import type {
   ReturnWorkflow,
   UnwrapWorkflowInputDataType,
 } from "@medusajs/framework/workflows-sdk"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { WorkflowExecution } from "@models"
 import { WorkflowOrchestratorService } from "@services"
 import { WorkflowOrchestratorCancelOptions } from "@types"

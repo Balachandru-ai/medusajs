@@ -5,17 +5,6 @@ required:
   - cart
   - title
   - id
-  - item_total
-  - item_subtotal
-  - item_tax_total
-  - original_total
-  - original_subtotal
-  - original_tax_total
-  - total
-  - subtotal
-  - tax_total
-  - discount_total
-  - discount_tax_total
   - requires_shipping
   - is_discountable
   - is_tax_inclusive
@@ -298,44 +287,88 @@ properties:
   original_total:
     type: number
     title: original_total
-    description: The item's total including taxes, excluding promotions.
+    description: >-
+      The item's total including taxes, excluding promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   original_subtotal:
     type: number
     title: original_subtotal
-    description: The item's total excluding taxes, including promotions.
+    description: >-
+      The item's total excluding taxes, including promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   original_tax_total:
     type: number
     title: original_tax_total
-    description: The total taxes of the item excluding promotions.
+    description: >-
+      The total taxes of the item excluding promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   item_total:
     type: number
     title: original_tax_total
-    description: The item's total including taxes and promotions.
+    description: >-
+      The item's total including taxes and promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   item_subtotal:
     type: number
     title: item_subtotal
-    description: The item's total excluding taxes, including promotions.
+    description: >-
+      The item's total excluding taxes, including promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   item_tax_total:
     type: number
     title: item_tax_total
-    description: The total taxes of the item including promotions.
+    description: >-
+      The total taxes of the item including promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   total:
     type: number
     title: total
-    description: The item's total including taxes and promotions.
+    description: >-
+      The item's total including taxes and promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   subtotal:
     type: number
     title: subtotal
-    description: The item's total excluding taxes, including promotions.
+    description: >-
+      The item's total excluding taxes, including promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   tax_total:
     type: number
     title: tax_total
-    description: The total taxes of the item including promotions.
+    description: >-
+      The total taxes of the item including promotions. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   discount_total:
     type: number
     title: discount_total
-    description: The total discount of the item.
+    description: >-
+      The total discount of the item. This field is only available if you expand
+      the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.
   discount_tax_total:
     type: number
     title: discount_tax_total
-    description: The total taxes applied on the discounted amount.
+    description: >-
+      The total taxes applied on the discounted amount. This field is only
+      available if you expand the `items.*` relation. Learn more in the [Cart
+      Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-cart-item-totals)
+      guide.

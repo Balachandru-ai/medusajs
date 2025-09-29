@@ -22,11 +22,6 @@ export interface AdminRefundPayment {
   note?: string | null
 }
 
-export interface AdminCreateRefundReason {
-  label: string
-  description?: string
-}
-
 export interface AdminCreatePaymentCollection {
   /**
    * The ID of the order this payment collection belongs to.

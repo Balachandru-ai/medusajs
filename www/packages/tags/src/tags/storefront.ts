@@ -4,6 +4,10 @@ export const storefront = [
     "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/customize-stripe"
   },
   {
+    "title": "Return Request - Order #",
+    "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/storefront-returns"
+  },
+  {
     "title": "Create Cart Context in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/context"
   },
@@ -14,6 +18,10 @@ export const storefront = [
   {
     "title": "Manage Cart's Items in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items"
+  },
+  {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
   },
   {
     "title": "Retrieve Cart in Storefront",

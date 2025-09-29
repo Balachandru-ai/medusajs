@@ -152,6 +152,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
   },
   {
+    "title": "Example",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
+  },
+  {
     "title": "Use Analytics Module",
     "path": "https://docs.medusajs.com/resources/references/analytics/service"
   },

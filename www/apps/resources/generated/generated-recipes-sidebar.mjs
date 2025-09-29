@@ -144,6 +144,48 @@ const generatedgeneratedRecipesSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "link",
+      "path": "/recipes/personalized-products",
+      "title": "Personalized Products",
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/personalized-products/example",
+          "title": "Example",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "link",
+      "path": "/recipes/ticket-booking",
+      "title": "Ticket Booking",
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/ticket-booking/example",
+          "title": "Example",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/recipes/ticket-booking/example/storefront",
+          "title": "Storefront Customizations",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "link",
       "path": "/recipes/ecommerce",
       "title": "Ecommerce",
       "children": []
@@ -171,23 +213,6 @@ const generatedgeneratedRecipesSidebarSidebar = {
       "path": "/recipes/oms",
       "title": "OMS",
       "children": []
-    },
-    {
-      "loaded": true,
-      "isPathHref": true,
-      "type": "link",
-      "path": "/recipes/personalized-products",
-      "title": "Personalized Products",
-      "children": [
-        {
-          "loaded": true,
-          "isPathHref": true,
-          "type": "link",
-          "path": "/recipes/personalized-products/example",
-          "title": "Example",
-          "children": []
-        }
-      ]
     },
     {
       "loaded": true,

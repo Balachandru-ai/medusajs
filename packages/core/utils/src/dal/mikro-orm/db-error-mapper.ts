@@ -4,7 +4,7 @@ import {
   NotFoundError,
   NotNullConstraintViolationException,
   UniqueConstraintViolationException,
-} from "@mikro-orm/core"
+} from "@medusajs/deps/mikro-orm/core"
 import { MedusaError, upperCaseFirst } from "../../common"
 
 function parseValue(value: string) {

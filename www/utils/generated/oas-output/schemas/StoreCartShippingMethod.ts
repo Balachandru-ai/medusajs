@@ -11,14 +11,6 @@
  *   - is_tax_inclusive
  *   - created_at
  *   - updated_at
- *   - original_total
- *   - original_subtotal
- *   - original_tax_total
- *   - total
- *   - subtotal
- *   - tax_total
- *   - discount_total
- *   - discount_tax_total
  * properties:
  *   id:
  *     type: string
@@ -220,35 +212,43 @@
  *   original_total:
  *     type: number
  *     title: original_total
- *     description: The shipping method's total including taxes, excluding promotions.
+ *     description: The shipping method's total including taxes, excluding promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   original_subtotal:
  *     type: number
  *     title: original_subtotal
- *     description: The shipping method's total excluding taxes, including promotions.
+ *     description: The shipping method's total excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   original_tax_total:
  *     type: number
  *     title: original_tax_total
- *     description: The total taxes applied on the shipping method's amount including promotions.
+ *     description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   total:
  *     type: number
  *     title: total
- *     description: The shipping method's total amount including taxes and promotions.
+ *     description: The shipping method's total amount including taxes and promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   subtotal:
  *     type: number
  *     title: subtotal
- *     description: The shipping method's total amount excluding taxes, including promotions.
+ *     description: The shipping method's total amount excluding taxes, including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   tax_total:
  *     type: number
  *     title: tax_total
- *     description: The total taxes applied on the shipping method's amount including promotions.
+ *     description: The total taxes applied on the shipping method's amount including promotions. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   discount_total:
  *     type: number
  *     title: discount_total
- *     description: The total amount discounted.
+ *     description: The total amount discounted. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  *   discount_tax_total:
  *     type: number
  *     title: discount_tax_total
- *     description: The taxes applied on the discounted amount.
+ *     description: The taxes applied on the discounted amount. This field is only available if you expand the `shipping_methods.*` relation. Learn more in the [Cart
+ *       Totals](https://docs.medusajs.com/resources/storefront-development/cart/totals#retrieve-and-show-shipping-method-totals) guide.
  * 
 */
 

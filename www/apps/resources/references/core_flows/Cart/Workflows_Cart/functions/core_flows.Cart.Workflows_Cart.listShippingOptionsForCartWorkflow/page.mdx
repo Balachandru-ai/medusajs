@@ -25,7 +25,7 @@ use the [listShippingOptionsForCartWithPricingWorkflow](../core_flows.Cart.Workf
 You can use this workflow within your own customizations or custom workflows, allowing you to wrap custom logic around to retrieve the shipping options of a cart
 in your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/9069e9279ee230384cf09c553f60ab6caa0e7012/packages/core/core-flows/src/cart/workflows/list-shipping-options-for-cart.ts#L82" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/cart/workflows/list-shipping-options-for-cart.ts#L130" />
 
 ## Examples
 
@@ -138,7 +138,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"listShippingOptionsForCartWorkflow","steps":[{"type":"step","name":"validatePresenceOfStep","description":"This step validates the presence of attributes on an object","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.validatePresenceOfStep/page.mdx","depth":1},{"type":"hook","name":"setPricingContext","description":"This hook is executed before the shipping options are retrieved. You can consume this hook to return any custom context useful for the prices retrieval of shipping options.\n\nFor example, assuming you have the following custom pricing rule:\n\n```json\n{\n  \"attribute\": \"location_id\",\n  \"operator\": \"eq\",\n  \"value\": \"sloc_123\",\n}\n```\n\nYou can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:\n\n```ts\nimport { listShippingOptionsForCartWorkflow } from \"@medusajs/medusa/core-flows\";\nimport { StepResponse } from \"@medusajs/workflows-sdk\";\n\nlistShippingOptionsForCartWorkflow.hooks.setPricingContext((\n  { cart, fulfillmentSetIds, additional_data }, { container }\n) => {\n  return new StepResponse({\n    location_id: \"sloc_123\", // Special price for in-store purchases\n  });\n});\n```\n\nThe shipping options' prices will now be retrieved using the context you return.\n\n:::note\n\nLearn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.\n\n:::","link":"#setPricingContext","depth":2}]}} />
+<WorkflowDiagram workflow={{"name":"listShippingOptionsForCartWorkflow","steps":[{"type":"step","name":"validatePresenceOfStep","description":"This step validates the presence of attributes on an object","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.validatePresenceOfStep/page.mdx","depth":1},{"type":"hook","name":"setPricingContext","description":"This hook is executed after the order is retrieved and before the line items are created. You can consume this hook to return any custom context useful for the prices retrieval of the variants to be added to the order.\n\nFor example, assuming you have the following custom pricing rule:\n\n```json\n{\n  \"attribute\": \"location_id\",\n  \"operator\": \"eq\",\n  \"value\": \"sloc_123\",\n}\n```\n\nYou can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:\n\n```ts\nimport { addOrderLineItemsWorkflow } from \"@medusajs/medusa/core-flows\";\nimport { StepResponse } from \"@medusajs/workflows-sdk\";\n\naddOrderLineItemsWorkflow.hooks.setPricingContext((\n  { order, variantIds, region, customerData, additional_data }, { container }\n) => {\n  return new StepResponse({\n    location_id: \"sloc_123\", // Special price for in-store purchases\n  });\n});\n```\n\nThe variants' prices will now be retrieved using the context you return.\n\n:::note\n\nLearn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.\n\n:::","link":"#setPricingContext","depth":2},{"type":"hook","name":"setShippingOptionsContext","description":"This hook is executed after the cart is retrieved and before the shipping options are queried. You can consume this hook to return any custom context useful for the shipping options retrieval.\n\nFor example, you can consume the hook to add the customer Id to the context:\n\n```ts\nimport { listShippingOptionsForCartWithPricingWorkflow } from \"@medusajs/medusa/core-flows\"\nimport { StepResponse } from \"@medusajs/workflows-sdk\"\n\nlistShippingOptionsForCartWithPricingWorkflow.hooks.setShippingOptionsContext(\n  async ({ cart }, { container }) => {\n\n    if (cart.customer_id) {\n      return new StepResponse({\n        customer_id: cart.customer_id,\n      })\n    }\n\n    const query = container.resolve(\"query\")\n\n    const { data: carts } = await query.graph({\n      entity: \"cart\",\n      filters: {\n        id: cart.id,\n      },\n      fields: [\"customer_id\"],\n    })\n\n    return new StepResponse({\n      customer_id: carts[0].customer_id,\n    })\n  }\n)\n```\n\nThe `customer_id` property will be added to the context along with other properties such as `is_return` and `enabled_in_store`.\n\n:::note\n\nYou should also consume the `setShippingOptionsContext` hook in the listShippingOptionsForCartWorkflow workflow to ensure that the context is consistent when listing shipping options across workflows.\n\n:::","link":"#setShippingOptionsContext","depth":3}]}} />
 
 ## Input
 
@@ -203,4 +203,66 @@ listShippingOptionsForCartWorkflow.hooks.setPricingContext(
 
 Handlers consuming this hook accept the following input.
 
-<TypeList types={[{"name":"input","type":"[input](../../../core_flows.Cart.Workflows_Cart/page.mdx#__type-9)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"cart","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillmentSetIds","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"additional_data","type":"`Record<string, unknown> | undefined`","description":"Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="setPricingContext"/>
+<TypeList types={[{"name":"input","type":"[input](../../../core_flows.Cart.Workflows_Cart/page.mdx#__type-10)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"cart","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillmentSetIds","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"additional_data","type":"`Record<string, unknown> | undefined`","description":"Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="setPricingContext"/>
+
+### setShippingOptionsContext
+
+This hook is executed after the cart is retrieved and before the shipping options are queried. You can consume this hook to return any custom context useful for the shipping options retrieval.
+
+For example, you can consume the hook to add the customer Id to the context:
+
+```ts
+import { listShippingOptionsForCartWithPricingWorkflow } from "@medusajs/medusa/core-flows"
+import { StepResponse } from "@medusajs/workflows-sdk"
+
+listShippingOptionsForCartWithPricingWorkflow.hooks.setShippingOptionsContext(
+  async ({ cart }, { container }) => {
+
+    if (cart.customer_id) {
+      return new StepResponse({
+        customer_id: cart.customer_id,
+      })
+    }
+
+    const query = container.resolve("query")
+
+    const { data: carts } = await query.graph({
+      entity: "cart",
+      filters: {
+        id: cart.id,
+      },
+      fields: ["customer_id"],
+    })
+
+    return new StepResponse({
+      customer_id: carts[0].customer_id,
+    })
+  }
+)
+```
+
+The `customer_id` property will be added to the context along with other properties such as `is_return` and `enabled_in_store`.
+
+:::note
+
+You should also consume the `setShippingOptionsContext` hook in the [listShippingOptionsForCartWithPricingWorkflow](../core_flows.Cart.Workflows_Cart.listShippingOptionsForCartWithPricingWorkflow/page.mdx) workflow to ensure that the context is consistent when listing shipping options across workflows.
+
+:::
+
+#### Example
+
+```ts
+import { listShippingOptionsForCartWorkflow } from "@medusajs/medusa/core-flows"
+
+listShippingOptionsForCartWorkflow.hooks.setShippingOptionsContext(
+  (async ({ cart, fulfillmentSetIds, additional_data }, { container }) => {
+    //TODO
+  })
+)
+```
+
+#### Input
+
+Handlers consuming this hook accept the following input.
+
+<TypeList types={[{"name":"input","type":"[input](../../../core_flows.Cart.Workflows_Cart/page.mdx#__type-11)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"cart","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fulfillmentSetIds","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"additional_data","type":"`Record<string, unknown> | undefined`","description":"Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="setShippingOptionsContext"/>

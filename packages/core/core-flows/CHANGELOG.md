@@ -1,5 +1,39 @@
 # @medusajs/core-flows
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13516](https://github.com/medusajs/medusa/pull/13516) [`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada) Thanks [@adrien2p](https://github.com/adrien2p)! - test(): test dynamic max workers and improve CI
+
+- [#13497](https://github.com/medusajs/medusa/pull/13497) [`9563ee446f2b3a2e0cd4a4a33959ed55be5f268a`](https://github.com/medusajs/medusa/commit/9563ee446f2b3a2e0cd4a4a33959ed55be5f268a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(utils): subtotal calculation discounting returned items
+
+- [#13468](https://github.com/medusajs/medusa/pull/13468) [`1071296236d84b70b3b31034eb95984445feb020`](https://github.com/medusajs/medusa/commit/1071296236d84b70b3b31034eb95984445feb020) Thanks [@willbouch](https://github.com/willbouch)! - feat(core-flows): hook to set shipping opt context when listing
+
+- [#13501](https://github.com/medusajs/medusa/pull/13501) [`040fbf3220420b43871e33acc6686a6cedcf88fc`](https://github.com/medusajs/medusa/commit/040fbf3220420b43871e33acc6686a6cedcf88fc) Thanks [@shahednasser](https://github.com/shahednasser)! - chore(core-flows): use directory convention for locking steps
+
+- [#13508](https://github.com/medusajs/medusa/pull/13508) [`8565dcfc46c9ccc923a44582bb215c615ac2792f`](https://github.com/medusajs/medusa/commit/8565dcfc46c9ccc923a44582bb215c615ac2792f) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows,medusa): don't allow negative line item quantity
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- [#13353](https://github.com/medusajs/medusa/pull/13353) [`fb71bc64052ff7ddf4e5a44c6e91e6a3a3636317`](https://github.com/medusajs/medusa/commit/fb71bc64052ff7ddf4e5a44c6e91e6a3a3636317) Thanks [@fPolic](https://github.com/fPolic)! - fix(core-flows): handle cacluated shipping options on draft orders gracefully
+
+- [#13424](https://github.com/medusajs/medusa/pull/13424) [`b776fd55dcd959fdd495dd11ff9b006a31a623ce`](https://github.com/medusajs/medusa/commit/b776fd55dcd959fdd495dd11ff9b006a31a623ce) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(core-flows): lock on cart operations
+
+- [#13418](https://github.com/medusajs/medusa/pull/13418) [`2fe68a975b75a925e1e16c7e08c245abf63db0c5`](https://github.com/medusajs/medusa/commit/2fe68a975b75a925e1e16c7e08c245abf63db0c5) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Tweak update payment collection and refresh shipping method workflow execution
+
+- [#13477](https://github.com/medusajs/medusa/pull/13477) [`29dca1ca481e34cc17678b7b4f0e854d3a404acd`](https://github.com/medusajs/medusa/commit/29dca1ca481e34cc17678b7b4f0e854d3a404acd) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): update cart line item route fetching
+
+- [#13385](https://github.com/medusajs/medusa/pull/13385) [`ca471eb8f45d01cebe3eb65644de1b10e796e7ba`](https://github.com/medusajs/medusa/commit/ca471eb8f45d01cebe3eb65644de1b10e796e7ba) Thanks [@gladius882](https://github.com/gladius882)! - feat(core-flows): return type in createPaymentCollectionForCartWorkflow
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
 ## 2.10.1
 
 ### Patch Changes

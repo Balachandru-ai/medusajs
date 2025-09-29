@@ -101,7 +101,8 @@ export function decorateCartTotals(
   let shippingDiscountTotal = MathBN.convert(0)
 
   const cartItems = items.map((item, index) => {
-    const itemTotals = Object.assign(item, itemsTotals[item.id ?? index] ?? {})
+    const rawTotals = itemsTotals[item.id ?? index] ?? {}
+    const itemTotals = Object.assign(item, rawTotals)
     const itemSubtotal = itemTotals.subtotal
 
     const itemTotal = MathBN.convert(itemTotals.total)
@@ -208,6 +209,10 @@ export function decorateCartTotals(
 
   // TODO: Gift Card calculations
   const originalTotal = MathBN.add(itemsOriginalTotal, shippingOriginalTotal)
+  const originalSubtotal = MathBN.add(
+    itemsOriginalSubtotal,
+    shippingOriginalSubtotal
+  )
 
   // TODO: subtract (cart.gift_card_total + cart.gift_card_tax_total)
   const tempTotal = MathBN.add(subtotal, taxTotal)
@@ -231,6 +236,7 @@ export function decorateCartTotals(
   // cart.gift_card_tax_total = giftCardTotal.tax_total || 0
 
   cart.original_total = new BigNumber(originalTotal)
+  cart.original_subtotal = new BigNumber(originalSubtotal)
   cart.original_tax_total = new BigNumber(originalTaxTotal)
 
   // cart.original_gift_card_total =
@@ -262,6 +268,23 @@ export function decorateCartTotals(
     cart.original_shipping_tax_total = new BigNumber(shippingOriginalTaxTotal)
     cart.original_shipping_subtotal = new BigNumber(shippingOriginalSubtotal)
     cart.original_shipping_total = new BigNumber(shippingOriginalTotal)
+  }
+
+  // Calculate pending return total
+  if (cart.summary) {
+    const pendingReturnTotal = MathBN.sum(
+      0,
+      ...(cart.items?.map((item) => item.return_requested_total ?? 0) ?? [0])
+    )
+
+    const pendingDifference = new BigNumber(
+      MathBN.sub(
+        MathBN.sub(cart.total, pendingReturnTotal),
+        cart.summary?.transaction_total ?? 0
+      )
+    )
+
+    cart.summary.pending_difference = pendingDifference
   }
 
   return cart

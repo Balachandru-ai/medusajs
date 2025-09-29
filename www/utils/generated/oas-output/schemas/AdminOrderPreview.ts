@@ -26,6 +26,7 @@
  *   - item_total
  *   - item_subtotal
  *   - item_tax_total
+ *   - item_discount_total
  *   - original_total
  *   - original_subtotal
  *   - original_tax_total
@@ -39,6 +40,7 @@
  *   - shipping_total
  *   - shipping_subtotal
  *   - shipping_tax_total
+ *   - shipping_discount_total
  *   - original_shipping_total
  *   - original_shipping_subtotal
  *   - original_shipping_tax_total
@@ -643,6 +645,14 @@
  *     type: number
  *     title: credit_line_total
  *     description: The order preview's credit line total.
+ *   item_discount_total:
+ *     type: number
+ *     title: item_discount_total
+ *     description: The total discount amount applied on the order's items.
+ *   shipping_discount_total:
+ *     type: number
+ *     title: shipping_discount_total
+ *     description: The total discount amount applied on the order's shipping.
  * 
 */
 

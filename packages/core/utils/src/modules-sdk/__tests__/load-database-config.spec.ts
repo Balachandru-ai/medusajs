@@ -169,7 +169,30 @@ describe("loadDatabaseConfig", function () {
     let config = loadDatabaseConfig("product", options)
 
     expect(config).toEqual({
-      clientUrl: options.database.clientUrl,
+      clientUrl: "postgres://https://test.com:5432/medusa-test",
+      driverOptions: {
+        connection: {
+          ssl: false,
+        },
+      },
+      debug: false,
+      schema: "",
+    })
+  })
+
+  it("should return the local configuration using the client url sslmode=disable", function () {
+    process.env.DATABASE_URL = "postgres://localhost:5432/medusa"
+    const options = {
+      database: {
+        clientUrl:
+          "postgres://https://test.com:5432/medusa-test?sslmode=disable",
+      },
+    }
+
+    let config = loadDatabaseConfig("product", options)
+
+    expect(config).toEqual({
+      clientUrl: "postgres://https://test.com:5432/medusa-test?sslmode=disable",
       driverOptions: {
         connection: {
           ssl: false,
@@ -185,14 +208,14 @@ describe("loadDatabaseConfig", function () {
     const options = {
       database: {
         clientUrl:
-          "postgres://https://test.com:5432/medusa-test?ssl_mode=disable",
+          "postgres://https://test.com:5432/medusa-test?ssl_mode=false",
       },
     }
 
     let config = loadDatabaseConfig("product", options)
 
     expect(config).toEqual({
-      clientUrl: options.database.clientUrl,
+      clientUrl: "postgres://https://test.com:5432/medusa-test",
       driverOptions: {
         connection: {
           ssl: false,

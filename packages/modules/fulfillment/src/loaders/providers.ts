@@ -11,7 +11,7 @@ import {
 } from "@medusajs/framework/utils"
 import { FulfillmentProviderService } from "@services"
 import { FulfillmentIdentifiersRegistrationName } from "@types"
-import { Lifetime, asFunction, asValue } from "awilix"
+import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
 
 const registrationFn = async (klass, container, pluginOptions) => {
   const key = FulfillmentProviderService.getRegistrationIdentifier(

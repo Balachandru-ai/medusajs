@@ -25,7 +25,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { WorkflowsModuleService } from "@services"
-import { asFunction } from "awilix"
+import { asFunction } from "@medusajs/framework/awilix"
 import { setTimeout as setTimeoutSync } from "timers"
 import { setTimeout as setTimeoutPromise } from "timers/promises"
 import { ulid } from "ulid"
@@ -447,63 +447,61 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
       })
 
-      it("should not retry steps X times automatically when maxRetries is set and autoRetry is false", async () => {
-        const transactionId = "transaction-auto-retries" + ulid()
-        const workflowId = "workflow_1_auto_retries_false"
+      it("should not retry steps X times automatically when maxRetries is set and autoRetry is false", (done) => {
+        ;(async () => {
+          const transactionId = "transaction-auto-retries" + ulid()
+          const workflowId = "workflow_1_auto_retries_false"
 
-        await workflowOrcModule.run(workflowId, {
-          input: {},
-          transactionId,
-          throwOnError: false,
-        })
+          await workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+            throwOnError: false,
+          })
 
-        let lastExepectHaveBeenCalledTimes = 0
+          workflowOrcModule.subscribe({
+            workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+                expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(3)
+                expect(
+                  step1CompensateMockAutoRetriesFalse
+                ).toHaveBeenCalledTimes(1)
+                expect(
+                  step2CompensateMockAutoRetriesFalse
+                ).toHaveBeenCalledTimes(1)
+                done()
+              }
+            },
+          })
 
-        workflowOrcModule.subscribe({
-          workflowId,
-          transactionId,
-          subscriber: async (event) => {
-            if (event.eventType === "onFinish") {
-              lastExepectHaveBeenCalledTimes = 1
-              expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
-              expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(3)
-              expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(
-                1
-              )
-              expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(
-                1
-              )
-            }
-          },
-        })
+          expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+          expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+          expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+          expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
 
-        expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
-        expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
-        expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
-        expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+          await setTimeoutPromise(2000)
 
-        await workflowOrcModule.run(workflowId, {
-          input: {},
-          transactionId,
-          throwOnError: false,
-        })
+          await workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+            throwOnError: false,
+          })
 
-        await setTimeoutPromise(1000)
+          await setTimeoutPromise(2000)
 
-        expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
-        expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(2)
-        expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
-        expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+          expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(1)
+          expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(2)
+          expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
+          expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
 
-        await workflowOrcModule.run(workflowId, {
-          input: {},
-          transactionId,
-          throwOnError: false,
-        })
-
-        await setTimeoutPromise(1000)
-
-        expect(lastExepectHaveBeenCalledTimes).toEqual(1)
+          await workflowOrcModule.run(workflowId, {
+            input: {},
+            transactionId,
+            throwOnError: false,
+          })
+        })()
       })
 
       it("should prevent executing twice the same workflow in perfect concurrency with the same transactionId and non idempotent and not async but retention time is set", async () => {
