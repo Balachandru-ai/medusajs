@@ -64,7 +64,7 @@ if (process.env.TEST_TYPE === "integration:http") {
 Next, create the `integration-tests/setup.js` file with the following content:
 
 ```js title="integration-tests/setup.js"
-const { MetadataStorage } = require("@mikro-orm/core")
+const { MetadataStorage } = require("@medusajs/framework/@mikro-orm/core")
 
 MetadataStorage.clear()
 ```

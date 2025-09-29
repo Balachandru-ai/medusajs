@@ -196,7 +196,7 @@ npx medusa db:generate blog
 The `db:generate` command of the Medusa CLI accepts one or more module names to generate the migration for. It will create a migration file for the Blog Module in the directory `src/modules/blog/migrations` similar to the following:
 
 ```ts
-import { Migration } from "@mikro-orm/migrations"
+import { Migration } from "@medusajs/framework/@mikro-orm/migrations"
 
 export class Migration20241121103722 extends Migration {
 

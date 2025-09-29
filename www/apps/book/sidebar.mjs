@@ -709,6 +709,18 @@ export const sidebars = [
             path: "https://github.com/medusajs/medusa/releases",
             title: "Release Notes",
           },
+          {
+            type: "link",
+            path: "/learn/codemods",
+            title: "Codemods",
+            children: [
+              {
+                type: "link",
+                title: "Replace Imports (v2.11.0+)",
+                path: "/learn/codemods/replace-imports",
+              },
+            ],
+          },
         ],
       },
       {
