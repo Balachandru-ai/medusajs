@@ -101,9 +101,8 @@ export const generatedEditDates = {
   "app/commerce-modules/page.mdx": "2025-04-17T08:48:34.855Z",
   "app/create-medusa-app/page.mdx": "2025-07-14T08:51:06.654Z",
   "app/deployment/admin/vercel/page.mdx": "2024-10-16T08:10:29.377Z",
-  "app/deployment/medusa-application/railway/page.mdx": "2025-04-17T08:28:58.981Z",
   "app/deployment/storefront/vercel/page.mdx": "2025-05-20T07:51:40.712Z",
-  "app/deployment/page.mdx": "2025-06-24T08:50:10.114Z",
+  "app/deployment/page.mdx": "2025-09-29T10:23:47.833Z",
   "app/integrations/page.mdx": "2025-08-07T06:06:50.604Z",
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
@@ -6609,5 +6608,6 @@ export const generatedEditDates = {
   "references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.acquireLockStepId/page.mdx": "2025-09-15T09:52:14.218Z",
   "references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.releaseLockStepId/page.mdx": "2025-09-15T09:52:14.219Z",
   "references/core_flows/Locking/core_flows.Locking.Steps_Locking/page.mdx": "2025-09-15T09:52:14.217Z",
+  "app/nextjs-starter/guides/storefront-returns/page.mdx": "2025-09-22T06:02:00.580Z",
   "references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx": "2025-09-18T17:04:59.240Z"
 }

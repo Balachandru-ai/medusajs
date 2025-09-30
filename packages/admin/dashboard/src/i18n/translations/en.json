@@ -832,6 +832,7 @@
     "deleteWarning": "You are about to delete an inventory item. This action cannot be undone.",
     "editItemDetails": "Edit item details",
     "quantityAcrossLocations": "{{quantity}} across {{locations}} locations",
+    "levelDeleted": "Inventory level deleted successfully.",
     "create": {
       "title": "Create Inventory Item",
       "details": "Details",
@@ -1535,7 +1536,10 @@
   "stockLocations": {
     "domain": "Locations & Shipping",
     "list": {
-      "description": "Manage your store's stock locations and shipping options."
+      "description": "Manage your store's stock locations and shipping options.",
+      "noRecordsMessage": "No records",
+      "noRecordsMessageEmpty": "No locations found",
+      "noRecordsMessageFiltered": "No locations found matching the filters"
     },
     "create": {
       "header": "Create Stock Location",
@@ -1548,7 +1552,8 @@
       "successToast": "Location {{name}} was successfully updated."
     },
     "delete": {
-      "confirmation": "You are about to delete the stock location \"{{name}}\". This action cannot be undone."
+      "confirmation": "You are about to delete the stock location \"{{name}}\". This action cannot be undone.",
+      "successToast": "Location \"{{name}}\" was successfully deleted."
     },
     "fulfillmentProviders": {
       "header": "Fulfillment Providers",
@@ -2230,7 +2235,7 @@
       "total_used": "Budget used",
       "budget_limit": "Budget limit",
       "campaign_id": {
-        "hint": "Only campaigns with the same currency code as the promotion are shown in this list."
+        "hint": "Disabled campaigns have budget in a different currency than the promotion."
       }
     },
     "budget": {
@@ -2765,6 +2770,10 @@
       "label": {
         "label": "Label",
         "placeholder": "Gesture of goodwill"
+      },
+      "code": {
+        "label": "Code",
+        "placeholder": "gesture_of_goodwill"
       },
       "description": {
         "label": "Description",

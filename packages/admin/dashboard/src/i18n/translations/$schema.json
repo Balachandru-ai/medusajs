@@ -3111,6 +3111,9 @@
         "quantityAcrossLocations": {
           "type": "string"
         },
+        "levelDeleted": {
+          "type": "string"
+        },
         "create": {
           "type": "object",
           "properties": {
@@ -3327,6 +3330,7 @@
         "deleteWarning",
         "editItemDetails",
         "quantityAcrossLocations",
+        "levelDeleted",
         "create",
         "reservation",
         "adjustInventory",
@@ -5834,9 +5838,23 @@
           "properties": {
             "description": {
               "type": "string"
+            },
+            "noRecordsMessage": {
+              "type": "string"
+            },
+            "noRecordsMessageEmpty": {
+              "type": "string"
+            },
+            "noRecordsMessageFiltered": {
+              "type": "string"
             }
           },
-          "required": ["description"],
+          "required": [
+            "description",
+            "noRecordsMessage",
+            "noRecordsMessageEmpty",
+            "noRecordsMessageFiltered"
+          ],
           "additionalProperties": false
         },
         "create": {
@@ -5876,9 +5894,12 @@
           "properties": {
             "confirmation": {
               "type": "string"
+            },
+            "successToast": {
+              "type": "string"
             }
           },
-          "required": ["confirmation"],
+          "required": ["confirmation", "successToast"],
           "additionalProperties": false
         },
         "fulfillmentProviders": {
@@ -10285,6 +10306,19 @@
               "required": ["label", "placeholder"],
               "additionalProperties": false
             },
+            "code": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "placeholder"],
+              "additionalProperties": false
+            },
             "description": {
               "type": "object",
               "properties": {
@@ -10299,7 +10333,7 @@
               "additionalProperties": false
             }
           },
-          "required": ["label", "description"],
+          "required": ["label", "code", "description"],
           "additionalProperties": false
         }
       },
