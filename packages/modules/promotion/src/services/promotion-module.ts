@@ -240,7 +240,7 @@ export default class PromotionModuleService
       if (limit && MathBN.gt(newUsedValue, limit)) {
         throw new MedusaError(
           MedusaError.Types.NOT_ALLOWED,
-          "Promotion usage exceeded the budget limit."
+          "Promotion usage exceeds the budget limit."
         )
       }
 
@@ -366,7 +366,7 @@ export default class PromotionModuleService
         ) {
           throw new MedusaError(
             MedusaError.Types.NOT_ALLOWED,
-            "Promotion usage exceeded the budget limit."
+            "Promotion usage exceeds the budget limit."
           )
         }
 
@@ -391,7 +391,7 @@ export default class PromotionModuleService
         ) {
           throw new MedusaError(
             MedusaError.Types.NOT_ALLOWED,
-            "Promotion usage exceeded the budget limit."
+            "Promotion usage exceeds the budget limit."
           )
         }
 

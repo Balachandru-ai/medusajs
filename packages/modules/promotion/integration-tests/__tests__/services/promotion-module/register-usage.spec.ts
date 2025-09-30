@@ -125,7 +125,7 @@ moduleIntegrationTestRunner({
           expect(error).toEqual(
             expect.objectContaining({
               type: "not_allowed",
-              message: "Promotion usage exceeded the budget limit.",
+              message: "Promotion usage exceeds the budget limit.",
             })
           )
 
@@ -175,7 +175,7 @@ moduleIntegrationTestRunner({
           expect(error).toEqual(
             expect.objectContaining({
               type: "not_allowed",
-              message: "Promotion usage exceeded the budget limit.",
+              message: "Promotion usage exceeds the budget limit.",
             })
           )
 
@@ -220,7 +220,7 @@ moduleIntegrationTestRunner({
           expect(error).toEqual(
             expect.objectContaining({
               type: "not_allowed",
-              message: "Promotion usage exceeded the budget limit.",
+              message: "Promotion usage exceeds the budget limit.",
             })
           )
 
