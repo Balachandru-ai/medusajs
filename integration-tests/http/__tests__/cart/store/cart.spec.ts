@@ -2211,7 +2211,7 @@ medusaIntegrationTestRunner({
             expect(response2.response.data).toEqual(
               expect.objectContaining({
                 type: "not_allowed",
-                message: "Promotion usage exceeded the budget limit.",
+                message: "Promotion usage exceeds the budget limit.",
               })
             )
 
