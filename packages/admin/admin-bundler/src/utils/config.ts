@@ -76,11 +76,13 @@ export async function getViteConfig(
       .replace(/^@/, "")
       .replace(/[^a-zA-Z0-9]/g, "_")
       .toUpperCase()
+    const pluginEnv: Record<string, string | undefined> = {}
     for (const envVar in process.env) {
       if (envVar.startsWith(`PLUGIN_${normalizedName}_`)) {
-        baseConfig.define![envVar] = JSON.stringify(process.env[envVar]);
+        pluginEnv[envVar] = process.env[envVar];
       }
     }
+    baseConfig.define!["process.env"] = JSON.stringify(pluginEnv);
   }
 
   if (options.vite) {
