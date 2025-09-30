@@ -217,7 +217,7 @@ export default class PromotionModuleService
           budget_id: budgetId,
           attribute_value: attributeValue,
         },
-        {},
+        { relations: ["budget"] },
         sharedContext
       )
 
@@ -231,10 +231,23 @@ export default class PromotionModuleService
         sharedContext
       )
     } else {
+      const limit = campaignBudgetUsagePerAttributeValue.budget.limit
+      const newUsedValue = MathBN.add(
+        campaignBudgetUsagePerAttributeValue.used ?? 0,
+        1
+      )
+
+      if (limit && MathBN.gt(newUsedValue, limit)) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Promotion usage exceeded the budget limit."
+        )
+      }
+
       await this.campaignBudgetUsageService_.update(
         {
           id: campaignBudgetUsagePerAttributeValue.id,
-          used: MathBN.add(campaignBudgetUsagePerAttributeValue.used ?? 0, 1),
+          used: newUsedValue,
         },
         sharedContext
       )
@@ -279,6 +292,16 @@ export default class PromotionModuleService
 
   @InjectTransactionManager()
   @EmitEvents()
+  /**
+   * Register the usage of promotions in the campaign budget and
+   * increment the used value if the budget is not exceeded,
+   * throws an error if the budget is exceeded.
+   *
+   * @param computedActions - The computed actions to register usage for.
+   * @param registrationContext - The context of the campaign budget usage.
+   * @returns void
+   * @throws {MedusaError} - If the promotion usage exceeds the budget limit.
+   */
   async registerUsage(
     computedActions: PromotionTypes.UsageComputedActions[],
     registrationContext: PromotionTypes.CampaignBudgetUsageContext,
@@ -341,10 +364,13 @@ export default class PromotionModuleService
           campaignBudget.limit &&
           MathBN.gt(newUsedValue, campaignBudget.limit)
         ) {
-          campaignBudgetData.used = campaignBudget.limit
-        } else {
-          campaignBudgetData.used = newUsedValue
+          throw new MedusaError(
+            MedusaError.Types.NOT_ALLOWED,
+            "Promotion usage exceeded the budget limit."
+          )
         }
+
+        campaignBudgetData.used = newUsedValue
 
         campaignBudgetMap.set(campaignBudget.id, campaignBudgetData)
       }
@@ -359,21 +385,20 @@ export default class PromotionModuleService
 
         const newUsedValue = MathBN.add(campaignBudget.used ?? 0, 1)
 
-        // Check if it exceeds the limit and cap it if necessary
         if (
           campaignBudget.limit &&
           MathBN.gt(newUsedValue, campaignBudget.limit)
         ) {
-          campaignBudgetMap.set(campaignBudget.id, {
-            id: campaignBudget.id,
-            used: campaignBudget.limit,
-          })
-        } else {
-          campaignBudgetMap.set(campaignBudget.id, {
-            id: campaignBudget.id,
-            used: newUsedValue,
-          })
+          throw new MedusaError(
+            MedusaError.Types.NOT_ALLOWED,
+            "Promotion usage exceeded the budget limit."
+          )
         }
+
+        campaignBudgetMap.set(campaignBudget.id, {
+          id: campaignBudget.id,
+          used: newUsedValue,
+        })
 
         promotionCodeUsageMap.set(promotion.code!, true)
       }
