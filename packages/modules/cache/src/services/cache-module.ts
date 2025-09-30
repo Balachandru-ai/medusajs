@@ -252,7 +252,14 @@ export default class CachingModuleService implements ICachingModuleService {
       autoInvalidate?: boolean
     }
   }) {
-    const key_ = key ?? this.strategy.computeKey(data)
+    if (!key) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_ARGUMENT,
+        "[CachingModuleService] Key must be provided"
+      )
+    }
+
+    const key_ = key
     const tags_ = tags ?? (await this.strategy.computeTags(data))
 
     let providers_: string[] | { id: string; ttl?: number }[] = [

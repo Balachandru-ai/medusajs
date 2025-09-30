@@ -7,7 +7,6 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
   Modules,
-  useCache,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
@@ -123,32 +122,14 @@ async function processVariantPriceSets(
 
   // Group items by their context to minimize API calls
   const contextGroups = groupItemsByContext(items)
-  const cachingModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   for (const [, groupItems] of contextGroups) {
     const priceSetIds = groupItems.map((item) => item.priceSetId)
     const context = groupItems[0].context // All items in group have same context
 
-    const calculatedPriceSetsArgs = [
+    const calculatedPriceSets = await pricingService.calculatePrices(
       { id: priceSetIds },
-      { context: context as Record<string, string | number> },
-    ]
-
-    const calculatedPriceSets = await useCache<CalculatedPriceSet[]>(
-      async () =>
-        await pricingService.calculatePrices(
-          ...(calculatedPriceSetsArgs as Parameters<
-            typeof pricingService.calculatePrices
-          >)
-        ),
-      {
-        container,
-        key:
-          cachingModule &&
-          (await cachingModule.computeKey(calculatedPriceSetsArgs)),
-      }
+      { context: context as Record<string, string | number> }
     )
 
     // Map calculated prices back to variants

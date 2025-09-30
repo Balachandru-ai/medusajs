@@ -192,7 +192,10 @@ const getDataForComputation = async (
       },
       {
         cache: {
-          enable: true,
+          tags: [
+            `SalesChannel:${data.sales_channel_id}`,
+            "StockLocation:list:*",
+          ],
         },
       }
     )

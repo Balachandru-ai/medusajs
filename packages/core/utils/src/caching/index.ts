@@ -1,7 +1,7 @@
 import { ICachingModuleService, Logger, MedusaContainer } from "@medusajs/types"
 import { Modules } from "../modules-sdk"
 import { FeatureFlag } from "../feature-flags"
-import { ContainerRegistrationKeys } from "../common"
+import { ContainerRegistrationKeys, isObject } from "../common"
 
 /**
  * This function is used to cache the result of a function call.
@@ -14,7 +14,7 @@ export async function useCache<T>(
   cb: (...args: any[]) => Promise<T>,
   options: {
     enable?: boolean
-    key?: string
+    key: string
     tags?: string[]
     ttl?: number
     /**
@@ -40,7 +40,7 @@ export async function useCache<T>(
     return await cb()
   }
 
-  const key = options.key ?? (await cachingModule.computeKey(options))
+  const key = options.key
 
   const data = await cachingModule.get({
     key,
@@ -179,6 +179,25 @@ export function Cached<
         "providers",
       ]
       const cacheOptions = {} as Parameters<typeof useCache>[1]
+
+      if (!options.key) {
+        options.key = await cachingModule.computeKey(
+          args.map((arg) => {
+            if (isObject(arg)) {
+              // Prevent any container, manager, transactionManager, etc from being included in the key
+              const {
+                container,
+                manager,
+                transactionManager,
+                __type,
+                ...rest
+              } = arg as any
+              return rest
+            }
+            return arg
+          })
+        )
+      }
 
       const promises: Promise<any>[] = []
       for (const key of resolvableKeys) {

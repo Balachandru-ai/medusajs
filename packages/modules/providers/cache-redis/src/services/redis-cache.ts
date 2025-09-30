@@ -22,7 +22,7 @@ export class RedisCachingProvider {
     this.redisClient = redisClient
     this.keyNamePrefix = prefix
     this.defaultTTL = options?.ttl ?? 3600 // 1 hour default
-    this.compressionThreshold = options?.compressionThreshold ?? 1024 // 1KB default
+    this.compressionThreshold = options?.compressionThreshold ?? 2048 // 2KB default
     this.hasher = hasher
   }
 
@@ -87,31 +87,40 @@ export class RedisCachingProvider {
     if (newTags.length) {
       const nextIdKey = this.#getTagNextIdKey()
       const reverseDictKey = this.#getTagReverseDictionaryKey()
+      const refCountKey = this.#getTagRefCountKey()
       const startId = await this.redisClient.incrby(nextIdKey, newTags.length)
 
-      const newTagPipeline = this.redisClient.pipeline()
+      // OPTIMIZED: Single pipeline for all new tag operations
+      const batchPipeline = this.redisClient.pipeline()
       newTags.forEach((tag, index) => {
         const newId = startId - newTags.length + index + 1
 
         // Store in both forward and reverse dictionaries
-        newTagPipeline.hset(dictionaryKey, tag, newId.toString())
-        newTagPipeline.hset(reverseDictKey, newId.toString(), tag)
+        batchPipeline.hset(dictionaryKey, tag, newId.toString())
+        batchPipeline.hset(reverseDictKey, newId.toString(), tag)
 
         // Update the tagIds array
         const originalIndex = hashedTags.indexOf(tag)
         tagIds[originalIndex] = newId
       })
 
-      await newTagPipeline.exec()
-    }
+      // Add reference count increments to the same pipeline
+      tagIds.forEach((id) => {
+        if (id !== -1) {
+          batchPipeline.hincrby(refCountKey, id.toString(), 1)
+        }
+      })
 
-    // Increment reference count for all tags (existing and new)
-    const refCountKey = this.#getTagRefCountKey()
-    const refPipeline = this.redisClient.pipeline()
-    tagIds.forEach((id) => {
-      refPipeline.hincrby(refCountKey, id.toString(), 1)
-    })
-    await refPipeline.exec()
+      await batchPipeline.exec() // Single execution instead of two
+    } else {
+      // Only increment reference count for existing tags
+      const refCountKey = this.#getTagRefCountKey()
+      const refPipeline = this.redisClient.pipeline()
+      tagIds.forEach((id) => {
+        refPipeline.hincrby(refCountKey, id.toString(), 1)
+      })
+      await refPipeline.exec()
+    }
 
     return tagIds
   }
@@ -286,19 +295,24 @@ export class RedisCachingProvider {
       const valueResults = await valuePipeline.exec()
       const results: any[] = []
 
-      for (const result of valueResults || []) {
+      // OPTIMIZED: Parallel decompression for better performance
+      const decompressionPromises = (valueResults || []).map(async (result) => {
         if (result && result[1]) {
           const buffer = result[1] as Buffer
-
           try {
             const finalData = await this.#decompressData(buffer)
-            results.push(JSON.parse(finalData))
+            return JSON.parse(finalData)
           } catch (e) {
             // If JSON parsing fails, skip this entry (corrupted data)
             console.warn(`Skipping corrupted cache entry: ${e.message}`)
+            return null
           }
         }
-      }
+        return null
+      })
+
+      const decompressionResults = await Promise.all(decompressionPromises)
+      results.push(...decompressionResults.filter(Boolean))
 
       return results
     }
@@ -327,57 +341,50 @@ export class RedisCachingProvider {
 
     const finalData = await this.#compressData(serializedData)
 
-    const res = await this.redisClient.hsetnx(keyName, "data", finalData)
-    if (res === 1) {
-      if (options && Object.keys(options).length) {
-        await this.redisClient.hset(keyName, "options", JSON.stringify(options))
-      }
-      if (effectiveTTL) {
-        await this.redisClient.expire(keyName, effectiveTTL)
-      }
+    // OPTIMIZED: Process tags first to batch all operations
+    let tagIds: number[] = []
+    if (tags?.length) {
+      tagIds = await this.#internTags(tags)
     }
 
-    // Store tag IDs in a separate key for inverted index lookup (much more space efficient)
-    if (tags?.length) {
-      const tagIds = await this.#internTags(tags)
-      const tagsKey = this.#getTagsKey(key)
+    // OPTIMIZED: Single pipeline for all SET-related operations
+    const setPipeline = this.redisClient.pipeline()
 
-      // Store as binary array of 32-bit integers instead of JSON strings
+    // Main data with conditional operations
+    setPipeline.hsetnx(keyName, "data", finalData)
+    if (options && Object.keys(options).length) {
+      setPipeline.hset(keyName, "options", JSON.stringify(options))
+    }
+    if (effectiveTTL) {
+      setPipeline.expire(keyName, effectiveTTL)
+    }
+
+    // Store tag IDs if present
+    if (tags?.length && tagIds.length) {
+      const tagsKey = this.#getTagsKey(key)
       const buffer = Buffer.alloc(tagIds.length * 4)
       tagIds.forEach((id, index) => {
         buffer.writeUInt32LE(id, index * 4)
       })
 
       if (effectiveTTL) {
-        await this.redisClient.set(
-          tagsKey,
-          buffer,
-          "EX",
-          effectiveTTL + 60,
-          "NX"
-        ) // +1 minute buffer
+        setPipeline.set(tagsKey, buffer, "EX", effectiveTTL + 60, "NX")
       } else {
-        await this.redisClient.setnx(tagsKey, buffer)
+        setPipeline.setnx(tagsKey, buffer)
       }
-    }
 
-    // Handle tags if provided
-    if (tags && tags.length) {
-      const pipeline = this.redisClient.pipeline()
-
+      // Add tag operations to the same pipeline
       tags.forEach((tag) => {
         const tagKey = this.#getTagKey(tag)
-
-        pipeline.sadd(tagKey, keyName)
-
-        // Set TTL for tag keys too (slightly longer than cache TTL)
+        setPipeline.sadd(tagKey, keyName)
         if (effectiveTTL) {
-          pipeline.expire(tagKey, effectiveTTL + 60) // +1 minute buffer
+          setPipeline.expire(tagKey, effectiveTTL + 60)
         }
       })
-
-      await pipeline.exec()
     }
+
+    // Single execution for all operations
+    await setPipeline.exec()
   }
 
   async clear({
@@ -393,12 +400,19 @@ export class RedisCachingProvider {
   }): Promise<void> {
     if (key) {
       const keyName = this.#getKeyName(key)
-
-      // Get tags for this key to clean up tag sets
       const tagsKey = this.#getTagsKey(key)
-      const tagsBuffer = await this.redisClient.getBuffer(tagsKey)
 
-      if (tagsBuffer) {
+      // OPTIMIZED: Batch key deletion with tag cleanup
+      const clearPipeline = this.redisClient.pipeline()
+
+      // Get tags for cleanup and delete main key in same pipeline
+      clearPipeline.getBuffer(tagsKey)
+      clearPipeline.unlink(keyName)
+
+      const results = await clearPipeline.exec()
+      const tagsBuffer = results?.[0]?.[1] as Buffer
+
+      if (tagsBuffer?.length) {
         try {
           // Binary format: array of 32-bit integers
           const tagIds: number[] = []
@@ -409,7 +423,7 @@ export class RedisCachingProvider {
           if (tagIds.length) {
             const entryTags = await this.#resolveTagIds(tagIds)
 
-            // Clean up tag indexes
+            // OPTIMIZED: Single pipeline for all tag cleanup
             const tagCleanupPipeline = this.redisClient.pipeline()
             entryTags.forEach((tag) => {
               const tagKey = this.#getTagKey(tag, { isHashed: true })
@@ -426,7 +440,6 @@ export class RedisCachingProvider {
         }
       }
 
-      await this.redisClient.unlink(keyName)
       return
     }
 
