@@ -6217,9 +6217,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/caching-redis@2.10.3, @medusajs/caching-redis@workspace:packages/modules/providers/cache-redis":
+"@medusajs/caching-redis@2.10.3, @medusajs/caching-redis@workspace:packages/modules/providers/caching-redis":
   version: 0.0.0-use.local
-  resolution: "@medusajs/caching-redis@workspace:packages/modules/providers/cache-redis"
+  resolution: "@medusajs/caching-redis@workspace:packages/modules/providers/caching-redis"
   dependencies:
     "@medusajs/framework": 2.10.3
     "@swc/core": ^1.7.28
@@ -6234,9 +6234,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/caching@2.10.3, @medusajs/caching@workspace:*, @medusajs/caching@workspace:packages/modules/cache":
+"@medusajs/caching@2.10.3, @medusajs/caching@workspace:*, @medusajs/caching@workspace:packages/modules/caching":
   version: 0.0.0-use.local
-  resolution: "@medusajs/caching@workspace:packages/modules/cache"
+  resolution: "@medusajs/caching@workspace:packages/modules/caching"
   dependencies:
     "@medusajs/framework": 2.10.3
     "@medusajs/test-utils": 2.10.3
