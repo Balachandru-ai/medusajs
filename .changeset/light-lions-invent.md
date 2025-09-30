@@ -9,6 +9,8 @@
 "@medusajs/event-bus-redis": patch
 "@medusajs/caching-redis": patch
 "@medusajs/core-flows": patch
+"@medusajs/pricing": patch
+"@medusajs/draft-order": patch
 ---
 
 Feat(): distributed caching
