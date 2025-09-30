@@ -29,15 +29,12 @@ async function fetchSalesChannel(
   const salesChannelService = container.resolve<ISalesChannelModuleService>(
     Modules.SALES_CHANNEL
   )
-  const cacheModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   return await useCache<
     Awaited<ReturnType<typeof salesChannelService.retrieveSalesChannel>>
   >(async () => salesChannelService.retrieveSalesChannel(salesChannelId), {
     container,
-    key: await cacheModule.computeKey?.([salesChannelId]),
+    key: ["find-sales-channel", salesChannelId],
   })
 }
 

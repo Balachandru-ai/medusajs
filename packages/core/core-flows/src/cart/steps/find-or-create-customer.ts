@@ -50,15 +50,12 @@ async function fetchCustomerById(
   container: MedusaContainer
 ): Promise<CustomerDTO> {
   const service = container.resolve<ICustomerModuleService>(Modules.CUSTOMER)
-  const cacheModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   return await useCache<CustomerDTO>(
     async () => service.retrieveCustomer(customerId),
     {
       container,
-      key: await cacheModule.computeKey?.([customerId]),
+      key: ["find-or-create-customer-by-id", customerId],
     }
   )
 }
@@ -69,9 +66,6 @@ async function fetchCustomersByEmail(
   hasAccount?: boolean
 ): Promise<CustomerDTO[]> {
   const service = container.resolve<ICustomerModuleService>(Modules.CUSTOMER)
-  const cacheModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   const filters =
     hasAccount !== undefined ? { email, has_account: hasAccount } : { email }
@@ -80,7 +74,7 @@ async function fetchCustomersByEmail(
     async () => service.listCustomers(filters),
     {
       container,
-      key: await cacheModule.computeKey?.(filters),
+      key: ["find-or-create-customer-by-email", filters],
     }
   )
 }

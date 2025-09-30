@@ -14,7 +14,7 @@ export async function useCache<T>(
   cb: (...args: any[]) => Promise<T>,
   options: {
     enable?: boolean
-    key: string
+    key: string | any[]
     tags?: string[]
     ttl?: number
     /**
@@ -40,7 +40,12 @@ export async function useCache<T>(
     return await cb()
   }
 
-  const key = options.key
+  let key: string
+  if (typeof options.key === "string") {
+    key = options.key
+  } else {
+    key = await cachingModule.computeKey(options.key)
+  }
 
   const data = await cachingModule.get({
     key,
@@ -101,7 +106,7 @@ export function Cached<
     | ((
         args: TargetMethodArgs<Target, PropertyKey>,
         cachingModule: ICachingModuleService
-      ) => string | Promise<string>)
+      ) => string | Promise<string> | Promise<any[]> | any[])
   /**
    * Whether to enable the cache. This is only useful if you want to enable without providing any
    * other options.

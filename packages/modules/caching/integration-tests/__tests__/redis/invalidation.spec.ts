@@ -67,7 +67,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
     providers: [
       {
         id: "cache-redis",
-        resolve: require.resolve("../../../../providers/cache-redis/src"),
+        resolve: require.resolve("../../../../providers/caching-redis/src"),
         is_default: true,
         options: {
           redisUrl: "localhost:6379",

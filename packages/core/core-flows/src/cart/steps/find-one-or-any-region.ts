@@ -18,9 +18,6 @@ export type FindOneOrAnyRegionStepInput = {
 
 async function fetchRegionById(regionId: string, container: MedusaContainer) {
   const service = container.resolve<IRegionModuleService>(Modules.REGION)
-  const cacheModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   const args = [
     regionId,
@@ -31,21 +28,16 @@ async function fetchRegionById(regionId: string, container: MedusaContainer) {
 
   return await useCache(async () => service.retrieveRegion(...args), {
     container,
-    key: await cacheModule.computeKey?.(args),
+    key: args,
   })
 }
 
 async function fetchDefaultStore(container: MedusaContainer) {
   const storeModule = container.resolve<IStoreModuleService>(Modules.STORE)
-  const cacheModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   return await useCache(async () => storeModule.listStores(), {
     container,
-    key: await cacheModule.computeKey?.([
-      "find-one-or-any-region-default-store",
-    ]),
+    key: "find-one-or-any-region-default-store",
   })
 }
 
@@ -54,9 +46,6 @@ async function fetchDefaultRegion(
   container: MedusaContainer
 ) {
   const service = container.resolve<IRegionModuleService>(Modules.REGION)
-  const cacheModule = container.resolve(Modules.CACHING, {
-    allowUnregistered: true,
-  })
 
   const args = [
     { id: defaultRegionId },
@@ -65,7 +54,7 @@ async function fetchDefaultRegion(
 
   return await useCache(async () => service.listRegions(...args), {
     container,
-    key: await cacheModule.computeKey?.(args),
+    key: args,
   })
 }
 
