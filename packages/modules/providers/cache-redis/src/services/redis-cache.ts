@@ -90,7 +90,6 @@ export class RedisCachingProvider {
       const refCountKey = this.#getTagRefCountKey()
       const startId = await this.redisClient.incrby(nextIdKey, newTags.length)
 
-      // OPTIMIZED: Single pipeline for all new tag operations
       const batchPipeline = this.redisClient.pipeline()
       newTags.forEach((tag, index) => {
         const newId = startId - newTags.length + index + 1
@@ -111,7 +110,7 @@ export class RedisCachingProvider {
         }
       })
 
-      await batchPipeline.exec() // Single execution instead of two
+      await batchPipeline.exec()
     } else {
       // Only increment reference count for existing tags
       const refCountKey = this.#getTagRefCountKey()
@@ -131,7 +130,6 @@ export class RedisCachingProvider {
     const reverseDictKey = this.#getTagReverseDictionaryKey()
     const pipeline = this.redisClient.pipeline()
 
-    // Direct lookup using reverse dictionary - much more efficient!
     tagIds.forEach((id) => {
       pipeline.hget(reverseDictKey, id.toString())
     })
@@ -295,7 +293,6 @@ export class RedisCachingProvider {
       const valueResults = await valuePipeline.exec()
       const results: any[] = []
 
-      // OPTIMIZED: Parallel decompression for better performance
       const decompressionPromises = (valueResults || []).map(async (result) => {
         if (result && result[1]) {
           const buffer = result[1] as Buffer
@@ -341,13 +338,11 @@ export class RedisCachingProvider {
 
     const finalData = await this.#compressData(serializedData)
 
-    // OPTIMIZED: Process tags first to batch all operations
     let tagIds: number[] = []
     if (tags?.length) {
       tagIds = await this.#internTags(tags)
     }
 
-    // OPTIMIZED: Single pipeline for all SET-related operations
     const setPipeline = this.redisClient.pipeline()
 
     // Main data with conditional operations
@@ -383,7 +378,6 @@ export class RedisCachingProvider {
       })
     }
 
-    // Single execution for all operations
     await setPipeline.exec()
   }
 
@@ -402,7 +396,6 @@ export class RedisCachingProvider {
       const keyName = this.#getKeyName(key)
       const tagsKey = this.#getTagsKey(key)
 
-      // OPTIMIZED: Batch key deletion with tag cleanup
       const clearPipeline = this.redisClient.pipeline()
 
       // Get tags for cleanup and delete main key in same pipeline
@@ -423,7 +416,6 @@ export class RedisCachingProvider {
           if (tagIds.length) {
             const entryTags = await this.#resolveTagIds(tagIds)
 
-            // OPTIMIZED: Single pipeline for all tag cleanup
             const tagCleanupPipeline = this.redisClient.pipeline()
             entryTags.forEach((tag) => {
               const tagKey = this.#getTagKey(tag, { isHashed: true })
