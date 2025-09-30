@@ -1,1 +1,1 @@
-# @medusajs/cache
+# @medusajs/caching

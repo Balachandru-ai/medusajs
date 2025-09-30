@@ -24,7 +24,6 @@ import {
 } from "@medusajs/framework/types"
 import {
   arrayDifference,
-  Cached,
   createContainerLike,
   deduplicate,
   EmitEvents,
@@ -350,26 +349,6 @@ export default class PricingModuleService
     )
   }
 
-  @Cached<any, any>({
-    key: (args, cachingModule) => {
-      const [filters, config] = args as [
-        PricingTypes.FilterablePriceRuleProps,
-        FindConfig<PricingTypes.PriceRuleDTO>
-      ]
-
-      if (config?.select && !config.select.includes("id")) {
-        config.select = [...(config.select || []), "id"]
-      }
-
-      return cachingModule.computeKey({
-        filters,
-        config,
-      })
-    },
-    container: function (this: PricingModuleService) {
-      return createContainerLike(this.container_) as MedusaContainer
-    },
-  })
   protected async listPriceRules_(
     filters: PricingTypes.FilterablePriceRuleProps,
     config: FindConfig<PricingTypes.PriceRuleDTO> = {},
@@ -396,26 +375,6 @@ export default class PricingModuleService
     >(pricePreferences)
   }
 
-  @Cached<any, any>({
-    key: (args, cachingModule) => {
-      const [filters, config] = args as [
-        PricingTypes.FilterablePricePreferenceProps,
-        FindConfig<PricingTypes.PricePreferenceDTO>
-      ]
-
-      if (config?.select && !config.select.includes("id")) {
-        config.select = [...(config.select || []), "id"]
-      }
-
-      return cachingModule.computeKey({
-        filters,
-        config,
-      })
-    },
-    container: function (this: PricingModuleService) {
-      return createContainerLike(this.container_) as MedusaContainer
-    },
-  })
   protected async listPricePreferences_(
     filters: PricingTypes.FilterablePricePreferenceProps,
     config: FindConfig<PricingTypes.PricePreferenceDTO> = {},

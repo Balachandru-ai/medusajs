@@ -27,7 +27,7 @@ export type CachingModuleOptions = Partial<ModuleServiceInitializeOptions> & {
   /**
    * The strategy to be used. Default to the inbuilt default strategy.
    */
-  strategy?: ICachingStrategy
+  // strategy?: ICachingStrategy
   /**
    * Time to keep data in cache (in seconds)
    */
