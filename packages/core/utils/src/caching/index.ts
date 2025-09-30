@@ -1,5 +1,5 @@
 import { ICachingModuleService, Logger, MedusaContainer } from "@medusajs/types"
-import { Modules } from "../modules-sdk"
+import { MedusaContextType, Modules } from "../modules-sdk"
 import { FeatureFlag } from "../feature-flags"
 import { ContainerRegistrationKeys, isObject } from "../common"
 
@@ -170,6 +170,30 @@ export function Cached<
         return await originalMethod.apply(this, args)
       }
 
+      if (!options.key) {
+        options.key = await cachingModule.computeKey(
+          args
+            .map((arg) => {
+              if (isObject(arg)) {
+                // Prevent any container, manager, transactionManager, etc from being included in the key
+                const {
+                  container,
+                  manager,
+                  transactionManager,
+                  __type,
+                  ...rest
+                } = arg as any
+                if (__type === MedusaContextType) {
+                  return
+                }
+                return rest
+              }
+              return arg
+            })
+            .filter(Boolean)
+        )
+      }
+
       const resolvableKeys = [
         "enable",
         "key",
@@ -178,26 +202,8 @@ export function Cached<
         "autoInvalidate",
         "providers",
       ]
-      const cacheOptions = {} as Parameters<typeof useCache>[1]
 
-      if (!options.key) {
-        options.key = await cachingModule.computeKey(
-          args.map((arg) => {
-            if (isObject(arg)) {
-              // Prevent any container, manager, transactionManager, etc from being included in the key
-              const {
-                container,
-                manager,
-                transactionManager,
-                __type,
-                ...rest
-              } = arg as any
-              return rest
-            }
-            return arg
-          })
-        )
-      }
+      const cacheOptions = {} as Parameters<typeof useCache>[1]
 
       const promises: Promise<any>[] = []
       for (const key of resolvableKeys) {

@@ -46,7 +46,7 @@ export default async ({
 >): Promise<void> => {
   container.registerAdd(CachingIdentifiersRegistrationName, asValue(undefined))
 
-  const strategy = options?.strategy ?? DefaultCacheStrategy
+  const strategy = DefaultCacheStrategy // Re enable custom strategy another time
   container.register("strategy", asValue(strategy))
 
   // MemoryCachingProvider - default provider

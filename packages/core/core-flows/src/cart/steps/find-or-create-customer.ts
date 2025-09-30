@@ -58,12 +58,7 @@ async function fetchCustomerById(
     async () => service.retrieveCustomer(customerId),
     {
       container,
-      key:
-        cacheModule &&
-        (await cacheModule.computeKey([
-          "find-or-create-customer-by-id",
-          customerId,
-        ])),
+      key: await cacheModule.computeKey?.([customerId]),
     }
   )
 }
@@ -85,13 +80,7 @@ async function fetchCustomersByEmail(
     async () => service.listCustomers(filters),
     {
       container,
-      key:
-        cacheModule &&
-        (await cacheModule.computeKey([
-          "find-or-create-customer-by-email",
-          email,
-          hasAccount,
-        ])),
+      key: await cacheModule.computeKey?.(filters),
     }
   )
 }

@@ -37,7 +37,7 @@ async function fetchSalesChannel(
     Awaited<ReturnType<typeof salesChannelService.retrieveSalesChannel>>
   >(async () => salesChannelService.retrieveSalesChannel(salesChannelId), {
     container,
-    key: cacheModule && (await cacheModule.computeKey([salesChannelId])),
+    key: await cacheModule.computeKey?.([salesChannelId]),
   })
 }
 

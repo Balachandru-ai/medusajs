@@ -22,21 +22,17 @@ async function fetchRegionById(regionId: string, container: MedusaContainer) {
     allowUnregistered: true,
   })
 
-  return await useCache(
-    async () =>
-      service.retrieveRegion(regionId, {
-        relations: ["countries"],
-      }),
+  const args = [
+    regionId,
     {
-      container,
-      key:
-        cacheModule &&
-        (await cacheModule.computeKey([
-          "find-one-or-any-region-by-id",
-          regionId,
-        ])),
-    }
-  )
+      relations: ["countries"],
+    },
+  ] as Parameters<IRegionModuleService["retrieveRegion"]>
+
+  return await useCache(async () => service.retrieveRegion(...args), {
+    container,
+    key: await cacheModule.computeKey?.(args),
+  })
 }
 
 async function fetchDefaultStore(container: MedusaContainer) {
@@ -47,9 +43,9 @@ async function fetchDefaultStore(container: MedusaContainer) {
 
   return await useCache(async () => storeModule.listStores(), {
     container,
-    key:
-      cacheModule &&
-      (await cacheModule.computeKey(["find-one-or-any-region-default-store"])),
+    key: await cacheModule.computeKey?.([
+      "find-one-or-any-region-default-store",
+    ]),
   })
 }
 
@@ -62,24 +58,15 @@ async function fetchDefaultRegion(
     allowUnregistered: true,
   })
 
-  return await useCache(
-    async () =>
-      service.listRegions(
-        {
-          id: defaultRegionId,
-        },
-        { relations: ["countries"] }
-      ),
-    {
-      container,
-      key:
-        cacheModule &&
-        (await cacheModule.computeKey([
-          "find-one-or-any-region-default",
-          defaultRegionId,
-        ])),
-    }
-  )
+  const args = [
+    { id: defaultRegionId },
+    { relations: ["countries"] },
+  ] as Parameters<IRegionModuleService["listRegions"]>
+
+  return await useCache(async () => service.listRegions(...args), {
+    container,
+    key: await cacheModule.computeKey?.(args),
+  })
 }
 
 export const findOneOrAnyRegionStepId = "find-one-or-any-region"

@@ -24,7 +24,6 @@ import {
 } from "@medusajs/framework/types"
 import {
   arrayDifference,
-  createContainerLike,
   deduplicate,
   EmitEvents,
   GetIsoStringFromDate,

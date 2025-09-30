@@ -8,15 +8,23 @@ import type {
 import { ContainerRegistrationKeys, isString } from "../../utils"
 import type { MedusaRequest } from "../types"
 
-export const refetchEntities = async <TEntry extends string>(
-  entryPoint: TEntry,
-  idOrFilter: string | object,
-  scope: MedusaContainer,
-  fields: string[],
-  pagination?: MedusaRequest["queryConfig"]["pagination"],
-  withDeleted?: boolean,
+export const refetchEntities = async <TEntry extends string>({
+  entity,
+  idOrFilter,
+  scope,
+  fields,
+  pagination,
+  withDeleted,
+  options,
+}: {
+  entity: TEntry
+  idOrFilter?: string | object
+  scope: MedusaContainer
+  fields?: string[]
+  pagination?: MedusaRequest["queryConfig"]["pagination"]
+  withDeleted?: boolean
   options?: RemoteJoinerOptions
-): Promise<
+}): Promise<
   Omit<GraphResultSet<TEntry>, "metadata"> & {
     metadata: RemoteQueryFunctionReturnPagination
   }
@@ -25,7 +33,7 @@ export const refetchEntities = async <TEntry extends string>(
   let filters = isString(idOrFilter) ? { id: idOrFilter } : idOrFilter
   let context!: Record<string, unknown>
 
-  if ("context" in filters) {
+  if (filters && "context" in filters) {
     const { context: context_, ...rest } = filters
     if (context_) {
       context = context_! as Record<string, unknown>
@@ -34,8 +42,8 @@ export const refetchEntities = async <TEntry extends string>(
   }
 
   const graphOptions: Parameters<typeof query.graph>[0] = {
-    entity: entryPoint as string,
-    fields,
+    entity,
+    fields: fields ?? [],
     filters,
     pagination,
     withDeleted,
@@ -51,22 +59,30 @@ export const refetchEntities = async <TEntry extends string>(
   }
 }
 
-export const refetchEntity = async (
-  entryPoint: string,
-  idOrFilter: string | object,
-  scope: MedusaContainer,
-  fields: string[],
+export const refetchEntity = async <TEntry extends string>({
+  entity,
+  idOrFilter,
+  scope,
+  fields,
+  options,
+}: {
+  entity: TEntry & string
+  idOrFilter: string | object
+  scope: MedusaContainer
+  fields: string[]
   options?: RemoteJoinerOptions
-) => {
-  const { data } = await refetchEntities(
-    entryPoint,
+}): Promise<
+  TEntry extends keyof RemoteQueryEntryPoints
+    ? RemoteQueryEntryPoints[TEntry]
+    : any
+> => {
+  const { data } = await refetchEntities<TEntry>({
+    entity,
     idOrFilter,
     scope,
     fields,
-    undefined,
-    undefined,
-    options
-  )
+    options,
+  })
 
   return Array.isArray(data) ? data[0] : data
 }

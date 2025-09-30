@@ -23,12 +23,13 @@ export const GET = async (
 ) => {
   const {
     data: [category],
-  } = await refetchEntities(
-    "product_category",
-    { id: req.params.id, ...req.filterableFields },
-    req.scope,
-    req.queryConfig.fields
-  )
+  } = await refetchEntities({
+    entity: "product_category",
+    idOrFilter: { id: req.params.id, ...req.filterableFields },
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+    pagination: req.queryConfig.pagination,
+  })
 
   if (!category) {
     throw new MedusaError(
@@ -52,12 +53,13 @@ export const POST = async (
 
   const {
     data: [category],
-  } = await refetchEntities(
-    "product_category",
-    { id, ...req.filterableFields },
-    req.scope,
-    req.queryConfig.fields
-  )
+  } = await refetchEntities({
+    entity: "product_category",
+    idOrFilter: { id, ...req.filterableFields },
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+    pagination: req.queryConfig.pagination,
+  })
 
   res.status(200).json({ product_category: category })
 }
