@@ -179,6 +179,12 @@ Make sure to give the script executable permissions:
 
 <Note>
 
+**For Windows Users:** Ensure that the `start.sh` file uses LF line endings instead of CRLF. Git on Windows can sometimes automatically convert line endings, which causes errors when running the script inside the Linux-based Docker container. You can configure Git or your code editor to maintain LF line endings to prevent this issue.
+
+</Note>
+
+<Note>
+
 Setting permissions isn't necessary on Windows, but it's recommended to run this command on Unix-based systems like macOS and Linux.
 
 </Note>
