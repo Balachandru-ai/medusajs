@@ -22,5 +22,5 @@ export const generatedEditDates = {
   "app/billing/manage/page.mdx": "2025-09-04T14:50:46.747Z",
   "app/pricing/page.mdx": "2025-09-05T10:31:59.059Z",
   "app/sign-up/page.mdx": "2025-09-29T10:16:20.885Z",
-  "app/comparison/page.mdx": "2025-09-29T10:09:53.809Z"
+  "app/comparison/page.mdx": "2025-09-30T06:17:40.257Z"
 }
