@@ -132,6 +132,11 @@ export interface FilterablePriceRuleProps
    * The IDs to filter the price rule's associated price set.
    */
   price_set_id?: string | string[] | OperatorMap<string | string[]>
+
+  /**
+   * The IDs to filter the price rule's associated price.
+   */
+  price_id?: string | string[] | OperatorMap<string | string[]>
 }
 
 /**
