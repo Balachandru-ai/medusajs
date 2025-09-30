@@ -362,10 +362,6 @@ export const completeCartWorkflow = createWorkflow(
         updateCartsStep([updateCompletedAt]),
         reserveInventoryStep(formatedInventoryItems),
         registerUsageStep(promotionUsage),
-        emitEventStep({
-          eventName: OrderWorkflowEvents.PLACED,
-          data: { id: createdOrder.id },
-        })
       )
 
       /**
@@ -412,6 +408,11 @@ export const completeCartWorkflow = createWorkflow(
       createHook("orderCreated", {
         order_id: createdOrder.id,
         cart_id: cart.id,
+      })
+
+      emitEventStep({
+        eventName: OrderWorkflowEvents.PLACED,
+        data: { id: createdOrder.id },
       })
 
       return createdOrder
