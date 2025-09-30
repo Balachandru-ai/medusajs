@@ -590,9 +590,11 @@ moduleIntegrationTestRunner<IInventoryService>({
         })
 
         it("should delete reservation items by id", async () => {
-          const reservationItemsPreDeleted = await service.listReservationItems({
-            id: reservationItems.map(item => item.id)
-          })
+          const reservationItemsPreDeleted = await service.listReservationItems(
+            {
+              id: reservationItems.map((item) => item.id),
+            }
+          )
 
           expect(reservationItemsPreDeleted).toEqual(
             expect.arrayContaining([
@@ -605,18 +607,47 @@ moduleIntegrationTestRunner<IInventoryService>({
                 inventory_item_id: inventoryItem.id,
                 location_id: "location-2",
                 quantity: 2,
-              })
+              }),
             ])
           )
           expect(reservationItemsPreDeleted).toHaveLength(2)
 
-          await service.deleteReservationItems(reservationItems.map(item => item.id))
+          await service.deleteReservationItems(
+            reservationItems.map((item) => item.id)
+          )
 
-          const reservationItemsPostDeleted = await service.listReservationItems({
-            id: reservationItems.map(item => item.id)
-          })
+          const reservationItemsPostDeleted =
+            await service.listReservationItems({
+              id: reservationItems.map((item) => item.id),
+            })
 
           expect(reservationItemsPostDeleted).toEqual([])
+        })
+
+        it("should adjust inventory levels accordingly when removing reservations by id", async () => {
+          const reservationItem = (await service.listReservationItems({ location_id: "location-1"}))[0]
+          
+          const inventoryLevelBefore =
+            await service.retrieveInventoryLevelByItemAndLocation(
+              inventoryItem.id,
+              "location-1"
+            )
+
+          expect(inventoryLevelBefore).toEqual(
+            expect.objectContaining({ reserved_quantity: 2 })
+          )
+
+          await service.deleteReservationItems(reservationItem.id)
+
+          const inventoryLevelAfter =
+            await service.retrieveInventoryLevelByItemAndLocation(
+              inventoryItem.id,
+              "location-1"
+            )
+
+          expect(inventoryLevelAfter).toEqual(
+            expect.objectContaining({ reserved_quantity: 0 })
+          )
         })
       })
 
