@@ -120,7 +120,24 @@ export class S3FileService extends AbstractFileProviderService {
       parsedFilename.ext
     }`
 
-    const content = Buffer.from(file.content, "binary")
+    // Detect if content is base64 or raw string
+    // Base64 from upload route will have specific pattern, but CSV/JSON content will be raw string
+    let content: Buffer
+    try {
+      // Try to decode as base64 first
+      const decoded = Buffer.from(file.content, "base64")
+      // Check if the decoded content re-encodes to the same base64 string
+      // This validates it was actually base64
+      if (decoded.toString("base64") === file.content) {
+        content = decoded
+      } else {
+        // Not valid base64, treat as UTF-8 string
+        content = Buffer.from(file.content, "utf8")
+      }
+    } catch {
+      // If decoding fails, treat as UTF-8 string
+      content = Buffer.from(file.content, "utf8")
+    }
     const command = new PutObjectCommand({
       // We probably also want to support a separate bucket altogether for private files
       // protected private_bucket_: string

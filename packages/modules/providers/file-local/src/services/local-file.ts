@@ -57,7 +57,24 @@ export class LocalFileService extends AbstractFileProviderService {
     const filePath = this.getUploadFilePath(baseDir, fileKey)
     const fileUrl = this.getUploadFileUrl(fileKey)
 
-    const content = Buffer.from(file.content as string, "binary")
+    // Detect if content is base64 or raw string
+    // Base64 from upload route will have specific pattern, but CSV/JSON content will be raw string
+    let content: Buffer
+    try {
+      // Try to decode as base64 first
+      const decoded = Buffer.from(file.content as string, "base64")
+      // Check if the decoded content re-encodes to the same base64 string
+      // This validates it was actually base64
+      if (decoded.toString("base64") === file.content) {
+        content = decoded
+      } else {
+        // Not valid base64, treat as UTF-8 string
+        content = Buffer.from(file.content as string, "utf8")
+      }
+    } catch {
+      // If decoding fails, treat as UTF-8 string
+      content = Buffer.from(file.content as string, "utf8")
+    }
     await fs.writeFile(filePath, content)
 
     return {

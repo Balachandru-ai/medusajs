@@ -9,6 +9,7 @@ export const convertCsvToJson = <T extends object>(
   return csv2json(data, {
     preventCsvInjection: true,
     delimiter: { field: detectDelimiter(data) },
+    excelBOM: true,
   }) as T[]
 }
 
