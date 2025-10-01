@@ -349,6 +349,12 @@ export type AdminBatchVariantInventoryItemsType = BatchMethodRequest<
   AdminBatchDeleteVariantInventoryItemType
 >
 
+export const AdminBatchImageVariant = z.object({
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+}) satisfies ZodType<HttpTypes.AdminBatchImageVariantRequest>
+export type AdminBatchImageVariantType = z.infer<typeof AdminBatchImageVariant>
+
 export const AdminImportProducts = z.object({
   file_key: z.string(),
   originalname: z.string(),

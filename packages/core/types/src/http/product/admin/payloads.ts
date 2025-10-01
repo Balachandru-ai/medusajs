@@ -571,6 +571,17 @@ interface AdminDeleteProductVariantInventoryItem {
   variant_id: string
 }
 
+export interface AdminBatchImageVariantRequest {
+  /**
+   * The variant IDs to add to the image.
+   */
+  add?: string[]
+  /**
+   * The variant IDs to remove from the image.
+   */
+  remove?: string[]
+}
+
 export interface AdminImportProductsRequest {
   /**
    * The file's identifier in the third-party system.
