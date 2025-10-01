@@ -46,7 +46,7 @@ import {
   toHandle,
 } from "@medusajs/framework/utils"
 import { EntityManager } from "@mikro-orm/core"
-import { ProductRepository } from "../repositories"
+import { ProductRepository, ProductImageRepository } from "../repositories"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
@@ -62,6 +62,7 @@ import { eventBuilders } from "../utils/events"
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
   productRepository: ProductRepository
+  productImageRepository: ProductImageRepository
   productService: ModulesSdkTypes.IMedusaInternalService<any, any>
   productVariantService: ModulesSdkTypes.IMedusaInternalService<any, any>
   productTagService: ModulesSdkTypes.IMedusaInternalService<any>
@@ -120,6 +121,7 @@ export default class ProductModuleService
 {
   protected baseRepository_: DAL.RepositoryService
   protected readonly productRepository_: ProductRepository
+  protected readonly productImageRepository_: ProductImageRepository
   protected readonly productService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof Product>
   >
@@ -154,6 +156,7 @@ export default class ProductModuleService
     {
       baseRepository,
       productRepository,
+      productImageRepository,
       productService,
       productVariantService,
       productTagService,
@@ -174,6 +177,7 @@ export default class ProductModuleService
 
     this.baseRepository_ = baseRepository
     this.productRepository_ = productRepository
+    this.productImageRepository_ = productImageRepository
     this.productService_ = productService
     this.productVariantService_ = productVariantService
     this.productTagService_ = productTagService
@@ -2196,34 +2200,6 @@ export default class ProductModuleService
     }
   }
 
-  /**
-   * Helper method to combine variant images with product images and deduplicate
-   */
-  private combineVariantImages(
-    variant: InferEntityType<typeof ProductVariant>
-  ) {
-    const imageMap = new Map()
-
-    const productImages = variant.product?.images || []
-    const variantImages = variant.images || []
-
-    /**
-     * TODO: we need to filter out the images that are already assigned to the other variants.
-     *
-     * on trick would be to filter out all images that have any variants, and then only add the current variant pictures
-     */
-    for (const img of [...productImages, ...variantImages]) {
-      imageMap.set(img.id, img)
-    }
-
-    const uniqueImages = Array.from(imageMap.values())
-
-    return {
-      ...variant,
-      images: uniqueImages as any,
-    }
-  }
-
   @InjectManager()
   // @ts-ignore
   async listProductVariants(
@@ -2247,12 +2223,50 @@ export default class ProductModuleService
       sharedContext
     )
 
-    // Combine variant images with product images if images were loaded
-    const variantsWithImages = shouldLoadImages
-      ? variants.map((variant) => this.combineVariantImages(variant)) // TODO solve cyclycal serialization
-      : variants
+    if (shouldLoadImages) {
+      // Get variant IDs
+      const variantIds = variants.map((variant) => variant.id)
 
-    return this.baseRepository_.serialize(variantsWithImages)
+      // Get variant images for all variants
+      const variantImagesMap =
+        await this.productImageRepository_.getVariantImages(
+          variantIds,
+          sharedContext
+        )
+
+      const variantImageMap =
+        await this.productVariantProductImageService_.list(
+          {
+            variant_id: variantIds,
+          },
+          {},
+          sharedContext
+        )
+
+      console.log(
+        await this.productImageService_.list(
+          {
+            $or: [
+              { id: variantImageMap.map((v) => v.image_id) },
+              {
+                $and: [
+                  { id: { $nin: variantImageMap.map((v) => v.image_id) } },
+                  { product: { id: variants.map((v) => v.product_id) } },
+                ],
+              },
+            ],
+          },
+          {},
+          sharedContext
+        )
+      )
+
+      for (const variant of variants) {
+        variant.images = variantImagesMap.get(variant.id) || []
+      }
+    }
+
+    return this.baseRepository_.serialize(variants)
   }
 
   @InjectManager()
@@ -2278,12 +2292,24 @@ export default class ProductModuleService
       sharedContext
     )
 
-    // Combine variant images with product images if images were loaded
-    const variantWithImages = shouldLoadImages
-      ? this.combineVariantImages(variant)
-      : variant
+    if (shouldLoadImages) {
+      // Get variant images using the custom repository method
+      const variantImagesMap =
+        await this.productImageRepository_.getVariantImages(id, sharedContext)
+      const variantImages = variantImagesMap.get(id) || []
 
-    return this.baseRepository_.serialize(variantWithImages)
+      // Serialize the variant and attach the images
+      const serializedVariant = (await this.baseRepository_.serialize(
+        variant
+      )) as any
+      serializedVariant.images = await this.baseRepository_.serialize(
+        variantImages
+      )
+
+      return serializedVariant
+    }
+
+    return this.baseRepository_.serialize(variant)
   }
 
   @InjectManager()
