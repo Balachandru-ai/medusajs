@@ -9,10 +9,15 @@ import {
   PromotionStatus,
   PromotionType,
 } from "@medusajs/utils"
-import { createAdminUser, generatePublishableKey, generateStoreHeaders, } from "../../../../helpers/create-admin-user"
+import {
+  createAdminUser,
+  generatePublishableKey,
+  generateStoreHeaders,
+} from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
+import { setTimeout } from "timers/promises"
 
 jest.setTimeout(100000)
 
@@ -150,10 +155,9 @@ medusaIntegrationTestRunner({
 
       describe("GET /store/carts/[id]", () => {
         it("should return 404 when trying to fetch a cart that does not exist", async () => {
-          const response = await api.get(
-            `/store/carts/fake`,
-            storeHeadersWithCustomer
-          ).catch((e) => e)
+          const response = await api
+            .get(`/store/carts/fake`, storeHeadersWithCustomer)
+            .catch((e) => e)
 
           expect(response.response.status).toEqual(404)
         })
@@ -1868,7 +1872,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.only("should successfully complete cart", async () => {
+          it("should successfully complete cart and fail on concurrent complete", async () => {
             const paymentCollection = (
               await api.post(
                 `/store/payment-collections`,
@@ -1904,17 +1908,77 @@ medusaIntegrationTestRunner({
                   .post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
                   .catch((e) => e)
               )
-              await new Promise((resolve) => setTimeout(resolve, 50))
+
+              await setTimeout(25)
             }
 
-            const all = await Promise.all(completedCart)
-            console.log(all.map((r) => r?.data || r))
+            let all = await Promise.all(completedCart)
 
-            const response = all[0]
+            let success = all.filter((res) => res.status === 200)
+            let failure = all.filter((res) => res.status !== 200)
 
-            for (const res of all) {
-              expect(res.data).toEqual(response.data)
+            const successData = success[0].data.order
+            for (const res of success) {
+              expect(res.data.order).toEqual(successData)
             }
+
+            expect(failure.length).toBeGreaterThan(0)
+
+            expect(successData).toEqual(
+              expect.objectContaining({
+                id: expect.any(String),
+                currency_code: "usd",
+                credit_lines: [
+                  expect.objectContaining({
+                    amount: 100,
+                    reference: "test",
+                    reference_id: "test",
+                  }),
+                ],
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    unit_price: 1500,
+                    compare_at_unit_price: null,
+                    quantity: 1,
+                  }),
+                ]),
+              })
+            )
+          })
+
+          it("should successfully complete cart", async () => {
+            const paymentCollection = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart.id },
+                storeHeaders
+              )
+            ).data.payment_collection
+
+            await api.post(
+              `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
+
+            await createCartCreditLinesWorkflow.run({
+              input: [
+                {
+                  cart_id: cart.id,
+                  amount: 100,
+                  currency_code: "usd",
+                  reference: "test",
+                  reference_id: "test",
+                },
+              ],
+              container: appContainer,
+            })
+
+            const response = await api.post(
+              `/store/carts/${cart.id}/complete`,
+              {},
+              storeHeaders
+            )
 
             expect(response.status).toEqual(200)
             expect(response.data.order).toEqual(

@@ -492,10 +492,12 @@ export class RedisDistributedTransactionStorage
       if (!data.flow.metadata?.parentStepIdempotencyKey) {
         await promiseAll([pipelinePromise, this.deleteFromDb(data)])
       } else {
-        await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
+        await this.saveToDb(data, retentionTime)
+        await pipelinePromise
       }
     } else {
-      await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
+      await this.saveToDb(data, retentionTime)
+      await pipelinePromise
     }
   }
 

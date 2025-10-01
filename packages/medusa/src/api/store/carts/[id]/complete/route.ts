@@ -17,11 +17,21 @@ export const POST = async (
   const cart_id = req.params.id
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
 
-  const { errors, result } = await we.run(completeCartWorkflowId, {
-    input: { id: cart_id },
-    transactionId: cart_id,
-    throwOnError: false,
-  })
+  const { errors, result, acknowledgement, transaction } = await we.run(
+    completeCartWorkflowId,
+    {
+      input: { id: cart_id },
+      transactionId: cart_id,
+      throwOnError: false,
+    }
+  )
+
+  if (!transaction.hasFinished()) {
+    throw new MedusaError(
+      MedusaError.Types.CONFLICT,
+      "Cart is already being completed by another request"
+    )
+  }
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
@@ -50,10 +60,6 @@ export const POST = async (
     )
 
     if (!statusOKErrors.includes(error?.type)) {
-      console.log(
-        errors[0],
-        "----------------------------------------------------------------------"
-      )
       throw error
     }
 

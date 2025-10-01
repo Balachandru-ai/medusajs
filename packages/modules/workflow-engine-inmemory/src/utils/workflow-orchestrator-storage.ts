@@ -369,10 +369,6 @@ export class InMemoryDistributedTransactionStorage
     }
 
     const { flow, errors } = data
-    this.storage.set(key, {
-      flow,
-      errors,
-    })
 
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
@@ -390,6 +386,10 @@ export class InMemoryDistributedTransactionStorage
       this.storage.delete(key)
     } else {
       await this.saveToDb(data, retentionTime)
+      this.storage.set(key, {
+        flow,
+        errors,
+      })
     }
   }
 
