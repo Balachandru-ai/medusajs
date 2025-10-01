@@ -207,7 +207,6 @@ export const normalizeCsvToChunksStep = createStep(
         const transformer = parse({
           columns: true,
           skip_empty_lines: true,
-          bom: true,
         })
 
         contents.on("error", reject)
