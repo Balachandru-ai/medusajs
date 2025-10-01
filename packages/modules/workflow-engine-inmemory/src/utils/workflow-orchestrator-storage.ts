@@ -162,12 +162,15 @@ export class InMemoryDistributedTransactionStorage
   }
 
   private createManagedTimer(
-    callback: () => void,
+    callback: () => void | Promise<void>,
     delay: number
   ): NodeJS.Timeout {
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       this.pendingTimers.delete(timer)
-      callback()
+      const res = callback()
+      if (res instanceof Promise) {
+        await res
+      }
     }, delay)
 
     this.pendingTimers.add(timer)
