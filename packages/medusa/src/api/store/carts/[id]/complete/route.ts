@@ -17,14 +17,11 @@ export const POST = async (
   const cart_id = req.params.id
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
 
-  const { errors, result, acknowledgement, transaction } = await we.run(
-    completeCartWorkflowId,
-    {
-      input: { id: cart_id },
-      transactionId: cart_id,
-      throwOnError: false,
-    }
-  )
+  const { errors, result, transaction } = await we.run(completeCartWorkflowId, {
+    input: { id: cart_id },
+    transactionId: cart_id,
+    throwOnError: false,
+  })
 
   if (!transaction.hasFinished()) {
     throw new MedusaError(
