@@ -122,12 +122,10 @@ export class S3FileService extends AbstractFileProviderService {
 
     let content: Buffer
     try {
-      // Try Base64
       const decoded = Buffer.from(file.content, "base64")
       if (decoded.toString("base64") === file.content) {
         content = decoded
       } else {
-        // Fallback: assume UTF-8 (JSON, CSV, etc.)
         content = Buffer.from(file.content, "utf8")
       }
     } catch {
