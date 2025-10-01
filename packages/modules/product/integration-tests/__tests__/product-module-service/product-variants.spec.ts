@@ -73,75 +73,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           ])
         })
 
-        // it("should retreive variants with images", async () => {
-        //   const productOneWithImages = await service.createProducts({
-        //     id: "product-with-images-1",
-        //     title: "product with image 1",
-        //     status: ProductStatus.PUBLISHED,
-        //     options: [
-        //       {
-        //         title: "size",
-        //         values: ["large", "small"],
-        //       },
-        //       {
-        //         title: "color",
-        //         values: ["red", "blue"],
-        //       },
-        //     ],
-        //     images: [
-        //       {
-        //         url: "https://via.placeholder.com/150",
-        //       },
-        //       {
-        //         url: "https://via.placeholder.com/250",
-        //       },
-        //       {
-        //         url: "https://via.placeholder.com/350",
-        //       },
-        //     ],
-        //   } as CreateProductDTO)
-
-        //   const variantOneWithImages = await service.createProductVariants({
-        //     id: "test-1-with-images",
-        //     title: "variant with image 1",
-        //     product_id: productOneWithImages.id,
-        //     options: { size: "large", color: "red" },
-        //   } as CreateProductVariantDTO)
-
-        //   await service.addImageToVariant([
-        //     {
-        //       image_id: productOneWithImages.images[0].id,
-        //       variant_id: variantOneWithImages.id,
-        //     },
-        //   ])
-
-        //   const results = await service.listProductVariants(
-        //     {
-        //       id: variantOneWithImages.id,
-        //     },
-        //     {
-        //       relations: ["images"],
-        //     }
-        //   )
-
-        //   expect(results[0]).toEqual(
-        //     expect.objectContaining({
-        //       id: variantOneWithImages.id,
-        //       images: expect.arrayContaining([
-        //         expect.objectContaining({
-        //           url: "https://via.placeholder.com/150",
-        //         }),
-        //         expect.objectContaining({
-        //           url: "https://via.placeholder.com/250",
-        //         }),
-        //         expect.objectContaining({
-        //           url: "https://via.placeholder.com/350",
-        //         }),
-        //       ]),
-        //     })
-        //   )
-        // })
-
         it("should retrieve variant images including product images not associated with other variants", async () => {
           // Create a product with multiple images
           const productWithMultipleImages = await service.createProducts({
@@ -186,8 +117,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
             options: { size: "small", color: "blue" },
           } as CreateProductVariantDTO)
 
-          // Associate first image with variant1 only
           await service.addImageToVariant([
+            // Associate first image with variant1 only
             {
               image_id: productWithMultipleImages.images[0].id,
               variant_id: variant1.id,
@@ -199,7 +130,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             },
           ])
 
-          // Test variant1 should have its specific image + the third image (not associated with any variant)
           const variant1Results = await service.listProductVariants(
             {
               id: variant1.id,
@@ -217,6 +147,45 @@ moduleIntegrationTestRunner<IProductModuleService>({
               }),
               expect.objectContaining({
                 id: productWithMultipleImages.images[2].id, // general product image
+              }),
+            ])
+          )
+
+          const bothVariantsResults = await service.listProductVariants(
+            {
+              id: [variant1.id, variant2.id],
+            },
+            {
+              relations: ["images"],
+            }
+          )
+
+          expect(bothVariantsResults[0].images).toHaveLength(2)
+          expect(bothVariantsResults[1].images).toHaveLength(2)
+
+          expect(bothVariantsResults).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: variant1.id,
+                images: expect.arrayContaining([
+                  expect.objectContaining({
+                    id: productWithMultipleImages.images[0].id, // variant image
+                  }),
+                  expect.objectContaining({
+                    id: productWithMultipleImages.images[2].id, // general product image
+                  }),
+                ]),
+              }),
+              expect.objectContaining({
+                id: variant2.id,
+                images: expect.arrayContaining([
+                  expect.objectContaining({
+                    id: productWithMultipleImages.images[1].id, // variant image
+                  }),
+                  expect.objectContaining({
+                    id: productWithMultipleImages.images[2].id, // general product image
+                  }),
+                ]),
               }),
             ])
           )

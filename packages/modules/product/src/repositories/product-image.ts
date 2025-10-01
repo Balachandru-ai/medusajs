@@ -72,7 +72,7 @@ export class ProductImageRepository extends DALUtils.mikroOrmBaseRepositoryFacto
           return false
         }
 
-        if (!img.variants.count()) {
+        if (img.variants.isEmpty()) {
           return true
         }
 
