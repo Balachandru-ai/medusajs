@@ -523,7 +523,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(step1CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
             expect(step2CompensateMockAutoRetriesFalse).toHaveBeenCalledTimes(0)
 
-          await setTimeout(3000)
+            await setTimeout(3000)
 
             await workflowOrcModule.run(workflowId, {
               input: {},
@@ -533,7 +533,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
             await setTimeout(2000)
 
-          await setTimeout(3000)
+            await setTimeout(3000)
 
             await workflowOrcModule.run(workflowId, {
               input: {},
@@ -581,6 +581,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           expect(result2.message || result1.message).toEqual(
             "Transaction already started for transactionId: " + transactionId
           )
+          console.log("after expect ")
         })
 
         it("should return a list of workflow executions and remove after completed when there is no retentionTime set", async () => {
