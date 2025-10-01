@@ -70,20 +70,14 @@ export async function getViteConfig(
     ],
   }
 
-  // Inject plugin environment variables as vite defines
-  for (const plugin of options.plugins ?? []) {
-    const normalizedName = plugin.replace(/\/admin$/, "")
-      .replace(/^@/, "")
-      .replace(/[^a-zA-Z0-9]/g, "_")
-      .toUpperCase()
-    const pluginEnv: Record<string, string | undefined> = {}
-    for (const envVar in process.env) {
-      if (envVar.startsWith(`PLUGIN_${normalizedName}_`)) {
-        pluginEnv[envVar] = process.env[envVar];
-      }
-    }
-    baseConfig.define!["process.env"] = JSON.stringify(pluginEnv);
-  }
+  // Inject plugin environment variables with vite define
+  const pluginEnv = Object.fromEntries(
+    Object.entries(process.env).filter(([key]) =>
+      key.startsWith("PLUGIN_")
+    )
+  )
+  pluginEnv["BACKEND_URL"] = backendUrl
+  baseConfig.define!["process.env"] = JSON.stringify(pluginEnv)
 
   if (options.vite) {
     const customConfig = options.vite(baseConfig)
