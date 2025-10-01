@@ -2266,20 +2266,11 @@ export default class ProductModuleService
     )
 
     if (shouldLoadImages) {
-      // Get variant images using the custom repository method
-      const variantImagesMap =
-        await this.productImageRepository_.getVariantImages(id, sharedContext)
-      const variantImages = variantImagesMap.get(id) || []
-
-      // Serialize the variant and attach the images
-      const serializedVariant = (await this.baseRepository_.serialize(
-        variant
-      )) as any
-      serializedVariant.images = await this.baseRepository_.serialize(
-        variantImages
+      const variantImages = await this.productImageRepository_.getVariantImages(
+        id,
+        sharedContext
       )
-
-      return serializedVariant
+      variant.images = variantImages.get(id) || []
     }
 
     return this.baseRepository_.serialize(variant)

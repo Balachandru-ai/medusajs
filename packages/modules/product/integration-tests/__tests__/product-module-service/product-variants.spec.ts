@@ -209,6 +209,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             }
           )
 
+          expect(variant1Results[0].images).toHaveLength(2)
           expect(variant1Results[0].images).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
