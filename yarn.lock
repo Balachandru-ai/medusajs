@@ -25966,6 +25966,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"k6@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "k6@npm:0.0.0"
+  checksum: c3a1e47a08444b90e8865321d7a3e1b656d352263357e5cff332ced88510b6a2d19a161352f7b37243670388474e8e73cb70e702915d430d1c94e37234e8e271
+  languageName: node
+  linkType: hard
+
 "keygrip@npm:~1.1.0":
   version: 1.1.0
   resolution: "keygrip@npm:1.1.0"
@@ -32138,6 +32145,7 @@ __metadata:
     global: ^4.4.0
     import-from: ^3.0.0
     jest: ^29.7.0
+    k6: ^0.0.0
     lint-staged: ^11.2.6
     microbundle: ^0.13.3
     pg-god: ^1.0.12

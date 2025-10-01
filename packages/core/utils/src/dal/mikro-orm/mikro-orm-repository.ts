@@ -453,31 +453,19 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
     }
 
     async find(
-      options: DAL.FindOptions<T> = { where: {} } as DAL.FindOptions<T>,
+      findOptions: DAL.FindOptions<T> = { where: {} } as DAL.FindOptions<T>,
       context?: Context
     ): Promise<InferRepositoryReturnType<T>[]> {
       const manager = this.getActiveManager<EntityManager>(context)
 
-      const findOptions_ = { ...options }
-      findOptions_.options ??= {}
-
-      if (!("strategy" in findOptions_.options)) {
-        if (findOptions_.options.limit != null || findOptions_.options.offset) {
-          // TODO: from 7+ it will be the default strategy
-          Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.BALANCED,
-          })
-        }
-      }
-
       MikroOrmBaseRepository.compensateRelationFieldsSelectionFromLoadStrategy({
-        findOptions: findOptions_,
+        findOptions: findOptions,
       })
 
       return (await manager.find(
         this.entity as EntityName<T>,
-        findOptions_.where as MikroFilterQuery<T>,
-        findOptions_.options as MikroOptions<T>
+        findOptions.where as MikroFilterQuery<T>,
+        findOptions.options as MikroOptions<T>
       )) as InferRepositoryReturnType<T>[]
     }
 
@@ -487,26 +475,14 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
     ): Promise<[InferRepositoryReturnType<T>[], number]> {
       const manager = this.getActiveManager<EntityManager>(context)
 
-      const findOptions_ = { ...findOptions }
-      findOptions_.options ??= {}
-
-      if (!("strategy" in findOptions_.options)) {
-        if (findOptions_.options.limit != null || findOptions_.options.offset) {
-          // TODO: from 7+ it will be the default strategy
-          Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.BALANCED,
-          })
-        }
-      }
-
       MikroOrmBaseRepository.compensateRelationFieldsSelectionFromLoadStrategy({
-        findOptions: findOptions_,
+        findOptions: findOptions,
       })
 
       return (await manager.findAndCount(
         this.entity,
-        findOptions_.where,
-        findOptions_.options as any // MikroOptions<T>
+        findOptions.where,
+        findOptions.options as any // MikroOptions<T>
       )) as [InferRepositoryReturnType<T>[], number]
     }
 
