@@ -167,7 +167,10 @@ export function transform(
   const ret = {
     __id: uniqId,
     __type: OrchestrationUtils.SymbolWorkflowStepTransformer,
-    __temporary_storage_key: null as string | null,
+  } as WorkflowData & {
+    __id: string
+    __type: string
+    __temporary_storage_key: string | null
   }
 
   const returnFn = async function (
@@ -217,10 +220,11 @@ export function transform(
     return finalResult
   }
 
-  const proxyfiedRet = proxify<WorkflowData & { __resolver: any }>(
-    ret as unknown as WorkflowData
-  )
+  const proxyfiedRet = proxify<
+    WorkflowData & { __resolver: any; __temporary_storage_key: string | null }
+  >(ret as unknown as WorkflowData)
   proxyfiedRet.__resolver = returnFn as any
+  proxyfiedRet.__temporary_storage_key = null as string | null
 
   return proxyfiedRet
 }

@@ -425,13 +425,11 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    if (data.flow.hasAsyncSteps) {
-      await this.#preventRaceConditionExecutionIfNecessary({
-        data,
-        key,
-        options,
-      })
-    }
+    await this.#preventRaceConditionExecutionIfNecessary({
+      data,
+      key,
+      options,
+    })
 
     if (hasFinished && retentionTime) {
       Object.assign(data, {

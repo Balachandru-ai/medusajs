@@ -1,10 +1,11 @@
-import { completeCartWorkflow } from "@medusajs/core-flows"
+import { completeCartWorkflowId } from "@medusajs/core-flows"
 import { prepareRetrieveQuery } from "@medusajs/framework"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   MedusaError,
+  Modules,
 } from "@medusajs/framework/utils"
 import { refetchCart } from "../../helpers"
 import { defaultStoreCartFields } from "../../query-config"
@@ -14,10 +15,11 @@ export const POST = async (
   res: MedusaResponse<HttpTypes.StoreCompleteCartResponse>
 ) => {
   const cart_id = req.params.id
+  const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
 
-  const { errors, result } = await completeCartWorkflow(req.scope).run({
+  const { errors, result } = await we.run(completeCartWorkflowId, {
     input: { id: cart_id },
-    context: { transactionId: cart_id },
+    transactionId: cart_id,
     throwOnError: false,
   })
 

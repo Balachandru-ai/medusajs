@@ -341,13 +341,11 @@ export class InMemoryDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    if (data.flow.hasAsyncSteps) {
-      await this.#preventRaceConditionExecutionIfNecessary({
-        data,
-        key,
-        options,
-      })
-    }
+    await this.#preventRaceConditionExecutionIfNecessary({
+      data,
+      key,
+      options,
+    })
 
     // Only store retention time if it's provided
     if (retentionTime) {

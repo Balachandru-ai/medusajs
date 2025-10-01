@@ -115,7 +115,6 @@ export const completeCartWorkflow = createWorkflow(
     })
 
     const orderId = transform({ orderCart }, ({ orderCart }) => {
-      console.log("*******ORDER CART", orderCart)
       return orderCart?.data?.order_id
     })
 
@@ -267,7 +266,7 @@ export const completeCartWorkflow = createWorkflow(
       const createdOrders = createOrdersStep([cartToOrder])
 
       const createdOrder = transform({ createdOrders }, ({ createdOrders }) => {
-        return createdOrders?.[0] ?? undefined
+        return createdOrders[0]
       })
 
       const reservationItemsData = transform(
