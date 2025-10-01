@@ -952,7 +952,9 @@ export class TransactionOrchestrator extends EventEmitter {
           )
         } else {
           // Execute async step in background and continue the execution of the transaction
-          this.executeAsyncStep(promise, transaction, step, nextSteps)
+          process.nextTick(() =>
+            this.executeAsyncStep(promise, transaction, step, nextSteps)
+          )
           hasAsyncSteps = true
         }
       }
