@@ -2234,33 +2234,6 @@ export default class ProductModuleService
           sharedContext
         )
 
-      const variantImageMap =
-        await this.productVariantProductImageService_.list(
-          {
-            variant_id: variantIds,
-          },
-          {},
-          sharedContext
-        )
-
-      console.log(
-        await this.productImageService_.list(
-          {
-            $or: [
-              { id: variantImageMap.map((v) => v.image_id) },
-              {
-                $and: [
-                  { id: { $nin: variantImageMap.map((v) => v.image_id) } },
-                  { product: { id: variants.map((v) => v.product_id) } },
-                ],
-              },
-            ],
-          },
-          {},
-          sharedContext
-        )
-      )
-
       for (const variant of variants) {
         variant.images = variantImagesMap.get(variant.id) || []
       }

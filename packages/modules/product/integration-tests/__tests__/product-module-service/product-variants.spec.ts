@@ -209,7 +209,16 @@ moduleIntegrationTestRunner<IProductModuleService>({
             }
           )
 
-          expect(variant1Results[0].images.length).toBeGreaterThan(0)
+          expect(variant1Results[0].images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithMultipleImages.images[0].id, // variant image
+              }),
+              expect.objectContaining({
+                id: productWithMultipleImages.images[2].id, // general product image
+              }),
+            ])
+          )
         })
 
         it("should return variants and count based on the options and filter parameter", async () => {
