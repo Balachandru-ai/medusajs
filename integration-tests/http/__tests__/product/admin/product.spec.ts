@@ -3902,6 +3902,133 @@ medusaIntegrationTestRunner({
           )
         })
       })
+
+      describe("POST /admin/products/:id/images/:image_id/variants/batch", () => {
+        it("should batch assign and remove variants from images", async () => {
+          // Create a product with multiple images
+          const productWithMultipleImages = await api.post(
+            "/admin/products",
+            {
+              title: "product with multiple images",
+              status: "published",
+              options: [
+                {
+                  title: "size",
+                  values: ["large", "small"],
+                },
+                {
+                  title: "color",
+                  values: ["red", "blue"],
+                },
+              ],
+              images: [
+                {
+                  url: "https://via.placeholder.com/100",
+                },
+                {
+                  url: "https://via.placeholder.com/200",
+                },
+                {
+                  url: "https://via.placeholder.com/300",
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const product = productWithMultipleImages.data.product
+
+          // Create two variants
+          const variant1Response = await api.post(
+            `/admin/products/${product.id}/variants`,
+            {
+              title: "variant 1",
+              options: { size: "large", color: "red" },
+              prices: [{ currency_code: "usd", amount: 100 }],
+            },
+            adminHeaders
+          )
+
+          const variant2Response = await api.post(
+            `/admin/products/${product.id}/variants`,
+            {
+              title: "variant 2",
+              options: { size: "small", color: "blue" },
+              prices: [{ currency_code: "usd", amount: 200 }],
+            },
+            adminHeaders
+          )
+
+          const variant1 = variant1Response.data.product.variants[0]
+          const variant2 = variant2Response.data.product.variants[0]
+
+          const addResponse = await api.post(
+            `/admin/products/${product.id}/images/${product.images[0].id}/variants/batch`,
+            {
+              add: [variant1.id, variant2.id],
+            },
+            adminHeaders
+          )
+
+          expect(addResponse.status).toBe(200)
+          expect(addResponse.data.added).toHaveLength(2)
+          expect(addResponse.data.added).toContain(variant1.id)
+          expect(addResponse.data.added).toContain(variant2.id)
+
+          const addResponse2 = await api.post(
+            `/admin/products/${product.id}/images/${product.images[1].id}/variants/batch`,
+            {
+              add: [variant1.id],
+            },
+            adminHeaders
+          )
+
+          expect(addResponse2.status).toBe(200)
+          expect(addResponse2.data.added).toHaveLength(1)
+          expect(addResponse2.data.added).toContain(variant1.id)
+
+          const variant1WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant1.id}?fields=*images`,
+            adminHeaders
+          )
+
+          const variant2WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant2.id}?fields=*images`,
+            adminHeaders
+          )
+
+          expect(variant1WithImages.data.variant.images).toHaveLength(3)
+
+          // Variant 1 should have both images (first and second)
+          expect(variant1WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: product.images[0].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[1].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[2].id, // General product image
+              }),
+            ])
+          )
+
+          expect(variant2WithImages.data.variant.images).toHaveLength(2)
+
+          // Variant 2 should have the first image
+          expect(variant2WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: product.images[0].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[2].id, // General product image
+              }),
+            ])
+          )
+        })
+      })
     })
   },
 })
