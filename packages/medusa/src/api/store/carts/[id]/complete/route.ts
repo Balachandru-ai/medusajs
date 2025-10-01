@@ -47,7 +47,11 @@ export const POST = async (
       ).remoteQueryConfig.fields
     )
 
-    if (!statusOKErrors.includes(error.type)) {
+    if (!statusOKErrors.includes(error?.type)) {
+      console.log(
+        errors[0],
+        "----------------------------------------------------------------------"
+      )
       throw error
     }
 

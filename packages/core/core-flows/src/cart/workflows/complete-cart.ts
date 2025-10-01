@@ -109,10 +109,14 @@ export const completeCartWorkflow = createWorkflow(
       entity: "order_cart",
       fields: ["cart_id", "order_id"],
       filters: { cart_id: input.id },
+      options: {
+        isList: false,
+      },
     })
 
     const orderId = transform({ orderCart }, ({ orderCart }) => {
-      return orderCart.data[0]?.order_id
+      console.log("*******ORDER CART", orderCart)
+      return orderCart?.data?.order_id
     })
 
     const cart = useRemoteQueryStep({
@@ -417,12 +421,12 @@ export const completeCartWorkflow = createWorkflow(
       return createdOrder
     })
 
-    releaseLockStep({
-      key: input.id,
+    const result = transform({ order, orderId }, async ({ order, orderId }) => {
+      return { id: order?.id ?? orderId } as CompleteCartWorkflowOutput
     })
 
-    const result = transform({ order, orderId }, ({ order, orderId }) => {
-      return { id: order?.id ?? orderId } as CompleteCartWorkflowOutput
+    releaseLockStep({
+      key: input.id,
     })
 
     return new WorkflowResponse(result, {

@@ -1,3 +1,4 @@
+import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   DistributedTransactionType,
   IDistributedSchedulerStorage,
@@ -24,7 +25,6 @@ import {
   TransactionStepState,
   isPresent,
 } from "@medusajs/framework/utils"
-import { raw } from "@medusajs/framework/mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
@@ -363,8 +363,7 @@ export class InMemoryDistributedTransactionStorage
     if (isNotStarted && isManualTransactionId) {
       const storedData = this.storage.get(key)
       if (storedData) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_ARGUMENT,
+        throw new SkipExecutionError(
           "Transaction already started for transactionId: " +
             data.flow.transactionId
         )

@@ -1,3 +1,4 @@
+import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   DistributedTransactionType,
   IDistributedSchedulerStorage,
@@ -21,7 +22,6 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
-import { raw } from "@medusajs/framework/mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
@@ -479,8 +479,7 @@ export class RedisDistributedTransactionStorage
       const actionResult = result?.pop()
       const isOk = !!actionResult?.pop()
       if (!isOk) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_ARGUMENT,
+        throw new SkipExecutionError(
           "Transaction already started for transactionId: " +
             data.flow.transactionId
         )

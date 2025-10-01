@@ -1868,7 +1868,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it("should successfully complete cart", async () => {
+          it.only("should successfully complete cart", async () => {
             const paymentCollection = (
               await api.post(
                 `/store/payment-collections`,
@@ -1883,7 +1883,7 @@ medusaIntegrationTestRunner({
               storeHeaders
             )
 
-            createCartCreditLinesWorkflow.run({
+            await createCartCreditLinesWorkflow.run({
               input: [
                 {
                   cart_id: cart.id,
@@ -1896,11 +1896,25 @@ medusaIntegrationTestRunner({
               container: appContainer,
             })
 
-            const response = await api.post(
-              `/store/carts/${cart.id}/complete`,
-              {},
-              storeHeaders
-            )
+            // Concurrently complete the cart
+            let completedCart: any[] = []
+            for (let i = 0; i < 5; i++) {
+              completedCart.push(
+                api
+                  .post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+                  .catch((e) => e)
+              )
+              await new Promise((resolve) => setTimeout(resolve, 50))
+            }
+
+            const all = await Promise.all(completedCart)
+            console.log(all.map((r) => r?.data || r))
+
+            const response = all[0]
+
+            for (const res of all) {
+              expect(res.data).toEqual(response.data)
+            }
 
             expect(response.status).toEqual(200)
             expect(response.data.order).toEqual(
