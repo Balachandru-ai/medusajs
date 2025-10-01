@@ -420,12 +420,12 @@ export const completeCartWorkflow = createWorkflow(
       return createdOrder
     })
 
-    const result = transform({ order, orderId }, async ({ order, orderId }) => {
-      return { id: order?.id ?? orderId } as CompleteCartWorkflowOutput
-    })
-
     releaseLockStep({
       key: input.id,
+    })
+
+    const result = transform({ order, orderId }, async ({ order, orderId }) => {
+      return { id: order?.id ?? orderId } as CompleteCartWorkflowOutput
     })
 
     return new WorkflowResponse(result, {
