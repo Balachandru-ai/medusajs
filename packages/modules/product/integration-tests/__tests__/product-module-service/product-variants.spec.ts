@@ -120,12 +120,12 @@ moduleIntegrationTestRunner<IProductModuleService>({
           await service.addImageToVariant([
             // Associate first image with variant1 only
             {
-              image_id: productWithMultipleImages.images[0].id,
+              image_id: productWithMultipleImages.images[1].id,
               variant_id: variant1.id,
             },
             // Associate second image with variant2 only
             {
-              image_id: productWithMultipleImages.images[1].id,
+              image_id: productWithMultipleImages.images[2].id,
               variant_id: variant2.id,
             },
           ])
@@ -143,10 +143,10 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(variant1Results[0].images).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                id: productWithMultipleImages.images[0].id, // variant image
+                id: productWithMultipleImages.images[0].id, // general product image
               }),
               expect.objectContaining({
-                id: productWithMultipleImages.images[2].id, // general product image
+                id: productWithMultipleImages.images[1].id, // variant image
               }),
             ])
           )
@@ -169,10 +169,10 @@ moduleIntegrationTestRunner<IProductModuleService>({
                 id: variant1.id,
                 images: expect.arrayContaining([
                   expect.objectContaining({
-                    id: productWithMultipleImages.images[0].id, // variant image
+                    id: productWithMultipleImages.images[0].id, // general product image
                   }),
                   expect.objectContaining({
-                    id: productWithMultipleImages.images[2].id, // general product image
+                    id: productWithMultipleImages.images[1].id, // general product image
                   }),
                 ]),
               }),
@@ -180,14 +180,147 @@ moduleIntegrationTestRunner<IProductModuleService>({
                 id: variant2.id,
                 images: expect.arrayContaining([
                   expect.objectContaining({
-                    id: productWithMultipleImages.images[1].id, // variant image
+                    id: productWithMultipleImages.images[0].id, // general product image
                   }),
                   expect.objectContaining({
-                    id: productWithMultipleImages.images[2].id, // general product image
+                    id: productWithMultipleImages.images[2].id, // variant image
                   }),
                 ]),
               }),
             ])
+          )
+
+          await service.removeImageFromVariant([
+            {
+              variant_id: variant1.id,
+              image_id: productWithMultipleImages.images[1].id,
+            },
+          ])
+
+          const variant1AfterRemove = await service.listProductVariants(
+            {
+              id: variant1.id,
+            },
+            {
+              relations: ["images"],
+            }
+          )
+
+          expect(variant1AfterRemove[0].images).toHaveLength(2)
+          expect(variant1AfterRemove[0].images).toEqual(
+            expect.arrayContaining([
+              // this variant doesn't have scoped images - only 2 general images
+              expect.objectContaining({
+                id: productWithMultipleImages.images[0].id, // onlyoriginal general product image
+              }),
+              expect.objectContaining({
+                id: productWithMultipleImages.images[1].id, // became general product image after unassignneent from variant
+              }),
+            ])
+          )
+
+          const product = await service.retrieveProduct(
+            productWithMultipleImages.id,
+            {
+              relations: ["images"],
+            }
+          )
+
+          expect(product.images).toHaveLength(3)
+          expect(product.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithMultipleImages.images[0].id,
+              }),
+              expect.objectContaining({
+                id: productWithMultipleImages.images[1].id,
+              }),
+              expect.objectContaining({
+                id: productWithMultipleImages.images[2].id,
+              }),
+            ])
+          )
+
+          // variant2 after image is removed from variant1
+          const variant2AfterRemove = await service.listProductVariants(
+            {
+              id: variant2.id,
+            },
+            {
+              relations: ["images"],
+            }
+          )
+
+          expect(variant2AfterRemove[0].images).toHaveLength(3)
+          expect(variant2AfterRemove[0].images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithMultipleImages.images[0].id, // general product image
+              }),
+              expect.objectContaining({
+                id: productWithMultipleImages.images[1].id, // general product image
+              }),
+              expect.objectContaining({
+                id: productWithMultipleImages.images[2].id,
+              }),
+            ])
+          )
+
+          await service.removeImageFromVariant([
+            {
+              variant_id: variant2.id,
+              image_id: productWithMultipleImages.images[2].id,
+            },
+          ])
+
+          const productAfterRemove = await service.retrieveProduct(
+            productWithMultipleImages.id,
+            {
+              relations: ["images"],
+            }
+          )
+          expect(productAfterRemove.images).toHaveLength(3)
+          expect(productAfterRemove.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithMultipleImages.images[0].id,
+              }),
+            ])
+          )
+          expect(productAfterRemove.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithMultipleImages.images[1].id,
+              }),
+            ])
+          )
+          expect(productAfterRemove.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithMultipleImages.images[2].id,
+              }),
+            ])
+          )
+
+          const bothVariantsAfterRemove = await service.listProductVariants(
+            {
+              id: [variant1.id, variant2.id],
+            },
+            {
+              relations: ["images"],
+            }
+          )
+
+          expect(bothVariantsAfterRemove[0].images).toHaveLength(3)
+          expect(bothVariantsAfterRemove[1].images).toHaveLength(3)
+
+          const imageeIds = productWithMultipleImages.images.map((i) => i.id)
+
+          expect(bothVariantsAfterRemove[0].images.map((i) => i.id)).toEqual(
+            expect.arrayContaining(imageeIds)
+          )
+          expect(bothVariantsAfterRemove[1].images.map((i) => i.id)).toEqual(
+            expect.arrayContaining(imageeIds)
           )
         })
 

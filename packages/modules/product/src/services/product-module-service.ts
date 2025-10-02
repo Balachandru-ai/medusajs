@@ -2313,7 +2313,9 @@ export default class ProductModuleService
   ): Promise<void> {
     const pairs = Array.isArray(data) ? data : [data]
     const productVariantProductImages =
-      await this.productVariantProductImageService_.list(pairs)
+      await this.productVariantProductImageService_.list({
+        $or: pairs,
+      })
 
     await this.productVariantProductImageService_.delete(
       productVariantProductImages.map((p) => p.id as string),
@@ -2322,7 +2324,7 @@ export default class ProductModuleService
   }
 
   @InjectManager()
-  protected async getVariantImages(
+  private async getVariantImages(
     variantIds: string | string[],
     context: Context = {}
   ): Promise<Map<string, InferEntityType<typeof ProductImage>[]>> {
