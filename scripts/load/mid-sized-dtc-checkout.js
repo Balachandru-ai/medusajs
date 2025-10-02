@@ -1,6 +1,22 @@
 import { check, group, sleep } from "k6"
 import http from "k6/http"
 
+/**
+ * NOTE: if running high VUs (eg. 450) locally lead to errors such as: "connect: can't assign requested
+ * address". It means that the number of port available is not enough for the number of concurrent
+ * connections. You can increase the number of ports available by running the following command:
+ *
+ * On MAC OS:
+ * you can expand the range with:
+ *   sudo sysctl net.inet.ip.portrange.first=10000
+ *   sudo sysctl net.inet.ip.portrange.last=65535
+ * Verify the range with:
+ *   sysctl net.inet.ip.portrange.first net.inet.ip.portrange.last
+ * Reset to defaults
+ *   sudo sysctl net.inet.ip.portrange.first=49152
+ *   sudo sysctl net.inet.ip.portrange.last=65535
+ */
+
 // let publishableKey = __ENV.K6_PUBLISHABLE_KEY
 // let regionId = __ENV.K6_REGION_ID
 // let endpoint = __ENV.K6_ENDPOINT
@@ -15,9 +31,9 @@ const firstStageDuration = "1m"
 const secondStageDuration = "3m"
 const thirdStageDuration = "1m"
 
-const highVus = 100
-const mediumVus = 50
-const lowVus = 10
+const highVus = 200
+// const mediumVus = 50
+const lowVus = 20
 
 // let publishableKey =
 //   "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
