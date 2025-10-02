@@ -37,7 +37,7 @@ export default async (
     commandTimeout: 5000,
     lazyConnect: true,
     maxRetriesPerRequest: 3,
-    enableOfflineQueue: false,
+    enableOfflineQueue: true,
     connectionName: "medusa-cache-redis",
     ...redisOptions_,
   }

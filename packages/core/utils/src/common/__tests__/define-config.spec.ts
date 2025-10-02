@@ -1086,6 +1086,21 @@ describe("defineConfig", function () {
             },
             "resolve": "@medusajs/medusa/cache-redis",
           },
+          "caching": {
+            "options": {
+              "providers": [
+                {
+                  "id": "caching-redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                  },
+                  "resolve": "@medusajs/medusa/caching-redis",
+                },
+              ],
+            },
+            "resolve": "@medusajs/caching",
+          },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
           },
@@ -1293,6 +1308,21 @@ describe("defineConfig", function () {
               "redisUrl": "redis://localhost:6379",
             },
             "resolve": "@medusajs/medusa/cache-redis",
+          },
+          "caching": {
+            "options": {
+              "providers": [
+                {
+                  "id": "caching-redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                  },
+                  "resolve": "@medusajs/medusa/caching-redis",
+                },
+              ],
+            },
+            "resolve": "@medusajs/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1517,6 +1547,21 @@ describe("defineConfig", function () {
               "redisUrl": "redis://localhost:6379",
             },
             "resolve": "@medusajs/medusa/cache-redis",
+          },
+          "caching": {
+            "options": {
+              "providers": [
+                {
+                  "id": "caching-redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                  },
+                  "resolve": "@medusajs/medusa/caching-redis",
+                },
+              ],
+            },
+            "resolve": "@medusajs/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
