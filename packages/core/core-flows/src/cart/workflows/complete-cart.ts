@@ -424,7 +424,7 @@ export const completeCartWorkflow = createWorkflow(
       key: input.id,
     })
 
-    const result = transform({ order, orderId }, async ({ order, orderId }) => {
+    const result = transform({ order, orderId }, ({ order, orderId }) => {
       return { id: order?.id ?? orderId } as CompleteCartWorkflowOutput
     })
 
