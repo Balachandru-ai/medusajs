@@ -9,11 +9,7 @@ import {
   PromotionStatus,
   PromotionType,
 } from "@medusajs/utils"
-import {
-  createAdminUser,
-  generatePublishableKey,
-  generateStoreHeaders,
-} from "../../../../helpers/create-admin-user"
+import { createAdminUser, generatePublishableKey, generateStoreHeaders, } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
@@ -150,6 +146,17 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
         ).data.promotion
+      })
+
+      describe("GET /store/carts/[id]", () => {
+        it("should return 404 when trying to fetch a cart that does not exist", async () => {
+          const response = await api.get(
+            `/store/carts/fake`,
+            storeHeadersWithCustomer
+          ).catch((e) => e)
+
+          expect(response.response.status).toEqual(404)
+        })
       })
 
       describe("POST /store/carts", () => {
@@ -2029,6 +2036,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product without inventory management",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -2222,6 +2230,7 @@ medusaIntegrationTestRunner({
                   "/admin/products",
                   {
                     title: `Test fixture ${shippingProfile.id}`,
+                    status: ProductStatus.PUBLISHED,
                     shipping_profile_id: shippingProfile.id,
                     options: [
                       { title: "pack", values: ["1-pack", "2-pack", "3-pack"] },
@@ -2541,6 +2550,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "test product",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {
@@ -2886,6 +2896,7 @@ medusaIntegrationTestRunner({
               {
                 title: "Gift Card",
                 description: "test",
+                status: ProductStatus.PUBLISHED,
                 is_giftcard: true,
                 options: [
                   {
@@ -3445,6 +3456,7 @@ medusaIntegrationTestRunner({
                 "/admin/products",
                 {
                   title: "Medusa T-Shirt not discountable",
+                  status: ProductStatus.PUBLISHED,
                   handle: "t-shirt-not-discountable",
                   discountable: false,
                   options: [
@@ -3621,6 +3633,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3737,6 +3750,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3855,6 +3869,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3973,6 +3988,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4110,6 +4126,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4226,6 +4243,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4363,6 +4381,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4457,6 +4476,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "Product for free",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {
