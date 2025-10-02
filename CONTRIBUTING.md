@@ -25,11 +25,23 @@ If you, as a community contributor, wish to work on more extensive features, ple
 
 ## Local development
 
-1. Provided you followed the previous section steps, you already have the forked Medusa repository locally and your branch created. Start making the changes you desire.
+> Prerequisites:
+> 1. [Forked Medusa repository cloned locally](https://github.com/medusajs/medusa).
+> 2. [A local Medusa application for testing](https://docs.medusajs.com/learn/installation).
 
-2. If you don't have already, create a local Medusa test project `npx create-medusa-app`. This is the project you are going to use to validate your changes at runtime.
 
-3. Replace the @medusajs/* dependencies and devDependencies in you test project package.json, to point to the corresponding local packages in your forked Medusa repository. You will also need to add the medusa packages in the resolutions section of the package.json, so that every dependency is resolved locally. Assuming your forked Medusa project lives inside the same directory as your test project (otherwise modify the paths accordingly) you would have:
+```
+|
+|__ medusa  // forked repository
+|
+|__ test-project // medusa application for testing
+|
+|__ test-project_storefront // (optional) storefront to interact with medusa application
+```
+
+> **Note:** Assuming your forked Medusa project and the test project are sibling directories, and you optionally setup the starter storefront as part of the installation, your directory structure would look like the above.
+
+1. Replace the @medusajs/* dependencies and devDependencies in you test project's `package.json` to point to the corresponding local packages in your forked Medusa repository. You will also need to add the medusa packages in the resolutions section of the `package.json`, so that every dependency is resolved locally. For example, assuming your forked Medusa project and the test project are sibling directories:
 
 ```json
 // test project package.json
@@ -107,9 +119,16 @@ If you, as a community contributor, wish to work on more extensive features, ple
 }
 ```
 
-4. Each time you make a change in the forked Medusa repository, you need to build the packages where the modifications took place with `yarn build`. Some packages have a watch script, so you can execute `yarn watch` once and it will automatically build on changes. 
+2. Every time you make a change in the forked Medusa repository, you need to build the packages where the modifications took place with `yarn build`. Some packages have a watch script, so you can execute `yarn watch` once and it will automatically build on changes:
 
-5. To have this changes in your test project, you need to navigate to it and run `rm -R node_modules && yarn && yarn dev` so that node_modules is regenerated with the newly built contents from the previous step. 
+```bash
+yarn build # or yarn watch
+```
+
+3. After building changes in the forked medusa repository, run the following command in the test project to regenerate the `node_modules` directory with the newly built contents from the previous step:
+```
+rm -R node_modules && yarn && yarn dev
+```
 
 ## Workflow
 
