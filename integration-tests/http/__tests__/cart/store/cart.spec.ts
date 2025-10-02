@@ -2249,6 +2249,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product without inventory management",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -2442,6 +2443,7 @@ medusaIntegrationTestRunner({
                   "/admin/products",
                   {
                     title: `Test fixture ${shippingProfile.id}`,
+                    status: ProductStatus.PUBLISHED,
                     shipping_profile_id: shippingProfile.id,
                     options: [
                       { title: "pack", values: ["1-pack", "2-pack", "3-pack"] },
@@ -2761,6 +2763,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "test product",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {
@@ -3106,6 +3109,7 @@ medusaIntegrationTestRunner({
               {
                 title: "Gift Card",
                 description: "test",
+                status: ProductStatus.PUBLISHED,
                 is_giftcard: true,
                 options: [
                   {
@@ -3665,6 +3669,7 @@ medusaIntegrationTestRunner({
                 "/admin/products",
                 {
                   title: "Medusa T-Shirt not discountable",
+                  status: ProductStatus.PUBLISHED,
                   handle: "t-shirt-not-discountable",
                   discountable: false,
                   options: [
@@ -3841,6 +3846,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3957,6 +3963,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4075,6 +4082,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4193,6 +4201,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4330,6 +4339,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4446,6 +4456,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4583,6 +4594,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4677,6 +4689,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "Product for free",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {
