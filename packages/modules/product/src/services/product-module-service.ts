@@ -2286,6 +2286,8 @@ export default class ProductModuleService
     data: { image_id: string; variant_id: string }[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<{ id: string } | { id: string }[]> {
+    // TODO: consider validation that image and variant are on the same product
+
     const productVariantProductImage =
       await this.productVariantProductImageService_.create(data, sharedContext)
 
