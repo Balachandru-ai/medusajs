@@ -1,5 +1,5 @@
 ---
-"@medusajs/medusa": minor
+"@medusajs/medusa": patch
 ---
 
-Enhance entity column generation with additional types support
+Fix columns helper (view entities columns)
