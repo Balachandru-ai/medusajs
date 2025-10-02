@@ -10,3 +10,8 @@ export type RuleOperatorType =
   | "lt"
   | "lte"
   | "nin"
+
+/**
+ * The accepted values for the pricing rule option's operator.
+ */
+export type PricingRuleOperatorType = "eq" | "gt" | "gte" | "lt" | "lte"
