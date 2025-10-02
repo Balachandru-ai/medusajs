@@ -13,7 +13,10 @@ import {
   PricingFilters,
   PricingRepositoryService,
 } from "@medusajs/framework/types"
-import { Knex, SqlEntityManager } from "@mikro-orm/postgresql"
+import {
+  Knex,
+  SqlEntityManager,
+} from "@medusajs/framework/mikro-orm/postgresql"
 
 export class PricingRepository
   extends MikroOrmBase
@@ -66,7 +69,7 @@ export class PricingRepository
   ): Promise<CalculatedPriceSetDTO[]> {
     const manager = this.getActiveManager<SqlEntityManager>(sharedContext)
     const knex = manager.getKnex()
-    const context = pricingContext.context || {}
+    const context = { ...(pricingContext.context || {}) }
 
     // Extract quantity and currency from context
     const quantity = context.quantity

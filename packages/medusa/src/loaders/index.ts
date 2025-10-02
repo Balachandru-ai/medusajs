@@ -22,7 +22,7 @@ import {
   validateModuleName,
 } from "@medusajs/framework/utils"
 import { WorkflowLoader } from "@medusajs/framework/workflows"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 import { Express, NextFunction, Request, Response } from "express"
 import { join } from "path"
 import requestIp from "request-ip"

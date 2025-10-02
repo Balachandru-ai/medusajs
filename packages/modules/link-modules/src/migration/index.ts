@@ -13,8 +13,11 @@ import {
   normalizeMigrationSQL,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { EntitySchema, MikroORM } from "@mikro-orm/core"
-import { DatabaseSchema, PostgreSqlDriver } from "@mikro-orm/postgresql"
+import { EntitySchema, MikroORM } from "@medusajs/framework/mikro-orm/core"
+import {
+  DatabaseSchema,
+  PostgreSqlDriver,
+} from "@medusajs/framework/mikro-orm/postgresql"
 import { generateEntity } from "../utils"
 
 /**

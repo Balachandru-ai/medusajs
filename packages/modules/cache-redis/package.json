@@ -39,7 +39,6 @@
     "ioredis": "^5.4.1"
   },
   "peerDependencies": {
-    "@medusajs/framework": "2.10.3",
-    "awilix": "^8.0.1"
+    "@medusajs/framework": "2.10.3"
   }
 }

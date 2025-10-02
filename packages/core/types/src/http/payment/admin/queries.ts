@@ -5,7 +5,7 @@ import {
   BasePaymentFilters,
   BasePaymentSessionFilters,
 } from "../common"
-import { AdminRefundReason } from "./entities"
+import { AdminRefundReason } from "../../refund-reason"
 
 export interface AdminPaymentProviderFilters
   extends FindParams,

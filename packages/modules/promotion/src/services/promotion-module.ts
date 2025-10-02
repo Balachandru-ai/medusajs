@@ -714,7 +714,9 @@ export default class PromotionModuleService
       sharedContext
     )
 
-    return Array.isArray(data) ? promotions : promotions[0]
+    return await this.baseRepository_.serialize<
+      PromotionTypes.PromotionDTO | PromotionTypes.PromotionDTO[]
+    >(Array.isArray(data) ? promotions : promotions[0])
   }
 
   @InjectTransactionManager()
@@ -973,6 +975,7 @@ export default class PromotionModuleService
   ): Promise<PromotionTypes.PromotionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updatePromotions(
     data:
@@ -1189,6 +1192,7 @@ export default class PromotionModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
   async addPromotionRules(
     promotionId: string,
     rulesData: PromotionTypes.CreatePromotionRuleDTO[],
@@ -1312,6 +1316,8 @@ export default class PromotionModuleService
 
     validatePromotionRuleAttributes(rulesData)
 
+    const promotionRuleValuesDataToCreate: CreatePromotionRuleValueDTO[] = []
+
     for (const ruleData of rulesData) {
       const { values, ...rest } = ruleData
       const promotionRuleData: CreatePromotionRuleDTO = {
@@ -1332,11 +1338,13 @@ export default class PromotionModuleService
         promotion_rule: createdPromotionRule,
       }))
 
-      await this.promotionRuleValueService_.create(
-        promotionRuleValuesData,
-        sharedContext
-      )
+      promotionRuleValuesDataToCreate.push(...promotionRuleValuesData)
     }
+
+    await this.promotionRuleValueService_.create(
+      promotionRuleValuesDataToCreate,
+      sharedContext
+    )
 
     return createdPromotionRules
   }
@@ -1654,7 +1662,7 @@ export default class PromotionModuleService
   @EmitEvents()
   async addPromotionsToCampaign(
     data: PromotionTypes.AddPromotionsToCampaignDTO,
-    @MedusaContext() sharedContext?: Context
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<{ ids: string[] }> {
     const ids = await this.addPromotionsToCampaign_(data, sharedContext)
 

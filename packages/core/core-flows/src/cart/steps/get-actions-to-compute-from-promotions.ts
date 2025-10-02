@@ -1,7 +1,7 @@
 import {
   ComputeActionContext,
   ComputeActionOptions,
-  IPromotionModuleService,
+  IPromotionModuleService
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
