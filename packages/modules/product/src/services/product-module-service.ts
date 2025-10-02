@@ -46,7 +46,7 @@ import {
   toHandle,
 } from "@medusajs/framework/utils"
 import { EntityManager } from "@mikro-orm/core"
-import { ProductRepository, ProductImageRepository } from "../repositories"
+import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
@@ -62,7 +62,6 @@ import { eventBuilders } from "../utils/events"
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
   productRepository: ProductRepository
-  productImageRepository: ProductImageRepository
   productService: ModulesSdkTypes.IMedusaInternalService<any, any>
   productVariantService: ModulesSdkTypes.IMedusaInternalService<any, any>
   productTagService: ModulesSdkTypes.IMedusaInternalService<any>
@@ -121,7 +120,6 @@ export default class ProductModuleService
 {
   protected baseRepository_: DAL.RepositoryService
   protected readonly productRepository_: ProductRepository
-  protected readonly productImageRepository_: ProductImageRepository
   protected readonly productService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof Product>
   >
@@ -156,7 +154,6 @@ export default class ProductModuleService
     {
       baseRepository,
       productRepository,
-      productImageRepository,
       productService,
       productVariantService,
       productTagService,
@@ -177,7 +174,6 @@ export default class ProductModuleService
 
     this.baseRepository_ = baseRepository
     this.productRepository_ = productRepository
-    this.productImageRepository_ = productImageRepository
     this.productService_ = productService
     this.productVariantService_ = productVariantService
     this.productTagService_ = productTagService
@@ -2228,11 +2224,10 @@ export default class ProductModuleService
       const variantIds = variants.map((variant) => variant.id)
 
       // Get variant images for all variants
-      const variantImagesMap =
-        await this.productImageRepository_.getVariantImages(
-          variantIds,
-          sharedContext
-        )
+      const variantImagesMap = await this.getVariantImages(
+        variantIds,
+        sharedContext
+      )
 
       for (const variant of variants) {
         variant.images = variantImagesMap.get(variant.id) || []
@@ -2266,10 +2261,7 @@ export default class ProductModuleService
     )
 
     if (shouldLoadImages) {
-      const variantImages = await this.productImageRepository_.getVariantImages(
-        id,
-        sharedContext
-      )
+      const variantImages = await this.getVariantImages(id, sharedContext)
       variant.images = variantImages.get(id) || []
     }
 
@@ -2325,5 +2317,65 @@ export default class ProductModuleService
       productVariantProductImages.map((p) => p.id as string),
       sharedContext
     )
+  }
+
+  @InjectManager()
+  protected async getVariantImages(
+    variantIds: string | string[],
+    context: Context = {}
+  ): Promise<Map<string, InferEntityType<typeof ProductImage>[]>> {
+    const variantIdArray = Array.isArray(variantIds) ? variantIds : [variantIds]
+
+    if (variantIdArray.length === 0) {
+      return new Map()
+    }
+
+    // todo pass don't refetch
+    const variants = await this.productVariantService_.list(
+      { id: variantIdArray },
+      { select: ["id", "product_id"] },
+      context
+    )
+
+    const variantProductIdMap = new Map(
+      variants.map((v) => [v.id, v.product_id])
+    )
+
+    const allProductImages = (await this.listProductImages(
+      { product_id: Array.from(variantProductIdMap.values()) },
+      {
+        relations: ["variants"],
+      },
+      context
+    )) as (ProductTypes.ProductImageDTO & {
+      product_id: string
+      variants: InferEntityType<typeof ProductVariant>[]
+    })[]
+
+    // Group images by variant ID
+    const result = new Map<string, InferEntityType<typeof ProductImage>[]>()
+
+    for (const variantId of variantIdArray) {
+      const productId = variantProductIdMap.get(variantId)
+      const variantImages = allProductImages.filter((img) => {
+        // belongs to another product
+        if (img.product_id !== productId) {
+          return false
+        }
+
+        if (!img.variants.length) {
+          return true
+        }
+
+        return img.variants.some((v) => v.id === variantId)
+      })
+
+      result.set(
+        variantId,
+        variantImages as InferEntityType<typeof ProductImage>[]
+      )
+    }
+
+    return result
   }
 }
