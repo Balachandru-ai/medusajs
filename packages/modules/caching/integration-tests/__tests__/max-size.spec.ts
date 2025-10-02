@@ -50,6 +50,7 @@ moduleIntegrationTestRunner<ICachingModuleService>({
   moduleName: Modules.CACHING,
   moduleOptions: {
     in_memory: {
+      enable: true,
       maxSize: 1000,
     },
   },
