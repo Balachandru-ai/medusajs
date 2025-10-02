@@ -2109,6 +2109,7 @@ medusaIntegrationTestRunner({
               await api.post(
                 `/admin/products`,
                 {
+                  status: ProductStatus.PUBLISHED,
                   title: "Product for camapign",
                   description: "test",
                   options: [
