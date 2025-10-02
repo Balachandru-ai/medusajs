@@ -2220,12 +2220,9 @@ export default class ProductModuleService
     )
 
     if (shouldLoadImages) {
-      // Get variant IDs
-      const variantIds = variants.map((variant) => variant.id)
-
       // Get variant images for all variants
       const variantImagesMap = await this.getVariantImages(
-        variantIds,
+        variants,
         sharedContext
       )
 
@@ -2261,7 +2258,10 @@ export default class ProductModuleService
     )
 
     if (shouldLoadImages) {
-      const variantImages = await this.getVariantImages(id, sharedContext)
+      const variantImages = await this.getVariantImages(
+        [variant],
+        sharedContext
+      )
       variant.images = variantImages.get(id) || []
     }
 
@@ -2325,21 +2325,17 @@ export default class ProductModuleService
 
   @InjectManager()
   private async getVariantImages(
-    variantIds: string | string[],
+    variants: Pick<
+      InferEntityType<typeof ProductVariant>,
+      "id" | "product_id"
+    >[],
     context: Context = {}
   ): Promise<Map<string, InferEntityType<typeof ProductImage>[]>> {
-    const variantIdArray = Array.isArray(variantIds) ? variantIds : [variantIds]
+    const variantIdArray = variants.map((v) => v.id)
 
     if (variantIdArray.length === 0) {
       return new Map()
     }
-
-    // todo pass don't refetch
-    const variants = await this.productVariantService_.list(
-      { id: variantIdArray },
-      { select: ["id", "product_id"] },
-      context
-    )
 
     const variantProductIdMap = new Map(
       variants.map((v) => [v.id, v.product_id])
