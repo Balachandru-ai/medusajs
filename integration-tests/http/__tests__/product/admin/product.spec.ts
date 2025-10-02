@@ -3938,7 +3938,6 @@ medusaIntegrationTestRunner({
 
           const product = productWithMultipleImages.data.product
 
-          // Create two variants
           const variant1Response = await api.post(
             `/admin/products/${product.id}/variants`,
             {
@@ -3959,8 +3958,12 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
 
-          const variant1 = variant1Response.data.product.variants[0]
-          const variant2 = variant2Response.data.product.variants[0]
+          const variant1 = variant1Response.data.product.variants.find(
+            (v) => v.title === "variant 1"
+          )
+          const variant2 = variant2Response.data.product.variants.find(
+            (v) => v.title === "variant 2"
+          )
 
           const addResponse = await api.post(
             `/admin/products/${product.id}/images/${product.images[0].id}/variants/batch`,
