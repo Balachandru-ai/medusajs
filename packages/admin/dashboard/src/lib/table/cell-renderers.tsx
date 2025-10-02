@@ -25,6 +25,14 @@ export type RendererRegistry = Map<string, CellRenderer>
 
 const cellRenderers: RendererRegistry = new Map()
 
+const toCamelCase = (str: string): string => {
+  return /^([a-zA-Z]+)(([A-Z]([a-z]+))+)$/.test(str)
+    ? str
+    : str
+        .toLowerCase()
+        .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
+}
+
 const getNestedValue = (obj: any, path: string) => {
   return path.split('.').reduce((current, key) => current?.[key], obj)
 }
@@ -71,10 +79,11 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
   }
 
   // Use existing translation keys where available
-  const getTranslatedStatus = (status: string): string => {
+  const getTranslatedStatus = (status: string, column: HttpTypes.AdminColumn): string => {
     if (!t) return status
 
     const lowerStatus = status.toLowerCase()
+    const camelCaseStatus = toCamelCase(lowerStatus)
     switch (lowerStatus) {
       case 'active':
         return t('general.active', 'Active') as string
@@ -87,12 +96,18 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
       case 'canceled':
         return t('orders.status.canceled', 'Canceled') as string
       default:
+        if (column.context === 'payment') {
+          return t(`orders.payment.status.${camelCaseStatus}`, status) as string
+        }
+        if (column.context === 'fulfillment') {
+          return t(`orders.fulfillment.status.${camelCaseStatus}`, status) as string
+        }
         // Try generic status translation with fallback
         return t(`status.${lowerStatus}`, status) as string
     }
   }
 
-  const translatedValue = getTranslatedStatus(value)
+  const translatedValue = getTranslatedStatus(value, column)
 
   return (
     <StatusBadge color={getStatusColor(value)}>
