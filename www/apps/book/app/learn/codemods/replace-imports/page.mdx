@@ -10,9 +10,17 @@ In this chapter, you'll learn about the codemod that helps you replace imports i
 
 Medusa v2.11.0 optimized the package structure by consolidating several external packages into the `@medusajs/framework` package.
 
-Previously, you had to install and manage packages related to MikroORM, Awilix, and the `pg` package separately in your Medusa application. Starting with v2.11.0, these packages are included in the `@medusajs/framework` package.
+Previously, you had to install and manage packages related to MikroORM, Awilix, OpenTelemetry, and the `pg` package separately in your Medusa application. Starting with v2.11.0, these packages are included in the `@medusajs/framework` package.
 
-For example, instead of importing `@mikro-orm/core`, you now import it from `@medusajs/framework/mikro-orm/core`. The same applies to other MikroORM packages, as well as `awilix` and `pg`.
+For example, instead of importing `@mikro-orm/core`, you now import it from `@medusajs/framework/mikro-orm/core`. This applies to all of the following packages:
+
+- `@mikro-orm/*` packages (e.g., `@mikro-orm/core`, `@mikro-orm/migrations`, etc.) -> `@medusajs/framework/mikro-orm/{subpath}`
+- `awilix` -> `@medusajs/framework/awilix`
+- `pg` -> `@medusajs/framework/pg`
+- `@opentelemetry/instrumentation-pg` -> `@medusajs/framework/opentelemetry/instrumentation-pg`
+- `@opentelemetry/resources` -> `@medusajs/framework/opentelemetry/resources`
+- `@opentelemetry/sdk-node` -> `@medusajs/framework/opentelemetry/sdk-node`
+- `@opentelemetry/sdk-trace-node` -> `@medusajs/framework/opentelemetry/sdk-trace-node`
 
 To help you update your codebase to reflect these changes, Medusa provides a codemod that automatically replaces imports of these packages throughout your codebase.
 
@@ -54,6 +62,13 @@ const replacements = [
     // eslint-disable-next-line quotes
     replacement: 'from "@medusajs/framework/pg"',
   },
+  // OpenTelemetry imports - replace @opentelemetry/instrumentation-pg, @opentelemetry/resources, 
+  // @opentelemetry/sdk-node, and @opentelemetry/sdk-trace-node with @medusajs/framework/opentelemetry/{subpath}
+  {
+    pattern: /from\s+['"]@?opentelemetry\/(instrumentation-pg|resources|sdk-node|sdk-trace-node)['"]/g,
+    // eslint-disable-next-line quotes
+    replacement: 'from "@medusajs/framework/opentelemetry/$1"',
+  },
   // MikroORM require statements - replace require('@?mikro-orm/{subpath}') with require('@medusajs/framework/mikro-orm/{subpath}')
   {
     pattern: /require\s*\(\s*['"]@?mikro-orm\/([^'"]+)['"]\s*\)/g,
@@ -71,6 +86,14 @@ const replacements = [
     pattern: /require\s*\(\s*['"]pg['"]\s*\)/g,
     // eslint-disable-next-line quotes
     replacement: 'require("@medusajs/framework/pg")',
+  },
+  // OpenTelemetry require statements - replace require('@opentelemetry/instrumentation-pg'), 
+  // require('@opentelemetry/resources'), require('@opentelemetry/sdk-node'), and 
+  // require('@opentelemetry/sdk-trace-node') with require('@medusajs/framework/opentelemetry/{subpath}')
+  {
+    pattern: /require\s*\(\s*['"]@?opentelemetry\/(instrumentation-pg|resources|sdk-node|sdk-trace-node)['"]\s*\)/g,
+    // eslint-disable-next-line quotes
+    replacement: 'require("@medusajs/framework/opentelemetry/$1")',
   },
 ]
 
@@ -245,4 +268,12 @@ This will scan your project files, apply the necessary import replacements, and 
 
 After running the codemod, review the changes made to your codebase. You can use `git diff` to see the modifications. Additionally, run your tests to ensure everything works as expected.
 
-If everything is working correctly, you can remove the `replace-imports.js` file from your project. You can also remove the `@mikro-orm/*`, `awilix`, and `pg` packages from your `package.json`, as they're now included in the `@medusajs/framework` package.
+If everything is working correctly, you can remove the `replace-imports.js` file from your project. You can also remove the following packages from your `package.json`, as they're now included in the `@medusajs/framework` package:
+
+- `@mikro-orm/*` packages (e.g., `@mikro-orm/core`, `@mikro-orm/migrations`, etc.)
+- `awilix`
+- `pg`
+- `@opentelemetry/instrumentation-pg`
+- `@opentelemetry/resources`
+- `@opentelemetry/sdk-node`
+- `@opentelemetry/sdk-trace-node`

@@ -40,13 +40,7 @@ Medusa uses [OpenTelemetry](https://opentelemetry.io/) for instrumentation and r
 
 ### Install Dependencies
 
-Start by installing the following OpenTelemetry dependencies in your Medusa project:
-
-```bash npm2yarn
-npm install @opentelemetry/sdk-node @opentelemetry/resources @opentelemetry/sdk-trace-node @opentelemetry/instrumentation-pg
-```
-
-Also, install the dependencies relevant for the exporter you use. If you're using Zipkin, install the following dependencies:
+Before you start, you must install the dependencies relevant for the exporter you use. If you're using Zipkin, install the following dependencies:
 
 ```bash npm2yarn
 npm install @opentelemetry/exporter-zipkin

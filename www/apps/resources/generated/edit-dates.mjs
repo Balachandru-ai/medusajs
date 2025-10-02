@@ -6543,7 +6543,7 @@ export const generatedEditDates = {
   "references/utils/types/utils.NormalizedRow/page.mdx": "2025-06-05T19:05:53.365Z",
   "references/utils/utils.Payment/page.mdx": "2025-06-05T19:05:53.489Z",
   "app/integrations/guides/slack/page.mdx": "2025-06-26T12:57:20.880Z",
-  "app/integrations/guides/sentry/page.mdx": "2025-06-16T10:11:29.955Z",
+  "app/integrations/guides/sentry/page.mdx": "2025-10-02T10:30:51.194Z",
   "app/integrations/guides/mailchimp/page.mdx": "2025-06-26T11:59:15.303Z",
   "app/how-to-tutorials/tutorials/first-purchase-discounts/page.mdx": "2025-06-26T11:55:27.175Z",
   "references/types/CommonTypes/interfaces/types.CommonTypes.CookieOptions/page.mdx": "2025-06-25T10:11:37.088Z",

@@ -69,7 +69,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/modules/db-operations/page.mdx": "2025-09-29T15:32:00.991Z",
   "app/learn/fundamentals/modules/multiple-services/page.mdx": "2025-03-18T15:11:44.632Z",
   "app/learn/fundamentals/modules/page.mdx": "2025-09-29T15:33:08.586Z",
-  "app/learn/debugging-and-testing/instrumentation/page.mdx": "2025-06-16T10:40:52.922Z",
+  "app/learn/debugging-and-testing/instrumentation/page.mdx": "2025-10-02T10:30:30.785Z",
   "app/learn/fundamentals/api-routes/additional-data/page.mdx": "2025-04-17T08:50:17.036Z",
   "app/learn/fundamentals/workflows/variable-manipulation/page.mdx": "2025-04-24T13:14:43.967Z",
   "app/learn/customization/custom-features/api-route/page.mdx": "2024-12-09T10:39:30.046Z",
@@ -134,5 +134,5 @@ export const generatedEditDates = {
   "app/learn/debugging-and-testing/feature-flags/page.mdx": "2025-09-02T08:36:12.714Z",
   "app/learn/fundamentals/workflows/locks/page.mdx": "2025-09-15T09:37:00.808Z",
   "app/learn/codemods/page.mdx": "2025-09-29T15:40:03.620Z",
-  "app/learn/codemods/replace-imports/page.mdx": "2025-09-29T15:50:19.101Z"
+  "app/learn/codemods/replace-imports/page.mdx": "2025-10-02T10:36:36.883Z"
 }
