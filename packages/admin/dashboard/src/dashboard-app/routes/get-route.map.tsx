@@ -125,6 +125,13 @@ export function getRouteMap({
                             import("../../routes/products/product-media"),
                         },
                         {
+                          path: "variant-media",
+                          lazy: () =>
+                            import(
+                              "../../routes/products/product-variant-media"
+                            ),
+                        },
+                        {
                           path: "prices",
                           lazy: () =>
                             import("../../routes/products/product-prices"),

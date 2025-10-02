@@ -66,7 +66,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
 
     const mediaToKeep = product.images
       .filter((i) => !ids.includes(i.id))
-      .map((i) => ({ url: i.url}))
+      .map((i) => ({ url: i.url }))
 
     await mutateAsync(
       {
@@ -90,7 +90,12 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
             {
               actions: [
                 {
-                  label: t("actions.edit"),
+                  label: t("actions.editVariantImages"),
+                  to: "variant-media",
+                  icon: <PencilSquare />,
+                },
+                {
+                  label: t("actions.editImages"),
                   to: "media?view=edit",
                   icon: <PencilSquare />,
                 },
