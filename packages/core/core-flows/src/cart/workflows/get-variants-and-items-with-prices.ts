@@ -143,6 +143,11 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
       filters: {
         id: variantIds,
       },
+      options: {
+        cache: {
+          enable: true,
+        },
+      },
     }).config({ name: "fetch-variants" })
 
     const calculatedPriceSets = getVariantPriceSetsStep({
