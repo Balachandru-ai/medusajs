@@ -4091,14 +4091,6 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "ref",
-                      "title": "validateCartShippingOptionsStep",
-                      "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/validateCartShippingOptionsStep",
-                      "children": []
-                    },
-                    {
-                      "loaded": true,
-                      "isPathHref": true,
-                      "type": "ref",
                       "title": "validateShipmentStep",
                       "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/validateShipmentStep",
                       "children": []
@@ -6309,6 +6301,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Order Confirmation in Storefront",
               "path": "https://docs.medusajs.com/resources/storefront-development/checkout/order-confirmation",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Return Request - Order #",
+              "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/storefront-returns",
               "children": []
             }
           ]
@@ -9546,6 +9546,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "ref",
                       "title": "confirmOrderEditRequestWorkflow",
                       "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmOrderEditRequestWorkflow",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "ref",
+                      "title": "confirmReturnReceiveWorkflow",
+                      "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnReceiveWorkflow",
                       "children": []
                     },
                     {

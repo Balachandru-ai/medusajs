@@ -4,7 +4,11 @@ import {
   OrderTypes,
   ReturnDTO,
 } from "@medusajs/framework/types"
-import { ChangeActionType, promiseAll } from "@medusajs/framework/utils"
+import {
+  ChangeActionType,
+  promiseAll,
+  ReturnStatus,
+} from "@medusajs/framework/utils"
 
 async function createOrderChange(
   service,
@@ -90,6 +94,7 @@ export async function cancelReturn(
         {
           data: {
             canceled_at: new Date(),
+            status: ReturnStatus.CANCELED,
           },
           selector: {
             id: returnOrder.id,

@@ -1,4 +1,4 @@
-import { asClass, asValue } from "awilix"
+import { asClass, asValue } from "@medusajs/framework/awilix"
 import { PostgresProvider } from "../services/postgres-provider"
 import { MikroOrmBaseRepository as BaseRepository } from "@medusajs/framework/utils"
 import { IndexModuleService } from "@services"

@@ -728,10 +728,6 @@ export const filesMap = [
     "pathname": "/data-model-repository-reference/tips/filtering"
   },
   {
-    "filePath": "/www/apps/resources/app/deployment/medusa-application/railway/page.mdx",
-    "pathname": "/deployment/medusa-application/railway"
-  },
-  {
     "filePath": "/www/apps/resources/app/deployment/page.mdx",
     "pathname": "/deployment"
   },
@@ -1018,6 +1014,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/nextjs-starter/guides/revalidate-cache/page.mdx",
     "pathname": "/nextjs-starter/guides/revalidate-cache"
+  },
+  {
+    "filePath": "/www/apps/resources/app/nextjs-starter/guides/storefront-returns/page.mdx",
+    "pathname": "/nextjs-starter/guides/storefront-returns"
   },
   {
     "filePath": "/www/apps/resources/app/nextjs-starter/page.mdx",
