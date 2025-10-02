@@ -301,6 +301,21 @@ function resolveModules(
         ],
       },
     },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.CACHING],
+      options: {
+        providers: [
+          {
+            id: "caching-redis",
+            resolve: "@medusajs/medusa/caching-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
   ]
 
   /**
