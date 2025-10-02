@@ -4030,6 +4030,57 @@ medusaIntegrationTestRunner({
               }),
             ])
           )
+
+          const removeResponse = await api.post(
+            `/admin/products/${product.id}/images/${product.images[0].id}/variants/batch`,
+            {
+              remove: [variant1.id],
+            },
+            adminHeaders
+          )
+
+          expect(removeResponse.status).toBe(200)
+          expect(removeResponse.data.removed).toHaveLength(1)
+          expect(removeResponse.data.removed).toContain(variant1.id)
+
+          const variant1WithImagesAfterRemove = await api.get(
+            `/admin/products/${product.id}/variants/${variant1.id}?fields=*images`,
+            adminHeaders
+          )
+
+          expect(
+            variant1WithImagesAfterRemove.data.variant.images
+          ).toHaveLength(2)
+          expect(variant1WithImagesAfterRemove.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: product.images[1].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[2].id, // General product image
+              }),
+            ])
+          )
+
+          const variant2WithImagesAfterRemove = await api.get(
+            `/admin/products/${product.id}/variants/${variant2.id}?fields=*images`,
+            adminHeaders
+          )
+
+          expect(
+            variant2WithImagesAfterRemove.data.variant.images
+          ).toHaveLength(2)
+          expect(variant2WithImagesAfterRemove.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                // Removed from the first variant but still on the second
+                id: product.images[0].id,
+              }),
+              expect.objectContaining({
+                id: product.images[2].id,
+              }),
+            ])
+          )
         })
       })
     })
