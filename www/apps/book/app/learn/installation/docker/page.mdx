@@ -140,6 +140,11 @@ If this isn't the first Medusa project you're setting up with Docker on your mac
 Next, you need to create a script file that [runs database migrations](../../fundamentals/data-models/write-migration/page.mdx) and starts the Medusa development server.
 
 Create the file `start.sh` with the following content:
+<Note title="Windows Users">
+
+Ensure that the `start.sh` file uses LF line endings instead of CRLF. Git on Windows can sometimes automatically convert line endings, which causes errors when running the script inside the Linux-based Docker container. You can learn how to configure your environment to maintain LF line endings in [this guide from GitHub](https://docs.github.com/en/get-started/git-basics/configuring-git-to-handle-line-endings).
+
+</Note>
 
 <CodeTabs group="npm2yarn" defaultValue="yarn">
   <CodeTab value="yarn" label="Yarn">
@@ -177,11 +182,7 @@ npm run dev
 
 Make sure to give the script executable permissions:
 
-<Note>
 
-**For Windows Users:** Ensure that the `start.sh` file uses LF line endings instead of CRLF. Git on Windows can sometimes automatically convert line endings, which causes errors when running the script inside the Linux-based Docker container. You can configure Git or your code editor to maintain LF line endings to prevent this issue.
-
-</Note>
 
 <Note>
 
