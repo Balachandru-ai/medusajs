@@ -1,6 +1,10 @@
 import { RedisOptions } from "ioredis"
 export interface RedisCacheModuleOptions extends RedisOptions {
   /**
+   * Redis connection string
+   */
+  redisUrl?: string
+  /**
    * TTL in milliseconds
    */
   ttl?: number
