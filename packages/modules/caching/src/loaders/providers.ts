@@ -49,7 +49,7 @@ export default async ({
   const strategy = DefaultCacheStrategy // Re enable custom strategy another time
   container.register("strategy", asValue(strategy))
 
-  const inMemoryOptions = options?.in_memory_options ?? {}
+  const inMemoryOptions = options?.in_memory ?? {}
   const { enable: isInMemoryEnabled, ...restInmemoryOptions } = inMemoryOptions
 
   if (isInMemoryEnabled) {
