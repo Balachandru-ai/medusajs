@@ -6,6 +6,14 @@ import http from "k6/http"
 // let endpoint = __ENV.K6_ENDPOINT
 // let projectID = __ENV.K6_PROJECT_ID
 
+const firstStageDuration = "2m"
+const secondStageDuration = "6m"
+const thirdStageDuration = "2m"
+
+const highVus = 100
+// const mediumVus = 50
+const lowVus = 10
+
 let publishableKey =
   "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
 let regionId = "reg_01K4CCFRK54NSVCPVT0QP9J5QK"
@@ -26,19 +34,19 @@ const params = {
 }
 
 export const options = {
-//   cloud: {
-//     projectID: projectId,
-//     name: `Version 2.10.2, ${new Date().toLocaleString()} (local execution)`,
-// },
+  //   cloud: {
+  //     projectID: projectId,
+  //     name: `Version 2.10.2, ${new Date().toLocaleString()} (local execution)`,
+  // },
   scenarios: {
     browseCatalog: {
       executor: "ramping-vus",
       exec: "browseCatalog",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 100 },
-        { duration: "6m", target: 100 },
-        { duration: "2m", target: 0 },
+        { duration: firstStageDuration, target: highVus },
+        { duration: secondStageDuration, target: highVus },
+        { duration: thirdStageDuration, target: 0 },
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "browseCatalog" },
@@ -48,9 +56,9 @@ export const options = {
       exec: "addBrowseAddAbandon",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 10 },
-        { duration: "6m", target: 10 },
-        { duration: "2m", target: 0 },
+        { duration: firstStageDuration, target: lowVus },
+        { duration: secondStageDuration, target: lowVus },
+        { duration: thirdStageDuration, target: 0 },
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "addBrowseAddAbandon" },
@@ -60,9 +68,9 @@ export const options = {
       exec: "addBrowseAddComplete",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 10 },
-        { duration: "6m", target: 10 },
-        { duration: "2m", target: 0 },
+        { duration: firstStageDuration, target: lowVus },
+        { duration: secondStageDuration, target: lowVus },
+        { duration: thirdStageDuration, target: 0 },
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "addBrowseAddComplete" },
@@ -72,9 +80,9 @@ export const options = {
       exec: "addMultipleAbandon",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 10 },
-        { duration: "6m", target: 10 },
-        { duration: "2m", target: 0 },
+        { duration: firstStageDuration, target: lowVus },
+        { duration: secondStageDuration, target: lowVus },
+        { duration: thirdStageDuration, target: 0 },
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "addMultipleAbandon" },
@@ -84,9 +92,9 @@ export const options = {
       exec: "addMultipleComplete",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 10 },
-        { duration: "6m", target: 10 },
-        { duration: "2m", target: 0 },
+        { duration: firstStageDuration, target: lowVus },
+        { duration: secondStageDuration, target: lowVus },
+        { duration: thirdStageDuration, target: 0 },
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "addMultipleComplete" },
@@ -96,9 +104,9 @@ export const options = {
       exec: "addToCart",
       startTime: "0s",
       stages: [
-        { duration: "2m", target: 10 },
-        { duration: "6m", target: 10 },
-        { duration: "2m", target: 0 },
+        { duration: firstStageDuration, target: lowVus },
+        { duration: secondStageDuration, target: lowVus },
+        { duration: thirdStageDuration, target: 0 },
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "randomShoppers" },
