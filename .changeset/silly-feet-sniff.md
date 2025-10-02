@@ -2,4 +2,4 @@
 "@medusajs/medusa": patch
 ---
 
-Fix columns helper (view entities columns)
+fix(medusa): fix columns helper (view entities columns)
