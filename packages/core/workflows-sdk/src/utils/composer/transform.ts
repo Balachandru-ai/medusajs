@@ -167,7 +167,10 @@ export function transform(
   const ret = {
     __id: uniqId,
     __type: OrchestrationUtils.SymbolWorkflowStepTransformer,
-    __temporary_storage_key: null as { key: string } | null,
+  } as WorkflowData & {
+    __id: string
+    __type: string
+    __temporary_storage_key: string | null
   }
 
   const returnFn = async function (
@@ -176,7 +179,7 @@ export function transform(
   ): Promise<any> {
     if ("transaction" in transactionContext) {
       const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
-      ret.__temporary_storage_key ??= { key: temporaryDataKey }
+      ret.__temporary_storage_key ??= temporaryDataKey
 
       if (
         transactionContext.transaction.hasTemporaryData(
@@ -199,15 +202,14 @@ export function transform(
       const fn = functions[i]
       const arg = i === 0 ? stepValue : finalResult
 
-      finalResult = await fn.apply(fn, [arg, transactionContext])
+      finalResult = fn.apply(fn, [arg, transactionContext])
+      if (finalResult instanceof Promise) {
+        finalResult = await finalResult
+      }
     }
 
     if ("transaction" in transactionContext) {
       const temporaryDataKey = ret.__temporary_storage_key!
-      if (!temporaryDataKey) {
-        return finalResult
-      }
-
       transactionContext.transaction.setTemporaryData(
         temporaryDataKey,
         finalResult
@@ -217,10 +219,11 @@ export function transform(
     return finalResult
   }
 
-  const proxyfiedRet = proxify<WorkflowData & { __resolver: any }>(
-    ret as unknown as WorkflowData
-  )
+  const proxyfiedRet = proxify<
+    WorkflowData & { __resolver: any; __temporary_storage_key: string | null }
+  >(ret as unknown as WorkflowData)
   proxyfiedRet.__resolver = returnFn as any
+  proxyfiedRet.__temporary_storage_key = null as string | null
 
   return proxyfiedRet
 }
