@@ -60,6 +60,7 @@ export type CachingModuleOptions = Partial<ModuleServiceInitializeOptions> & {
 
   /**
    * Enable and configure the built in memory cache
+   * @private
    */
   in_memory?: MemoryCacheModuleOptions & {
     enable?: boolean
