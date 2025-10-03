@@ -30,6 +30,9 @@ If you, as a community contributor, wish to work on more extensive features, ple
 > 2. [A local Medusa application for testing](https://docs.medusajs.com/learn/installation).
 
 
+
+The code snippets in this section assume that your forked Medusa project and the test project are sibling directories, and you optionally setup the starter storefront as part of the installation. For example:
+
 ```
 |
 |__ medusa  // forked repository
@@ -39,7 +42,6 @@ If you, as a community contributor, wish to work on more extensive features, ple
 |__ test-project_storefront // (optional) storefront to interact with medusa application
 ```
 
-The code snippets in this section assume that your forked Medusa project and the test project are sibling directories, and you optionally setup the starter storefront as part of the installation. For example:
 
 1. Replace the @medusajs/* dependencies and devDependencies in you test project's `package.json` to point to the corresponding local packages in your forked Medusa repository. You will also need to add the medusa packages in the resolutions section of the `package.json`, so that every dependency is resolved locally. For example, assuming your forked Medusa project and the test project are sibling directories:
 
