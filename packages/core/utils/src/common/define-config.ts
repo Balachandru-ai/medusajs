@@ -301,7 +301,10 @@ function resolveModules(
         ],
       },
     },
-    {
+  ]
+
+  if (process.env.CACHE_REDIS_URL) {
+    cloudModules.push({
       resolve: MODULE_PACKAGE_NAMES[Modules.CACHING],
       options: {
         providers: [
@@ -310,13 +313,13 @@ function resolveModules(
             resolve: "@medusajs/medusa/caching-redis",
             is_default: true,
             options: {
-              redisUrl: process.env.REDIS_URL,
+              redisUrl: process.env.CACHE_REDIS_URL,
             },
           },
         ],
       },
-    },
-  ]
+    })
+  }
 
   /**
    * The default set of modules to always use. The end user can swap

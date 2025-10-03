@@ -1048,6 +1048,7 @@ describe("defineConfig", function () {
 
     process.env.EXECUTION_CONTEXT = "medusa-cloud"
     process.env.REDIS_URL = "redis://localhost:6379"
+    process.env.CACHE_REDIS_URL = "redis://localhost:6379"
     process.env.S3_FILE_URL = "https://s3.amazonaws.com/medusa-cloud-test"
     process.env.S3_PREFIX = "test"
     process.env.S3_REGION = "us-east-1"
@@ -1270,6 +1271,7 @@ describe("defineConfig", function () {
 
     process.env.EXECUTION_CONTEXT = "medusa-cloud"
     process.env.REDIS_URL = "redis://localhost:6379"
+    process.env.CACHE_REDIS_URL = "redis://localhost:6379"
     process.env.S3_FILE_URL = "https://s3.amazonaws.com/medusa-cloud-test"
     process.env.S3_PREFIX = "test"
     process.env.S3_REGION = "us-east-1"
@@ -1503,6 +1505,7 @@ describe("defineConfig", function () {
 
     process.env.EXECUTION_CONTEXT = "medusa-cloud"
     process.env.REDIS_URL = "redis://localhost:6379"
+    process.env.CACHE_REDIS_URL = "redis://localhost:6379"
     process.env.S3_FILE_URL = "https://s3.amazonaws.com/medusa-cloud-test"
     process.env.S3_PREFIX = "test"
     process.env.S3_REGION = "us-east-1"
