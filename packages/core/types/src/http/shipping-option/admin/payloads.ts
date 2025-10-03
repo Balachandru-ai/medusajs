@@ -1,5 +1,6 @@
 import { RuleOperatorType } from "../../../common"
 import { ShippingOptionPriceType } from "../../../fulfillment"
+import { PriceRule } from "../../../pricing"
 
 export interface AdminCreateShippingOptionRule {
   /**
@@ -52,36 +53,12 @@ export interface AdminUpdateShippingOptionType {
   code?: string
 }
 
-interface AdminShippingOptionPriceRulePayload {
-  /**
-   * The operator of the shipping option price rule.
-   *
-   * @example
-   * "eq"
-   */
-  operator: string
-  /**
-   * The attribute of the shipping option price rule.
-   *
-   * @example
-   * "region_id"
-   */
-  attribute: string
-  /**
-   * The value of the shipping option price rule.
-   *
-   * @example
-   * "region_123"
-   */
-  value: string | string[] | number
-}
-
 interface AdminShippingOptionPriceWithRules {
   /**
    * The rules of the shipping option price that
    * indicate when the price should be applied.
    */
-  rules?: AdminShippingOptionPriceRulePayload[]
+  rules?: PriceRule[]
 }
 
 export interface AdminCreateShippingOptionPriceWithCurrency
@@ -111,78 +88,121 @@ export interface AdminCreateShippingOptionPriceWithRegion
   amount: number
 }
 
-export interface AdminCreateShippingOption {
+export interface AdminCreateFlatRateShippingOption {
   /**
-   * The name of the shipping option. Customers can
-   * view this name during checkout.
-   *
-   * @example
-   * "Standard Shipping"
+   * The name of the shipping option.
    */
   name: string
+
   /**
    * The ID of the service zone that the shipping option belongs to.
-   *
-   * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#service-zone-restrictions)
-   * documentation.
    */
   service_zone_id: string
+
   /**
    * The ID of the shipping profile that the shipping option belongs to.
-   *
-   * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
-   * documentation.
    */
   shipping_profile_id: string
+
   /**
-   * Additional data that is useful for third-party fulfillment providers
-   * that process fulfillments for the shipping option.
-   *
-   * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property)
-   * documentation.
+   * Additional data for third-party fulfillment providers.
    */
   data?: Record<string, unknown>
+
   /**
-   * The type of shipping option's price.
+   * Flat rate type.
    */
-  price_type: ShippingOptionPriceType
+  price_type: "flat"
+
   /**
-   * The ID of the fulfillment provider that the shipping option belongs to.
+   * The ID of the fulfillment provider.
    */
   provider_id: string
+
   /**
    * The type of shipping option.
-   *
-   * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
-   * documentation.
    */
   type?: AdminCreateShippingOptionType
+
   /**
    * The ID of the type of shipping option.
-   *
-   * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
-   * documentation.
    */
   type_id?: string
+
   /**
-   * The prices of the shipping option.
+   * Prices are **required** for flat-rate.
    */
   prices: (
     | AdminCreateShippingOptionPriceWithCurrency
     | AdminCreateShippingOptionPriceWithRegion
   )[]
+
   /**
-   * The rules of the shipping option.
-   *
-   * Learn more in the [Shipping Option Rules](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-option-rules)
-   * documentation.
+   * Rules for when this option is applied.
    */
   rules?: AdminCreateShippingOptionRule[]
+
   /**
-   * Custom key-value pairs that can be added to the shipping option.
+   * Custom metadata.
    */
   metadata?: Record<string, unknown>
 }
+
+export interface AdminCreateCalculatedShippingOption {
+  /**
+   * The name of the shipping option.
+   */
+  name: string
+
+  /**
+   * The ID of the service zone that the shipping option belongs to.
+   */
+  service_zone_id: string
+
+  /**
+   * The ID of the shipping profile that the shipping option belongs to.
+   */
+  shipping_profile_id: string
+
+  /**
+   * Additional data for third-party fulfillment providers.
+   */
+  data?: Record<string, unknown>
+
+  /**
+   * Calculated type.
+   */
+  price_type: "calculated"
+
+  /**
+   * The ID of the fulfillment provider.
+   */
+  provider_id: string
+
+  /**
+   * The type of shipping option.
+   */
+  type?: AdminCreateShippingOptionType
+
+  /**
+   * The ID of the type of shipping option.
+   */
+  type_id?: string
+
+  /**
+   * No prices here — provider calculates cost.
+   */
+  rules?: AdminCreateShippingOptionRule[]
+
+  /**
+   * Custom metadata.
+   */
+  metadata?: Record<string, unknown>
+}
+
+export type AdminCreateShippingOption =
+  | AdminCreateFlatRateShippingOption
+  | AdminCreateCalculatedShippingOption
 
 export interface AdminUpdateShippingOptionRule
   extends AdminCreateShippingOptionRule {

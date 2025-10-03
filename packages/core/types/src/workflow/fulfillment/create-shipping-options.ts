@@ -1,24 +1,17 @@
 import { ShippingOptionDTO } from "../../fulfillment"
-import { PricingRuleOperatorType, RuleOperatorType } from "../../common"
+import { RuleOperatorType } from "../../common"
+import { PriceRule } from "../../pricing"
 
 type CreateFlatRateShippingOptionPriceRecord =
   | {
       currency_code: string
       amount: number
-      rules?: {
-        attribute: string
-        operator: PricingRuleOperatorType
-        value: number
-      }[]
+      rules?: PriceRule[]
     }
   | {
       region_id: string
       amount: number
-      rules?: {
-        attribute: string
-        operator: PricingRuleOperatorType
-        value: number
-      }[]
+      rules?: PriceRule[]
     }
 
 /**
