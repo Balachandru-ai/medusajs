@@ -40,7 +40,7 @@ export const generatedEditDates = {
   "app/commerce-modules/order/promotion-adjustments/page.mdx": "2024-10-09T10:19:19.333Z",
   "app/commerce-modules/order/return/page.mdx": "2025-02-26T11:22:49.675Z",
   "app/commerce-modules/order/tax-lines/page.mdx": "2024-10-09T10:22:49.335Z",
-  "app/commerce-modules/order/transactions/page.mdx": "2025-09-01T15:06:16.923Z",
+  "app/commerce-modules/order/transactions/page.mdx": "2025-10-03T10:35:16.560Z",
   "app/commerce-modules/order/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/commerce-modules/payment/_events/_events-table/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/payment/_events/page.mdx": "2024-07-03T19:27:13+03:00",
@@ -6610,5 +6610,6 @@ export const generatedEditDates = {
   "references/core_flows/Locking/core_flows.Locking.Steps_Locking/page.mdx": "2025-09-15T09:52:14.217Z",
   "app/nextjs-starter/guides/storefront-returns/page.mdx": "2025-09-22T06:02:00.580Z",
   "references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx": "2025-09-18T17:04:59.240Z",
-  "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-02T07:14:50.956Z"
+  "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-02T07:14:50.956Z",
+  "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z"
 }
