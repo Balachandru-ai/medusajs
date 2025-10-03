@@ -59,8 +59,6 @@ export const deleteDraftOrderWorkflowId = "delete-draft-order"
 export const deleteDraftOrdersWorkflow = createWorkflow(
   deleteDraftOrderWorkflowId,
   (input: WorkflowData<DeleteDraftOrderStepInput>) => {
-    // TODO - Acquire lock for every order?
-
     const orderQuery = useQueryGraphStep({
       entity: "orders",
       fields: ["id", "status", "is_draft_order", "deleted_at"],
@@ -79,8 +77,6 @@ export const deleteDraftOrdersWorkflow = createWorkflow(
     })
 
     deleteDraftOrdersStep({ orderIds: input.order_ids })
-
-    // TODO - Release
 
     return new WorkflowResponse(void 0)
   }
