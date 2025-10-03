@@ -126,6 +126,7 @@ yarn build # or yarn watch
 ```
 
 3. After building changes in the forked medusa repository, run the following command in the test project to regenerate the `node_modules` directory with the newly built contents from the previous step:
+
 ```
 rm -R node_modules && yarn && yarn dev
 ```
