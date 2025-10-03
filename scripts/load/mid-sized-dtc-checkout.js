@@ -51,7 +51,7 @@ const params = {
 export const options = {
   cloud: {
     projectID: projectId,
-    name: `Version 2.10.4-snapshot-20251003092840, ${new Date().toLocaleString()} (local execution - without caching)`,
+    name: `Version 2.10.4-snapshot-20251003141424, ${new Date().toLocaleString()} (local execution - with caching - downgraded mikro orm to 6.4.16)`,
   },
   scenarios: {
     browseCatalog: {
