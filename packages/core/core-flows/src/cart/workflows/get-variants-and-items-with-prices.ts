@@ -13,6 +13,7 @@ import {
   filterObjectByKeys,
   isDefined,
   MedusaError,
+  ProductStatus,
   simpleHash,
 } from "@medusajs/framework/utils"
 import {
@@ -142,6 +143,11 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
       filters: {
         id: variantIds,
       },
+      options: {
+        cache: {
+          enable: true,
+        },
+      },
     }).config({ name: "fetch-variants" })
 
     const calculatedPriceSets = getVariantPriceSetsStep({
@@ -162,6 +168,7 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
         calculatedPriceSets,
       }): GetVariantsAndItemsWithPricesWorkflowOutput => {
         const priceNotFound: string[] = []
+        const variantNotFoundOrPublished: string[] = []
 
         const items = (inputItems ?? cart.items ?? []).map((item) => {
           const item_ = item as any
@@ -177,6 +184,11 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
           }
 
           const variant = variantsData.find((v) => v.id === item.variant_id)
+          if ((item.variant_id && !variant) || // variant specified but doesn't exist
+            (variant && (!variant?.product?.status || variant.product.status !== ProductStatus.PUBLISHED)) // variant exists but product is not published
+          ) {
+            variantNotFoundOrPublished.push(item_.variant_id)
+          }
 
           if (variant) {
             variant.calculated_price = calculatedPriceSet
@@ -210,6 +222,12 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
           }
         })
 
+        if (variantNotFoundOrPublished.length > 0) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `Variants ${variantNotFoundOrPublished.join(", ")} do not exist or belong to a product that is not published`
+          )
+        }
         if (priceNotFound.length > 0) {
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
