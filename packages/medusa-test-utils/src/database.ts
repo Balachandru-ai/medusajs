@@ -347,12 +347,3 @@ export const dbTestUtilFactory = (): any => {
 
   return obj
 }
-      process.exit(0)
-    })
-
-    // @ts-ignore
-    process.dbTestUtilSignalListenersSet = true
-  }
-
-  return obj
-}
