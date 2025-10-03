@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Checkbox, clx, CommandBar } from "@medusajs/ui"
+import { Button, Checkbox, clx, CommandBar, IconButton } from "@medusajs/ui"
 import { Fragment, useCallback, useState, useMemo } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -9,6 +9,8 @@ import {
   OnChangeFn,
   RowSelectionState,
 } from "@tanstack/react-table"
+import { XMark } from "@medusajs/icons"
+import * as Dialog from "@radix-ui/react-dialog"
 
 import { AdminProduct } from "@medusajs/types"
 
@@ -104,9 +106,9 @@ export const EditProductVariantsMediaForm = ({
       >
         <RouteFocusModal.Header />
         <RouteFocusModal.Body className="flex flex-col overflow-hidden">
-          <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr_560px]">
+          <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr]">
             <div className="bg-ui-bg-subtle size-full overflow-auto">
-              <div className="grid h-fit auto-rows-auto grid-cols-4 gap-6 p-6">
+              <div className="grid h-fit auto-rows-auto grid-cols-6 gap-6 p-6">
                 {fields.map((m) => {
                   return (
                     <MediaGridItem
@@ -118,19 +120,6 @@ export const EditProductVariantsMediaForm = ({
                   )
                 })}
               </div>
-            </div>
-            <div className="bg-ui-bg-base overflow-auto border-b lg:border-b-0 lg:border-l">
-              {showVariantsTable ? (
-                <VariantsTable
-                  variants={product.variants || []}
-                  variantSelection={variantSelection}
-                  setVariantSelection={setVariantSelection}
-                />
-              ) : (
-                <div className="text-ui-fg-muted flex h-full items-center justify-center">
-                  Select media to manage variants
-                </div>
-              )}
             </div>
           </div>
         </RouteFocusModal.Body>
@@ -174,6 +163,46 @@ export const EditProductVariantsMediaForm = ({
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
+
+      {/* Variants Table Sidebar */}
+      <Dialog.Root open={showVariantsTable} onOpenChange={setShowVariantsTable}>
+        <Dialog.Portal>
+          <Dialog.Overlay
+            className={clx(
+              "bg-ui-bg-overlay fixed inset-0",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+            )}
+          />
+          <Dialog.Content
+            className={clx(
+              "bg-ui-bg-base shadow-elevation-modal fixed inset-y-0 right-0 flex w-full max-w-[560px] flex-col overflow-hidden border-l",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-right-1/2 data-[state=open]:slide-in-from-right-1/2 duration-200"
+            )}
+          >
+            <div className="flex items-center justify-between border-b p-4">
+              <Dialog.Title className="text-lg font-semibold">
+                {t("products.variantMedia.manageVariants")}
+              </Dialog.Title>
+              <Dialog.Close asChild>
+                <IconButton
+                  size="small"
+                  variant="transparent"
+                  className="text-ui-fg-subtle"
+                >
+                  <XMark />
+                </IconButton>
+              </Dialog.Close>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <VariantsTable
+                variants={product.variants || []}
+                variantSelection={variantSelection}
+                setVariantSelection={setVariantSelection}
+              />
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </RouteFocusModal.Form>
   )
 }
