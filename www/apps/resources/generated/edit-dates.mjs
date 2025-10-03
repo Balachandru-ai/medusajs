@@ -68,7 +68,7 @@ export const generatedEditDates = {
   "app/commerce-modules/promotion/_events/_events-table/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/promotion/_events/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/promotion/actions/page.mdx": "2025-06-27T15:42:19.142Z",
-  "app/commerce-modules/promotion/application-method/page.mdx": "2025-09-01T15:22:53.403Z",
+  "app/commerce-modules/promotion/application-method/page.mdx": "2025-10-01T09:54:44.931Z",
   "app/commerce-modules/promotion/campaign/page.mdx": "2025-02-26T11:32:24.484Z",
   "app/commerce-modules/promotion/concepts/page.mdx": "2025-02-26T11:31:54.391Z",
   "app/commerce-modules/promotion/page.mdx": "2025-04-17T08:48:14.643Z",
@@ -6569,7 +6569,7 @@ export const generatedEditDates = {
   "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-08-29T11:32:54.117Z",
   "app/troubleshooting/pnpm/page.mdx": "2025-08-29T12:21:24.692Z",
-  "app/how-to-tutorials/tutorials/product-feed/page.mdx": "2025-09-01T13:19:59.335Z",
+  "app/how-to-tutorials/tutorials/product-feed/page.mdx": "2025-10-02T10:24:52.283Z",
   "app/storefront-development/cart/manage-promotions/page.mdx": "2025-09-11T14:11:40.904Z",
   "app/recipes/ticket-booking/examples/page.mdx": "2025-09-10T14:11:55.063Z",
   "app/recipes/ticket-booking/examples/storefront/page.mdx": "2025-09-10T14:14:44.005Z",
@@ -6609,5 +6609,6 @@ export const generatedEditDates = {
   "references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.releaseLockStepId/page.mdx": "2025-09-15T09:52:14.219Z",
   "references/core_flows/Locking/core_flows.Locking.Steps_Locking/page.mdx": "2025-09-15T09:52:14.217Z",
   "app/nextjs-starter/guides/storefront-returns/page.mdx": "2025-09-22T06:02:00.580Z",
-  "references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx": "2025-09-18T17:04:59.240Z"
+  "references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx": "2025-09-18T17:04:59.240Z",
+  "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-02T07:14:50.956Z"
 }
