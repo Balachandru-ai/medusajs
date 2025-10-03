@@ -93,39 +93,66 @@ export interface AdminCreateShippingOptionPriceWithRegion
  */
 interface AdminCreateShippingOptionBase {
   /**
-   * The name of the shipping option.
+   * The name of the shipping option. Customers can
+   * view this name during checkout.
+   *
+   * @example
+   * "Standard Shipping"
    */
   name: string
   /**
    * The ID of the service zone that the shipping option belongs to.
+   *
+   * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#service-zone-restrictions)
+   * documentation.
    */
   service_zone_id: string
   /**
    * The ID of the shipping profile that the shipping option belongs to.
+   *
+   * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
+   * documentation.
    */
   shipping_profile_id: string
   /**
-   * Additional data for third-party fulfillment providers.
+   * Additional data that is useful for third-party fulfillment providers
+   * that process fulfillments for the shipping option.
+   *
+   * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property)
+   * documentation.
    */
   data?: Record<string, unknown>
   /**
-   * The ID of the fulfillment provider.
+   * The type of shipping option's price.
+   */
+  price_type: ShippingOptionPriceType
+  /**
+   * The ID of the fulfillment provider that the shipping option belongs to.
    */
   provider_id: string
   /**
    * The type of shipping option.
+   *
+   * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
+   * documentation.
    */
   type?: AdminCreateShippingOptionType
   /**
    * The ID of the type of shipping option.
+   *
+   * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
+   * documentation.
    */
   type_id?: string
   /**
-   * Rules for when this option is applied.
+   * The rules of the shipping option.
+   *
+   * Learn more in the [Shipping Option Rules](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-option-rules)
+   * documentation.
    */
   rules?: AdminCreateShippingOptionRule[]
   /**
-   * Custom metadata.
+   * Custom key-value pairs that can be added to the shipping option.
    */
   metadata?: Record<string, unknown>
 }
