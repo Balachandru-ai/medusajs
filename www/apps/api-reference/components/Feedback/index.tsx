@@ -17,7 +17,7 @@ export const Feedback = (props: Partial<FeedbackProps>) => {
         area,
         ...props.extraData,
       }}
-      pathName={pathname}
+      pathName={`/api/${pathname}`}
     />
   )
 }
