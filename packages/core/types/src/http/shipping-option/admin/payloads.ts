@@ -88,116 +88,66 @@ export interface AdminCreateShippingOptionPriceWithRegion
   amount: number
 }
 
-export interface AdminCreateFlatRateShippingOption {
+/**
+ * Common properties for all shipping option create inputs.
+ */
+interface AdminCreateShippingOptionBase {
   /**
    * The name of the shipping option.
    */
   name: string
-
   /**
    * The ID of the service zone that the shipping option belongs to.
    */
   service_zone_id: string
-
   /**
    * The ID of the shipping profile that the shipping option belongs to.
    */
   shipping_profile_id: string
-
   /**
    * Additional data for third-party fulfillment providers.
    */
   data?: Record<string, unknown>
-
-  /**
-   * Flat rate type.
-   */
-  price_type: "flat"
-
   /**
    * The ID of the fulfillment provider.
    */
   provider_id: string
-
   /**
    * The type of shipping option.
    */
   type?: AdminCreateShippingOptionType
-
   /**
    * The ID of the type of shipping option.
    */
   type_id?: string
-
-  /**
-   * Prices are **required** for flat-rate.
-   */
-  prices: (
-    | AdminCreateShippingOptionPriceWithCurrency
-    | AdminCreateShippingOptionPriceWithRegion
-  )[]
-
   /**
    * Rules for when this option is applied.
    */
   rules?: AdminCreateShippingOptionRule[]
-
   /**
    * Custom metadata.
    */
   metadata?: Record<string, unknown>
 }
 
-export interface AdminCreateCalculatedShippingOption {
-  /**
-   * The name of the shipping option.
-   */
-  name: string
+/**
+ * Flat rate shipping option creation input.
+ */
+export interface AdminCreateFlatRateShippingOption
+  extends AdminCreateShippingOptionBase {
+  price_type: "flat"
+  prices: (
+    | AdminCreateShippingOptionPriceWithCurrency
+    | AdminCreateShippingOptionPriceWithRegion
+  )[]
+}
 
-  /**
-   * The ID of the service zone that the shipping option belongs to.
-   */
-  service_zone_id: string
-
-  /**
-   * The ID of the shipping profile that the shipping option belongs to.
-   */
-  shipping_profile_id: string
-
-  /**
-   * Additional data for third-party fulfillment providers.
-   */
-  data?: Record<string, unknown>
-
-  /**
-   * Calculated type.
-   */
+/**
+ * Calculated shipping option creation input.
+ */
+export interface AdminCreateCalculatedShippingOption
+  extends AdminCreateShippingOptionBase {
   price_type: "calculated"
-
-  /**
-   * The ID of the fulfillment provider.
-   */
-  provider_id: string
-
-  /**
-   * The type of shipping option.
-   */
-  type?: AdminCreateShippingOptionType
-
-  /**
-   * The ID of the type of shipping option.
-   */
-  type_id?: string
-
-  /**
-   * No prices here — provider calculates cost.
-   */
-  rules?: AdminCreateShippingOptionRule[]
-
-  /**
-   * Custom metadata.
-   */
-  metadata?: Record<string, unknown>
 }
 
 export type AdminCreateShippingOption =
