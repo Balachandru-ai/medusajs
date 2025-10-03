@@ -184,7 +184,7 @@ export function moduleIntegrationTestRunner<TService = any>({
     if (moduleModels.length) {
       await MikroOrmWrapper.clearDatabase()
     }
-    await shutdown()
+
     moduleService = {}
     medusaApp = {}
   }
@@ -193,6 +193,7 @@ export function moduleIntegrationTestRunner<TService = any>({
     beforeEach(beforeEach_)
     afterEach(afterEach_)
     afterAll(async () => {
+      await shutdown()
       await (connection as any).context?.destroy()
       await (connection as any).destroy()
     })

@@ -7,6 +7,7 @@ import {
   Options,
   SqlEntityManager,
 } from "@medusajs/framework/mikro-orm/postgresql"
+import { Client } from "pg"
 import { createDatabase, dropDatabase } from "pg-god"
 import { execOrTimeout } from "./medusa-test-runner-utils"
 
@@ -204,97 +205,154 @@ export function getMikroOrmWrapper({
   }
 }
 
-export const dbTestUtilFactory = (): any => ({
-  pgConnection_: null,
+export const dbTestUtilFactory = (): any => {
+  let dbNameToDrop: string | null = null
 
-  create: async function (dbName: string) {
-    try {
-      await createDatabase(
-        { databaseName: dbName, errorIfExist: false },
-        pgGodCredentials
-      )
-    } catch (error) {
-      logger.error("Error creating database:", error)
-      throw error
-    }
-  },
+  const obj = {
+    pgConnection_: null as any,
 
-  teardown: async function ({ schema }: { schema?: string } = {}) {
-    if (!this.pgConnection_) {
-      return
-    }
+    create: async function (dbName: string) {
+      try {
+        await createDatabase(
+          { databaseName: dbName, errorIfExist: false },
+          pgGodCredentials
+        )
+        dbNameToDrop = dbName
+      } catch (error) {
+        logger.error("Error creating database:", error)
+        throw error
+      }
+    },
 
-    try {
-      const runRawQuery = this.pgConnection_.raw.bind(this.pgConnection_)
-      schema ??= "public"
+    teardown: async function ({ schema }: { schema?: string } = {}) {
+      if (!this.pgConnection_) {
+        return
+      }
 
-      await runRawQuery(`SET session_replication_role = 'replica';`)
-      const { rows: tableNames } = await runRawQuery(`SELECT table_name
+      try {
+        const runRawQuery = this.pgConnection_.raw.bind(this.pgConnection_)
+        schema ??= "public"
+
+        await runRawQuery(`SET session_replication_role = 'replica';`)
+        const { rows: tableNames } = await runRawQuery(`SELECT table_name
                                               FROM information_schema.tables
                                               WHERE table_schema = '${schema}';`)
 
-      const skipIndexPartitionPrefix = "cat_"
-      const mainPartitionTables = ["index_data", "index_relation"]
-      let hasIndexTables = false
+        const skipIndexPartitionPrefix = "cat_"
+        const mainPartitionTables = ["index_data", "index_relation"]
+        let hasIndexTables = false
 
-      for (const { table_name } of tableNames) {
-        if (mainPartitionTables.includes(table_name)) {
-          hasIndexTables = true
+        for (const { table_name } of tableNames) {
+          if (mainPartitionTables.includes(table_name)) {
+            hasIndexTables = true
+          }
+
+          if (
+            table_name.startsWith(skipIndexPartitionPrefix) ||
+            mainPartitionTables.includes(table_name)
+          ) {
+            continue
+          }
+
+          await runRawQuery(`DELETE FROM ${schema}."${table_name}";`)
         }
 
-        if (
-          table_name.startsWith(skipIndexPartitionPrefix) ||
-          mainPartitionTables.includes(table_name)
-        ) {
-          continue
+        if (hasIndexTables) {
+          await runRawQuery(`TRUNCATE TABLE ${schema}.index_data;`)
+          await runRawQuery(`TRUNCATE TABLE ${schema}.index_relation;`)
         }
 
-        await runRawQuery(`DELETE FROM ${schema}."${table_name}";`)
+        await runRawQuery(`SET session_replication_role = 'origin';`)
+      } catch (error) {
+        logger.error("Error during database teardown:", error)
+        throw error
       }
+    },
 
-      if (hasIndexTables) {
-        await runRawQuery(`TRUNCATE TABLE ${schema}.index_data;`)
-        await runRawQuery(`TRUNCATE TABLE ${schema}.index_relation;`)
-      }
-
-      await runRawQuery(`SET session_replication_role = 'origin';`)
-    } catch (error) {
-      logger.error("Error during database teardown:", error)
-      throw error
-    }
-  },
-
-  shutdown: async function (dbName: string) {
-    try {
-      const cleanupPromises: Promise<any>[] = []
-
-      if (this.pgConnection_?.context) {
-        cleanupPromises.push(
-          execOrTimeout(this.pgConnection_.context.destroy())
-        )
-      }
-
-      if (this.pgConnection_) {
-        cleanupPromises.push(execOrTimeout(this.pgConnection_.destroy()))
-      }
-
-      await Promise.all(cleanupPromises)
-
-      return await dropDatabase(
-        { databaseName: dbName, errorIfNonExist: false },
-        pgGodCredentials
-      )
-    } catch (error) {
-      logger.error("Error during database shutdown:", error)
+    shutdown: async function (dbName: string) {
       try {
-        await this.pgConnection_?.context?.destroy()
-        await this.pgConnection_?.destroy()
-      } catch (cleanupError) {
-        logger.error("Error during forced cleanup:", cleanupError)
+        const cleanupPromises: Promise<any>[] = []
+
+        if (this.pgConnection_?.context) {
+          cleanupPromises.push(
+            execOrTimeout(this.pgConnection_.context.destroy())
+          )
+        }
+
+        if (this.pgConnection_) {
+          cleanupPromises.push(execOrTimeout(this.pgConnection_.destroy()))
+        }
+
+        await Promise.all(cleanupPromises)
+
+        if (process.env.MEDUSA_TESTS_DROP_ALL_DATABASES === "true") {
+          await this.dropAllIntegrationDatabases(pgGodCredentials)
+          return
+        }
+
+        return await dropDatabase(
+          { databaseName: dbName, errorIfNonExist: false },
+          pgGodCredentials
+        )
+      } catch (error) {
+        logger.error("Error during database shutdown:", error)
+        try {
+          await this.pgConnection_?.context?.destroy()
+          await this.pgConnection_?.destroy()
+        } catch (cleanupError) {
+          logger.error("Error during forced cleanup:", cleanupError)
+        }
+        throw error
+      } finally {
+        this.pgConnection_ = null
+        dbNameToDrop = null
       }
-      throw error
-    } finally {
-      this.pgConnection_ = null
+    },
+
+    dropAllIntegrationDatabases: async function (pgGodCredentials) {
+      try {
+        const client = new Client()
+        await client.connect()
+        const res = await client.query(
+          "SELECT datname FROM pg_database WHERE datname LIKE 'medusa-%-integration-%'"
+        )
+        for (const row of res.rows) {
+          logger.info(`Dropping integration database: ${row.datname}`)
+          await dropDatabase(
+            { databaseName: row.datname, errorIfNonExist: false },
+            pgGodCredentials
+          )
+        }
+        await client.end()
+      } catch (error) {
+        logger.error("Error dropping integration databases:", error)
+        throw error
+      }
+    },
+  }
+
+  // @ts-ignore
+  if (!process.dbTestUtilSignalListenersSet) {
+    const dropDb = async () => {
+      if (dbNameToDrop) {
+        await obj.shutdown(dbNameToDrop)
+      }
+      process.exit(0)
     }
-  },
-})
+    process.on("SIGINT", dropDb)
+    process.on("SIGTERM", dropDb)
+    // @ts-ignore
+    process.dbTestUtilSignalListenersSet = true
+  }
+
+  return obj
+}
+      process.exit(0)
+    })
+
+    // @ts-ignore
+    process.dbTestUtilSignalListenersSet = true
+  }
+
+  return obj
+}
