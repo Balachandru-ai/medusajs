@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ThumbnailBadge } from "@medusajs/icons"
-import { Button, Checkbox, clx, CommandBar, Tooltip } from "@medusajs/ui"
+import { Button, Checkbox, clx, CommandBar } from "@medusajs/ui"
 import { Fragment, useCallback, useState, useMemo } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -120,7 +119,7 @@ export const EditProductVariantsMediaForm = ({
                 })}
               </div>
             </div>
-            <div className="bg-ui-bg-base overflow-auto border-b px-6 py-4 lg:border-b-0 lg:border-l">
+            <div className="bg-ui-bg-base overflow-auto border-b lg:border-b-0 lg:border-l">
               {showVariantsTable ? (
                 <VariantsTable
                   variants={product.variants || []}
@@ -235,22 +234,10 @@ const MediaGridItem = ({
   return (
     <div
       className={clx(
-        "shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full overflow-hidden rounded-lg outline-none"
+        "shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full cursor-pointer overflow-hidden rounded-lg outline-none"
       )}
     >
-      {media.isThumbnail && (
-        <div className="absolute left-2 top-2">
-          <Tooltip content="Thumbnail">
-            <ThumbnailBadge />
-          </Tooltip>
-        </div>
-      )}
-      <div
-        className={clx(
-          "absolute inset-0 cursor-grab touch-none outline-none",
-          {}
-        )}
-      />
+      <div className={clx("absolute inset-0  touch-none outline-none", {})} />
       <div
         className={clx("transition-fg absolute right-2 top-2 opacity-0", {
           "group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100":
@@ -262,43 +249,13 @@ const MediaGridItem = ({
           onClick={(e) => {
             e.stopPropagation()
           }}
-          checked={checked}
           onCheckedChange={handleToggle}
+          checked={checked}
         />
       </div>
       <img
-        src={media.url}
         alt=""
-        className="size-full object-cover object-center"
-      />
-    </div>
-  )
-}
-
-export const MediaGridItemOverlay = ({
-  media,
-  checked,
-}: {
-  media: MediaView
-  checked: boolean
-}) => {
-  return (
-    <div className="shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full cursor-grabbing overflow-hidden rounded-lg outline-none">
-      {media.isThumbnail && (
-        <div className="absolute left-2 top-2">
-          <ThumbnailBadge />
-        </div>
-      )}
-      <div
-        className={clx("transition-fg absolute right-2 top-2 opacity-0", {
-          "opacity-100": checked,
-        })}
-      >
-        <Checkbox checked={checked} />
-      </div>
-      <img
         src={media.url}
-        alt=""
         className="size-full object-cover object-center"
       />
     </div>
@@ -370,17 +327,6 @@ const VariantsTable = ({
           )
         },
       }),
-      variantColumnHelper.accessor("manage_inventory", {
-        header: () => t("fields.manageInventory"),
-        cell: ({ getValue }) => {
-          const manageInventory = getValue()
-          return (
-            <div className="flex h-full w-full items-center">
-              <span className="truncate">{manageInventory ? "Yes" : "No"}</span>
-            </div>
-          )
-        },
-      }),
     ],
     [t]
   )
@@ -389,6 +335,8 @@ const VariantsTable = ({
     const state = typeof value === "function" ? value(variantSelection) : value
     setVariantSelection(state)
   }
+
+  // TODO: load variants instead loading for product with many variants
 
   const { table } = useDataTable({
     data: variants || [],
@@ -406,17 +354,13 @@ const VariantsTable = ({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-4">
-        <p className="ui-fg- my-4 text-sm">Select variants to assign media</p>
-      </div>
       <div className="flex-1 overflow-hidden">
         <_DataTable
+          layout="fill"
           table={table}
           columns={columns}
           count={variants?.length || 0}
           isLoading={false}
-          layout="fill"
-          noHeader
           pageSize={variants?.length || 0}
         />
       </div>
