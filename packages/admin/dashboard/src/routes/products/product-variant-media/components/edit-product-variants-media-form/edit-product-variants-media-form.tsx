@@ -12,7 +12,7 @@ import {
 import { XMark } from "@medusajs/icons"
 import * as Dialog from "@radix-ui/react-dialog"
 
-import { AdminProduct } from "@medusajs/types"
+import { AdminProduct, AdminProductImage } from "@medusajs/types"
 
 import {
   RouteFocusModal,
@@ -52,17 +52,6 @@ export const EditProductVariantsMediaForm = ({
       media: getDefaultValues(product.images, product.thumbnail),
     },
     resolver: zodResolver(EditProductMediaSchema),
-  })
-
-  const {
-    fields,
-    append: _append,
-    remove: _remove,
-    update: _update,
-  } = useFieldArray({
-    name: "media",
-    control: form.control,
-    keyName: "field_id",
   })
 
   const { mutateAsync: _mutateAsync, isPending } = {
@@ -108,14 +97,14 @@ export const EditProductVariantsMediaForm = ({
         <RouteFocusModal.Body className="flex flex-col overflow-hidden">
           <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr]">
             <div className="bg-ui-bg-subtle size-full overflow-auto">
-              <div className="grid h-fit auto-rows-auto grid-cols-6 gap-6 p-6">
-                {fields.map((m) => {
+              <div className="grid h-fit auto-rows-auto grid-cols-2 gap-6 p-6 lg:grid-cols-6">
+                {product.images?.map((m) => {
                   return (
                     <MediaGridItem
-                      onCheckedChange={handleCheckedChange(m.id!)}
-                      checked={!!selection[m.id!]}
-                      key={m.field_id}
+                      key={m.id!}
                       media={m}
+                      checked={!!selection[m.id!]}
+                      onCheckedChange={handleCheckedChange(m.id!)}
                     />
                   )
                 })}
@@ -233,15 +222,8 @@ const getDefaultValues = (
   return media
 }
 
-interface MediaView {
-  id?: string
-  field_id: string
-  url: string
-  isThumbnail: boolean
-}
-
 interface MediaGridItemProps {
-  media: MediaView
+  media: AdminProductImage
   checked: boolean
   onCheckedChange: (value: boolean) => void
 }
