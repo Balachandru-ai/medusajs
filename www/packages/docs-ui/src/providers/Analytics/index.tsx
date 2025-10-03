@@ -8,7 +8,6 @@ import React, {
   useState,
 } from "react"
 import { Analytics, AnalyticsBrowser } from "@segment/analytics-next"
-import { PostHogProvider as PHProvider } from "posthog-js/react"
 import posthog from "posthog-js"
 
 // @ts-expect-error Doesn't have a types package
@@ -45,8 +44,6 @@ const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 export type AnalyticsProviderProps = {
   segmentWriteKey?: string
   reoDevKey?: string
-  postHogKey?: string
-  postHogApiHost?: string
   children?: React.ReactNode
 }
 
@@ -56,8 +53,6 @@ export const AnalyticsProvider = ({
   segmentWriteKey = "temp",
   reoDevKey,
   children,
-  postHogKey,
-  postHogApiHost = "https://eu.i.posthog.com",
 }: AnalyticsProviderProps) => {
   // loaded is used to ensure that a connection has been made to segment
   // even if it failed. This is to ensure that the connection isn't
@@ -116,30 +111,9 @@ export const AnalyticsProvider = ({
     [analytics, loaded]
   )
 
-  const initPostHog = useCallback(() => {
-    if (!postHogKey) {
-      return
-    }
-
-    posthog.init(postHogKey, {
-      api_host: postHogApiHost,
-      person_profiles: "always",
-      defaults: "2025-05-24",
-    })
-  }, [postHogKey, postHogApiHost])
-
-  const trackWithPostHog = useCallback(
-    async ({ event, options }: TrackedEvent) => {
-      if (postHogKey && posthog.__loaded) {
-        posthog.capture(event, options)
-      } else {
-        console.warn(
-          "PostHog is either not installed or not configured. Simulating success..."
-        )
-      }
-    },
-    [postHogKey]
-  )
+  const trackWithPostHog = async ({ event, options }: TrackedEvent) => {
+    posthog.capture(event, options)
+  }
 
   const processEvent = useCallback(
     async (event: TrackedEvent) => {
@@ -172,8 +146,7 @@ export const AnalyticsProvider = ({
 
   useEffect(() => {
     initSegment()
-    initPostHog()
-  }, [initSegment, initPostHog])
+  }, [initSegment])
 
   useEffect(() => {
     if (analytics && queue.length) {
@@ -218,11 +191,7 @@ export const AnalyticsProvider = ({
         loaded,
       }}
     >
-      {postHogKey ? (
-        <PHProvider client={posthog}>{children}</PHProvider>
-      ) : (
-        children
-      )}
+      {children}
     </AnalyticsContext.Provider>
   )
 }
