@@ -1,30 +1,45 @@
 import { check, group, sleep } from "k6"
 import http from "k6/http"
 
+/**
+ * NOTE: if running high VUs (eg. 450) locally lead to errors such as: "connect: can't assign requested
+ * address". It means that the number of port available is not enough for the number of concurrent
+ * connections. You can increase the number of ports available by running the following command:
+ *
+ * On MAC OS:
+ * you can expand the range with:
+ *   sudo sysctl net.inet.ip.portrange.first=10000
+ *   sudo sysctl net.inet.ip.portrange.last=65535
+ * Verify the range with:
+ *   sysctl net.inet.ip.portrange.first net.inet.ip.portrange.last
+ * Reset to defaults
+ *   sudo sysctl net.inet.ip.portrange.first=49152
+ *   sudo sysctl net.inet.ip.portrange.last=65535
+ */
+
 // let publishableKey = __ENV.K6_PUBLISHABLE_KEY
 // let regionId = __ENV.K6_REGION_ID
 // let endpoint = __ENV.K6_ENDPOINT
 // let projectID = __ENV.K6_PROJECT_ID
 
-const firstStageDuration = "2m"
-const secondStageDuration = "6m"
-const thirdStageDuration = "2m"
-
-const highVus = 100
-// const mediumVus = 50
-const lowVus = 10
-
 let publishableKey =
-  "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
-let regionId = "reg_01K4CCFRK54NSVCPVT0QP9J5QK"
+  "pk_03823fccbc94952c4e2a6d045adb1b3479389ccacef6e4d5198c5e7b2a9dc4b5"
+let regionId = "reg_01K4JKNGBA9HXBS57EJFSXY2X7"
 let endpoint = "http://localhost:9000"
+
+const firstStageDuration = "1m"
+const secondStageDuration = "3m"
+const thirdStageDuration = "1m"
+
+const highVus = 300
+const lowVus = 30
 
 // let publishableKey =
 //   "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
 // let regionId = "reg_01K2ZDG12VKJ64F2NFTNW7Y8AT"
 // let endpoint = "https://dtc-starter-preview.medusajs.app"
 // let endpoint = "https://dtc-starter.medusajs.app"
-// let projectId = 4475269
+// let projectId = 4837050
 
 const params = {
   headers: {
@@ -34,9 +49,9 @@ const params = {
 }
 
 export const options = {
-  //   cloud: {
-  //     projectID: projectId,
-  //     name: `Version 2.10.2, ${new Date().toLocaleString()} (local execution)`,
+  // cloud: {
+  //   projectID: projectId,
+  //   name: `Version 2.10.4-snapshot-20251003141424, ${new Date().toLocaleString()} (local execution - with caching - downgraded mikro orm to 6.4.16)`,
   // },
   scenarios: {
     browseCatalog: {
@@ -152,6 +167,10 @@ export function browseCatalog() {
     sleep(2 + Math.random() * 3)
 
     const products = JSON.parse(res.body).products
+    if (!products.length) {
+      console.log("[browseCatalog] No products found", productsParams)
+      return []
+    }
 
     res = http.get(`${endpoint}/store/products/${products[0].id}`, params)
     check(res, { "product details ok": (r) => r.status === 200 })
@@ -169,6 +188,7 @@ function createCart() {
     }),
     params
   )
+
   check(res, { "create cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
   return JSON.parse(res.body).cart
@@ -183,6 +203,7 @@ function addItemToCart(cartId, variantId, quantity) {
     }),
     params
   )
+
   check(res, { "add to cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
   return JSON.parse(res.body).cart
@@ -221,7 +242,12 @@ function browseMoreProducts() {
   const res = http.get(`${endpoint}/store/products?${productsParams}`, params)
   check(res, { "browse more products ok": (r) => r.status === 200 })
   sleep(3 + Math.random() * 4)
-  return JSON.parse(res.body).products
+  const products = JSON.parse(res.body).products
+  if (!products.length) {
+    console.log("[browseMoreProducts] No products found", productsParams)
+    return []
+  }
+  return products
 }
 
 function checkout(cart) {
@@ -275,10 +301,15 @@ function checkout(cart) {
   )
   sleep(Math.random() * 3)
 
+  const shippingOptions = JSON.parse(shippingOptionsResp.body).shipping_options
+  if (!shippingOptions.length) {
+    throw new Error("No shipping options available")
+  }
+
   http.post(
     `${endpoint}/store/carts/${cart.id}/shipping-methods`,
     JSON.stringify({
-      option_id: JSON.parse(shippingOptionsResp.body).shipping_options[0].id,
+      option_id: shippingOptions[0].id,
     }),
     params
   )
@@ -300,11 +331,17 @@ function checkout(cart) {
     paymentCollectionRes.body
   ).payment_collection
 
+  const paymentProviders = JSON.parse(
+    paymentProvidersResp.body
+  ).payment_providers
+  if (!paymentProviders.length) {
+    throw new Error("No payment providers available")
+  }
+
   let paymentSessionRes = http.post(
     `${endpoint}/store/payment-collections/${paymentCollection.id}/payment-sessions`,
     JSON.stringify({
-      provider_id: JSON.parse(paymentProvidersResp.body).payment_providers[0]
-        .id,
+      provider_id: paymentProviders[0].id,
     }),
     params
   )
@@ -334,22 +371,59 @@ function checkout(cart) {
 export function addBrowseAddAbandon() {
   return group("Shop Flow - Add Browse Add Abandon", () => {
     const products = browseCatalog()
+    if (!products.length) {
+      console.log("[addBrowseAddAbandon] No products found")
+      return []
+    }
+
     const cart = createCart()
 
     const firstProductIndex = Math.floor(Math.random() * products.length)
+    const product = products[firstProductIndex]
+    const variantId =
+      product &&
+      product.variants &&
+      product.variants[0] &&
+      product.variants[0].id
+    if (!variantId) {
+      console.log(
+        `[addBrowseAddAbandon] No product variantfound\n
+        product index (length: ${products.length}): ${firstProductIndex}`
+      )
+      return []
+    }
+
     addItemToCart(
       cart.id,
-      products[firstProductIndex].variants[0].id,
+      variantId,
       1 + Math.floor(Math.random() * 3),
       "first item"
     )
 
     const moreProducts = browseMoreProducts()
+    if (!moreProducts.length) {
+      console.log("[addBrowseAddAbandon] No more products found")
+      return []
+    }
 
     const secondProductIndex = Math.floor(Math.random() * moreProducts.length)
+    const secondProduct = moreProducts[secondProductIndex]
+    const secondVariantId =
+      secondProduct &&
+      secondProduct.variants &&
+      secondProduct.variants[0] &&
+      secondProduct.variants[0].id
+    if (!secondVariantId) {
+      console.log(
+        `[addBrowseAddAbandon] No second product variant found\n
+        product index (length: ${moreProducts.length}): ${secondProductIndex}`
+      )
+      return []
+    }
+
     const updatedCart = addItemToCart(
       cart.id,
-      moreProducts[secondProductIndex].variants[0].id,
+      secondVariantId,
       1 + Math.floor(Math.random() * 2),
       "second item"
     )
@@ -366,20 +440,57 @@ export function addBrowseAddComplete() {
     const products = browseCatalog()
     const cart = createCart()
 
+    if (!products.length) {
+      console.log("[addBrowseAddComplete] No products found")
+      return []
+    }
+
     const firstProductIndex = Math.floor(Math.random() * products.length)
+    const product = products[firstProductIndex]
+    const variantId =
+      product &&
+      product.variants &&
+      product.variants[0] &&
+      product.variants[0].id
+    if (!variantId) {
+      console.log(
+        `[addBrowseAddComplete] No product variant found\n
+        product index (length: ${products.length}): ${firstProductIndex}`
+      )
+      return []
+    }
+
     addItemToCart(
       cart.id,
-      products[firstProductIndex].variants[0].id,
+      variantId,
       1 + Math.floor(Math.random() * 3),
       "first item"
     )
 
     const moreProducts = browseMoreProducts()
+    if (!moreProducts.length) {
+      console.log("[addBrowseAddComplete] No more products found")
+      return []
+    }
 
     const secondProductIndex = Math.floor(Math.random() * moreProducts.length)
+    const secondProduct = moreProducts[secondProductIndex]
+    const secondVariantId =
+      secondProduct &&
+      secondProduct.variants &&
+      secondProduct.variants[0] &&
+      secondProduct.variants[0].id
+    if (!secondVariantId) {
+      console.log(
+        `[addBrowseAddComplete] No second product variant found\n
+        product index (length: ${moreProducts.length}): ${secondProductIndex}`
+      )
+      return []
+    }
+
     const updatedCart = addItemToCart(
       cart.id,
-      moreProducts[secondProductIndex].variants[0].id,
+      secondVariantId,
       1 + Math.floor(Math.random() * 2),
       "second item"
     )
@@ -396,18 +507,33 @@ export function addMultipleAbandon() {
     const products = browseCatalog()
     const cart = createCart()
 
+    if (!products.length) {
+      console.log("[addMultipleAbandon] No products found")
+      return []
+    }
+
     const numItems = 3 + Math.floor(Math.random() * 3)
     let updatedCart = cart
 
     for (let i = 0; i < numItems; i++) {
       const productIndex = Math.floor(Math.random() * products.length)
       const quantity = 1 + Math.floor(Math.random() * 3)
-      updatedCart = addItemToCart(
-        cart.id,
-        products[productIndex].variants[0].id,
-        quantity,
-        `item ${i + 1}`
-      )
+
+      const product = products[productIndex]
+      const variantId =
+        product &&
+        product.variants &&
+        product.variants[0] &&
+        product.variants[0].id
+      if (!variantId) {
+        console.log(
+          `[addMultipleAbandon] No product variant found\n
+          product index (length: ${products.length}): ${productIndex}`
+        )
+        return []
+      }
+
+      updatedCart = addItemToCart(cart.id, variantId, quantity, `item ${i + 1}`)
     }
 
     viewCart(updatedCart.id)
@@ -422,18 +548,33 @@ export function addMultipleComplete() {
     const products = browseCatalog()
     const cart = createCart()
 
+    if (!products.length) {
+      console.log("[addMultipleComplete] No products found")
+      return []
+    }
+
     const numItems = 3 + Math.floor(Math.random() * 3)
     let updatedCart = cart
 
     for (let i = 0; i < numItems; i++) {
       const productIndex = Math.floor(Math.random() * products.length)
       const quantity = 1 + Math.floor(Math.random() * 3)
-      updatedCart = addItemToCart(
-        cart.id,
-        products[productIndex].variants[0].id,
-        quantity,
-        `item ${i + 1}`
-      )
+
+      const product = products[productIndex]
+      const variantId =
+        product &&
+        product.variants &&
+        product.variants[0] &&
+        product.variants[0].id
+      if (!variantId) {
+        console.log(
+          `[addMultipleComplete] No product variant found\n
+          product index (length: ${products.length}): ${productIndex}`
+        )
+        return []
+      }
+
+      updatedCart = addItemToCart(cart.id, variantId, quantity, `item ${i + 1}`)
     }
 
     viewCart(updatedCart.id)
