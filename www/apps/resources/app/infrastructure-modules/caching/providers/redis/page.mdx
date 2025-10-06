@@ -1,4 +1,4 @@
-import { Table } from "docs-ui"
+import { Table, Prerequisites } from "docs-ui"
 
 export const metadata = {
   title: `Redis Caching Module Provider`,
@@ -18,25 +18,14 @@ The Caching Module and its providers are available starting [Medusa v2.11.0](htt
 
 ## Register the Redis Caching Module
 
-### Default Redis Configuration
+<Prerequisites items={[
+  {
+    text: "Redis installed and Redis server running",
+    link: "https://redis.io/docs/getting-started/installation/"
+  }
+]} />
 
-The Redis Caching Module Provider is registered by default in your Medusa application. You only need to configure the Redis connection URL using the `CACHE_REDIS_URL` environment variable.
-
-For example, in `.env`, add the following variable:
-
-```bash
-CACHE_REDIS_URL=redis://localhost:6379
-```
-
-The above example assumes you have a Redis server running locally on the default port `6379`. If your Redis server is hosted elsewhere or requires authentication, adjust the URL accordingly.
-
-Your Medusa application will now use the Redis Caching Module Provider as the default caching provider.
-
-### Custom Redis Configuration
-
-If you want to pass custom configurations to the Redis Caching Module Provider or use multiple caching providers, you need to manually register the Redis Caching Module Provider in the `providers` array of the Caching Module.
-
-For example, in `medusa-config.ts`:
+To use the Redis Caching Module Provider, you need to register it in the `providers` array of the Caching Module in your `medusa-config.ts`.
 
 ```ts title="medusa-config.ts"
 module.exports = defineConfig({
@@ -66,7 +55,7 @@ module.exports = defineConfig({
 
 Notice that you pass an `id` property to the provider. The provider will be registered with that ID, which you can use to explicitly [specify the provider when caching data](../page.mdx#how-to-use-the-caching-module).
 
-#### Environment Variables
+### Environment Variables
 
 Make sure to add the following environment variable:
 
@@ -74,7 +63,7 @@ Make sure to add the following environment variable:
 CACHE_REDIS_URL=redis://localhost:6379
 ```
 
-#### Redis Caching Module Options
+### Redis Caching Module Options
 
 <Table>
   <Table.Header>
@@ -144,9 +133,7 @@ CACHE_REDIS_URL=redis://localhost:6379
 
 You can test the Redis Caching Module by caching data using the Query or Index Module, or by directly using the Caching Module's service, as described in the [Caching Module guide](../page.mdx#how-to-use-the-caching-module).
 
-The Redis Caching Module Provider is used by default in your Medusa application given that you have [configured its URL](#default-redis-configuration) and haven't set up another Caching Module Provider as the [default provider](../page.mdx#default-caching-module-provider).
-
-You can also explicitly specify the Redis Caching Module Provider by using its provider ID `caching-redis` when caching data with Query, the Index Module, or directly with the Caching Module's service.
+If you don't set the Redis Caching Module Provider as the default, you can explicitly specify its provider ID `caching-redis` when caching data with Query, the Index Module, or directly with the Caching Module's service.
 
 For example, you can create a workflow in `src/workflows/cache-products.ts` that caches products using the Redis Caching Module Provider:
 
