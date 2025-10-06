@@ -98,7 +98,7 @@ export const markPaymentCollectionAsPaid = createWorkflow(
   markPaymentCollectionAsPaidId,
   (input: WorkflowData<MarkPaymentCollectionAsPaidInput>) => {
     const { data: paymentCollection } = useQueryGraphStep({
-      entity: "paymentCollection",
+      entity: "payment_collection",
       filters: { id: input.payment_collection_id },
       fields: ["id", "status", "amount"],
       options: { throwIfKeyNotFound: true, isList: false },

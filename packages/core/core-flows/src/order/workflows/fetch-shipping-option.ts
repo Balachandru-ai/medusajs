@@ -14,7 +14,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { BigNumber, ShippingOptionPriceType } from "@medusajs/framework/utils"
 import { calculateShippingOptionsPricesStep } from "../../fulfillment/steps"
-import { useQueryGraphStep } from "../../common"
+import { useQueryGraphStep, useRemoteQueryStep } from "../../common"
 import { pricingContextResult } from "../../cart/utils/schemas"
 
 const COMMON_OPTIONS_FIELDS = [
@@ -168,7 +168,7 @@ export const fetchShippingOptionForOrderWorkflow = createWorkflow(
   fetchShippingOptionsForOrderWorkflowId,
   function (input: FetchShippingOptionForOrderWorkflowInput) {
     const { data: initialOption } = useQueryGraphStep({
-      entity: "shippingOption",
+      entity: "shipping_option",
       filters: { id: input.shipping_option_id },
       fields: ["id", "price_type"],
       options: { isList: false },
@@ -192,7 +192,7 @@ export const fetchShippingOptionForOrderWorkflow = createWorkflow(
       }).config({ name: "order-query" })
 
       const { data: shippingOption } = useQueryGraphStep({
-        entity: "shippingOption",
+        entity: "shipping_option",
         filters: { id: input.shipping_option_id },
         fields: [...COMMON_OPTIONS_FIELDS],
         options: { isList: false },
@@ -262,22 +262,22 @@ export const fetchShippingOptionForOrderWorkflow = createWorkflow(
       { isCalculatedPriceShippingOption },
       ({ isCalculatedPriceShippingOption }) => !isCalculatedPriceShippingOption
     ).then(() => {
-      const { data: shippingOption } = useQueryGraphStep({
-        entity: "shippingOption",
-        filters: {
-          id: input.shipping_option_id,
-          calculated_price: {
-            context: pricingContext,
-          },
-        },
+      const shippingOption = useRemoteQueryStep({
+        entry_point: "shipping_option",
         fields: [
           "id",
           "name",
           "calculated_price.calculated_amount",
           "calculated_price.is_calculated_price_tax_inclusive",
         ],
-        options: { isList: false },
-      }).config({ name: "flat-rate-option" })
+        variables: {
+          id: input.shipping_option_id,
+          calculated_price: {
+            context: pricingContext,
+          },
+        },
+        list: false,
+      }).config({ name: "flat-reate-option" })
 
       return shippingOption
     })

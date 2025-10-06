@@ -63,7 +63,7 @@ export const deleteOrderPaymentCollections = createWorkflow(
     input: WorkflowData<DeleteOrderPaymentCollectionsInput>
   ): WorkflowData<void> => {
     const { data: paymentCollection } = useQueryGraphStep({
-      entity: "paymentCollection",
+      entity: "payment_collection",
       filters: { id: input.id },
       fields: ["id", "status"],
       options: { throwIfKeyNotFound: true, isList: false },

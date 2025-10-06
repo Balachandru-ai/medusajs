@@ -119,7 +119,7 @@ export const listShippingOptionsForOrderWorkflow = createWorkflow(
     )
 
     const { data: shippingOptions } = useQueryGraphStep({
-      entity: "shippingOption",
+      entity: "shipping_option",
       filters: queryVariables.filters,
       fields: [
         "id",

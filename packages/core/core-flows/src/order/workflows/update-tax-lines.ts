@@ -1,5 +1,10 @@
 import type { OrderWorkflowDTO } from "@medusajs/framework/types"
-import { createWorkflow, transform, when, WorkflowData, } from "@medusajs/framework/workflows-sdk"
+import {
+  createWorkflow,
+  transform,
+  when,
+  WorkflowData,
+} from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
 import { setOrderTaxLinesForItemsStep } from "../steps"
@@ -208,7 +213,7 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       return input.shipping_method_ids!?.length > 0
     }).then(() => {
       const { data: orderShippingMethods } = useQueryGraphStep({
-        entity: "orderShippingMethod",
+        entity: "order_shipping_method",
         filters: { id: input.shipping_method_ids },
         fields: shippingMethodFields,
       }).config({ name: "query-order-shipping-methods" })

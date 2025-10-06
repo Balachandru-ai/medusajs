@@ -71,7 +71,7 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
     })
 
     const { data: orderPaymentCollections } = useQueryGraphStep({
-      entity: "orderPaymentCollection",
+      entity: "order_payment_collection",
       fields: ["payment_collection_id"],
       filters: { order_id: order.id },
     }).config({ name: "order-payment-collection-query" })
@@ -83,7 +83,7 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
     )
 
     const { data: existingPaymentCollection } = useQueryGraphStep({
-      entity: "paymentCollection",
+      entity: "payment_collection",
       fields: ["id", "status"],
       filters: {
         id: orderPaymentCollectionIds,
