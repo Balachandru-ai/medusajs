@@ -22,6 +22,7 @@ import {
   TransactionStepState,
   TransactionStepStatus,
 } from "@medusajs/framework/utils"
+import { MedusaWorkflow } from "@medusajs/framework/workflows-sdk"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
@@ -153,6 +154,12 @@ export class RedisDistributedTransactionStorage
           } with the following data: ${JSON.stringify(job.data)}`
         )
         if (allowedJobs.includes(job.name as JobType)) {
+          console.log({
+            workflowId: job.data.workflowId,
+            transactionId: job.data.transactionId,
+            transactionMetadata: job.data.transactionMetadata,
+            allFlows: Object.keys(MedusaWorkflow.workflows),
+          })
           try {
             await this.executeTransaction(
               job.data.workflowId,
@@ -508,7 +515,7 @@ export class RedisDistributedTransactionStorage
     }
 
     let retries = 0
-    const maxRetries = options?.maxRetries ?? 1
+    const maxRetries = options?.maxRetries || 1
     while (retries < maxRetries) {
       let lockAcquired = false
       try {
@@ -519,7 +526,7 @@ export class RedisDistributedTransactionStorage
           if (!lockAcquired) {
             retries++
             // retry with jitter to avoid race conditions again
-            await setTimeout(Math.round(10 + 200 * Math.random()))
+            await setTimeout(Math.round(10 + 100 * Math.random()))
             continue
           }
 
