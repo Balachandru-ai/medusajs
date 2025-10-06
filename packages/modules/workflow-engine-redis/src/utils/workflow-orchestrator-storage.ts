@@ -128,6 +128,7 @@ export class RedisDistributedTransactionStorage
   }
 
   async onApplicationStart() {
+    await this.ensureRedisConnection()
     const allowedJobs = [
       JobType.RETRY,
       JobType.STEP_TIMEOUT,
@@ -210,6 +211,24 @@ export class RedisDistributedTransactionStorage
 
   setWorkflowOrchestratorService(workflowOrchestratorService) {
     this.workflowOrchestratorService_ = workflowOrchestratorService
+  }
+
+  private async ensureRedisConnection(): Promise<void> {
+    if (this.redisClient.status !== "ready") {
+      this.logger_.warn(
+        `Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
+      )
+      try {
+        await this.redisClient.connect()
+        this.logger_.info("Redis connection reestablished successfully")
+      } catch (error) {
+        this.logger_.error("Failed to reconnect to Redis", error)
+        throw new MedusaError(
+          MedusaError.Types.DB_ERROR,
+          `Redis connection failed: ${error.message}`
+        )
+      }
+    }
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
