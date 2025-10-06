@@ -6,7 +6,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
+import { useRemoteQueryStep } from "../../common"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
@@ -134,11 +134,12 @@ export const getOrdersListWorkflow = createWorkflow(
       ])
     })
 
-    const { data: orders } = useQueryGraphStep({
-      entity: "order",
-      pagination: input.variables,
+    const orders: OrderDTO[] = useRemoteQueryStep({
+      entry_point: "orders",
       fields,
-    }).config({ name: "get-orders" })
+      variables: input.variables,
+      list: true,
+    })
 
     const aggregatedOrders = transform(
       { orders, input },
