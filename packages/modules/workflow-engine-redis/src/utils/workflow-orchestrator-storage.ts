@@ -221,13 +221,14 @@ export class RedisDistributedTransactionStorage
         `[Workflow-engine-redis] Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
       )
       reconnectTasks.push(
-        this.redisClient.connect().then(
-          () => {
+        this.redisClient
+          .connect()
+          .then(() => {
             this.logger_.info(
               "[Workflow-engine-redis] Redis connection reestablished successfully"
             )
-          },
-          (error) => {
+          })
+          .catch((error) => {
             this.logger_.error(
               "[Workflow-engine-redis] Failed to reconnect to Redis",
               error
@@ -236,8 +237,7 @@ export class RedisDistributedTransactionStorage
               MedusaError.Types.DB_ERROR,
               `Redis connection failed: ${error.message}`
             )
-          }
-        )
+          })
       )
     }
 
@@ -246,13 +246,14 @@ export class RedisDistributedTransactionStorage
         `[Workflow-engine-redis] Redis worker connection is not ready (status: ${this.redisWorkerConnection.status}). Attempting to reconnect...`
       )
       reconnectTasks.push(
-        this.redisWorkerConnection.connect().then(
-          () => {
+        this.redisWorkerConnection
+          .connect()
+          .then(() => {
             this.logger_.info(
               "[Workflow-engine-redis] Redis worker connection reestablished successfully"
             )
-          },
-          (error) => {
+          })
+          .catch((error) => {
             this.logger_.error(
               "[Workflow-engine-redis] Failed to reconnect to Redis worker connection",
               error
@@ -261,8 +262,7 @@ export class RedisDistributedTransactionStorage
               MedusaError.Types.DB_ERROR,
               `Redis worker connection failed: ${error.message}`
             )
-          }
-        )
+          })
       )
     }
 
