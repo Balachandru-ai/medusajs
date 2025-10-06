@@ -7,7 +7,6 @@ import {
 import type { ListShippingOptionsForOrderWorkflowInput } from "@medusajs/framework/types"
 
 import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
 
 export const listShippingOptionsForOrderWorkflowId =
   "list-shipping-options-for-order"
@@ -119,8 +118,9 @@ export const listShippingOptionsForOrderWorkflow = createWorkflow(
       }
     )
 
-    const shippingOptions = useRemoteQueryStep({
-      entry_point: "shipping_options",
+    const { data: shippingOptions } = useQueryGraphStep({
+      entity: "shippingOption",
+      filters: queryVariables.filters,
       fields: [
         "id",
         "name",
@@ -147,7 +147,6 @@ export const listShippingOptionsForOrderWorkflow = createWorkflow(
         "rules.value",
         "rules.operator",
       ],
-      variables: queryVariables,
     }).config({ name: "shipping-options-query" })
 
     const shippingOptionsWithInventory = transform(

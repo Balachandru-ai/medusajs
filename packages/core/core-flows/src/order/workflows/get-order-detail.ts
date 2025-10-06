@@ -89,7 +89,7 @@ export const getOrderDetailWorkflow = createWorkflow(
     })
 
     const { data: order } = useQueryGraphStep({
-      entity: "orders",
+      entity: "order",
       filters: variables,
       fields: fields,
       options: { throwIfKeyNotFound: true, isList: false },

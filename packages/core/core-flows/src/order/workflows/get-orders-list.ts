@@ -1,12 +1,12 @@
-import type { OrderDTO, OrderDetailDTO } from "@medusajs/framework/types"
+import type { OrderDetailDTO, OrderDTO } from "@medusajs/framework/types"
 import { deduplicate } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createWorkflow,
   transform,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common"
+import { useQueryGraphStep } from "../../common"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
@@ -134,12 +134,12 @@ export const getOrdersListWorkflow = createWorkflow(
       ])
     })
 
-    const orders: OrderDTO[] = useRemoteQueryStep({
-      entry_point: "orders",
+    const { data: orders } = useQueryGraphStep({
+      entity: "order",
+      filters: input.variables,
+      pagination: input.variables,
       fields,
-      variables: input.variables,
-      list: true,
-    })
+    }).config({ name: "get-orders" })
 
     const aggregatedOrders = transform(
       { orders, input },
