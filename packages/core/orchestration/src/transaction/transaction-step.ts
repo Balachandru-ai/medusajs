@@ -62,6 +62,7 @@ export class TransactionStep {
   startedAt?: number
   next: string[]
   saveResponse: boolean
+  _v?: number
 
   public getStates() {
     return this.isCompensating() ? this.compensate : this.invoke

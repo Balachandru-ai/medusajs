@@ -263,6 +263,8 @@ export type StepFeatures = {
   hasAsyncSteps: boolean
   hasStepTimeouts: boolean
   hasRetriesTimeout: boolean
+  maxRetries?: number
+  _v?: number
 }
 
 export type TransactionOptions = TransactionModelOptions & StepFeatures
@@ -295,4 +297,5 @@ export type TransactionFlow = {
   steps: {
     [key: string]: TransactionStep
   }
+  _v: number
 }

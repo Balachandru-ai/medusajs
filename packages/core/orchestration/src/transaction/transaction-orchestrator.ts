@@ -18,6 +18,7 @@ import {
   TransactionStepStatus,
 } from "./types"
 
+import { Context } from "@medusajs/types"
 import {
   isDefined,
   isErrorLike,
@@ -38,7 +39,6 @@ import {
   TransactionStepTimeoutError,
   TransactionTimeoutError,
 } from "./errors"
-import { Context } from "@medusajs/types"
 
 /**
  * @class TransactionOrchestrator is responsible for managing and executing distributed transactions.
@@ -137,7 +137,7 @@ export class TransactionOrchestrator extends EventEmitter {
     return params.join(this.SEPARATOR)
   }
 
-  private getPreviousStep(flow: TransactionFlow, step: TransactionStep) {
+  private static getPreviousStep(flow: TransactionFlow, step: TransactionStep) {
     const id = step.id.split(".")
     id.pop()
     const parentId = id.join(".")
@@ -175,6 +175,14 @@ export class TransactionOrchestrator extends EventEmitter {
     return steps
   }
 
+  private static countSiblings(
+    flow: TransactionFlow,
+    step: TransactionStep
+  ): number {
+    const previous = TransactionOrchestrator.getPreviousStep(flow, step)
+    return previous.next.length
+  }
+
   private canMoveForward(flow: TransactionFlow, previousStep: TransactionStep) {
     const states = [
       TransactionStepState.DONE,
@@ -184,9 +192,10 @@ export class TransactionOrchestrator extends EventEmitter {
       TransactionStepState.SKIPPED_FAILURE,
     ]
 
-    const siblings = this.getPreviousStep(flow, previousStep).next.map(
-      (sib) => flow.steps[sib]
-    )
+    const siblings = TransactionOrchestrator.getPreviousStep(
+      flow,
+      previousStep
+    ).next.map((sib) => flow.steps[sib])
 
     return (
       !!previousStep.definition.noWait ||
@@ -214,7 +223,7 @@ export class TransactionOrchestrator extends EventEmitter {
     if (flow.state == TransactionState.COMPENSATING) {
       return this.canMoveBackward(flow, step)
     } else {
-      const previous = this.getPreviousStep(flow, step)
+      const previous = TransactionOrchestrator.getPreviousStep(flow, step)
       if (previous.id === TransactionOrchestrator.ROOT_STEP) {
         return true
       }
@@ -547,7 +556,13 @@ export class TransactionOrchestrator extends EventEmitter {
     let shouldEmit = true
     let transactionIsCancelling = false
     try {
-      await transaction.saveCheckpoint()
+      await transaction.saveCheckpoint({
+        _v: step._v,
+        parallelSteps: TransactionOrchestrator.countSiblings(
+          transaction.getFlow(),
+          step
+        ),
+      })
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
@@ -627,7 +642,9 @@ export class TransactionOrchestrator extends EventEmitter {
     let shouldEmit = true
     let transactionIsCancelling = false
     try {
-      await transaction.saveCheckpoint()
+      await transaction.saveCheckpoint({
+        _v: step._v,
+      })
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
@@ -837,7 +854,9 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     try {
-      await transaction.saveCheckpoint()
+      await transaction.saveCheckpoint({
+        _v: step._v,
+      })
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
         throw error
@@ -915,6 +934,7 @@ export class TransactionOrchestrator extends EventEmitter {
       })
 
       const execution: Promise<void | unknown>[] = []
+      const executionAsync: (() => Promise<void | unknown>)[] = []
 
       let i = 0
       let hasAsyncSteps = false
@@ -951,11 +971,16 @@ export class TransactionOrchestrator extends EventEmitter {
             this.executeSyncStep(promise, transaction, step, nextSteps)
           )
         } else {
+          // async steps have version for conflicts resolution
+          const version = transaction.getFlow()._v + 1
+          transaction.getFlow()._v = version
+          step._v = version
+
           // Execute async step in background as part of the next event loop cycle and continue the execution of the transaction
-          process.nextTick(() =>
+          hasAsyncSteps = true
+          executionAsync.push(() =>
             this.executeAsyncStep(promise, transaction, step, nextSteps)
           )
-          hasAsyncSteps = true
         }
       }
 
@@ -963,13 +988,18 @@ export class TransactionOrchestrator extends EventEmitter {
 
       if (nextSteps.next.length === 0 || (hasAsyncSteps && !execution.length)) {
         continueExecution = false
+      }
+
+      if (hasAsyncSteps) {
         await transaction.saveCheckpoint().catch((error) => {
           if (TransactionOrchestrator.isExpectedError(error)) {
-            return
+            continueExecution = false
           }
-
-          throw error
         })
+
+        for (const exec of executionAsync) {
+          void exec()
+        }
       }
     }
   }
@@ -989,6 +1019,7 @@ export class TransactionOrchestrator extends EventEmitter {
         throw error
       }
     })
+
     this.emit(DistributedTransactionEvent.FINISH, { transaction })
   }
 
@@ -1335,9 +1366,9 @@ export class TransactionOrchestrator extends EventEmitter {
         flow.state = TransactionState.INVOKING
         flow.startedAt = Date.now()
 
-        await transaction.saveCheckpoint(
-          flow.hasAsyncSteps ? 0 : TransactionOrchestrator.DEFAULT_TTL
-        )
+        await transaction.saveCheckpoint({
+          ttl: flow.hasAsyncSteps ? 0 : TransactionOrchestrator.DEFAULT_TTL,
+        })
 
         if (transaction.hasTimeout()) {
           await transaction.scheduleTransactionTimeout(
@@ -1476,6 +1507,7 @@ export class TransactionOrchestrator extends EventEmitter {
       state: TransactionState.NOT_STARTED,
       definition: this.definition,
       steps,
+      _v: 0, // Initialize version to 0
     }
 
     return flow
@@ -1588,6 +1620,7 @@ export class TransactionOrchestrator extends EventEmitter {
             failures: 0,
             lastAttempt: null,
             next: [],
+            _v: 0, // Initialize step version to 0
           }
         )
       }
@@ -1628,7 +1661,6 @@ export class TransactionOrchestrator extends EventEmitter {
     const existingTransaction =
       await TransactionOrchestrator.loadTransactionById(this.id, transactionId)
 
-    let newTransaction = false
     let modelFlow: TransactionFlow
     if (!existingTransaction) {
       modelFlow = this.createTransactionFlow(
@@ -1636,7 +1668,6 @@ export class TransactionOrchestrator extends EventEmitter {
         flowMetadata,
         context
       )
-      newTransaction = true
     } else {
       modelFlow = existingTransaction.flow
     }
@@ -1648,12 +1679,6 @@ export class TransactionOrchestrator extends EventEmitter {
       existingTransaction?.errors,
       existingTransaction?.context
     )
-
-    if (newTransaction && this.getOptions().store) {
-      await transaction.saveCheckpoint(
-        modelFlow.hasAsyncSteps ? 0 : TransactionOrchestrator.DEFAULT_TTL
-      )
-    }
 
     if (onLoad) {
       await onLoad(transaction)

@@ -195,15 +195,26 @@ class DistributedTransaction extends EventEmitter {
     return this.getFlow().options?.timeout
   }
 
-  public async saveCheckpoint(
-    ttl = 0
-  ): Promise<TransactionCheckpoint | undefined> {
+  public async saveCheckpoint({
+    ttl = 0,
+    parallelSteps = 0,
+    _v,
+  }: {
+    ttl?: number
+    parallelSteps?: number
+    _v?: number
+  } = {}): Promise<TransactionCheckpoint | undefined> {
     const options =
       TransactionOrchestrator.getWorkflowOptions(this.modelId) ??
       this.getFlow().options
 
     if (!options?.store) {
       return
+    }
+
+    if (_v) {
+      options.maxRetries = parallelSteps
+      options._v = _v
     }
 
     const key = TransactionOrchestrator.getKeyName(

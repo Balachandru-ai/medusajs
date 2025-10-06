@@ -23,7 +23,7 @@ import {
   MedusaError,
   TransactionState,
   TransactionStepState,
-  isPresent,
+  TransactionStepStatus,
 } from "@medusajs/framework/utils"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
@@ -96,8 +96,7 @@ export class InMemoryDistributedTransactionStorage
   private logger_: Logger
   private workflowOrchestratorService_: WorkflowOrchestratorService
 
-  private storage: Map<string, Omit<TransactionCheckpoint, "context">> =
-    new Map()
+  private storage: Map<string, TransactionCheckpoint> = new Map()
   private scheduled: Map<
     string,
     {
@@ -112,6 +111,8 @@ export class InMemoryDistributedTransactionStorage
   private pendingTimers: Set<NodeJS.Timeout> = new Set()
 
   private clearTimeout_: NodeJS.Timeout
+  private isLocked = false
+  private lockQueue: (() => void)[] = []
 
   constructor({
     workflowExecutionService,
@@ -270,6 +271,10 @@ export class InMemoryDistributedTransactionStorage
       isCancelling?: boolean
     }
   ): Promise<TransactionCheckpoint | undefined> {
+    if (this.storage.has(key)) {
+      return this.storage.get(key)
+    }
+
     const [_, workflowId, transactionId] = key.split(":")
     const trx: InferEntityType<typeof WorkflowExecution> | undefined =
       await this.workflowExecutionService_
@@ -342,7 +347,7 @@ export class InMemoryDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
-    const { retentionTime } = options ?? {}
+    const { retentionTime, _v } = options ?? {}
 
     await this.#preventRaceConditionExecutionIfNecessary({
       data,
@@ -371,16 +376,31 @@ export class InMemoryDistributedTransactionStorage
       }
     }
 
-    const { flow, errors } = data
+    if (this.isLocked) {
+      await new Promise<void>((resolve) => {
+        this.lockQueue.push(resolve)
+      })
+    }
+
+    // if awaiting async step, _v > 0
+    if (data.flow._v) {
+      this.isLocked = true
+    }
+
+    if (_v) {
+      await this.#performVersionCheckAndMerge(key, data, _v)
+    }
+
+    const { flow, errors, context } = data
     this.storage.set(key, {
       flow,
       errors,
+      context,
     })
 
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
       if (!retentionTime) {
-        // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
         if (!flow.metadata?.parentStepIdempotencyKey) {
           await this.deleteFromDb(data)
         } else {
@@ -394,6 +414,114 @@ export class InMemoryDistributedTransactionStorage
     } else {
       await this.saveToDb(data, retentionTime)
     }
+
+    // Release the lock if we acquired one
+    if (this.isLocked) {
+      this.isLocked = false
+      const nextResolve = this.lockQueue.shift()
+      if (nextResolve) {
+        nextResolve()
+      }
+    }
+  }
+
+  async #performVersionCheckAndMerge(
+    key: string,
+    data: TransactionCheckpoint,
+    _v?: number
+  ): Promise<void> {
+    const currentData = (await this.get(key)) as TransactionCheckpoint
+
+    const savingVersion = _v!
+
+    // get step related to the version
+    const allSteps = data.flow.steps
+    let savingStep
+    for (const step of Object.values(allSteps)) {
+      if (step._v === savingVersion) {
+        savingStep = step
+        break
+      }
+    }
+
+    this.#mergeStepData(currentData, data, savingStep)
+    this.#mergeErrors(data.errors, currentData!.errors ?? [])
+
+    data.context = currentData.context
+    data.errors = currentData.errors
+    data.flow = currentData.flow
+  }
+
+  #mergeStepData(
+    currentData: TransactionCheckpoint,
+    data: TransactionCheckpoint,
+    savingStep: TransactionStep
+  ): void {
+    const currentContext = currentData.context
+    const latestContext = data.context
+    const isCompensating =
+      data.flow.state === TransactionState.COMPENSATING ||
+      data.flow.state === TransactionState.WAITING_TO_COMPENSATE
+
+    const stepName = savingStep.definition.action!
+
+    if (
+      !isCompensating &&
+      latestContext.invoke[stepName] &&
+      !currentContext.invoke[stepName]
+    ) {
+      currentContext.invoke[stepName] = latestContext.invoke[stepName]
+    }
+
+    if (
+      isCompensating &&
+      latestContext.compensate[stepName] &&
+      !currentContext.compensate[stepName]
+    ) {
+      currentContext.compensate[stepName] = latestContext.compensate[stepName]
+    }
+
+    const stepId = savingStep.id
+
+    if (isCompensating) {
+      const canUpdate = [
+        TransactionStepStatus.IDLE,
+        TransactionStepStatus.WAITING,
+        TransactionStepStatus.TEMPORARY_FAILURE,
+      ]
+      if (
+        canUpdate.includes(currentData.flow.steps[stepId].compensate.status)
+      ) {
+        currentData.flow.steps[stepId] = savingStep
+      }
+    } else {
+      const canUpdate = [
+        TransactionStepStatus.IDLE,
+        TransactionStepStatus.WAITING,
+        TransactionStepStatus.TEMPORARY_FAILURE,
+      ]
+      if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
+        currentData.flow.steps[stepId] = savingStep
+      }
+    }
+  }
+
+  #mergeErrors(
+    currentErrors: TransactionStepError[],
+    latestErrors: TransactionStepError[]
+  ): void {
+    const existingErrorSignatures = new Set(
+      currentErrors.map(
+        (err) => `${err.action}:${err.handlerType}:${err.error?.message}`
+      )
+    )
+
+    for (const error of latestErrors) {
+      const signature = `${error.action}:${error.handlerType}:${error.error?.message}`
+      if (!existingErrorSignatures.has(signature)) {
+        currentErrors.push(error)
+      }
+    }
   }
 
   async #preventRaceConditionExecutionIfNecessary({
@@ -405,16 +533,6 @@ export class InMemoryDistributedTransactionStorage
     key: string
     options?: TransactionOptions
   }) {
-    // TODO: comment, we have been able to try to replace this entire function
-    // with a locking first approach. We might come back to that another time.
-    // This remove the necessity of all the below logic to prevent race conditions
-    // by preventing the exact same execution to run at the same time.
-    // See early commits from: https://github.com/medusajs/medusa/pull/13345/commits
-
-    const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
-      data.flow.state
-    )
-
     /**
      * In case many execution can succeed simultaneously, we need to ensure that the latest
      * execution does continue if a previous execution is considered finished
@@ -437,16 +555,6 @@ export class InMemoryDistributedTransactionStorage
     }
 
     const { flow: latestUpdatedFlow } = data_
-
-    if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
-      /**
-       * the initial checkpoint expect no other checkpoint to have been stored.
-       * In case it is not the initial one and another checkpoint is trying to
-       * find if a concurrent execution has finished, we skip the execution.
-       * The already finished execution would have deleted the checkpoint already.
-       */
-      throw new SkipExecutionError("Already finished by another execution")
-    }
 
     let currentFlowLatestExecutedStep: TransactionStep | undefined
     const currentFlowSteps = Object.values(currentFlow.steps || {})
@@ -491,7 +599,7 @@ export class InMemoryDistributedTransactionStorage
       !isCurrentLatestExecutedStepLastAttemptAhead
     ) {
       throw new SkipStepAlreadyFinishedError(
-        "Step already in execution ahead of the current one"
+        "Step already finished by another execution"
       )
     }
 
@@ -508,9 +616,16 @@ export class InMemoryDistributedTransactionStorage
       )
     }
 
-    const currentFlowLastInvokingStepIndex =
-      currentFlowSteps.findIndex(isInvokingState)
+    let currentFlowLastInvokingStepIndex = -1
+    const currentInvokingSteps: TransactionStep[] = []
+    for (let i = 0; i < currentFlowSteps.length; i++) {
+      if (isInvokingState(currentFlowSteps[i])) {
+        currentFlowLastInvokingStepIndex = i
+        currentInvokingSteps.push(currentFlowSteps[i])
+      }
+    }
 
+    const isParallelExecution = currentInvokingSteps.length > 1
     let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
       ? 1 // There is no other execution, so the current execution is the latest
       : -1
@@ -578,7 +693,8 @@ export class InMemoryDistributedTransactionStorage
 
     if (
       (data.flow.state !== TransactionState.COMPENSATING &&
-        invokeShouldBeSkipped) ||
+        invokeShouldBeSkipped &&
+        !isParallelExecution) ||
       (data.flow.state === TransactionState.COMPENSATING &&
         compensateShouldBeSkipped) ||
       isCompensatingMismatch ||
