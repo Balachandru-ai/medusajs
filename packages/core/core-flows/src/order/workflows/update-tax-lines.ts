@@ -201,7 +201,7 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       return input.item_ids!?.length > 0
     }).then(() => {
       const { data: orderLineItems } = useQueryGraphStep({
-        entity: "orderLineItem",
+        entity: "order_line_item",
         filters: { id: input.item_ids },
         fields: lineItemFields,
       }).config({ name: "query-order-line-items" })
