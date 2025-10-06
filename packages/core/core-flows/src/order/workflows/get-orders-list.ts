@@ -136,7 +136,6 @@ export const getOrdersListWorkflow = createWorkflow(
 
     const { data: orders } = useQueryGraphStep({
       entity: "order",
-      filters: input.variables,
       pagination: input.variables,
       fields,
     }).config({ name: "get-orders" })
