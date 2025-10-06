@@ -71,7 +71,9 @@ export async function getViteConfig(
   }
 
   // Inject plugin environment variables with vite define
-  const pluginEnv: Record<string, string | undefined> = { BACKEND_URL: backendUrl }
+  const pluginEnv: Record<string, string | undefined> = {
+    BACKEND_URL: backendUrl,
+  }
   for (const [key, value] of Object.entries(process.env)) {
     if (key.startsWith("PLUGIN_")) {
       pluginEnv[key.replace(/^PLUGIN_/, "")] = value
@@ -90,6 +92,13 @@ export async function getViteConfig(
 function getHmrConfig(hmrPort: number): HmrOptions | boolean {
   const options: HmrOptions = {
     port: hmrPort,
+  }
+
+  if (process.env.HMR_BIND_HOST) {
+    const { createServer } = require("http")
+    const hmrServer = createServer()
+    hmrServer.listen(hmrPort, process.env.HMR_BIND_HOST)
+    options.server = hmrServer
   }
 
   if (process.env.HMR_PROTOCOL) {
