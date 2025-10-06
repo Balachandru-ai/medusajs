@@ -90,8 +90,54 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "category",
-      "title": "Cache Module",
+      "title": "Caching Module",
       "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/infrastructure-modules/caching",
+          "title": "Overview",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Providers",
+          "path": "/infrastructure-modules/caching/providers",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/infrastructure-modules/caching/providers/in-memory",
+              "title": "In-Memory",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/infrastructure-modules/caching/providers/redis",
+              "title": "Redis",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
+      "title": "Cache Module",
+      "initialOpen": false,
+      "badge": {
+        "variant": "neutral",
+        "text": "Deprecated"
+      },
       "children": [
         {
           "loaded": true,

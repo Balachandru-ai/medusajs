@@ -832,6 +832,22 @@ export const filesMap = [
     "pathname": "/infrastructure-modules/cache/redis"
   },
   {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/page.mdx",
+    "pathname": "/infrastructure-modules/caching"
+  },
+  {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/providers/in-memory/page.mdx",
+    "pathname": "/infrastructure-modules/caching/providers/in-memory"
+  },
+  {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/providers/page.mdx",
+    "pathname": "/infrastructure-modules/caching/providers"
+  },
+  {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/providers/redis/page.mdx",
+    "pathname": "/infrastructure-modules/caching/providers/redis"
+  },
+  {
     "filePath": "/www/apps/resources/app/infrastructure-modules/event/create/page.mdx",
     "pathname": "/infrastructure-modules/event/create"
   },

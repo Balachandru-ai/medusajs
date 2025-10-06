@@ -59,8 +59,41 @@ export const infrastructureModulesSidebar = [
   },
   {
     type: "category",
-    title: "Cache Module",
+    title: "Caching Module",
     initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/infrastructure-modules/caching",
+        title: "Overview",
+      },
+      {
+        type: "link",
+        title: "Providers",
+        path: "/infrastructure-modules/caching/providers",
+        children: [
+          {
+            type: "link",
+            path: "/infrastructure-modules/caching/providers/in-memory",
+            title: "In-Memory",
+          },
+          {
+            type: "link",
+            path: "/infrastructure-modules/caching/providers/redis",
+            title: "Redis",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: "category",
+    title: "Cache Module",
+    initialOpen: false,
+    badge: {
+      variant: "neutral",
+      text: "Deprecated",
+    },
     children: [
       {
         type: "link",
