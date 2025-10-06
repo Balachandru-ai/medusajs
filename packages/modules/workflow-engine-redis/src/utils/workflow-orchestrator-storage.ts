@@ -216,13 +216,18 @@ export class RedisDistributedTransactionStorage
   private async ensureRedisConnection(): Promise<void> {
     if (this.redisClient.status !== "ready") {
       this.logger_.warn(
-        `Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
+        `[Workflow-engine-redis] Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
       )
       try {
         await this.redisClient.connect()
-        this.logger_.info("Redis connection reestablished successfully")
+        this.logger_.info(
+          "[Workflow-engine-redis] Redis connection reestablished successfully"
+        )
       } catch (error) {
-        this.logger_.error("Failed to reconnect to Redis", error)
+        this.logger_.error(
+          "[Workflow-engine-redis] Failed to reconnect to Redis",
+          error
+        )
         throw new MedusaError(
           MedusaError.Types.DB_ERROR,
           `Redis connection failed: ${error.message}`
