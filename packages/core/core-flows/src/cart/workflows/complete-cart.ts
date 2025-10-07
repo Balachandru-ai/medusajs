@@ -123,9 +123,6 @@ export const completeCartWorkflow = createWorkflow(
       filters: { id: input.id },
       options: {
         isList: false,
-        cache: {
-          enable: true,
-        },
       },
     }).config({
       name: "cart-query",
