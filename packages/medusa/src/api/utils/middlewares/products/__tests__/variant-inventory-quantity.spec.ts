@@ -81,20 +81,24 @@ describe("variant-inventory-quantity", () => {
         "variant-3": { availability: 20 },
         "variant-4": { availability: null },
       }
+      const _variants = [
+        ...variants,
+        { id: "variant-4", manage_inventory: true },
+      ]
 
       ;(getTotalVariantAvailability as jest.Mock).mockResolvedValueOnce(
         mockAvailability
       )
 
-      await wrapVariantsWithTotalInventoryQuantity(req as MedusaRequest, [
-        ...variants,
-        { id: "variant-4", manage_inventory: true },
-      ])
+      await wrapVariantsWithTotalInventoryQuantity(
+        req as MedusaRequest,
+        _variants
+      )
 
-      expect(variants[0].inventory_quantity).toBe(10)
-      expect(variants[1].inventory_quantity).toBe(5)
-      expect(variants[2].inventory_quantity).toBeUndefined()
-      expect(variants[3].inventory_quantity).toBeNull()
+      expect(_variants[0].inventory_quantity).toBe(10)
+      expect(_variants[1].inventory_quantity).toBe(5)
+      expect(_variants[2].inventory_quantity).toBeUndefined()
+      expect(_variants[3].inventory_quantity).toBeNull()
     })
   })
 
