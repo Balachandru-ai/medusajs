@@ -4,4 +4,4 @@
 "@medusajs/medusa": patch
 ---
 
-"fix(medusa,utils,types): inventory management nullable
+fix(medusa,utils,types): inventory management nullable
