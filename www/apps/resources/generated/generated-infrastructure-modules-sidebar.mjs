@@ -125,6 +125,30 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "children": []
             }
           ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "sub-category",
+          "title": "Guides",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/caching-module-provider",
+              "title": "Create Caching Module Provider",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/caching-service",
+              "title": "Use Caching Module",
+              "children": []
+            }
+          ]
         }
       ]
     },

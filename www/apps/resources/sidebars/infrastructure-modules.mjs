@@ -84,6 +84,22 @@ export const infrastructureModulesSidebar = [
           },
         ],
       },
+      {
+        type: "sub-category",
+        title: "Guides",
+        children: [
+          {
+            type: "link",
+            path: "/references/caching-module-provider",
+            title: "Create Caching Module Provider",
+          },
+          {
+            type: "link",
+            path: "/references/caching-service",
+            title: "Use Caching Module",
+          },
+        ],
+      },
     ],
   },
   {
