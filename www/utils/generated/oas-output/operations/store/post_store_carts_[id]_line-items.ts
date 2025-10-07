@@ -39,7 +39,31 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/StoreAddCartLineItem"
+ *         allOf:
+ *           - type: object
+ *             description: The details of the line item to add.
+ *             required:
+ *               - variant_id
+ *               - quantity
+ *             properties:
+ *               variant_id:
+ *                 type: string
+ *                 title: variant_id
+ *                 description: The ID of the product variant to add as a line item.
+ *               quantity:
+ *                 type: number
+ *                 title: quantity
+ *                 description: The item's quantity.
+ *               metadata:
+ *                 type: object
+ *                 description: The item's metadata, can hold custom key-value pairs.
+ *           - type: object
+ *             description: The details of the line item to add.
+ *             properties:
+ *               additional_data:
+ *                 type: object
+ *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+ *         description: The details of the line item to add.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

@@ -48,6 +48,12 @@ export type TransactionStepsDefinition = {
   maxRetries?: number
 
   /**
+   * If true, the step will be retried automatically in case of a temporary failure.
+   * The default is true.
+   */
+  autoRetry?: boolean
+
+  /**
    * The interval (in seconds) between retry attempts after a temporary failure.
    * The default is to retry immediately.
    */
@@ -57,6 +63,11 @@ export type TransactionStepsDefinition = {
    * The interval (in seconds) to retry a step even if its status is "TransactionStepStatus.WAITING".
    */
   retryIntervalAwaiting?: number
+
+  /**
+   * The maximum number of times to retry a step even if its status is "TransactionStepStatus.WAITING".
+   */
+  maxAwaitingRetries?: number
 
   /**
    * The maximum amount of time (in seconds) to wait for this step to complete.
@@ -279,6 +290,7 @@ export type TransactionFlow = {
   timedOutAt: number | null
   startedAt?: number
   cancelledAt?: number
+  temporaryFailedAt?: number | null
   state: TransactionState
   steps: {
     [key: string]: TransactionStep

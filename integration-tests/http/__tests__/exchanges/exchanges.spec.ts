@@ -2,6 +2,7 @@ import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ContainerRegistrationKeys,
   Modules,
+  ProductStatus,
   RuleOperator,
 } from "@medusajs/utils"
 import {
@@ -22,8 +23,10 @@ medusaIntegrationTestRunner({
     let returnReason
     let inventoryItem
     let inventoryItemExtra
+    let inventoryItemExtra2
     let location
     let productExtra
+    let productExtra2
     const shippingProviderId = "manual_test-provider"
 
     beforeEach(async () => {
@@ -78,6 +81,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "Test product",
+            status: ProductStatus.PUBLISHED,
             shipping_profile_id: shippingProfile.id,
             options: [{ title: "size", values: ["large", "small"] }],
             variants: [
@@ -103,6 +107,7 @@ medusaIntegrationTestRunner({
           "/admin/products",
           {
             title: "Extra product",
+            status: ProductStatus.PUBLISHED,
             shipping_profile_id: shippingProfile.id,
             options: [{ title: "size", values: ["large", "small"] }],
             variants: [
@@ -114,6 +119,32 @@ medusaIntegrationTestRunner({
                   {
                     currency_code: "usd",
                     amount: 123456.1234657890123456789,
+                  },
+                ],
+              },
+            ],
+          },
+          adminHeaders
+        )
+      ).data.product
+
+      productExtra2 = (
+        await api.post(
+          "/admin/products",
+          {
+            title: "Extra product 2, same price",
+            status: ProductStatus.PUBLISHED,
+            shipping_profile_id: shippingProfile.id,
+            options: [{ title: "size", values: ["large", "small"] }],
+            variants: [
+              {
+                title: "my variant 2",
+                sku: "variant-sku-2",
+                options: { size: "large" },
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 25,
                   },
                 ],
               },
@@ -269,11 +300,24 @@ medusaIntegrationTestRunner({
         await api.get(`/admin/inventory-items?sku=variant-sku`, adminHeaders)
       ).data.inventory_items[0]
 
+      inventoryItemExtra2 = (
+        await api.get(`/admin/inventory-items?sku=variant-sku-2`, adminHeaders)
+      ).data.inventory_items[0]
+
       await api.post(
         `/admin/inventory-items/${inventoryItemExtra.id}/location-levels`,
         {
           location_id: location.id,
           stocked_quantity: 4,
+        },
+        adminHeaders
+      )
+
+      await api.post(
+        `/admin/inventory-items/${inventoryItemExtra2.id}/location-levels`,
+        {
+          location_id: location.id,
+          stocked_quantity: 2,
         },
         adminHeaders
       )
@@ -321,6 +365,14 @@ medusaIntegrationTestRunner({
           },
           [Modules.INVENTORY]: {
             inventory_item_id: inventoryItemExtra.id,
+          },
+        },
+        {
+          [Modules.PRODUCT]: {
+            variant_id: productExtra2.variants[0].id,
+          },
+          [Modules.INVENTORY]: {
+            inventory_item_id: inventoryItemExtra2.id,
           },
         },
       ])
@@ -440,6 +492,95 @@ medusaIntegrationTestRunner({
     })
 
     describe("Exchanges lifecycle", () => {
+      it("test full exchange flow", async () => {
+        const orderBefore = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
+
+        let result = await api.post(
+          "/admin/exchanges",
+          {
+            order_id: order.id,
+            description: "Test",
+          },
+          adminHeaders
+        )
+
+        expect(result.data.exchange.created_by).toEqual(expect.any(String))
+
+        const exchangeId = result.data.exchange.id
+
+        const item = order.items[0]
+
+        result = await api.post(
+          `/admin/exchanges/${exchangeId}/inbound/items`,
+          {
+            items: [
+              {
+                id: item.id,
+                reason_id: returnReason.id,
+                quantity: 2,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        // New Item
+        result = await api.post(
+          `/admin/exchanges/${exchangeId}/outbound/items`,
+          {
+            items: [
+              {
+                variant_id: productExtra2.variants[0].id,
+                quantity: 2,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        result = await api.post(
+          `/admin/exchanges/${exchangeId}/request`,
+          {},
+          adminHeaders
+        )
+        const returnId = result.data.exchange.return_id
+
+        result = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
+          .order
+
+        expect(orderBefore.total).toBe(61)
+        expect(result.total).toBe(112)
+
+        // receive return
+        await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+        await api.post(
+          `/admin/returns/${returnId}/receive-items`,
+          {
+            items: [
+              {
+                id: item.id,
+                quantity: 2,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/returns/${returnId}/receive/confirm`,
+          {},
+          adminHeaders
+        )
+
+        result = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
+          .order
+
+        expect(orderBefore.total).toBe(61)
+        expect(result.total).toBe(62) // +1 is from taxes of the new item
+      })
+
       it("Full flow with 2 orders", async () => {
         let result = await api.post(
           "/admin/exchanges",

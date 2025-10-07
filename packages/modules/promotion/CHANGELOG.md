@@ -1,5 +1,25 @@
 # @medusajs/promotion
 
+## 2.10.3
+
+### Patch Changes
+
+- [#13524](https://github.com/medusajs/medusa/pull/13524) [`57897c232e23db042f523cbe83b6318b97de519d`](https://github.com/medusajs/medusa/commit/57897c232e23db042f523cbe83b6318b97de519d) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat(): promo prepare top level rules filter
+
+- [#13540](https://github.com/medusajs/medusa/pull/13540) [`4736c58da5de67f6868b4552351a093e67715e4b`](https://github.com/medusajs/medusa/commit/4736c58da5de67f6868b4552351a093e67715e4b) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Prevent promotion filtering to exceed psql limits
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- [#13446](https://github.com/medusajs/medusa/pull/13446) [`ac09b3cbeffc11c76b8e5972ee25688b17e5fa58`](https://github.com/medusajs/medusa/commit/ac09b3cbeffc11c76b8e5972ee25688b17e5fa58) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/localised improvement to promotion module
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
 ## 2.10.1
 
 ### Patch Changes

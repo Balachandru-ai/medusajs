@@ -1,13 +1,28 @@
 ---
 slug: /references/medusa-workflows/steps/setActiveViewConfigurationStep
 sidebar_label: setActiveViewConfigurationStep
+tags:
+  - settings
+  - step
 ---
 
 import { TypeList, WorkflowDiagram } from "docs-ui"
 
 # setActiveViewConfigurationStep - Medusa Core Workflows Reference
 
+:::note
+
+To use this resource, make sure to [enable its feature flag: view_configurations](https://docs.medusajs.com/development/feature-flags/toggle)
+
+:::
+
 This documentation provides a reference to the `setActiveViewConfigurationStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+:::note
+
+This is available starting from Medusa `v2.10.3`.
+
+:::
 
 ```ts title="src/workflows/my-workflow.ts"
 import { createWorkflow } from "@medusajs/framework/workflows-sdk"
@@ -17,7 +32,7 @@ const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
     const data = setActiveViewConfigurationStep({
-      "id": "id_SOmyE8hIwu22dDA",
+      "id": "id_cD3jUTR7z6",
       "entity": "{value}",
       "user_id": "{value}"
     })

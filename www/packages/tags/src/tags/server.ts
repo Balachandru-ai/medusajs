@@ -60,6 +60,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
+    "title": "Agentic Commerce",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
     "title": "First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -86,6 +90,10 @@ export const server = [
   {
     "title": "Product Builder",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
+    "title": "Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
   },
   {
     "title": "Product Reviews",
@@ -146,6 +154,10 @@ export const server = [
   {
     "title": "Personalized Products",
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
+  },
+  {
+    "title": "Example",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
   },
   {
     "title": "Use Analytics Module",

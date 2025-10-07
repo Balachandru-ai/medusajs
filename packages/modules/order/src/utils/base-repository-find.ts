@@ -1,6 +1,6 @@
 import { Constructor, Context, DAL } from "@medusajs/framework/types"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
-import { LoadStrategy } from "@mikro-orm/core"
+import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
 import { Order, OrderClaim } from "@models"
 import { mapRepositoryToOrderModel } from "."
 
@@ -21,10 +21,6 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
       if (findOptions_.options.limit != null || findOptions_.options.offset) {
         Object.assign(findOptions_.options, {
           strategy: LoadStrategy.SELECT_IN,
-        })
-      } else {
-        Object.assign(findOptions_.options, {
-          strategy: LoadStrategy.JOINED,
         })
       }
     }

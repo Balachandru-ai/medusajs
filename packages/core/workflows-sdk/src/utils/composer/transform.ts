@@ -1,12 +1,11 @@
-import { resolveValue } from "./helpers"
-import { StepExecutionContext, WorkflowData } from "./type"
-import { proxify } from "./helpers/proxy"
-import { OrchestrationUtils } from "@medusajs/utils"
-import { ulid } from "ulid"
 import {
   TransactionContext,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
+import { OrchestrationUtils } from "@medusajs/utils"
+import { resolveValue } from "./helpers"
+import { proxify } from "./helpers/proxy"
+import { StepExecutionContext, WorkflowData } from "./type"
 
 type Func1<T extends object | WorkflowData, U> = (
   input: T extends WorkflowData<infer U>
@@ -163,11 +162,15 @@ export function transform(
   values: any | any[],
   ...functions: Function[]
 ): unknown {
-  const uniqId = ulid()
+  const uniqId = Math.random().toString(36).substring(2, 20)
 
   const ret = {
     __id: uniqId,
     __type: OrchestrationUtils.SymbolWorkflowStepTransformer,
+  } as WorkflowData & {
+    __id: string
+    __type: string
+    __temporary_storage_key: string | null
   }
 
   const returnFn = async function (
@@ -176,25 +179,37 @@ export function transform(
   ): Promise<any> {
     if ("transaction" in transactionContext) {
       const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
+      ret.__temporary_storage_key ??= temporaryDataKey
 
-      if (transactionContext.transaction.hasTemporaryData(temporaryDataKey)) {
-        return transactionContext.transaction.getTemporaryData(temporaryDataKey)
+      if (
+        transactionContext.transaction.hasTemporaryData(
+          ret.__temporary_storage_key
+        )
+      ) {
+        return transactionContext.transaction.getTemporaryData(
+          ret.__temporary_storage_key
+        )
       }
     }
 
-    const stepValue = await resolveValue(values, transactionContext)
+    let stepValue = resolveValue(values, transactionContext)
+    if (stepValue instanceof Promise) {
+      stepValue = await stepValue
+    }
 
     let finalResult
     for (let i = 0; i < functions.length; i++) {
       const fn = functions[i]
       const arg = i === 0 ? stepValue : finalResult
 
-      finalResult = await fn.apply(fn, [arg, transactionContext])
+      finalResult = fn.apply(fn, [arg, transactionContext])
+      if (finalResult instanceof Promise) {
+        finalResult = await finalResult
+      }
     }
 
     if ("transaction" in transactionContext) {
-      const temporaryDataKey = `${transactionContext.transaction.modelId}_${transactionContext.transaction.transactionId}_${uniqId}`
-
+      const temporaryDataKey = ret.__temporary_storage_key!
       transactionContext.transaction.setTemporaryData(
         temporaryDataKey,
         finalResult
@@ -204,10 +219,11 @@ export function transform(
     return finalResult
   }
 
-  const proxyfiedRet = proxify<WorkflowData & { __resolver: any }>(
-    ret as unknown as WorkflowData
-  )
+  const proxyfiedRet = proxify<
+    WorkflowData & { __resolver: any; __temporary_storage_key: string | null }
+  >(ret as unknown as WorkflowData)
   proxyfiedRet.__resolver = returnFn as any
+  proxyfiedRet.__temporary_storage_key = null as string | null
 
   return proxyfiedRet
 }

@@ -109,6 +109,7 @@ medusaIntegrationTestRunner({
           `/admin/tax-regions`,
           {
             country_code: "us",
+            provider_id: "tp_system",
             default_tax_rate: {
               code: "default",
               rate: 2,
@@ -131,7 +132,7 @@ medusaIntegrationTestRunner({
             updated_at: expect.any(String),
             deleted_at: null,
             created_by: expect.any(String),
-            provider_id: null,
+            provider_id: "tp_system",
             metadata: null,
             children: [],
             parent: null,
@@ -275,6 +276,7 @@ medusaIntegrationTestRunner({
           `/admin/tax-regions`,
           {
             country_code: "us",
+            provider_id: "tp_system",
             default_tax_rate: {
               code: "default",
               rate: 2,
@@ -297,7 +299,7 @@ medusaIntegrationTestRunner({
             updated_at: expect.any(String),
             deleted_at: null,
             created_by: expect.any(String),
-            provider_id: null,
+            provider_id: "tp_system",
             metadata: null,
             children: [],
             parent: null,
@@ -385,6 +387,7 @@ medusaIntegrationTestRunner({
           `/admin/tax-regions`,
           {
             country_code: "us",
+            provider_id: "tp_system",
             default_tax_rate: {
               code: "default",
               rate: 2,
@@ -495,6 +498,7 @@ medusaIntegrationTestRunner({
           `/admin/tax-regions`,
           {
             country_code: "us",
+            provider_id: "tp_system",
             default_tax_rate: {
               code: "default",
               rate: 2,
@@ -531,6 +535,7 @@ medusaIntegrationTestRunner({
           `/admin/tax-regions`,
           {
             country_code: "us",
+            provider_id: "tp_system",
             default_tax_rate: {
               code: "default",
               rate: 2,

@@ -1,5 +1,5 @@
 import { CreateCartDTO, InferEntityType } from "@medusajs/framework/types"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { Cart } from "../../../src/models"
 import { defaultCartsData } from "./data"
 import { toMikroORMEntity } from "@medusajs/framework/utils"

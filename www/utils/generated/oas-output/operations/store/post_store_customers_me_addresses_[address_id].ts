@@ -63,6 +63,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to update their address
  *       sdk.store.customer.updateAddress(
  *         "caddr_123",
  *         {
@@ -76,7 +77,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/customers/me/addresses/{address_id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
  *       --data-raw '{

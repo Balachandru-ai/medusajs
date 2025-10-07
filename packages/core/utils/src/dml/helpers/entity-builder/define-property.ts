@@ -12,7 +12,7 @@ import {
   PrimaryKey,
   Property,
   Utils,
-} from "@mikro-orm/core"
+} from "@medusajs/deps/mikro-orm/core"
 import { generateEntityId, isDefined } from "../../../common"
 import { MikroOrmBigNumberProperty } from "../../../dal"
 import { PrimaryKeyModifier } from "../../properties/primary-key"

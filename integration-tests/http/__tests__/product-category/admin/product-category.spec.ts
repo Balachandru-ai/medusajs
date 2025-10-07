@@ -598,6 +598,33 @@ medusaIntegrationTestRunner({
         )
       })
 
+      it("should filter by handle and retrieve descendants tree", async () => {
+        const response = await api.get(
+          `/admin/product-categories?handle=${productCategoryParent.handle}&include_descendants_tree=true`,
+          adminHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.product_categories).toEqual([
+          expect.objectContaining({
+            id: productCategoryParent.id,
+            handle: productCategoryParent.handle,
+            category_children: [
+              expect.objectContaining({
+                id: productCategory.id,
+                handle: productCategory.handle,
+                category_children: [
+                  expect.objectContaining({
+                    id: productCategoryChild.id,
+                    handle: productCategoryChild.handle,
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ])
+      })
+
       it("filters based on free text on name and handle columns", async () => {
         const response = await api.get(
           `/admin/product-categories?q=men&limit=1`,
@@ -716,6 +743,28 @@ medusaIntegrationTestRunner({
             }),
           })
         )
+      })
+
+      it("gets categories sorted by name", async () => {
+        const response = await api.get(
+          `/admin/product-categories?order=name`,
+          adminHeaders
+        )
+
+        const names = response.data.product_categories.map(pc => pc.name)
+        const sortedNames = [...names].sort((a: string, b: string) => a.localeCompare(b))
+        expect(names).toEqual(sortedNames)
+      })
+
+      it("gets categories sorted by name descending", async () => {
+        const response = await api.get(
+          `/admin/product-categories?order=-name`,
+          adminHeaders
+        )
+
+        const names = response.data.product_categories.map(pc => pc.name)
+        const sortedNames = [...names].sort((a: string, b: string) => b.localeCompare(a))
+        expect(names).toEqual(sortedNames)
       })
     })
 

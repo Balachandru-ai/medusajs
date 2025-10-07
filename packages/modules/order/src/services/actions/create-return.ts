@@ -22,6 +22,7 @@ function createReturnReference(em, data, order) {
     status: ReturnStatus.REQUESTED,
     no_notification: data.no_notification,
     refund_amount: (data.refund_amount as unknown) ?? null,
+    location_id: data.location_id ?? null,
   })
 }
 

@@ -1,5 +1,5 @@
 import { InlineIcon } from "docs-ui"
-import { ArrowDownTray, ChevronUpDown } from "@medusajs/icons"
+import { ArrowDownTray, ChevronUpDown, EllipsisHorizontal } from "@medusajs/icons"
 
 export const metadata = {
   title: `Billing`,
@@ -51,11 +51,29 @@ You can also see a table with all the payments made for your organization, inclu
 
 ### Download Invoice
 
-To download an invoice for a specific payment, click the <InlineIcon Icon={ArrowDownTray} alt="download" /> icon in the same row as the payment you want to download.
+An invoice is generated for every successful payment made for your organization. You can download the invoice as a PDF for your records. An invoice shows a request to pay for your organization's plan and any add-ons or Flex Usage charges.
+
+To download an invoice for a specific payment:
+
+1. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the end of the row for the payment you want to download the invoice for.
+2. Choose "Download invoice" from the dropdown.
 
 This will open the invoice in a new tab, where you can view and download it as a PDF.
 
 ![Download invoice icon in the Invoices settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1750242445/Cloud/CleanShot_2025-06-18_at_13.27.05_2x_qqibor.png)
+
+### Download Receipt
+
+A receipt is generated for every successful payment made for your organization. You can download the receipt as a PDF for your records. A receipt shows proof of payment for your organization's plan and any add-ons or Flex Usage charges.
+
+To download a receipt for a specific payment:
+
+1. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the end of the row for the payment you want to download the receipt for.
+2. Choose "Download receipt" from the dropdown.
+
+This will open the receipt in a new tab, where you can view and download it as a PDF.
+
+![Download receipt icon in the Invoices settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1750242600/Cloud/CleanShot_2025-06-18_at_13.30.03_2x_wwm3yo.png)
 
 ---
 
@@ -83,9 +101,34 @@ You can view your add-on charges in the [Invoices](#view-billing-history-and-inv
 
 ## Change Plan
 
-You choose your organization's plan when you sign up for Cloud. However, the plan may not be the best fit for your needs as your business grows.
+You choose your organization's plan when you sign up for Cloud. However, the plan may not be the best fit for your needs as your business grows or as you move to production.
 
-If you want to change your plan, or learn more about your plan's resources and limits, contact support for assistance.
+Hobby or Pro organizations can change their plan from the Cloud dashboard. Enterprise organizations need to contact support to change their plan.
+
+### What happens when I change my plan?
+
+When you change your organization's plan, the following will happen:
+
+- You'll be refunded the remaining days of your current plan.
+    - For example, if you are on a Pro plan and you change to a Hobby plan halfway through the month, you'll be refunded half of the Pro plan's cost.
+- You'll be charged a pro-rated amount for your current billing cycle's [Flex Usage](../usage/page.mdx).
+- You'll be charged upfront for the new plan.
+
+### Change Your Organization's Plan
+
+To change your organization's plan:
+
+1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
+2. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon in the [organization switcher](../organizations/page.mdx#switch-organization) at the top left of the Cloud dashboard.
+3. Choose "Organization Settings" from the dropdown.
+4. Change to the "Billing" settings from the sidebar.
+5. In the "Upcoming payment" section, click the "Change plan" button.
+
+![Change plan button in the Billing settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1759415060/Cloud/CleanShot_2025-10-02_at_17.23.41_2x_dtqz5r.png)
+
+6. In the modal that opens, choose either to upgrade to the Pro plan or downgrade to the Hobby plan.
+    - To upgrade to the Enterprise plan, contact support for assistance.
+7. Confirm the plan change in the pop-up by clicking the "Confirm" button.
 
 ---
 
@@ -103,4 +146,15 @@ If there are no issues with your payment method and the payment still fails, con
 
 You can cancel your organization's plan at any time. The plan will be cancelled at the end of the current billing period, and you will be charged for the month's plan and Flex Usage.
 
-To cancel your organization's plan, contact support for assistance.
+Hobby or Pro organizations can cancel their plan from the Cloud dashboard. Enterprise organizations need to contact support to cancel their plan.
+
+To cancel your organization's plan:
+
+1. Make sure you're viewing the [correct organization's dashboard in Cloud](../organizations/page.mdx#switch-organization).
+2. Click on the <InlineIcon Icon={ChevronUpDown} alt="switch organization" /> icon in the [organization switcher](../organizations/page.mdx#switch-organization) at
+3. Choose "Organization Settings" from the dropdown.
+4. Change to the "Billing" settings from the sidebar.
+5. Scroll down to the "Cancel plan" section and click the "Cancel plan" button.
+6. Confirm the cancellation in the pop-up by clicking the "Confirm" button.
+
+![Cancel plan section in the Billing settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1759415806/Cloud/CleanShot_2025-10-02_at_17.30.39_2x_d8ixwc.png)

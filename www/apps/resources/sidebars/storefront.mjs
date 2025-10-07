@@ -22,6 +22,11 @@ export const storefrontDevelopmentSidebar = [
         path: "/storefront-development/publishable-api-keys",
         title: "Publishable API Key",
       },
+      {
+        type: "link",
+        path: "/storefront-development/production-optimizations",
+        title: "Production Optimizations",
+      },
     ],
   },
   {
@@ -34,6 +39,11 @@ export const storefrontDevelopmentSidebar = [
         type: "link",
         path: "/storefront-development/guides/express-checkout",
         title: "Express Checkout Storefront",
+      },
+      {
+        type: "ref",
+        path: "/nextjs-starter/guides/storefront-returns",
+        title: "Create Returns from Storefront",
       },
     ],
   },
@@ -178,6 +188,11 @@ export const storefrontDevelopmentSidebar = [
         type: "link",
         path: "/storefront-development/cart/manage-items",
         title: "Manage Line Items",
+      },
+      {
+        type: "link",
+        path: "/storefront-development/cart/manage-promotions",
+        title: "Manage Promotions",
       },
       {
         type: "link",

@@ -39,6 +39,12 @@ const Promotion = model
       where: "deleted_at IS NULL",
       unique: true,
     },
+    {
+      name: "IDX_promotion_is_automatic",
+      on: ["is_automatic"],
+      unique: false,
+      where: "deleted_at IS NULL",
+    },
   ])
 
 export default Promotion

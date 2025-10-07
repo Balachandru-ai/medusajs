@@ -9,6 +9,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import {
   createLineItemAdjustmentsStep,
   createShippingMethodAdjustmentsStep,
@@ -93,6 +94,12 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       return input.cart ?? fetchCart
     })
 
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const validate = createHook("validate", {
       input,
       cart,
@@ -140,6 +147,10 @@ export const updateCartPromotionsWorkflow = createWorkflow(
         action: PromotionActions.REPLACE,
       })
     )
+
+    releaseLockStep({
+      key: cart.id,
+    })
 
     return new WorkflowResponse(void 0, {
       hooks: [validate],

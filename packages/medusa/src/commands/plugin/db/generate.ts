@@ -1,18 +1,16 @@
+import { logger } from "@medusajs/framework"
 import type { Logger } from "@medusajs/framework/types"
 import {
-  ContainerRegistrationKeys,
   defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
   isFileSkipped,
   toUnixSlash,
 } from "@medusajs/framework/utils"
+import { MetadataStorage } from "@medusajs/framework/mikro-orm/core"
+import { MikroORM } from "@medusajs/framework/mikro-orm/postgresql"
 import { glob } from "glob"
 import { dirname, join } from "path"
-
-import { MetadataStorage } from "@mikro-orm/core"
-import { MikroORM } from "@mikro-orm/postgresql"
-import { initializeContainer } from "../../../loaders"
 
 const TERMINAL_SIZE = process.stdout.columns
 
@@ -20,11 +18,6 @@ const TERMINAL_SIZE = process.stdout.columns
  * Generate migrations for all scanned modules in a plugin
  */
 const main = async function ({ directory }) {
-  const container = await initializeContainer(directory, {
-    skipDbConnection: true,
-  })
-  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-
   try {
     const moduleDescriptors = [] as {
       serviceName: string
@@ -121,6 +114,10 @@ async function generateMigrations(
     logger.info(
       `Generating migrations for module ${moduleDescriptor.serviceName}...`
     )
+    if (moduleDescriptor.entities.length === 0) {
+      logger.info(`No entities found for module ${moduleDescriptor.serviceName}, skipping...`)
+      continue
+    }
 
     const mikroOrmConfig = defineMikroOrmCliConfig(
       moduleDescriptor.serviceName,

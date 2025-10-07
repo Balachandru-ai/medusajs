@@ -31,7 +31,7 @@ import {
   stringifyCircular,
   toMikroOrmEntities,
 } from "@medusajs/utils"
-import { asFunction, asValue } from "awilix"
+import { asFunction, asValue } from "@medusajs/deps/awilix"
 import { statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"
@@ -231,7 +231,8 @@ export async function loadInternalModule(args: {
     ContainerRegistrationKeys.CONFIG_MODULE,
     ContainerRegistrationKeys.LOGGER,
     ContainerRegistrationKeys.PG_CONNECTION,
-    Modules.EVENT_BUS
+    Modules.EVENT_BUS,
+    Modules.CACHING
   )
 
   for (const dependency of dependencies) {

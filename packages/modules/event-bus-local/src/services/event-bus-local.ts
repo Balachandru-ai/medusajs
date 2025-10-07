@@ -58,8 +58,9 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const eventListenersCount = this.eventEmitter_.listenerCount(
         eventData.name
       )
+      const startSubscribersCount = this.eventEmitter_.listenerCount("*")
 
-      if (eventListenersCount === 0) {
+      if (eventListenersCount === 0 && startSubscribersCount === 0) {
         continue
       }
 
@@ -82,21 +83,25 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   // This is useful in the event of a distributed transaction where you'd want to emit
   // events only once the transaction ends.
   private async groupOrEmitEvent<T = unknown>(eventData: Message<T>) {
-    const eventData_ = JSON.parse(JSON.stringify(eventData))
-    const { options, ...eventBody } = eventData_
+    const { options, ...eventBody } = eventData
     const eventGroupId = eventBody.metadata?.eventGroupId
+    const hasStarSubscriber = this.eventEmitter_.listenerCount("*") > 0
 
     if (eventGroupId) {
-      await this.groupEvent(eventGroupId, eventData_)
+      await this.groupEvent(eventGroupId, eventData)
     } else {
-      const { options, ...eventBody } = eventData_
-
-      const options_ = options as { delay: number }
+      const options_ = eventData.options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
-      delay(options_?.delay).then(() =>
+      delay(options_?.delay).then(async () => {
+        // Call interceptors before emitting
+        void this.callInterceptors(eventData, { isGrouped: false })
+
         this.eventEmitter_.emit(eventData.name, eventBody)
-      )
+        if (hasStarSubscriber) {
+          this.eventEmitter_.emit("*", eventBody)
+        }
+      })
     }
   }
 
@@ -115,6 +120,7 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   async releaseGroupedEvents(eventGroupId: string) {
     let groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
     groupedEvents = JSON.parse(JSON.stringify(groupedEvents))
+    const hasStarSubscriber = this.eventEmitter_.listenerCount("*") > 0
 
     for (const event of groupedEvents) {
       const { options, ...eventBody } = event
@@ -122,9 +128,15 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const options_ = options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
-      delay(options_?.delay).then(() =>
+      delay(options_?.delay).then(async () => {
+        // Call interceptors before emitting grouped events
+        void this.callInterceptors(event, { isGrouped: true, eventGroupId })
+
         this.eventEmitter_.emit(event.name, eventBody)
-      )
+        if (hasStarSubscriber) {
+          this.eventEmitter_.emit("*", eventBody)
+        }
+      })
     }
 
     await this.clearGroupedEvents(eventGroupId)

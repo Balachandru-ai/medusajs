@@ -6,13 +6,15 @@ import {
 import {
   createStep,
   createWorkflow,
+  parallelize,
   StepResponse,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { IOrderModuleService, OrderDTO } from "@medusajs/types"
+import type { IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 
 export const convertDraftOrderWorkflowId = "convert-draft-order"
 
@@ -78,10 +80,10 @@ export const convertDraftOrderStep = createStep(
 /**
  * This workflow converts a draft order to a pending order. It's used by the
  * [Convert Draft Order to Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidconverttoorder).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * converting a draft order to a pending order.
- * 
+ *
  * @example
  * const { result } = await convertDraftOrderWorkflow(container)
  * .run({
@@ -89,9 +91,9 @@ export const convertDraftOrderStep = createStep(
  *     id: "order_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Convert a draft order to a pending order.
  */
 export const convertDraftOrderWorkflow = createWorkflow(
@@ -99,6 +101,12 @@ export const convertDraftOrderWorkflow = createWorkflow(
   function (
     input: WorkflowData<ConvertDraftOrderWorkflowInput>
   ): WorkflowResponse<OrderDTO> {
+    acquireLockStep({
+      key: input.id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["id", "status", "is_draft_order"],
@@ -113,10 +121,15 @@ export const convertDraftOrderWorkflow = createWorkflow(
 
     const updatedOrder = convertDraftOrderStep({ id: input.id })
 
-    emitEventStep({
-      eventName: OrderWorkflowEvents.PLACED,
-      data: { id: updatedOrder.id },
-    })
+    parallelize(
+      releaseLockStep({
+        key: input.id,
+      }),
+      emitEventStep({
+        eventName: OrderWorkflowEvents.PLACED,
+        data: { id: updatedOrder.id },
+      })
+    )
 
     return new WorkflowResponse(updatedOrder)
   }

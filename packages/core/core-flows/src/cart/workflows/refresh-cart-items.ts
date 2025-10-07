@@ -1,8 +1,5 @@
-import {
-  filterObjectByKeys,
-  isDefined,
-  PromotionActions,
-} from "@medusajs/framework/utils"
+import type { AdditionalData } from "@medusajs/framework/types"
+import { isDefined, PromotionActions } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
@@ -11,21 +8,13 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { AdditionalData, CartDTO } from "@medusajs/types"
 import { useQueryGraphStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
-import { getVariantPriceSetsStep, updateLineItemsStep } from "../steps"
-import { validateVariantPricesStep } from "../steps/validate-variant-prices"
-import {
-  cartFieldsForPricingContext,
-  cartFieldsForRefreshSteps,
-  productVariantsFields,
-} from "../utils/fields"
-import {
-  prepareLineItemData,
-  PrepareLineItemDataInput,
-} from "../utils/prepare-line-item-data"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { updateLineItemsStep } from "../steps"
+import { cartFieldsForRefreshSteps } from "../utils/fields"
 import { pricingContextResult } from "../utils/schemas"
+import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
 import { refreshCartShippingMethodsWorkflow } from "./refresh-cart-shipping-methods"
 import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
@@ -133,6 +122,12 @@ export const refreshCartItemsWorkflow = createWorkflow(
     idempotent: false,
   },
   (input: WorkflowData<RefreshCartItemsWorkflowInput & AdditionalData>) => {
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const setPricingContext = createHook(
       "setPricingContext",
       {
@@ -161,93 +156,11 @@ export const refreshCartItemsWorkflow = createWorkflow(
         },
       })
 
-      const variantIds = transform({ cart }, (data: { cart: CartDTO }) => {
-        return (data.cart.items ?? []).map((i) => i.variant_id).filter(Boolean)
-      })
-
-      const cartPricingContext = transform(
-        { cart, setPricingContextResult },
-        (data): { variantId: string; context: Record<string, unknown> }[] => {
-          const cart = data.cart
-          const baseContext = {
-            ...filterObjectByKeys(cart, cartFieldsForPricingContext),
-            ...(data.setPricingContextResult
-              ? data.setPricingContextResult
-              : {}),
-            currency_code: cart.currency_code,
-            region_id: cart.region_id,
-            region: cart.region,
-            customer_id: cart.customer_id,
-            customer: cart.customer,
-          }
-
-          return cart.items
-            .filter((i) => i.variant_id)
-            .map((item) => {
-              return {
-                variantId: item.variant_id,
-                context: {
-                  ...baseContext,
-                  quantity: item.quantity,
-                },
-              }
-            })
-        }
-      )
-
-      const { data: variantsData } = useQueryGraphStep({
-        entity: "variants",
-        fields: productVariantsFields,
-        filters: {
-          id: variantIds,
+      const { lineItems } = getVariantsAndItemsWithPrices.runAsStep({
+        input: {
+          cart,
+          setPricingContextResult: setPricingContextResult!,
         },
-      }).config({ name: "fetch-variants" })
-
-      const calculatedPriceSets = getVariantPriceSetsStep({
-        data: cartPricingContext,
-      })
-
-      const variants = transform(
-        { variantsData, calculatedPriceSets },
-        ({ variantsData, calculatedPriceSets }) => {
-          return variantsData.map((variant) => {
-            variant.calculated_price = calculatedPriceSets[variant.id]
-            return variant
-          })
-        }
-      )
-
-      validateVariantPricesStep({ variants })
-
-      const lineItems = transform({ cart, variants }, ({ cart, variants }) => {
-        const items = cart.items.map((item) => {
-          const variant = (variants ?? []).find(
-            (v) => v.id === item.variant_id
-          )!
-
-          const input: PrepareLineItemDataInput = {
-            item,
-            variant: variant,
-            cartId: cart.id,
-            unitPrice: item.unit_price,
-            isTaxInclusive: item.is_tax_inclusive,
-          }
-
-          if (variant && !item.is_custom_price) {
-            input.unitPrice = variant.calculated_price?.calculated_amount
-            input.isTaxInclusive =
-              variant.calculated_price?.is_calculated_price_tax_inclusive
-          }
-
-          const preparedItem = prepareLineItemData(input)
-
-          return {
-            selector: { id: item.id },
-            data: preparedItem,
-          }
-        })
-
-        return items
       })
 
       updateLineItemsStep({
@@ -263,25 +176,15 @@ export const refreshCartItemsWorkflow = createWorkflow(
       list: false,
     }).config({ name: "refetch–cart" })
 
-    const refreshCartInput = transform(
-      { refetchedCart, input },
-      ({ refetchedCart, input }) => {
-        return {
-          cart: !input.force_refresh ? refetchedCart : undefined,
-          cart_id: !!input.force_refresh ? input.cart_id : undefined,
-        }
-      }
-    )
-
     refreshCartShippingMethodsWorkflow.runAsStep({
-      input: refreshCartInput,
+      input: { cart: refetchedCart, additional_data: input.additional_data },
     })
 
     when("force-refresh-update-tax-lines", { input }, ({ input }) => {
       return !!input.force_refresh
     }).then(() => {
       updateTaxLinesWorkflow.runAsStep({
-        input: refreshCartInput,
+        input: { cart_id: input.cart_id },
       })
     })
 
@@ -331,7 +234,11 @@ export const refreshCartItemsWorkflow = createWorkflow(
     )
 
     refreshPaymentCollectionForCartWorkflow.runAsStep({
-      input: { cart_id: input.cart_id },
+      input: { cart: refetchedCart },
+    })
+
+    releaseLockStep({
+      key: input.cart_id,
     })
 
     return new WorkflowResponse(refetchedCart, {

@@ -54,6 +54,7 @@ export class TransactionStep {
   }
   attempts: number
   failures: number
+  temporaryFailedAt: number | null
   lastAttempt: number | null
   retryRescheduledAt: number | null
   hasScheduledRetry: boolean
@@ -189,7 +190,9 @@ export class TransactionStep {
       this.hasAwaitingRetry() &&
       this.lastAttempt &&
       Date.now() - this.lastAttempt >
-        this.definition.retryIntervalAwaiting! * 1e3
+        this.definition.retryIntervalAwaiting! * 1e3 &&
+      (!("maxAwaitingRetries" in this.definition) ||
+        this.attempts < this.definition.maxAwaitingRetries!)
     )
   }
 
@@ -199,7 +202,8 @@ export class TransactionStep {
       (!this.isCompensating() &&
         state === TransactionStepState.NOT_STARTED &&
         flowState === TransactionState.INVOKING) ||
-      status === TransactionStepStatus.TEMPORARY_FAILURE
+      (status === TransactionStepStatus.TEMPORARY_FAILURE &&
+        !this.temporaryFailedAt)
     )
   }
 

@@ -55,6 +55,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to update their details
  *       sdk.store.customer.update({
  *         first_name: "John"
  *       })
@@ -65,7 +66,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/customers/me' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
  *       --data-raw '{

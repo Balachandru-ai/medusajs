@@ -2,7 +2,7 @@ import {
   ContainerRegistrationKeys,
   createMedusaContainer,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "../../deps/awilix"
 import express from "express"
 import { resolve } from "path"
 import { logger as defaultLogger } from "../../logger"

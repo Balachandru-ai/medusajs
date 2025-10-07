@@ -44,7 +44,7 @@ For admin customizations, create this file at `src/admin/lib/config.ts`.
 <CodeTabs group="sdk-project">
   <CodeTab label="Admin (Medusa project)" value="admin-medusa-project">
 
-```ts title="src/admin/lib/config.ts"
+```ts title="src/admin/lib/sdk.ts"
 import Medusa from "@medusajs/js-sdk"
 
 export const sdk = new Medusa({
@@ -59,7 +59,7 @@ export const sdk = new Medusa({
   </CodeTab>
   <CodeTab label="Admin (Medusa Plugin)" value="admin-medusa-plugin">
 
-```ts title="src/admin/lib/config.ts"
+```ts title="src/admin/lib/sdk.ts"
 import Medusa from "@medusajs/js-sdk"
 
 export const sdk = new Medusa({
@@ -74,7 +74,7 @@ export const sdk = new Medusa({
   </CodeTab>
   <CodeTab label="Storefront" value="storefront">
 
-```ts title="config.ts"
+```ts title="sdk.ts"
 import Medusa from "@medusajs/js-sdk"
 
 let MEDUSA_BACKEND_URL = "http://localhost:9000"

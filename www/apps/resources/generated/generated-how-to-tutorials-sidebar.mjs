@@ -402,6 +402,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Agentic Commerce",
+          "path": "/how-to-tutorials/tutorials/agentic-commerce",
+          "description": "Learn how to build Agentic Commerce with Medusa to support purchase with AI agents like ChatGPT.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Analytics with Segment",
           "path": "/integrations/guides/segment",
@@ -526,6 +535,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Meta Product Feed",
+          "path": "/how-to-tutorials/tutorials/product-feed",
+          "description": "Learn how to implement a product feed for Meta (Facebook and Instagram) and Google using Medusa.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "ref",
           "title": "Newsletter with Mailchimp",
           "path": "/integrations/guides/mailchimp",
@@ -640,26 +658,10 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
-          "type": "sub-category",
+          "type": "link",
           "title": "Self-Hosting",
-          "children": [
-            {
-              "loaded": true,
-              "isPathHref": true,
-              "type": "link",
-              "path": "https://docs.medusajs.com/learn/deployment/general",
-              "title": "General",
-              "children": []
-            },
-            {
-              "loaded": true,
-              "isPathHref": true,
-              "type": "link",
-              "path": "/deployment/medusa-application/railway",
-              "title": "Railway",
-              "children": []
-            }
-          ]
+          "path": "https://docs.medusajs.com/learn/deployment/general",
+          "children": []
         },
         {
           "loaded": true,

@@ -34,6 +34,14 @@ const generatedgeneratedStorefrontDevelopmentSidebarSidebar = {
           "path": "/storefront-development/publishable-api-keys",
           "title": "Publishable API Key",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/storefront-development/production-optimizations",
+          "title": "Production Optimizations",
+          "children": []
         }
       ]
     },
@@ -50,6 +58,14 @@ const generatedgeneratedStorefrontDevelopmentSidebarSidebar = {
           "type": "link",
           "path": "/storefront-development/guides/express-checkout",
           "title": "Express Checkout Storefront",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "ref",
+          "path": "/nextjs-starter/guides/storefront-returns",
+          "title": "Create Returns from Storefront",
           "children": []
         }
       ]
@@ -292,6 +308,14 @@ const generatedgeneratedStorefrontDevelopmentSidebarSidebar = {
           "type": "link",
           "path": "/storefront-development/cart/manage-items",
           "title": "Manage Line Items",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/storefront-development/cart/manage-promotions",
+          "title": "Manage Promotions",
           "children": []
         },
         {

@@ -141,6 +141,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to list their addresses
  *       sdk.store.customer.listAddress()
  *       .then(({ addresses, count, offset, limit }) => {
  *         console.log(addresses)
@@ -149,7 +150,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/store/customers/me/addresses' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Customers

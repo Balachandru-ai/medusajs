@@ -4,8 +4,8 @@ import {
   AdminPaymentCollection,
   AdminPaymentProvider,
   AdminRefund,
-  AdminRefundReason,
 } from "./entities"
+import { AdminRefundReason } from "../../refund-reason"
 
 export interface AdminPaymentCollectionResponse {
   /**
@@ -60,5 +60,3 @@ export type AdminPaymentProviderListResponse = PaginatedResponse<{
    */
   payment_providers: AdminPaymentProvider[]
 }>
-
-export type AdminRefundReasonDeleteResponse = DeleteResponse<"refund_reason">
