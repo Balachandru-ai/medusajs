@@ -18,9 +18,7 @@ export type FindOneOrAnyRegionStepInput = {
 async function fetchRegionById(regionId: string, container: MedusaContainer) {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  const {
-    data: [region],
-  } = await query.graph(
+  const { data } = await query.graph(
     {
       entity: "region",
       filters: { id: regionId },
@@ -31,15 +29,13 @@ async function fetchRegionById(regionId: string, container: MedusaContainer) {
     }
   )
 
-  return region
+  return data?.[0]
 }
 
 async function fetchDefaultStore(container: MedusaContainer) {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  const {
-    data: [store],
-  } = await query.graph(
+  const { data } = await query.graph(
     {
       entity: "store",
       fields: ["*"],
@@ -49,7 +45,7 @@ async function fetchDefaultStore(container: MedusaContainer) {
     }
   )
 
-  return store
+  return data?.[0]
 }
 
 async function fetchDefaultRegion(
@@ -58,9 +54,7 @@ async function fetchDefaultRegion(
 ) {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
-  const {
-    data: [region],
-  } = await query.graph(
+  const { data } = await query.graph(
     {
       entity: "region",
       filters: { id: defaultRegionId },
@@ -69,7 +63,7 @@ async function fetchDefaultRegion(
     { cache: { enable: true } }
   )
 
-  return region
+  return data?.[0]
 }
 
 export const findOneOrAnyRegionStepId = "find-one-or-any-region"
