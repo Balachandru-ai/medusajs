@@ -1,6 +1,5 @@
 import { check, group, sleep } from "k6"
 import http from "k6/http"
-import { Counter } from "k6/metrics"
 
 /**
  * NOTE: if running high VUs (eg. 450) locally lead to errors such as: "connect: can't assign requested
@@ -35,11 +34,6 @@ const promoApplicationRate = 0.1 // 10% of users apply promo codes
 const minItemsInCart = 3
 const maxItemsInCart = 5
 
-// Custom metrics for error tracking
-const noProductsFoundCounter = new Counter("no_products_found")
-const noVariantFoundCounter = new Counter("no_variant_found")
-const noMoreProductsCounter = new Counter("no_more_products_found")
-
 /** LOCAL TESTING */
 // let publishableKey =
 //   "pk_03823fccbc94952c4e2a6d045adb1b3479389ccacef6e4d5198c5e7b2a9dc4b5"
@@ -50,8 +44,8 @@ const noMoreProductsCounter = new Counter("no_more_products_found")
 let publishableKey =
   "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
 let regionId = "reg_01K2ZDG12VKJ64F2NFTNW7Y8AT"
-let endpoint = "https://dtc-starter-preview.medusajs.app"
-// let endpoint = "https://dtc-starter.medusajs.app"
+// let endpoint = "https://dtc-starter-preview.medusajs.app"
+let endpoint = "https://dtc-starter.medusajs.app"
 let projectId = 4837050
 
 const params = {
@@ -64,7 +58,7 @@ const params = {
 export const options = {
   cloud: {
     projectID: projectId,
-    name: `Version 2.10.4-preview-20251007060201, ${new Date().toLocaleString()}`,
+    name: `Version 2.10.1, ${new Date().toLocaleString()}`,
   },
   scenarios: {
     browseCatalog: {
@@ -181,7 +175,6 @@ export function browseCatalog() {
 
     const products = JSON.parse(res.body).products
     if (!products.length) {
-      noProductsFoundCounter.add(1, { scenario: "browseCatalog" })
       return []
     }
 
@@ -257,7 +250,6 @@ function browseMoreProducts() {
   sleep(3 + Math.random() * 4)
   const products = JSON.parse(res.body).products
   if (!products.length) {
-    noMoreProductsCounter.add(1)
     return []
   }
   return products
@@ -391,7 +383,6 @@ export function addBrowseAddAbandon() {
   return group("Shop Flow - Add Browse Add Abandon", () => {
     const products = browseCatalog()
     if (!products.length) {
-      noProductsFoundCounter.add(1, { scenario: "addBrowseAddAbandon" })
       return []
     }
 
@@ -405,10 +396,6 @@ export function addBrowseAddAbandon() {
       product.variants[0] &&
       product.variants[0].id
     if (!variantId) {
-      noVariantFoundCounter.add(1, {
-        scenario: "addBrowseAddAbandon",
-        item: "first",
-      })
       return []
     }
 
@@ -421,7 +408,6 @@ export function addBrowseAddAbandon() {
 
     const moreProducts = browseMoreProducts()
     if (!moreProducts.length) {
-      noMoreProductsCounter.add(1, { scenario: "addBrowseAddAbandon" })
       return []
     }
 
@@ -433,10 +419,6 @@ export function addBrowseAddAbandon() {
       secondProduct.variants[0] &&
       secondProduct.variants[0].id
     if (!secondVariantId) {
-      noVariantFoundCounter.add(1, {
-        scenario: "addBrowseAddAbandon",
-        item: "second",
-      })
       return []
     }
 
@@ -460,7 +442,6 @@ export function addBrowseAddComplete() {
     const cart = createCart()
 
     if (!products.length) {
-      noProductsFoundCounter.add(1, { scenario: "addBrowseAddComplete" })
       return []
     }
 
@@ -472,10 +453,6 @@ export function addBrowseAddComplete() {
       product.variants[0] &&
       product.variants[0].id
     if (!variantId) {
-      noVariantFoundCounter.add(1, {
-        scenario: "addBrowseAddComplete",
-        item: "first",
-      })
       return []
     }
 
@@ -488,7 +465,6 @@ export function addBrowseAddComplete() {
 
     const moreProducts = browseMoreProducts()
     if (!moreProducts.length) {
-      noMoreProductsCounter.add(1, { scenario: "addBrowseAddComplete" })
       return []
     }
 
@@ -500,10 +476,6 @@ export function addBrowseAddComplete() {
       secondProduct.variants[0] &&
       secondProduct.variants[0].id
     if (!secondVariantId) {
-      noVariantFoundCounter.add(1, {
-        scenario: "addBrowseAddComplete",
-        item: "second",
-      })
       return []
     }
 
@@ -527,7 +499,6 @@ export function addMultipleAbandon() {
     const cart = createCart()
 
     if (!products.length) {
-      noProductsFoundCounter.add(1, { scenario: "addMultipleAbandon" })
       return []
     }
 
@@ -547,7 +518,6 @@ export function addMultipleAbandon() {
         product.variants[0] &&
         product.variants[0].id
       if (!variantId) {
-        noVariantFoundCounter.add(1, { scenario: "addMultipleAbandon" })
         return []
       }
 
@@ -567,7 +537,6 @@ export function addMultipleComplete() {
     const cart = createCart()
 
     if (!products.length) {
-      noProductsFoundCounter.add(1, { scenario: "addMultipleComplete" })
       return []
     }
 
@@ -587,7 +556,6 @@ export function addMultipleComplete() {
         product.variants[0] &&
         product.variants[0].id
       if (!variantId) {
-        noVariantFoundCounter.add(1, { scenario: "addMultipleComplete" })
         return []
       }
 
