@@ -1940,6 +1940,14 @@ export const filesMap = [
     "pathname": "/references/cache/interfaces/cache.ICacheService"
   },
   {
+    "filePath": "/www/apps/resources/references/caching/interfaces/caching.ICachingModuleService/page.mdx",
+    "pathname": "/references/caching/interfaces/caching.ICachingModuleService"
+  },
+  {
+    "filePath": "/www/apps/resources/references/caching/interfaces/caching.ICachingProviderService/page.mdx",
+    "pathname": "/references/caching/interfaces/caching.ICachingProviderService"
+  },
+  {
     "filePath": "/www/apps/resources/references/cart/IBigNumber/methods/cart.IBigNumber.toJSON/page.mdx",
     "pathname": "/references/cart/IBigNumber/methods/cart.IBigNumber.toJSON"
   },
@@ -14194,6 +14202,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/modules/cache/page.mdx",
     "pathname": "/references/modules/cache"
+  },
+  {
+    "filePath": "/www/apps/resources/references/modules/caching/page.mdx",
+    "pathname": "/references/modules/caching"
   },
   {
     "filePath": "/www/apps/resources/references/modules/cart/page.mdx",
