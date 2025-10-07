@@ -110,31 +110,18 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
     describe("Workflow Orchestrator module", function () {
       beforeEach(async () => {
-        await TestDatabase.clearTables()
         jest.clearAllMocks()
+
+        query = medusaApp.query
+        sharedContainer_ = medusaApp.sharedContainer
       })
 
-      afterAll(async () => {
-        // empty redis
-        const connection = new Redis("localhost:6379", {
-          lazyConnect: true,
-        })
-
-        await new Promise(async (resolve) => {
-          await connection.connect(resolve)
-        })
-
-        await connection.flushall()
-        await connection.disconnect()
+      afterEach(async () => {
+        await TestDatabase.clearTables()
       })
 
       let query: RemoteQueryFunction
       let sharedContainer_: MedusaContainer
-
-      beforeEach(() => {
-        query = medusaApp.query
-        sharedContainer_ = medusaApp.sharedContainer
-      })
 
       it(`should export the appropriate linkable configuration`, () => {
         const linkable = Module(Modules.WORKFLOW_ENGINE, {
