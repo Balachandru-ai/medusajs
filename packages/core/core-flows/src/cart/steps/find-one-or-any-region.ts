@@ -88,10 +88,7 @@ export const findOneOrAnyRegionStep = createStep(
       throw new MedusaError(MedusaError.Types.NOT_FOUND, "Store not found")
     }
 
-    const [region] = await fetchDefaultRegion(
-      store.default_region_id!,
-      container
-    )
+    const region = await fetchDefaultRegion(store.default_region_id!, container)
 
     if (!region) {
       return new StepResponse(null)
