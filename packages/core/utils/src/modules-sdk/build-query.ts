@@ -2,6 +2,7 @@ import { DAL, FindConfig, InferRepositoryReturnType } from "@medusajs/types"
 import { deduplicate, isObject } from "../common"
 
 import { SoftDeletableFilterKey } from "../dal/mikro-orm/mikro-orm-soft-deletable-filter"
+import { LoadStrategy } from "@medusajs/deps/mikro-orm/core"
 
 export function buildQuery<const T = any>(
   filters: Record<string, any> = {},
@@ -50,6 +51,13 @@ export function buildQuery<const T = any>(
 
   if (config.options) {
     Object.assign(findOptions, config.options)
+  }
+
+  if (!("strategy" in findOptions)) {
+    // TODO: from 7+ it will be the default strategy
+    Object.assign(findOptions, {
+      strategy: LoadStrategy.BALANCED,
+    })
   }
 
   return { where, options: findOptions } as Required<DAL.FindOptions<T>>
