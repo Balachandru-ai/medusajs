@@ -125,10 +125,10 @@ export function getRouteMap({
                             import("../../routes/products/product-media"),
                         },
                         {
-                          path: "variant-media",
+                          path: "images/:image_id/variants",
                           lazy: () =>
                             import(
-                              "../../routes/products/product-variant-media"
+                              "../../routes/products/product-image-variants"
                             ),
                         },
                         {

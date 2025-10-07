@@ -12,7 +12,7 @@ import {
 } from "@medusajs/ui"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { useUpdateProduct } from "../../../../../hooks/api/products"
 import { HttpTypes } from "@medusajs/types"
@@ -24,6 +24,8 @@ type ProductMedisaSectionProps = {
 export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
+  const navigate = useNavigate()
+
   const [selection, setSelection] = useState<Record<string, boolean>>({})
 
   const media = getMedia(product)
@@ -89,11 +91,6 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
           groups={[
             {
               actions: [
-                {
-                  label: t("actions.editVariantImages"),
-                  to: "variant-media",
-                  icon: <PencilSquare />,
-                },
                 {
                   label: t("actions.editImages"),
                   to: "media?view=edit",
@@ -180,6 +177,16 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
             label={t("actions.delete")}
             shortcut="d"
           />
+          {Object.keys(selection).length === 1 && (
+            <CommandBar.Command
+              action={() => {
+                navigate(`images/${Object.keys(selection)[0]}/variants`)
+                setSelection({})
+              }}
+              label={t("products.media.manageImageVariants")}
+              shortcut="m"
+            />
+          )}
         </CommandBar.Bar>
       </CommandBar>
     </Container>

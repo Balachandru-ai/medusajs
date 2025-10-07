@@ -1920,6 +1920,9 @@
             "editHint": {
               "type": "string"
             },
+            "manageImageVariants": {
+              "type": "string"
+            },
             "makeThumbnail": {
               "type": "string"
             },
@@ -1982,6 +1985,7 @@
           "required": [
             "label",
             "editHint",
+            "manageImageVariants",
             "makeThumbnail",
             "uploadImagesLabel",
             "uploadImagesHint",
@@ -2012,6 +2016,12 @@
             "addToMultipleVariants": {
               "type": "string"
             },
+            "manageVariantsDescription": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
             "emptyState": {
               "type": "object",
               "properties": {
@@ -2027,17 +2037,15 @@
               },
               "required": ["header", "description", "action"],
               "additionalProperties": false
-            },
-            "successToast": {
-              "type": "string"
             }
           },
           "required": [
             "label",
             "manageVariants",
             "addToMultipleVariants",
-            "emptyState",
-            "successToast"
+            "manageVariantsDescription",
+            "successToast",
+            "emptyState"
           ],
           "additionalProperties": false
         },
