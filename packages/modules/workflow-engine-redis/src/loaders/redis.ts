@@ -30,10 +30,10 @@ export default async (
   const queueName_ = queueName ?? "medusa-workflows"
   const jobQueueName_ = jobQueueName ?? "medusa-workflows-jobs"
 
-  let connection
-  let redisPublisher
-  let redisSubscriber
-  let workerConnection
+  let connection!: Awaited<ReturnType<typeof getConnection>>
+  let redisPublisher!: Awaited<ReturnType<typeof getConnection>>
+  let redisSubscriber!: Awaited<ReturnType<typeof getConnection>>
+  let workerConnection!: Awaited<ReturnType<typeof getConnection>>
 
   try {
     connection = await getConnection(url, redisOptions)
@@ -72,10 +72,35 @@ export default async (
     redisQueueName: asValue(queueName_),
     redisJobQueueName: asValue(jobQueueName_),
     redisDisconnectHandler: asValue(async () => {
-      connection.disconnect()
-      workerConnection.disconnect()
-      redisPublisher.disconnect()
-      redisSubscriber.disconnect()
+      // Use quit() for graceful shutdown instead of disconnect()
+      // quit() waits for pending commands to complete
+      const disconnectPromises: Promise<any>[] = []
+
+      if (connection && connection.status !== "end") {
+        disconnectPromises.push(
+          connection.quit().catch(() => connection.disconnect())
+        )
+      }
+
+      if (workerConnection && workerConnection.status !== "end") {
+        disconnectPromises.push(
+          workerConnection.quit().catch(() => workerConnection.disconnect())
+        )
+      }
+
+      if (redisPublisher && redisPublisher.status !== "end") {
+        disconnectPromises.push(
+          redisPublisher.quit().catch(() => redisPublisher.disconnect())
+        )
+      }
+
+      if (redisSubscriber && redisSubscriber.status !== "end") {
+        disconnectPromises.push(
+          redisSubscriber.quit().catch(() => redisSubscriber.disconnect())
+        )
+      }
+
+      await Promise.all(disconnectPromises)
     }),
   })
 }
