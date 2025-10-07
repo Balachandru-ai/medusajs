@@ -30,10 +30,10 @@ export default async (
   const queueName_ = queueName ?? "medusa-workflows"
   const jobQueueName_ = jobQueueName ?? "medusa-workflows-jobs"
 
-  let connection!: Awaited<ReturnType<typeof getConnection>>
-  let redisPublisher!: Awaited<ReturnType<typeof getConnection>>
-  let redisSubscriber!: Awaited<ReturnType<typeof getConnection>>
-  let workerConnection!: Awaited<ReturnType<typeof getConnection>>
+  let connection
+  let redisPublisher
+  let redisSubscriber
+  let workerConnection
 
   try {
     connection = await getConnection(url, redisOptions)
@@ -72,75 +72,22 @@ export default async (
     redisQueueName: asValue(queueName_),
     redisJobQueueName: asValue(jobQueueName_),
     redisDisconnectHandler: asValue(async () => {
-      // Use quit() for graceful shutdown instead of disconnect()
-      // quit() waits for pending commands to complete
-      const disconnectPromises: Promise<any>[] = []
-
-      if (connection && connection.status !== "end") {
-        disconnectPromises.push(
-          connection.quit().catch(() => connection.disconnect())
-        )
-      }
-
-      if (workerConnection && workerConnection.status !== "end") {
-        disconnectPromises.push(
-          workerConnection.quit().catch(() => workerConnection.disconnect())
-        )
-      }
-
-      if (redisPublisher && redisPublisher.status !== "end") {
-        disconnectPromises.push(
-          redisPublisher.quit().catch(() => redisPublisher.disconnect())
-        )
-      }
-
-      if (redisSubscriber && redisSubscriber.status !== "end") {
-        disconnectPromises.push(
-          redisSubscriber.quit().catch(() => redisSubscriber.disconnect())
-        )
-      }
-
-      await Promise.all(disconnectPromises)
+      connection.disconnect()
+      workerConnection.disconnect()
+      redisPublisher.disconnect()
+      redisSubscriber.disconnect()
     }),
   })
 }
 
-async function getConnection(url: string, redisOptions?: any) {
+async function getConnection(url, redisOptions) {
   const connection = new Redis(url, {
     lazyConnect: true,
-    // Add retry strategy to handle temporary connection issues
-    retryStrategy: (times: number) => {
-      if (times > 3) {
-        return null // Stop retrying after 3 attempts
-      }
-      // Exponential backoff: 50ms, 100ms, 200ms
-      return Math.min(times * 50, 200)
-    },
-    // Ensure connections don't timeout too quickly
-    connectTimeout: 10000,
-    // Keep connections alive
-    enableReadyCheck: true,
     ...(redisOptions ?? {}),
   })
 
-  // Add error handler to prevent unhandled errors from crashing the process
-  connection.on("error", (err) => {
-    console.error("[Redis] Connection error:", err.message)
-  })
-
-  await new Promise<void>(async (resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error("Redis connection timeout after 10 seconds"))
-    }, 10000)
-
-    try {
-      await connection.connect()
-      clearTimeout(timeout)
-      resolve()
-    } catch (error) {
-      clearTimeout(timeout)
-      reject(error)
-    }
+  await new Promise(async (resolve) => {
+    await connection.connect(resolve)
   })
 
   return connection

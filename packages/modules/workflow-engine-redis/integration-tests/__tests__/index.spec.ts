@@ -473,6 +473,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           const transactionId = "transaction-auto-retries" + ulid()
           const workflowId = "workflow_1_auto_retries_false"
 
+          const redisClientStatus = (workflowOrcModule as any)
+            .workflowOrchestratorService_.redisDistributedTransactionStorage_
+            .redisClient.status
+
+          console.log(">>>>>>>>> redisClientStatus", redisClientStatus)
+
           await workflowOrcModule.run(workflowId, {
             input: {},
             transactionId,

@@ -216,34 +216,19 @@ export class RedisDistributedTransactionStorage
   private async ensureRedisConnection(): Promise<void> {
     const reconnectTasks: Promise<void>[] = []
 
-    // Handle all possible connection states that require reconnection
-    const needsReconnect = (status: string) => {
-      return status !== "ready" && status !== "connecting" && status !== "reconnecting"
-    }
-
-    if (needsReconnect(this.redisClient.status)) {
+    if (this.redisClient.status !== "ready") {
       this.logger_.warn(
         `[Workflow-engine-redis] Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
       )
       reconnectTasks.push(
-        (async () => {
-          try {
-            // If connection is in end state, we need to handle it differently
-            if (this.redisClient.status === "end") {
-              this.logger_.warn(
-                "[Workflow-engine-redis] Redis connection was closed. Connection may need to be recreated by restarting the module."
-              )
-              throw new MedusaError(
-                MedusaError.Types.DB_ERROR,
-                "Redis connection was closed and cannot be reconnected. Module restart required."
-              )
-            }
-
-            await this.redisClient.connect()
+        this.redisClient
+          .connect()
+          .then(() => {
             this.logger_.info(
               "[Workflow-engine-redis] Redis connection reestablished successfully"
             )
-          } catch (error) {
+          })
+          .catch((error) => {
             this.logger_.error(
               "[Workflow-engine-redis] Failed to reconnect to Redis",
               error
@@ -252,57 +237,23 @@ export class RedisDistributedTransactionStorage
               MedusaError.Types.DB_ERROR,
               `Redis connection failed: ${error.message}`
             )
-          }
-        })()
-      )
-    } else if (this.redisClient.status === "connecting" || this.redisClient.status === "reconnecting") {
-      // Wait for ongoing connection attempt
-      this.logger_.debug(
-        `[Workflow-engine-redis] Redis connection is ${this.redisClient.status}, waiting...`
-      )
-      reconnectTasks.push(
-        new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new MedusaError(
-              MedusaError.Types.DB_ERROR,
-              "Redis connection timeout"
-            ))
-          }, 5000)
-
-          this.redisClient.once("ready", () => {
-            clearTimeout(timeout)
-            resolve()
           })
-          this.redisClient.once("error", (err) => {
-            clearTimeout(timeout)
-            reject(err)
-          })
-        })
       )
     }
 
-    if (needsReconnect(this.redisWorkerConnection.status)) {
+    if (this.redisWorkerConnection.status !== "ready") {
       this.logger_.warn(
         `[Workflow-engine-redis] Redis worker connection is not ready (status: ${this.redisWorkerConnection.status}). Attempting to reconnect...`
       )
       reconnectTasks.push(
-        (async () => {
-          try {
-            if (this.redisWorkerConnection.status === "end") {
-              this.logger_.warn(
-                "[Workflow-engine-redis] Redis worker connection was closed. Connection may need to be recreated by restarting the module."
-              )
-              throw new MedusaError(
-                MedusaError.Types.DB_ERROR,
-                "Redis worker connection was closed and cannot be reconnected. Module restart required."
-              )
-            }
-
-            await this.redisWorkerConnection.connect()
+        this.redisWorkerConnection
+          .connect()
+          .then(() => {
             this.logger_.info(
               "[Workflow-engine-redis] Redis worker connection reestablished successfully"
             )
-          } catch (error) {
+          })
+          .catch((error) => {
             this.logger_.error(
               "[Workflow-engine-redis] Failed to reconnect to Redis worker connection",
               error
@@ -311,28 +262,7 @@ export class RedisDistributedTransactionStorage
               MedusaError.Types.DB_ERROR,
               `Redis worker connection failed: ${error.message}`
             )
-          }
-        })()
-      )
-    } else if (this.redisWorkerConnection.status === "connecting" || this.redisWorkerConnection.status === "reconnecting") {
-      reconnectTasks.push(
-        new Promise((resolve, reject) => {
-          const timeout = setTimeout(() => {
-            reject(new MedusaError(
-              MedusaError.Types.DB_ERROR,
-              "Redis worker connection timeout"
-            ))
-          }, 5000)
-
-          this.redisWorkerConnection.once("ready", () => {
-            clearTimeout(timeout)
-            resolve()
           })
-          this.redisWorkerConnection.once("error", (err) => {
-            clearTimeout(timeout)
-            reject(err)
-          })
-        })
       )
     }
 
