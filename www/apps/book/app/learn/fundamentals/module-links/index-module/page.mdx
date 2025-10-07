@@ -499,6 +499,12 @@ const { data: products } = await query.index({
 
 In the example above, you cache the query results with the `Product:list:*` tag.
 
+<Note>
+
+The cache tag must follow the [Caching Tags Convention](!resources!/infrastructure-modules/caching#caching-tags-convention) to be automatically invalidated.
+
+</Note>
+
 You can also pass a function as the value of `cache.tags`:
 
 ```ts highlights={[["7"], ["8"], ["9"], ["10"], ["11"], ["12"], ["13"]]}
@@ -522,15 +528,6 @@ const { data: products } = await query.index({
 In the example above, you use a function to determine the cache tags. The function accepts the arguments passed to `query.index` as an array.
 
 Then, you add the `ProductCollection:id` tag if `collection_id` is passed in the query filters.
-
-#### Cache Tag Convention
-
-The cache tags you add must adhere to the following convention:
-
-- `Entity:id`: Cache tag for a single record of an entity. For example, `Product:prod_123` for caching a single product with the ID `prod_123`.
-- `Entity:list:*`: Cache tag for a list of records of an entity. For example, `Product:list:*` for caching a list of products.
-
-If your cache tags don't follow this convention, Medusa can't automatically invalidate your cached data when related records are created, updated, or deleted. You must [invalidate](!resources!/references/caching-service#clear) the cached data manually.
 
 ### Set TTL
 
