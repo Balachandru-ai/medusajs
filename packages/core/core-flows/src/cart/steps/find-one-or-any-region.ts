@@ -1,13 +1,7 @@
-import {
-  IRegionModuleService,
-  IStoreModuleService,
-  MedusaContainer,
-} from "@medusajs/framework/types"
+import { MedusaContainer } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   MedusaError,
-  Modules,
-  useCache,
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 

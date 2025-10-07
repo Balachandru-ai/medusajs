@@ -24,7 +24,6 @@ import {
   createRemoteLinkStep,
   emitEventStep,
   useQueryGraphStep,
-  useRemoteQueryStep,
 } from "../../common"
 import { acquireLockStep } from "../../locking/steps/acquire-lock"
 import { releaseLockStep } from "../../locking/steps/release-lock"
