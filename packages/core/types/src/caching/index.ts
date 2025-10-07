@@ -36,7 +36,7 @@ export interface ICachingModuleService extends IModuleService {
    *  be returned.
    *
    */
-  get<T>({
+  get({
     key,
     tags,
     providers,
@@ -44,7 +44,7 @@ export interface ICachingModuleService extends IModuleService {
     key?: string
     tags?: string[]
     providers?: string[]
-  }): Promise<T | null>
+  }): Promise<any | null>
 
   /**
    * This method stores data in the cache.
