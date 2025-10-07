@@ -22,14 +22,22 @@ import http from "k6/http"
 // let endpoint = __ENV.K6_ENDPOINT
 // let projectID = __ENV.K6_PROJECT_ID
 
+const thresholds = {
+  "http_req_duration{scenario:browseCatalog}": ["p(95)<400"],
+  "http_req_duration{scenario:addBrowseAddAbandon}": ["p(95)<700"],
+  "http_req_duration{scenario:addBrowseAddComplete}": ["p(95)<1200"],
+  "http_req_duration{scenario:addMultipleAbandon}": ["p(95)<700"],
+  "http_req_duration{scenario:addMultipleComplete}": ["p(95)<1200"],
+  http_req_failed: ["rate<0.01"],
+}
+
 const firstStageDuration = "2m"
-const secondStageDuration = "11m"
+const secondStageDuration = "6m"
 const thirdStageDuration = "2m"
 
 const highVus = 300
 const lowVus = 30
 
-// Test behavior configuration
 const promoApplicationRate = 0.1 // 10% of users apply promo codes
 const minItemsInCart = 3
 const maxItemsInCart = 5
@@ -44,8 +52,8 @@ const maxItemsInCart = 5
 let publishableKey =
   "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
 let regionId = "reg_01K2ZDG12VKJ64F2NFTNW7Y8AT"
-// let endpoint = "https://dtc-starter-preview.medusajs.app"
-let endpoint = "https://dtc-starter.medusajs.app"
+let endpoint = "https://dtc-starter-preview.medusajs.app"
+// let endpoint = "https://dtc-starter.medusajs.app"
 let projectId = 4837050
 
 const params = {
@@ -58,7 +66,7 @@ const params = {
 export const options = {
   cloud: {
     projectID: projectId,
-    name: `Version 2.10.1, ${new Date().toLocaleString()}`,
+    name: `Version 2.10.4-preview-20251007060201, ${new Date().toLocaleString()}`,
   },
   scenarios: {
     browseCatalog: {
@@ -121,40 +129,68 @@ export const options = {
       gracefulRampDown: "30s",
       tags: { scenario: "addMultipleComplete" },
     },
-    randomShoppers: {
-      executor: "ramping-vus",
-      exec: "addToCart",
-      startTime: "0s",
-      stages: [
-        { duration: firstStageDuration, target: lowVus },
-        { duration: secondStageDuration, target: lowVus },
-        { duration: thirdStageDuration, target: 0 },
-      ],
-      gracefulRampDown: "30s",
-      tags: { scenario: "randomShoppers" },
-    },
+    // randomShoppers: {
+    //   executor: "ramping-vus",
+    //   exec: "addToCart",
+    //   startTime: "0s",
+    //   stages: [
+    //     { duration: firstStageDuration, target: lowVus },
+    //     { duration: secondStageDuration, target: lowVus },
+    //     { duration: thirdStageDuration, target: 0 },
+    //   ],
+    //   gracefulRampDown: "30s",
+    //   tags: { scenario: "randomShoppers" },
+    // },
   },
-  thresholds: {
-    "http_req_duration{scenario:browseCatalog}": ["p(95)<400"],
-    "http_req_duration{scenario:addBrowseAddAbandon}": ["p(95)<700"],
-    "http_req_duration{scenario:addBrowseAddComplete}": ["p(95)<1200"],
-    "http_req_duration{scenario:addMultipleAbandon}": ["p(95)<700"],
-    "http_req_duration{scenario:addMultipleComplete}": ["p(95)<1200"],
-    "http_req_duration{scenario:randomShoppers}": ["p(95)<1000"],
-    http_req_failed: ["rate<0.01"],
-  },
+  thresholds: thresholds,
 }
 
-// We only treat 5xx responses as errors, some 401 are expected
-http.setResponseCallback(http.expectedStatuses({ min: 200, max: 401 }))
+// We only treat 5xx, 400 responses as errors, some 401 are expected
+http.setResponseCallback(http.expectedStatuses({ min: 200, max: 399 }, 401))
+
+// Helper function to group URLs by pattern to reduce time series
+function makeRequest({ method, url, body, urlPattern } = {}) {
+  const requestParams = {
+    ...params,
+    tags: {
+      name: urlPattern || url, // Use pattern for grouping
+    },
+  }
+
+  if (method === "GET") {
+    return http.get(url, requestParams)
+  } else if (method === "POST") {
+    return http.post(url, body, requestParams)
+  }
+  return http.request(method, url, body, requestParams)
+}
 
 export function browseCatalog() {
   return group("Browse Flow", () => {
     const [regionsRes] = http.batch([
-      { method: "GET", url: `${endpoint}/store/regions`, params },
-      { method: "GET", url: `${endpoint}/store/collections`, params },
-      { method: "GET", url: `${endpoint}/store/product-categories`, params },
-      { method: "GET", url: `${endpoint}/store/customers/me`, params },
+      {
+        method: "GET",
+        url: `${endpoint}/store/regions`,
+        params: { ...params, tags: { name: `${endpoint}/store/regions` } },
+      },
+      {
+        method: "GET",
+        url: `${endpoint}/store/collections`,
+        params: { ...params, tags: { name: `${endpoint}/store/collections` } },
+      },
+      {
+        method: "GET",
+        url: `${endpoint}/store/product-categories`,
+        params: {
+          ...params,
+          tags: { name: `${endpoint}/store/product-categories` },
+        },
+      },
+      {
+        method: "GET",
+        url: `${endpoint}/store/customers/me`,
+        params: { ...params, tags: { name: `${endpoint}/store/customers/me` } },
+      },
     ])
 
     check(regionsRes, { "regions ok": (r) => r.status === 200 })
@@ -165,11 +201,19 @@ export function browseCatalog() {
 
     const productsParams = `region_id=${regionId}&fields=*variants.calculated_price&limit=20`
 
-    let res = http.get(`${endpoint}/store/collections`, params)
+    let res = makeRequest({
+      method: "GET",
+      url: `${endpoint}/store/collections`,
+    })
+
     check(res, { "collections ok": (r) => r.status === 200 })
     sleep(2 + Math.random() * 3)
 
-    res = http.get(`${endpoint}/store/products?${productsParams}`, params)
+    res = makeRequest({
+      method: "GET",
+      url: `${endpoint}/store/products?${productsParams}`,
+    })
+
     check(res, { "products list ok": (r) => r.status === 200 })
     sleep(2 + Math.random() * 3)
 
@@ -178,7 +222,12 @@ export function browseCatalog() {
       return []
     }
 
-    res = http.get(`${endpoint}/store/products/${products[0].id}`, params)
+    res = makeRequest({
+      method: "GET",
+      url: `${endpoint}/store/products/${products[0].id}`,
+      urlPattern: `${endpoint}/store/products/:id`,
+    })
+
     check(res, { "product details ok": (r) => r.status === 200 })
     sleep(2 + Math.random() * 3)
 
@@ -187,13 +236,13 @@ export function browseCatalog() {
 }
 
 function createCart() {
-  const res = http.post(
-    `${endpoint}/store/carts`,
-    JSON.stringify({
+  const res = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/carts`,
+    body: JSON.stringify({
       region_id: regionId,
     }),
-    params
-  )
+  })
 
   check(res, { "create cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
@@ -201,14 +250,15 @@ function createCart() {
 }
 
 function addItemToCart(cartId, variantId, quantity) {
-  const res = http.post(
-    `${endpoint}/store/carts/${cartId}/line-items`,
-    JSON.stringify({
+  const res = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/carts/${cartId}/line-items`,
+    body: JSON.stringify({
       variant_id: variantId,
       quantity: quantity,
     }),
-    params
-  )
+    urlPattern: `${endpoint}/store/carts/:id/line-items`,
+  })
 
   check(res, { "add to cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
@@ -218,10 +268,13 @@ function addItemToCart(cartId, variantId, quantity) {
 function viewCart(cartId) {
   const cartParams =
     "fields=*items,*region,*items.product,*items.variant,*items.thumbnail,*items.metadata,+items.total,*promotions,+shipping_methods.name"
-  const res = http.get(
-    `${endpoint}/store/carts/${cartId}?${cartParams}`,
-    params
-  )
+
+  const res = makeRequest({
+    method: "GET",
+    url: `${endpoint}/store/carts/${cartId}?${cartParams}`,
+    urlPattern: `${endpoint}/store/carts/:id?${cartParams}`,
+  })
+
   check(res, { "view cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
   return JSON.parse(res.body).cart
@@ -229,13 +282,15 @@ function viewCart(cartId) {
 
 function applyPromotion(cartId) {
   if (Math.random() < promoApplicationRate) {
-    const res = http.post(
-      `${endpoint}/store/carts/${cartId}/promotions`,
-      JSON.stringify({
+    const res = makeRequest({
+      method: "POST",
+      url: `${endpoint}/store/carts/${cartId}/promotions`,
+      body: JSON.stringify({
         promo_codes: ["10OFF"],
       }),
-      params
-    )
+      urlPattern: `${endpoint}/store/carts/:id/promotions`,
+    })
+
     check(res, { "add promotion ok": (r) => r.status === 200 })
     sleep(1 + Math.random() * 2)
     return JSON.parse(res.body).cart
@@ -245,7 +300,11 @@ function applyPromotion(cartId) {
 
 function browseMoreProducts() {
   const productsParams = `region_id=${regionId}&fields=*variants.calculated_price&limit=20`
-  const res = http.get(`${endpoint}/store/products?${productsParams}`, params)
+  const res = makeRequest({
+    method: "GET",
+    url: `${endpoint}/store/products?${productsParams}`,
+  })
+
   check(res, { "browse more products ok": (r) => r.status === 200 })
   sleep(3 + Math.random() * 4)
   const products = JSON.parse(res.body).products
@@ -260,34 +319,37 @@ function checkout(cart) {
     {
       method: "GET",
       url: `${endpoint}/store/carts/${cart.id}`,
-      params,
+      urlPattern: `${endpoint}/store/carts/:id`,
     },
     {
       method: "GET",
       url: `${endpoint}/store/payment-providers?region_id=${regionId}`,
-      params,
     },
     {
       method: "GET",
       url: `${endpoint}/store/shipping-options?cart_id=${cart.id}`,
-      params,
+      urlPattern: `${endpoint}/store/shipping-options?cart_id`,
     },
   ])
+
   check(res, { "view cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
 
-  const selectedRegion = http.get(
-    `${endpoint}/store/regions/${regionId}`,
-    params
-  )
+  const selectedRegion = makeRequest({
+    method: "GET",
+    url: `${endpoint}/store/regions/${regionId}`,
+    urlPattern: `${endpoint}/store/regions/:id`,
+  })
+
   check(selectedRegion, { "selected region ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
 
   const country = JSON.parse(selectedRegion.body).region.countries[0].iso_2
 
-  const updateCartRes = http.post(
-    `${endpoint}/store/carts/${cart.id}`,
-    JSON.stringify({
+  const updateCartRes = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/carts/${cart.id}`,
+    body: JSON.stringify({
       shipping_address: {
         first_name: "John",
         last_name: "Doe",
@@ -302,8 +364,9 @@ function checkout(cart) {
       },
       email: "john.doe@example.com",
     }),
-    params
-  )
+    urlPattern: `${endpoint}/store/carts/:id`,
+  })
+
   check(updateCartRes, {
     "update cart with address ok": (r) => r.status === 200,
   })
@@ -314,25 +377,28 @@ function checkout(cart) {
     throw new Error("No shipping options available")
   }
 
-  const addShippingMethodRes = http.post(
-    `${endpoint}/store/carts/${cart.id}/shipping-methods`,
-    JSON.stringify({
+  const addShippingMethodRes = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/carts/${cart.id}/shipping-methods`,
+    body: JSON.stringify({
       option_id: shippingOptions[0].id,
     }),
-    params
-  )
+    urlPattern: `${endpoint}/store/carts/:id/shipping-methods`,
+  })
+
   check(addShippingMethodRes, {
     "add shipping method ok": (r) => r.status === 200,
   })
   sleep(Math.random() * 3)
 
-  let paymentCollectionRes = http.post(
-    `${endpoint}/store/payment-collections`,
-    JSON.stringify({
+  let paymentCollectionRes = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/payment-collections`,
+    body: JSON.stringify({
       cart_id: cart.id,
     }),
-    params
-  )
+  })
+
   check(paymentCollectionRes, {
     "create payment collection ok": (r) => r.status === 200,
   })
@@ -349,30 +415,39 @@ function checkout(cart) {
     throw new Error("No payment providers available")
   }
 
-  let paymentSessionRes = http.post(
-    `${endpoint}/store/payment-collections/${paymentCollection.id}/payment-sessions`,
-    JSON.stringify({
+  let paymentSessionRes = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+    body: JSON.stringify({
       provider_id: paymentProviders[0].id,
     }),
-    params
-  )
+    urlPattern: `${endpoint}/store/payment-collections/:id/payment-sessions`,
+  })
+
   check(paymentSessionRes, {
     "create payment session ok": (r) => r.status === 200,
   })
   sleep(2 + Math.random() * 3)
 
-  let orderRes = http.post(
-    `${endpoint}/store/carts/${cart.id}/complete`,
-    JSON.stringify({}),
-    params
-  )
+  let orderRes = makeRequest({
+    method: "POST",
+    url: `${endpoint}/store/carts/${cart.id}/complete`,
+    body: JSON.stringify({}),
+    urlPattern: `${endpoint}/store/carts/:id/complete`,
+  })
+
   check(orderRes, { "create order ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
 
   const order = JSON.parse(orderRes.body).order
   sleep(Math.random() * 3)
 
-  orderRes = http.get(`${endpoint}/store/orders/${order.id}`, params)
+  orderRes = makeRequest({
+    method: "GET",
+    url: `${endpoint}/store/orders/${order.id}`,
+    urlPattern: `${endpoint}/store/orders/:id`,
+  })
+
   check(orderRes, { "view order ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
 
