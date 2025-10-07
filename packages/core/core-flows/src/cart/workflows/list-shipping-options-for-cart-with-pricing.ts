@@ -249,15 +249,10 @@ export const listShippingOptionsForCartWithPricingWorkflow = createWorkflow(
     /**
      * We need to prefetch exact same SO as in the final result but only to determine pricing calculations first.
      */
-    const initialOptionsData = useQueryGraphStep({
-      entity: "shipping_option",
-      filters: typeQueryFilters,
+    const initialOptions = useRemoteQueryStep({
+      entry_point: "shipping_options",
+      variables: typeQueryFilters,
       fields: ["id", "price_type"],
-      options: {
-        cache: {
-          enable: true,
-        },
-      },
     }).config({ name: "shipping-options-price-type-query" })
 
     /**
@@ -266,7 +261,7 @@ export const listShippingOptionsForCartWithPricingWorkflow = createWorkflow(
     const { flatRateOptionsQuery, calculatedShippingOptionsQuery } = transform(
       {
         cart,
-        initialOptions: initialOptionsData.data,
+        initialOptions: initialOptions,
         commonOptions,
       },
       ({ cart, initialOptions, commonOptions }) => {
