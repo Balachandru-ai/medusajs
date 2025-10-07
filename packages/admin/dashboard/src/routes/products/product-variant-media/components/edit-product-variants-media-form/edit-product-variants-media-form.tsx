@@ -39,7 +39,7 @@ const variantColumnHelper =
 export const EditProductVariantsMediaForm = ({
   product,
 }: ProductVarianstMediaViewProps) => {
-  const [selection, setSelection] = useState<Record<string, true>>({})
+  const [selection, setSelection] = useState<string | null>(null)
   const [showVariantsTable, setShowVariantsTable] = useState(false)
   const [variantSelection, setVariantSelection] = useState<RowSelectionState>(
     {}
@@ -66,26 +66,15 @@ export const EditProductVariantsMediaForm = ({
   const handleCheckedChange = useCallback(
     (id: string) => {
       return (val: boolean) => {
-        if (!val) {
-          const { [id]: _, ...rest } = selection
-          setSelection(rest)
-        } else {
-          setSelection((prev) => ({ ...prev, [id]: true }))
-        }
+        setSelection(val ? id : null)
       }
     },
-    [selection]
+    [setSelection]
   )
 
   const handleManageVariants = () => {
     setShowVariantsTable(!showVariantsTable)
   }
-
-  const handleAddToMultipleVariants = () => {
-    setShowVariantsTable(!showVariantsTable)
-  }
-
-  const selectionCount = Object.keys(selection).length
 
   return (
     <RouteFocusModal.Form blockSearchParams form={form}>
@@ -103,7 +92,7 @@ export const EditProductVariantsMediaForm = ({
                     <MediaGridItem
                       key={m.id!}
                       media={m}
-                      checked={!!selection[m.id!]}
+                      checked={selection === m.id}
                       onCheckedChange={handleCheckedChange(m.id!)}
                     />
                   )
@@ -112,15 +101,15 @@ export const EditProductVariantsMediaForm = ({
             </div>
           </div>
         </RouteFocusModal.Body>
-        <CommandBar open={!!selectionCount}>
+        <CommandBar open={!!selection}>
           <CommandBar.Bar>
             <CommandBar.Value>
               {t("general.countSelected", {
-                count: selectionCount,
+                count: selection ? 1 : 0,
               })}
             </CommandBar.Value>
             <CommandBar.Seperator />
-            {selectionCount === 1 && (
+            {!!selection && (
               <Fragment>
                 <CommandBar.Command
                   action={handleManageVariants}
@@ -129,13 +118,6 @@ export const EditProductVariantsMediaForm = ({
                 />
                 <CommandBar.Seperator />
               </Fragment>
-            )}
-            {selectionCount > 1 && (
-              <CommandBar.Command
-                action={handleAddToMultipleVariants}
-                label={t("products.variantMedia.addToMultipleVariants")}
-                shortcut="M"
-              />
             )}
           </CommandBar.Bar>
         </CommandBar>
