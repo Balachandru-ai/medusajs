@@ -13,6 +13,7 @@ import { DisplayIdCell } from "../../components/table/table-cells/order/display-
 import { TotalCell } from "../../components/table/table-cells/order/total-cell"
 import { MoneyAmountCell } from "../../components/table/table-cells/common/money-amount-cell"
 import { TFunction } from "i18next"
+import { toCamelCase } from "../common"
 
 export type CellRenderer<TData = any> = (
   value: any,
@@ -24,14 +25,6 @@ export type CellRenderer<TData = any> = (
 export type RendererRegistry = Map<string, CellRenderer>
 
 const cellRenderers: RendererRegistry = new Map()
-
-const toCamelCase = (str: string): string => {
-  return /^([a-zA-Z]+)(([A-Z]([a-z]+))+)$/.test(str)
-    ? str
-    : str
-        .toLowerCase()
-        .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
-}
 
 const getNestedValue = (obj: any, path: string) => {
   return path.split('.').reduce((current, key) => current?.[key], obj)
