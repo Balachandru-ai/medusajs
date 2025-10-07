@@ -29,6 +29,12 @@ function validateContext(
   }
 }
 
+function sortByPriceAscending(a: any, b: any) {
+  const priceA = MathBN.div(a.subtotal, a.quantity)
+  const priceB = MathBN.div(b.subtotal, b.quantity)
+  return MathBN.lt(priceA, priceB) ? -1 : 1
+}
+
 export function getComputedActionsForItems(
   promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   items: PromotionTypes.ComputeActionContext[TargetType.ITEMS],
@@ -66,10 +72,14 @@ function applyPromotionToItems(
 
   const computedActions: PromotionTypes.ComputeActions[] = []
 
-  const applicableItems = getValidItemsForPromotion(items, promotion)
+  let applicableItems = getValidItemsForPromotion(items, promotion)
 
   if (!applicableItems.length) {
     return computedActions
+  }
+
+  if (allocation === ApplicationMethodAllocation.ONCE) {
+    applicableItems = [...applicableItems].sort(sortByPriceAscending)
   }
 
   const isTargetLineItems = target === TargetType.ITEMS
@@ -96,7 +106,12 @@ function applyPromotionToItems(
     }
   }
 
+  let remainingQuota = maxQuantity ?? 0
+
   for (const item of applicableItems) {
+    if (allocation === ApplicationMethodAllocation.ONCE && remainingQuota <= 0) {
+      break
+    }
     if (
       MathBN.lte(
         promotion.is_tax_inclusive ? item.original_total : item.subtotal,
@@ -108,15 +123,25 @@ function applyPromotionToItems(
 
     const appliedPromoValue = appliedPromotionsMap.get(item.id) ?? 0
 
+    const effectiveMaxQuantity =
+      allocation === ApplicationMethodAllocation.ONCE
+        ? Math.min(remainingQuota ?? 0, Number(item.quantity))
+        : maxQuantity
+
+    const effectiveAllocation =
+      allocation === ApplicationMethodAllocation.ONCE
+        ? ApplicationMethodAllocation.EACH
+        : allocation
+
     const amount = calculateAdjustmentAmountFromPromotion(
       item,
       {
         value: promotionValue,
         applied_value: appliedPromoValue,
         is_tax_inclusive: promotion.is_tax_inclusive,
-        max_quantity: maxQuantity,
+        max_quantity: effectiveMaxQuantity,
         type: applicationMethod?.type!,
-        allocation,
+        allocation: effectiveAllocation,
       },
       lineItemsAmount
     )
@@ -136,6 +161,15 @@ function applyPromotionToItems(
     }
 
     appliedPromotionsMap.set(item.id, MathBN.add(appliedPromoValue, amount))
+
+    if (allocation === ApplicationMethodAllocation.ONCE) {
+      // We already know exactly how many units we applied via effectiveMaxQuantity
+      const quantityApplied = Math.min(
+        effectiveMaxQuantity ?? 0,
+        Number(item.quantity)
+      )
+      remainingQuota -= quantityApplied
+    }
 
     if (isTargetLineItems || isTargetOrder) {
       computedActions.push({
