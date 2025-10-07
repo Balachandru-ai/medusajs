@@ -66,7 +66,7 @@ const params = {
 export const options = {
   cloud: {
     projectID: projectId,
-    name: `Version 2.10.4-preview-20251007060201, ${new Date().toLocaleString()}`,
+    name: `Version 2.10.4-preview-20251007060201, ${new Date().toLocaleString()} (caching enabled)`,
   },
   scenarios: {
     browseCatalog: {
@@ -153,7 +153,7 @@ function makeRequest({ method, url, body, urlPattern } = {}) {
   const requestParams = {
     ...params,
     tags: {
-      name: urlPattern || url, // Use pattern for grouping
+      url: urlPattern || url, // Use pattern for grouping
     },
   }
 
@@ -188,25 +188,25 @@ export function browseCatalog() {
       {
         method: "GET",
         url: `${endpoint}/store/regions`,
-        params: { ...params, tags: { name: `${endpoint}/store/regions` } },
+        params: { ...params, tags: { url: `${endpoint}/store/regions` } },
       },
       {
         method: "GET",
         url: `${endpoint}/store/collections`,
-        params: { ...params, tags: { name: `${endpoint}/store/collections` } },
+        params: { ...params, tags: { url: `${endpoint}/store/collections` } },
       },
       {
         method: "GET",
         url: `${endpoint}/store/product-categories`,
         params: {
           ...params,
-          tags: { name: `${endpoint}/store/product-categories` },
+          tags: { url: `${endpoint}/store/product-categories` },
         },
       },
       {
         method: "GET",
         url: `${endpoint}/store/customers/me`,
-        params: { ...params, tags: { name: `${endpoint}/store/customers/me` } },
+        params: { ...params, tags: { url: `${endpoint}/store/customers/me` } },
       },
     ])
 
@@ -328,14 +328,14 @@ function checkout(cart) {
     {
       method: "GET",
       url: `${endpoint}/store/carts/${cart.id}`,
-      params: { ...params, tags: { name: `${endpoint}/store/carts/:id` } },
+      params: { ...params, tags: { url: `${endpoint}/store/carts/:id` } },
     },
     {
       method: "GET",
       url: `${endpoint}/store/payment-providers?region_id=${regionId}`,
       params: {
         ...params,
-        tags: { name: `${endpoint}/store/payment-providers?region_id` },
+        tags: { url: `${endpoint}/store/payment-providers?region_id` },
       },
     },
     {
@@ -343,7 +343,7 @@ function checkout(cart) {
       url: `${endpoint}/store/shipping-options?cart_id=${cart.id}`,
       params: {
         ...params,
-        tags: { name: `${endpoint}/store/shipping-options?cart_id` },
+        tags: { url: `${endpoint}/store/shipping-options?cart_id` },
       },
     },
   ])
