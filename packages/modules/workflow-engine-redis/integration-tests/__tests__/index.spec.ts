@@ -479,25 +479,39 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: false,
           })
 
-          const onFinishPromise = new Promise<void>((resolve) => {
+          const onFinishPromise = new Promise<void>((resolve, reject) => {
+            // Add a timeout to prevent hanging
+            const timeout = setTimeoutSync(() => {
+              reject(
+                new Error(
+                  "Test timed out waiting for workflow to finish. Redis may be down."
+                )
+              )
+            }, 30000)
+
             workflowOrcModule.subscribe({
               workflowId,
               transactionId,
               subscriber: async (event) => {
                 if (event.eventType === "onFinish") {
-                  expect(step1InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(
-                    1
-                  )
-                  expect(step2InvokeMockAutoRetriesFalse).toHaveBeenCalledTimes(
-                    3
-                  )
-                  expect(
-                    step1CompensateMockAutoRetriesFalse
-                  ).toHaveBeenCalledTimes(1)
-                  expect(
-                    step2CompensateMockAutoRetriesFalse
-                  ).toHaveBeenCalledTimes(1)
-                  resolve()
+                  clearTimeout(timeout)
+                  try {
+                    expect(
+                      step1InvokeMockAutoRetriesFalse
+                    ).toHaveBeenCalledTimes(1)
+                    expect(
+                      step2InvokeMockAutoRetriesFalse
+                    ).toHaveBeenCalledTimes(3)
+                    expect(
+                      step1CompensateMockAutoRetriesFalse
+                    ).toHaveBeenCalledTimes(1)
+                    expect(
+                      step2CompensateMockAutoRetriesFalse
+                    ).toHaveBeenCalledTimes(1)
+                    resolve()
+                  } catch (error) {
+                    reject(error)
+                  }
                 }
               },
             })

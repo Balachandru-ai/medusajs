@@ -105,14 +105,42 @@ export default async (
   })
 }
 
-async function getConnection(url, redisOptions) {
+async function getConnection(url: string, redisOptions?: any) {
   const connection = new Redis(url, {
     lazyConnect: true,
+    // Add retry strategy to handle temporary connection issues
+    retryStrategy: (times: number) => {
+      if (times > 3) {
+        return null // Stop retrying after 3 attempts
+      }
+      // Exponential backoff: 50ms, 100ms, 200ms
+      return Math.min(times * 50, 200)
+    },
+    // Ensure connections don't timeout too quickly
+    connectTimeout: 10000,
+    // Keep connections alive
+    enableReadyCheck: true,
     ...(redisOptions ?? {}),
   })
 
-  await new Promise(async (resolve) => {
-    await connection.connect(resolve)
+  // Add error handler to prevent unhandled errors from crashing the process
+  connection.on("error", (err) => {
+    console.error("[Redis] Connection error:", err.message)
+  })
+
+  await new Promise<void>(async (resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error("Redis connection timeout after 10 seconds"))
+    }, 10000)
+
+    try {
+      await connection.connect()
+      clearTimeout(timeout)
+      resolve()
+    } catch (error) {
+      clearTimeout(timeout)
+      reject(error)
+    }
   })
 
   return connection
