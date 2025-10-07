@@ -12,20 +12,10 @@ In this guide, you'll learn about Caching Module Providers in Medusa, including 
 
 A Caching Module Provider implements the logic for caching data, such as integrating third-party caching services. The [Caching Module](../page.mdx) then uses the registered Caching Module Providers to handle caching data.
 
-For development, you can use the [In-Memory Caching Module Provider](./in-memory/page.mdx). This provider stores cached data in the memory of your Medusa application, which is suitable for development and testing purposes.
-
-However, for production, it's recommended to use other Caching Module Providers, such as the [Redis Caching Module Provider](./redis/page.mdx). You can also [Create a Caching Provider](/references/caching-module-provider).
+Medusa provides the [Redis Caching Module Provider](./redis/page.mdx) that you can use in development and production. You can also [Create a Caching Provider](/references/caching-module-provider).
 
 <CardList
   items={[
-    {
-      title: "In-Memory",
-      href: "/infrastructure-modules/caching/providers/in-memory",
-      badge: {
-        variant: "neutral",
-        children: "For Development"
-      }
-    },
     {
       title: "Redis",
       href: "/infrastructure-modules/caching/providers/redis",
@@ -33,20 +23,17 @@ However, for production, it's recommended to use other Caching Module Providers,
         variant: "green",
         children: "For Production"
       }
+    },
+    {
+      title: "Memcached",
+      // TODO add link
+      href: "#",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
     }
   ]}
-/>
-
-{/* TODO add link */}
-
-<Card
-  title="Memcached"
-  href="#"
-  className="my-1"
-  badge={{
-    variant: "blue",
-    children: "Tutorial"
-  }}
 />
 
 ---
@@ -57,9 +44,7 @@ You can register multiple Caching Module Providers and specify which one to use 
 
 ### How is the Default Provider Selected?
 
-If you don't configure the Caching Module in `medusa-config.ts` and you enable the [In-Memory Caching Module Provider](./in-memory/page.mdx), Medusa uses it as the default provider.
-
-If you configure the Caching Module, Medusa determines the default provider based on the following scenarios:
+Medusa determines the default Caching Module Provider based on the following scenarios:
 
 <Table>
   <Table.Header>
@@ -75,14 +60,6 @@ If you configure the Caching Module, Medusa determines the default provider base
       </Table.Cell>
       <Table.Cell>
         The registered provider.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        Multiple providers are registered and none of them has an `is_default` flag.
-      </Table.Cell>
-      <Table.Cell>
-        In-Memory Caching Module Provider if enabled.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -177,3 +154,5 @@ await cachingModuleService.set({
 </CodeTabs>
 
 In this example, both Query and the Caching Module's service use the Memcached provider, overriding the default Redis provider.
+
+The ID you pass is the same ID you specified in `medusa-config.ts` when registering the provider.
