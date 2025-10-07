@@ -26,6 +26,7 @@ import {
 import { EditProductMediaSchemaType } from "../../../product-create/types"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { useProductVariants } from "../../../../../hooks/api"
 
 type ProductVarianstMediaViewProps = {
   product: AdminProduct
@@ -166,7 +167,8 @@ export const EditProductVariantsMediaForm = ({
             </div>
             <div className="flex-1 overflow-hidden">
               <VariantsTable
-                variants={product.variants || []}
+                productId={product.id}
+                selectedImageId={selection!}
                 variantSelection={variantSelection}
                 setVariantSelection={setVariantSelection}
               />
@@ -256,15 +258,17 @@ const MediaGridItem = ({
 }
 
 type VariantsTableProps = {
-  variants: AdminProduct["variants"]
+  productId: string
+  selectedImageId: string
   variantSelection: RowSelectionState
   setVariantSelection: (selection: RowSelectionState) => void
 }
 
 const VariantsTable = ({
-  variants,
+  productId,
   variantSelection,
   setVariantSelection,
+  selectedImageId,
 }: VariantsTableProps) => {
   const { t } = useTranslation()
 
@@ -329,12 +333,15 @@ const VariantsTable = ({
     setVariantSelection(state)
   }
 
-  // TODO: load variants instead loading for product with many variants
+  const { variants, count, isLoading } = useProductVariants(productId, {
+    limit: 20,
+    offset: 0, // TODO: connect pagination
+  })
 
   const { table } = useDataTable({
     data: variants || [],
     columns,
-    count: variants?.length || 0,
+    count: count,
     enablePagination: true,
     enableRowSelection: true,
     pageSize: 20,
@@ -352,9 +359,9 @@ const VariantsTable = ({
           layout="fill"
           table={table}
           columns={columns}
-          count={variants?.length || 0}
-          isLoading={false}
-          pageSize={variants?.length || 0}
+          count={count}
+          isLoading={isLoading}
+          pageSize={20}
         />
       </div>
     </div>
