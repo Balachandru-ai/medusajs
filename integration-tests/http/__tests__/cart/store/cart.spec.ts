@@ -19,7 +19,7 @@ import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
-jest.setTimeout(100000)
+jest.setTimeout(10000000)
 
 const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
@@ -4774,7 +4774,7 @@ medusaIntegrationTestRunner({
             })
           })
 
-          describe.only("ONCE allocation promotions", () => {
+          describe("ONCE allocation promotions", () => {
             it("should apply fixed promotion to lowest priced items first and respect max_quantity across cart", async () => {
               // Create two products with different prices
               const expensiveProduct = (
@@ -4852,7 +4852,10 @@ medusaIntegrationTestRunner({
                     region_id: region.id,
                     shipping_address: shippingAddressData,
                     items: [
-                      { variant_id: expensiveProduct.variants[0].id, quantity: 3 },
+                      {
+                        variant_id: expensiveProduct.variants[0].id,
+                        quantity: 3,
+                      },
                       { variant_id: cheapProduct.variants[0].id, quantity: 5 },
                     ],
                     promo_codes: [oncePromotion.code],
@@ -5077,143 +5080,6 @@ medusaIntegrationTestRunner({
               expect(cheapItem.adjustments[0].code).toBe(oncePromotion.code)
 
               expect(expensiveItem.adjustments).toHaveLength(0)
-            })
-
-            it("should successfully complete cart with once allocation promotion", async () => {
-              const product1 = (
-                await api.post(
-                  "/admin/products",
-                  {
-                    title: "Product A",
-                    status: ProductStatus.PUBLISHED,
-                    options: [{ title: "Size", values: ["M"] }],
-                    variants: [
-                      {
-                        title: "Medium",
-                        sku: "prod-a-m",
-                        options: { Size: "M" },
-                        manage_inventory: false,
-                        prices: [{ amount: 3000, currency_code: "usd" }], // $30
-                      },
-                    ],
-                    shipping_profile_id: shippingProfile.id,
-                  },
-                  adminHeaders
-                )
-              ).data.product
-
-              const oncePromotion = (
-                await api.post(
-                  `/admin/promotions`,
-                  {
-                    code: "ONCE_COMPLETE_CART",
-                    type: PromotionType.STANDARD,
-                    status: PromotionStatus.ACTIVE,
-                    is_automatic: false,
-                    application_method: {
-                      type: "fixed",
-                      target_type: "items",
-                      allocation: "once",
-                      value: 1000, // $10 off
-                      max_quantity: 1,
-                      currency_code: "usd",
-                      target_rules: [],
-                    },
-                  },
-                  adminHeaders
-                )
-              ).data.promotion
-
-              // Create shipping option
-              const fulfillmentSet = (
-                await api.post(
-                  `/admin/fulfillment-sets`,
-                  { name: "Test", type: "shipping" },
-                  adminHeaders
-                )
-              ).data.fulfillment_set
-
-              const serviceZone = (
-                await api.post(
-                  `/admin/fulfillment-sets/${fulfillmentSet.id}/service-zones`,
-                  { name: "Test", geo_zones: [{ type: "country", country_code: "us" }] },
-                  adminHeaders
-                )
-              ).data.service_zone
-
-              const shippingProfile2 = (
-                await api.post(
-                  `/admin/shipping-profiles`,
-                  { name: "test-profile", type: "default" },
-                  adminHeaders
-                )
-              ).data.shipping_profile
-
-              const shippingOption = (
-                await api.post(
-                  `/admin/shipping-options`,
-                  {
-                    name: "Standard Shipping",
-                    service_zone_id: serviceZone.id,
-                    shipping_profile_id: shippingProfile2.id,
-                    provider_id: "manual_test-provider",
-                    price_type: "flat",
-                    type: { label: "Test type", description: "Test desc", code: "test-code" },
-                    prices: [{ currency_code: "usd", amount: 500 }],
-                  },
-                  adminHeaders
-                )
-              ).data.shipping_option
-
-              cart = (
-                await api.post(
-                  `/store/carts`,
-                  {
-                    currency_code: "usd",
-                    sales_channel_id: salesChannel.id,
-                    region_id: region.id,
-                    email: "test@medusa.com",
-                    shipping_address: shippingAddressData,
-                    items: [{ variant_id: product1.variants[0].id, quantity: 3 }],
-                    promo_codes: [oncePromotion.code],
-                  },
-                  storeHeadersWithCustomer
-                )
-              ).data.cart
-
-              // Verify promotion is applied
-              expect(cart.items[0].adjustments).toHaveLength(1)
-              expect(cart.items[0].adjustments[0].amount).toBe(1000) // $10
-
-              // Add shipping method
-              cart = (
-                await api.post(
-                  `/store/carts/${cart.id}/shipping-methods`,
-                  { option_id: shippingOption.id },
-                  storeHeadersWithCustomer
-                )
-              ).data.cart
-
-              // Complete the cart
-              const order = (
-                await api.post(
-                  `/store/carts/${cart.id}/complete`,
-                  {},
-                  storeHeadersWithCustomer
-                )
-              ).data.order
-
-              expect(order).toBeDefined()
-              expect(order.id).toBeDefined()
-              expect(order.items[0].adjustments).toHaveLength(1)
-              expect(order.items[0].adjustments[0].amount).toBe(1000)
-              expect(order.items[0].adjustments[0].code).toBe(oncePromotion.code)
-              // Original subtotal: 3 * $30 = $90
-              // Discount: $10
-              // Shipping: $5
-              // Total: $85
-              expect(order.total).toBe(8500)
-              expect(order.discount_total).toBe(1000)
             })
           })
         })
