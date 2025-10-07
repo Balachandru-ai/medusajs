@@ -22,11 +22,13 @@ For example, Medusa uses the Caching Module to cache product information. You ca
 
 The Caching Module stores and retrieves cached data using the caching service you've integrated, such as Redis or Memcached. This provides flexibility in customizing your Medusa application's infrastructure to meet your performance and scalability requirements.
 
+![Diagram illustrating the Caching Module architecture](https://res.cloudinary.com/dza7lstvk/image/upload/v1759846791/Medusa%20Resources/caching-overview_tz91tw.jpg)
+
 ### Caching Module vs Cache Module
 
 Before Medusa v2.11.0, you used the [Cache Module](../cache/page.mdx) to cache data. The Cache Module is now deprecated and has been replaced by the Caching Module.
 
-If you were using the Cache Module in your application, you should remove it from your `medusa-config.ts` and [migrate to the Caching Module instead](#install-the-caching-module).
+If you were using the Cache Module in your application, you should remove it from your `medusa-config.ts` and [migrate to the Caching Module instead](./migrate-cache/page.mdx).
 
 ---
 
@@ -73,7 +75,13 @@ module.exports = defineConfig({
 })
 ```
 
-This will register the Caching Module in your application with the [Redis Caching Module Provider](./providers/redis/page.mdx). Refer to its documentation to learn about other available options.
+This will register the Caching Module in your application with the [Redis Caching Module Provider](./providers/redis/page.mdx).
+
+<Note>
+
+The Caching Module requires at least one Caching Module Provider to be registered. If you don't register any providers, the Caching Module will throw an error when your application starts.
+
+</Note>
 
 ### What is a Caching Module Provider?
 
@@ -145,9 +153,7 @@ The `useQueryGraphStep` accepts an `options.cache` property that allows you to e
 
 When caching is enabled, the Caching Module stores the results in the underlying caching service (for example, Redis). Subsequent calls to the same query will retrieve the results from the cache, improving performance.
 
-{/* TODO check link */}
-
-Query and the Index Module accept other caching options, which you can learn about in the [Query guide](!docs!/learn/fundamentals/module-links/query#caching).
+Query and the Index Module accept other caching options, which you can learn about in the [Query guide](!docs!/learn/fundamentals/module-links/query#cache-query-results).
 
 ### 2. Caching with the Caching Module's Service
 

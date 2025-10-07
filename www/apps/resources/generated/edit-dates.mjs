@@ -202,7 +202,7 @@ export const generatedEditDates = {
   "app/infrastructure-modules/file/s3/page.mdx": "2025-06-24T08:50:10.115Z",
   "app/commerce-modules/api-key/_events/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/api-key/_events/_events-table/page.mdx": "2024-07-03T19:27:13+03:00",
-  "app/infrastructure-modules/cache/redis/page.mdx": "2025-10-07T08:21:23.078Z",
+  "app/infrastructure-modules/cache/redis/page.mdx": "2025-10-07T13:36:50.625Z",
   "app/infrastructure-modules/event/redis/page.mdx": "2025-06-24T08:50:10.115Z",
   "app/infrastructure-modules/event/local/page.mdx": "2025-03-27T14:53:13.309Z",
   "app/infrastructure-modules/workflow-engine/in-memory/page.mdx": "2024-11-19T16:37:47.262Z",
@@ -6613,9 +6613,10 @@ export const generatedEditDates = {
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-02T07:14:50.956Z",
   "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
   "app/infrastructure-modules/caching/in-memory/page.mdx": "2025-10-06T08:51:25.764Z",
-  "app/infrastructure-modules/caching/page.mdx": "2025-10-07T09:11:42.097Z",
+  "app/infrastructure-modules/caching/page.mdx": "2025-10-07T13:29:42.749Z",
   "app/infrastructure-modules/caching/redis/page.mdx": "2025-10-06T09:21:20.055Z",
   "app/infrastructure-modules/caching/providers/in-memory/page.mdx": "2025-10-06T10:33:22.566Z",
   "app/infrastructure-modules/caching/providers/page.mdx": "2025-10-07T08:21:46.233Z",
-  "app/infrastructure-modules/caching/providers/redis/page.mdx": "2025-10-06T10:33:12.788Z"
+  "app/infrastructure-modules/caching/providers/redis/page.mdx": "2025-10-06T10:33:12.788Z",
+  "app/infrastructure-modules/caching/migrate-cache/page.mdx": "2025-10-07T14:04:11.782Z"
 }
