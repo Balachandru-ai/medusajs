@@ -165,6 +165,23 @@ function makeRequest({ method, url, body, urlPattern } = {}) {
   return http.request(method, url, body, requestParams)
 }
 
+function makePostRequest({ url, body, urlPattern } = {}) {
+  return makeRequest({
+    method: "POST",
+    url,
+    body,
+    urlPattern,
+  })
+}
+
+function makeGetRequest({ url, urlPattern } = {}) {
+  return makeRequest({
+    method: "GET",
+    url,
+    urlPattern,
+  })
+}
+
 export function browseCatalog() {
   return group("Browse Flow", () => {
     const [regionsRes] = http.batch([
@@ -201,16 +218,14 @@ export function browseCatalog() {
 
     const productsParams = `region_id=${regionId}&fields=*variants.calculated_price&limit=20`
 
-    let res = makeRequest({
-      method: "GET",
+    let res = makeGetRequest({
       url: `${endpoint}/store/collections`,
     })
 
     check(res, { "collections ok": (r) => r.status === 200 })
     sleep(2 + Math.random() * 3)
 
-    res = makeRequest({
-      method: "GET",
+    res = makeGetRequest({
       url: `${endpoint}/store/products?${productsParams}`,
     })
 
@@ -222,8 +237,7 @@ export function browseCatalog() {
       return []
     }
 
-    res = makeRequest({
-      method: "GET",
+    res = makeGetRequest({
       url: `${endpoint}/store/products/${products[0].id}`,
       urlPattern: `${endpoint}/store/products/:id`,
     })
@@ -236,8 +250,7 @@ export function browseCatalog() {
 }
 
 function createCart() {
-  const res = makeRequest({
-    method: "POST",
+  const res = makePostRequest({
     url: `${endpoint}/store/carts`,
     body: JSON.stringify({
       region_id: regionId,
@@ -250,8 +263,7 @@ function createCart() {
 }
 
 function addItemToCart(cartId, variantId, quantity) {
-  const res = makeRequest({
-    method: "POST",
+  const res = makePostRequest({
     url: `${endpoint}/store/carts/${cartId}/line-items`,
     body: JSON.stringify({
       variant_id: variantId,
@@ -269,8 +281,7 @@ function viewCart(cartId) {
   const cartParams =
     "fields=*items,*region,*items.product,*items.variant,*items.thumbnail,*items.metadata,+items.total,*promotions,+shipping_methods.name"
 
-  const res = makeRequest({
-    method: "GET",
+  const res = makeGetRequest({
     url: `${endpoint}/store/carts/${cartId}?${cartParams}`,
     urlPattern: `${endpoint}/store/carts/:id?${cartParams}`,
   })
@@ -282,8 +293,7 @@ function viewCart(cartId) {
 
 function applyPromotion(cartId) {
   if (Math.random() < promoApplicationRate) {
-    const res = makeRequest({
-      method: "POST",
+    const res = makePostRequest({
       url: `${endpoint}/store/carts/${cartId}/promotions`,
       body: JSON.stringify({
         promo_codes: ["10OFF"],
@@ -300,8 +310,7 @@ function applyPromotion(cartId) {
 
 function browseMoreProducts() {
   const productsParams = `region_id=${regionId}&fields=*variants.calculated_price&limit=20`
-  const res = makeRequest({
-    method: "GET",
+  const res = makeGetRequest({
     url: `${endpoint}/store/products?${productsParams}`,
   })
 
@@ -319,24 +328,30 @@ function checkout(cart) {
     {
       method: "GET",
       url: `${endpoint}/store/carts/${cart.id}`,
-      urlPattern: `${endpoint}/store/carts/:id`,
+      params: { ...params, tags: { name: `${endpoint}/store/carts/:id` } },
     },
     {
       method: "GET",
       url: `${endpoint}/store/payment-providers?region_id=${regionId}`,
+      params: {
+        ...params,
+        tags: { name: `${endpoint}/store/payment-providers?region_id` },
+      },
     },
     {
       method: "GET",
       url: `${endpoint}/store/shipping-options?cart_id=${cart.id}`,
-      urlPattern: `${endpoint}/store/shipping-options?cart_id`,
+      params: {
+        ...params,
+        tags: { name: `${endpoint}/store/shipping-options?cart_id` },
+      },
     },
   ])
 
   check(res, { "view cart ok": (r) => r.status === 200 })
   sleep(2 + Math.random() * 3)
 
-  const selectedRegion = makeRequest({
-    method: "GET",
+  const selectedRegion = makeGetRequest({
     url: `${endpoint}/store/regions/${regionId}`,
     urlPattern: `${endpoint}/store/regions/:id`,
   })
@@ -346,8 +361,7 @@ function checkout(cart) {
 
   const country = JSON.parse(selectedRegion.body).region.countries[0].iso_2
 
-  const updateCartRes = makeRequest({
-    method: "POST",
+  const updateCartRes = makePostRequest({
     url: `${endpoint}/store/carts/${cart.id}`,
     body: JSON.stringify({
       shipping_address: {
@@ -377,8 +391,7 @@ function checkout(cart) {
     throw new Error("No shipping options available")
   }
 
-  const addShippingMethodRes = makeRequest({
-    method: "POST",
+  const addShippingMethodRes = makePostRequest({
     url: `${endpoint}/store/carts/${cart.id}/shipping-methods`,
     body: JSON.stringify({
       option_id: shippingOptions[0].id,
@@ -391,8 +404,7 @@ function checkout(cart) {
   })
   sleep(Math.random() * 3)
 
-  let paymentCollectionRes = makeRequest({
-    method: "POST",
+  let paymentCollectionRes = makePostRequest({
     url: `${endpoint}/store/payment-collections`,
     body: JSON.stringify({
       cart_id: cart.id,
@@ -415,8 +427,7 @@ function checkout(cart) {
     throw new Error("No payment providers available")
   }
 
-  let paymentSessionRes = makeRequest({
-    method: "POST",
+  let paymentSessionRes = makePostRequest({
     url: `${endpoint}/store/payment-collections/${paymentCollection.id}/payment-sessions`,
     body: JSON.stringify({
       provider_id: paymentProviders[0].id,
@@ -429,8 +440,7 @@ function checkout(cart) {
   })
   sleep(2 + Math.random() * 3)
 
-  let orderRes = makeRequest({
-    method: "POST",
+  let orderRes = makePostRequest({
     url: `${endpoint}/store/carts/${cart.id}/complete`,
     body: JSON.stringify({}),
     urlPattern: `${endpoint}/store/carts/:id/complete`,
@@ -442,8 +452,7 @@ function checkout(cart) {
   const order = JSON.parse(orderRes.body).order
   sleep(Math.random() * 3)
 
-  orderRes = makeRequest({
-    method: "GET",
+  orderRes = makeGetRequest({
     url: `${endpoint}/store/orders/${order.id}`,
     urlPattern: `${endpoint}/store/orders/:id`,
   })
