@@ -54,9 +54,6 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.6.2"
   },
-  "resolutions": {
-    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm:^6.0.0#.yarn/patches/changesets.patch"
-  },
   "packageManager": "yarn@3.2.1",
   "gitHead": "41a5425405aea5045a26def95c0dc00cf4a5a44d"
 }
