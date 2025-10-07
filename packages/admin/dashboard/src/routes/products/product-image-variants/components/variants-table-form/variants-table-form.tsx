@@ -8,8 +8,8 @@ import {
 } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as zod from "zod"
 import { keepPreviousData } from "@tanstack/react-query"
+import * as zod from "zod"
 
 import { AdminProduct } from "@medusajs/types"
 
@@ -25,7 +25,7 @@ import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 
 const PAGE_SIZE = 20
 
-type VariantsTableProps = {
+type VariantsTableFormProps = {
   productId: string
   image: { id: string; variants: { id: string }[] }
 }
@@ -37,7 +37,10 @@ const BatchImageVariantsSchema = zod.object({
 const variantColumnHelper =
   createColumnHelper<NonNullable<AdminProduct["variants"]>[0]>()
 
-export const VariantsTable = ({ productId, image }: VariantsTableProps) => {
+export const VariantsTableForm = ({
+  productId,
+  image,
+}: VariantsTableFormProps) => {
   const { t } = useTranslation()
 
   const { handleSuccess } = useRouteModal()

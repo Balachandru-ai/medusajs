@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { json, useParams } from "react-router-dom"
 
 import { RouteDrawer } from "../../../components/modals"
-import { VariantsTable } from "./components/variants-table/variants-table"
+import { VariantsTableForm } from "./components/variants-table-form/variants-table-form"
 import { useProduct } from "../../../hooks/api"
 
 export const ProductImageVariants = () => {
@@ -47,7 +47,7 @@ export const ProductImageVariants = () => {
           </div>
         </div>
       </RouteDrawer.Header>
-      <VariantsTable productId={product_id} image={image} />
+      <VariantsTableForm productId={product_id} image={image} />
     </RouteDrawer>
   )
 }
