@@ -1,3 +1,5 @@
+import { Table } from "docs-ui"
+
 export const metadata = {
   title: `In-Memory Caching Module Provider`,
 }
@@ -18,9 +20,112 @@ The Caching Module and its providers are available starting [Medusa v2.11.0](htt
 
 ## Register the In-Memory Caching Module
 
-The In-Memory Caching Module Provider is registered by default in your application. It will be used as the [default Caching Module Provider](../page.mdx#default-caching-module-provider) if you don't configure another default Caching Module Provider.
+To enable and configure the In-Memory Caching Module Provider, add the `in_memory` option to the Caching Module configuration in your `medusa-config.ts` file:
 
-You can also explicitly specify it for caching operations, as explained in the [next section](#test-the-in-memory-caching-module).
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/caching",
+      options: {
+        in_memory: {
+          enable: true,
+          // other options...
+        },
+      }
+    }
+  ]
+})
+```
+
+This will enable the In-Memory Caching Module Provider in your Medusa application. It will be used as the default provider if no other provider is set as default, as explained in the [Caching Module Providers guide](../page.mdx#default-caching-module-provider).
+
+### In-Memory Caching Module Provider Options
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Option
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Default
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `enable`
+      </Table.Cell>
+      <Table.Cell>
+        A boolean indicating whether to enable the In-Memory Caching Module Provider.
+      </Table.Cell>
+      <Table.Cell>
+        `false`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `ttl`
+      </Table.Cell>
+      <Table.Cell>
+        The number of seconds an item can live in the cache before it’s removed.
+      </Table.Cell>
+      <Table.Cell>
+        `3600` seconds (1 hour)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `maxKeys`
+      </Table.Cell>
+      <Table.Cell>
+        The maximum number of items to store in the cache. When the limit is reached and a new item is added, an error is thrown and the new item is not cached. Setting it to `-1` disables the limit.
+      </Table.Cell>
+      <Table.Cell>
+        `25000` items
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `checkPeriod`
+      </Table.Cell>
+      <Table.Cell>
+        A number indicating the interval (in seconds) at which the cache is checked for expired items. Set to `0` to disable automatic checks.
+      </Table.Cell>
+      <Table.Cell>
+        `60` seconds (1 minute)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `useClones`
+      </Table.Cell>
+      <Table.Cell>
+        A boolean indicating whether to use clones of cached items. If `true`, you'll get a copy of the cached item when retrieving it, preventing accidental modifications to the cached data. If `false`, you'll get a reference to the cached item.
+      </Table.Cell>
+      <Table.Cell>
+        `false`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `maxSize`
+      </Table.Cell>
+      <Table.Cell>
+        A number indicating the maximum size (in bytes) of the cache. When the limit is reached, the least recently used items will be evicted from the cache.
+      </Table.Cell>
+      <Table.Cell>
+        `300 * 1024 * 1024` bytes (300 MB)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
 
 ---
 
@@ -28,9 +133,7 @@ You can also explicitly specify it for caching operations, as explained in the [
 
 You can test the In-Memory Caching Module by caching data using the Query or Index Module, or by directly using the Caching Module's service, as described in the [Caching Module guide](../page.mdx#how-to-use-the-caching-module).
 
-If you don't have any other Caching Module Provider configured, the In-Memory Caching Module Provider will be used as the [default provider](../page.mdx#default-caching-module-provider) to store and retrieve cached data.
-
-You can also explicitly specify the In-Memory Caching Module Provider by using its provider ID, which is `cache-memory`, when caching data with Query, the Index Module, or directly with the Caching Module's service.
+If the In-Memory Caching Module Provider isn't the default provider, you can explicitly specify the In-Memory Caching Module Provider by using its provider ID, which is `cache-memory`, when caching data with Query, the Index Module, or directly with the Caching Module's service.
 
 For example, you can create a workflow in `src/workflows/cache-products.ts` that caches products using the In-Memory Caching Module Provider:
 

@@ -30,6 +30,55 @@ Your Medusa application now uses the Caching Module by default. If you were usin
 
 ---
 
+## Install the Caching Module
+
+The Caching Module is installed by default in your application. To use it, you must enable the caching feature flag and register the module in your `medusa-config.ts` file.
+
+### 1. Enable Caching Feature Flag
+
+The caching feature is currently hidden behind a feature flag. To enable it, set the `MEDUSA_FF_CACHING` environment variable to `true` in your `.env` file:
+
+```bash
+MEDUSA_FF_CACHING=true
+```
+
+This will allow you to use the Caching Module, and will enable caching features in Medusa's core.
+
+### 2. Register the Caching Module
+
+Next, add the Caching Module into the `modules` property of the exported object in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/caching",
+      options: {
+        // If you want to use the in-memory provider for development
+        in_memory: {
+          enable: true
+        },
+        providers: [
+          // Register other providers like Redis...
+        ]
+      }
+    }
+  ]
+})
+```
+
+This will register the Caching Module in your application and enable the [In-Memory Caching Module Provider](./providers/in-memory/page.mdx) for development.
+
+### Caching Module Options
+
+The Caching Module accepts the following options:
+
+1. `in_memory` (optional): Configuration for the [In-Memory Caching Module Provider](./providers/in-memory/page.mdx). This provider is suitable for development and testing purposes. Refer to its documentation for available options.
+2. `providers` (optional): An array of configurations for other [Caching Module Providers](#what-is-a-caching-module-provider). You can register multiple providers and specify which one to use as the default. Refer to the documentation of each provider for available options.
+
+---
+
 ## How to Use the Caching Module
 
 There are two ways to cache data with the Caching Module: when retrieving data with the [Query](!docs!/learn/fundamentals/module-links/query) and [Index Module](!docs!/learn/fundamentals/module-links/index-module), or by directly using the Caching Module's service.
