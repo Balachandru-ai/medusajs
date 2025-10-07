@@ -74,13 +74,13 @@ export const infrastructureModulesSidebar = [
         children: [
           {
             type: "link",
-            path: "/infrastructure-modules/caching/providers/in-memory",
-            title: "In-Memory",
+            path: "/infrastructure-modules/caching/providers/redis",
+            title: "Redis",
           },
           {
             type: "link",
-            path: "/infrastructure-modules/caching/providers/redis",
-            title: "Redis",
+            path: "#",
+            title: "Memcached",
           },
         ],
       },

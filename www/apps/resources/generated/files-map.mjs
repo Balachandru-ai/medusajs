@@ -836,10 +836,6 @@ export const filesMap = [
     "pathname": "/infrastructure-modules/caching"
   },
   {
-    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/providers/in-memory/page.mdx",
-    "pathname": "/infrastructure-modules/caching/providers/in-memory"
-  },
-  {
     "filePath": "/www/apps/resources/app/infrastructure-modules/caching/providers/page.mdx",
     "pathname": "/infrastructure-modules/caching/providers"
   },

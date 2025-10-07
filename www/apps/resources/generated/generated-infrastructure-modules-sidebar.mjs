@@ -112,16 +112,16 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
-              "path": "/infrastructure-modules/caching/providers/in-memory",
-              "title": "In-Memory",
+              "path": "/infrastructure-modules/caching/providers/redis",
+              "title": "Redis",
               "children": []
             },
             {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
-              "path": "/infrastructure-modules/caching/providers/redis",
-              "title": "Redis",
+              "path": "#",
+              "title": "Memcached",
               "children": []
             }
           ]
