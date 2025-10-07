@@ -461,6 +461,14 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
       const findOptions_ = { ...options }
       findOptions_.options ??= {}
 
+      if (!("strategy" in findOptions_.options)) {
+        if (findOptions_.options.limit != null || findOptions_.options.offset) {
+          Object.assign(findOptions_.options, {
+            strategy: LoadStrategy.BALANCED,
+          })
+        }
+      }
+
       MikroOrmBaseRepository.compensateRelationFieldsSelectionFromLoadStrategy({
         findOptions: findOptions_,
       })
@@ -480,6 +488,14 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
 
       const findOptions_ = { ...findOptions }
       findOptions_.options ??= {}
+
+      if (!("strategy" in findOptions_.options)) {
+        if (findOptions_.options.limit != null || findOptions_.options.offset) {
+          Object.assign(findOptions_.options, {
+            strategy: LoadStrategy.BALANCED,
+          })
+        }
+      }
 
       MikroOrmBaseRepository.compensateRelationFieldsSelectionFromLoadStrategy({
         findOptions: findOptions_,

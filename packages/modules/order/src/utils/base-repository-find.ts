@@ -17,13 +17,6 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     findOptions_.options ??= {}
     findOptions_.where ??= {}
 
-    if (
-      "strategy" in findOptions_.options &&
-      findOptions_.options.strategy === LoadStrategy.BALANCED
-    ) {
-      findOptions_.options.strategy = LoadStrategy.JOINED
-    }
-
     if (!("strategy" in findOptions_.options)) {
       if (findOptions_.options.limit != null || findOptions_.options.offset) {
         Object.assign(findOptions_.options, {

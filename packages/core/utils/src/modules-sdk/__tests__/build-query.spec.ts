@@ -1,7 +1,6 @@
 import { FindConfig } from "@medusajs/types"
 import { SoftDeletableFilterKey } from "../../dal/mikro-orm/mikro-orm-soft-deletable-filter"
 import { buildQuery } from "../build-query"
-import { LoadStrategy } from "@medusajs/deps/mikro-orm/core"
 
 describe("buildQuery", () => {
   test("should return empty where and basic options when no filters or config provided", () => {
@@ -13,7 +12,6 @@ describe("buildQuery", () => {
         fields: undefined,
         limit: undefined,
         offset: undefined,
-        strategy: LoadStrategy.BALANCED,
       },
     })
   })
