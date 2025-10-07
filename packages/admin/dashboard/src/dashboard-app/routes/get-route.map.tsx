@@ -206,6 +206,13 @@ export function getRouteMap({
                             ),
                         },
                         {
+                          path: "media",
+                          lazy: () =>
+                            import(
+                              "../../routes/product-variants/product-variant-media"
+                            ),
+                        },
+                        {
                           path: "metadata/edit",
                           lazy: () =>
                             import(
