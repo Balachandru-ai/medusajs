@@ -51,7 +51,6 @@ import {
 } from "../__fixtures__/workflow_1_auto_retries_false"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
 
-import { Redis } from "ioredis"
 import {
   step1InvokeMock as step1InvokeMockManualRetry,
   step2InvokeMock as step2InvokeMockManualRetry,
@@ -515,8 +514,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               transactionId,
               throwOnError: false,
             })
-
-            await setTimeout(2000)
 
             await setTimeout(3000)
 
