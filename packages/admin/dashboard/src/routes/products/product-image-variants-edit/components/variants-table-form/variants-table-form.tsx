@@ -77,6 +77,8 @@ export const VariantsTableForm = ({
       (id) => !newVariantIds.includes(id)
     )
 
+    // TODO: remove thumbnail if variant is removed
+
     await mutateAsync(
       {
         add: variantsToAdd,
@@ -142,6 +144,19 @@ export const VariantsTableForm = ({
           return (
             <div className="flex h-full w-full items-center">
               <span className="truncate font-mono text-sm">{sku || "-"}</span>
+            </div>
+          )
+        },
+      }),
+      variantColumnHelper.accessor("thumbnail", {
+        header: () => t("fields.thumbnail"),
+        cell: ({ getValue }) => {
+          const isThumbnail = getValue() === image.url
+          return (
+            <div className="flex h-full w-full items-center">
+              <span className="truncate text-sm">
+                {isThumbnail ? t("fields.true") : t("fields.false")}
+              </span>
             </div>
           )
         },

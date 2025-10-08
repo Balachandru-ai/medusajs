@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { ThumbnailBadge } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import { Button, Checkbox, clx, toast } from "@medusajs/ui"
-import { useCallback, useState } from "react"
+import { Button, Checkbox, clx, CommandBar, toast, Tooltip } from "@medusajs/ui"
+import { Fragment, useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -11,13 +12,17 @@ import {
   useRouteModal,
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useBatchVariantImages } from "../../../../../hooks/api/products"
+import {
+  useBatchVariantImages,
+  useUpdateProductVariant,
+} from "../../../../../hooks/api/products"
 
 /**
  * Schema
  */
 const MediaSchema = z.object({
   image_ids: z.array(z.string()),
+  thumbnail: z.string().nullable(),
 })
 
 type MediaSchemaType = z.infer<typeof MediaSchema>
@@ -57,9 +62,15 @@ export const EditProductVariantMediaForm = ({
   const form = useForm<MediaSchemaType>({
     defaultValues: {
       image_ids: allVariantImages.map((image) => image.id!),
+      thumbnail: variant.thumbnail,
     },
     resolver: zodResolver(MediaSchema),
   })
+
+  const { mutateAsync: updateVariant } = useUpdateProductVariant(
+    variant.product_id!,
+    variant.id!
+  )
 
   const { mutateAsync, isPending } = useBatchVariantImages(
     variant.product_id!,
@@ -79,6 +90,23 @@ export const EditProductVariantMediaForm = ({
       (id) => !newVariantImageIds.includes(id)
     )
 
+    // Update thumbnail if it has changed
+    if (data.thumbnail !== variant.thumbnail) {
+      let thumbnail = data.thumbnail
+      if (
+        thumbnail &&
+        ![...currentVariantImageIds, ...newVariantImageIds].includes(thumbnail)
+      ) {
+        thumbnail = null
+      }
+      updateVariant({
+        thumbnail: data.thumbnail,
+      }).catch((error) => {
+        toast.error(error.message)
+      })
+    }
+
+    // Update variant images
     await mutateAsync(
       {
         add: imagesToAdd,
@@ -110,6 +138,28 @@ export const EditProductVariantMediaForm = ({
     [selection]
   )
 
+  const handlePromoteToThumbnail = () => {
+    const ids = Object.keys(selection)
+
+    if (!ids.length) {
+      return
+    }
+
+    const selectedImage = allProductImages.find((image) => image.id === ids[0])
+    if (selectedImage) {
+      form.setValue("thumbnail", selectedImage.url)
+    }
+  }
+
+  const selectedImageThumbnail = form.watch("thumbnail")
+
+  const isSelectedImageThumbnail =
+    variant.thumbnail &&
+    Object.keys(selection).length === 1 &&
+    selectedImageThumbnail ===
+      variant.images.find((image) => image.id === Object.keys(selection)[0])
+        ?.url
+
   return (
     <RouteFocusModal.Form blockSearchParams form={form}>
       <KeyboundForm
@@ -127,12 +177,32 @@ export const EditProductVariantMediaForm = ({
                     media={image}
                     checked={!!selection[image.id!]}
                     onCheckedChange={handleCheckedChange(image.id!)}
+                    isThumbnail={image.url === form.watch("thumbnail")}
                   />
                 ))}
               </div>
             </div>
           </div>
         </RouteFocusModal.Body>
+        <CommandBar
+          open={
+            Object.keys(selection).length === 1 && !isSelectedImageThumbnail
+          }
+        >
+          <CommandBar.Bar>
+            <CommandBar.Value>
+              {t("general.countSelected", {
+                count: Object.keys(selection).length,
+              })}
+            </CommandBar.Value>
+            <CommandBar.Seperator />
+            <CommandBar.Command
+              action={handlePromoteToThumbnail}
+              label={t("products.media.makeThumbnail")}
+              shortcut="t"
+            />
+          </CommandBar.Bar>
+        </CommandBar>
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
@@ -161,12 +231,14 @@ interface MediaGridItemProps {
   media: MediaView
   checked: boolean
   onCheckedChange: (value: boolean) => void
+  isThumbnail: boolean
 }
 
 const MediaGridItem = ({
   media,
   checked,
   onCheckedChange,
+  isThumbnail,
 }: MediaGridItemProps) => {
   const handleToggle = useCallback(
     (value: boolean) => {
@@ -175,12 +247,21 @@ const MediaGridItem = ({
     [onCheckedChange]
   )
 
+  const { t } = useTranslation()
+
   return (
     <div
       className={clx(
         "shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full overflow-hidden rounded-lg outline-none"
       )}
     >
+      {isThumbnail && (
+        <div className="absolute left-2 top-2">
+          <Tooltip content={t("products.media.thumbnailTooltip")}>
+            <ThumbnailBadge />
+          </Tooltip>
+        </div>
+      )}
       <div
         className={clx("transition-fg absolute right-2 top-2 opacity-0", {
           "group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100":

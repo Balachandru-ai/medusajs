@@ -1,7 +1,7 @@
-import { Container, Heading, Text, clx } from "@medusajs/ui"
+import { Container, Heading, Text, Tooltip } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { HttpTypes } from "@medusajs/types"
-import { PencilSquare } from "@medusajs/icons"
+import { PencilSquare, ThumbnailBadge } from "@medusajs/icons"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
 
@@ -43,11 +43,13 @@ export const VariantMediaSection = ({ variant }: VariantMediaSectionProps) => {
                 className="shadow-elevation-card-rest hover:shadow-elevation-card-hover transition-fg group relative aspect-square size-full overflow-hidden rounded-[8px]"
                 key={i.id}
               >
-                <div
-                  className={clx(
-                    "transition-fg invisible absolute right-2 top-2 opacity-0 group-hover:visible group-hover:opacity-100"
-                  )}
-                ></div>
+                {i.url === variant.thumbnail && (
+                  <div className="absolute left-2 top-2">
+                    <Tooltip content={t("products.media.thumbnailTooltip")}>
+                      <ThumbnailBadge />
+                    </Tooltip>
+                  </div>
+                )}
                 <img src={i.url} className="size-full object-cover" />
               </div>
             )
