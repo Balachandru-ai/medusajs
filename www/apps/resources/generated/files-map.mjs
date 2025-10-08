@@ -728,10 +728,6 @@ export const filesMap = [
     "pathname": "/data-model-repository-reference/tips/filtering"
   },
   {
-    "filePath": "/www/apps/resources/app/deployment/medusa-application/railway/page.mdx",
-    "pathname": "/deployment/medusa-application/railway"
-  },
-  {
     "filePath": "/www/apps/resources/app/deployment/page.mdx",
     "pathname": "/deployment"
   },
@@ -758,6 +754,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/abandoned-cart/page.mdx",
     "pathname": "/how-to-tutorials/tutorials/abandoned-cart"
+  },
+  {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/agentic-commerce/page.mdx",
+    "pathname": "/how-to-tutorials/tutorials/agentic-commerce"
   },
   {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/first-purchase-discounts/page.mdx",
@@ -924,6 +924,10 @@ export const filesMap = [
     "pathname": "/integrations/guides/mailchimp"
   },
   {
+    "filePath": "/www/apps/resources/app/integrations/guides/meilisearch/page.mdx",
+    "pathname": "/integrations/guides/meilisearch"
+  },
+  {
     "filePath": "/www/apps/resources/app/integrations/guides/payload/page.mdx",
     "pathname": "/integrations/guides/payload"
   },
@@ -1018,6 +1022,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/nextjs-starter/guides/revalidate-cache/page.mdx",
     "pathname": "/nextjs-starter/guides/revalidate-cache"
+  },
+  {
+    "filePath": "/www/apps/resources/app/nextjs-starter/guides/storefront-returns/page.mdx",
+    "pathname": "/nextjs-starter/guides/storefront-returns"
   },
   {
     "filePath": "/www/apps/resources/app/nextjs-starter/page.mdx",
@@ -1274,6 +1282,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/storefront-development/page.mdx",
     "pathname": "/storefront-development"
+  },
+  {
+    "filePath": "/www/apps/resources/app/storefront-development/production-optimizations/page.mdx",
+    "pathname": "/storefront-development/production-optimizations"
   },
   {
     "filePath": "/www/apps/resources/app/storefront-development/products/categories/list/page.mdx",

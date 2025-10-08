@@ -33,7 +33,7 @@ import {
   promiseAll,
   registerFeatureFlag,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/deps/awilix"
 import { Link } from "./link"
 import {
   MedusaModule,
@@ -609,6 +609,7 @@ async function MedusaApp_({
     query: createQuery({
       remoteQuery,
       indexModule,
+      container: sharedContainer_,
     }) as any, // TODO: rm any once we remove the old RemoteQueryFunction and rely on the Query object instead,
     entitiesMap,
     gqlSchema: schema,

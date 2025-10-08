@@ -17,6 +17,7 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
+import { setTimeout } from "timers/promises"
 
 jest.setTimeout(100000)
 
@@ -152,6 +153,16 @@ medusaIntegrationTestRunner({
         ).data.promotion
       })
 
+      describe("GET /store/carts/[id]", () => {
+        it("should return 404 when trying to fetch a cart that does not exist", async () => {
+          const response = await api
+            .get(`/store/carts/fake`, storeHeadersWithCustomer)
+            .catch((e) => e)
+
+          expect(response.response.status).toEqual(404)
+        })
+      })
+
       describe("POST /store/carts", () => {
         it("should successfully create a cart", async () => {
           const response = await api.post(
@@ -281,6 +292,156 @@ medusaIntegrationTestRunner({
               subtotal: 5714.285714285715,
               tax_total: 285.7142857142857,
               total: 6000,
+            })
+          )
+        })
+
+        it("should successfully create a cart with a line items for the same variant with different quantities and calculate prices based on the correct quantity", async () => {
+          const productData = {
+            title: "Medusa T-Shirt based quantity",
+            handle: "t-shirt-with-quantity-prices",
+            status: ProductStatus.PUBLISHED,
+            options: [
+              {
+                title: "Size",
+                values: ["S"],
+              },
+            ],
+            variants: [
+              {
+                title: "S",
+                sku: "SHIRT-S-BLACK-w-quantity-prices",
+                options: {
+                  Size: "S",
+                },
+                manage_inventory: false,
+                prices: [
+                  {
+                    amount: 1500,
+                    currency_code: "usd",
+                    min_quantity: 1,
+                    max_quantity: 4,
+                  },
+                  {
+                    amount: 1000,
+                    currency_code: "usd",
+                    min_quantity: 5,
+                    max_quantity: 10,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const newProduct = await api.post(
+            `/admin/products`,
+            productData,
+            adminHeaders
+          )
+
+          const variantId = newProduct.data.product.variants[0].id
+
+          const newCart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+                items: [{ variant_id: variantId, quantity: 6 }],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(newCart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 5714.285714285715,
+              item_tax_total: 285.7142857142857,
+              item_total: 6000,
+              items: [
+                expect.objectContaining({
+                  quantity: 6,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1000,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ],
+              original_item_subtotal: 5714.285714285715,
+              original_item_tax_total: 285.7142857142857,
+              original_item_total: 6000,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 285.7142857142857,
+              original_total: 6000,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 5714.285714285715,
+              tax_total: 285.7142857142857,
+              total: 6000,
+            })
+          )
+
+          const updatedCart = (
+            await api.post(
+              `/store/carts/${newCart.id}/line-items`,
+              {
+                variant_id: variantId,
+                quantity: 1,
+                metadata: { custom: true },
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(updatedCart).toEqual(
+            expect.objectContaining({
+              item_subtotal: 7142.857142857143,
+              item_tax_total: 357.14285714285717,
+              item_total: 7500,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  quantity: 6,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1000,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+                expect.objectContaining({
+                  quantity: 1,
+                  title: "Medusa T-Shirt based quantity",
+                  unit_price: 1500,
+                  updated_at: expect.any(String),
+                  variant_barcode: null,
+                  variant_id: expect.any(String),
+                  variant_sku: "SHIRT-S-BLACK-w-quantity-prices",
+                  variant_title: "S",
+                }),
+              ]),
+              original_item_subtotal: 7142.857142857143,
+              original_item_tax_total: 357.14285714285717,
+              original_item_total: 7500,
+              original_shipping_subtotal: 0,
+              original_shipping_tax_total: 0,
+              original_shipping_total: 0,
+              original_tax_total: 357.14285714285717,
+              original_total: 7500,
+              shipping_subtotal: 0,
+              shipping_tax_total: 0,
+              shipping_total: 0,
+              subtotal: 7142.857142857143,
+              tax_total: 357.14285714285717,
+              total: 7500,
             })
           )
         })
@@ -1711,6 +1872,80 @@ medusaIntegrationTestRunner({
             )
           })
 
+          it("should successfully complete cart and fail on concurrent complete", async () => {
+            const paymentCollection = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart.id },
+                storeHeaders
+              )
+            ).data.payment_collection
+
+            await api.post(
+              `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
+
+            await createCartCreditLinesWorkflow.run({
+              input: [
+                {
+                  cart_id: cart.id,
+                  amount: 100,
+                  currency_code: "usd",
+                  reference: "test",
+                  reference_id: "test",
+                },
+              ],
+              container: appContainer,
+            })
+
+            // Concurrently complete the cart
+            let completedCart: any[] = []
+            for (let i = 0; i < 5; i++) {
+              completedCart.push(
+                api
+                  .post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+                  .catch((e) => e)
+              )
+
+              await setTimeout(25)
+            }
+
+            let all = await Promise.all(completedCart)
+
+            let success = all.filter((res) => res.status === 200)
+            let failure = all.filter((res) => res.status !== 200)
+
+            const successData = success[0].data.order
+            for (const res of success) {
+              expect(res.data.order).toEqual(successData)
+            }
+
+            expect(failure.length).toBeGreaterThan(0)
+
+            expect(successData).toEqual(
+              expect.objectContaining({
+                id: expect.any(String),
+                currency_code: "usd",
+                credit_lines: [
+                  expect.objectContaining({
+                    amount: 100,
+                    reference: "test",
+                    reference_id: "test",
+                  }),
+                ],
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    unit_price: 1500,
+                    compare_at_unit_price: null,
+                    quantity: 1,
+                  }),
+                ]),
+              })
+            )
+          })
+
           it("should successfully complete cart", async () => {
             const paymentCollection = (
               await api.post(
@@ -1726,7 +1961,7 @@ medusaIntegrationTestRunner({
               storeHeaders
             )
 
-            createCartCreditLinesWorkflow.run({
+            await createCartCreditLinesWorkflow.run({
               input: [
                 {
                   cart_id: cart.id,
@@ -1879,6 +2114,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product without inventory management",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -2072,6 +2308,7 @@ medusaIntegrationTestRunner({
                   "/admin/products",
                   {
                     title: `Test fixture ${shippingProfile.id}`,
+                    status: ProductStatus.PUBLISHED,
                     shipping_profile_id: shippingProfile.id,
                     options: [
                       { title: "pack", values: ["1-pack", "2-pack", "3-pack"] },
@@ -2391,6 +2628,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "test product",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {
@@ -2736,6 +2974,7 @@ medusaIntegrationTestRunner({
               {
                 title: "Gift Card",
                 description: "test",
+                status: ProductStatus.PUBLISHED,
                 is_giftcard: true,
                 options: [
                   {
@@ -3295,6 +3534,7 @@ medusaIntegrationTestRunner({
                 "/admin/products",
                 {
                   title: "Medusa T-Shirt not discountable",
+                  status: ProductStatus.PUBLISHED,
                   handle: "t-shirt-not-discountable",
                   discountable: false,
                   options: [
@@ -3471,6 +3711,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3587,6 +3828,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3705,6 +3947,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3823,6 +4066,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -3960,6 +4204,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4076,6 +4321,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4213,6 +4459,7 @@ medusaIntegrationTestRunner({
                 {
                   title: "Product for free",
                   description: "test",
+                  status: ProductStatus.PUBLISHED,
                   options: [
                     {
                       title: "Size",
@@ -4307,6 +4554,7 @@ medusaIntegrationTestRunner({
                 `/admin/products`,
                 {
                   title: "Product for free",
+                  status: ProductStatus.PUBLISHED,
                   description: "test",
                   options: [
                     {

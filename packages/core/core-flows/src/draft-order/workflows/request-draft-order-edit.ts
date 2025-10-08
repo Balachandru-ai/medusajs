@@ -4,7 +4,7 @@ import {
   transform,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { OrderChangeDTO, OrderDTO } from "@medusajs/types"
+import type { OrderChangeDTO, OrderDTO } from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrUpdateOrderPaymentCollectionWorkflow,
@@ -12,6 +12,7 @@ import {
   updateOrderChangesStep,
 } from "../../order"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 
 export const requestDraftOrderEditId = "request-draft-order-edit"
 
@@ -51,10 +52,10 @@ export type RequestDraftOrderEditWorkflowInput = {
 /**
  * This workflow requests a draft order edit. It's used by the
  * [Request Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditrequest).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * requesting a draft order edit.
- * 
+ *
  * @example
  * const { result } = await requestDraftOrderEditWorkflow(container)
  * .run({
@@ -63,14 +64,20 @@ export type RequestDraftOrderEditWorkflowInput = {
  *     requested_by: "user_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Request a draft order edit.
  */
 export const requestDraftOrderEditWorkflow = createWorkflow(
   requestDraftOrderEditId,
   function (input: RequestDraftOrderEditWorkflowInput) {
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["id", "version", "status", "is_draft_order", "canceled_at"],
@@ -103,6 +110,10 @@ export const requestDraftOrderEditWorkflow = createWorkflow(
       input: {
         order_id: order.id,
       },
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
 
     return new WorkflowResponse(previewOrderChangeStep(order.id))

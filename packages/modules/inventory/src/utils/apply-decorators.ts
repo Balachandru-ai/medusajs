@@ -4,7 +4,7 @@ import {
   MathBN,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { Formula, OnInit } from "@mikro-orm/core"
+import { Formula, OnInit } from "@medusajs/framework/mikro-orm/core"
 
 import InventoryItem from "../models/inventory-item"
 import InventoryLevel from "../models/inventory-level"

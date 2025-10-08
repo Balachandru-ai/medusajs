@@ -1,6 +1,6 @@
-import pg from "pg"
+import pg from "@medusajs/deps/pg"
 
-const { Client } = pg
+const { Client } = pg as any
 
 export const DEFAULT_HOST = "localhost"
 export const DEFAULT_PORT = 5432
