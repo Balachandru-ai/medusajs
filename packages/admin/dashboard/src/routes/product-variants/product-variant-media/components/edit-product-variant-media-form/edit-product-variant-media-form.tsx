@@ -12,15 +12,23 @@ import {
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 
-type ProductVariantMediaViewProps = {
-  variant: HttpTypes.AdminProductVariant
-}
-
+/**
+ * Schema
+ */
 const MediaSchema = z.object({
   image_ids: z.array(z.string()),
 })
 
 type MediaSchemaType = z.infer<typeof MediaSchema>
+
+/**
+ * Prop types
+ */
+type ProductVariantMediaViewProps = {
+  variant: HttpTypes.AdminProductVariant & {
+    images: HttpTypes.AdminProductImage[]
+  }
+}
 
 export const EditProductVariantMediaForm = ({
   variant,
@@ -28,32 +36,47 @@ export const EditProductVariantMediaForm = ({
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
 
-  const [selection, setSelection] = useState<Record<string, true>>(
-    variant.images
-      .filter((image) =>
-        image.variants?.some((variant) => variant.id === variant.id)
-      )
-      .reduce(
-        (acc, image) => {
-          acc[image.id] = true
-          return acc
-        },
+  const allProductImages = variant.product?.images || []
+  // find images directly scoped to the variant without general product images
+  const allVariantImages = (variant.images || []).filter((image) =>
+    image.variants?.some((variant) => variant.id === variant.id)
+  )
 
-        {} as Record<string, true>
-      )
+  const [selection, setSelection] = useState<Record<string, true>>(() =>
+    allVariantImages.reduce(
+      // @eslint-disable-next-line
+      (acc: Record<string, true>, image) => {
+        acc[image.id] = true
+        return acc
+      },
+      {}
+    )
   )
 
   const form = useForm<MediaSchemaType>({
     defaultValues: {
-      image_ids: Object.keys(selection),
+      image_ids: allVariantImages.map((image) => image.id!),
     },
     resolver: zodResolver(MediaSchema),
   })
 
-  // @ts-ignore
   const { mutateAsync, isPending } = {}
 
-  const handleSubmit = form.handleSubmit(async ({ media }) => {
+  const handleSubmit = form.handleSubmit(async (data) => {
+    const currentVariantImageIds = data.image_ids
+    const newVariantImageIds = Object.keys(selection).filter(
+      (id) => selection[id]
+    )
+
+    const imagesToAdd = newVariantImageIds.filter(
+      (id) => !currentVariantImageIds.includes(id)
+    )
+    const imagesToRemove = currentVariantImageIds.filter(
+      (id) => !newVariantImageIds.includes(id)
+    )
+
+    // TODO: API CALL
+
     await mutateAsync(
       {},
       {
@@ -93,7 +116,7 @@ export const EditProductVariantMediaForm = ({
           <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr]">
             <div className="bg-ui-bg-subtle size-full overflow-auto">
               <div className="grid h-fit auto-rows-auto grid-cols-6 gap-6 p-6">
-                {variant.product.images?.map((image) => (
+                {allProductImages.map((image) => (
                   <MediaGridItem
                     key={image.id}
                     media={image}
@@ -121,6 +144,8 @@ export const EditProductVariantMediaForm = ({
     </RouteFocusModal.Form>
   )
 }
+
+/* ******************* * MEDIA VIEW ******************* */
 
 interface MediaView {
   id: string

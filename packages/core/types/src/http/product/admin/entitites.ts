@@ -75,7 +75,16 @@ export interface AdminProductOption extends BaseProductOption {
    */
   values?: AdminProductOptionValue[]
 }
-export interface AdminProductImage extends BaseProductImage {}
+export interface AdminProductImage extends BaseProductImage {
+  /**
+   * The product that the image belongs to.
+   */
+  product?: AdminProduct | null
+  /**
+   * The variants that the image is scoped to.
+   */
+  variants?: AdminProductVariant[] | null
+}
 export interface AdminProductOptionValue extends BaseProductOptionValue {
   /**
    * The option's details.

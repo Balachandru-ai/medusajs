@@ -1,8 +1,14 @@
 import { useTranslation } from "react-i18next"
 import { useParams } from "react-router-dom"
+import { HttpTypes } from "@medusajs/types"
+
 import { RouteFocusModal } from "../../../components/modals"
 import { useProductVariant } from "../../../hooks/api/products"
 import { EditProductVariantMediaForm } from "./components/edit-product-variant-media-form"
+
+type ProductMediaVariantsReponse = HttpTypes.AdminProductVariant & {
+  images: HttpTypes.AdminProductImage[]
+}
 
 export const ProductVariantMedia = () => {
   const { t } = useTranslation()
@@ -11,7 +17,7 @@ export const ProductVariantMedia = () => {
   const { variant, isLoading, isError, error } = useProductVariant(
     id!,
     variant_id!,
-    { fields: "*product,*product.images,+images.variants.id" }
+    { fields: "*product,*product.images,*images,+images.variants.id" }
   )
 
   const ready = !isLoading && variant
@@ -28,7 +34,11 @@ export const ProductVariantMedia = () => {
       <RouteFocusModal.Description asChild>
         <span className="sr-only">{t("products.media.editHint")}</span>
       </RouteFocusModal.Description>
-      {ready && <EditProductVariantMediaForm variant={variant} />}
+      {ready && (
+        <EditProductVariantMediaForm
+          variant={variant as ProductMediaVariantsReponse}
+        />
+      )}
     </RouteFocusModal>
   )
 }
