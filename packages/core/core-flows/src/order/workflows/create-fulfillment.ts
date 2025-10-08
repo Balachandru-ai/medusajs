@@ -444,6 +444,7 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
         "shipping_methods.id",
         "shipping_methods.shipping_option_id",
         "shipping_methods.data",
+        "shipping_methods.amount",
       ],
       options: { throwIfKeyNotFound: true, isList: false },
     }).config({ name: "get-order" })
