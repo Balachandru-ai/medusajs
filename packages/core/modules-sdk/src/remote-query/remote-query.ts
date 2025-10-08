@@ -352,6 +352,12 @@ export class RemoteQuery {
     }
 
     if (ids) {
+      if (!ids.length) {
+        return {
+          data: [],
+        }
+      }
+
       filters[keyField] = ids
     }
 
