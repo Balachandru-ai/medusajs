@@ -6614,10 +6614,11 @@ export const generatedEditDates = {
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-02T07:14:50.956Z",
   "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
   "app/infrastructure-modules/caching/in-memory/page.mdx": "2025-10-06T08:51:25.764Z",
-  "app/infrastructure-modules/caching/page.mdx": "2025-10-07T13:29:42.749Z",
+  "app/infrastructure-modules/caching/page.mdx": "2025-10-08T13:57:08.437Z",
   "app/infrastructure-modules/caching/redis/page.mdx": "2025-10-06T09:21:20.055Z",
   "app/infrastructure-modules/caching/providers/in-memory/page.mdx": "2025-10-06T10:33:22.566Z",
-  "app/infrastructure-modules/caching/providers/page.mdx": "2025-10-07T08:21:46.233Z",
+  "app/infrastructure-modules/caching/providers/page.mdx": "2025-10-08T13:58:14.930Z",
   "app/infrastructure-modules/caching/providers/redis/page.mdx": "2025-10-06T10:33:12.788Z",
-  "app/infrastructure-modules/caching/migrate-cache/page.mdx": "2025-10-07T14:04:11.782Z"
+  "app/infrastructure-modules/caching/migrate-cache/page.mdx": "2025-10-08T13:59:07.744Z",
+  "app/infrastructure-modules/caching/concepts/page.mdx": "2025-10-08T13:40:11.391Z"
 }

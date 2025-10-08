@@ -1047,7 +1047,7 @@ In this example, you enable caching of the query's results. The next time the sa
 
 <Note title="Tip">
 
-Query results are cached using the [Caching Module](!resources!/infrastructure-modules/caching).
+Refer to the [Caching Module documentation](!resources!/infrastructure-modules/caching/concepts#caching-best-practices) for best practices on caching.
 
 </Note>
 
@@ -1066,17 +1066,17 @@ Query results are cached using the [Caching Module](!resources!/infrastructure-m
     {
       type: "`string` \| `((args: any[], cachingModule: ICachingModuleService) => string \| Promise<string>)`",
       name: "key",
-      description: "The key to cache the query results with.  If no key is provided, Medusa will generate the key from the `query.graph` parameters.\n\nIf a function is passed, it receives the following properties:\n\n1. The parameters passed to `query.graph`.\n\n2. The [Caching Module's service](!resources!/references/caching-service), which you can use to perform caching operations.\n\nThe function must return a string indicating the cache key.",
+      description: "The key to cache the query results with. If no key is provided, the Caching Module will generate the key from the `query.graph` parameters.\n\nIf a function is passed, it receives the following properties:\n\n1. The parameters passed to `query.graph`.\n\n2. The [Caching Module's service](!resources!/references/caching-service), which you can use to perform caching operations.\n\nThe function must return a string indicating the cache key.",
     },
     {
       type: "`string[]` \| `((args: any[]) => string[] \| undefined)`",
       name: "tags",
-      description: "The tags to associate with the cached results. Tags are useful to group related items. If no tag is provided, Medusa will generate relevant tags from the `query.graph` parameters.\n\nIf a function is passed, it receives as a parameter the `query.graph` parameters, and returns an array of strings indicating the cache tags."
+      description: "The tags to associate with the cached results. Tags are useful to group related items. If no tag is provided, the Caching Module will generate relevant tags from the `query.graph` parameters.\n\nIf a function is passed, it receives as a parameter the `query.index` parameters, and returns an array of strings indicating the cache tags."
     },
     {
       type: "`number` \| `((args: any[]) => number \| undefined)`",
       name: "ttl",
-      description: "The time-to-live (TTL) for the cached results, in seconds. If no TTL is provided, Medusa will use the global configuration of the [default Caching Module Provider](!resources!/infrastructure-modules/caching/providers#default-caching-module-provider).\n\nIf a function is passed, it receives as a parameter the `query.graph` parameters, and returns a number indicating the TTL.",
+      description: "The time-to-live (TTL) for the cached results, in seconds. If no TTL is provided, the Caching Module Provider will receive the [configured TTL of the Caching Module](!resources!/infrastructure-modules/caching#caching-module-options), or it will use its own default value.\n\nIf a function is passed, it receives as a parameter the `query.graph` parameters, and returns a number indicating the TTL.",
     },
     {
       type: "`boolean` \| `((args: any[]) => boolean \| undefined)`",
@@ -1095,7 +1095,7 @@ Query results are cached using the [Caching Module](!resources!/infrastructure-m
 
 ### Set Cache Key
 
-By default, Medusa generates a cache key for a query based on the arguments passed to `query.graph`. The cache key is a unique key that the cached result is stored with.
+By default, the Caching Module generates a cache key for a query based on the arguments passed to `query.graph`. The cache key is a unique key that the cached result is stored with.
 
 Alternatively, you can set a custom cache key for a query. This is useful if you want to manage invalidating the cache manually.
 
@@ -1141,6 +1141,12 @@ const { data: products } = useQueryGraphStep({
 
 In the example above, you cache the query results with the `products-123456` key.
 
+<Note>
+
+You should generate cache keys with the Caching Module service's [computeKey method](!resources!/references/caching-service#computeKey) to ensure that the key is unique and follows best practices.
+
+</Note>
+
 You can also pass a function as the value of `cache.key`:
 
 <Note>
@@ -1175,7 +1181,7 @@ You generate the key using the [computeKey method of the Caching Module's servic
 
 ### Set Cache Tags
 
-By default, Medusa generates relevant tags for a query based on the arguments passed to `query.graph`. Cache tags are useful to group related items together, allowing you to [retrieve](!resources!/references/caching-service#get) or [invalidate](!resources!/references/caching-service#clear) items by common tags.
+By default, the Caching Module generates relevant tags for a query based on the arguments passed to `query.graph`. Cache tags are useful to group related items together, allowing you to [retrieve](!resources!/references/caching-service#get) or [invalidate](!resources!/references/caching-service#clear) items by common tags.
 
 Alternatively, you can set the cache tags of a query manually. This is useful if you want to manage invalidating the cache manually, or you want to group related cached items with custom tags.
 
@@ -1192,8 +1198,6 @@ const { data: products } = await query.graph({
   cache: {
     enable: true,
     tags: ["Product:list:*"],
-    // to disable auto invalidation:
-    // autoInvalidate: false,
   }
 })
 ```
@@ -1223,7 +1227,7 @@ In the example above, you cache the query results with the `Product:list:*` tag.
 
 <Note>
 
-The cache tag must follow the [Caching Tags Convention](!resources!/infrastructure-modules/caching#caching-tags-convention) to be automatically invalidated.
+The cache tag must follow the [Caching Tags Convention](!resources!/infrastructure-modules/caching/concepts#caching-tags-convention) to be automatically invalidated.
 
 </Note>
 
@@ -1259,7 +1263,7 @@ Then, you add the `ProductCollection:id` tag if `collection_id` is passed in the
 
 ### Set TTL
 
-By default, Medusa uses the time-to-live (TTL) defined in the [default Caching Module Provider](!resources!/infrastructure-modules/caching/providers#default-caching-module-provider). The cache isn't invalidated until that time passes.
+By default, the Caching Module will pass the [configured time-to-live (TTL)](!resources!/infrastructure-modules/caching#caching-module-options) to the Caching Module Provider when caching data. The Caching Module Provider may also have its own default TTL.  The cache isn't invalidated until the configured TTL passes.
 
 Alternatively, you can set a custom TTL for a query. This is useful if you want the cached data to be invalidated sooner or later than the default TTL.
 
@@ -1332,7 +1336,7 @@ Then, you set the TTL based on the ID of the product passed in the filters.
 
 ### Set Auto Invalidation
 
-By default, Medusa enables auto invalidation of cached query results based on the [configured time-to-live (TTL)](#set-ttl).
+By default, the Caching Module automatically invalidates cached query results when the data changes.
 
 Alternatively, you can disable auto invalidation of cached query results. This is useful if you want to manage invalidating the cache manually.
 
@@ -1400,9 +1404,15 @@ In the example above, you use a function to determine whether to invalidate the 
 
 Then, you enable auto-invalidation only if the `fields` passed to `query.graph` don't include `custom_fields`. If this disables auto-invalidation, you must [invalidate](!resources!/references/caching-service#clear) the cached data manually.
 
+<Note title="Tip">
+
+Learn more about automatic invalidation in the [Caching Module documentation](!resources!/infrastructure-modules/caching/concepts#automatic-cache-invalidation).
+
+</Note>
+
 ### Set Caching Provider
 
-By default, Medusa uses the [default Caching Module Provider](!resources!/infrastructure-modules/caching/providers#default-caching-module-provider) to cache a query.
+By default, the Caching Module uses the [default Caching Module Provider](!resources!/infrastructure-modules/caching/providers#default-caching-module-provider) to cache a query.
 
 Alternatively, you can set the caching provider to use for a query. This is useful if you have multiple caching providers configured, and you want to use a specific one for a query, or you want to specify a fallback provider.
 

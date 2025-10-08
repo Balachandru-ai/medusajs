@@ -39,11 +39,11 @@ Medusa provides the [Redis Caching Module Provider](./redis/page.mdx) that you c
 
 ## Default Caching Module Provider
 
-You can register multiple Caching Module Providers and specify which one to use as the default. Medusa uses the default provider for all caching operations unless you specify a specific provider.
+You can register multiple Caching Module Providers and specify which one to use as the default. The Caching Module uses the default provider for all caching operations unless you specify a specific provider.
 
 ### How is the Default Provider Selected?
 
-Medusa determines the default Caching Module Provider based on the following scenarios:
+The Caching Module determines the default Caching Module Provider based on the following scenarios:
 
 <Table>
   <Table.Header>
@@ -72,7 +72,7 @@ Medusa determines the default Caching Module Provider based on the following sce
   </Table.Body>
 </Table>
 
-If none of the above scenarios apply, Medusa throws an error during startup indicating that no default provider is configured.
+If none of the above scenarios apply, the Caching Module throws an error during startup indicating that no default provider is configured.
 
 ### Setting the Default Caching Module Provider
 

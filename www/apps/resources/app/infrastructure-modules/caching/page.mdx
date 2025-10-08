@@ -18,9 +18,9 @@ The Caching Module is available starting [Medusa v2.11.0](https://github.com/med
 
 The Caching Module provides functionality to cache data in your Medusa application, improving performance and reducing latency for frequently accessed data.
 
-For example, Medusa uses the Caching Module to cache product information. You can also cache custom data such as brand information.
+For example, Medusa uses the Caching Module to cache product information, and you can cache custom data such as brand information.
 
-The Caching Module stores and retrieves cached data using the caching service you've integrated, such as Redis or Memcached. This provides flexibility in customizing your Medusa application's infrastructure to meet your performance and scalability requirements.
+The Caching Module stores and retrieves cached data using the caching service you integrate, such as [Redis](./providers/redis/page.mdx) or [Memcached](./guides/memcached/page.mdx). This provides flexibility in customizing your Medusa application's infrastructure to meet your performance and scalability requirements.
 
 ![Diagram illustrating the Caching Module architecture](https://res.cloudinary.com/dza7lstvk/image/upload/v1759846791/Medusa%20Resources/caching-overview_tz91tw.jpg)
 
@@ -28,27 +28,27 @@ The Caching Module stores and retrieves cached data using the caching service yo
 
 Before Medusa v2.11.0, you used the [Cache Module](../cache/page.mdx) to cache data. The Cache Module is now deprecated and has been replaced by the Caching Module.
 
-If you were using the Cache Module in your application, you should remove it from your `medusa-config.ts` and [migrate to the Caching Module instead](./migrate-cache/page.mdx).
+If you're using the Cache Module in your application, refer to the [migrate to the Caching Module](./migrate-cache/page.mdx).
 
 ---
 
 ## Install the Caching Module
 
-The Caching Module is installed by default in your application. To use it, you must enable the caching feature flag and register the module in your `medusa-config.ts` file.
+The Caching Module is installed by default in your application. To use it, enable the caching feature flag and register the module in your `medusa-config.ts` file.
 
 ### 1. Enable Caching Feature Flag
 
-The caching feature is currently hidden behind a feature flag. To enable it, set the `MEDUSA_FF_CACHING` environment variable to `true` in your `.env` file:
+The caching feature is currently behind a feature flag. To enable it, set the `MEDUSA_FF_CACHING` environment variable to `true` in your `.env` file:
 
 ```bash
 MEDUSA_FF_CACHING=true
 ```
 
-This will allow you to use the Caching Module, and will enable caching features in Medusa's core.
+This enables you to use the Caching Module and activates caching features in Medusa's core.
 
 ### 2. Register the Caching Module
 
-Next, add the Caching Module into the `modules` property of the exported object in `medusa-config.ts`:
+Next, add the Caching Module to the `modules` property of the exported object in `medusa-config.ts`:
 
 ```ts title="medusa-config.ts"
 module.exports = defineConfig({
@@ -75,11 +75,11 @@ module.exports = defineConfig({
 })
 ```
 
-This will register the Caching Module in your application with the [Redis Caching Module Provider](./providers/redis/page.mdx).
+This registers the Caching Module in your application with the [Redis Caching Module Provider](./providers/redis/page.mdx).
 
 <Note>
 
-The Caching Module requires at least one Caching Module Provider to be registered. If you don't register any providers, the Caching Module will throw an error when your application starts.
+The Caching Module requires at least one Caching Module Provider to be registered. If you do not register any providers, the Caching Module throws an error when your application starts.
 
 </Note>
 
@@ -115,11 +115,11 @@ Refer to the [Caching Module Providers guide](./providers/page.mdx) to learn mor
 
 ## How to Use the Caching Module
 
-There are two ways to cache data with the Caching Module: when retrieving data with the [Query](!docs!/learn/fundamentals/module-links/query) and [Index Module](!docs!/learn/fundamentals/module-links/index-module), or by directly using the Caching Module's service.
+You can cache data with the Caching Module in two ways: by caching data retrieved with [Query](!docs!/learn/fundamentals/module-links/query) or the [Index Module](!docs!/learn/fundamentals/module-links/index-module), or by directly using the [Caching Module's service](/references/caching-service).
 
 ### 1. Caching with Query or Index Module
 
-You can cache results of Query and the Index Module by passing the `cache` option to the `query.graph` and `query.index` methods, or to the `useQueryGraphStep` in workflows.
+You can cache results from Query and the Index Module by passing the `cache` option to the `query.graph` and `query.index` methods, or to the `useQueryGraphStep` in workflows.
 
 For example:
 
@@ -148,19 +148,27 @@ export const workflow = createWorkflow(
 )
 ```
 
-The `useQueryGraphStep` accepts an `options.cache` property that allows you to enable and configure caching of the results.
+The `useQueryGraphStep` accepts an `options.cache` property that enables and configures caching of the results.
 
-When caching is enabled, the Caching Module stores the results in the underlying caching service (for example, Redis). Subsequent calls to the same query will retrieve the results from the cache, improving performance.
+When caching is enabled, the Caching Module stores the results in the underlying caching service (for example, Redis). Subsequent calls to the same query retrieve the results from the cache, improving performance.
 
-Query and the Index Module accept other caching options, which you can learn about in the [Query guide](!docs!/learn/fundamentals/module-links/query#cache-query-results).
+Query and the Index Module accept other caching options. Learn more in the [Query](!docs!/learn/fundamentals/module-links/query#cache-query-results) and [Index Module](!docs!/learn/fundamentals/module-links/index-module#cache-index-module-results) guides.
 
 ### 2. Caching with the Caching Module's Service
 
-You can also directly use the Caching Module's service to cache custom data in your Medusa application.
+You can also use the Caching Module's service directly to cache custom data in your Medusa application.
 
-For example, you can resolve the Caching Module's service in a workflow step and use its methods to set, retrieve, or delete cached data.
+For example, resolve the Caching Module's service in a workflow step and use its methods to cache brand information:
 
-```ts highlights={[["16"], ["17"], ["18"]]}
+export const cachingHighlights = [
+  ["14", "computeKey", "Compute the cache key."],
+  ["15", "get", "Retrieve the cached value for the `brand` tag."],
+  ["19", "cachedValue", "If a cached value exists, return it."],
+  ["23", "getBrand", "Fetch the brand data if not cached."],
+  ["25", "set", "Cache the fetched brand data with the `brand` tag."]
+]
+
+```ts highlights={cachingHighlights}
 import { Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
@@ -187,7 +195,7 @@ export const getBrandStep = createStep(
 
     await cachingModuleService.set({
       key: cacheKey,
-      tags: ["brand"],
+      tags: [`Brand:${brand.id}`],
       data: brand
     })
 
@@ -221,7 +229,7 @@ Learn about other methods and options of the Caching Module in the [Use Caching 
         Query or Index Module
       </Table.Cell>
       <Table.Cell>
-        Ideal for caching query results.
+        Ideal for standard data retrieval scenarios, such as fetching products or custom data.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -229,26 +237,65 @@ Learn about other methods and options of the Caching Module in the [Use Caching 
         Caching Module's Service
       </Table.Cell>
       <Table.Cell>
-        Suitable for caching computed values or external API responses.
+        Suitable for caching computed values, external API responses, or to control caching behavior.
       </Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table>
 
-Caching data with Query or the Index Module is ideal for caching query results. The Caching Module will:
+Caching data with Query or the Index Module is ideal when retrieving standard data, such as products or custom entities. The Caching Module automatically handles cache keys and invalidation for you.
 
-1. Generate unique cache keys based on query parameters, ensuring different queries are cached separately.
-2. Automatically invalidate cached data based on the specified time-to-live (TTL) or the global configuration of the [default Caching Module Provider](./providers/page.mdx#default-caching-module-provider).
-
-If you need to cache custom data that isn't the result of database queries, such as computed values or external API responses, use the Caching Module's service directly. In this case, you'll need to manage cache keys yourself, though you can still enable automatic invalidation using the service's `set` method.
+If you need to cache custom data like computed values or external API responses, or you want finer control over caching behavior, use the Caching Module's service directly. In this case, you must manage cache keys yourself, though you can still enable automatic invalidation using the service's `set` method.
 
 ---
 
-## Caching Tags Convention
+## Caching Module Options
 
-When you use custom tags, make sure they adhere to the following convention:
+You can pass the following options to the Caching Module when registering it in your `medusa-config.ts` file:
 
-- `Entity:id`: Cache tag for a single record of an entity. For example, `Product:prod_123` for caching a single product with the ID `prod_123`.
-- `Entity:list:*`: Cache tag for a list of records of an entity. For example, `Product:list:*` for caching a list of products.
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Option
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Default
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `ttl`
+      </Table.Cell>
+      <Table.Cell>
+        A number indicating the default time-to-live (TTL) in seconds for cached items. After this period, cached items will be removed from the cache.
+        This number is passed to the underlying caching provider if no TTL is specified when caching data.
+      </Table.Cell>
+      <Table.Cell>
+        `3600` (1 hour)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `providers`
+      </Table.Cell>
+      <Table.Cell>
+        An array of caching providers to use. This allows you to configure multiple caching providers for different use cases.
+      </Table.Cell>
+      <Table.Cell>
+        No providers by default
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
 
-If your cache tags don't follow this convention, Medusa can't automatically invalidate your cached data. You must [invalidate](/references/caching-service#clear) the cached data manually.
+---
+
+## Caching Concepts
+
+To learn more about caching concepts such as cache keys, cache tags, and automatic cache invalidation, refer to the [Caching Module Concepts guide](./concepts/page.mdx).

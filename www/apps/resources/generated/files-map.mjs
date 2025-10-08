@@ -832,6 +832,10 @@ export const filesMap = [
     "pathname": "/infrastructure-modules/cache/redis"
   },
   {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/concepts/page.mdx",
+    "pathname": "/infrastructure-modules/caching/concepts"
+  },
+  {
     "filePath": "/www/apps/resources/app/infrastructure-modules/caching/guides/memcached/page.mdx",
     "pathname": "/infrastructure-modules/caching/guides/memcached"
   },

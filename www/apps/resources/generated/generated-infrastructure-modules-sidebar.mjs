@@ -105,6 +105,14 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/infrastructure-modules/caching/concepts",
+          "title": "Concepts",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/infrastructure-modules/caching/migrate-cache",
           "title": "Migrate from Cache Module",
           "children": []

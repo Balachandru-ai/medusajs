@@ -69,6 +69,11 @@ export const infrastructureModulesSidebar = [
       },
       {
         type: "link",
+        path: "/infrastructure-modules/caching/concepts",
+        title: "Concepts",
+      },
+      {
+        type: "link",
         path: "/infrastructure-modules/caching/migrate-cache",
         title: "Migrate from Cache Module",
       },
