@@ -116,12 +116,6 @@
         "items_one": {
           "type": "string"
         },
-        "items_few": {
-          "type": "string"
-        },
-        "items_many": {
-          "type": "string"
-        },
         "items_other": {
           "type": "string"
         },
@@ -184,6 +178,12 @@
         },
         "noMoreData": {
           "type": "string"
+        },
+        "items_few": {
+          "type": "string"
+        },
+        "items_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -222,8 +222,6 @@
         "admin",
         "store",
         "details",
-        "items_one",
-        "items_other",
         "countSelected",
         "countOfTotalSelected",
         "plusCount",
@@ -256,12 +254,6 @@
         "numberOfKeys_one": {
           "type": "string"
         },
-        "numberOfKeys_few": {
-          "type": "string"
-        },
-        "numberOfKeys_many": {
-          "type": "string"
-        },
         "numberOfKeys_other": {
           "type": "string"
         },
@@ -271,29 +263,30 @@
             "header_one": {
               "type": "string"
             },
-            "header_few": {
-              "type": "string"
-            },
-            "header_many": {
-              "type": "string"
-            },
             "header_other": {
               "type": "string"
             },
             "description": {
               "type": "string"
+            },
+            "header_few": {
+              "type": "string"
+            },
+            "header_many": {
+              "type": "string"
             }
           },
-          "required": ["header_one", "header_other", "description"],
+          "required": ["description"],
           "additionalProperties": false
+        },
+        "numberOfKeys_few": {
+          "type": "string"
+        },
+        "numberOfKeys_many": {
+          "type": "string"
         }
       },
-      "required": [
-        "header",
-        "numberOfKeys_one",
-        "numberOfKeys_other",
-        "drawer"
-      ],
+      "required": ["header", "drawer"],
       "additionalProperties": false
     },
     "metadata": {
@@ -303,12 +296,6 @@
           "type": "string"
         },
         "numberOfKeys_one": {
-          "type": "string"
-        },
-        "numberOfKeys_few": {
-          "type": "string"
-        },
-        "numberOfKeys_many": {
           "type": "string"
         },
         "numberOfKeys_other": {
@@ -381,9 +368,15 @@
             "complexRow"
           ],
           "additionalProperties": false
+        },
+        "numberOfKeys_few": {
+          "type": "string"
+        },
+        "numberOfKeys_many": {
+          "type": "string"
         }
       },
-      "required": ["header", "numberOfKeys_one", "numberOfKeys_other", "edit"],
+      "required": ["header", "edit"],
       "additionalProperties": false
     },
     "validation": {
@@ -1161,17 +1154,17 @@
             "count_one": {
               "type": "string"
             },
-            "count_few": {
-              "type": "string"
-            },
-            "count_many": {
-              "type": "string"
-            },
             "count_other": {
+              "type": "string"
+            },
+            "numberOfKeys_few": {
+              "type": "string"
+            },
+            "numberOfKeys_many": {
               "type": "string"
             }
           },
-          "required": ["fixError", "count_one", "count_other"],
+          "required": ["fixError"],
           "additionalProperties": false
         }
       },
@@ -1960,22 +1953,10 @@
             "deleteWarning_one": {
               "type": "string"
             },
-            "deleteWarning_few": {
-              "type": "string"
-            },
-            "deleteWarning_many": {
-              "type": "string"
-            },
             "deleteWarning_other": {
               "type": "string"
             },
             "deleteWarningWithThumbnail_one": {
-              "type": "string"
-            },
-            "deleteWarningWithThumbnail_few": {
-              "type": "string"
-            },
-            "deleteWarningWithThumbnail_many": {
               "type": "string"
             },
             "deleteWarningWithThumbnail_other": {
@@ -2011,6 +1992,18 @@
             },
             "successToast": {
               "type": "string"
+            },
+            "deleteWarning_few": {
+              "type": "string"
+            },
+            "deleteWarning_many": {
+              "type": "string"
+            },
+            "deleteWarningWithThumbnail_few": {
+              "type": "string"
+            },
+            "deleteWarningWithThumbnail_many": {
+              "type": "string"
             }
           },
           "required": [
@@ -2021,10 +2014,6 @@
             "uploadImagesHint",
             "invalidFileType",
             "failedToUpload",
-            "deleteWarning_one",
-            "deleteWarning_other",
-            "deleteWarningWithThumbnail_one",
-            "deleteWarningWithThumbnail_other",
             "thumbnailTooltip",
             "galleryLabel",
             "downloadImageLabel",
@@ -2041,12 +2030,6 @@
           "type": "string"
         },
         "variantCount_one": {
-          "type": "string"
-        },
-        "variantCount_few": {
-          "type": "string"
-        },
-        "variantCount_many": {
           "type": "string"
         },
         "variantCount_other": {
@@ -2458,12 +2441,6 @@
             "tableItem_one": {
               "type": "string"
             },
-            "tableItem_few": {
-              "type": "string"
-            },
-            "tableItem_many": {
-              "type": "string"
-            },
             "tableItem_other": {
               "type": "string"
             },
@@ -2579,6 +2556,12 @@
                 "toast"
               ],
               "additionalProperties": false
+            },
+            "tableItem_few": {
+              "type": "string"
+            },
+            "tableItem_many": {
+              "type": "string"
             }
           },
           "required": [
@@ -2587,8 +2570,6 @@
             "deleteWarning",
             "pricesPagination",
             "tableItemAvailable",
-            "tableItem_one",
-            "tableItem_other",
             "inventory"
           ],
           "additionalProperties": false
@@ -2774,6 +2755,12 @@
           },
           "required": ["delete"],
           "additionalProperties": false
+        },
+        "variantCount_few": {
+          "type": "string"
+        },
+        "variantCount_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -2792,8 +2779,6 @@
         "media",
         "discountableHint",
         "noSalesChannels",
-        "variantCount_one",
-        "variantCount_other",
         "deleteVariantWarning",
         "productStatus",
         "columns",
@@ -2840,12 +2825,6 @@
         "removeProductsWarning_one": {
           "type": "string"
         },
-        "removeProductsWarning_few": {
-          "type": "string"
-        },
-        "removeProductsWarning_many": {
-          "type": "string"
-        },
         "removeProductsWarning_other": {
           "type": "string"
         },
@@ -2868,17 +2847,17 @@
                 "successToast_one": {
                   "type": "string"
                 },
+                "successToast_other": {
+                  "type": "string"
+                },
                 "successToast_few": {
                   "type": "string"
                 },
                 "successToast_many": {
                   "type": "string"
-                },
-                "successToast_other": {
-                  "type": "string"
                 }
               },
-              "required": ["successToast_one", "successToast_other"],
+              "required": [],
               "additionalProperties": false
             },
             "remove": {
@@ -2887,22 +2866,28 @@
                 "successToast_one": {
                   "type": "string"
                 },
+                "successToast_other": {
+                  "type": "string"
+                },
                 "successToast_few": {
                   "type": "string"
                 },
                 "successToast_many": {
                   "type": "string"
-                },
-                "successToast_other": {
-                  "type": "string"
                 }
               },
-              "required": ["successToast_one", "successToast_other"],
+              "required": [],
               "additionalProperties": false
             }
           },
           "required": ["list", "add", "remove"],
           "additionalProperties": false
+        },
+        "removeProductsWarning_few": {
+          "type": "string"
+        },
+        "removeProductsWarning_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -2915,8 +2900,6 @@
         "handleTooltip",
         "deleteWarning",
         "removeSingleProductWarning",
-        "removeProductsWarning_one",
-        "removeProductsWarning_other",
         "products"
       ],
       "additionalProperties": false
@@ -3000,21 +2983,17 @@
                 "successToast_one": {
                   "type": "string"
                 },
+                "successToast_other": {
+                  "type": "string"
+                },
                 "successToast_few": {
                   "type": "string"
                 },
                 "successToast_many": {
                   "type": "string"
-                },
-                "successToast_other": {
-                  "type": "string"
                 }
               },
-              "required": [
-                "disabledTooltip",
-                "successToast_one",
-                "successToast_other"
-              ],
+              "required": ["disabledTooltip"],
               "additionalProperties": false
             },
             "remove": {
@@ -3023,16 +3002,19 @@
                 "confirmation_one": {
                   "type": "string"
                 },
-                "confirmation_few": {
-                  "type": "string"
-                },
-                "confirmation_many": {
-                  "type": "string"
-                },
                 "confirmation_other": {
                   "type": "string"
                 },
                 "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_other": {
+                  "type": "string"
+                },
+                "confirmation_few": {
+                  "type": "string"
+                },
+                "confirmation_many": {
                   "type": "string"
                 },
                 "successToast_few": {
@@ -3040,17 +3022,9 @@
                 },
                 "successToast_many": {
                   "type": "string"
-                },
-                "successToast_other": {
-                  "type": "string"
                 }
               },
-              "required": [
-                "confirmation_one",
-                "confirmation_other",
-                "successToast_one",
-                "successToast_other"
-              ],
+              "required": [],
               "additionalProperties": false
             },
             "list": {
@@ -3385,12 +3359,6 @@
             "disablePrompt_one": {
               "type": "string"
             },
-            "disablePrompt_few": {
-              "type": "string"
-            },
-            "disablePrompt_many": {
-              "type": "string"
-            },
             "disablePrompt_other": {
               "type": "string"
             },
@@ -3399,6 +3367,12 @@
             },
             "successToast": {
               "type": "string"
+            },
+            "disablePrompt_few": {
+              "type": "string"
+            },
+            "disablePrompt_many": {
+              "type": "string"
             }
           },
           "required": [
@@ -3406,8 +3380,6 @@
             "description",
             "action",
             "placeholder",
-            "disablePrompt_one",
-            "disablePrompt_other",
             "disabledToggleTooltip",
             "successToast"
           ],
@@ -3866,12 +3838,6 @@
                 "successToast_one": {
                   "type": "string"
                 },
-                "successToast_few": {
-                  "type": "string"
-                },
-                "successToast_many": {
-                  "type": "string"
-                },
                 "successToast_other": {
                   "type": "string"
                 },
@@ -3884,9 +3850,15 @@
                   },
                   "required": ["noRecordsMessage"],
                   "additionalProperties": false
+                },
+                "successToast_few": {
+                  "type": "string"
+                },
+                "successToast_many": {
+                  "type": "string"
                 }
               },
-              "required": ["successToast_one", "successToast_other", "list"],
+              "required": ["list"],
               "additionalProperties": false
             },
             "remove": {
@@ -3895,16 +3867,19 @@
                 "title_one": {
                   "type": "string"
                 },
-                "title_few": {
-                  "type": "string"
-                },
-                "title_many": {
-                  "type": "string"
-                },
                 "title_other": {
                   "type": "string"
                 },
                 "description_one": {
+                  "type": "string"
+                },
+                "description_other": {
+                  "type": "string"
+                },
+                "title_few": {
+                  "type": "string"
+                },
+                "title_many": {
                   "type": "string"
                 },
                 "description_few": {
@@ -3912,17 +3887,9 @@
                 },
                 "description_many": {
                   "type": "string"
-                },
-                "description_other": {
-                  "type": "string"
                 }
               },
-              "required": [
-                "title_one",
-                "title_other",
-                "description_one",
-                "description_other"
-              ],
+              "required": [],
               "additionalProperties": false
             },
             "list": {
@@ -4743,6 +4710,9 @@
               },
               "required": ["title", "description"],
               "additionalProperties": false
+            },
+            "refundAmount": {
+              "type": "string"
             }
           },
           "required": [
@@ -4780,7 +4750,8 @@
             "placeholders",
             "receive",
             "toast",
-            "panel"
+            "panel",
+            "refundAmount"
           ],
           "additionalProperties": false
         },
@@ -5230,7 +5201,6 @@
               },
               "required": [
                 "wrongQuantity",
-                "wrongQuantity_other",
                 "noItems",
                 "noShippingOption",
                 "noLocation"
@@ -5437,12 +5407,6 @@
             "showMoreActivities_one": {
               "type": "string"
             },
-            "showMoreActivities_few": {
-              "type": "string"
-            },
-            "showMoreActivities_many": {
-              "type": "string"
-            },
             "showMoreActivities_other": {
               "type": "string"
             },
@@ -5552,24 +5516,17 @@
                     "items_one": {
                       "type": "string"
                     },
+                    "items_other": {
+                      "type": "string"
+                    },
                     "items_few": {
                       "type": "string"
                     },
                     "items_many": {
                       "type": "string"
-                    },
-                    "items_other": {
-                      "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "shipped",
-                    "delivered",
-                    "items_one",
-                    "items_other"
-                  ],
+                  "required": ["created", "canceled", "shipped", "delivered"],
                   "additionalProperties": false
                 },
                 "return": {
@@ -5587,23 +5544,17 @@
                     "items_one": {
                       "type": "string"
                     },
+                    "items_other": {
+                      "type": "string"
+                    },
                     "items_few": {
                       "type": "string"
                     },
                     "items_many": {
                       "type": "string"
-                    },
-                    "items_other": {
-                      "type": "string"
                     }
                   },
-                  "required": [
-                    "created",
-                    "canceled",
-                    "received",
-                    "items_one",
-                    "items_other"
-                  ],
+                  "required": ["created", "canceled", "received"],
                   "additionalProperties": false
                 },
                 "note": {
@@ -5728,17 +5679,15 @@
                 "update_order"
               ],
               "additionalProperties": false
+            },
+            "showMoreActivities_few": {
+              "type": "string"
+            },
+            "showMoreActivities_many": {
+              "type": "string"
             }
           },
-          "required": [
-            "header",
-            "showMoreActivities_one",
-            "showMoreActivities_other",
-            "comment",
-            "from",
-            "to",
-            "events"
-          ],
+          "required": ["header", "comment", "from", "to", "events"],
           "additionalProperties": false
         },
         "fields": {
@@ -6473,22 +6422,10 @@
                     "shipping_one": {
                       "type": "string"
                     },
-                    "shipping_few": {
-                      "type": "string"
-                    },
-                    "shipping_many": {
-                      "type": "string"
-                    },
                     "shipping_other": {
                       "type": "string"
                     },
                     "pickup_one": {
-                      "type": "string"
-                    },
-                    "pickup_few": {
-                      "type": "string"
-                    },
-                    "pickup_many": {
                       "type": "string"
                     },
                     "pickup_other": {
@@ -6497,24 +6434,29 @@
                     "returns_one": {
                       "type": "string"
                     },
+                    "returns_other": {
+                      "type": "string"
+                    },
+                    "shipping_few": {
+                      "type": "string"
+                    },
+                    "shipping_many": {
+                      "type": "string"
+                    },
+                    "pickup_few": {
+                      "type": "string"
+                    },
+                    "pickup_many": {
+                      "type": "string"
+                    },
                     "returns_few": {
                       "type": "string"
                     },
                     "returns_many": {
                       "type": "string"
-                    },
-                    "returns_other": {
-                      "type": "string"
                     }
                   },
-                  "required": [
-                    "shipping_one",
-                    "shipping_other",
-                    "pickup_one",
-                    "pickup_other",
-                    "returns_one",
-                    "returns_other"
-                  ],
+                  "required": [],
                   "additionalProperties": false
                 },
                 "priceType": {
@@ -6818,9 +6760,20 @@
                 },
                 "missingCountry": {
                   "type": "string"
+                },
+                "rateIsRequired": {
+                  "type": "string"
+                },
+                "nameIsRequired": {
+                  "type": "string"
                 }
               },
-              "required": ["missingProvider", "missingCountry"],
+              "required": [
+                "missingProvider",
+                "missingCountry",
+                "rateIsRequired",
+                "nameIsRequired"
+              ],
               "additionalProperties": false
             },
             "successToast": {
@@ -7424,22 +7377,10 @@
                 "values_one": {
                   "type": "string"
                 },
-                "values_few": {
-                  "type": "string"
-                },
-                "values_many": {
-                  "type": "string"
-                },
                 "values_other": {
                   "type": "string"
                 },
                 "numberOfTargets_one": {
-                  "type": "string"
-                },
-                "numberOfTargets_few": {
-                  "type": "string"
-                },
-                "numberOfTargets_many": {
                   "type": "string"
                 },
                 "numberOfTargets_other": {
@@ -7448,16 +7389,28 @@
                 "additionalValues_one": {
                   "type": "string"
                 },
-                "additionalValues_few": {
-                  "type": "string"
-                },
-                "additionalValues_many": {
-                  "type": "string"
-                },
                 "additionalValues_other": {
                   "type": "string"
                 },
                 "action": {
+                  "type": "string"
+                },
+                "values_few": {
+                  "type": "string"
+                },
+                "values_many": {
+                  "type": "string"
+                },
+                "numberOfTargets_few": {
+                  "type": "string"
+                },
+                "numberOfTargets_many": {
+                  "type": "string"
+                },
+                "additionalValues_few": {
+                  "type": "string"
+                },
+                "additionalValues_many": {
                   "type": "string"
                 }
               },
@@ -7469,12 +7422,6 @@
                 "placeholders",
                 "tags",
                 "modal",
-                "values_one",
-                "values_other",
-                "numberOfTargets_one",
-                "numberOfTargets_other",
-                "additionalValues_one",
-                "additionalValues_other",
                 "action"
               ],
               "additionalProperties": false
@@ -7813,9 +7760,21 @@
                       },
                       "required": ["title", "description"],
                       "additionalProperties": false
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
                     }
                   },
-                  "required": ["order", "shipping_methods", "items"],
+                  "required": [
+                    "order",
+                    "shipping_methods",
+                    "items",
+                    "title",
+                    "description"
+                  ],
                   "additionalProperties": false
                 },
                 "buy-rules": {
@@ -8101,9 +8060,12 @@
                   },
                   "required": ["title", "description"],
                   "additionalProperties": false
+                },
+                "title": {
+                  "type": "string"
                 }
               },
-              "required": ["label", "draft", "active", "inactive"],
+              "required": ["label", "draft", "active", "inactive", "title"],
               "additionalProperties": false
             },
             "method": {
@@ -8829,16 +8791,19 @@
                 "confirmation_one": {
                   "type": "string"
                 },
-                "confirmation_few": {
-                  "type": "string"
-                },
-                "confirmation_many": {
-                  "type": "string"
-                },
                 "confirmation_other": {
                   "type": "string"
                 },
                 "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_other": {
+                  "type": "string"
+                },
+                "confirmation_few": {
+                  "type": "string"
+                },
+                "confirmation_many": {
                   "type": "string"
                 },
                 "successToast_few": {
@@ -8846,17 +8811,9 @@
                 },
                 "successToast_many": {
                   "type": "string"
-                },
-                "successToast_other": {
-                  "type": "string"
                 }
               },
-              "required": [
-                "confirmation_one",
-                "confirmation_other",
-                "successToast_one",
-                "successToast_other"
-              ],
+              "required": [],
               "additionalProperties": false
             },
             "add": {
@@ -9302,12 +9259,6 @@
         "removeCurrencyWarning_one": {
           "type": "string"
         },
-        "removeCurrencyWarning_few": {
-          "type": "string"
-        },
-        "removeCurrencyWarning_many": {
-          "type": "string"
-        },
         "removeCurrencyWarning_other": {
           "type": "string"
         },
@@ -9347,6 +9298,12 @@
             "updatedTaxInclusivitySuccessfully"
           ],
           "additionalProperties": false
+        },
+        "removeCurrencyWarning_few": {
+          "type": "string"
+        },
+        "removeCurrencyWarning_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -9364,8 +9321,6 @@
         "addCurrencies",
         "enableTaxInclusivePricing",
         "disableTaxInclusivePricing",
-        "removeCurrencyWarning_one",
-        "removeCurrencyWarning_other",
         "currencyAlreadyAdded",
         "edit",
         "toast"
@@ -9400,12 +9355,6 @@
           "type": "string"
         },
         "removeCountriesWarning_one": {
-          "type": "string"
-        },
-        "removeCountriesWarning_few": {
-          "type": "string"
-        },
-        "removeCountriesWarning_many": {
           "type": "string"
         },
         "removeCountriesWarning_other": {
@@ -9565,6 +9514,12 @@
             "requirements"
           ],
           "additionalProperties": false
+        },
+        "removeCountriesWarning_few": {
+          "type": "string"
+        },
+        "removeCountriesWarning_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -9576,8 +9531,6 @@
         "editRegion",
         "countriesHint",
         "deleteRegionWarning",
-        "removeCountriesWarning_one",
-        "removeCountriesWarning_other",
         "removeCountryWarning",
         "automaticTaxesHint",
         "taxInclusiveHint",
@@ -9733,6 +9686,9 @@
             },
             "shippingOptionOverridesHeader": {
               "type": "string"
+            },
+            "editTaxRate": {
+              "type": "string"
             }
           },
           "required": [
@@ -9756,7 +9712,8 @@
             "addShippingOptionOverridesAction",
             "productOverridesHeader",
             "productTypeOverridesHeader",
-            "shippingOptionOverridesHeader"
+            "shippingOptionOverridesHeader",
+            "editTaxRate"
           ],
           "additionalProperties": false
         }
@@ -9795,12 +9752,6 @@
         "removeSalesChannelsWarning_one": {
           "type": "string"
         },
-        "removeSalesChannelsWarning_few": {
-          "type": "string"
-        },
-        "removeSalesChannelsWarning_many": {
-          "type": "string"
-        },
         "removeSalesChannelsWarning_other": {
           "type": "string"
         },
@@ -9819,6 +9770,12 @@
           },
           "required": ["create", "update", "removeChannel"],
           "additionalProperties": false
+        },
+        "removeSalesChannelsWarning_few": {
+          "type": "string"
+        },
+        "removeSalesChannelsWarning_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -9828,8 +9785,6 @@
         "noLocationsFound",
         "selectLocations",
         "deleteLocationWarning",
-        "removeSalesChannelsWarning_one",
-        "removeSalesChannelsWarning_other",
         "toast"
       ],
       "additionalProperties": false
@@ -9902,12 +9857,6 @@
           "type": "string"
         },
         "removeProductsWarning_one": {
-          "type": "string"
-        },
-        "removeProductsWarning_few": {
-          "type": "string"
-        },
-        "removeProductsWarning_many": {
           "type": "string"
         },
         "removeProductsWarning_other": {
@@ -9984,6 +9933,12 @@
           },
           "required": ["list", "add"],
           "additionalProperties": false
+        },
+        "removeProductsWarning_few": {
+          "type": "string"
+        },
+        "removeProductsWarning_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -9993,8 +9948,6 @@
         "createSalesChannel",
         "createSalesChannelHint",
         "enabledHint",
-        "removeProductsWarning_one",
-        "removeProductsWarning_other",
         "addProducts",
         "editSalesChannel",
         "productAlreadyAdded",
@@ -10132,12 +10085,6 @@
             "successToast_one": {
               "type": "string"
             },
-            "successToast_few": {
-              "type": "string"
-            },
-            "successToast_many": {
-              "type": "string"
-            },
             "successToast_other": {
               "type": "string"
             },
@@ -10153,16 +10100,15 @@
               },
               "required": ["noRecordsMessage"],
               "additionalProperties": false
+            },
+            "successToast_few": {
+              "type": "string"
+            },
+            "successToast_many": {
+              "type": "string"
             }
           },
-          "required": [
-            "title",
-            "description",
-            "successToast_one",
-            "successToast_other",
-            "alreadyAddedTooltip",
-            "list"
-          ],
+          "required": ["title", "description", "alreadyAddedTooltip", "list"],
           "additionalProperties": false
         },
         "delete": {
@@ -10217,12 +10163,6 @@
             "warningBatch_one": {
               "type": "string"
             },
-            "warningBatch_few": {
-              "type": "string"
-            },
-            "warningBatch_many": {
-              "type": "string"
-            },
             "warningBatch_other": {
               "type": "string"
             },
@@ -10232,24 +10172,23 @@
             "successToastBatch_one": {
               "type": "string"
             },
+            "successToastBatch_other": {
+              "type": "string"
+            },
+            "warningBatch_few": {
+              "type": "string"
+            },
+            "warningBatch_many": {
+              "type": "string"
+            },
             "successToastBatch_few": {
               "type": "string"
             },
             "successToastBatch_many": {
               "type": "string"
-            },
-            "successToastBatch_other": {
-              "type": "string"
             }
           },
-          "required": [
-            "warning",
-            "warningBatch_one",
-            "warningBatch_other",
-            "successToast",
-            "successToastBatch_one",
-            "successToastBatch_other"
-          ],
+          "required": ["warning", "successToast"],
           "additionalProperties": false
         },
         "actions": {
@@ -10771,12 +10710,6 @@
         "stepsCompletedLabel_one": {
           "type": "string"
         },
-        "stepsCompletedLabel_few": {
-          "type": "string"
-        },
-        "stepsCompletedLabel_many": {
-          "type": "string"
-        },
         "stepsCompletedLabel_other": {
           "type": "string"
         },
@@ -10916,6 +10849,12 @@
           },
           "required": ["state"],
           "additionalProperties": false
+        },
+        "stepsCompletedLabel_few": {
+          "type": "string"
+        },
+        "stepsCompletedLabel_many": {
+          "type": "string"
         }
       },
       "required": [
@@ -10924,8 +10863,6 @@
         "transactionIdLabel",
         "workflowIdLabel",
         "progressLabel",
-        "stepsCompletedLabel_one",
-        "stepsCompletedLabel_other",
         "list",
         "history",
         "state",
@@ -11935,22 +11872,10 @@
         "years_one": {
           "type": "string"
         },
-        "years_few": {
-          "type": "string"
-        },
-        "years_many": {
-          "type": "string"
-        },
         "years_other": {
           "type": "string"
         },
         "months_one": {
-          "type": "string"
-        },
-        "months_few": {
-          "type": "string"
-        },
-        "months_many": {
           "type": "string"
         },
         "months_other": {
@@ -11959,22 +11884,10 @@
         "weeks_one": {
           "type": "string"
         },
-        "weeks_few": {
-          "type": "string"
-        },
-        "weeks_many": {
-          "type": "string"
-        },
         "weeks_other": {
           "type": "string"
         },
         "days_one": {
-          "type": "string"
-        },
-        "days_few": {
-          "type": "string"
-        },
-        "days_many": {
           "type": "string"
         },
         "days_other": {
@@ -11983,22 +11896,10 @@
         "hours_one": {
           "type": "string"
         },
-        "hours_few": {
-          "type": "string"
-        },
-        "hours_many": {
-          "type": "string"
-        },
         "hours_other": {
           "type": "string"
         },
         "minutes_one": {
-          "type": "string"
-        },
-        "minutes_few": {
-          "type": "string"
-        },
-        "minutes_many": {
           "type": "string"
         },
         "minutes_other": {
@@ -12007,32 +11908,53 @@
         "seconds_one": {
           "type": "string"
         },
+        "seconds_other": {
+          "type": "string"
+        },
+        "years_few": {
+          "type": "string"
+        },
+        "years_many": {
+          "type": "string"
+        },
+        "months_few": {
+          "type": "string"
+        },
+        "months_many": {
+          "type": "string"
+        },
+        "weeks_few": {
+          "type": "string"
+        },
+        "weeks_many": {
+          "type": "string"
+        },
+        "days_few": {
+          "type": "string"
+        },
+        "days_many": {
+          "type": "string"
+        },
+        "hours_few": {
+          "type": "string"
+        },
+        "hours_many": {
+          "type": "string"
+        },
+        "minutes_few": {
+          "type": "string"
+        },
+        "minutes_many": {
+          "type": "string"
+        },
         "seconds_few": {
           "type": "string"
         },
         "seconds_many": {
           "type": "string"
-        },
-        "seconds_other": {
-          "type": "string"
         }
       },
-      "required": [
-        "years_one",
-        "years_other",
-        "months_one",
-        "months_other",
-        "weeks_one",
-        "weeks_other",
-        "days_one",
-        "days_other",
-        "hours_one",
-        "hours_other",
-        "minutes_one",
-        "minutes_other",
-        "seconds_one",
-        "seconds_other"
-      ],
+      "required": [],
       "additionalProperties": false
     },
     "views": {
