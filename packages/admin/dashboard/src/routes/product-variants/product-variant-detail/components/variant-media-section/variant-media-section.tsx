@@ -1,9 +1,8 @@
 import { Container, Heading, Text, clx } from "@medusajs/ui"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
 import { HttpTypes } from "@medusajs/types"
 import { PencilSquare } from "@medusajs/icons"
+
 import { ActionMenu } from "../../../../../components/common/action-menu"
 
 type VariantMediaSectionProps = {
@@ -13,20 +12,7 @@ type VariantMediaSectionProps = {
 export const VariantMediaSection = ({ variant }: VariantMediaSectionProps) => {
   const { t } = useTranslation()
 
-  const [selection, setSelection] = useState<Record<string, boolean>>({})
-
   const media = variant.images || []
-
-  // const handleCheckedChange = (id: string) => {
-  //   setSelection((prev) => {
-  //     if (prev[id]) {
-  //       const { [id]: _, ...rest } = prev
-  //       return rest
-  //     } else {
-  //       return { ...prev, [id]: true }
-  //     }
-  //   })
-  // }
 
   return (
     <Container className="divide-y p-0">
@@ -48,9 +34,7 @@ export const VariantMediaSection = ({ variant }: VariantMediaSectionProps) => {
       </div>
       {media.length > 0 ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-4 px-6 py-4">
-          {media.map((i, index) => {
-            // const isSelected = selection[i.id]
-
+          {media.map((i) => {
             return (
               <div
                 className="shadow-elevation-card-rest hover:shadow-elevation-card-hover transition-fg group relative aspect-square size-full overflow-hidden rounded-[8px]"
@@ -59,19 +43,9 @@ export const VariantMediaSection = ({ variant }: VariantMediaSectionProps) => {
                 <div
                   className={clx(
                     "transition-fg invisible absolute right-2 top-2 opacity-0 group-hover:visible group-hover:opacity-100"
-                    // {
-                    //   "visible opacity-100": isSelected,
-                    // }
                   )}
-                >
-                  {/* <Checkbox
-                    checked={selection[i.id] || false}
-                    onCheckedChange={() => handleCheckedChange(i.id)}
-                  /> */}
-                </div>
-                <Link to={`media`} state={{ curr: index }}>
-                  <img src={i.url} className="size-full object-cover" />
-                </Link>
+                ></div>
+                <img src={i.url} className="size-full object-cover" />
               </div>
             )
           })}
