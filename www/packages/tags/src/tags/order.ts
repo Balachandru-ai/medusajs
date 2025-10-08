@@ -56,6 +56,10 @@ export const order = [
     "path": "https://docs.medusajs.com/resources/examples/guides/quote-management"
   },
   {
+    "title": "Agentic Commerce",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
     "title": "Add Gift Message",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
@@ -74,6 +78,10 @@ export const order = [
   {
     "title": "Implement Re-Order",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/re-order"
+  },
+  {
+    "title": "Return Request - Order #",
+    "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/storefront-returns"
   },
   {
     "title": "Checkout Step 5: Complete Cart",

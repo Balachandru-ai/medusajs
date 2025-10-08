@@ -4,6 +4,10 @@ export const storefront = [
     "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/customize-stripe"
   },
   {
+    "title": "Return Request - Order #",
+    "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/storefront-returns"
+  },
+  {
     "title": "Create Cart Context in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/context"
   },
@@ -98,6 +102,10 @@ export const storefront = [
   {
     "title": "Implement Express Checkout with Medusa",
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
+  },
+  {
+    "title": "Storefront Production Optimization Tips",
+    "path": "https://docs.medusajs.com/resources/storefront-development/production-optimizations"
   },
   {
     "title": "Show Product Categories in Storefront",

@@ -61,7 +61,7 @@
     "jest": "jest",
     "test": "turbo run test --concurrency=50% --no-daemon --no-cache --force",
     "test:chunk": "./scripts/run-workspace-unit-tests-in-chunks.sh",
-    "test:integration:packages:fast": "turbo run test:integration --concurrency=2 --no-daemon --no-cache --force --filter='./packages/medusa' --filter='./packages/modules/*' --filter='./packages/modules/providers/*' --filter='!./packages/modules/{workflow-engine-redis,index,product,order,cart}'",
+    "test:integration:packages:fast": "turbo run test:integration --concurrency=2 --no-daemon --no-cache --force --filter='./packages/core/*' --filter='./packages/medusa' --filter='./packages/modules/*' --filter='./packages/modules/providers/*' --filter='!./packages/modules/{workflow-engine-redis,index,product,order,cart}'",
     "test:integration:packages:slow": "turbo run test:integration --concurrency=2 --no-daemon --no-cache --force --filter='./packages/modules/{workflow-engine-redis,index,product,order,cart}'",
     "test:integration:api": "turbo run test:integration:chunk --concurrency=50% --no-daemon --no-cache --force --filter=integration-tests-api",
     "test:integration:http": "turbo run test:integration:chunk --concurrency=50% --no-daemon --no-cache --force --filter=integration-tests-http",
@@ -84,7 +84,8 @@
   "resolutions": {
     "@redocly/cli/react": "^17.0.1",
     "@redocly/cli/react-dom": "^17.0.1",
-    "pg": "8.11.3",
-    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm:^6.0.0#.yarn/patches/changesets.patch"
+    "pg": "8.16.3",
+    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm:^6.0.0#.yarn/patches/changesets.patch",
+    "@changesets/get-github-info@^0.5.2": "patch:@changesets/get-github-info@npm:^0.5.2#.yarn/patches/changesets-github-info.patch"
   }
 }

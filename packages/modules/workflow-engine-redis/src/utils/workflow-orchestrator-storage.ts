@@ -1,3 +1,4 @@
+import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   DistributedTransactionType,
   IDistributedSchedulerStorage,
@@ -21,7 +22,6 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
-import { raw } from "@mikro-orm/core"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
@@ -33,7 +33,7 @@ enum JobType {
   TRANSACTION_TIMEOUT = "transaction_timeout",
 }
 
-const ONE_HOUR_IN_MS = 1000 * 60 * 60
+const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
 const invokingStatesSet = new Set([
@@ -118,14 +118,6 @@ export class RedisDistributedTransactionStorage
     await this.worker?.close()
     await this.jobWorker?.close()
 
-    // Clean up repeatable jobs
-    const repeatableJobs = (await this.cleanerQueue_?.getRepeatableJobs()) ?? []
-    for (const job of repeatableJobs) {
-      if (job.id === REPEATABLE_CLEARER_JOB_ID) {
-        await this.cleanerQueue_?.removeRepeatableByKey(job.key)
-      }
-    }
-
     await this.cleanerWorker_?.close()
   }
 
@@ -136,6 +128,7 @@ export class RedisDistributedTransactionStorage
   }
 
   async onApplicationStart() {
+    await this.ensureRedisConnection()
     const allowedJobs = [
       JobType.RETRY,
       JobType.STEP_TIMEOUT,
@@ -198,7 +191,7 @@ export class RedisDistributedTransactionStorage
         async () => {
           await this.clearExpiredExecutions()
         },
-        { connection: this.redisClient }
+        workerOptions
       )
 
       await this.cleanerQueue_?.add(
@@ -206,7 +199,7 @@ export class RedisDistributedTransactionStorage
         {},
         {
           repeat: {
-            every: ONE_HOUR_IN_MS,
+            every: THIRTY_MINUTES_IN_MS,
           },
           jobId: REPEATABLE_CLEARER_JOB_ID,
           removeOnComplete: true,
@@ -220,6 +213,64 @@ export class RedisDistributedTransactionStorage
     this.workflowOrchestratorService_ = workflowOrchestratorService
   }
 
+  private async ensureRedisConnection(): Promise<void> {
+    const reconnectTasks: Promise<void>[] = []
+
+    if (this.redisClient.status !== "ready") {
+      this.logger_.warn(
+        `[Workflow-engine-redis] Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
+      )
+      reconnectTasks.push(
+        this.redisClient
+          .connect()
+          .then(() => {
+            this.logger_.info(
+              "[Workflow-engine-redis] Redis connection reestablished successfully"
+            )
+          })
+          .catch((error) => {
+            this.logger_.error(
+              "[Workflow-engine-redis] Failed to reconnect to Redis",
+              error
+            )
+            throw new MedusaError(
+              MedusaError.Types.DB_ERROR,
+              `Redis connection failed: ${error.message}`
+            )
+          })
+      )
+    }
+
+    if (this.redisWorkerConnection.status !== "ready") {
+      this.logger_.warn(
+        `[Workflow-engine-redis] Redis worker connection is not ready (status: ${this.redisWorkerConnection.status}). Attempting to reconnect...`
+      )
+      reconnectTasks.push(
+        this.redisWorkerConnection
+          .connect()
+          .then(() => {
+            this.logger_.info(
+              "[Workflow-engine-redis] Redis worker connection reestablished successfully"
+            )
+          })
+          .catch((error) => {
+            this.logger_.error(
+              "[Workflow-engine-redis] Failed to reconnect to Redis worker connection",
+              error
+            )
+            throw new MedusaError(
+              MedusaError.Types.DB_ERROR,
+              `Redis worker connection failed: ${error.message}`
+            )
+          })
+      )
+    }
+
+    if (reconnectTasks.length > 0) {
+      await promiseAll(reconnectTasks)
+    }
+  }
+
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const isFinished = [
@@ -227,6 +278,8 @@ export class RedisDistributedTransactionStorage
       TransactionState.FAILED,
       TransactionState.REVERTED,
     ].includes(data.flow.state)
+    const isWaitingToCompensate =
+      data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
     /**
      * Bit of explanation:
@@ -279,7 +332,10 @@ export class RedisDistributedTransactionStorage
         )
       : false
 
-    if (!(isNotStarted || isFinished) && !currentStepsIsAsync) {
+    if (
+      !(isNotStarted || isFinished || isWaitingToCompensate) &&
+      !currentStepsIsAsync
+    ) {
       return
     }
 
@@ -433,13 +489,11 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
-    if (data.flow.hasAsyncSteps) {
-      await this.#preventRaceConditionExecutionIfNecessary({
-        data,
-        key,
-        options,
-      })
-    }
+    await this.#preventRaceConditionExecutionIfNecessary({
+      data,
+      key,
+      options,
+    })
 
     if (hasFinished && retentionTime) {
       Object.assign(data, {
@@ -479,34 +533,37 @@ export class RedisDistributedTransactionStorage
       pipeline.unlink(key)
     }
 
-    const pipelinePromise = pipeline.exec().then((result) => {
-      if (!shouldSetNX) {
+    const execPipeline = () => {
+      return pipeline.exec().then((result) => {
+        if (!shouldSetNX) {
+          return result
+        }
+
+        const actionResult = result?.pop()
+        const isOk = !!actionResult?.pop()
+        if (!isOk) {
+          throw new SkipExecutionError(
+            "Transaction already started for transactionId: " +
+              data.flow.transactionId
+          )
+        }
+
         return result
-      }
-
-      const actionResult = result?.pop()
-      const isOk = !!actionResult?.pop()
-      if (!isOk) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_ARGUMENT,
-          "Transaction already started for transactionId: " +
-            data.flow.transactionId
-        )
-      }
-
-      return result
-    })
+      })
+    }
 
     // Database operations
     if (hasFinished && !retentionTime) {
       // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
       if (!data.flow.metadata?.parentStepIdempotencyKey) {
-        await promiseAll([pipelinePromise, this.deleteFromDb(data)])
+        await promiseAll([execPipeline(), this.deleteFromDb(data)])
       } else {
-        await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
+        await this.saveToDb(data, retentionTime)
+        await execPipeline()
       }
     } else {
-      await promiseAll([pipelinePromise, this.saveToDb(data, retentionTime)])
+      await this.saveToDb(data, retentionTime)
+      await execPipeline()
     }
   }
 

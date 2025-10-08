@@ -598,6 +598,33 @@ medusaIntegrationTestRunner({
         )
       })
 
+      it("should filter by handle and retrieve descendants tree", async () => {
+        const response = await api.get(
+          `/admin/product-categories?handle=${productCategoryParent.handle}&include_descendants_tree=true`,
+          adminHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.product_categories).toEqual([
+          expect.objectContaining({
+            id: productCategoryParent.id,
+            handle: productCategoryParent.handle,
+            category_children: [
+              expect.objectContaining({
+                id: productCategory.id,
+                handle: productCategory.handle,
+                category_children: [
+                  expect.objectContaining({
+                    id: productCategoryChild.id,
+                    handle: productCategoryChild.handle,
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ])
+      })
+
       it("filters based on free text on name and handle columns", async () => {
         const response = await api.get(
           `/admin/product-categories?q=men&limit=1`,

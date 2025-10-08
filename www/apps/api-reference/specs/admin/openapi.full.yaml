@@ -525,6 +525,7 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: '#/components/schemas/AdminUser'
+  - name: Views
   - name: Workflows Executions
     description: |
       These API routes allow you to track workflow executions in your Medusa application.
@@ -1618,7 +1619,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/api-keys' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Api Keys
       responses:
@@ -1710,7 +1711,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/api-keys' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}",
@@ -1788,7 +1789,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/api-keys/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Api Keys
       responses:
@@ -1865,7 +1866,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/api-keys/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}"
@@ -1932,7 +1933,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/api-keys/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Api Keys
       responses:
@@ -2030,7 +2031,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/api-keys/{id}/revoke' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Api Keys
       responses:
@@ -2128,7 +2129,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/api-keys/{id}/sales-channels' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Api Keys
       responses:
@@ -2231,7 +2232,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/campaigns' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Campaigns
       responses:
@@ -2407,7 +2408,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/campaigns' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Gunner",
@@ -2488,7 +2489,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/campaigns/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Campaigns
       responses:
@@ -2624,7 +2625,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/campaigns/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "description": "{value}",
@@ -2693,7 +2694,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/campaigns/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Campaigns
       responses:
@@ -2810,7 +2811,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/campaigns/{id}/promotions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Campaigns
       responses:
@@ -3676,7 +3677,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/claims' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -3748,7 +3749,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "type": "{value}",
@@ -3827,7 +3828,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/claims/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -3893,7 +3894,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -3979,7 +3980,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/claim-items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4072,7 +4073,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/claim-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4157,7 +4158,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/claims/{id}/claim-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4237,7 +4238,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/inbound/items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4321,7 +4322,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/inbound/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4394,7 +4395,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/inbound/items/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/inbound/items/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Claims
       responses:
@@ -4470,7 +4471,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/inbound/shipping-method' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -4568,7 +4569,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/inbound/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4641,7 +4642,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/inbound/shipping-method/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/inbound/shipping-method/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Claims
       responses:
@@ -4729,7 +4730,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/outbound/items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4823,7 +4824,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/outbound/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -4906,7 +4907,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/outbound/items/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/outbound/items/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Claims
       responses:
@@ -4992,7 +4993,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/outbound/shipping-method' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -5090,7 +5091,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/outbound/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -5173,7 +5174,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/outbound/shipping-method/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/claims/{id}/outbound/shipping-method/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Claims
       responses:
@@ -5250,7 +5251,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/claims/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -5324,7 +5325,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/claims/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Claims
       responses:
@@ -6190,7 +6191,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/collections' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Collections
       responses:
@@ -6284,7 +6285,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/collections' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}",
@@ -6371,7 +6372,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/collections/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Collections
       responses:
@@ -6469,7 +6470,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/collections/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -6544,7 +6545,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/collections/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Collections
       responses:
@@ -6651,7 +6652,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/collections/{id}/products' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Collections
       responses:
@@ -6796,7 +6797,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/currencies' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Currencies
       responses:
@@ -6867,7 +6868,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/currencies/{code}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Currencies
       responses:
@@ -7746,7 +7747,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/customer-groups' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customer Groups
       responses:
@@ -7846,7 +7847,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customer-groups' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Solon",
@@ -7924,7 +7925,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/customer-groups/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customer Groups
       responses:
@@ -8001,7 +8002,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customer-groups/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Corbin",
@@ -8069,7 +8070,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/customer-groups/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customer Groups
       responses:
@@ -8185,7 +8186,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customer-groups/{id}/customers' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customer Groups
       responses:
@@ -11572,7 +11573,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/customers' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customers
       responses:
@@ -11710,7 +11711,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customers' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "email": "Tomas.Toy16@yahoo.com",
@@ -11801,7 +11802,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/customers/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customers
       responses:
@@ -11919,7 +11920,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customers/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "email": "Daren_Rodriguez-Rutherford93@gmail.com",
@@ -11999,7 +12000,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/customers/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customers
       responses:
@@ -12241,7 +12242,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/customers/{id}/addresses' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customers
       responses:
@@ -12433,7 +12434,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customers/{id}/addresses' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "address_name": "{value}",
@@ -12527,7 +12528,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/customers/{id}/addresses/{address_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customers
       responses:
@@ -12696,7 +12697,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customers/{id}/addresses/{address_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "address_name": "{value}",
@@ -12787,7 +12788,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/customers/{id}/addresses/{address_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/customers/{id}/addresses/{address_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Customers
       responses:
@@ -12914,7 +12915,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/customers/{id}/customer-groups' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Customers
       responses:
@@ -14393,7 +14394,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/draft-orders' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -14769,7 +14770,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "sales_channel_id": "{value}",
@@ -14862,7 +14863,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/draft-orders/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -14944,7 +14945,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15017,7 +15018,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/draft-orders/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15091,7 +15092,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/convert-to-order' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15162,7 +15163,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15221,7 +15222,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/draft-orders/{id}/edit' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15281,7 +15282,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/confirm' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15353,7 +15354,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15426,7 +15427,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/items/item/{item_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "quantity": 0
@@ -15506,7 +15507,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "quantity": 39
@@ -15578,7 +15579,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/draft-orders/{id}/edit/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15645,7 +15646,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/promotions' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "promo_codes": [
@@ -15713,7 +15714,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/draft-orders/{id}/edit/promotions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15782,7 +15783,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15849,7 +15850,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/shipping-methods' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -15926,7 +15927,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -15994,7 +15995,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -16070,7 +16071,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/draft-orders/{id}/edit/shipping-methods/{action_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -16142,7 +16143,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/draft-orders/{id}/edit/shipping-methods/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Draft Orders
       responses:
@@ -16976,7 +16977,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/exchanges' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17076,7 +17077,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}",
@@ -17154,7 +17155,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/exchanges/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17220,7 +17221,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17294,7 +17295,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/inbound/items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17378,7 +17379,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/inbound/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17451,7 +17452,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/inbound/items/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/inbound/items/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Exchanges
       responses:
@@ -17522,7 +17523,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/inbound/shipping-method' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -17620,7 +17621,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/inbound/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17693,7 +17694,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/inbound/shipping-method/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/inbound/shipping-method/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Exchanges
       responses:
@@ -17776,7 +17777,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/outbound/items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17870,7 +17871,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/outbound/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -17953,7 +17954,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/outbound/items/{action_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/outbound/items/{action_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Exchanges
       responses:
@@ -18034,7 +18035,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/outbound/shipping-method' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -18132,7 +18133,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/outbound/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -18215,7 +18216,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/outbound/shipping-method/{action_id}''\ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/exchanges/{id}/outbound/shipping-method/{action_id}''\ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Exchanges
       responses:
@@ -18288,7 +18289,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/exchanges/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -18360,7 +18361,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/exchanges/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Exchanges
       responses:
@@ -18546,7 +18547,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/fulfillment-providers' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Fulfillment Providers
       responses:
@@ -18607,7 +18608,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/fulfillment-providers/{id}/options' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Fulfillment Providers
       responses:
@@ -18668,7 +18669,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/fulfillment-sets/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Fulfillment Sets
       responses:
@@ -18753,7 +18754,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/fulfillment-sets/{id}/service-zones' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Layla"
@@ -18840,7 +18841,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/fulfillment-sets/{id}/service-zones/{zone_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Fulfillment Sets
       responses:
@@ -18928,7 +18929,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/fulfillment-sets/{id}/service-zones/{zone_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Elvis"
@@ -19002,7 +19003,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/fulfillment-sets/{id}/service-zones/{zone_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/fulfillment-sets/{id}/service-zones/{zone_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Fulfillment Sets
       responses:
@@ -19091,7 +19092,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/fulfillments' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "location_id": "{value}",
@@ -19211,7 +19212,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/fulfillments/{id}/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Fulfillments
       responses:
@@ -19298,7 +19299,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/fulfillments/{id}/shipment' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "labels": [
@@ -19675,7 +19676,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/gift-cards' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Gift Cards
       responses:
@@ -19735,7 +19736,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/gift-cards' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "code": "{value}",
@@ -19809,7 +19810,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/gift-cards/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Gift Cards
       responses:
@@ -19875,7 +19876,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/gift-cards/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Gift Cards
       responses:
@@ -19938,7 +19939,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/gift-cards/{id}/orders' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Gift Cards
       responses:
@@ -20001,7 +20002,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/gift-cards/{id}/redeem' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "customer_id": "{value}"
@@ -20445,7 +20446,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/inventory-items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Inventory Items
       responses:
@@ -20545,7 +20546,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/inventory-items' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "sku": "{value}",
@@ -20629,7 +20630,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/inventory-items/location-levels/batch' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "create": [
@@ -20724,7 +20725,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/inventory-items/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Inventory Items
       responses:
@@ -20801,7 +20802,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/inventory-items/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "sku": "{value}",
@@ -20879,7 +20880,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/inventory-items/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Inventory Items
       responses:
@@ -21025,7 +21026,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/inventory-items/{id}/location-levels' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Inventory Items
       responses:
@@ -21113,7 +21114,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/inventory-items/{id}/location-levels' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "location_id": "{value}"
@@ -21192,7 +21193,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/inventory-items/{id}/location-levels/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Inventory Items
       responses:
@@ -21279,7 +21280,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/inventory-items/{id}/location-levels/{location_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Inventory Items
       responses:
@@ -21362,7 +21363,7 @@ paths:
             })
         - lang: Shell
           label: cURL
-          source: 'curl -X DELETE ''{backend_url}/admin/inventory-items/{id}/location-levels/{location_id}'' \ -H ''Authorization: Bearer {access_token}'''
+          source: 'curl -X DELETE ''{backend_url}/admin/inventory-items/{id}/location-levels/{location_id}'' \ -H ''Authorization: Bearer {jwt_token}'''
       tags:
         - Inventory Items
       responses:
@@ -22537,7 +22538,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/notifications' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Notifications
       responses:
@@ -22608,7 +22609,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/notifications/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Notifications
       responses:
@@ -22669,7 +22670,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}",
@@ -22737,7 +22738,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/order-edits/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -22830,7 +22831,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/confirm' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -22917,7 +22918,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -23000,7 +23001,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/items/item/{item_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "quantity": 7564330046324736
@@ -23088,7 +23089,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -23163,7 +23164,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/order-edits/{id}/items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -23226,7 +23227,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -23289,7 +23290,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/shipping-method' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -23354,7 +23355,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/order-edits/{id}/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -23409,7 +23410,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/order-edits/{id}/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Order Edits
       responses:
@@ -24070,7 +24071,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/orders' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -24220,7 +24221,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/orders/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -24310,7 +24311,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -24394,7 +24395,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/archive' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}"
@@ -24488,7 +24489,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -24578,7 +24579,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/orders/{id}/changes' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -24659,7 +24660,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/complete' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}"
@@ -24761,7 +24762,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/credit-lines' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "amount": 32,
@@ -24896,7 +24897,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/fulfillments' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "items": [
@@ -25022,7 +25023,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/fulfillments/{fulfillment_id}/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -25117,7 +25118,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/fulfillments/{fulfillment_id}/mark-as-delivered' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -25283,7 +25284,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/fulfillments/{fulfillment_id}/shipments' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "items": [
@@ -25451,7 +25452,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/orders/{id}/line-items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -25521,7 +25522,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/orders/{id}/preview' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -25583,7 +25584,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/orders/{id}/shipping-options' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -25678,7 +25679,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/transfer' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "customer_id": "cus_123"
@@ -25771,7 +25772,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/orders/{id}/transfer/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Orders
       responses:
@@ -25845,7 +25846,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/payment-collections' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}"
@@ -25912,7 +25913,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/payment-collections/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Payment Collections
       responses:
@@ -25993,7 +25994,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/payment-collections/{id}/mark-as-paid' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}"
@@ -26520,7 +26521,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/payments' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Payments
       responses:
@@ -26690,7 +26691,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/payments/payment-providers' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Payments
       responses:
@@ -26790,7 +26791,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/payments/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Payments
       responses:
@@ -26866,7 +26867,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/payments/{id}/capture' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Payments
       responses:
@@ -26953,7 +26954,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/payments/{id}/refund' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Payments
       responses:
@@ -27018,7 +27019,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/plugins' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Plugins
       responses:
@@ -27423,7 +27424,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/price-lists' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Lists
       responses:
@@ -27506,7 +27507,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/price-lists' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}",
@@ -27586,7 +27587,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/price-lists/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Lists
       responses:
@@ -27663,7 +27664,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/price-lists/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "description": "{value}",
@@ -27731,7 +27732,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/price-lists/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Lists
       responses:
@@ -27899,7 +27900,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/price-lists/{id}/prices/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Lists
       responses:
@@ -27979,7 +27980,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/price-lists/{id}/products' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Lists
       responses:
@@ -28152,7 +28153,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/price-preferences' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Preferences
       responses:
@@ -28225,7 +28226,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/price-preferences' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Preferences
       responses:
@@ -28298,7 +28299,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/price-preferences/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Preferences
       responses:
@@ -28375,7 +28376,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/price-preferences/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Preferences
       responses:
@@ -28437,7 +28438,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/price-preferences/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Price Preferences
       responses:
@@ -29025,7 +29026,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-categories' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Categories
       responses:
@@ -29096,7 +29097,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-categories' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Vesta",
@@ -29200,7 +29201,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-categories/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Categories
       responses:
@@ -29277,7 +29278,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-categories/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "parent_category_id": "{value}",
@@ -29353,7 +29354,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/product-categories/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Categories
       responses:
@@ -29460,7 +29461,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-categories/{id}/products' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Categories
       responses:
@@ -29974,7 +29975,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-tags' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Tags
       responses:
@@ -30045,7 +30046,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-tags' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "value": "{value}",
@@ -30132,7 +30133,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-tags/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Tags
       responses:
@@ -30209,7 +30210,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-tags/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -30284,7 +30285,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/product-tags/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Tags
       responses:
@@ -30807,7 +30808,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-types' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Types
       responses:
@@ -30878,7 +30879,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-types' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "value": "{value}",
@@ -30965,7 +30966,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-types/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Types
       responses:
@@ -31042,7 +31043,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/product-types/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -31117,7 +31118,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/product-types/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Types
       responses:
@@ -31686,7 +31687,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/product-variants' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Product Variants
       responses:
@@ -32776,7 +32777,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/products' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -32898,7 +32899,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}",
@@ -33022,7 +33023,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/batch' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             --data-raw '{
               "delete": [
                 "prod_123"
@@ -33134,7 +33135,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/export' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33197,7 +33198,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/import' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33298,7 +33299,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/import/{transaction_id}/confirm' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33357,7 +33358,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/imports' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "file_key": "{value}",
@@ -33429,7 +33430,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/imports/{transaction_id}/confirm' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33497,7 +33498,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/products/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33582,7 +33583,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33653,7 +33654,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/products/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33828,7 +33829,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/products/{id}/options' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -33947,7 +33948,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/options' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}",
@@ -34046,7 +34047,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/products/{id}/options/{option_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -34142,7 +34143,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/options/{option_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -34233,7 +34234,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/products/{id}/options/{option_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -34809,7 +34810,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/products/{id}/variants' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -34933,7 +34934,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/variants' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "title": "{value}",
@@ -35043,7 +35044,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/variants/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -35229,7 +35230,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/variants/inventory-items/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -35312,7 +35313,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/products/{id}/variants/{variant_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -35408,7 +35409,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/variants/{variant_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -35496,7 +35497,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/products/{id}/variants/{variant_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -35573,7 +35574,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/variants/{variant_id}/inventory-items' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "required_quantity": 7390879820021760,
@@ -35652,7 +35653,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/products/{id}/variants/{variant_id}/inventory-items/{inventory_item_id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "required_quantity": 5324804697620480
@@ -35724,7 +35725,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/products/{id}/variants/{variant_id}/inventory-items/{inventory_item_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Products
       responses:
@@ -36414,7 +36415,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/promotions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -36800,7 +36801,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/promotions' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "code": "{value}",
@@ -36925,7 +36926,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/promotions/rule-attribute-options/{rule_type}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37074,7 +37075,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/promotions/rule-value-options/{rule_type}/{rule_attribute_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37175,7 +37176,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/promotions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37342,7 +37343,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/promotions/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "campaign_id": "{value}"
@@ -37408,7 +37409,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/promotions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37508,7 +37509,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/promotions/{id}/buy-rules/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37629,7 +37630,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/promotions/{id}/rules/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37750,7 +37751,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/promotions/{id}/target-rules/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -37878,7 +37879,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/promotions/{id}/{rule_type}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Promotions
       responses:
@@ -38030,7 +38031,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/refund-reasons' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Refund Reasons
       responses:
@@ -38111,7 +38112,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/refund-reasons' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "label": "{value}",
@@ -38172,7 +38173,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/refund-reasons/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Refund Reasons
       responses:
@@ -38230,7 +38231,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/refund-reasons/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "description": "{value}"
@@ -38279,7 +38280,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/refund-reasons/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Refund Reasons
       responses:
@@ -38826,7 +38827,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/regions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Regions
       responses:
@@ -38927,7 +38928,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/regions' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Heloise",
@@ -39015,7 +39016,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/regions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Regions
       responses:
@@ -39092,7 +39093,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/regions/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -39167,7 +39168,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/regions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Regions
       responses:
@@ -39778,7 +39779,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/reservations' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Reservations
       responses:
@@ -39880,7 +39881,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/reservations' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "line_item_id": "{value}",
@@ -39962,7 +39963,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/reservations/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Reservations
       responses:
@@ -40039,7 +40040,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/reservations/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "description": "{value}",
@@ -40106,7 +40107,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/reservations/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Reservations
       responses:
@@ -40683,7 +40684,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/return-reasons' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Return Reasons
       responses:
@@ -40755,7 +40756,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/return-reasons' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "value": "{value}",
@@ -40833,7 +40834,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/return-reasons/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Return Reasons
       responses:
@@ -40911,7 +40912,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/return-reasons/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Return Reasons
       responses:
@@ -40973,7 +40974,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/return-reasons/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Return Reasons
       responses:
@@ -41634,7 +41635,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/returns' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -41734,7 +41735,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "order_id": "{value}",
@@ -41825,7 +41826,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/returns/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -41902,7 +41903,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -41969,7 +41970,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/cancel' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42057,7 +42058,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/dismiss-items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42147,7 +42148,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/dismiss-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42229,7 +42230,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/returns/{id}/dismiss-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42309,7 +42310,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/receive' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "return_id": "{value}",
@@ -42384,7 +42385,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/returns/{id}/receive' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42486,7 +42487,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/receive-items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42576,7 +42577,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/receive-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42658,7 +42659,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/returns/{id}/receive-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42739,7 +42740,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/receive/confirm' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42830,7 +42831,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -42902,7 +42903,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/returns/{id}/request' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -43003,7 +43004,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/request-items' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -43093,7 +43094,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/request-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -43175,7 +43176,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/returns/{id}/request-items/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -43256,7 +43257,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/shipping-method' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "shipping_option_id": "{value}"
@@ -43350,7 +43351,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/returns/{id}/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -43432,7 +43433,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/returns/{id}/shipping-method/{action_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Returns
       responses:
@@ -43990,7 +43991,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/sales-channels' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Sales Channels
       responses:
@@ -44090,7 +44091,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/sales-channels' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Linnea",
@@ -44178,7 +44179,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/sales-channels/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Sales Channels
       responses:
@@ -44258,7 +44259,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/sales-channels/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "description": "{value}",
@@ -44334,7 +44335,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/sales-channels/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Sales Channels
       responses:
@@ -44441,7 +44442,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/sales-channels/{id}/products' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Sales Channels
       responses:
@@ -44976,7 +44977,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/shipping-option-types' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Option Types
       responses:
@@ -45053,7 +45054,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-option-types' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "label": "{value}",
@@ -45145,7 +45146,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/shipping-option-types/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Option Types
       responses:
@@ -45226,7 +45227,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-option-types/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Option Types
       responses:
@@ -45300,7 +45301,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/shipping-option-types/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Option Types
       responses:
@@ -45879,7 +45880,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/shipping-options' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Options
       responses:
@@ -45980,7 +45981,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-options' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Julie",
@@ -46070,7 +46071,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/shipping-options/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Options
       responses:
@@ -46147,7 +46148,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-options/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Options
       responses:
@@ -46209,7 +46210,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/shipping-options/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Options
       responses:
@@ -46309,7 +46310,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-options/{id}/rules/batch' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Options
       responses:
@@ -46865,7 +46866,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/shipping-profiles' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Profiles
       responses:
@@ -46965,7 +46966,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-profiles' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Percy",
@@ -47044,7 +47045,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/shipping-profiles/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Profiles
       responses:
@@ -47121,7 +47122,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/shipping-profiles/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -47187,7 +47188,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/shipping-profiles/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Shipping Profiles
       responses:
@@ -47729,7 +47730,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/stock-locations' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stock Locations
       responses:
@@ -47801,7 +47802,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/stock-locations' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Maryam",
@@ -47880,7 +47881,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/stock-locations/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stock Locations
       responses:
@@ -47957,7 +47958,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/stock-locations/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "address_id": "{value}",
@@ -48024,7 +48025,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/stock-locations/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stock Locations
       responses:
@@ -48122,7 +48123,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/stock-locations/{id}/fulfillment-providers' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stock Locations
       responses:
@@ -48204,7 +48205,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/stock-locations/{id}/fulfillment-sets' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Helene",
@@ -48307,7 +48308,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/stock-locations/{id}/sales-channels' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stock Locations
       responses:
@@ -48714,7 +48715,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/store-credit-accounts' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Store Credit Accounts
       responses:
@@ -48774,7 +48775,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/store-credit-accounts' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "currency_code": "nzd",
@@ -49194,7 +49195,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/store-credit-accounts/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Store Credit Accounts
       responses:
@@ -49577,7 +49578,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/store-credit-accounts/{id}/transactions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Store Credit Accounts
       responses:
@@ -49736,7 +49737,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/stores' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stores
       responses:
@@ -49807,7 +49808,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/stores/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Stores
       responses:
@@ -49884,7 +49885,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/stores/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Melvina",
@@ -50042,7 +50043,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/tax-providers' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Providers
       responses:
@@ -50661,7 +50662,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/tax-rates' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Rates
       responses:
@@ -50764,7 +50765,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/tax-rates' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "name": "Kaylin",
@@ -50843,7 +50844,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/tax-rates/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Rates
       responses:
@@ -50921,7 +50922,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/tax-rates/{id}' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "metadata": {}
@@ -50987,7 +50988,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/tax-rates/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Rates
       responses:
@@ -51049,7 +51050,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/tax-rates/{id}/rules' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "reference": "{value}",
@@ -51117,7 +51118,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/tax-rates/{id}/rules/{rule_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Rates
       responses:
@@ -52189,7 +52190,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/tax-regions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Regions
       responses:
@@ -52296,7 +52297,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/tax-regions' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "country_code": "{value}",
@@ -52400,7 +52401,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/tax-regions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Regions
       responses:
@@ -52480,7 +52481,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/tax-regions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Regions
       responses:
@@ -52542,7 +52543,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/tax-regions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Tax Regions
       responses:
@@ -52909,7 +52910,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/transaction-groups' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Transaction Groups
       responses:
@@ -53024,7 +53025,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/uploads' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Uploads
       responses:
@@ -53086,7 +53087,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/uploads/presigned-urls' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "originalname": "{value}",
@@ -53163,7 +53164,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/uploads/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Uploads
       responses:
@@ -53223,7 +53224,7 @@ paths:
           label: cURL
           source: |-
             curl -X DELETE '{backend_url}/admin/uploads/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Uploads
       responses:
@@ -54059,6 +54060,886 @@ paths:
             ```
           description: Emitted when users are deleted.
           deprecated: false
+  /admin/views/{entity}/columns:
+    get:
+      operationId: GetViewsEntityColumns
+      summary: List Columns in View
+      x-sidebar-summary: List Columns
+      description: Retrieve a list of columns in a view for an entity. The columns are retrieved for the authenticated admin user.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its columns (for example, `orders`)
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/columns' \
+            -H 'Authorization: Bearer {jwt_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewsEntityColumnsResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+  /admin/views/{entity}/configurations:
+    get:
+      operationId: GetViewsEntityConfigurations
+      summary: List View Configurations
+      description: Retrieve a list of view configurations of an entity. The configurations can be filtered by fields like `id`. The configurations can also be paginated. An admin user can only retrieve their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its view configurations (for example, `orders`)
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: The number of items to skip when retrieving a list.
+          required: false
+          schema:
+            type: number
+            title: offset
+            description: The number of items to skip when retrieving a list.
+            externalDocs:
+              url: '#pagination'
+        - name: limit
+          in: query
+          description: Limit the number of items returned in the list.
+          required: false
+          schema:
+            type: number
+            title: limit
+            description: Limit the number of items returned in the list.
+            externalDocs:
+              url: '#pagination'
+        - name: order
+          in: query
+          description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+          required: false
+          schema:
+            type: string
+            title: order
+            description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+            externalDocs:
+              url: '#pagination'
+        - name: with_deleted
+          in: query
+          description: Whether to include deleted records in the result.
+          required: false
+          schema:
+            type: boolean
+            title: with_deleted
+            description: Whether to include deleted records in the result.
+        - name: id
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: id
+                description: Filter by a view configuration ID.
+              - type: array
+                description: Filter by view configuration IDs.
+                items:
+                  type: string
+                  title: id
+                  description: The view configuration ID.
+        - name: entity
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: entity
+                description: Filter by an entity.
+              - type: array
+                description: Filter by entities.
+                items:
+                  type: string
+                  title: entity
+                  description: An entity.
+        - name: name
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: name
+                description: Filter by a view's name.
+              - type: array
+                description: Filter by view names.
+                items:
+                  type: string
+                  title: name
+                  description: The view's name.
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: user_id
+                description: Filter by the ID of the user who owns the view.
+              - type: array
+                description: Filter by the IDs of users who own the view.
+                items:
+                  type: string
+                  title: user_id
+                  description: The user ID.
+        - name: is_system_default
+          in: query
+          description: Filter by whether the view is a system default.
+          required: false
+          schema:
+            type: boolean
+            title: is_system_default
+            description: Whether the view is a system default.
+        - name: created_at
+          in: query
+          description: Filter by a view configuration's creation date.
+          required: false
+          schema:
+            type: object
+            description: Filter by a view configuration's creation date.
+            properties:
+              $and:
+                type: array
+                description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $and
+              $or:
+                type: array
+                description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $or
+              $eq:
+                oneOf:
+                  - type: string
+                    title: $eq
+                    description: Filter by an exact match.
+                  - type: array
+                    description: Filter by an exact match.
+                    items:
+                      type: string
+                      title: $eq
+                      description: Filter by an exact match.
+              $ne:
+                type: string
+                title: $ne
+                description: Filter by values not equal to this parameter.
+              $in:
+                type: array
+                description: Filter by values in this array.
+                items:
+                  type: string
+                  title: $in
+                  description: Filter by values in this array.
+              $nin:
+                type: array
+                description: Filter by values not in this array.
+                items:
+                  type: string
+                  title: $nin
+                  description: Filter by values not in this array.
+              $not:
+                oneOf:
+                  - type: string
+                    title: $not
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: object
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: array
+                    description: Filter by values not matching the conditions in this parameter.
+                    items:
+                      type: string
+                      title: $not
+                      description: Filter by values not matching the conditions in this parameter.
+              $gt:
+                type: string
+                title: $gt
+                description: Filter by values greater than this parameter. Useful for numbers and dates only.
+              $gte:
+                type: string
+                title: $gte
+                description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
+              $lt:
+                type: string
+                title: $lt
+                description: Filter by values less than this parameter. Useful for numbers and dates only.
+              $lte:
+                type: string
+                title: $lte
+                description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+              $like:
+                type: string
+                title: $like
+                description: Apply a `like` filter. Useful for strings only.
+              $re:
+                type: string
+                title: $re
+                description: Apply a regex filter. Useful for strings only.
+              $ilike:
+                type: string
+                title: $ilike
+                description: Apply a case-insensitive `like` filter. Useful for strings only.
+              $fulltext:
+                type: string
+                title: $fulltext
+                description: Filter to apply on full-text properties.
+              $overlap:
+                type: array
+                description: Filter arrays that have overlapping values with this parameter.
+                items:
+                  type: string
+                  title: $overlap
+                  description: Filter arrays that have overlapping values with this parameter.
+              $contains:
+                type: array
+                description: Filter arrays that contain some of the values of this parameter.
+                items:
+                  type: string
+                  title: $contains
+                  description: Filter arrays that contain some of the values of this parameter.
+              $contained:
+                type: array
+                description: Filter arrays that contain all values of this parameter.
+                items:
+                  type: string
+                  title: $contained
+                  description: Filter arrays that contain all values of this parameter.
+              $exists:
+                type: boolean
+                title: $exists
+                description: Filter by whether a value for this parameter exists (not `null`).
+        - name: updated_at
+          in: query
+          description: Filter by a view configuration's update date.
+          required: false
+          schema:
+            type: object
+            description: Filter by a view configuration's update date.
+            properties:
+              $and:
+                type: array
+                description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $and
+              $or:
+                type: array
+                description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+                items:
+                  type: object
+                title: $or
+              $eq:
+                oneOf:
+                  - type: string
+                    title: $eq
+                    description: Filter by an exact match.
+                  - type: array
+                    description: Filter by an exact match.
+                    items:
+                      type: string
+                      title: $eq
+                      description: Filter by an exact match.
+              $ne:
+                type: string
+                title: $ne
+                description: Filter by values not equal to this parameter.
+              $in:
+                type: array
+                description: Filter by values in this array.
+                items:
+                  type: string
+                  title: $in
+                  description: Filter by values in this array.
+              $nin:
+                type: array
+                description: Filter by values not in this array.
+                items:
+                  type: string
+                  title: $nin
+                  description: Filter by values not in this array.
+              $not:
+                oneOf:
+                  - type: string
+                    title: $not
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: object
+                    description: Filter by values not matching the conditions in this parameter.
+                  - type: array
+                    description: Filter by values not matching the conditions in this parameter.
+                    items:
+                      type: string
+                      title: $not
+                      description: Filter by values not matching the conditions in this parameter.
+              $gt:
+                type: string
+                title: $gt
+                description: Filter by values greater than this parameter. Useful for numbers and dates only.
+              $gte:
+                type: string
+                title: $gte
+                description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
+              $lt:
+                type: string
+                title: $lt
+                description: Filter by values less than this parameter. Useful for numbers and dates only.
+              $lte:
+                type: string
+                title: $lte
+                description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
+              $like:
+                type: string
+                title: $like
+                description: Apply a `like` filter. Useful for strings only.
+              $re:
+                type: string
+                title: $re
+                description: Apply a regex filter. Useful for strings only.
+              $ilike:
+                type: string
+                title: $ilike
+                description: Apply a case-insensitive `like` filter. Useful for strings only.
+              $fulltext:
+                type: string
+                title: $fulltext
+                description: Filter to apply on full-text properties.
+              $overlap:
+                type: array
+                description: Filter arrays that have overlapping values with this parameter.
+                items:
+                  type: string
+                  title: $overlap
+                  description: Filter arrays that have overlapping values with this parameter.
+              $contains:
+                type: array
+                description: Filter arrays that contain some of the values of this parameter.
+                items:
+                  type: string
+                  title: $contains
+                  description: Filter arrays that contain some of the values of this parameter.
+              $contained:
+                type: array
+                description: Filter arrays that contain all values of this parameter.
+                items:
+                  type: string
+                  title: $contained
+                  description: Filter arrays that contain all values of this parameter.
+              $exists:
+                type: boolean
+                title: $exists
+                description: Filter by whether a value for this parameter exists (not `null`).
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+        - name: $and
+          in: query
+          description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $and
+        - name: $or
+          in: query
+          description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $or
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/configurations' \
+            -H 'Authorization: Bearer {jwt_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: The list of view configurations.
+                    required:
+                      - limit
+                      - offset
+                      - count
+                    properties:
+                      limit:
+                        type: number
+                        title: limit
+                        description: The maximum number of returned items.
+                      offset:
+                        type: number
+                        title: offset
+                        description: The number of items skipped before retrieving the returned items.
+                      count:
+                        type: number
+                        title: count
+                        description: The total number of items.
+                      estimate_count:
+                        type: number
+                        title: estimate_count
+                        description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+                        x-featureFlag: index_engine
+                  - type: object
+                    description: The list of view configurations.
+                    required:
+                      - view_configurations
+                    properties:
+                      view_configurations:
+                        type: array
+                        description: The list of view configurations.
+                        items:
+                          $ref: '#/components/schemas/AdminViewConfiguration'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    post:
+      operationId: PostViewsEntityConfigurations
+      summary: Create View Configuration
+      description: Create a new view configuration for an entity. If `is_system_default` is set to true, the created configuration will be set as the system default for the specified entity. Otherwise, it will be a custom configuration for the admin user.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to create its view configuration (for example, `orders`).
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateViewConfiguration'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/views/{entity}/configurations' \
+            -H 'Authorization: Bearer {jwt_token}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "is_system_default": true,
+              "name": "Custom View"
+            }'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewConfigurationResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: createViewConfigurationWorkflow
+      x-events: []
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+  /admin/views/{entity}/configurations/active:
+    get:
+      operationId: GetViewsEntityConfigurationsActive
+      summary: Get Active View Configuration
+      description: Get the active view configurations for an entity. If no active view is set, `null` is returned. An admin user can only retrieve their own active configuration.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its active view configurations (for example, `orders`).
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/configurations/active' \
+            -H 'Authorization: Bearer {jwt_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/AdminViewConfigurationResponse'
+                  - type: object
+                    description: Additional properties related to the active view configuration.
+                    properties:
+                      is_default_active:
+                        type: boolean
+                        title: is_default_active
+                        description: Whether the active view configuration is the system default.
+                      default_type:
+                        type: string
+                        description: The type of the default view configuration if the active view is the system default. It will be `system` if the active view is the system default, `code` if no active view is set, or `undefined` if the active view isn't the system default.
+                        enum:
+                          - code
+                          - system
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    post:
+      operationId: PostViewsEntityConfigurationsActive
+      summary: Make View Configuration Active
+      description: Make a view configuration active. This will set the given view configuration as the active one for the specified entity for the admin user. An admin user can only set their own configurations as active. If the view configuration ID is `null`, the active view configuration will be cleared, and the `code` or system default view configuration type will be used as the active view.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to update its view configuration (for example, `orders`).
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminSetActiveViewConfiguration'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/views/{entity}/configurations/active' \
+            -H 'Authorization: Bearer {jwt_token}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "view_configuration_id": "{value}"
+            }'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The details of the operation.
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                    title: success
+                    description: Whether the operation was successful.
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+  /admin/views/{entity}/configurations/{id}:
+    get:
+      operationId: GetViewsEntityConfigurationsId
+      summary: Get View Configuration
+      description: Retrieve a view configuration for an entity. An admin user can only retrieve their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to retrieve its view configurations (for example, `orders`)
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The ID of the view configuration to retrieve.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/views/{entity}/configurations/{id}' \
+            -H 'Authorization: Bearer {jwt_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewConfigurationResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    post:
+      operationId: PostViewsEntityConfigurationsId
+      summary: Update View Configuration
+      description: Update the view configuration of an entity. An admin user can only update their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to update its view configuration (for example, `orders`).
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The view configuration's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateViewConfiguration'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/views/{entity}/configurations/{id}' \
+            -H 'Authorization: Bearer {jwt_token}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "is_system_default": true
+            }'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminViewConfigurationResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: updateViewConfigurationWorkflow
+      x-events: []
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
+    delete:
+      operationId: DeleteViewsEntityConfigurationsId
+      summary: Remove View Configurations
+      description: Remove view configurations of an entity. An admin user can only delete their own configurations.
+      x-authenticated: true
+      parameters:
+        - name: entity
+          in: path
+          description: The entity to delete its view configuration (for example, `orders`)
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The ID of the view configuration to delete
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X DELETE '{backend_url}/admin/views/{entity}/configurations/{id}' \
+            -H 'Authorization: Bearer {jwt_token}'
+      tags:
+        - Views
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The details of the deletion operation.
+                required:
+                  - id
+                  - object
+                  - deleted
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The ID of the deleted View Configuration.
+                  object:
+                    type: string
+                    title: object
+                    description: The name of the deleted object.
+                    example: view_configuration
+                  deleted:
+                    type: boolean
+                    title: deleted
+                    description: Whether the view was deleted.
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-since: 2.10.3
+      x-featureFlag: view_configurations
   /admin/workflows-executions:
     get:
       operationId: GetWorkflowsExecutions
@@ -54174,7 +55055,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/workflows-executions' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Workflows Executions
       responses:
@@ -54274,7 +55155,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/workflows-executions/{id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Workflows Executions
       responses:
@@ -54323,7 +55204,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/workflows-executions/{workflow_id}/run' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Workflows Executions
       responses:
@@ -54406,7 +55287,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/workflows-executions/{workflow_id}/steps/failure' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "transaction_id": "{value}",
@@ -54469,7 +55350,7 @@ paths:
           label: cURL
           source: |-
             curl -X POST '{backend_url}/admin/workflows-executions/{workflow_id}/steps/success' \
-            -H 'Authorization: Bearer {access_token}' \
+            -H 'Authorization: Bearer {jwt_token}' \
             -H 'Content-Type: application/json' \
             --data-raw '{
               "transaction_id": "{value}",
@@ -54529,7 +55410,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/workflows-executions/{workflow_id}/subscribe' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Workflows Executions
       responses:
@@ -54594,7 +55475,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/workflows-executions/{workflow_id}/{transaction_id}' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Workflows Executions
       responses:
@@ -54653,7 +55534,7 @@ paths:
           label: cURL
           source: |-
             curl '{backend_url}/admin/workflows-executions/{workflow_id}/{transaction_id}/{step_id}/subscribe' \
-            -H 'Authorization: Bearer {access_token}'
+            -H 'Authorization: Bearer {jwt_token}'
       tags:
         - Workflows Executions
       responses:
@@ -56525,6 +57406,121 @@ components:
       properties:
         collection:
           $ref: '#/components/schemas/AdminCollection'
+    AdminColumn:
+      type: object
+      description: The details of a column in a view configuration.
+      x-schemaName: AdminColumn
+      required:
+        - id
+        - name
+        - field
+        - sortable
+        - hideable
+        - default_visible
+        - data_type
+      properties:
+        id:
+          type: string
+          title: id
+          description: The column's ID.
+        name:
+          type: string
+          title: name
+          description: The column's name. This is displayed in the view header.
+        description:
+          type: string
+          title: description
+          description: The column's description.
+        field:
+          type: string
+          title: field
+          description: The column's field in the entity.
+        sortable:
+          type: boolean
+          title: sortable
+          description: Whether the column is sortable.
+        hideable:
+          type: boolean
+          title: hideable
+          description: Whether the column is hideable.
+        default_visible:
+          type: boolean
+          title: default_visible
+          description: Whether the column is visible by default.
+        data_type:
+          type: string
+          description: The data type of the column's value.
+          enum:
+            - string
+            - number
+            - boolean
+            - object
+            - date
+            - currency
+            - enum
+        semantic_type:
+          type: string
+          title: semantic_type
+          description: The column's semantic type. It can be `computed`, or other primitive types.
+        context:
+          type: string
+          title: context
+          description: The column's context. It can be `display` or `generic`.
+        computed:
+          type: object
+          description: A computed column's details. Only available if the column's `semantic_type` is `computed`.
+          required:
+            - type
+            - required_fields
+            - optional_fields
+          properties:
+            type:
+              type: string
+              title: type
+              description: The computed's type for rendering.
+            required_fields:
+              type: array
+              description: The required fields in the computed column.
+              items:
+                type: string
+                title: required_fields
+                description: A required field in the computed column.
+            optional_fields:
+              type: array
+              description: The optional fields in the computed column.
+              items:
+                type: string
+                title: optional_fields
+                description: An optional field in the computed column.
+        relationship:
+          type: object
+          description: The relationship details. Only available for relationship columns.
+          required:
+            - entity
+            - field
+          properties:
+            entity:
+              type: string
+              title: entity
+              description: The related entity.
+            field:
+              type: string
+              title: field
+              description: The field in the related entity.
+        default_order:
+          type: number
+          title: default_order
+          description: The column's sort order in the default view configuration.
+        category:
+          type: string
+          description: The column's category.
+          enum:
+            - status
+            - metadata
+            - identifier
+            - timestamp
+            - metric
+            - relationship
     AdminCreateApiKey:
       type: object
       description: The API key's details.
@@ -58186,6 +59182,69 @@ components:
           type: string
           title: inventory_item_id
           description: The inventory item's ID.
+    AdminCreateViewConfiguration:
+      type: object
+      description: The details of a view configuration to create.
+      x-schemaName: AdminCreateViewConfiguration
+      properties:
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default. If so, it will be used as the default view for all users that don't have a custom active view set.
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+        name:
+          type: string
+          title: name
+          description: The view's name.
     AdminCreateWorkflowsAsyncResponse:
       type: object
       description: The details of changing a workflow execution's step status.
@@ -63793,6 +64852,10 @@ components:
                 externalDocs:
                   url: https://docs.medusajs.com/api/admin#manage-metadata
                   description: Learn how to manage metadata
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location to which outbound items are sent from.
     AdminPostExchangesShippingActionReqSchema:
       type: object
       description: The details of the shipping method to update.
@@ -66695,6 +67758,17 @@ components:
       properties:
         service_zone:
           $ref: '#/components/schemas/AdminServiceZone'
+    AdminSetActiveViewConfiguration:
+      type: object
+      description: The details of a view configuration to set as active for the given entity.
+      x-schemaName: AdminSetActiveViewConfiguration
+      required:
+        - view_configuration_id
+      properties:
+        view_configuration_id:
+          type: string
+          title: view_configuration_id
+          description: The ID of the view configuration to set as active. If `null`, the active view configuration will be cleared, and the `code` or system default view configuration will be used as the active view.
     AdminShippingOption:
       type: object
       description: The shipping option's details.
@@ -69559,6 +70633,66 @@ components:
           type: number
           title: required_quantity
           description: The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the value set for `required_quantity`. When the customer orders the quantity, Medusa reserves the ordered quantity multiplied by the value set for `required_quantity`.
+    AdminUpdateViewConfiguration:
+      type: object
+      description: The details to update in a view configuration.
+      x-schemaName: AdminUpdateViewConfiguration
+      properties:
+        set_active:
+          type: boolean
+          title: set_active
+          description: Whether the view is set as active.
+        name:
+          type: string
+          title: name
+          description: The view's name.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          properties:
+            search:
+              type: string
+              title: search
+              description: The search query used in the view.
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
     AdminUploadPreSignedUrl:
       type: object
       description: The details of the file to upload.
@@ -69790,6 +70924,116 @@ components:
       properties:
         user:
           $ref: '#/components/schemas/AdminUser'
+    AdminViewConfiguration:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfiguration
+      required:
+        - id
+        - entity
+        - name
+        - user_id
+        - is_system_default
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The view configuration's ID.
+        entity:
+          type: string
+          title: entity
+          description: The entity the view configuration belongs to.
+        name:
+          type: string
+          title: name
+          description: The view configuration's name.
+        user_id:
+          type: string
+          title: user_id
+          description: The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default.
+        is_system_default:
+          type: boolean
+          title: is_system_default
+          description: Whether the view configuration is the system default.
+        configuration:
+          type: object
+          description: The view's configuration.
+          required:
+            - visible_columns
+            - column_order
+          properties:
+            visible_columns:
+              type: array
+              description: The configuration's visible columns.
+              items:
+                type: string
+                title: visible_columns
+                description: The visible column's name.
+            column_order:
+              type: array
+              description: The columns in the order they should be displayed.
+              items:
+                type: string
+                title: column_order
+                description: The column's name.
+            column_widths:
+              type: object
+              description: The column widths in the view.
+            filters:
+              type: object
+              description: The filters applied to the view.
+            sorting:
+              type: object
+              description: The sorting applied to the view.
+              required:
+                - id
+                - desc
+              properties:
+                id:
+                  type: string
+                  title: id
+                  description: The ID of the sorting column.
+                desc:
+                  type: boolean
+                  title: desc
+                  description: Whether the sorting is descending.
+            search:
+              type: string
+              title: search
+              description: The configuration's search.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The date the view configuration was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the view configuration was updated.
+    AdminViewConfigurationResponse:
+      type: object
+      description: The details of a view configuration.
+      x-schemaName: AdminViewConfigurationResponse
+      required:
+        - view_configuration
+      properties:
+        view_configuration:
+          $ref: '#/components/schemas/AdminViewConfiguration'
+    AdminViewsEntityColumnsResponse:
+      type: object
+      description: The view's columns.
+      x-schemaName: AdminViewsEntityColumnsResponse
+      required:
+        - columns
+      properties:
+        columns:
+          type: array
+          description: The view's columns.
+          items:
+            $ref: '#/components/schemas/AdminColumn'
     AdminWorkflowExecution:
       type: object
       description: The workflows execution's details.
@@ -75789,45 +77033,6 @@ components:
           type: string
           title: token
           description: The order transfer's token issued when the transfer was requested.
-    StoreAddCartLineItem:
-      type: object
-      description: The details of the line item to add.
-      x-schemaName: StoreAddCartLineItem
-      required:
-        - variant_id
-        - quantity
-      properties:
-        variant_id:
-          type: string
-          title: variant_id
-          description: The ID of the product variant to add to the cart.
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
-    StoreAddCartShippingMethods:
-      type: object
-      description: The shipping method's details.
-      required:
-        - option_id
-      properties:
-        option_id:
-          type: string
-          title: option_id
-          description: The ID of the shipping option this method is created from.
-        data:
-          type: object
-          description: Any additional data relevant for the third-party fulfillment provider to process the shipment.
-          externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping#data-request-body-parameter
-            description: Learn more about the data parameter.
-      x-schemaName: StoreAddCartShippingMethods
     StoreAddGiftCardToCart:
       type: object
       description: The details to add a gift card to the cart.
@@ -85466,23 +86671,6 @@ components:
             url: https://docs.medusajs.com/api/store#manage-metadata
             description: Learn how to manage metadata
       x-schemaName: StoreTransactionGroup
-    StoreUpdateCartLineItem:
-      type: object
-      description: The details to update in the line item.
-      x-schemaName: StoreUpdateCartLineItem
-      required:
-        - quantity
-      properties:
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        metadata:
-          type: object
-          description: The item's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
     StoreUpdateCustomer:
       type: object
       description: The details to update in the customer.

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../components/common/form"
 import { useStore } from "../../../../../hooks/api/store"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 import {
   currencies,
   getCurrencySymbol,
@@ -22,7 +23,7 @@ import {
 export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
   const { t } = useTranslation()
   const { store } = useStore()
-
+  const direction = useDocumentDirection()
   const watchValueType = useWatch({
     control: form.control,
     name: `${fieldScope}budget.type`,
@@ -207,6 +208,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
 
               <Form.Control>
                 <RadioGroup
+                  dir={direction}
                   className="flex gap-y-3"
                   {...field}
                   onValueChange={field.onChange}
@@ -250,6 +252,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
                   </Form.Label>
                   <Form.Control>
                     <Select
+                      dir={direction}
                       {...field}
                       onValueChange={onChange}
                       disabled={!!fieldScope.length}

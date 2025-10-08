@@ -14,8 +14,12 @@ import { cartFieldsForPricingContext } from "../utils/fields"
 import {
   AdditionalData,
   ListShippingOptionsForCartWorkflowInput,
-} from "@medusajs/types"
-import { filterObjectByKeys, isDefined } from "@medusajs/framework/utils"
+} from "@medusajs/framework/types"
+import {
+  deduplicate,
+  filterObjectByKeys,
+  isDefined,
+} from "@medusajs/framework/utils"
 import {
   pricingContextResult,
   shippingOptionsContextResult,
@@ -84,6 +88,48 @@ export const listShippingOptionsForCartWorkflowId =
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
  *
  * :::
+ *
+ * @property hooks.setShippingOptionsContext - This hook is executed after the cart is retrieved and before the shipping options are queried. You can consume this hook to return any custom context useful for the shipping options retrieval.
+ *
+ * For example, you can consume the hook to add the customer Id to the context:
+ *
+ * ```ts
+ * import { listShippingOptionsForCartWithPricingWorkflow } from "@medusajs/medusa/core-flows"
+ * import { StepResponse } from "@medusajs/workflows-sdk"
+ *
+ * listShippingOptionsForCartWithPricingWorkflow.hooks.setShippingOptionsContext(
+ *   async ({ cart }, { container }) => {
+ *
+ *     if (cart.customer_id) {
+ *       return new StepResponse({
+ *         customer_id: cart.customer_id,
+ *       })
+ *     }
+ *
+ *     const query = container.resolve("query")
+ *
+ *     const { data: carts } = await query.graph({
+ *       entity: "cart",
+ *       filters: {
+ *         id: cart.id,
+ *       },
+ *       fields: ["customer_id"],
+ *     })
+ *
+ *     return new StepResponse({
+ *       customer_id: carts[0].customer_id,
+ *     })
+ *   }
+ * )
+ * ```
+ *
+ * The `customer_id` property will be added to the context along with other properties such as `is_return` and `enabled_in_store`.
+ *
+ * :::note
+ *
+ * You should also consume the `setShippingOptionsContext` hook in the {@link listShippingOptionsForCartWithPricingWorkflow} workflow to ensure that the context is consistent when listing shipping options across workflows.
+ *
+ * :::
  */
 export const listShippingOptionsForCartWorkflow = createWorkflow(
   listShippingOptionsForCartWorkflowId,
@@ -122,6 +168,11 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
         "stock_locations.name",
         "stock_locations.address.*",
       ],
+      options: {
+        cache: {
+          enable: true,
+        },
+      },
     }).config({ name: "sales_channels-fulfillment-query" })
 
     const scFulfillmentSets = transform(
@@ -170,16 +221,31 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
         resultValidator: shippingOptionsContextResult,
       }
     )
-    const setShippingOptionsContextResult = setShippingOptionsContext.getResult()
+    const setShippingOptionsContextResult =
+      setShippingOptionsContext.getResult()
 
     const queryVariables = transform(
-      { input, fulfillmentSetIds, cart, setPricingContextResult, setShippingOptionsContextResult },
-      ({ input, fulfillmentSetIds, cart, setPricingContextResult, setShippingOptionsContextResult }) => {
+      {
+        input,
+        fulfillmentSetIds,
+        cart,
+        setPricingContextResult,
+        setShippingOptionsContextResult,
+      },
+      ({
+        input,
+        fulfillmentSetIds,
+        cart,
+        setPricingContextResult,
+        setShippingOptionsContextResult,
+      }) => {
         return {
           id: input.option_ids,
 
           context: {
-            ...(setShippingOptionsContextResult ? setShippingOptionsContextResult : {}),
+            ...(setShippingOptionsContextResult
+              ? setShippingOptionsContextResult
+              : {}),
             is_return: input.is_return ? "true" : "false",
             enabled_in_store: !isDefined(input.enabled_in_store)
               ? "true"
@@ -214,9 +280,9 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
       }
     )
 
-    const shippingOptions = useRemoteQueryStep({
-      entry_point: "shipping_options",
-      fields: [
+    const fields = transform(input, ({ fields = [] }) => {
+      return deduplicate([
+        ...fields,
         "id",
         "name",
         "price_type",
@@ -244,7 +310,11 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
         "calculated_price.*",
         "prices.*",
         "prices.price_rules.*",
-      ],
+      ])
+    })
+    const shippingOptions = useRemoteQueryStep({
+      entry_point: "shipping_options",
+      fields,
       variables: queryVariables,
     }).config({ name: "shipping-options-query" })
 

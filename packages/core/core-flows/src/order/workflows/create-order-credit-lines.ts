@@ -1,4 +1,7 @@
-import { CreateOrderCreditLineDTO, OrderDTO } from "@medusajs/framework/types"
+import type {
+  CreateOrderCreditLineDTO,
+  OrderDTO,
+} from "@medusajs/framework/types"
 import {
   ChangeActionType,
   MathBN,
@@ -90,7 +93,7 @@ export const createOrderCreditLinesWorkflow = createWorkflow(
   ) => {
     const orderQuery = useQueryGraphStep({
       entity: "orders",
-      fields: ["id", "status", "summary"],
+      fields: ["id", "status", "summary", "total"],
       filters: { id: input.id },
       options: { throwIfKeyNotFound: true },
     }).config({ name: "get-order" })

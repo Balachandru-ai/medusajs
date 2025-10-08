@@ -6,6 +6,7 @@ import {
   AdminStockLocation,
   MedusaContainer,
 } from "@medusajs/types"
+import { ContainerRegistrationKeys, Modules, ProductStatus } from "@medusajs/utils"
 import {
   adminHeaders,
   generatePublishableKey,
@@ -115,6 +116,7 @@ export async function createOrderSeeder({
         "/admin/products",
         {
           title: `Test fixture ${shippingProfile.id}`,
+          status: ProductStatus.PUBLISHED,
           shipping_profile_id: withoutShipping ? undefined : shippingProfile.id,
           options: [
             { title: "size", values: ["large", "small"] },
@@ -174,6 +176,26 @@ export async function createOrderSeeder({
     { add: ["manual_test-provider"] },
     adminHeaders
   )
+
+  const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+  await remoteLink.create([
+    {
+      [Modules.SALES_CHANNEL]: {
+        sales_channel_id: salesChannel.id,
+      },
+      [Modules.STOCK_LOCATION]: {
+        stock_location_id: stockLocation.id,
+      },
+    },
+    {
+      [Modules.PRODUCT]: {
+        variant_id: product.variants[0].id,
+      },
+      [Modules.INVENTORY]: {
+        inventory_item_id: inventoryItem.id,
+      },
+    },
+  ])
 
   /**
    * Create shipping options for each shipping profile provided

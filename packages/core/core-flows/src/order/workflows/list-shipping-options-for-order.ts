@@ -4,7 +4,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { ListShippingOptionsForOrderWorkflowInput } from "@medusajs/types"
+import type { ListShippingOptionsForOrderWorkflowInput } from "@medusajs/framework/types"
 
 import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
 import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
@@ -72,11 +72,17 @@ export const listShippingOptionsForOrderWorkflow = createWorkflow(
       entity: "sales_channels",
       filters: { id: order.sales_channel_id },
       fields: [
+        "id",
         "stock_locations.fulfillment_sets.id",
         "stock_locations.id",
         "stock_locations.name",
         "stock_locations.address.*",
       ],
+      options: {
+        cache: {
+          enable: true,
+        },
+      },
     }).config({ name: "sales_channels-fulfillment-query" })
 
     const scFulfillmentSets = transform(

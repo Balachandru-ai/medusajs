@@ -1,8 +1,8 @@
 import { join } from "path"
-import { MikroORM } from "@mikro-orm/postgresql"
-import { MetadataStorage } from "@mikro-orm/core"
+import { MikroORM } from "@medusajs/deps/mikro-orm/postgresql"
+import { MetadataStorage } from "@medusajs/deps/mikro-orm/core"
 import { createDatabase, dropDatabase } from "pg-god"
-import { TSMigrationGenerator } from "@mikro-orm/migrations"
+import { TSMigrationGenerator } from "@medusajs/deps/mikro-orm/migrations"
 
 import { model } from "../../../dml"
 import { FileSystem } from "../../../common"

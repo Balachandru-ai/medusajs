@@ -1,55 +1,98 @@
 import { HttpTypes } from "@medusajs/types"
 import { ColumnAdapter } from "../../hooks/table/columns/use-configurable-table-columns"
 
-// Order-specific column adapter
 export const orderColumnAdapter: ColumnAdapter<HttpTypes.AdminOrder> = {
   getColumnAlignment: (column) => {
-    // Custom alignment for order columns
-    if (column.field === "display_id") return "center"
-    if (column.semantic_type === "currency") return "right"
-    if (column.semantic_type === "status") return "center"
-    if (column.computed?.type === "country_code") return "center"
+    if (column.semantic_type === "currency") {
+      return "right"
+    }
+    if (column.semantic_type === "status") {
+      return "center"
+    }
+    if (column.computed?.type === "country_code") {
+      return "center"
+    }
     return "left"
   }
 }
 
-// Product-specific column adapter
 export const productColumnAdapter: ColumnAdapter<HttpTypes.AdminProduct> = {
   getColumnAlignment: (column) => {
-    // Custom alignment for product columns
-    if (column.field === "sku") return "center"
-    if (column.field === "stock") return "right"
-    if (column.semantic_type === "currency") return "right"
-    if (column.semantic_type === "status") return "center"
+    if (column.field === "product_display") {
+      return "left"
+    }
+    if (column.field === "collection.title") {
+      return "left"
+    }
+    if (column.field === "sales_channels_display") {
+      return "left"
+    }
+    if (column.field === "variants_count") {
+      return "left"
+    }
+    if (column.field === "sku") {
+      return "center"
+    }
+    if (column.field === "stock") {
+      return "right"
+    }
+    if (column.semantic_type === "currency") {
+      return "right"
+    }
+    if (column.semantic_type === "status") {
+      return "left"
+    }
+    if (column.computed?.type === "product_info") {
+      return "left"
+    }
+    if (column.computed?.type === "count") {
+      return "left"
+    }
+    if (column.computed?.type === "sales_channels_list") {
+      return "left"
+    }
+
     return "left"
   },
-  
-  transformCellValue: (value, row, column) => {
-    // Custom transformation for product-specific fields
-    if (column.field === "variants_count") {
-      return `${value || 0} variants`
+
+  transformCellValue: (_value, row, column) => {
+    if (column.field === "variants_count" || column.computed?.type === "count") {
+      const count = Array.isArray(row.variants) ? row.variants.length : 0
+      return `${count} ${count === 1 ? 'variant' : 'variants'}`
     }
-    
-    if (column.field === "status" && value === "draft") {
-      return <span className="text-ui-fg-muted">Draft</span>
+
+    if (column.field === "product_display" || column.computed?.type === "product_info") {
+      return null
     }
-    
-    // Default to standard display
+
+    if (column.field === "sales_channels_display" || column.computed?.type === "sales_channels_list") {
+      return null
+    }
+
+    if (column.field === "status") {
+      return null
+    }
+
     return null
   }
 }
 
-// Customer-specific column adapter
 export const customerColumnAdapter: ColumnAdapter<HttpTypes.AdminCustomer> = {
   getColumnAlignment: (column) => {
-    if (column.field === "orders_count") return "right"
-    if (column.semantic_type === "currency") return "right"
-    if (column.semantic_type === "status") return "center"
+    if (column.field === "orders_count") {
+      return "right"
+    }
+    if (column.semantic_type === "currency") {
+      return "right"
+    }
+    if (column.semantic_type === "status") {
+      return "center"
+    }
+
     return "left"
   },
-  
-  transformCellValue: (value, row, column) => {
-    // Format customer name
+
+  transformCellValue: (_value, row, column) => {
     if (column.field === "name") {
       const { first_name, last_name } = row
       if (first_name || last_name) {
@@ -57,23 +100,30 @@ export const customerColumnAdapter: ColumnAdapter<HttpTypes.AdminCustomer> = {
       }
       return "-"
     }
-    
+
     return null
   }
 }
 
-// Inventory-specific column adapter
 export const inventoryColumnAdapter: ColumnAdapter<HttpTypes.AdminInventoryItem> = {
   getColumnAlignment: (column) => {
-    if (column.field === "stocked_quantity") return "right"
-    if (column.field === "reserved_quantity") return "right"
-    if (column.field === "available_quantity") return "right"
-    if (column.semantic_type === "status") return "center"
+    if (column.field === "stocked_quantity") {
+      return "right"
+    }
+    if (column.field === "reserved_quantity") {
+      return "right"
+    }
+    if (column.field === "available_quantity") {
+      return "right"
+    }
+    if (column.semantic_type === "status") {
+      return "center"
+    }
+
     return "left"
   }
 }
 
-// Registry of entity adapters
 export const entityAdapters = {
   orders: orderColumnAdapter,
   products: productColumnAdapter,
@@ -83,7 +133,6 @@ export const entityAdapters = {
 
 export type EntityType = keyof typeof entityAdapters
 
-// Helper function to get adapter for an entity
 export function getEntityAdapter<TData = any>(entity: string): ColumnAdapter<TData> | undefined {
   return entityAdapters[entity as EntityType] as ColumnAdapter<TData>
 }

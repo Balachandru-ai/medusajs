@@ -4,7 +4,7 @@ import {
   retryExecution,
   stringifyCircular,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "../deps/awilix"
 import { configManager } from "../config"
 import { container } from "../container"
 import { logger } from "../logger"
@@ -38,8 +38,18 @@ export async function pgConnectionLoader(): Promise<
 
   delete driverOptions.pool
 
+  const clientUrl = connectionString?.replace(
+    /(\?|&)ssl_mode=[^&]*(&|$)/gi,
+    (match, prefix, suffix) => {
+      if (prefix === "?" && suffix === "&") return "?"
+      if (prefix === "?" && suffix === "") return ""
+      if (prefix === "&") return suffix
+      return ""
+    }
+  )
+
   const pgConnection = ModulesSdkUtils.createPgConnection({
-    clientUrl: connectionString,
+    clientUrl,
     schema,
     driverOptions,
     pool: {

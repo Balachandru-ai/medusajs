@@ -6,8 +6,11 @@ import {
   ProductTypes,
 } from "@medusajs/framework/types"
 import { DALUtils, isDefined, MedusaError } from "@medusajs/framework/utils"
-import { FindOptions as MikroOptions, LoadStrategy } from "@mikro-orm/core"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import {
+  LoadStrategy,
+  FindOptions as MikroOptions,
+} from "@medusajs/framework/mikro-orm/core"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { ProductCategory } from "@models"
 import { UpdateCategoryInput } from "@types"
 
@@ -179,6 +182,7 @@ export class ProductCategoryRepository extends DALUtils.MikroOrmBaseTreeReposito
     } as MikroOptions<any>
 
     delete where.id
+    delete where.handle
     delete where.mpath
     delete where.parent_category_id
 

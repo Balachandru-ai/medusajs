@@ -1379,35 +1379,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@medusajs/icons@npm:2.10.2":
-  version: 2.10.2
-  resolution: "@medusajs/icons@npm:2.10.2"
+"@medusajs/icons@npm:2.10.3":
+  version: 2.10.3
+  resolution: "@medusajs/icons@npm:2.10.3"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: d468c1255f7705edf8dffe83fa95a27724c8fe9f1216afe900b195c05d0e80c3c28a4227fd3ff95b90126256af4ba858bfac80606ec8c760ddcfcd5ac220f1c4
+  checksum: 64775cda6c2983ca586a4ace2aa546494d8d065363be13690654ab0027d1876f68feab818db41e79d205f2ea1de5f0cdf47ba71bd85c19779ddb26f7af9fd6a0
   languageName: node
   linkType: hard
 
-"@medusajs/ui-preset@npm:2.10.2":
-  version: 2.10.2
-  resolution: "@medusajs/ui-preset@npm:2.10.2"
+"@medusajs/ui-preset@npm:2.10.3":
+  version: 2.10.3
+  resolution: "@medusajs/ui-preset@npm:2.10.3"
   dependencies:
     "@tailwindcss/forms": ^0.5.3
     tailwindcss-animate: ^1.0.6
   peerDependencies:
     tailwindcss: ">=3.0.0"
-  checksum: 4212aab1aea1065435c7d9f75b2febdd7b09f7f39ab67805d28b0c933a79887f014224a48013cea3f21f2ca5d296d02e9f3f12ce7af197b039d3a4bd4066bac9
+  checksum: c4aece92216471ac54a437416b4b31cc3bd3e0a080e48272012ac38c696caf192ba95019cdf735ba1b5a88055070369e996e7eaa72615168c1f406c1713bd178
   languageName: node
   linkType: hard
 
-"@medusajs/ui@npm:4.0.22":
-  version: 4.0.22
-  resolution: "@medusajs/ui@npm:4.0.22"
+"@medusajs/ui@npm:4.0.23":
+  version: 4.0.23
+  resolution: "@medusajs/ui@npm:4.0.23"
   dependencies:
     "@dnd-kit/core": ^6.0.0
     "@dnd-kit/sortable": ^7.0.0
     "@dnd-kit/utilities": ^3.2.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@radix-ui/react-dialog": 1.1.4
     "@radix-ui/react-dismissable-layer": 1.1.4
     "@tanstack/react-table": 8.20.5
@@ -1425,7 +1425,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 2aee83ae3caeaa8a0f20c17a7a9239eb0887bfaf7296a09effae287df992e3ae61bda6f7317fec1a69f130b20bfd914782d97e732f27e8d753c882b593e04dde
+  checksum: d876ad2229298e2b841ac63158b53456864d28fdc1b94b7971ca08fbdbd018b4e7f09d55883af3b004fe191edb9c9c6a5883adfa6b2f50b6781f6d82f1cead6e
   languageName: node
   linkType: hard
 
@@ -1597,55 +1597,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/endpoint@npm:^9.0.0":
-  version: 9.0.4
-  resolution: "@octokit/endpoint@npm:9.0.4"
-  dependencies:
-    "@octokit/types": ^12.0.0
-    universal-user-agent: ^6.0.0
-  checksum: f1c857c5d85afa9d7e8857f7f97dbec28d3b6ab1dc21fe35172f1bc9e5512c8a3a26edabf6b2d83bb60d700f7ad290c96be960496aa83606095630edfad06db4
-  languageName: node
-  linkType: hard
-
-"@octokit/openapi-types@npm:^20.0.0":
-  version: 20.0.0
-  resolution: "@octokit/openapi-types@npm:20.0.0"
-  checksum: 5176dcc3b9d182ede3d446750cfa5cf31139624785a73fcf3511e3102a802b4d7cc45e999c27ed91d73fe8b7d718c8c406facb48688926921a71fe603b7db95d
-  languageName: node
-  linkType: hard
-
-"@octokit/request-error@npm:^5.0.0":
-  version: 5.0.1
-  resolution: "@octokit/request-error@npm:5.0.1"
-  dependencies:
-    "@octokit/types": ^12.0.0
-    deprecation: ^2.0.0
-    once: ^1.4.0
-  checksum: e72a4627120de345b54876a1f007664095e5be9d624fce2e14fccf7668cd8f5e4929d444d8fc085d48e1fb5cd548538453974aab129a669101110d6679dce6c6
-  languageName: node
-  linkType: hard
-
-"@octokit/request@npm:^8.1.1":
-  version: 8.2.0
-  resolution: "@octokit/request@npm:8.2.0"
-  dependencies:
-    "@octokit/endpoint": ^9.0.0
-    "@octokit/request-error": ^5.0.0
-    "@octokit/types": ^12.0.0
-    universal-user-agent: ^6.0.0
-  checksum: 0789edd3b600c5b7ca74089e2842b7bb679a0ad1ec56e5dda54f052d2dd266ac8e6e2eb3c34ba57962066f0770444bf1e99805fd2d762a47776f567beafcf038
-  languageName: node
-  linkType: hard
-
-"@octokit/types@npm:^12.0.0":
-  version: 12.6.0
-  resolution: "@octokit/types@npm:12.6.0"
-  dependencies:
-    "@octokit/openapi-types": ^20.0.0
-  checksum: 0bea58bda46c93287f5a80a0e52bc60e7dc7136b8a38c3569d63d073fb9df4a56acdb9d9bdba9978f37c374a4a6e3e52886ef5b08cace048adb0012cacef942c
-  languageName: node
-  linkType: hard
-
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -1664,6 +1615,13 @@ __metadata:
   version: 1.0.0-next.24
   resolution: "@polka/url@npm:1.0.0-next.24"
   checksum: 97d98fa911857158514457bedad8c36084c1f608302458f580ab300a25c3abf456d1d54fcf2ea7927464bee0858baf5e8e5b374b95c3375b9eb3784d81411ebd
+  languageName: node
+  linkType: hard
+
+"@posthog/core@npm:1.2.2":
+  version: 1.2.2
+  resolution: "@posthog/core@npm:1.2.2"
+  checksum: 723dbb93605625ed0122569c929efe4d5c571b8c5c61d6a9e6768cc5ebca05887e39f48a9697d6c212b209215a504c48fc56dfa401576fbe3cd8828c5f440f2d
   languageName: node
   linkType: hard
 
@@ -5446,8 +5404,8 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
-    "@medusajs/ui": 4.0.22
+    "@medusajs/icons": 2.10.3
+    "@medusajs/ui": 4.0.23
     "@next/bundle-analyzer": 15.3.5
     "@next/mdx": 15.3.5
     "@react-hook/resize-observer": ^2.0.2
@@ -5476,6 +5434,7 @@ __metadata:
     openapi-sampler: ^1.3.1
     pluralize: ^8.0.0
     postcss: 8.4.27
+    posthog-js: ^1.269.1
     prism-react-renderer: 2.4.0
     react: rc
     react-dom: rc
@@ -5819,7 +5778,7 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
     "@types/mdx": ^2.0.13
@@ -5836,6 +5795,7 @@ __metadata:
     eslint-plugin-react-hooks: ^5.0.0
     next: 15.3.5
     postcss: ^8
+    posthog-js: ^1.269.1
     react: rc
     react-dom: rc
     rehype-mdx-code-props: ^2.0.0
@@ -6174,7 +6134,7 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/mdx": 15.3.5
     "@sanity/client": ^7.11.0
     "@stefanprobst/rehype-extract-toc": ^3.0.0
@@ -6191,6 +6151,7 @@ __metadata:
     eslint-plugin-react-hooks: ^5.0.0
     next: 15.3.5
     postcss: ^8
+    posthog-js: ^1.269.1
     react: rc
     react-dom: rc
     rehype-mdx-code-props: ^2.0.0
@@ -6358,6 +6319,13 @@ __metadata:
   dependencies:
     toggle-selection: ^1.0.6
   checksum: 3ebf5e8ee00601f8c440b83ec08d838e8eabb068c1fae94a9cda6b42f288f7e1b552f3463635f419af44bf7675afc8d0390d30876cf5c2d5d35f86d9c56a3e5f
+  languageName: node
+  linkType: hard
+
+"core-js@npm:^3.38.1":
+  version: 3.45.1
+  resolution: "core-js@npm:3.45.1"
+  checksum: c38e5fae5a05ee3a129c45e10056aafe61dbb15fd35d27e0c289f5490387541c89741185e0aeb61acb558559c6697e016c245cca738fa169a73f2b06cd30e6b6
   languageName: node
   linkType: hard
 
@@ -7039,13 +7007,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deprecation@npm:^2.0.0":
-  version: 2.3.1
-  resolution: "deprecation@npm:2.3.1"
-  checksum: 23d688ba66b74d09b908c40a76179418acbeeb0bfdf218c8075c58ad8d0c315130cb91aa3dffb623aa3a411a3569ce56c6460de6c8d69071c17fe6dd2442f032
-  languageName: node
-  linkType: hard
-
 "dequal@npm:^2.0.0":
   version: 2.0.3
   resolution: "dequal@npm:2.0.3"
@@ -7143,10 +7104,9 @@ __metadata:
   dependencies:
     "@emotion/is-prop-valid": ^1.3.1
     "@kapaai/react-sdk": ^0.3.0
-    "@medusajs/icons": 2.10.2
-    "@medusajs/ui": 4.0.22
+    "@medusajs/icons": 2.10.3
+    "@medusajs/ui": 4.0.23
     "@next/third-parties": 15.3.5
-    "@octokit/request": ^8.1.1
     "@react-hook/resize-observer": ^1.2.6
     "@segment/analytics-next": ^1.75.0
     "@types/react": "npm:types-react@rc"
@@ -7183,6 +7143,7 @@ __metadata:
     "@types/react": "*"
     "@types/react-dom": "*"
     next: "*"
+    posthog-js: "*"
     react: "*"
     react-dom: "*"
   languageName: unknown
@@ -8544,6 +8505,13 @@ __metadata:
     picomatch:
       optional: true
   checksum: d13c10120e9625adf21d8d80481586200759928c19405a816b77dd28eaeb80e7c59c5def3e2941508045eb06d34eb47fad865ccc8bf98e6ab988bb0ed160fb6f
+  languageName: node
+  linkType: hard
+
+"fflate@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "fflate@npm:0.4.8"
+  checksum: 29d1eddaaa5deab61b1c6b0d21282adacadbc4d2c01e94d8b1ee784398151673b9c563e53f97a801bc410a1ae55e8de5378114a743430e643e7a0644ba8e5a42
   languageName: node
   linkType: hard
 
@@ -11993,15 +11961,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"once@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "once@npm:1.4.0"
-  dependencies:
-    wrappy: 1
-  checksum: 5d48aca287dfefabd756621c5dfce5c91a549a93e9fdb7b8246bc4c4790aa2ec17b34a260530474635147aeb631a2dcc8b32c613df0675f96041cbb8244517d0
-  languageName: node
-  linkType: hard
-
 "onetime@npm:^5.1.2":
   version: 5.1.2
   resolution: "onetime@npm:5.1.2"
@@ -12406,10 +12365,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"posthog-js@npm:^1.269.1":
+  version: 1.269.1
+  resolution: "posthog-js@npm:1.269.1"
+  dependencies:
+    "@posthog/core": 1.2.2
+    core-js: ^3.38.1
+    fflate: ^0.4.8
+    preact: ^10.19.3
+    web-vitals: ^4.2.4
+  peerDependencies:
+    "@rrweb/types": 2.0.0-alpha.17
+    rrweb-snapshot: 2.0.0-alpha.17
+  peerDependenciesMeta:
+    "@rrweb/types":
+      optional: true
+    rrweb-snapshot:
+      optional: true
+  checksum: 93b5d050f06dedb70820a2749d999451b37b24b61bb6041d61a1a05fe78405677284b00e1cfeae8e7b298645615002951febb275a4f87cf25191070172855590
+  languageName: node
+  linkType: hard
+
 "preact@npm:^10.10.0":
   version: 10.19.6
   resolution: "preact@npm:10.19.6"
   checksum: 305c63bc59f9a081185fea8ee9a43c96f69af58e50692228d0e566eacd69bac009f2fb9d4ebfa2bcfcfd9762c5318a7f1ccd1d5223ab8764e3f7e14386bce626
+  languageName: node
+  linkType: hard
+
+"preact@npm:^10.19.3":
+  version: 10.27.2
+  resolution: "preact@npm:10.27.2"
+  checksum: 951b708f7afa34391e054b0f1026430e8f5f6d5de24020beef70288e17067e473b9ee5503a994e0a80ced014826f56708fea5902f80346432c22dfcf3dff4be7
   languageName: node
   linkType: hard
 
@@ -13322,7 +13309,7 @@ __metadata:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/bundle-analyzer": ^15.3.5
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
@@ -13340,6 +13327,7 @@ __metadata:
     eslint-plugin-react-hooks: ^5.0.0
     next: 15.3.5
     postcss: ^8
+    posthog-js: ^1.269.1
     react: rc
     react-dom: rc
     rehype-mdx-code-props: ^2.0.0
@@ -14347,7 +14335,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tailwind@workspace:packages/tailwind"
   dependencies:
-    "@medusajs/ui-preset": 2.10.2
+    "@medusajs/ui-preset": 2.10.3
     tailwindcss-animate: ^1.0.7
   peerDependencies:
     docs-ui: "*"
@@ -14972,7 +14960,7 @@ turbo@latest:
   version: 0.0.0-use.local
   resolution: "types@workspace:packages/types"
   dependencies:
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@types/node": ^20.11.20
     openapi-types: ^12.1.3
     rimraf: ^5.0.5
@@ -15061,9 +15049,9 @@ turbo@latest:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
-    "@medusajs/ui": 4.0.22
-    "@medusajs/ui-preset": 2.10.2
+    "@medusajs/icons": 2.10.3
+    "@medusajs/ui": 4.0.23
+    "@medusajs/ui-preset": 2.10.3
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
     "@types/mdx": ^2.0.13
@@ -15079,6 +15067,7 @@ turbo@latest:
     eslint-plugin-react-hooks: ^5.0.0
     next: 15.3.5
     postcss: ^8
+    posthog-js: ^1.269.1
     react: rc
     react-dom: rc
     rehype-mdx-code-props: ^2.0.0
@@ -15323,13 +15312,6 @@ turbo@latest:
   languageName: node
   linkType: hard
 
-"universal-user-agent@npm:^6.0.0":
-  version: 6.0.1
-  resolution: "universal-user-agent@npm:6.0.1"
-  checksum: 5c9c46ffe19a975e11e6443640ed4c9e0ce48fcc7203325757a8414ac49940ebb0f4667f2b1fa561489d1eb22cb2d05a0f7c82ec20c5cba42e58e188fb19b187
-  languageName: node
-  linkType: hard
-
 "universalify@npm:^0.2.0":
   version: 0.2.0
   resolution: "universalify@npm:0.2.0"
@@ -15416,7 +15398,7 @@ turbo@latest:
   dependencies:
     "@mdx-js/loader": ^3.1.0
     "@mdx-js/react": ^3.1.0
-    "@medusajs/icons": 2.10.2
+    "@medusajs/icons": 2.10.3
     "@next/mdx": 15.3.5
     "@stefanprobst/rehype-extract-toc": ^3.0.0
     "@types/mdx": ^2.0.13
@@ -15432,6 +15414,7 @@ turbo@latest:
     eslint-plugin-react-hooks: ^5.0.0
     next: 15.3.5
     postcss: ^8
+    posthog-js: ^1.269.1
     react: rc
     react-dom: rc
     rehype-mdx-code-props: ^2.0.0
@@ -15563,6 +15546,13 @@ turbo@latest:
   dependencies:
     xml-name-validator: ^4.0.0
   checksum: 02cc66d6efc590bd630086cd88252444120f5feec5c4043932b0d0f74f8b060512f79dc77eb093a7ad04b4f02f39da79ce4af47ceb600f2bf9eacdc83204b1a8
+  languageName: node
+  linkType: hard
+
+"web-vitals@npm:^4.2.4":
+  version: 4.2.4
+  resolution: "web-vitals@npm:4.2.4"
+  checksum: 383c9281d5b556bcd190fde3c823aeb005bb8cf82e62c75b47beb411014a4ed13fa5c5e0489ed0f1b8d501cd66b0bebcb8624c1a75750bd5df13e2a3b1b2d194
   languageName: node
   linkType: hard
 
@@ -15837,13 +15827,6 @@ turbo@latest:
     string-width: ^5.0.1
     strip-ansi: ^7.0.1
   checksum: 138ff58a41d2f877eae87e3282c0630fc2789012fc1af4d6bd626eeb9a2f9a65ca92005e6e69a75c7b85a68479fe7443c7dbe1eb8fbaa681a4491364b7c55c60
-  languageName: node
-  linkType: hard
-
-"wrappy@npm:1":
-  version: 1.0.2
-  resolution: "wrappy@npm:1.0.2"
-  checksum: 56fece1a4018c6a6c8e28fbc88c87e0fbf4ea8fd64fc6c63b18f4acc4bd13e0ad2515189786dd2c30d3eec9663d70f4ecf699330002f8ccb547e4a18231fc9f0
   languageName: node
   linkType: hard
 

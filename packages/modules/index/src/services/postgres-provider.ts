@@ -22,7 +22,7 @@ import {
   EntityManager,
   EntityRepository,
   SqlEntityManager,
-} from "@mikro-orm/postgresql"
+} from "@medusajs/framework/mikro-orm/postgresql"
 import { IndexData, IndexRelation } from "@models"
 import { createPartitions, QueryBuilder } from "../utils"
 import { flattenObjectKeys } from "../utils/flatten-object-keys"

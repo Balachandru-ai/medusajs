@@ -2,7 +2,7 @@ import {
   InternalModuleDeclaration,
   LoaderOptions,
 } from "@medusajs/framework/types"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 import Redis from "ioredis"
 import { RedisWorkflowsOptions } from "../types"
 
@@ -13,6 +13,8 @@ export default async (
   const {
     url,
     options: redisOptions,
+    jobQueueName,
+    queueName,
     pubsub,
   } = options?.redis as RedisWorkflowsOptions
 
@@ -25,8 +27,8 @@ export default async (
 
   const cnnPubSub = pubsub ?? { url, options: redisOptions }
 
-  const queueName = options?.queueName ?? "medusa-workflows"
-  const jobQueueName = options?.jobQueueName ?? "medusa-workflows-jobs"
+  const queueName_ = queueName ?? "medusa-workflows"
+  const jobQueueName_ = jobQueueName ?? "medusa-workflows-jobs"
 
   let connection
   let redisPublisher
@@ -40,11 +42,11 @@ export default async (
       maxRetriesPerRequest: null,
     })
     logger?.info(
-      `Connection to Redis in module 'workflow-engine-redis' established`
+      `[Workflow-engine-redis] Connection to Redis in module 'workflow-engine-redis' established`
     )
   } catch (err) {
     logger?.error(
-      `An error occurred while connecting to Redis in module 'workflow-engine-redis': ${err}`
+      `[Workflow-engine-redis] An error occurred while connecting to Redis in module 'workflow-engine-redis': ${err}`
     )
   }
 
@@ -52,11 +54,11 @@ export default async (
     redisPublisher = await getConnection(cnnPubSub.url, cnnPubSub.options)
     redisSubscriber = await getConnection(cnnPubSub.url, cnnPubSub.options)
     logger?.info(
-      `Connection to Redis PubSub in module 'workflow-engine-redis' established`
+      `[Workflow-engine-redis] Connection to Redis PubSub in module 'workflow-engine-redis' established`
     )
   } catch (err) {
     logger?.error(
-      `An error occurred while connecting to Redis PubSub in module 'workflow-engine-redis': ${err}`
+      `[Workflow-engine-redis] An error occurred while connecting to Redis PubSub in module 'workflow-engine-redis': ${err}`
     )
   }
 
@@ -67,8 +69,8 @@ export default async (
     redisWorkerConnection: asValue(workerConnection),
     redisPublisher: asValue(redisPublisher),
     redisSubscriber: asValue(redisSubscriber),
-    redisQueueName: asValue(queueName),
-    redisJobQueueName: asValue(jobQueueName),
+    redisQueueName: asValue(queueName_),
+    redisJobQueueName: asValue(jobQueueName_),
     redisDisconnectHandler: asValue(async () => {
       connection.disconnect()
       workerConnection.disconnect()

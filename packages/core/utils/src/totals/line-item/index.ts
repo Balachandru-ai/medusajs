@@ -33,6 +33,7 @@ export interface GetItemTotalOutput {
   unit_price: BigNumber
 
   subtotal: BigNumber
+  original_subtotal: BigNumber
 
   total: BigNumber
   original_total: BigNumber
@@ -76,8 +77,7 @@ export function getLineItemsTotals(
 function setRefundableTotal(
   item: GetItemTotalInput,
   discountsTotal: BigNumberInput,
-  totals: GetItemTotalOutput,
-  context: GetLineItemsTotalsContext
+  totals: GetItemTotalOutput
 ) {
   const itemDetail = item.detail!
   const totalReturnedQuantity = MathBN.sum(
@@ -127,54 +127,107 @@ function getLineItemTotals(
     ? MathBN.div(totalItemPrice, MathBN.add(1, sumTaxRate))
     : totalItemPrice
 
+  // Proportional discounts to current quantity and compute taxes on the current net amount
   const {
     adjustmentsTotal: discountsTotal,
-    adjustmentsSubtotal: discountsSubtotal,
-    adjustmentsTaxTotal: discountTaxTotal,
+    adjustmentsSubtotal: discountsSubtotalFull,
+    adjustmentSubtotalPerItem,
   } = calculateAdjustmentTotal({
+    item,
     adjustments: item.adjustments || [],
     taxRate: sumTaxRate,
   })
 
+  const itemDetail = item.detail!
+  const totalReturnedQuantity = MathBN.sum(
+    itemDetail?.return_received_quantity ?? 0,
+    itemDetail?.return_dismissed_quantity ?? 0
+  )
+
+  const currentQuantity = MathBN.sub(item.quantity, totalReturnedQuantity)
+  const currentTotalItemPrice = MathBN.mult(item.unit_price, currentQuantity)
+  const currentSubtotal = isTaxInclusive
+    ? MathBN.div(currentTotalItemPrice, MathBN.add(1, sumTaxRate))
+    : currentTotalItemPrice
+
+  const currentDiscountsSubtotal = MathBN.mult(
+    adjustmentSubtotalPerItem ?? 0,
+    currentQuantity
+  )
+
   const taxTotal = calculateTaxTotal({
     taxLines: item.tax_lines || [],
-    taxableAmount: MathBN.sub(subtotal, discountsSubtotal),
+    taxableAmount: MathBN.sub(currentSubtotal, currentDiscountsSubtotal),
     setTotalField: "total",
   })
 
   const originalTaxTotal = calculateTaxTotal({
     taxLines: item.tax_lines || [],
-    taxableAmount: subtotal,
+    taxableAmount: currentSubtotal,
     setTotalField: "subtotal",
   })
+
+  // Compute full-quantity net total after discounts and taxes to derive per-unit totals
+  const fullDiscountedTaxable = MathBN.sub(subtotal, discountsSubtotalFull ?? 0)
+  const taxTotalFull = calculateTaxTotal({
+    taxLines: item.tax_lines || [],
+    taxableAmount: fullDiscountedTaxable,
+  })
+  const fullNetTotal = MathBN.sum(fullDiscountedTaxable, taxTotalFull)
 
   const totals: GetItemTotalOutput = {
     quantity: item.quantity,
     unit_price: item.unit_price,
 
-    subtotal: new BigNumber(subtotal),
+    subtotal: new BigNumber(currentSubtotal),
+
     total: new BigNumber(
-      MathBN.sum(MathBN.sub(subtotal, discountsSubtotal), taxTotal)
+      MathBN.sum(
+        MathBN.sub(currentSubtotal, currentDiscountsSubtotal),
+        taxTotal
+      )
+    ),
+
+    original_subtotal: new BigNumber(
+      MathBN.sub(
+        isTaxInclusive
+          ? currentTotalItemPrice
+          : MathBN.add(currentSubtotal, originalTaxTotal),
+        originalTaxTotal
+      )
     ),
 
     original_total: new BigNumber(
-      isTaxInclusive ? totalItemPrice : MathBN.add(subtotal, originalTaxTotal)
+      isTaxInclusive
+        ? currentTotalItemPrice
+        : MathBN.add(currentSubtotal, originalTaxTotal)
     ),
 
-    discount_total: new BigNumber(discountsTotal),
-    discount_subtotal: new BigNumber(discountsSubtotal),
-    discount_tax_total: new BigNumber(discountTaxTotal),
+    // Discount values prorated to the current quantity
+    discount_subtotal: new BigNumber(currentDiscountsSubtotal),
+    discount_tax_total: new BigNumber(MathBN.sub(originalTaxTotal, taxTotal)),
+    discount_total: new BigNumber(
+      MathBN.add(
+        currentDiscountsSubtotal,
+        MathBN.sub(originalTaxTotal, taxTotal)
+      )
+    ),
 
     tax_total: new BigNumber(taxTotal),
     original_tax_total: new BigNumber(originalTaxTotal),
   }
 
-  if (isDefined(item.detail?.return_requested_quantity)) {
-    setRefundableTotal(item, discountsTotal, totals, context)
+  if (
+    isDefined(item.detail?.return_requested_quantity) ||
+    isDefined(item.detail?.return_received_quantity) ||
+    isDefined(item.detail?.return_dismissed_quantity)
+  ) {
+    setRefundableTotal(item, discountsTotal, totals)
   }
 
+  // Per-unit total should be based on full-quantity net total to support lifecycle totals consistently
   const div = MathBN.eq(item.quantity, 0) ? 1 : item.quantity
-  const totalPerUnit = MathBN.div(totals.total, div)
+  const totalPerUnit = MathBN.div(fullNetTotal, div)
 
   const optionalFields = {
     ...(context.extraQuantityFields ?? {}),
@@ -183,10 +236,9 @@ function getLineItemTotals(
   for (const field in optionalFields) {
     const totalField = optionalFields[field]
 
-    let target = item[totalField]
-    if (field.includes(".")) {
-      target = pickValueFromObject(field, item)
-    }
+    let target = field.includes(".")
+      ? pickValueFromObject(field, item)
+      : item[field]
 
     if (!isDefined(target)) {
       continue

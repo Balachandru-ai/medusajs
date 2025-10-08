@@ -35,7 +35,7 @@ export function InjectTransactionManager(
         async (transactionManager) => {
           const copiedContext = {} as Context
           for (const key in originalContext) {
-            if (key === "manager" || key === "transactionManager") {
+            if (key === "transactionManager") {
               continue
             }
 
@@ -52,10 +52,6 @@ export function InjectTransactionManager(
 
           copiedContext.transactionManager = transactionManager
 
-          if (originalContext?.manager) {
-            copiedContext.manager = originalContext?.manager
-          }
-
           copiedContext.__type = MedusaContextType
 
           args[argIndex] = copiedContext
@@ -63,6 +59,7 @@ export function InjectTransactionManager(
           return await originalMethod.apply(this, args)
         },
         {
+          manager: originalContext?.manager,
           transaction: originalContext?.transactionManager,
           isolationLevel: (originalContext as Context)?.isolationLevel,
           enableNestedTransactions:

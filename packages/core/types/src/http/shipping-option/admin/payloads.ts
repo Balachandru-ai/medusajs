@@ -1,5 +1,6 @@
 import { RuleOperatorType } from "../../../common"
 import { ShippingOptionPriceType } from "../../../fulfillment"
+import { PriceRule } from "../../../pricing"
 
 export interface AdminCreateShippingOptionRule {
   /**
@@ -52,43 +53,19 @@ export interface AdminUpdateShippingOptionType {
   code?: string
 }
 
-interface AdminShippingOptionPriceRulePayload {
-  /**
-   * The operator of the shipping option price rule.
-   * 
-   * @example
-   * "eq"
-   */
-  operator: string
-  /**
-   * The attribute of the shipping option price rule.
-   * 
-   * @example
-   * "region_id"
-   */
-  attribute: string
-  /**
-   * The value of the shipping option price rule.
-   * 
-   * @example
-   * "region_123"
-   */
-  value: string | string[] | number
-}
-
 interface AdminShippingOptionPriceWithRules {
   /**
    * The rules of the shipping option price that
    * indicate when the price should be applied.
    */
-  rules?: AdminShippingOptionPriceRulePayload[]
+  rules?: PriceRule[]
 }
 
 export interface AdminCreateShippingOptionPriceWithCurrency
   extends AdminShippingOptionPriceWithRules {
   /**
    * The currency code of the shipping option price.
-   * 
+   *
    * @example
    * "usd"
    */
@@ -111,25 +88,28 @@ export interface AdminCreateShippingOptionPriceWithRegion
   amount: number
 }
 
-export interface AdminCreateShippingOption {
+/**
+ * Common properties for all shipping option create inputs.
+ */
+interface AdminCreateShippingOptionBase {
   /**
    * The name of the shipping option. Customers can
    * view this name during checkout.
-   * 
+   *
    * @example
    * "Standard Shipping"
    */
   name: string
   /**
    * The ID of the service zone that the shipping option belongs to.
-   * 
+   *
    * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#service-zone-restrictions)
    * documentation.
    */
   service_zone_id: string
   /**
    * The ID of the shipping profile that the shipping option belongs to.
-   * 
+   *
    * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
    * documentation.
    */
@@ -137,7 +117,7 @@ export interface AdminCreateShippingOption {
   /**
    * Additional data that is useful for third-party fulfillment providers
    * that process fulfillments for the shipping option.
-   * 
+   *
    * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property)
    * documentation.
    */
@@ -152,7 +132,7 @@ export interface AdminCreateShippingOption {
   provider_id: string
   /**
    * The type of shipping option.
-   * 
+   *
    * Learn more in the [Shipping Option](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
    * documentation.
    */
@@ -165,20 +145,41 @@ export interface AdminCreateShippingOption {
    */
   type_id?: string
   /**
-   * The prices of the shipping option.
-   */
-  prices: (
-    | AdminCreateShippingOptionPriceWithCurrency
-    | AdminCreateShippingOptionPriceWithRegion
-  )[]
-  /**
    * The rules of the shipping option.
-   * 
+   *
    * Learn more in the [Shipping Option Rules](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-option-rules)
    * documentation.
    */
   rules?: AdminCreateShippingOptionRule[]
+  /**
+   * Custom key-value pairs that can be added to the shipping option.
+   */
+  metadata?: Record<string, unknown>
 }
+
+/**
+ * Flat rate shipping option creation input.
+ */
+export interface AdminCreateFlatRateShippingOption
+  extends AdminCreateShippingOptionBase {
+  price_type: "flat"
+  prices: (
+    | AdminCreateShippingOptionPriceWithCurrency
+    | AdminCreateShippingOptionPriceWithRegion
+  )[]
+}
+
+/**
+ * Calculated shipping option creation input.
+ */
+export interface AdminCreateCalculatedShippingOption
+  extends AdminCreateShippingOptionBase {
+  price_type: "calculated"
+}
+
+export type AdminCreateShippingOption =
+  | AdminCreateFlatRateShippingOption
+  | AdminCreateCalculatedShippingOption
 
 export interface AdminUpdateShippingOptionRule
   extends AdminCreateShippingOptionRule {
@@ -197,7 +198,7 @@ export interface AdminUpdateShippingOptionPriceWithCurrency
   id?: string
   /**
    * The currency code of the shipping option price.
-   * 
+   *
    * @example
    * "usd"
    */
@@ -229,7 +230,7 @@ export interface AdminUpdateShippingOption {
   /**
    * The name of the shipping option. Customers can
    * view this name during checkout.
-   * 
+   *
    * @example
    * "Standard Shipping"
    */
@@ -249,14 +250,14 @@ export interface AdminUpdateShippingOption {
   provider_id?: string
   /**
    * The ID of the shipping profile that the shipping option belongs to.
-   * 
+   *
    * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
    * documentation.
    */
   shipping_profile_id?: string
   /**
    * The type of shipping option.
-   * 
+   *
    * Learn more in the [Shipping Options](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-profile-and-types)
    * documentation.
    */
@@ -277,11 +278,15 @@ export interface AdminUpdateShippingOption {
   )[]
   /**
    * The rules of the shipping option.
-   * 
+   *
    * Learn more in the [Shipping Option Rules](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#shipping-option-rules)
    * documentation.
    */
   rules?: (AdminUpdateShippingOptionRule | AdminCreateShippingOptionRule)[]
+  /**
+   * Custom key-value pairs that can be added to the shipping option.
+   */
+  metadata?: Record<string, unknown>
 }
 
 export interface AdminUpdateShippingOptionRules {
