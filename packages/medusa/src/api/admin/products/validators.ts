@@ -191,6 +191,7 @@ export const UpdateProductVariant = z
     barcode: z.string().nullish(),
     hs_code: z.string().nullish(),
     mid_code: z.string().nullish(),
+    thumbnail: z.string().nullish(),
     allow_backorder: booleanString().optional(),
     manage_inventory: booleanString().optional(),
     variant_rank: z.number().optional(),
