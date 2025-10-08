@@ -1,4 +1,6 @@
 export * from "./add-image-to-variants"
+export * from "./add-images-to-variant"
+export * from "./remove-images-from-variant"
 export * from "./create-products"
 export * from "./update-products"
 export * from "./delete-products"

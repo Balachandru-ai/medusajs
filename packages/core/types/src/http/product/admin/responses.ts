@@ -127,18 +127,13 @@ export interface AdminBatchImageVariantResponse {
   removed: string[]
 }
 
-export interface AdminAssignImagesToVariantsResponse {
+export interface AdminBatchVariantImagesResponse {
   /**
-   * The list of image assignments.
+   * The image IDs that were added to the variant.
    */
-  assigned: {
-    /**
-     * The ID of the image.
-     */
-    image_id: string
-    /**
-     * The variant IDs the image was assigned to.
-     */
-    variants: string[]
-  }[]
+  added: string[]
+  /**
+   * The image IDs that were removed from the variant.
+   */
+  removed: string[]
 }

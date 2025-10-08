@@ -582,15 +582,15 @@ export interface AdminBatchImageVariantRequest {
   remove?: string[]
 }
 
-export interface AdminAssignImagesToVariantsRequest {
+export interface AdminBatchVariantImagesRequest {
   /**
-   * The IDs of the images to assign to the variants.
+   * The image IDs to add to the variant.
    */
-  images: string[]
+  add?: string[]
   /**
-   * The IDs of the variants that should receive the images.
+   * The image IDs to remove from the variant.
    */
-  variants: string[]
+  remove?: string[]
 }
 
 export interface AdminImportProductsRequest {

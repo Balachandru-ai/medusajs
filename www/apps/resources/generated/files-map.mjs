@@ -756,6 +756,10 @@ export const filesMap = [
     "pathname": "/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/agentic-commerce/page.mdx",
+    "pathname": "/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/first-purchase-discounts/page.mdx",
     "pathname": "/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -918,6 +922,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/integrations/guides/mailchimp/page.mdx",
     "pathname": "/integrations/guides/mailchimp"
+  },
+  {
+    "filePath": "/www/apps/resources/app/integrations/guides/meilisearch/page.mdx",
+    "pathname": "/integrations/guides/meilisearch"
   },
   {
     "filePath": "/www/apps/resources/app/integrations/guides/payload/page.mdx",
@@ -1274,6 +1282,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/storefront-development/page.mdx",
     "pathname": "/storefront-development"
+  },
+  {
+    "filePath": "/www/apps/resources/app/storefront-development/production-optimizations/page.mdx",
+    "pathname": "/storefront-development/production-optimizations"
   },
   {
     "filePath": "/www/apps/resources/app/storefront-development/products/categories/list/page.mdx",
