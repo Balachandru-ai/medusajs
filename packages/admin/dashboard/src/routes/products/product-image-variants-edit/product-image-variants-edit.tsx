@@ -14,7 +14,7 @@ export const ProductImageVariantsEdit = () => {
     image_id: string
   }>()
 
-  const { product, isPending } = useProduct(
+  const { product, isPending, isLoading } = useProduct(
     product_id!,
     { fields: "images.id,images.url,images.variants.id" },
     {

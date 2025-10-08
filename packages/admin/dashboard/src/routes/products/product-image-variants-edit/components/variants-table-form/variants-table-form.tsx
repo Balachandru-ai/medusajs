@@ -1,5 +1,5 @@
 import { Button, Checkbox, toast } from "@medusajs/ui"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   createColumnHelper,
@@ -48,11 +48,21 @@ export const VariantsTableForm = ({
   const { mutateAsync, isPending } = useBatchImageVariants(productId, image.id)
 
   const [variantSelection, setVariantSelection] = useState<RowSelectionState>(
-    image.variants?.reduce((acc, variant) => {
-      acc[variant.id] = true
-      return acc
-    }, {} as RowSelectionState) || {}
+    () =>
+      image.variants?.reduce((acc, variant) => {
+        acc[variant.id] = true
+        return acc
+      }, {} as RowSelectionState) || {}
   )
+
+  useEffect(() => {
+    setVariantSelection(
+      image.variants?.reduce((acc, variant) => {
+        acc[variant.id] = true
+        return acc
+      }, {} as RowSelectionState) || {}
+    )
+  }, [image.variants.length])
 
   const form = useForm<zod.infer<typeof BatchImageVariantsSchema>>({
     defaultValues: {
