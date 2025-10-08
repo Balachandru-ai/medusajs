@@ -38,24 +38,6 @@ enum JobType {
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
-const invokingStatesSet = new Set([
-  TransactionStepState.INVOKING,
-  TransactionStepState.NOT_STARTED,
-])
-
-const compensatingStatesSet = new Set([
-  TransactionStepState.COMPENSATING,
-  TransactionStepState.NOT_STARTED,
-])
-
-function isInvokingState(step: TransactionStep) {
-  return invokingStatesSet.has(step.invoke?.state)
-}
-
-function isCompensatingState(step: TransactionStep) {
-  return compensatingStatesSet.has(step.compensate?.state)
-}
-
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
@@ -531,7 +513,7 @@ export class RedisDistributedTransactionStorage
 
           const parallelSteps = options?.parallelSteps ?? 1
           if (_v && parallelSteps > 1) {
-            await this.#performVersionCheckAndMerge(key, data, _v)
+            await this.#performVersionCheckAndMerge(key, data, options?.stepId!)
           }
         }
 
@@ -816,21 +798,11 @@ export class RedisDistributedTransactionStorage
   async #performVersionCheckAndMerge(
     key: string,
     data: TransactionCheckpoint,
-    _v?: number
+    stepId: string
   ): Promise<void> {
     const currentData = (await this.get(key)) as TransactionCheckpoint
 
-    const savingVersion = _v!
-
-    // get step related to the version
-    const allSteps = data.flow.steps
-    let savingStep
-    for (const step of Object.values(allSteps)) {
-      if (step._v === savingVersion) {
-        savingStep = step
-        break
-      }
-    }
+    const savingStep = data.flow.steps[stepId]
 
     this.#mergeStepData(currentData, data, savingStep)
     this.#mergeErrors(data.errors, currentData!.errors ?? [])
@@ -989,12 +961,15 @@ export class RedisDistributedTransactionStorage
         const isCompensating =
           data.flow.state === TransactionState.COMPENSATING ||
           data.flow.state === TransactionState.WAITING_TO_COMPENSATE
+
         const latestState = isCompensating
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
+
         const currentState = isCompensating
           ? currentStep.compensate?.state
           : currentStep.invoke?.state
+
         const finishedStates = [
           TransactionStepState.DONE,
           TransactionStepState.FAILED,
@@ -1021,54 +996,7 @@ export class RedisDistributedTransactionStorage
       throw new SkipExecutionError("Already finished by another execution")
     }
 
-    let currentFlowLatestExecutedStep: TransactionStep | undefined
-    const currentFlowSteps = Object.values(currentFlow.steps || {})
-    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
-      if (currentFlowSteps[i].lastAttempt) {
-        currentFlowLatestExecutedStep = currentFlowSteps[i]
-        break
-      }
-    }
-
-    let latestUpdatedFlowLatestExecutedStep: TransactionStep | undefined
-    const latestUpdatedFlowSteps = Object.values(latestUpdatedFlow.steps || {})
-    for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
-      if (latestUpdatedFlowSteps[i].lastAttempt) {
-        latestUpdatedFlowLatestExecutedStep = latestUpdatedFlowSteps[i]
-        break
-      }
-    }
-
-    /**
-     * The current flow and the latest updated flow have the same latest executed step.
-     */
-    const isSameLatestExecutedStep =
-      currentFlowLatestExecutedStep &&
-      latestUpdatedFlowLatestExecutedStep &&
-      currentFlowLatestExecutedStep?.id ===
-        latestUpdatedFlowLatestExecutedStep?.id
-
-    /**
-     * The current flow's latest executed step has a last attempt ahead of the latest updated
-     * flow's latest executed step. Therefor it is fine, otherwise another execution has already
-     * finished the step.
-     */
-    const isCurrentLatestExecutedStepLastAttemptAhead =
-      currentFlowLatestExecutedStep?.lastAttempt &&
-      latestUpdatedFlowLatestExecutedStep?.lastAttempt &&
-      currentFlowLatestExecutedStep.lastAttempt >=
-        latestUpdatedFlowLatestExecutedStep.lastAttempt
-
-    if (
-      isSameLatestExecutedStep &&
-      !isCurrentLatestExecutedStepLastAttemptAhead
-    ) {
-      throw new SkipStepAlreadyFinishedError(
-        "Step already finished by another execution"
-      )
-    }
-
-    // First ensure that the latest execution was not cancelled, otherwise we skip the execution
+    // Ensure that the latest execution was not cancelled, otherwise we skip the execution
     const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
     const currentTransactionCancelledAt = currentFlow.cancelledAt
 
@@ -1079,95 +1007,6 @@ export class RedisDistributedTransactionStorage
       throw new SkipCancelledExecutionError(
         "Workflow execution has been cancelled during the execution"
       )
-    }
-
-    let currentFlowLastInvokingStepIndex = -1
-    const currentInvokingSteps: TransactionStep[] = []
-    for (let i = 0; i < currentFlowSteps.length; i++) {
-      if (isInvokingState(currentFlowSteps[i])) {
-        currentFlowLastInvokingStepIndex = i
-        currentInvokingSteps.push(currentFlowSteps[i])
-      }
-    }
-
-    const isParallelExecution = currentInvokingSteps.length > 1
-    let latestUpdatedFlowLastInvokingStepIndex = !latestUpdatedFlow.steps
-      ? 1 // There is no other execution, so the current execution is the latest
-      : -1
-
-    if (latestUpdatedFlow.steps) {
-      for (let i = 0; i < latestUpdatedFlowSteps.length; i++) {
-        if (isInvokingState(latestUpdatedFlowSteps[i])) {
-          latestUpdatedFlowLastInvokingStepIndex = i
-          break
-        }
-      }
-    }
-
-    let currentFlowLastCompensatingStepIndex = -1
-    for (let i = currentFlowSteps.length - 1; i >= 0; i--) {
-      if (isCompensatingState(currentFlowSteps[i])) {
-        currentFlowLastCompensatingStepIndex = currentFlowSteps.length - 1 - i
-        break
-      }
-    }
-
-    let latestUpdatedFlowLastCompensatingStepIndex = !latestUpdatedFlow.steps
-      ? -1 // There is no other execution, so the current execution is the latest
-      : -1
-
-    if (latestUpdatedFlow.steps) {
-      for (let i = latestUpdatedFlowSteps.length - 1; i >= 0; i--) {
-        if (isCompensatingState(latestUpdatedFlowSteps[i])) {
-          latestUpdatedFlowLastCompensatingStepIndex =
-            latestUpdatedFlowSteps.length - 1 - i
-          break
-        }
-      }
-    }
-
-    const isLatestExecutionFinishedIndex = -1
-    const invokeShouldBeSkipped =
-      (latestUpdatedFlowLastInvokingStepIndex ===
-        isLatestExecutionFinishedIndex ||
-        currentFlowLastInvokingStepIndex <
-          latestUpdatedFlowLastInvokingStepIndex) &&
-      currentFlowLastInvokingStepIndex !== isLatestExecutionFinishedIndex
-
-    const compensateShouldBeSkipped =
-      currentFlowLastCompensatingStepIndex <
-        latestUpdatedFlowLastCompensatingStepIndex &&
-      currentFlowLastCompensatingStepIndex !== isLatestExecutionFinishedIndex &&
-      latestUpdatedFlowLastCompensatingStepIndex !==
-        isLatestExecutionFinishedIndex
-
-    const isCompensatingMismatch =
-      latestUpdatedFlow.state === TransactionState.COMPENSATING &&
-      ![TransactionState.REVERTED, TransactionState.FAILED].includes(
-        currentFlow.state
-      ) &&
-      currentFlow.state !== latestUpdatedFlow.state
-
-    const isRevertedMismatch =
-      latestUpdatedFlow.state === TransactionState.REVERTED &&
-      currentFlow.state !== TransactionState.REVERTED
-
-    const isFailedMismatch =
-      latestUpdatedFlow.state === TransactionState.FAILED &&
-      currentFlow.state !== TransactionState.FAILED
-
-    if (
-      (data.flow.state !== TransactionState.COMPENSATING &&
-        invokeShouldBeSkipped &&
-        !isParallelExecution) ||
-      (data.flow.state === TransactionState.COMPENSATING &&
-        compensateShouldBeSkipped &&
-        !isParallelExecution) ||
-      isCompensatingMismatch ||
-      isRevertedMismatch ||
-      isFailedMismatch
-    ) {
-      throw new SkipExecutionError("Already finished by another execution")
     }
   }
 

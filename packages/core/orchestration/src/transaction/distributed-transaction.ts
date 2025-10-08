@@ -206,9 +206,10 @@ class DistributedTransaction extends EventEmitter {
     stepId?: string
     _v?: number
   } = {}): Promise<TransactionCheckpoint | undefined> {
-    const options =
-      TransactionOrchestrator.getWorkflowOptions(this.modelId) ??
-      this.getFlow().options
+    const options = {
+      ...(TransactionOrchestrator.getWorkflowOptions(this.modelId) ??
+        this.getFlow().options),
+    }
 
     if (!options?.store) {
       return

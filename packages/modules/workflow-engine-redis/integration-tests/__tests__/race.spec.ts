@@ -184,6 +184,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(build)
         })
 
+        let timeout: NodeJS.Timeout
         void workflowOrcModule.subscribe({
           workflowId,
           transactionId,
@@ -215,7 +216,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(result).toBe("result from step 0")
           })
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
         )
@@ -286,6 +287,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(build)
         })
 
+        let timeout: NodeJS.Timeout
         void workflowOrcModule.subscribe({
           workflowId: workflowId,
           transactionId,
@@ -316,7 +318,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(result).toBe("result from step 0")
           })
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution"
         )

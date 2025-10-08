@@ -130,6 +130,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           ],
         })
       })
+
       it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
         const step0InvokeMock = jest.fn()
         const step1InvokeMock = jest.fn()
@@ -157,7 +158,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(status)
         })
 
-        createWorkflow("workflow-1", function () {
+        const workflowId = "workflow-1" + ulid()
+        createWorkflow(workflowId, function () {
           const build = step0()
 
           const status = subWorkflow.runAsStep({} as any).config({
@@ -178,9 +180,9 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(build)
         })
 
+        let timeout: NodeJS.Timeout
         void workflowOrcModule.subscribe({
-          workflowId: "workflow-1",
-
+          workflowId,
           subscriber: (event) => {
             if (event.eventType === "onFinish") {
               expect(step0InvokeMock).toHaveBeenCalledTimes(1)
@@ -194,13 +196,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         workflowOrcModule
-          .run("workflow-1", { throwOnError: false, logOnError: true })
+          .run(workflowId, { throwOnError: false, logOnError: true })
           .then(({ result }) => {
             expect(result).toBe("result from step 0")
           })
           .catch((e) => e)
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
         )
@@ -270,6 +272,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(build)
         })
 
+        let timeout: NodeJS.Timeout
         void workflowOrcModule.subscribe({
           workflowId: workflowId,
           subscriber: async (event) => {
@@ -295,7 +298,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
           .catch((e) => e)
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution"
         )

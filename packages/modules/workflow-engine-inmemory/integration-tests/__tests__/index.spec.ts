@@ -1,4 +1,5 @@
 import { MedusaContainer } from "@medusajs/framework"
+import { asFunction } from "@medusajs/framework/awilix"
 import {
   DistributedTransactionType,
   TransactionState,
@@ -25,7 +26,6 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { WorkflowsModuleService } from "@services"
-import { asFunction } from "@medusajs/framework/awilix"
 import { setTimeout as setTimeoutSync } from "timers"
 import { setTimeout as setTimeoutPromise } from "timers/promises"
 import { ulid } from "ulid"
@@ -39,26 +39,26 @@ import {
   workflowNotIdempotentWithRetentionStep3Invoke,
 } from "../__fixtures__"
 import {
-  eventGroupWorkflowId,
-  workflowEventGroupIdStep1Mock,
-  workflowEventGroupIdStep2Mock,
-} from "../__fixtures__/workflow_event_group_id"
-import {
-  step1InvokeMock as step1InvokeMockAutoRetries,
-  step2InvokeMock as step2InvokeMockAutoRetries,
   step1CompensateMock as step1CompensateMockAutoRetries,
+  step1InvokeMock as step1InvokeMockAutoRetries,
   step2CompensateMock as step2CompensateMockAutoRetries,
+  step2InvokeMock as step2InvokeMockAutoRetries,
 } from "../__fixtures__/workflow_1_auto_retries"
 import {
-  step1InvokeMock as step1InvokeMockAutoRetriesFalse,
-  step2InvokeMock as step2InvokeMockAutoRetriesFalse,
   step1CompensateMock as step1CompensateMockAutoRetriesFalse,
+  step1InvokeMock as step1InvokeMockAutoRetriesFalse,
   step2CompensateMock as step2CompensateMockAutoRetriesFalse,
+  step2InvokeMock as step2InvokeMockAutoRetriesFalse,
 } from "../__fixtures__/workflow_1_auto_retries_false"
 import {
   step1InvokeMock as step1InvokeMockManualRetry,
   step2InvokeMock as step2InvokeMockManualRetry,
 } from "../__fixtures__/workflow_1_manual_retry_step"
+import {
+  eventGroupWorkflowId,
+  workflowEventGroupIdStep1Mock,
+  workflowEventGroupIdStep2Mock,
+} from "../__fixtures__/workflow_event_group_id"
 import { createScheduled } from "../__fixtures__/workflow_scheduled"
 
 jest.setTimeout(60000)
@@ -184,6 +184,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             return new WorkflowResponse("finished")
           })
 
+          let timeout: NodeJS.Timeout
           workflowOrcModule
             .run(workflowId, {
               input: {},
@@ -217,7 +218,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               })
             })
 
-          const timeout = failTrap(
+          timeout = failTrap(
             done,
             "should cancel an ongoing execution with async unfinished yet step"
           )
@@ -398,6 +399,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             })
           })
 
+        let timeout: NodeJS.Timeout
         workflowOrcModule.subscribe({
           workflowId,
           transactionId,
@@ -411,7 +413,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           },
         })
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should manually retry a step that is taking too long to finish"
         )
@@ -426,6 +428,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           transactionId,
         })
 
+        let timeout: NodeJS.Timeout
         workflowOrcModule.subscribe({
           workflowId,
           transactionId,
@@ -441,7 +444,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           },
         })
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should retry steps X times automatically when maxRetries is set"
         )
@@ -661,6 +664,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(fourth)
         })
 
+        let timeout: NodeJS.Timeout
         asyncResults.push("begin workflow")
         workflowOrcModule
           .run(workflowId, {
@@ -687,7 +691,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             })
           })
 
-        const timeout = failTrap(
+        timeout = failTrap(
           done,
           "should subscribe to a async workflow and receive the response when it finishes"
         )
@@ -874,6 +878,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         it("should subscribe to a async workflow and receive the response when it finishes", (done) => {
           const transactionId = "trx_123" + ulid()
 
+          let timeout: NodeJS.Timeout
           const onFinish = jest.fn(() => {
             done()
             clearTimeout(timeout)
@@ -898,7 +903,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           expect(onFinish).toHaveBeenCalledTimes(0)
-          const timeout = failTrap(
+          timeout = failTrap(
             done,
             "should subscribe to a async workflow and receive the response when it finishes"
           )
@@ -956,6 +961,8 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         it("should run conditional steps if condition is true", (done) => {
+          let timeout: NodeJS.Timeout
+
           void workflowOrcModule.subscribe({
             workflowId: "workflow_conditional_step",
             subscriber: (event) => {
@@ -975,13 +982,14 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: true,
           })
 
-          const timeout = failTrap(
+          timeout = failTrap(
             done,
             "should not run conditional steps if condition is false"
           )
         })
 
         it("should not run conditional steps if condition is false", (done) => {
+          let timeout: NodeJS.Timeout
           void workflowOrcModule.subscribe({
             workflowId: "workflow_conditional_step",
             subscriber: (event) => {
@@ -1001,7 +1009,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: true,
           })
 
-          const timeout = failTrap(
+          timeout = failTrap(
             done,
             "should not run conditional steps if condition is false"
           )
@@ -1133,6 +1141,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: false,
           })
 
+          let timeout: NodeJS.Timeout
           void workflowOrcModule.subscribe({
             workflowId: "workflow_parallel_async",
             subscriber: (event) => {
@@ -1154,7 +1163,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             },
           })
 
-          const timeout = failTrap(
+          timeout = failTrap(
             done,
             "should display error when multple async steps are running in parallel"
           )
