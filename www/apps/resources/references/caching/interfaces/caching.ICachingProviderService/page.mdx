@@ -175,7 +175,7 @@ async clear({ key, tags, options, }: {
 
 ### get
 
-This method retrieves data from the cache. If neither `key` nor `tags` are provided, `null` should be returned.
+This method retrieves data from the cache either by `key` or `tags`. If neither `key` nor `tags` are provided, `null` should be returned.
 If both `key` and `tags` are provided, `key` should take precedence over `tags`.
 
 #### Example
