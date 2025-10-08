@@ -52,8 +52,8 @@ const maxItemsInCart = 5
 let publishableKey =
   "pk_937f7a595bd4b039bb6bbb95476dd036dd79187f31ef61cf7093f2b81a1f863b"
 let regionId = "reg_01K2ZDG12VKJ64F2NFTNW7Y8AT"
-// let endpoint = "https://dtc-starter-preview.medusajs.app"
-let endpoint = "https://dtc-starter.medusajs.app"
+let endpoint = "https://dtc-starter-preview.medusajs.app"
+// let endpoint = "https://dtc-starter.medusajs.app"
 let projectId = 4837050
 
 const params = {
@@ -66,7 +66,10 @@ const params = {
 export const options = {
   cloud: {
     projectID: projectId,
-    name: `Version 2.10.1, ${new Date().toLocaleString()}`,
+    name: `Version 2.10.4-snapshot-20251008131841, ${new Date().toLocaleString()}`,
+    distribution: {
+      distributionLabel1: { loadZone: "amazon:de:frankfurt", percent: 100 },
+    },
   },
   scenarios: {
     browseCatalog: {
