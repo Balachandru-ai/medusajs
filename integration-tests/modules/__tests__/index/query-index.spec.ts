@@ -598,7 +598,11 @@ medusaIntegrationTestRunner({
         ) as RemoteQueryFunction
 
         await promiseAll([
-          waitForIndexedEntities(dbConnection, "Product", [products.id]),
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
           waitForIndexedEntities(
             dbConnection,
             "ProductVariant",
