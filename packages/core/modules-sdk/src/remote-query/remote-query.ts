@@ -307,7 +307,7 @@ export class RemoteQuery {
   private async executeFetchRequest(params: {
     expand: RemoteExpandProperty
     keyField: string
-    ids?: (unknown | unknown[])[]
+    ids?: (unknown | unknown[])[] | object
     relationship?: JoinerRelationship
   }): Promise<{
     data: unknown[] | { [path: string]: unknown }
@@ -361,9 +361,11 @@ export class RemoteQuery {
     }
 
     const hasPagination = this.hasPagination(options)
+    const isIdsArray = Array.isArray(ids)
+    const idsLength = isIdsArray ? ids.length : 1
 
     if (ids) {
-      if (!ids.length) {
+      if (isIdsArray && !idsLength) {
         if (hasPagination) {
           return {
             data: {
@@ -396,11 +398,11 @@ export class RemoteQuery {
       )
     }
 
-    if (ids?.length && !hasPagination) {
+    if (isIdsArray && idsLength && !hasPagination) {
       options.take = null
     }
 
-    if (ids && ids.length >= MAX_BATCH_SIZE && !hasPagination) {
+    if (isIdsArray && idsLength >= MAX_BATCH_SIZE && !hasPagination) {
       const data = await this.fetchRemoteDataBatched({
         serviceName: serviceConfig.serviceName,
         keyField,

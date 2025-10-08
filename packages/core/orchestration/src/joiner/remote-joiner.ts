@@ -638,12 +638,6 @@ export class RemoteJoiner {
       } else {
         uniqueIds = Array.from(new Set(uniqueIds.flat()))
       }
-
-      if (!uniqueIds.length) {
-        return {
-          data: [],
-        }
-      }
     }
 
     let pkFieldAdjusted = pkField
