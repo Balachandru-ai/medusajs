@@ -4083,6 +4083,127 @@ medusaIntegrationTestRunner({
           )
         })
       })
+
+      describe("POST /admin/products/:id/variants/:variant_id/images/batch", () => {
+        it("should batch manage images for a specific variant", async () => {
+          // Create a product with multiple images and variants
+          const productWithMultipleImages = await api.post(
+            "/admin/products",
+            {
+              title: "product for variant image batch management",
+              status: "published",
+              options: [
+                {
+                  title: "size",
+                  values: ["large", "small"],
+                },
+                {
+                  title: "color",
+                  values: ["red", "blue"],
+                },
+              ],
+              images: [
+                {
+                  url: "https://via.placeholder.com/100",
+                },
+                {
+                  url: "https://via.placeholder.com/200",
+                },
+                {
+                  url: "https://via.placeholder.com/300",
+                },
+                {
+                  url: "https://via.placeholder.com/400",
+                },
+              ],
+              variants: [
+                {
+                  title: "variant 1",
+                  options: { size: "large", color: "red" },
+                  prices: [{ currency_code: "usd", amount: 100 }],
+                },
+                {
+                  title: "variant 2",
+                  options: { size: "small", color: "blue" },
+                  prices: [{ currency_code: "usd", amount: 200 }],
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const product = productWithMultipleImages.data.product
+          const variant1 = product.variants.find((v) => v.title === "variant 1")
+          const variant2 = product.variants.find((v) => v.title === "variant 2")
+
+          // First, assign some images to variant1
+          const initialAssignResponse = await api.post(
+            `/admin/products/${product.id}/variants/${variant1.id}/images/batch`,
+            {
+              add: [product.images[0].id, product.images[1].id],
+            },
+            adminHeaders
+          )
+
+          expect(initialAssignResponse.status).toBe(200)
+          expect(initialAssignResponse.data.added).toHaveLength(2)
+          expect(initialAssignResponse.data.added).toEqual(
+            expect.arrayContaining([product.images[0].id, product.images[1].id])
+          )
+
+          // Now batch manage images for variant1: add one more, remove one
+          const batchResponse = await api.post(
+            `/admin/products/${product.id}/variants/${variant1.id}/images/batch`,
+            {
+              add: [product.images[2].id],
+              remove: [product.images[0].id],
+            },
+            adminHeaders
+          )
+
+          expect(batchResponse.status).toBe(200)
+          expect(batchResponse.data.added).toHaveLength(1)
+          expect(batchResponse.data.added).toEqual(
+            expect.arrayContaining([product.images[2].id])
+          )
+          expect(batchResponse.data.removed).toHaveLength(1)
+          expect(batchResponse.data.removed).toEqual(
+            expect.arrayContaining([product.images[0].id])
+          )
+
+          // Verify the final state by checking variant1 images
+          const variant1WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant1.id}?fields=*images`,
+            adminHeaders
+          )
+
+          // Should have 3 images: images[0] and images[3] (general product image), images[1] and images[2] variant scoped
+          expect(variant1WithImages.data.variant.images).toHaveLength(3)
+          expect(variant1WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: product.images[0].id }),
+              expect.objectContaining({ id: product.images[1].id }),
+              expect.objectContaining({ id: product.images[2].id }),
+              expect.objectContaining({ id: product.images[3].id }),
+            ])
+          )
+
+          // Verify variant2
+          const variant2WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant2.id}?fields=*images`,
+            adminHeaders
+          )
+
+          // Should only have the general product image
+          expect(variant2WithImages.data.variant.images).toHaveLength(1)
+          expect(variant2WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: product.images[0].id }),
+              expect.objectContaining({ id: product.images[3].id }),
+            ])
+          )
+        })
+      })
     })
   },
 })

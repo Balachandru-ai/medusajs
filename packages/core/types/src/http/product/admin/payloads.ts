@@ -582,6 +582,17 @@ export interface AdminBatchImageVariantRequest {
   remove?: string[]
 }
 
+export interface AdminBatchVariantImagesRequest {
+  /**
+   * The image IDs to add to the variant.
+   */
+  add?: string[]
+  /**
+   * The image IDs to remove from the variant.
+   */
+  remove?: string[]
+}
+
 export interface AdminImportProductsRequest {
   /**
    * The file's identifier in the third-party system.

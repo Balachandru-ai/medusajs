@@ -355,6 +355,14 @@ export const AdminBatchImageVariant = z.object({
 }) satisfies ZodType<HttpTypes.AdminBatchImageVariantRequest>
 export type AdminBatchImageVariantType = z.infer<typeof AdminBatchImageVariant>
 
+export const AdminBatchVariantImages = z.object({
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+}) satisfies ZodType<HttpTypes.AdminBatchVariantImagesRequest>
+export type AdminBatchVariantImagesType = z.infer<
+  typeof AdminBatchVariantImages
+>
+
 export const AdminImportProducts = z.object({
   file_key: z.string(),
   originalname: z.string(),

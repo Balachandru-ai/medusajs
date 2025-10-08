@@ -126,3 +126,14 @@ export interface AdminBatchImageVariantResponse {
    */
   removed: string[]
 }
+
+export interface AdminBatchVariantImagesResponse {
+  /**
+   * The image IDs that were added to the variant.
+   */
+  added: string[]
+  /**
+   * The image IDs that were removed from the variant.
+   */
+  removed: string[]
+}
