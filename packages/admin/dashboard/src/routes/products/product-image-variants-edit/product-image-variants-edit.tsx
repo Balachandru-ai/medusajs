@@ -6,7 +6,7 @@ import { RouteDrawer } from "../../../components/modals"
 import { VariantsTableForm } from "./components/variants-table-form/variants-table-form"
 import { useProduct } from "../../../hooks/api"
 
-export const ProductImageVariants = () => {
+export const ProductImageVariantsEdit = () => {
   const { t } = useTranslation()
 
   const { id: product_id, image_id } = useParams<{

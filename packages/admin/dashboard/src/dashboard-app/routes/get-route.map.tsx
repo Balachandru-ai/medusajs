@@ -128,7 +128,7 @@ export function getRouteMap({
                           path: "images/:image_id/variants",
                           lazy: () =>
                             import(
-                              "../../routes/products/product-image-variants"
+                              "../../routes/products/product-image-variants-edit"
                             ),
                         },
                         {
