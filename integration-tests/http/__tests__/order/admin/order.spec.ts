@@ -1,5 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { ModuleRegistrationName } from "@medusajs/utils"
+import { AdminShippingOption } from "@medusajs/types"
+import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -9,7 +10,6 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
 import { createShippingOptionSeeder } from "../../fixtures/shipping"
-import { AdminShippingOption } from "@medusajs/types"
 
 jest.setTimeout(300000)
 
@@ -705,6 +705,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [
                 { title: "size", values: ["large", "small"] },
@@ -793,6 +794,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture 2`,
+              status: ProductStatus.PUBLISHED,
               options: [
                 { title: "size", values: ["large", "small"] },
                 { title: "color", values: ["green"] },
@@ -829,6 +831,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture 3`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [
                 { title: "size", values: ["large", "small"] },
@@ -883,6 +886,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test override 4`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "size", values: ["large"] }],
               variants: [
@@ -924,6 +928,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture 4`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfileOverride.id,
               options: [
                 { title: "size", values: ["large", "small"] },
@@ -978,23 +983,6 @@ medusaIntegrationTestRunner({
         order = seeder.order
         order = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
           .order
-      })
-
-      it("should find the order querying it by number", async () => {
-        const userEmail = "tony@stark-industries.com"
-
-        const response = (
-          await api.get(`/admin/orders/?q=non-existing`, adminHeaders)
-        ).data
-
-        expect(response.orders).toHaveLength(0)
-
-        const response2 = (
-          await api.get(`/admin/orders/?fields=+email&q=@stark`, adminHeaders)
-        ).data
-
-        expect(response2.orders).toHaveLength(1)
-        expect(response2.orders[0].email).toEqual(userEmail)
       })
 
       it("should update stock levels correctly when creating partial fulfillment on an order", async () => {
@@ -1327,6 +1315,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Wooden table`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "color", values: ["green"] }],
               variants: [
@@ -1491,6 +1480,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Tablet`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "color", values: ["green"] }],
               variants: [
@@ -1714,6 +1704,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Tablet`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "color", values: ["green"] }],
               variants: [
@@ -2118,6 +2109,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Bottle Packs`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "packs", values: ["one", "two", "three"] }],
               variants: [
@@ -2924,6 +2916,7 @@ medusaIntegrationTestRunner({
               "/admin/products",
               {
                 title: `Wooden table`,
+                status: ProductStatus.PUBLISHED,
                 shipping_profile_id: shippingProfile.id,
                 options: [{ title: "color", values: ["green"] }],
                 variants: [

@@ -8,6 +8,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { AdditionalData } from "@medusajs/types"
 import { useRemoteQueryStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { removeShippingMethodFromCartStep } from "../steps"
@@ -55,7 +56,11 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
     name: refreshCartShippingMethodsWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
+  (
+    input: WorkflowData<
+      RefreshCartShippingMethodsWorkflowInput & AdditionalData
+    >
+  ) => {
     const shouldExecute = transform({ input }, ({ input }) => {
       return (
         !!input.cart_id ||
@@ -103,7 +108,6 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
       key: cart.id,
       timeout: 2,
       ttl: 10,
-      skipOnSubWorkflow: true,
     })
 
     const listShippingOptionsInput = transform({ cart }, ({ cart }) =>
@@ -133,6 +137,7 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
             options: listShippingOptionsInput,
             cart_id: cart.id,
             is_return: false,
+            additional_data: input.additional_data,
           },
         })
 
@@ -204,7 +209,6 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
 
       releaseLockStep({
         key: cart.id,
-        skipOnSubWorkflow: true,
       })
     })
 

@@ -10,9 +10,9 @@ import {
   deduplicate,
   filterObjectByKeys,
   isDefined,
+  MathBN,
   MedusaError,
   QueryContext,
-  MathBN,
 } from "@medusajs/framework/utils"
 import {
   createHook,
@@ -25,6 +25,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { emitEventStep } from "../../common/steps/emit-event"
+import { deleteLineItemsWorkflow } from "../../line-item"
 import { updateLineItemsStepWithSelector } from "../../line-item/steps"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { validateCartStep } from "../steps/validate-cart"
@@ -37,7 +38,6 @@ import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-
 import { pricingContextResult } from "../utils/schemas"
 import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
-import { deleteLineItemsWorkflow } from "../../line-item"
 
 const cartFields = cartFieldsForPricingContext.concat(["items.*"])
 const variantFields = productVariantsFields.concat(["calculated_price.*"])
@@ -120,7 +120,6 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       key: input.cart_id,
       timeout: 2,
       ttl: 10,
-      skipOnSubWorkflow: true,
     })
 
     const { data: cart } = useQueryGraphStep({
@@ -205,6 +204,7 @@ export const updateLineItemInCartWorkflow = createWorkflow(
         input: {
           cart_id: input.cart_id,
           ids: [input.item_id],
+          additional_data: input.additional_data,
         },
       })
     })
@@ -303,14 +303,16 @@ export const updateLineItemInCartWorkflow = createWorkflow(
       updateLineItemsStepWithSelector(lineItemUpdate)
 
       refreshCartItemsWorkflow.runAsStep({
-        input: { cart_id: input.cart_id },
+        input: {
+          cart_id: input.cart_id,
+          additional_data: input.additional_data,
+        },
       })
     })
 
     parallelize(
       releaseLockStep({
         key: input.cart_id,
-        skipOnSubWorkflow: true,
       }),
       emitEventStep({
         eventName: CartWorkflowEvents.UPDATED,

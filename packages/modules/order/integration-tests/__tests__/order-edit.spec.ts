@@ -414,7 +414,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         })
 
         const changedOrder = await service.retrieveOrder(createdOrder.id, {
-          select: ["total", "items.detail", "summary"],
+          select: ["total", "items.detail", "summary", "total"],
           relations: ["items"],
         })
 
@@ -492,7 +492,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         })
 
         const modified = await service.retrieveOrder(createdOrder.id, {
-          select: ["total", "items.detail", "summary"],
+          select: ["total", "items.detail", "summary", "total"],
           relations: ["items"],
         })
 

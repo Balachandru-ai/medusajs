@@ -6,7 +6,7 @@ export const ENTITY_DEFAULT_FIELDS = {
   orders: {
     properties: [
       "id",
-      "status", 
+      "status",
       "created_at",
       "email",
       "display_id",
@@ -15,22 +15,14 @@ export const ENTITY_DEFAULT_FIELDS = {
       "total",
       "currency_code",
     ],
-    relations: ["*customer", "*sales_channel"]
+    relations: ["*customer", "*sales_channel"],
   },
-  
+
   products: {
-    properties: [
-      "id",
-      "title",
-      "handle",
-      "status",
-      "created_at",
-      "updated_at",
-      "thumbnail",
-    ],
-    relations: ["*variants", "*categories", "*collections"]
+    properties: ["id", "title", "handle", "status", "thumbnail"],
+    relations: ["collection.title", "*sales_channels", "*variants"],
   },
-  
+
   customers: {
     properties: [
       "id",
@@ -41,9 +33,9 @@ export const ENTITY_DEFAULT_FIELDS = {
       "updated_at",
       "has_account",
     ],
-    relations: ["*groups"]
+    relations: ["*groups"],
   },
-  
+
   inventory: {
     properties: [
       "id",
@@ -55,14 +47,14 @@ export const ENTITY_DEFAULT_FIELDS = {
       "created_at",
       "updated_at",
     ],
-    relations: ["*location_levels"]
+    relations: ["*location_levels"],
   },
-  
+
   // Default configuration for entities without specific defaults
   default: {
     properties: ["id", "created_at", "updated_at"],
-    relations: []
-  }
+    relations: [],
+  },
 } as const
 
 export type EntityType = keyof typeof ENTITY_DEFAULT_FIELDS
@@ -71,10 +63,11 @@ export type EntityType = keyof typeof ENTITY_DEFAULT_FIELDS
  * Get default fields for an entity
  */
 export function getEntityDefaultFields(entity: string) {
-  const config = ENTITY_DEFAULT_FIELDS[entity as EntityType] || ENTITY_DEFAULT_FIELDS.default
+  const config =
+    ENTITY_DEFAULT_FIELDS[entity as EntityType] || ENTITY_DEFAULT_FIELDS.default
   return {
     properties: config.properties,
     relations: config.relations,
-    formatted: [...config.properties, ...config.relations].join(",")
+    formatted: [...config.properties, ...config.relations].join(","),
   }
 }

@@ -1,5 +1,5 @@
 import { ContainerRegistrationKeys, getConfigFile } from "@medusajs/utils"
-import { asFunction } from "awilix"
+import { asFunction } from "../deps/awilix"
 import { container } from "../container"
 import { logger as defaultLogger } from "../logger"
 import { ConfigManager } from "./config"

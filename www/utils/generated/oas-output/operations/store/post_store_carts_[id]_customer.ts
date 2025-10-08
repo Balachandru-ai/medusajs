@@ -64,7 +64,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/carts/{id}/customer' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Carts
@@ -103,6 +103,16 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
- * 
+ * requestBody:
+ *   content:
+ *     application/json:
+ *       schema:
+ *         type: object
+ *         description: Optional additional data to pass to the underlying workflow.
+ *         properties:
+ *           additional_data:
+ *             type: object
+ *             description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+ *
 */
 

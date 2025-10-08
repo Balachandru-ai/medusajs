@@ -88,7 +88,6 @@ export const updateCartWorkflow = createWorkflow(
       key: input.id,
       timeout: 2,
       ttl: 10,
-      skipOnSubWorkflow: true,
     })
 
     const { data: cartToUpdate } = useQueryGraphStep({
@@ -149,6 +148,9 @@ export const updateCartWorkflow = createWorkflow(
         options: {
           throwIfKeyNotFound: true,
           isList: false,
+          cache: {
+            enable: true,
+          },
         },
       }).config({ name: "get-region" })
 
@@ -309,6 +311,7 @@ export const updateCartWorkflow = createWorkflow(
         cart_id: cartInput.id,
         promo_codes: input.promo_codes,
         force_refresh: !!newRegion,
+        additional_data: input.additional_data,
       },
     })
 
@@ -319,7 +322,6 @@ export const updateCartWorkflow = createWorkflow(
 
     releaseLockStep({
       key: input.id,
-      skipOnSubWorkflow: true,
     })
 
     return new WorkflowResponse(void 0, {

@@ -1,4 +1,4 @@
-import { Check, CheckOptions } from "@mikro-orm/core"
+import { Check, CheckOptions } from "@medusajs/deps/mikro-orm/core"
 import { CheckConstraint, EntityConstructor } from "@medusajs/types"
 
 /**

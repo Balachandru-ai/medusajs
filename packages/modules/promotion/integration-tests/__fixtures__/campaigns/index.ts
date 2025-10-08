@@ -1,6 +1,6 @@
 import { CreateCampaignDTO } from "@medusajs/framework/types"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { Campaign } from "@models"
 import { defaultCampaignsData } from "./data"
 
@@ -12,7 +12,7 @@ export async function createCampaigns(
   campaignsData?: CreateCampaignDTO[]
 ): Promise<Campaign[]> {
   if (!campaignsData) {
-    const cp = JSON.parse(JSON.stringify(defaultCampaignsData))
+    const cp = structuredClone(defaultCampaignsData)
 
     const starts_at = new Date(TODAY)
     starts_at.setDate(starts_at.getDate() - 1)

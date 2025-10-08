@@ -11,8 +11,8 @@
  * small, we should be okay with managing this wrapper.
  */
 
-import { CLIConfigurator, CLIHelper } from "@mikro-orm/cli"
-import { ConfigurationLoader } from "@mikro-orm/core"
+import { CLIConfigurator, CLIHelper } from "../deps/mikro-orm-cli"
+import { ConfigurationLoader } from "../deps/mikro-orm-core"
 import { isAbsolute, join } from "path"
 
 /**

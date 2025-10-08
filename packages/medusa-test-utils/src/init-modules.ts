@@ -63,14 +63,13 @@ export async function initModules({
   await medusaApp.onApplicationStart()
 
   async function shutdown() {
-    if (shouldDestroyConnectionAutomatically) {
-      await medusaApp.onApplicationPrepareShutdown()
+    const promises: Promise<void>[] = []
 
-      await promiseAll([
-        (sharedPgConnection as any).context?.destroy(),
-        (sharedPgConnection as any).destroy(),
-        medusaApp.onApplicationShutdown(),
-      ])
+    if (shouldDestroyConnectionAutomatically) {
+      promises.push((sharedPgConnection as any).context?.destroy())
+      promises.push((sharedPgConnection as any).destroy())
+      promises.push(medusaApp.onApplicationPrepareShutdown())
+      promises.push(medusaApp.onApplicationShutdown())
     } else {
       if (!preventConnectionDestroyWarning) {
         logger.info(
@@ -78,6 +77,8 @@ export async function initModules({
         )
       }
     }
+
+    await promiseAll(promises)
     moduleSdkImports.MedusaModule.clearInstances()
   }
 

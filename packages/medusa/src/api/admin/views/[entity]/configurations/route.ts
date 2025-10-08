@@ -8,11 +8,8 @@ import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createViewConfigurationWorkflow } from "@medusajs/core-flows"
 
 /**
- * @ignore
- * 
- * @privateRemarks
- * Remove the `ignore` tag once the feature is ready. Otherwise,
- * it will be generated in the documentation.
+ * @since 2.10.3
+ * @featureFlag view_configurations
  */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminGetViewConfigurationsParams>,
@@ -41,11 +38,8 @@ export const GET = async (
 }
 
 /**
- * @ignore
- * 
- * @privateRemarks
- * Remove the `ignore` tag once the feature is ready. Otherwise,
- * it will be generated in the documentation.
+ * @since 2.10.3
+ * @featureFlag view_configurations
  */
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminCreateViewConfigurationType>,

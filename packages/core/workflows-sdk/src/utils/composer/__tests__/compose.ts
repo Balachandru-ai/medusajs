@@ -11,7 +11,7 @@ import {
   Modules,
   promiseAll,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/deps/awilix"
 import { setTimeout } from "timers/promises"
 import {
   createStep,

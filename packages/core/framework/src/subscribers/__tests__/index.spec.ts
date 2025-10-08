@@ -1,5 +1,5 @@
 import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "../../deps/awilix"
 import { join } from "path"
 import { container } from "../../container"
 import { logger } from "../../logger"
