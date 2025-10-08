@@ -473,12 +473,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           const transactionId = "transaction-auto-retries" + ulid()
           const workflowId = "workflow_1_auto_retries_false"
 
-          const redisClientStatus = (workflowOrcModule as any)
-            .workflowOrchestratorService_.redisDistributedTransactionStorage_
-            .redisClient.status
-
-          console.log(">>>>>>>>> redisClientStatus", redisClientStatus)
-
           await workflowOrcModule.run(workflowId, {
             input: {},
             transactionId,
@@ -486,21 +480,11 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           const onFinishPromise = new Promise<void>((resolve, reject) => {
-            // Add a timeout to prevent hanging
-            const timeout = setTimeoutSync(() => {
-              reject(
-                new Error(
-                  "Test timed out waiting for workflow to finish. Redis may be down."
-                )
-              )
-            }, 30000)
-
             workflowOrcModule.subscribe({
               workflowId,
               transactionId,
               subscriber: async (event) => {
                 if (event.eventType === "onFinish") {
-                  clearTimeout(timeout)
                   try {
                     expect(
                       step1InvokeMockAutoRetriesFalse

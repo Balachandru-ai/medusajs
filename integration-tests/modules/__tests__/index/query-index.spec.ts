@@ -597,6 +597,27 @@ medusaIntegrationTestRunner({
           ContainerRegistrationKeys.QUERY
         ) as RemoteQueryFunction
 
+        await promiseAll([
+          waitForIndexedEntities(
+            dbConnection,
+            "Product",
+            products.map((p) => p.id)
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductVariant",
+            products.flatMap((p) => p.variants.map((v) => v.id))
+          ),
+          waitForIndexedEntities(
+            dbConnection,
+            "Price",
+            products.flatMap((p) =>
+              p.variants.flatMap((v) => v.prices.map((p) => p.id))
+            )
+          ),
+          waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+        ])
+
         const resultset = await fetchAndRetry(
           async () =>
             await query.index({
