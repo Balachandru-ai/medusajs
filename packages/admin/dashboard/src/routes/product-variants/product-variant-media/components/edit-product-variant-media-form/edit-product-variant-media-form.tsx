@@ -11,6 +11,7 @@ import {
   useRouteModal,
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { useBatchVariantImages } from "../../../../../hooks/api/products"
 
 /**
  * Schema
@@ -60,7 +61,10 @@ export const EditProductVariantMediaForm = ({
     resolver: zodResolver(MediaSchema),
   })
 
-  const { mutateAsync, isPending } = {}
+  const { mutateAsync, isPending } = useBatchVariantImages(
+    variant.product_id!,
+    variant.id!
+  )
 
   const handleSubmit = form.handleSubmit(async (data) => {
     const currentVariantImageIds = data.image_ids
@@ -75,10 +79,11 @@ export const EditProductVariantMediaForm = ({
       (id) => !newVariantImageIds.includes(id)
     )
 
-    // TODO: API CALL
-
     await mutateAsync(
-      {},
+      {
+        add: imagesToAdd,
+        remove: imagesToRemove,
+      },
       {
         onSuccess: () => {
           toast.success(t("products.media.successToast"))

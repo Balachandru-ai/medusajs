@@ -1077,40 +1077,6 @@ export class Product {
   }
 
   /**
-   * This method assigns each image from `images` to product variants from `variants`. It sends a request to the
-   * [Assign Images to Variants](https://docs.medusajs.com/api/admin#products_postproductsidvariantsimages)
-   * API route.
-   *
-   * @param productId - The product's ID.
-   * @param body - The images and variants to assign.
-   * @param headers - Headers to pass in the request
-   * @returns The assignment details.
-   *
-   * @example
-   * sdk.admin.product.assignImagesToVariants("prod_123", {
-   *   images: ["img_123", "img_456"],
-   *   variants: ["variant_123", "variant_456"]
-   * })
-   * .then(({ assigned }) => {
-   *   console.log(assigned)
-   * })
-   */
-  async assignImagesToVariants(
-    productId: string,
-    body: HttpTypes.AdminAssignImagesToVariantsRequest,
-    headers?: ClientHeaders
-  ) {
-    return await this.client.fetch<HttpTypes.AdminAssignImagesToVariantsResponse>(
-      `/admin/products/${productId}/variants/images`,
-      {
-        method: "POST",
-        headers,
-        body,
-      }
-    )
-  }
-
-  /**
    * This method manages image-variant associations for a specific image. It sends a request to the
    * [Batch Image Variants](https://docs.medusajs.com/api/admin#products_postproductsidimagesimage_idvariantsbatch)
    * API route.
@@ -1138,6 +1104,42 @@ export class Product {
   ) {
     return await this.client.fetch<HttpTypes.AdminBatchImageVariantResponse>(
       `/admin/products/${productId}/images/${imageId}/variants/batch`,
+      {
+        method: "POST",
+        headers,
+        body,
+      }
+    )
+  }
+
+  /**
+   * This method manages variant-image associations for a specific variant. It sends a request to the
+   * [Batch Variant Images](https://docs.medusajs.com/api/admin#products_postproductsidvariantsvariant_idimagesbatch)
+   * API route.
+   *
+   * @param productId - The product's ID.
+   * @param variantId - The variant's ID.
+   * @param body - The images to add or remove from the variant.
+   * @param headers - Headers to pass in the request
+   * @returns The batch operation details.
+   *
+   * @example
+   * sdk.admin.product.batchVariantImages("prod_123", "variant_123", {
+   *   add: ["img_123", "img_456"],
+   *   remove: ["img_789"]
+   * })
+   * .then(({ added, removed }) => {
+   *   console.log(added, removed)
+   * })
+   */
+  async batchVariantImages(
+    productId: string,
+    variantId: string,
+    body: HttpTypes.AdminBatchVariantImagesRequest,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminBatchVariantImagesResponse>(
+      `/admin/products/${productId}/variants/${variantId}/images/batch`,
       {
         method: "POST",
         headers,

@@ -12,7 +12,10 @@ type VariantMediaSectionProps = {
 export const VariantMediaSection = ({ variant }: VariantMediaSectionProps) => {
   const { t } = useTranslation()
 
-  const media = variant.images || []
+  // show only variant scoped images
+  const media = (variant.images || []).filter((image) =>
+    image.variants?.some((variant) => variant.id === variant.id)
+  )
 
   return (
     <Container className="divide-y p-0">
