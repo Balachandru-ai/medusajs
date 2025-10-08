@@ -13,6 +13,7 @@ import { setTimeout as setTimeoutSync } from "timers"
 import { setTimeout } from "timers/promises"
 import { ulid } from "ulid"
 import "../__fixtures__"
+import { TestDatabase } from "../utils"
 
 jest.setTimeout(5000)
 
@@ -38,6 +39,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   },
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
     describe("Testing race condition of the workflow during retry", () => {
+      afterEach(async () => {
+        await TestDatabase.clearTables()
+      })
+
       it("should manage saving multiple async steps in concurrency", async () => {
         const step0 = createStep(
           { name: "step0", async: true, backgroundExecution: true },

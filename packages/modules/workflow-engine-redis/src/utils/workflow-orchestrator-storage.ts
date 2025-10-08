@@ -292,6 +292,8 @@ export class RedisDistributedTransactionStorage
       TransactionState.FAILED,
       TransactionState.REVERTED,
     ].includes(data.flow.state)
+    const isWaitingToCompensate =
+      data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
     /**
      * Bit of explanation:
@@ -344,7 +346,10 @@ export class RedisDistributedTransactionStorage
         )
       : false
 
-    if (!(isNotStarted || isFinished) && !currentStepsIsAsync) {
+    if (
+      !(isNotStarted || isFinished || isWaitingToCompensate) &&
+      !currentStepsIsAsync
+    ) {
       return
     }
 
