@@ -461,7 +461,9 @@ export const useBatchVariantImages = (
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
       })
-      queryClient.invalidateQueries({ queryKey: variantsQueryKeys.lists() })
+      queryClient.invalidateQueries({
+        queryKey: variantsQueryKeys.list({ productId }),
+      })
       queryClient.invalidateQueries({
         queryKey: variantsQueryKeys.detail(variantId),
       })

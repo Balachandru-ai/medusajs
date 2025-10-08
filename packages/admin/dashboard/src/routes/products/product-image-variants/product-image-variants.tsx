@@ -28,7 +28,7 @@ export const ProductImageVariants = () => {
     return null
   }
 
-  if (isPending && !image) {
+  if (!isPending && !image) {
     throw json({ message: `An image with ID ${image_id} was not found` }, 404)
   }
 
@@ -36,7 +36,7 @@ export const ProductImageVariants = () => {
     <RouteDrawer>
       <RouteDrawer.Header>
         <div className="flex items-center gap-x-4">
-          <img src={image.url} className="h-20" />
+          <img src={image!.url} className="h-20" />
           <div>
             <RouteDrawer.Title asChild>
               <Heading>{t("products.variantMedia.manageVariants")}</Heading>
@@ -47,7 +47,7 @@ export const ProductImageVariants = () => {
           </div>
         </div>
       </RouteDrawer.Header>
-      <VariantsTableForm productId={product_id} image={image} />
+      <VariantsTableForm productId={product_id} image={image!} />
     </RouteDrawer>
   )
 }
