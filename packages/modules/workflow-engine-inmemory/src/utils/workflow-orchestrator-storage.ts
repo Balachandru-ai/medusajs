@@ -607,6 +607,35 @@ export class InMemoryDistributedTransactionStorage
     }
 
     const { flow: latestUpdatedFlow } = data_
+    if (options?.stepId) {
+      const stepId = options.stepId
+      const currentStep = data.flow.steps[stepId]
+      const latestStep = latestUpdatedFlow.steps?.[stepId]
+      if (latestStep && currentStep) {
+        const isCompensating =
+          data.flow.state === TransactionState.COMPENSATING ||
+          data.flow.state === TransactionState.WAITING_TO_COMPENSATE
+        const latestState = isCompensating
+          ? latestStep.compensate?.state
+          : latestStep.invoke?.state
+        const currentState = isCompensating
+          ? currentStep.compensate?.state
+          : currentStep.invoke?.state
+        const finishedStates = [
+          TransactionStepState.DONE,
+          TransactionStepState.FAILED,
+        ]
+
+        if (
+          finishedStates.includes(latestState) &&
+          !finishedStates.includes(currentState)
+        ) {
+          throw new SkipStepAlreadyFinishedError(
+            `Step ${stepId} already finished by another execution`
+          )
+        }
+      }
+    }
     if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
       /**
        * the initial checkpoint expect no other checkpoint to have been stored.

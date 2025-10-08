@@ -130,7 +130,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           ],
         })
       })
-      it.only("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
+      it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
         const step0InvokeMock = jest.fn()
         const step1InvokeMock = jest.fn()
         const step2InvokeMock = jest.fn()
@@ -182,14 +182,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           workflowId: "workflow-1",
 
           subscriber: (event) => {
-            console.log(event)
             if (event.eventType === "onFinish") {
-              console.log({
-                step0InvokeMock: step0InvokeMock.mock.calls.length,
-                step1InvokeMock: step1InvokeMock.mock.calls.length,
-                step2InvokeMock: step2InvokeMock.mock.calls.length,
-                transformMock: transformMock.mock.calls.length,
-              })
               expect(step0InvokeMock).toHaveBeenCalledTimes(1)
               expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(1)
               expect(step2InvokeMock).toHaveBeenCalledTimes(1)
@@ -201,7 +194,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         workflowOrcModule
-          .run("workflow-1", { throwOnError: false })
+          .run("workflow-1", { throwOnError: false, logOnError: true })
           .then(({ result }) => {
             expect(result).toBe("result from step 0")
           })
