@@ -198,10 +198,12 @@ class DistributedTransaction extends EventEmitter {
   public async saveCheckpoint({
     ttl = 0,
     parallelSteps = 0,
+    stepId,
     _v,
   }: {
     ttl?: number
     parallelSteps?: number
+    stepId?: string
     _v?: number
   } = {}): Promise<TransactionCheckpoint | undefined> {
     const options =
@@ -212,8 +214,9 @@ class DistributedTransaction extends EventEmitter {
       return
     }
 
+    options.stepId = stepId
     if (_v) {
-      options.maxRetries = parallelSteps
+      options.parallelSteps = parallelSteps
       options._v = _v
     }
 

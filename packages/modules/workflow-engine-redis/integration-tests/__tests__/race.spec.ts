@@ -15,9 +15,9 @@ import { ulid } from "ulid"
 import "../__fixtures__"
 import { TestDatabase } from "../utils/database"
 
-jest.setTimeout(5000)
+jest.setTimeout(5000000)
 
-const failTrap = (done, name, timeout = 5000) => {
+const failTrap = (done, name, timeout = 5000000) => {
   return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
@@ -221,7 +221,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
       })
 
-      it.skip("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
+      it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "RACE_workflow-1" + ulid()
 

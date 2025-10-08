@@ -263,7 +263,8 @@ export type StepFeatures = {
   hasAsyncSteps: boolean
   hasStepTimeouts: boolean
   hasRetriesTimeout: boolean
-  maxRetries?: number
+  parallelSteps?: number
+  stepId?: string
   _v?: number
 }
 

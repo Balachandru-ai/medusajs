@@ -16,13 +16,13 @@ import {
 } from "@medusajs/framework/orchestration"
 import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
+  isPresent,
   MedusaError,
   promiseAll,
   TransactionState,
   TransactionStepState,
   TransactionStepStatus,
 } from "@medusajs/framework/utils"
-import { MedusaWorkflow } from "@medusajs/framework/workflows-sdk"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
@@ -154,12 +154,6 @@ export class RedisDistributedTransactionStorage
           } with the following data: ${JSON.stringify(job.data)}`
         )
         if (allowedJobs.includes(job.name as JobType)) {
-          console.log({
-            workflowId: job.data.workflowId,
-            transactionId: job.data.transactionId,
-            transactionMetadata: job.data.transactionMetadata,
-            allFlows: Object.keys(MedusaWorkflow.workflows),
-          })
           try {
             await this.executeTransaction(
               job.data.workflowId,
@@ -520,7 +514,7 @@ export class RedisDistributedTransactionStorage
     }
 
     let retries = 0
-    const maxRetries = options?.maxRetries || 1
+    const maxRetries = (options?.parallelSteps || 1) + 3
     while (retries < maxRetries) {
       let lockAcquired = false
       try {
@@ -535,7 +529,8 @@ export class RedisDistributedTransactionStorage
             continue
           }
 
-          if (_v) {
+          const parallelSteps = options?.parallelSteps ?? 1
+          if (_v && parallelSteps > 1) {
             await this.#performVersionCheckAndMerge(key, data, _v)
           }
         }
@@ -804,11 +799,12 @@ export class RedisDistributedTransactionStorage
     const lockKey = this.#getLockKey(key)
     const result = await this.redisClient.set(
       lockKey,
-      "locked",
+      1,
       "EX",
       ttlSeconds,
       "NX"
     )
+
     return result === "OK"
   }
 
@@ -854,6 +850,41 @@ export class RedisDistributedTransactionStorage
     const isCompensating =
       data.flow.state === TransactionState.COMPENSATING ||
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
+
+    const mergeProperties = [
+      "hasFailedSteps",
+      "hasSkippedOnFailureSteps",
+      "hasSkippedSteps",
+      "hasRevertedSteps",
+      "timedOutAt",
+      "state",
+    ]
+    const stateFlowOrder = [
+      TransactionState.NOT_STARTED,
+      TransactionState.INVOKING,
+      TransactionState.DONE,
+      TransactionState.WAITING_TO_COMPENSATE,
+      TransactionState.COMPENSATING,
+      TransactionState.REVERTED,
+      TransactionState.FAILED,
+    ]
+
+    for (const prop of mergeProperties) {
+      if (prop === "state") {
+        const curState = stateFlowOrder.findIndex(
+          (state) => state === currentData.flow.state
+        )
+        const latestState = stateFlowOrder.findIndex(
+          (state) => state === data.flow.state
+        )
+
+        if (latestState > curState) {
+          currentData.flow.state = data.flow.state
+        }
+      } else if (data.flow[prop] && !currentData.flow[prop]) {
+        currentData.flow[prop] = data.flow[prop]
+      }
+    }
 
     const stepName = savingStep.definition.action!
 
@@ -925,6 +956,9 @@ export class RedisDistributedTransactionStorage
     key: string
     options?: TransactionOptions
   }) {
+    const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
+      data.flow.state
+    )
     /**
      * In case many execution can succeed simultaneously, we need to ensure that the latest
      * execution does continue if a previous execution is considered finished
@@ -947,6 +981,15 @@ export class RedisDistributedTransactionStorage
     }
 
     const { flow: latestUpdatedFlow } = data_
+    if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
+      /**
+       * the initial checkpoint expect no other checkpoint to have been stored.
+       * In case it is not the initial one and another checkpoint is trying to
+       * find if a concurrent execution has finished, we skip the execution.
+       * The already finished execution would have deleted the checkpoint already.
+       */
+      throw new SkipExecutionError("Already finished by another execution")
+    }
 
     let currentFlowLatestExecutedStep: TransactionStep | undefined
     const currentFlowSteps = Object.values(currentFlow.steps || {})
@@ -1088,7 +1131,8 @@ export class RedisDistributedTransactionStorage
         invokeShouldBeSkipped &&
         !isParallelExecution) ||
       (data.flow.state === TransactionState.COMPENSATING &&
-        compensateShouldBeSkipped) ||
+        compensateShouldBeSkipped &&
+        !isParallelExecution) ||
       isCompensatingMismatch ||
       isRevertedMismatch ||
       isFailedMismatch

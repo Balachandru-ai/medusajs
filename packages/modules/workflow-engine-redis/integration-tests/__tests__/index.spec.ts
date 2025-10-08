@@ -585,8 +585,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
 
           expect(executionsList).toHaveLength(1)
-
-          console.log(">>>>>>>>> setting step success")
           const { result } = await workflowOrcModule.setStepSuccess({
             idempotencyKey: {
               action: TransactionHandlerType.INVOKE,
@@ -597,7 +595,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             stepResponse: { uhuuuu: "yeaah!" },
           })
 
-          console.log(">>>>>>>>> setting step success done")
           ;({ data: executionsList } = await query.graph({
             entity: "workflow_executions",
             fields: ["id"],

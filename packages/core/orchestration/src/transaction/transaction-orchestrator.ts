@@ -562,6 +562,7 @@ export class TransactionOrchestrator extends EventEmitter {
           transaction.getFlow(),
           step
         ),
+        stepId: step.id,
       })
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
@@ -644,6 +645,11 @@ export class TransactionOrchestrator extends EventEmitter {
     try {
       await transaction.saveCheckpoint({
         _v: step._v,
+        parallelSteps: TransactionOrchestrator.countSiblings(
+          transaction.getFlow(),
+          step
+        ),
+        stepId: step.id,
       })
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
@@ -856,6 +862,11 @@ export class TransactionOrchestrator extends EventEmitter {
     try {
       await transaction.saveCheckpoint({
         _v: step._v,
+        parallelSteps: TransactionOrchestrator.countSiblings(
+          transaction.getFlow(),
+          step
+        ),
+        stepId: step.id,
       })
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
@@ -1661,6 +1672,7 @@ export class TransactionOrchestrator extends EventEmitter {
     const existingTransaction =
       await TransactionOrchestrator.loadTransactionById(this.id, transactionId)
 
+    let newTransaction = false
     let modelFlow: TransactionFlow
     if (!existingTransaction) {
       modelFlow = this.createTransactionFlow(
@@ -1668,6 +1680,7 @@ export class TransactionOrchestrator extends EventEmitter {
         flowMetadata,
         context
       )
+      newTransaction = true
     } else {
       modelFlow = existingTransaction.flow
     }
@@ -1679,6 +1692,12 @@ export class TransactionOrchestrator extends EventEmitter {
       existingTransaction?.errors,
       existingTransaction?.context
     )
+
+    if (newTransaction && this.getOptions().store) {
+      await transaction.saveCheckpoint({
+        ttl: modelFlow.hasAsyncSteps ? 0 : TransactionOrchestrator.DEFAULT_TTL,
+      })
+    }
 
     if (onLoad) {
       await onLoad(transaction)

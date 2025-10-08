@@ -20,6 +20,7 @@ import {
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
 import {
+  isPresent,
   MedusaError,
   TransactionState,
   TransactionStepState,
@@ -111,8 +112,8 @@ export class InMemoryDistributedTransactionStorage
   private pendingTimers: Set<NodeJS.Timeout> = new Set()
 
   private clearTimeout_: NodeJS.Timeout
-  private isLocked = false
-  private lockQueue: (() => void)[] = []
+  private isLocked: Map<string, boolean> = new Map()
+  private lockQueue: Map<string, (() => void)[]> = new Map()
 
   constructor({
     workflowExecutionService,
@@ -381,18 +382,18 @@ export class InMemoryDistributedTransactionStorage
       }
     }
 
-    if (this.isLocked) {
-      await new Promise<void>((resolve) => {
-        this.lockQueue.push(resolve)
-      })
-    }
+    const parallelSteps = options?.parallelSteps ?? 1
+    if (_v && parallelSteps > 1) {
+      if (this.isLocked.get(key)) {
+        await new Promise<void>((resolve) => {
+          if (!this.lockQueue.has(key)) {
+            this.lockQueue.set(key, [])
+          }
+          this.lockQueue.get(key)!.push(resolve)
+        })
+      }
+      this.isLocked.set(key, true)
 
-    // if awaiting async step, _v > 0
-    if (data.flow._v) {
-      this.isLocked = true
-    }
-
-    if (_v) {
       await this.#performVersionCheckAndMerge(key, data, _v)
     }
 
@@ -421,11 +422,19 @@ export class InMemoryDistributedTransactionStorage
     }
 
     // Release the lock if we acquired one
-    if (this.isLocked) {
-      this.isLocked = false
-      const nextResolve = this.lockQueue.shift()
-      if (nextResolve) {
-        nextResolve()
+    if (this.isLocked.has(key)) {
+      this.isLocked.set(key, false)
+      const queue = this.lockQueue.get(key)
+      if (queue) {
+        if (queue.length > 0) {
+          const nextResolve = queue.shift()
+          if (nextResolve) {
+            nextResolve()
+          }
+        } else {
+          this.isLocked.delete(key)
+          this.lockQueue.delete(key)
+        }
       }
     }
   }
@@ -467,6 +476,41 @@ export class InMemoryDistributedTransactionStorage
     const isCompensating =
       data.flow.state === TransactionState.COMPENSATING ||
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
+
+    const mergeProperties = [
+      "hasFailedSteps",
+      "hasSkippedOnFailureSteps",
+      "hasSkippedSteps",
+      "hasRevertedSteps",
+      "timedOutAt",
+      "state",
+    ]
+    const stateFlowOrder = [
+      TransactionState.NOT_STARTED,
+      TransactionState.INVOKING,
+      TransactionState.DONE,
+      TransactionState.WAITING_TO_COMPENSATE,
+      TransactionState.COMPENSATING,
+      TransactionState.REVERTED,
+      TransactionState.FAILED,
+    ]
+
+    for (const prop of mergeProperties) {
+      if (prop === "state") {
+        const curState = stateFlowOrder.findIndex(
+          (state) => state === currentData.flow.state
+        )
+        const latestState = stateFlowOrder.findIndex(
+          (state) => state === data.flow.state
+        )
+
+        if (latestState > curState) {
+          currentData.flow.state = data.flow.state
+        }
+      } else if (data.flow[prop] && !currentData.flow[prop]) {
+        currentData.flow[prop] = data.flow[prop]
+      }
+    }
 
     const stepName = savingStep.definition.action!
 
@@ -538,6 +582,9 @@ export class InMemoryDistributedTransactionStorage
     key: string
     options?: TransactionOptions
   }) {
+    const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
+      data.flow.state
+    )
     /**
      * In case many execution can succeed simultaneously, we need to ensure that the latest
      * execution does continue if a previous execution is considered finished
@@ -560,6 +607,15 @@ export class InMemoryDistributedTransactionStorage
     }
 
     const { flow: latestUpdatedFlow } = data_
+    if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
+      /**
+       * the initial checkpoint expect no other checkpoint to have been stored.
+       * In case it is not the initial one and another checkpoint is trying to
+       * find if a concurrent execution has finished, we skip the execution.
+       * The already finished execution would have deleted the checkpoint already.
+       */
+      throw new SkipExecutionError("Already finished by another execution")
+    }
 
     let currentFlowLatestExecutedStep: TransactionStep | undefined
     const currentFlowSteps = Object.values(currentFlow.steps || {})
@@ -701,7 +757,8 @@ export class InMemoryDistributedTransactionStorage
         invokeShouldBeSkipped &&
         !isParallelExecution) ||
       (data.flow.state === TransactionState.COMPENSATING &&
-        compensateShouldBeSkipped) ||
+        compensateShouldBeSkipped &&
+        !isParallelExecution) ||
       isCompensatingMismatch ||
       isRevertedMismatch ||
       isFailedMismatch
