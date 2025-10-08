@@ -14,7 +14,6 @@ import {
   AdminBatchCreateVariantInventoryItem,
   AdminBatchDeleteVariantInventoryItem,
   AdminBatchImageVariant,
-  AdminAssignImagesToVariants,
   AdminBatchUpdateProduct,
   AdminBatchUpdateProductVariant,
   AdminBatchUpdateVariantInventoryItem,
@@ -189,11 +188,6 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
       sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
     },
     middlewares: [validateAndTransformBody(AdminBatchImageVariant)],
-  },
-  {
-    method: ["POST"],
-    matcher: "/admin/products/:id/variants/images",
-    middlewares: [validateAndTransformBody(AdminAssignImagesToVariants)],
   },
   // Note: New endpoint in v2
   {
