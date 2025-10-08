@@ -1,5 +1,5 @@
 import { Prerequisites, Card } from "docs-ui"
-import { GitHub } from "@medusajs/icons"
+import { Github } from "@medusajs/icons"
 
 export const metadata = {
   title: `Create Memcached Caching Module Provider`,
@@ -25,8 +25,10 @@ Refer to the [Caching Module](../../page.mdx) documentation to learn more about 
   title="Full Code"
   href="https://github.com/medusajs/examples/tree/main/memcached-caching"
   text="Find the complete code on GitHub"
-  icon={GitHub}
+  icon={Github}
 />
+
+---
 
 <Prerequisites
   items={[
@@ -40,8 +42,6 @@ Refer to the [Caching Module](../../page.mdx) documentation to learn more about 
     }
   ]}
 />
-
----
 
 ## 1. Install Memcached Client
 
@@ -65,7 +65,23 @@ Next, establish a connection to Memcached in your module using a [Loader](!docs!
 
 Create the file `src/modules/memcached/loaders/connection.ts` with the following content:
 
-```ts title="src/modules/memcached/loaders/connection.ts"
+export const loaderHighlights = [
+  ["5", "serverUrls", "Memcached server URLs"],
+  ["6", "username", "Username for authentication"],
+  ["7", "password", "Password for authentication"],
+  ["8", "options", "Additional Memcached client options"],
+  ["9", "cachePrefix", "Prefix for cache keys"],
+  ["10", "defaultTtl", "Default time-to-live for cached items"],
+  ["11", "compression", "Compression settings"],
+  ["12", "enable", "Enable compression"],
+  ["13", "threshold", "Minimum size to compress"],
+  ["14", "level", "Compression level"],
+  ["34", "client", "Create Memcached client"],
+  ["42", "stats", "Test the connection to Memcached"],
+  ["54", "register", "Register the client in the container"],
+]
+
+```ts title="src/modules/memcached/loaders/connection.ts" highlights={loaderHighlights}
 import { LoaderOptions } from "@medusajs/framework/types"
 import * as memjs from "memjs"
 
@@ -132,8 +148,6 @@ export default async function connection({
 }
 ```
 
-{/* TODO add link to register section */}
-
 You first define module options that are passed to the Memcached Module Provider. You'll set those up later when you [register the module in your Medusa application](#register-memcached-module-provider). The module accepts the following options:
 
 - `serverUrls`: An array of Memcached server URLs. Defaults to `["127.0.0.1:11211"]`.
@@ -164,7 +178,12 @@ In this step, you'll create the service of the Memcached Module Provider. This s
 
 To create the service, create the file `src/modules/memcached/service.ts` with the following content:
 
-```ts title="src/modules/memcached/service.ts"
+export const serviceHighlights1 = [
+  ["25", "memcachedClient", "Resolve Memcached client from the module container."],
+  ["26", "options", "Options passed to the module provider."]
+]
+
+```ts title="src/modules/memcached/service.ts" highlights={serviceHighlights1}
 import { ICachingProviderService } from "@medusajs/framework/types"
 import * as memjs from "memjs"
 import { ModuleOptions } from "./loaders/connection"
@@ -244,7 +263,10 @@ Then, add the following methods to the `MemcachedCachingProviderService` class:
 ```ts title="src/modules/memcached/service.ts"
 class MemcachedCachingProviderService implements ICachingProviderService {
   // ...
-  private async compressData(data: string): Promise<{ data: string; compressed: boolean }> {
+  private async compressData(data: string): Promise<{ 
+    data: string; 
+    compressed: boolean
+  }> {
     if (!this.compressionEnabled || data.length < this.compressionThreshold) {
       return { data, compressed: false }
     }
@@ -261,7 +283,10 @@ class MemcachedCachingProviderService implements ICachingProviderService {
     return { data, compressed: false }
   }
 
-  private async decompressData(data: string, compressed: boolean): Promise<string> {
+  private async decompressData(
+    data: string, 
+    compressed: boolean
+  ): Promise<string> {
     if (!compressed) {
       return data
     }
@@ -291,7 +316,11 @@ Add the following method to the `MemcachedCachingProviderService` class:
 ```ts title="src/modules/memcached/service.ts"
 class MemcachedCachingProviderService implements ICachingProviderService {
   // ...
-  private async setKeyTags(key: string, tags: string[], setOptions: memjs.InsertOptions): Promise<void> {
+  private async setKeyTags(
+    key: string, 
+    tags: string[], 
+    setOptions: memjs.InsertOptions
+  ): Promise<void> {
     const timestamp = Math.floor(Date.now() / 1000)
     const tagNamespaces: Record<string, string> = {}
     const operations: Promise<any>[] = []
@@ -380,7 +409,10 @@ class MemcachedCachingProviderService implements ICachingProviderService {
     setOptions.expires = ttl ?? this.defaultTtl
 
     // Compress data if enabled
-    const { data: finalData, compressed } = await this.compressData(serializedData)
+    const { 
+      data: finalData, 
+      compressed
+    } = await this.compressData(serializedData)
 
     // Batch operations for better performance
     const operations: Promise<any>[] = [
@@ -390,7 +422,9 @@ class MemcachedCachingProviderService implements ICachingProviderService {
     // Always store options (including compression flag) to allow checking them later
     const optionsKey = this.OPTIONS_PREFIX + key
     const optionsData = { ...options, compressed }
-    operations.push(this.client.set(optionsKey, JSON.stringify(optionsData), setOptions))
+    operations.push(
+      this.client.set(optionsKey, JSON.stringify(optionsData), setOptions)
+    )
 
     // Handle tags using namespace simulation with batching
     if (tags && tags.length > 0) {
@@ -947,7 +981,8 @@ module.exports = defineConfig({
             // Optional, makes this the default caching provider
             is_default: true,
             options: {
-              serverUrls: process.env.MEMCACHED_SERVERS?.split(',') || ["127.0.0.1:11211"],
+              serverUrls: process.env.MEMCACHED_SERVERS?.split(',') || 
+                ["127.0.0.1:11211"],
               // add other optional options here...
             },
           },
@@ -961,7 +996,7 @@ module.exports = defineConfig({
 
 You register the `@medusajs/medusa/caching` module and add the Memcached Module Provider to its `providers` array.
 
-You pass the options to configure the Memcached client and the module's behavior. These are the same options you defined in the `ModuleOptions` type in the loader.
+You pass the options to configure the Memcached client and the module's behavior. These are the same [options you defined in the ModuleOptions type in the loader](#3-create-memcached-connection-loader).
 
 ### Add Environment Variables
 
@@ -986,7 +1021,7 @@ npm run dev
 
 You'll see in the logs that the Memcached connection is established successfully:
 
-```
+```bash
 info:    Connecting to Memcached...
 info:    Successfully connected to Memcached
 ```

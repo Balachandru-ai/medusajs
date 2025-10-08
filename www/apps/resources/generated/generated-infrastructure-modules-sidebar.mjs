@@ -128,7 +128,7 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
-              "path": "#",
+              "path": "/infrastructure-modules/caching/guides/memcached",
               "title": "Memcached",
               "children": []
             }
