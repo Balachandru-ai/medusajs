@@ -351,16 +351,6 @@ export class RemoteQuery {
       }
     }
 
-    if (ids) {
-      if (!ids.length) {
-        return {
-          data: [],
-        }
-      }
-
-      filters[keyField] = ids
-    }
-
     delete options.args?.[BASE_PREFIX]
     if (Object.keys(options.args ?? {}).length) {
       filters = {
@@ -371,6 +361,26 @@ export class RemoteQuery {
     }
 
     const hasPagination = this.hasPagination(options)
+
+    if (ids) {
+      if (!ids.length) {
+        if (hasPagination) {
+          return {
+            data: {
+              rows: [],
+              metadata: this.buildPagination(options, 0),
+            },
+            path: "rows",
+          }
+        } else {
+          return {
+            data: [],
+          }
+        }
+      }
+
+      filters[keyField] = ids
+    }
 
     let methodName = hasPagination ? "listAndCount" : "list"
 
