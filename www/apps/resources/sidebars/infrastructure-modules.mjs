@@ -84,7 +84,7 @@ export const infrastructureModulesSidebar = [
           },
           {
             type: "link",
-            path: "#",
+            path: "/infrastructure-modules/caching/guides/memcached",
             title: "Memcached",
           },
         ],
