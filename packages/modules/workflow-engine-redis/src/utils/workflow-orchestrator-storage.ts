@@ -470,7 +470,7 @@ export class RedisDistributedTransactionStorage
     /**
      * Store the retention time only if the transaction is done, failed or reverted.
      */
-    const { retentionTime, _v } = options ?? {}
+    const { retentionTime } = options ?? {}
 
     const hasFinished = [
       TransactionState.DONE,
@@ -496,7 +496,7 @@ export class RedisDistributedTransactionStorage
     }
 
     let retries = 0
-    const maxRetries = (options?.parallelSteps || 1) + 3
+    const maxRetries = (options?.parallelSteps || 1) + 1
     while (retries < maxRetries) {
       let lockAcquired = false
       try {
@@ -511,10 +511,13 @@ export class RedisDistributedTransactionStorage
             continue
           }
 
-          const parallelSteps = options?.parallelSteps ?? 1
-          if (_v && parallelSteps > 1) {
-            await this.#performVersionCheckAndMerge(key, data, options?.stepId!)
-          }
+          await this.#performVersionCheckAndMerge(key, data, options?.stepId!)
+          console.log(
+            Object.values(data.flow.steps).map((step) => [
+              step.id,
+              step.invoke?.state,
+            ])
+          )
         }
 
         const data_ = {
@@ -802,6 +805,10 @@ export class RedisDistributedTransactionStorage
   ): Promise<void> {
     const currentData = (await this.get(key)) as TransactionCheckpoint
 
+    if (!stepId) {
+      return
+    }
+
     const savingStep = data.flow.steps[stepId]
 
     this.#mergeStepData(currentData, data, savingStep)
@@ -931,6 +938,7 @@ export class RedisDistributedTransactionStorage
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
     )
+
     /**
      * In case many execution can succeed simultaneously, we need to ensure that the latest
      * execution does continue if a previous execution is considered finished

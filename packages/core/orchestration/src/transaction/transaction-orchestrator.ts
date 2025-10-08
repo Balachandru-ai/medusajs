@@ -949,6 +949,17 @@ export class TransactionOrchestrator extends EventEmitter {
 
       let i = 0
       let hasAsyncSteps = false
+      let asyncCount = 0
+      for (const step of nextSteps.next) {
+        const isAsync = step.isCompensating()
+          ? step.definition.compensateAsync
+          : step.definition.async
+
+        if (isAsync) {
+          asyncCount++
+        }
+      }
+
       for (const step of nextSteps.next) {
         const stepIndex = i++
         if (!stepsShouldContinueExecution[stepIndex]) {
@@ -982,10 +993,12 @@ export class TransactionOrchestrator extends EventEmitter {
             this.executeSyncStep(promise, transaction, step, nextSteps)
           )
         } else {
-          // async steps have version for conflicts resolution
-          const version = transaction.getFlow()._v + 1
-          transaction.getFlow()._v = version
-          step._v = version
+          // if parallel steps are async, set a version for conflict resolution
+          if (asyncCount > 0) {
+            const version = transaction.getFlow()._v + 1
+            transaction.getFlow()._v = version
+            step._v = version
+          }
 
           // Execute async step in background as part of the next event loop cycle and continue the execution of the transaction
           hasAsyncSteps = true
@@ -1011,6 +1024,9 @@ export class TransactionOrchestrator extends EventEmitter {
         for (const exec of executionAsync) {
           void exec()
         }
+
+        // TODO: review this, if parallel sync steps have `noWait`, we should not stop the execution
+        continueExecution = false
       }
     }
   }
