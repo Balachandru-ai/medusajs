@@ -22,6 +22,7 @@ const ProductVariant = model
     width: model.number().nullable(),
     metadata: model.json().nullable(),
     variant_rank: model.number().default(0).nullable(),
+    thumbnail: model.text().nullable(),
     product: model
       .belongsTo(() => Product, {
         mappedBy: "variants",

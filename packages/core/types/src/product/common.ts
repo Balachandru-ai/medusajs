@@ -1409,6 +1409,10 @@ export interface UpdateProductVariantDTO {
    */
   upc?: string | null
   /**
+   * The thumbnail of the product variant.
+   */
+  thumbnail?: string | null
+  /**
    * Whether the product variant can be ordered when it's out of stock.
    */
   allow_backorder?: boolean
