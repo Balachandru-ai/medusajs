@@ -17,6 +17,7 @@ export async function getViteConfig(
     ? parseInt(process.env.HMR_PORT)
     : await getPort.default()
   const hmrOptions = getHmrConfig(hmrPort)
+  const allowedHosts = getAllowedHosts()
 
   const root = path.resolve(process.cwd(), ".medusa/client")
 
@@ -53,6 +54,7 @@ export async function getViteConfig(
         allow: [searchForWorkspaceRoot(process.cwd())],
       },
       hmr: hmrOptions,
+      ...(allowedHosts && { allowedHosts }),
     },
     plugins: [
       writeStaticFiles({
@@ -81,24 +83,46 @@ export async function getViteConfig(
   }
   baseConfig.define!["process.env"] = JSON.stringify(pluginEnv)
 
+  let finalConfig = baseConfig
   if (options.vite) {
     const customConfig = options.vite(baseConfig)
-    return mergeConfig(baseConfig, customConfig)
+    finalConfig = mergeConfig(baseConfig, customConfig)
   }
 
-  return baseConfig
+  // Handle HMR_BIND_HOST after merge to detect conflicts
+  if (process.env.HMR_BIND_HOST) {
+    if (finalConfig.server?.hmr && typeof finalConfig.server.hmr === "object" && finalConfig.server.hmr.server) {
+      console.warn(
+        "HMR_BIND_HOST is set but a custom hmr.server is already configured. HMR_BIND_HOST will be ignored."
+      )
+    } else {
+      const { createServer } = require("http")
+      const hmrServer = createServer()
+      hmrServer.listen(hmrPort, process.env.HMR_BIND_HOST)
+      if (!finalConfig.server) {
+        finalConfig.server = {}
+      }
+      if (!finalConfig.server.hmr || typeof finalConfig.server.hmr !== "object") {
+        finalConfig.server.hmr = {}
+      }
+      finalConfig.server.hmr.server = hmrServer
+    }
+  }
+
+  return finalConfig
+}
+
+function getAllowedHosts(): string[] | undefined {
+  const hosts = process.env.__MEDUSA_ADMIN_ADDITIONAL_ALLOWED_HOSTS
+  if (!hosts) {
+    return undefined
+  }
+  return hosts.split(",").map((host) => host.trim())
 }
 
 function getHmrConfig(hmrPort: number): HmrOptions | boolean {
   const options: HmrOptions = {
     port: hmrPort,
-  }
-
-  if (process.env.HMR_BIND_HOST) {
-    const { createServer } = require("http")
-    const hmrServer = createServer()
-    hmrServer.listen(hmrPort, process.env.HMR_BIND_HOST)
-    options.server = hmrServer
   }
 
   if (process.env.HMR_PROTOCOL) {
