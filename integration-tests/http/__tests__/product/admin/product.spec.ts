@@ -4178,7 +4178,7 @@ medusaIntegrationTestRunner({
           )
 
           // Should have 3 images: images[0] and images[3] (general product image), images[1] and images[2] variant scoped
-          expect(variant1WithImages.data.variant.images).toHaveLength(3)
+          expect(variant1WithImages.data.variant.images).toHaveLength(4)
           expect(variant1WithImages.data.variant.images).toEqual(
             expect.arrayContaining([
               expect.objectContaining({ id: product.images[0].id }),
@@ -4195,7 +4195,7 @@ medusaIntegrationTestRunner({
           )
 
           // Should only have the general product image
-          expect(variant2WithImages.data.variant.images).toHaveLength(1)
+          expect(variant2WithImages.data.variant.images).toHaveLength(2)
           expect(variant2WithImages.data.variant.images).toEqual(
             expect.arrayContaining([
               expect.objectContaining({ id: product.images[0].id }),
