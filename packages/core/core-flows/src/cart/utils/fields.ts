@@ -154,6 +154,7 @@ export const productVariantsFields = [
   "is_discountable",
   "variant_option_values",
   "barcode",
+  "thumbnail",
   "product.id",
   "product.title",
   "product.description",
