@@ -14,7 +14,7 @@ Previously, you had to install and manage packages related to MikroORM, Awilix, 
 
 For example, instead of importing `@mikro-orm/core`, you now import it from `@medusajs/framework/mikro-orm/core`. This applies to all of the following packages:
 
-- `@mikro-orm/*` packages (e.g., `@mikro-orm/core`, `@mikro-orm/migrations`, etc.) -> `@medusajs/framework/mikro-orm/{subpath}`
+- `@mikro-orm/*` packages (for example, `@mikro-orm/core`, `@mikro-orm/migrations`, etc.) -> `@medusajs/framework/mikro-orm/{subpath}`
 - `awilix` -> `@medusajs/framework/awilix`
 - `pg` -> `@medusajs/framework/pg`
 - `@opentelemetry/instrumentation-pg` -> `@medusajs/framework/opentelemetry/instrumentation-pg`
@@ -270,7 +270,7 @@ After running the codemod, review the changes made to your codebase. You can use
 
 If everything is working correctly, you can remove the `replace-imports.js` file from your project. You can also remove the following packages from your `package.json`, as they're now included in the `@medusajs/framework` package:
 
-- `@mikro-orm/*` packages (e.g., `@mikro-orm/core`, `@mikro-orm/migrations`, etc.)
+- `@mikro-orm/*` packages (for example, `@mikro-orm/core`, `@mikro-orm/migrations`, etc.)
 - `awilix`
 - `pg`
 - `@opentelemetry/instrumentation-pg`
