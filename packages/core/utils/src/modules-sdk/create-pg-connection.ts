@@ -13,6 +13,16 @@ export function createPgConnection(options: Options) {
     options.driverOptions?.ssl ??
     options.driverOptions?.connection?.ssl ??
     false
+  const connectionTimeoutMillis =
+    driverOptions?.connectionTimeoutMillis ??
+    driverOptions?.connection?.connectionTimeoutMillis ??
+    5000
+  const keepAliveInitialDelayMillis =
+    driverOptions?.keepAliveInitialDelayMillis ??
+    driverOptions?.connection?.keepAliveInitialDelayMillis ??
+    10000
+  const keepAlive =
+    driverOptions?.keepAlive ?? driverOptions?.connection?.keepAlive ?? true
 
   return knex<any, any>({
     client: "pg",
@@ -24,9 +34,9 @@ export function createPgConnection(options: Options) {
         (driverOptions?.idle_in_transaction_session_timeout as number) ??
         undefined, // prevent null to be passed
 
-      connectionTimeoutMillis: 5000, // Fail fast on slow connects
-      keepAlive: true, // Prevent connections from being dropped
-      keepAliveInitialDelayMillis: 10000, // Start keepalive probes after 10s
+      connectionTimeoutMillis: connectionTimeoutMillis as number, // Fail fast on slow connects
+      keepAlive: keepAlive as boolean, // Prevent connections from being dropped
+      keepAliveInitialDelayMillis: keepAliveInitialDelayMillis as number, // Start keepalive probes after 10s
     },
     pool: {
       propagateCreateError: false, // Don't fail entire pool on one bad connection
