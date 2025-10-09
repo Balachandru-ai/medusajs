@@ -6,4 +6,4 @@
 "@medusajs/core-flows": patch
 ---
 
-chore(): Mikro orm 6.4.16
+chore(): improve cart operations + Mikro orm 6.4.16
