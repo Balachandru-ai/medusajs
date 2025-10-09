@@ -3,6 +3,12 @@ import { Heading, Text } from "@medusajs/ui"
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 
+const translationKeyMap = {
+  spend: "spend",
+  usage: "usage",
+  use_by_attribute: "useByAttribute",
+}
+
 type CampaignDetailsProps = {
   campaign?: AdminCampaign
 }
@@ -78,9 +84,12 @@ export const CampaignDetails = ({ campaign }: CampaignDetailsProps) => {
 
           <div className="flex items-center gap-1">
             <Text className="txt-small truncate">
-              {t(`campaigns.budget.type.${campaign.budget?.type}.title`, {
-                defaultValue: "-",
-              })}
+              {t(
+                `campaigns.budget.type.${translationKeyMap[campaign.budget?.type]}.title`,
+                {
+                  defaultValue: "-",
+                }
+              )}
             </Text>
           </div>
         </div>

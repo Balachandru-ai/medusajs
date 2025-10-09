@@ -2263,7 +2263,7 @@
           "title": "Usage",
           "description": "Set a limit on how many times the promotion can be used."
         },
-        "use_by_attribute": {
+        "useByAttribute": {
           "title": "Usage by attribute (customer id, email, etc.)",
           "description": "Set a limit on how many times the promotion can be used by a specific attribute value."
         }

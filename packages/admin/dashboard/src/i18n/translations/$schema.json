@@ -8426,7 +8426,7 @@
                   "required": ["title", "description"],
                   "additionalProperties": false
                 },
-                "use_by_attribute": {
+                "useByAttribute": {
                   "type": "object",
                   "properties": {
                     "title": {
@@ -8440,7 +8440,7 @@
                   "additionalProperties": false
                 }
               },
-              "required": ["spend", "usage", "use_by_attribute"],
+              "required": ["spend", "usage", "useByAttribute"],
               "additionalProperties": false
             },
             "edit": {
