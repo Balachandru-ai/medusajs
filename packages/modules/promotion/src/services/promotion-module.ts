@@ -418,8 +418,8 @@ export default class PromotionModuleService
          */
         const attributeValue = (
           attribute === "promotion_code"
-            ? registrationContext[attribute]
-            : promotion.code
+            ? promotion.code
+            : registrationContext[attribute]
         ) as string | null
 
         if (!attributeValue) {
