@@ -95,11 +95,6 @@ export const sidebar = [
             title: "S3",
             path: "/s3",
           },
-          {
-            type: "link",
-            title: "Cache",
-            path: "/cache",
-          },
         ],
       },
       {
