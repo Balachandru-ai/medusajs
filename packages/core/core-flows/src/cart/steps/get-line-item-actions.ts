@@ -1,12 +1,13 @@
 import {
   CartLineItemDTO,
   CreateLineItemForCartDTO,
-  UpdateLineItemWithSelectorDTO,
+  ICartModuleService,
   UpdateLineItemWithoutSelectorDTO,
+  UpdateLineItemWithSelectorDTO,
 } from "@medusajs/framework/types"
 import {
-  ContainerRegistrationKeys,
   MathBN,
+  Modules,
   deepEqualObj,
   isPresent,
 } from "@medusajs/framework/utils"
@@ -62,13 +63,16 @@ export const getLineItemActionsStep = createStep(
       return new StepResponse({ itemsToCreate: [], itemsToUpdate: [] }, null)
     }
 
-    const query = container.resolve(ContainerRegistrationKeys.QUERY)
+    const cartModule = container.resolve<ICartModuleService>(Modules.CART)
 
     const variantIds = data.items.map((d) => d.variant_id!)
-    const { data: existingVariantItems } = await query.graph(
+    const existingVariantItems = await cartModule.listLineItems(
       {
-        entity: "line_items",
-        fields: [
+        cart_id: data.id,
+        variant_id: variantIds,
+      },
+      {
+        select: [
           "id",
           "metadata",
           "variant_id",
@@ -76,9 +80,7 @@ export const getLineItemActionsStep = createStep(
           "unit_price",
           "compare_at_unit_price",
         ],
-        filters: { cart_id: data.id, variant_id: variantIds },
-      },
-      { cache: { enable: true } }
+      }
     )
 
     const variantItemMap = new Map<string, CartLineItemDTO>(
