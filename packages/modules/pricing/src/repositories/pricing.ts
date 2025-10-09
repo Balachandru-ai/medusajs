@@ -7,16 +7,16 @@ import {
 } from "@medusajs/framework/utils"
 
 import {
+  Knex,
+  SqlEntityManager,
+} from "@medusajs/framework/mikro-orm/postgresql"
+import {
   CalculatedPriceSetDTO,
   Context,
   PricingContext,
   PricingFilters,
   PricingRepositoryService,
 } from "@medusajs/framework/types"
-import {
-  Knex,
-  SqlEntityManager,
-} from "@medusajs/framework/mikro-orm/postgresql"
 
 export class PricingRepository
   extends MikroOrmBase
