@@ -403,7 +403,7 @@ Refer to the [Caching Module documentation](!resources!/infrastructure-modules/c
     {
       type: "`string[]` \| `((args: any[]) => string[] \| undefined)`",
       name: "tags",
-      description: "The tags to associate with the cached results. Tags are useful to group related items. If no tag is provided, the Caching Module will generate relevant tags from the `query.index` parameters.\n\nIf a function is passed, it receives as a parameter the `query.index` parameters, and returns an array of strings indicating the cache tags."
+      description: "The tags to associate with the cached results. Tags are useful to group related items. If no tag is provided, the Caching Module will generate relevant tags based on the entity and its retrieved relations.\n\nIf a function is passed, it receives as a parameter the `query.index` parameters, and returns an array of strings indicating the cache tags."
     },
     {
       type: "`number` \| `((args: any[]) => number \| undefined)`",
@@ -483,7 +483,7 @@ You generate the key using the [computeKey method of the Caching Module's servic
 
 ### Set Cache Tags
 
-By default, the Caching Module generates relevant tags for a query based on the arguments passed to `query.index`. Cache tags are useful to group related items together, allowing you to [retrieve](!resources!/references/caching-service#get) or [invalidate](!resources!/references/caching-service#clear) items by common tags.
+By default, the Caching Module generates relevant tags for a query based on the entity and its retrieved relations. Cache tags are useful to group related items together, allowing you to [retrieve](!resources!/references/caching-service#get) or [invalidate](!resources!/references/caching-service#clear) items by common tags.
 
 Alternatively, you can set the cache tags of a query manually. This is useful if you want to manage invalidating the cache manually, or you want to group related cached items with custom tags.
 
