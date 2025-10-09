@@ -575,9 +575,10 @@ const CostBreakdown = ({
 
     order.items.forEach((item) => {
       item.tax_lines?.forEach((line) => {
+        const currTotal = line.subtotal || 0
         const prevTotal = taxCodeMap[line.code]?.total || 0
         taxCodeMap[line.code] = {
-          total: prevTotal + line.subtotal,
+          total: prevTotal + currTotal,
           rate: line.rate,
         }
       })
@@ -585,9 +586,10 @@ const CostBreakdown = ({
 
     order.shipping_methods.forEach((sm) => {
       sm.tax_lines?.forEach((line) => {
+        const currTotal = line.subtotal || 0
         const prevTotal = taxCodeMap[line.code]?.total || 0
         taxCodeMap[line.code] = {
-          total: prevTotal + line.subtotal,
+          total: prevTotal + currTotal,
           rate: line.rate,
         }
       })
@@ -853,10 +855,6 @@ const DiscountAndTotalBreakdown = ({
                   .split("-")
                   .join(" ")
 
-                const prettyReferenceId = creditLine.reference_id ? (
-                  <DisplayId id={creditLine.reference_id} />
-                ) : null
-
                 return (
                   <div
                     key={creditLine.id}
@@ -899,7 +897,7 @@ const DiscountAndTotalBreakdown = ({
                         leading="compact"
                         className="txt-small text-ui-fg-subtle capitalize"
                       >
-                        ({prettyReference} {prettyReferenceId})
+                        ({prettyReference})
                       </Text>
                     </div>
                     <div className="relative flex-1">

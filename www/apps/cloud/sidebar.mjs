@@ -16,8 +16,18 @@ export const sidebar = [
           },
           {
             type: "link",
+            path: "/sign-up",
+            title: "Sign Up",
+          },
+          {
+            type: "link",
             path: "/faq",
             title: "FAQ",
+          },
+          {
+            type: "link",
+            path: "/comparison",
+            title: "Cloud vs Self Hosting",
           },
         ],
       },
@@ -122,6 +132,11 @@ export const sidebar = [
             type: "link",
             title: "Plans & Pricing",
             path: "/pricing",
+          },
+          {
+            type: "link",
+            title: "Manage Plans",
+            path: "/billing/plans",
           },
           {
             type: "link",

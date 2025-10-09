@@ -22,8 +22,24 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "path": "/sign-up",
+            "title": "Sign Up",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "path": "/faq",
             "title": "FAQ",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/comparison",
+            "title": "Cloud vs Self Hosting",
             "children": []
           }
         ]
@@ -177,6 +193,14 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Plans & Pricing",
             "path": "/pricing",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Manage Plans",
+            "path": "/billing/plans",
             "children": []
           },
           {
