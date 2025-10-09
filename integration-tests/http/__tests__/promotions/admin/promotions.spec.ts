@@ -1,5 +1,10 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { Modules, ProductStatus, PromotionStatus, PromotionType } from "@medusajs/utils"
+import {
+  Modules,
+  ProductStatus,
+  PromotionStatus,
+  PromotionType,
+} from "@medusajs/utils"
 import {
   createAdminUser,
   generatePublishableKey,
@@ -1046,6 +1051,247 @@ medusaIntegrationTestRunner({
             expect(cart.promotions[0].code).toEqual(
               response.data.promotion.code
             )
+          })
+
+          it("should limit usage of promotion per promotion code attribute as defined in campaign budget", async () => {
+            const publishableKey = await generatePublishableKey(appContainer)
+            const storeHeaders = generateStoreHeaders({ publishableKey })
+
+            const salesChannel = (
+              await api.post(
+                "/admin/sales-channels",
+                { name: "Webshop", description: "channel" },
+                adminHeaders
+              )
+            ).data.sales_channel
+
+            const region = (
+              await api.post(
+                "/admin/regions",
+                { name: "US", currency_code: "usd", countries: ["us"] },
+                adminHeaders
+              )
+            ).data.region
+
+            const product = (
+              await api.post(
+                "/admin/products",
+                {
+                  ...medusaTshirtProduct,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const campaign = (
+              await api.post(
+                `/admin/campaigns`,
+                {
+                  name: "TEST",
+                  budget: {
+                    type: "use_by_attribute",
+                    limit: 2,
+                    attribute: "promotion_code",
+                  },
+                  campaign_identifier: "PROMO_CAMPAIGN",
+                },
+                adminHeaders
+              )
+            ).data.campaign
+
+            const response = await api.post(
+              `/admin/promotions`,
+              {
+                code: "TEST_PROMO",
+                type: PromotionType.STANDARD,
+                status: PromotionStatus.ACTIVE,
+                is_automatic: false,
+                application_method: {
+                  target_type: "items",
+                  type: "fixed",
+                  allocation: "each",
+                  currency_code: "usd",
+                  value: 100,
+                  max_quantity: 100,
+                },
+                campaign_id: campaign.id,
+              },
+              adminHeaders
+            )
+
+            let cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                  promo_codes: [response.data.promotion.code],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cart).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            let promotionCampaign = (
+              await api.get(
+                `/admin/campaigns/${campaign.id}?fields=budget.*,budget.usages.*`,
+                adminHeaders
+              )
+            ).data.campaign
+
+            expect(promotionCampaign).toEqual(
+              expect.objectContaining({
+                budget: expect.objectContaining({
+                  used: 0,
+                  limit: 2,
+                  attribute: "promotion_code",
+                  type: "use_by_attribute",
+                  usages: [],
+                }),
+              })
+            )
+
+            let paymentCollection = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart.id },
+                storeHeaders
+              )
+            ).data.payment_collection
+
+            await api.post(
+              `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
+
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+
+            cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                  promo_codes: [response.data.promotion.code],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cart).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: response.data.promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            promotionCampaign = (
+              await api.get(
+                `/admin/campaigns/${campaign.id}?fields=budget.*,budget.usages.*`,
+                adminHeaders
+              )
+            ).data.campaign
+
+            expect(promotionCampaign).toEqual(
+              expect.objectContaining({
+                budget: expect.objectContaining({
+                  used: 1,
+                  limit: 2,
+                  attribute: "promotion_code",
+                  type: "use_by_attribute",
+                  usages: [
+                    // usage recorded after first complete
+                    expect.objectContaining({
+                      attribute_value: response.data.promotion.code,
+                      used: 1,
+                    }),
+                  ],
+                }),
+              })
+            )
+
+            paymentCollection = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart.id },
+                storeHeaders
+              )
+            ).data.payment_collection
+
+            await api.post(
+              `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
+
+            // complete for the second time
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+
+            promotionCampaign = (
+              await api.get(
+                `/admin/campaigns/${campaign.id}?fields=budget.*,budget.usages.*`,
+                adminHeaders
+              )
+            ).data.campaign
+
+            expect(promotionCampaign).toEqual(
+              expect.objectContaining({
+                budget: expect.objectContaining({
+                  used: 2,
+                  limit: 2,
+                  attribute: "promotion_code",
+                  type: "use_by_attribute",
+                  usages: [
+                    expect.objectContaining({
+                      attribute_value: response.data.promotion.code,
+                      used: 2,
+                    }),
+                  ],
+                }),
+              })
+            )
+
+            cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            cart = (
+              await api.post(
+                `/store/carts/${cart.id}`,
+                {
+                  promo_codes: [response.data.promotion.code],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            expect(cart.promotions.length).toEqual(0) // promotion is not applied since limit is reached
           })
 
           it("should remove promotion after email is replaced by already used email for that promotion", async () => {

@@ -412,7 +412,15 @@ export default class PromotionModuleService
         }
 
         const attribute = campaignBudget.attribute!
-        const attributeValue = registrationContext[attribute]
+        /**
+         * `promotion_code` is an exception, since it doesn't apply for the entiere context but per promotion
+         * if multiple promotion are applied on a cart, they share computation context
+         */
+        const attributeValue = (
+          attribute === "promotion_code"
+            ? registrationContext[attribute]
+            : promotion.code
+        ) as string | null
 
         if (!attributeValue) {
           continue
@@ -774,7 +782,8 @@ export default class PromotionModuleService
         const attribute = promotion.campaign?.budget?.attribute!
         const budgetUsageContext =
           ComputeActionUtils.getBudgetUsageContextFromComputeActionContext(
-            applicationContext
+            applicationContext,
+            { promotion_code: promotion.code! }
           )
         const attributeValue = budgetUsageContext[attribute]
 

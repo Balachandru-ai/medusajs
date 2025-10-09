@@ -60,7 +60,8 @@ export function computeActionForBudgetExceeded(
 }
 
 export function getBudgetUsageContextFromComputeActionContext(
-  computeActionContext: ComputeActionContext
+  computeActionContext: ComputeActionContext,
+  additionalContext: Record<string, unknown> & { promotion_code: string }
 ): CampaignBudgetUsageContext {
   return {
     customer_id:
@@ -69,5 +70,6 @@ export function getBudgetUsageContextFromComputeActionContext(
       null,
     customer_email:
       (computeActionContext.email as string | undefined | null) ?? null,
+    promotion_code: additionalContext.promotion_code,
   }
 }

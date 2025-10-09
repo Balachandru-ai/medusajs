@@ -343,6 +343,7 @@ export const completeCartWorkflow = createWorkflow(
             registrationContext: {
               customer_id: cart.customer?.id || null,
               customer_email: cart.email || null,
+              promotion_code: promotionUsage.map((usage) => usage.code), // passed for reference but not used for computatio ATM
             },
           }
         }
