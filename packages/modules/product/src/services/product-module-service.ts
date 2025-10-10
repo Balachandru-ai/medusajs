@@ -55,6 +55,7 @@ import {
   UpdateProductVariantInput,
   UpdateTagInput,
   UpdateTypeInput,
+  VariantImageInputArray,
 } from "../types"
 import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
@@ -2199,10 +2200,10 @@ export default class ProductModuleService
   @InjectManager()
   // @ts-ignore
   async listProductVariants(
-    filters?: any,
-    config?: FindConfig<any>,
+    filters?: ProductTypes.FilterableProductVariantProps,
+    config?: FindConfig<ProductTypes.ProductVariantDTO>,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<any[]> {
+  ): Promise<ProductTypes.ProductVariantDTO[]> {
     const shouldLoadImages = config?.relations?.includes("images")
 
     const relations = [...(config?.relations || [])]
@@ -2231,7 +2232,50 @@ export default class ProductModuleService
       }
     }
 
-    return this.baseRepository_.serialize(variants)
+    return this.baseRepository_.serialize<ProductTypes.ProductVariantDTO[]>(
+      variants
+    )
+  }
+
+  @InjectManager()
+  // @ts-ignore
+  async listAndCountProductVariants(
+    filters?: ProductTypes.FilterableProductVariantProps,
+    config?: FindConfig<ProductTypes.ProductVariantDTO>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<[ProductTypes.ProductVariantDTO[], number]> {
+    const shouldLoadImages = config?.relations?.includes("images")
+
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadImages) {
+      relations.push("product.images")
+    }
+
+    const [variants, count] = await this.productVariantService_.listAndCount(
+      filters,
+      {
+        ...config,
+        relations,
+      },
+      sharedContext
+    )
+
+    if (shouldLoadImages) {
+      // Get variant images for all variants
+      const variantImagesMap = await this.getVariantImages(
+        variants,
+        sharedContext
+      )
+
+      for (const variant of variants) {
+        variant.images = variantImagesMap.get(variant.id) || []
+      }
+    }
+
+    const serializedVariants = await this.baseRepository_.serialize<
+      ProductTypes.ProductVariantDTO[]
+    >(variants)
+    return [serializedVariants, count]
   }
 
   @InjectManager()
@@ -2270,7 +2314,7 @@ export default class ProductModuleService
 
   @InjectManager()
   async addImageToVariant(
-    data: { image_id: string; variant_id: string }[],
+    data: VariantImageInputArray,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<{ id: string }[]> {
     const productVariantProductImage = await this.addImageToVariant_(
@@ -2283,7 +2327,7 @@ export default class ProductModuleService
 
   @InjectTransactionManager()
   protected async addImageToVariant_(
-    data: { image_id: string; variant_id: string }[],
+    data: VariantImageInputArray,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<{ id: string } | { id: string }[]> {
     // TODO: consider validation that image and variant are on the same product
@@ -2300,7 +2344,7 @@ export default class ProductModuleService
 
   @InjectManager()
   async removeImageFromVariant(
-    data: { image_id: string; variant_id: string }[],
+    data: VariantImageInputArray,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
     await this.removeImageFromVariant_(data, sharedContext)
@@ -2308,7 +2352,7 @@ export default class ProductModuleService
 
   @InjectTransactionManager()
   protected async removeImageFromVariant_(
-    data: { image_id: string; variant_id: string }[],
+    data: VariantImageInputArray,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
     const pairs = Array.isArray(data) ? data : [data]
