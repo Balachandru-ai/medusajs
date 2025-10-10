@@ -40,10 +40,6 @@ const Price = model
       on: ["currency_code"],
       where: "deleted_at IS NULL",
     },
-    // {
-    //   on: ["currency_code", "price_set_id", "min_quantity"],
-    //   where: "deleted_at IS NULL",
-    // },
   ])
 
 export default Price
