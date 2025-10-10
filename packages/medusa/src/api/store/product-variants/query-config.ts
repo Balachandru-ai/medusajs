@@ -1,0 +1,39 @@
+export const defaultStoreProductVariantFields = [
+  "id",
+  "title",
+  "sku",
+  "barcode",
+  "ean",
+  "upc",
+  // "*images", TODO: uncomment
+  "allow_backorder",
+  "manage_inventory",
+  "variant_rank",
+  "product_id",
+  "thumbnail",
+  "hs_code",
+  "origin_country",
+  "mid_code",
+  "material",
+  "weight",
+  "length",
+  "height",
+  "width",
+  "created_at",
+  "updated_at",
+  "metadata",
+  "*options",
+  "product.id",
+  "product.type_id",
+]
+
+export const retrieveProductVariantConfig = {
+  defaults: defaultStoreProductVariantFields,
+  isList: false,
+}
+
+export const listProductVariantConfig = {
+  ...retrieveProductVariantConfig,
+  defaultLimit: 50,
+  isList: true,
+}

@@ -6,12 +6,22 @@ import {
   refetchEntity,
 } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
-import { RequestWithContext } from "../../../store/products/helpers"
+import { StoreRequestWithContext } from "../../../store/types"
 
-export function setTaxContext() {
+type TaxContextOptions = {
+  priceFieldPaths?: string[]
+}
+
+const DEFAULT_PRICE_FIELD_PATHS = ["variants.calculated_price"]
+
+export function setTaxContext(options: TaxContextOptions = {}) {
+  const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options
+
   return async (req: AuthenticatedMedusaRequest, _, next: NextFunction) => {
     const withCalculatedPrice = req.queryConfig.fields.some((field) =>
-      field.startsWith("variants.calculated_price")
+      priceFieldPaths.some(
+        (pricePath) => field === pricePath || field.startsWith(`${pricePath}.`)
+      )
     )
     if (!withCalculatedPrice) {
       return next()
@@ -26,7 +36,7 @@ export function setTaxContext() {
       const taxLinesContext = await getTaxLinesContext(req)
 
       // TODO: Allow passing a context typings param to AuthenticatedMedusaRequest
-      ;(req as unknown as RequestWithContext<any>).taxContext = {
+      ;(req as unknown as StoreRequestWithContext<any>).taxContext = {
         taxLineContext: taxLinesContext,
         taxInclusivityContext: inclusivity,
       }
