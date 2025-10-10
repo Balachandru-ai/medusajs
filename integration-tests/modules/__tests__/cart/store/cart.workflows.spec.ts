@@ -4655,7 +4655,7 @@ medusaIntegrationTestRunner({
 
           expect(
             // @ts-ignore
-            transaction.context.invoke["use-remote-query"].output.output
+            transaction.context.invoke["fetch-cart"].output.output.data
               .shipping_address.metadata
           ).toEqual({
             testing_tax: true,
