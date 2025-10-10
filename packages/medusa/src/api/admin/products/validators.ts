@@ -227,7 +227,14 @@ export const CreateProduct = z
     description: z.string().nullish(),
     is_giftcard: booleanString().optional().default(false),
     discountable: booleanString().optional().default(true),
-    images: z.array(z.object({ url: z.string() })).optional(),
+    images: z
+      .array(
+        z.object({
+          url: z.string(),
+          metadata: z.record(z.unknown()).nullish(),
+        })
+      )
+      .optional(),
     thumbnail: z.string().nullish(),
     handle: z.string().optional(),
     status: statusEnum.nullish().default(ProductStatus.DRAFT),
@@ -265,7 +272,15 @@ export const UpdateProduct = z
     status: statusEnum.optional(),
     subtitle: z.string().nullish(),
     description: z.string().nullish(),
-    images: z.array(z.object({ url: z.string() })).optional(),
+    images: z
+      .array(
+        z.object({
+          id: z.string().optional(),
+          url: z.string().optional(),
+          metadata: z.record(z.unknown()).nullish(),
+        })
+      )
+      .optional(),
     thumbnail: z.string().nullish(),
     handle: z.string().nullish(),
     type_id: z.string().nullish(),
