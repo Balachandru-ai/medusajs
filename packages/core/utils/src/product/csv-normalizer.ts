@@ -167,20 +167,21 @@ function processAsCounterValue<Output extends Record<string, any[]>>(
   outputKey: keyof Output
 ): ColumnProcessor<Output> {
   return (csvRow, rowColumns, _, output) => {
-    if (!output[outputKey]) {
-      return
-    }
+    const matchingColumns = rowColumns.filter((rowKey) => inputMatcher.test(rowKey))
 
-    const existingIds = output[outputKey].map((item) => item[arrayItemKey])
+    // Only initialize the array if there are matching columns in the CSV
+    if (matchingColumns.length > 0) {
+      output[outputKey] = output[outputKey] ?? []
 
-    rowColumns
-      .filter((rowKey) => inputMatcher.test(rowKey))
-      .forEach((rowKey) => {
+      const existingIds = output[outputKey].map((item) => item[arrayItemKey])
+
+      matchingColumns.forEach((rowKey) => {
         const value = csvRow[rowKey]
         if (!existingIds.includes(value) && isPresent(value)) {
           output[outputKey].push({ [arrayItemKey]: value })
         }
       })
+    }
   }
 }
 
