@@ -1,5 +1,6 @@
 ---
 "@medusajs/medusa": patch
+"@medusajs/dashboard": patch
 ---
 
-fix(medusa): fix columns helper (view entities columns)
+feat(medusa,dashboard): Add support for configurable additional columns in entity views
