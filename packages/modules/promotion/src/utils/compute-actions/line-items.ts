@@ -7,15 +7,15 @@ import {
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
-  ApplicationMethodTargetType as TargetType,
   calculateAdjustmentAmountFromPromotion,
   ComputedActions,
   MathBN,
   MedusaError,
+  ApplicationMethodTargetType as TargetType,
 } from "@medusajs/framework/utils"
+import { Promotion } from "@models"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
-import { Promotion } from "@models"
 
 function validateContext(
   contextKey: string,
@@ -128,6 +128,7 @@ function applyPromotionToItems(
         ? Math.min(remainingQuota ?? 0, Number(item.quantity))
         : maxQuantity
 
+    // If the allocation is once, we rely on the existing logic for each allocation, as the calculate is the same: apply the promotion value to the line item
     const effectiveAllocation =
       allocation === ApplicationMethodAllocation.ONCE
         ? ApplicationMethodAllocation.EACH
