@@ -461,11 +461,11 @@ export class RedisDistributedTransactionStorage
         }
       }
 
-      return {
-        flow: flow ?? (trx.execution as TransactionFlow),
-        context: trx.context?.data as TransactionContext,
-        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
-      }
+      return new TransactionCheckpoint(
+        flow ?? (trx.execution as TransactionFlow),
+        trx.context?.data as TransactionContext,
+        errors ?? (trx.context?.errors as TransactionStepError[])
+      )
     }
 
     return
@@ -507,11 +507,17 @@ export class RedisDistributedTransactionStorage
       !data.flow.transactionId.startsWith("auto-")
 
     // Prepare operations to be executed in batch or pipeline
-    const data_ = {
-      errors: data.errors,
-      flow: data.flow,
+    // Check if stringified data is cached to avoid double JSON.stringify
+    let stringifiedData = (data as any).__getCachedStringified?.()
+
+    if (!stringifiedData) {
+      const data_ = {
+        errors: data.errors,
+        flow: data.flow,
+      }
+      stringifiedData = JSON.stringify(data_)
     }
-    const stringifiedData = JSON.stringify(data_)
+
     const pipeline = this.redisClient.pipeline()
 
     // Execute Redis operations
