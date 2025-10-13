@@ -14,7 +14,7 @@ export const updateLineItemsStepWithSelectorId =
   "update-line-items-with-selector"
 /**
  * This step updates line items.
- * 
+ *
  * @example
  * const data = updateLineItemsStepWithSelector({
  *   selector: {
@@ -54,7 +54,7 @@ export const updateLineItemsStepWithSelector = createStep(
       itemsBefore.map(async (i) =>
         service.updateLineItems(
           i.id,
-          removeUndefined({
+          await removeUndefined({
             quantity: i.quantity,
             title: i.title,
             metadata: i.metadata,

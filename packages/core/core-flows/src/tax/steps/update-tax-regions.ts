@@ -40,7 +40,7 @@ export const updateTaxRegionsStep = createStep(
       }
     )
 
-    const updateData = removeUndefined(
+    const updateData = await removeUndefined(
       data.map((d) => ({
         id: d.id,
         province_code: d.province_code,
@@ -59,7 +59,7 @@ export const updateTaxRegionsStep = createStep(
     }
 
     const service = container.resolve<ITaxModuleService>(Modules.TAX)
-    const updateData = removeUndefined(
+    const updateData = await removeUndefined(
       prevData.map((d) => ({
         id: d.id,
         province_code: d.province_code,
