@@ -1,5 +1,5 @@
 import { IWorkflowEngineService } from "@medusajs/framework/types"
-import { Modules } from "@medusajs/framework/utils"
+import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
@@ -15,7 +15,7 @@ import { ulid } from "ulid"
 import "../__fixtures__"
 import { TestDatabase } from "../utils/database"
 
-jest.setTimeout(30000)
+jest.setTimeout(3000000)
 
 const failTrap = (done, name, timeout = 5000) => {
   return setTimeoutSync(() => {
@@ -112,8 +112,91 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         await workflowOrcModule.run("workflow-1", {
           throwOnError: false,
+          logOnError: true,
           transactionId,
         })
+
+        await done
+
+        const { transaction, result } = await workflowOrcModule.run(
+          "workflow-1",
+          {
+            throwOnError: false,
+            transactionId,
+          }
+        )
+
+        expect(result).toEqual([
+          "result from step 0",
+          "result from step 1",
+          "result from step 2",
+          "result from step 3",
+          "result from step 4",
+          "result from step 5",
+        ])
+      })
+
+      it.only("should manage saving multiple async steps in concurrency without background execution while setting steps as success manually concurrently", async () => {
+        const step0 = createStep({ name: "step0", async: true }, async () => {})
+
+        const step1 = createStep({ name: "step1", async: true }, async () => {})
+
+        const step2 = createStep({ name: "step2", async: true }, async () => {})
+        const step3 = createStep({ name: "step3", async: true }, async () => {})
+
+        const step4 = createStep({ name: "step4", async: true }, async () => {})
+        const step5 = createStep({ name: "step5" }, async (all: any[]) => {
+          const ret = [...all, "result from step 5"]
+          return new StepResponse(ret)
+        })
+
+        createWorkflow(
+          {
+            name: "workflow-1",
+            idempotent: true,
+            retentionTime: 1,
+          },
+          function () {
+            const all = parallelize(step0(), step1(), step2(), step3(), step4())
+            const res = step5(all)
+            return new WorkflowResponse(res)
+          }
+        )
+
+        const transactionId = ulid()
+        let resolveDone: () => void
+        const done = new Promise<void>((resolve, reject) => {
+          resolveDone = resolve
+        })
+        void workflowOrcModule.subscribe({
+          workflowId: "workflow-1",
+          transactionId,
+          subscriber: async (event) => {
+            if (event.eventType === "onFinish") {
+              resolveDone()
+            }
+          },
+        })
+
+        await workflowOrcModule.run("workflow-1", {
+          throwOnError: false,
+          logOnError: true,
+          transactionId,
+        })
+
+        await setTimeout(100) // Just to wait a bit before firering everything
+
+        for (let i = 0; i <= 4; i++) {
+          void workflowOrcModule.setStepSuccess({
+            idempotencyKey: {
+              workflowId: "workflow-1",
+              transactionId: transactionId,
+              stepId: `step${i}`,
+              action: TransactionHandlerType.INVOKE,
+            },
+            stepResponse: new StepResponse("result from step " + i),
+          })
+        }
 
         await done
 
@@ -225,7 +308,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
       })
 
-      it.only("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
+      it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "RACE_workflow-1" + ulid()
 

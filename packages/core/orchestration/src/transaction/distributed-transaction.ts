@@ -51,12 +51,26 @@ export class TransactionStepError {
   ) {}
 }
 
+const STRINGIFIED_CACHE = Symbol("stringified")
 export class TransactionCheckpoint {
+  // @ts-ignore - Used internally for caching stringified result
+  private [STRINGIFIED_CACHE]?: string
+
   constructor(
     public flow: TransactionFlow,
     public context: TransactionContext,
     public errors: TransactionStepError[] = []
   ) {}
+
+  // Internal method to cache stringified data
+  __cacheStringified(value: string) {
+    this[STRINGIFIED_CACHE] = value
+  }
+
+  // Internal method to get cached stringified data
+  __getCachedStringified(): string | undefined {
+    return this[STRINGIFIED_CACHE]
+  }
 }
 
 export class TransactionPayload {
@@ -81,8 +95,8 @@ class DistributedTransaction extends EventEmitter {
   public transactionId: string
   public runId: string
 
-  private readonly errors: TransactionStepError[] = []
-  private readonly context: TransactionContext = new TransactionContext()
+  private errors: TransactionStepError[] = []
+  private context: TransactionContext = new TransactionContext()
   private static keyValueStore: IDistributedTransactionStorage
 
   /**
@@ -125,8 +139,16 @@ class DistributedTransaction extends EventEmitter {
     return this.flow
   }
 
+  private setFlow(flow: TransactionFlow) {
+    this.flow = flow
+  }
+
   public getContext() {
     return this.context
+  }
+
+  private setContext(context: TransactionContext) {
+    this.context = context
   }
 
   public getErrors(handlerType?: TransactionHandlerType) {
@@ -135,6 +157,10 @@ class DistributedTransaction extends EventEmitter {
     }
 
     return this.errors.filter((error) => error.handlerType === handlerType)
+  }
+
+  private setErrors(errors: TransactionStepError[]) {
+    this.errors = errors
   }
 
   public addError(
@@ -227,11 +253,21 @@ class DistributedTransaction extends EventEmitter {
       this.transactionId
     )
 
-    const rawData = this.#serializeCheckpointData()
+    const checkpoint = this.#serializeCheckpointData()
 
-    await DistributedTransaction.keyValueStore.save(key, rawData, ttl, options)
+    const savedData = await DistributedTransaction.keyValueStore.save(
+      key,
+      checkpoint,
+      ttl,
+      options
+    )
+    if (_v) {
+      this.setFlow(savedData.flow)
+      this.setContext(savedData.context)
+      this.setErrors(savedData.errors)
+    }
 
-    return rawData
+    return checkpoint
   }
 
   public static async loadTransaction(
@@ -346,66 +382,65 @@ class DistributedTransaction extends EventEmitter {
    * @internal
    * @returns
    */
-  #serializeCheckpointData() {
+  #serializeCheckpointData(): TransactionCheckpoint {
     const data = new TransactionCheckpoint(
       this.getFlow(),
       this.getContext(),
       this.getErrors()
     )
 
-    const isSerializable = (obj) => {
-      try {
-        JSON.parse(JSON.stringify(obj))
-        return true
-      } catch {
-        return false
-      }
-    }
+    let serialized: string
 
-    let rawData
+    // First attempt: try to stringify everything at once (happy path - single stringify)
     try {
-      rawData = JSON.parse(JSON.stringify(data))
+      serialized = JSON.stringify(data)
+      // Cache the stringified result to avoid re-stringify in Redis storage
+      data.__cacheStringified(serialized)
+      return data
     } catch (e) {
-      if (!isSerializable(this.context)) {
-        // This is a safe guard, we should never reach this point
-        // If we do, it means that the context is not serializable
-        // and we should throw an error
-        throw new NonSerializableCheckPointError(
-          "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
-        )
-      }
-
-      if (!isSerializable(this.errors)) {
-        const nonSerializableErrors: TransactionStepError[] = []
-        for (const error of this.errors) {
-          if (!isSerializable(error.error)) {
-            error.error = {
-              name: error.error.name,
-              message: error.error.message,
-              stack: error.error.stack,
-            }
-            nonSerializableErrors.push({
-              ...error,
-              error: e,
-            })
-          }
-        }
-
-        if (nonSerializableErrors.length) {
-          this.errors.push(...nonSerializableErrors)
-        }
-      }
-
-      const data = new TransactionCheckpoint(
-        this.getFlow(),
-        this.getContext(),
-        this.getErrors()
-      )
-
-      rawData = JSON.parse(JSON.stringify(data))
+      // Serialization failed - need to identify and fix the problem
     }
 
-    return rawData
+    // Check if context is the issue by attempting to stringify it separately
+    try {
+      JSON.stringify(this.context)
+    } catch (contextError) {
+      // Context is not serializable - this is a critical error
+      throw new NonSerializableCheckPointError(
+        "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
+      )
+    }
+
+    const sanitizedErrors: TransactionStepError[] = []
+    for (const error of this.errors) {
+      try {
+        JSON.stringify(error.error)
+        sanitizedErrors.push(error)
+      } catch {
+        sanitizedErrors.push({
+          ...error,
+          error: {
+            name: error.error?.name || "Error",
+            message: error.error?.message || String(error.error),
+            stack: error.error?.stack,
+          },
+        })
+      }
+    }
+
+    this.errors.push(...sanitizedErrors)
+
+    const sanitizedData = new TransactionCheckpoint(
+      this.getFlow(),
+      this.getContext(),
+      this.getErrors()
+    )
+
+    serialized = JSON.stringify(sanitizedData)
+    // Cache the stringified result to avoid re-stringify in Redis storage
+    sanitizedData.__cacheStringified(serialized)
+
+    return sanitizedData
   }
 }
 

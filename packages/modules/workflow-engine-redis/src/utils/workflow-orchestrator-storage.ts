@@ -264,6 +264,7 @@ export class RedisDistributedTransactionStorage
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const asyncVersion = data.flow._v
+
     const isFinished = [
       TransactionState.DONE,
       TransactionState.FAILED,
@@ -438,11 +439,11 @@ export class RedisDistributedTransactionStorage
         }
       }
 
-      return {
-        flow: flow ?? (trx.execution as TransactionFlow),
-        context: trx.context?.data as TransactionContext,
-        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
-      }
+      return new TransactionCheckpoint(
+        flow ?? (trx.execution as TransactionFlow),
+        trx.context?.data as TransactionContext,
+        errors ?? (trx.context?.errors as TransactionStepError[])
+      )
     }
 
     return
@@ -453,7 +454,7 @@ export class RedisDistributedTransactionStorage
     data: TransactionCheckpoint,
     ttl?: number,
     options?: TransactionOptions
-  ): Promise<void> {
+  ): Promise<TransactionCheckpoint> {
     /**
      * Store the retention time only if the transaction is done, failed or reverted.
      */
@@ -465,19 +466,28 @@ export class RedisDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
+    // Prepare operations to be executed in batch or pipeline
+    // Check if stringified data is cached to avoid double JSON.stringify
+    let stringifiedData = (data as any).__getCachedStringified?.()
+    let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
+
+    if (!stringifiedData) {
+      stringifiedData = JSON.stringify(data)
+    }
+
     await this.#preventRaceConditionExecutionIfNecessary({
-      data,
+      data: data_,
       key,
       options,
     })
 
     // Only set if not exists
     const shouldSetNX =
-      data.flow.state === TransactionState.NOT_STARTED &&
-      !data.flow.transactionId.startsWith("auto-")
+      data_.flow.state === TransactionState.NOT_STARTED &&
+      !data_.flow.transactionId.startsWith("auto-")
 
     if (hasFinished && retentionTime) {
-      Object.assign(data, {
+      Object.assign(data_, {
         retention_time: retentionTime,
       })
     }
@@ -489,8 +499,17 @@ export class RedisDistributedTransactionStorage
 
       try {
         // if awaiting async step, _v > 0
-        if (data.flow._v) {
+        if (data_.flow._v) {
           lockAcquired = await this.#acquireLock(key)
+
+          console.log(
+            "lockAcquired",
+            lockAcquired,
+            "for",
+            key,
+            data_.flow._v,
+            data_.flow._saved_v
+          )
 
           if (!lockAcquired) {
             retries++
@@ -499,36 +518,36 @@ export class RedisDistributedTransactionStorage
             continue
           }
 
-          await this.#performVersionCheckAndMerge(key, data, options?.stepId)
-        }
-
-        const data_ = {
-          errors: data.errors,
-          flow: data.flow,
-        }
-        const stringifiedData = JSON.stringify(data_)
-
-        const pipeline = this.redisClient.pipeline()
-
-        if (!hasFinished) {
-          if (ttl) {
-            if (shouldSetNX) {
-              pipeline.set(key, stringifiedData, "EX", ttl, "NX")
-            } else {
-              pipeline.set(key, stringifiedData, "EX", ttl)
-            }
-          } else {
-            if (shouldSetNX) {
-              pipeline.set(key, stringifiedData, "NX")
-            } else {
-              pipeline.set(key, stringifiedData)
-            }
-          }
-        } else {
-          pipeline.unlink(key)
+          await this.#performVersionCheckAndMerge(key, data_, options?.stepId)
         }
 
         const execPipeline = () => {
+          const lightData_ = {
+            errors: data_.errors,
+            flow: data_.flow,
+          }
+          const stringifiedData = JSON.stringify(lightData_)
+
+          const pipeline = this.redisClient.pipeline()
+
+          if (!hasFinished) {
+            if (ttl) {
+              if (shouldSetNX) {
+                pipeline.set(key, stringifiedData, "EX", ttl, "NX")
+              } else {
+                pipeline.set(key, stringifiedData, "EX", ttl)
+              }
+            } else {
+              if (shouldSetNX) {
+                pipeline.set(key, stringifiedData, "NX")
+              } else {
+                pipeline.set(key, stringifiedData)
+              }
+            }
+          } else {
+            pipeline.unlink(key)
+          }
+
           return pipeline.exec().then((result) => {
             if (!shouldSetNX) {
               return result
@@ -549,13 +568,13 @@ export class RedisDistributedTransactionStorage
 
         if (hasFinished && !retentionTime) {
           if (!data.flow.metadata?.parentStepIdempotencyKey) {
-            await promiseAll([execPipeline(), this.deleteFromDb(data)])
+            await promiseAll([execPipeline(), this.deleteFromDb(data_)])
           } else {
-            await this.saveToDb(data, retentionTime)
+            await this.saveToDb(data_, retentionTime)
             await execPipeline()
           }
         } else {
-          await this.saveToDb(data, retentionTime)
+          await this.saveToDb(data_, retentionTime)
           await execPipeline()
         }
       } finally {
@@ -564,7 +583,7 @@ export class RedisDistributedTransactionStorage
         }
       }
 
-      return
+      return data_ as TransactionCheckpoint
     }
 
     throw new Error(
@@ -786,6 +805,9 @@ export class RedisDistributedTransactionStorage
     stepId?: string
   ): Promise<void> {
     const currentData = (await this.get(key)) as TransactionCheckpoint
+    if (currentData.flow._v === data.flow._saved_v) {
+      return
+    }
 
     const savingStep = data.flow.steps[stepId!]
 
@@ -795,6 +817,7 @@ export class RedisDistributedTransactionStorage
     data.context = currentData.context
     data.errors = currentData.errors
     data.flow = currentData.flow
+    data.flow._saved_v = (currentData.flow._saved_v ?? 0) + 1
   }
 
   #mergeFlow(
@@ -820,6 +843,7 @@ export class RedisDistributedTransactionStorage
       "hasSkippedSteps",
       "hasRevertedSteps",
       "_v",
+      "_saved_v",
       "timedOutAt",
       "state",
     ]

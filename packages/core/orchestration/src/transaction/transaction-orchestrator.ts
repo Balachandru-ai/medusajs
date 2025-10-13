@@ -913,8 +913,19 @@ export class TransactionOrchestrator extends EventEmitter {
     transaction: DistributedTransactionType
   ): Promise<void> {
     let continueExecution = true
-    let currentTrasactionVersion = transaction.getFlow()._v
+    let currentTrasactionVersion = transaction.getFlow()._v ?? 0
+    const savedVersion = transaction.getFlow()._saved_v ?? 0
+
     while (continueExecution) {
+      if (savedVersion !== currentTrasactionVersion) {
+        console.log(
+          "savedVersion !== currentTrasactionVersion",
+          savedVersion,
+          currentTrasactionVersion
+        )
+        break
+      }
+
       if (transaction.hasFinished()) {
         return
       }
@@ -958,7 +969,6 @@ export class TransactionOrchestrator extends EventEmitter {
 
       let i = 0
       let hasAsyncSteps = false
-      let bumpVersion = false
       for (const step of nextSteps.next) {
         const stepIndex = i++
         if (!stepsShouldContinueExecution[stepIndex]) {
@@ -994,11 +1004,8 @@ export class TransactionOrchestrator extends EventEmitter {
         } else {
           // if there are async steps, set a version for conflict resolution
           if (!step._v) {
-            const version = currentTrasactionVersion + 1
-            currentTrasactionVersion = version
-
-            bumpVersion = true
-            step._v = version
+            transaction.getFlow()._v += 1
+            step._v = transaction.getFlow()._v
           }
 
           // Execute async step in background as part of the next event loop cycle and continue the execution of the transaction
@@ -1011,15 +1018,11 @@ export class TransactionOrchestrator extends EventEmitter {
 
       await promiseAll(execution)
 
-      if (nextSteps.next.length === 0 || (hasAsyncSteps && !execution.length)) {
+      if (!nextSteps.next.length || (hasAsyncSteps && !execution.length)) {
         continueExecution = false
       }
 
       if (hasAsyncSteps) {
-        if (bumpVersion) {
-          transaction.getFlow()._v = transaction.getFlow()._v + 1
-        }
-
         await transaction.saveCheckpoint().catch((error) => {
           if (TransactionOrchestrator.isExpectedError(error)) {
             continueExecution = false
@@ -1537,6 +1540,7 @@ export class TransactionOrchestrator extends EventEmitter {
       definition: this.definition,
       steps,
       _v: 0, // Initialize version to 0
+      _saved_v: 0, // Initialize saved version to 0
     }
 
     return flow

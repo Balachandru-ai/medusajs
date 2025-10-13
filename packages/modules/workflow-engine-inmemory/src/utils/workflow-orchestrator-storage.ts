@@ -296,11 +296,11 @@ export class InMemoryDistributedTransactionStorage
         }
       }
 
-      return {
-        flow: flow ?? (trx.execution as TransactionFlow),
-        context: trx.context?.data as TransactionContext,
-        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
-      }
+      return new TransactionCheckpoint(
+        flow ?? (trx.execution as TransactionFlow),
+        trx.context?.data as TransactionContext,
+        errors ?? (trx.context?.errors as TransactionStepError[])
+      )
     }
 
     return
@@ -366,12 +366,11 @@ export class InMemoryDistributedTransactionStorage
       await this.#performVersionCheckAndMerge(key, data, options?.stepId)
     }
 
-    const { flow, errors, context } = data
-    this.storage.set(key, {
-      flow,
-      errors,
-      context,
-    })
+    const { flow, errors } = data
+    this.storage.set(
+      key,
+      new TransactionCheckpoint(flow, {} as TransactionContext, errors)
+    )
 
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
