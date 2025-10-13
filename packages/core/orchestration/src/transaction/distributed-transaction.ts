@@ -228,11 +228,16 @@ class DistributedTransaction extends EventEmitter {
       this.transactionId
     )
 
-    const rawData = this.#serializeCheckpointData()
+    const checkpoint = this.#serializeCheckpointData()
 
-    await DistributedTransaction.keyValueStore.save(key, rawData, ttl, options)
+    await DistributedTransaction.keyValueStore.save(
+      key,
+      checkpoint,
+      ttl,
+      options
+    )
 
-    return rawData
+    return JSON.parse(checkpoint.__getCachedStringified() ?? "")
   }
 
   public static async loadTransaction(
@@ -354,16 +359,14 @@ class DistributedTransaction extends EventEmitter {
       this.getErrors()
     )
 
-    let rawData: TransactionCheckpoint
     let serialized: string
 
     // First attempt: try to stringify everything at once (happy path - single stringify)
     try {
       serialized = JSON.stringify(data)
-      rawData = JSON.parse(serialized)
       // Cache the stringified result to avoid re-stringify in Redis storage
-      rawData.__cacheStringified(serialized)
-      return rawData
+      data.__cacheStringified(serialized)
+      return data
     } catch (e) {
       // Serialization failed - need to identify and fix the problem
     }
@@ -404,11 +407,10 @@ class DistributedTransaction extends EventEmitter {
     )
 
     serialized = JSON.stringify(sanitizedData)
-    rawData = JSON.parse(serialized)
     // Cache the stringified result to avoid re-stringify in Redis storage
-    rawData.__cacheStringified(serialized)
+    sanitizedData.__cacheStringified(serialized)
 
-    return rawData
+    return sanitizedData
   }
 }
 
