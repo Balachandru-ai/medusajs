@@ -679,7 +679,7 @@ export const sidebars = [
           {
             type: "link",
             path: "/learn/production/worker-mode",
-            title: "Worker Mode",
+            title: "Worker Modes",
           },
           {
             type: "link",

@@ -1290,9 +1290,9 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "path": "/learn/production/worker-mode",
-            "title": "Worker Mode",
+            "title": "Worker Modes",
             "children": [],
-            "chapterTitle": "8.2. Worker Mode",
+            "chapterTitle": "8.2. Worker Modes",
             "number": "8.2."
           },
           {
