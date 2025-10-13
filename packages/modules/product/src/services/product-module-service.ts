@@ -2375,18 +2375,22 @@ export default class ProductModuleService
     >[],
     context: Context = {}
   ): Promise<Map<string, InferEntityType<typeof ProductImage>[]>> {
-    const variantIdArray = variants.map((v) => v.id)
-
-    if (variantIdArray.length === 0) {
+    if (variants.length === 0) {
       return new Map()
     }
 
-    const variantProductIdMap = new Map(
-      variants.map((v) => [v.id, v.product_id])
-    )
+    // Create lookup maps for efficient processing
+    const uniqueProductIds = new Set<string>()
+
+    // Build lookup maps
+    for (const variant of variants) {
+      if (variant.product_id) {
+        uniqueProductIds.add(variant.product_id)
+      }
+    }
 
     const allProductImages = (await this.listProductImages(
-      { product_id: Array.from(variantProductIdMap.values()) },
+      { product_id: Array.from(uniqueProductIds) },
       {
         relations: ["variants"],
       },
@@ -2396,26 +2400,50 @@ export default class ProductModuleService
       variants: InferEntityType<typeof ProductVariant>[]
     })[]
 
-    // Group images by variant ID
+    // all product images
+    const imagesByProductId = new Map<string, typeof allProductImages>()
+    // variant specific images
+    const variantSpecificImageIds = new Map<string, Set<string>>()
+
+    // Single pass to build both lookup maps
+    for (const img of allProductImages) {
+      // Group by product_id
+      if (!imagesByProductId.has(img.product_id)) {
+        imagesByProductId.set(img.product_id, [])
+      }
+      imagesByProductId.get(img.product_id)!.push(img)
+
+      // Track variant-specific images
+      if (img.variants.length > 0) {
+        for (const variant of img.variants) {
+          if (!variantSpecificImageIds.has(variant.id)) {
+            variantSpecificImageIds.set(variant.id, new Set())
+          }
+          variantSpecificImageIds.get(variant.id)!.add(img.id || "")
+        }
+      }
+    }
+
     const result = new Map<string, InferEntityType<typeof ProductImage>[]>()
 
-    for (const variantId of variantIdArray) {
-      const productId = variantProductIdMap.get(variantId)
-      const variantImages = allProductImages.filter((img) => {
-        // belongs to another product
-        if (img.product_id !== productId) {
-          return false
-        }
+    for (const variant of variants) {
+      const productId = variant.product_id!
 
+      const productImages = imagesByProductId.get(productId) || []
+      const specificImageIds =
+        variantSpecificImageIds.get(variant.id) || new Set()
+
+      const variantImages = productImages.filter((img) => {
+        // general product image
         if (!img.variants.length) {
           return true
         }
-
-        return img.variants.some((v) => v.id === variantId)
+        // Check if this image is specifically associated with this variant
+        return specificImageIds.has(img.id || "")
       })
 
       result.set(
-        variantId,
+        variant.id,
         variantImages as InferEntityType<typeof ProductImage>[]
       )
     }
