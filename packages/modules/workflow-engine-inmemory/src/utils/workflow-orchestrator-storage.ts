@@ -377,10 +377,10 @@ export class InMemoryDistributedTransactionStorage
     }
 
     const { flow, errors } = data
-    this.storage.set(key, {
-      flow,
-      errors,
-    })
+    this.storage.set(
+      key,
+      new TransactionCheckpoint(flow, {} as TransactionContext, errors)
+    )
 
     // Optimize DB operations - only perform when necessary
     if (hasFinished) {
