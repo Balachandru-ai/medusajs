@@ -82,7 +82,7 @@ export default class StoreModuleService
     data: StoreTypes.CreateStoreDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Store>[]> {
-    let normalizedInput = StoreModuleService.normalizeInput(data)
+    let normalizedInput = await StoreModuleService.normalizeInput(data)
     StoreModuleService.validateCreateRequest(normalizedInput)
 
     return (
@@ -194,7 +194,7 @@ export default class StoreModuleService
     data: UpdateStoreInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Store>[]> {
-    const normalizedInput = StoreModuleService.normalizeInput(data)
+    const normalizedInput = await StoreModuleService.normalizeInput(data)
     StoreModuleService.validateUpdateRequest(normalizedInput)
 
     return (
@@ -206,17 +206,19 @@ export default class StoreModuleService
     ).entities
   }
 
-  private static normalizeInput<T extends StoreTypes.UpdateStoreDTO>(
+  private static async normalizeInput<T extends StoreTypes.UpdateStoreDTO>(
     stores: T[]
-  ): T[] {
-    return stores.map((store) =>
-      removeUndefined({
-        ...store,
-        supported_currencies: store.supported_currencies?.map((c) => ({
-          ...c,
-          currency_code: c.currency_code.toLowerCase(),
-        })),
-        name: store.name?.trim(),
+  ): Promise<T[]> {
+    return await removeUndefined(
+      stores.map((store) => {
+        return {
+          ...store,
+          supported_currencies: store.supported_currencies?.map((c) => ({
+            ...c,
+            currency_code: c.currency_code.toLowerCase(),
+          })),
+          name: store.name?.trim(),
+        }
       })
     )
   }

@@ -99,7 +99,7 @@ export default class RegionModuleService
     data: CreateRegionDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Region>[]> {
-    let normalizedInput = RegionModuleService.normalizeInput(data)
+    let normalizedInput = await RegionModuleService.normalizeInput(data)
 
     let normalizedDbRegions = normalizedInput.map((region) =>
       removeUndefined({
@@ -257,7 +257,7 @@ export default class RegionModuleService
     data: UpdateRegionInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Region>[]> {
-    const normalizedInput = RegionModuleService.normalizeInput(data)
+    const normalizedInput = await RegionModuleService.normalizeInput(data)
 
     // If countries are being updated for a region, first make previously set countries' region to null to get to a clean slate.
     // Somewhat less efficient, but region operations will be very rare, so it is better to go with a simple solution
@@ -303,13 +303,17 @@ export default class RegionModuleService
     return await this.regionService_.update(normalizedDbRegions, sharedContext)
   }
 
-  private static normalizeInput<T extends UpdateRegionDTO>(regions: T[]): T[] {
-    return regions.map((region) =>
-      removeUndefined({
-        ...region,
-        currency_code: region.currency_code?.toLowerCase(),
-        name: region.name?.trim(),
-        countries: region.countries?.map((country) => country.toLowerCase()),
+  private static async normalizeInput<T extends UpdateRegionDTO>(
+    regions: T[]
+  ): Promise<T[]> {
+    return await removeUndefined(
+      regions.map((region) => {
+        return {
+          ...region,
+          currency_code: region.currency_code?.toLowerCase(),
+          name: region.name?.trim(),
+          countries: region.countries?.map((country) => country.toLowerCase()),
+        }
       })
     )
   }
