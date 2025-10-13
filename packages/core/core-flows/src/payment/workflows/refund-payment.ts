@@ -5,7 +5,7 @@ import {
   transform,
   when,
   WorkflowData,
-  WorkflowResponse
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
@@ -129,19 +129,6 @@ export const refundPaymentWorkflow = createWorkflow(
       }
     )
 
-    when({ creditLineAmount }, ({ creditLineAmount }) =>
-      MathBN.gt(creditLineAmount, 0)
-    ).then(() => {
-      createOrderRefundCreditLinesWorkflow.runAsStep({
-        input: {
-          order_id: order.id,
-          amount: creditLineAmount,
-          reference: refundReason?.label,
-          referenceId: refundReason?.code,
-        },
-      })
-    })
-
     when({ orderPaymentCollection }, ({ orderPaymentCollection }) => {
       return !!orderPaymentCollection?.order?.id
     }).then(() => {
@@ -164,6 +151,19 @@ export const refundPaymentWorkflow = createWorkflow(
       )
 
       addOrderTransactionStep(orderTransactionData)
+    })
+
+    when({ creditLineAmount }, ({ creditLineAmount }) =>
+      MathBN.gt(creditLineAmount, 0)
+    ).then(() => {
+      createOrderRefundCreditLinesWorkflow.runAsStep({
+        input: {
+          order_id: order.id,
+          amount: creditLineAmount,
+          reference: refundReason?.label,
+          referenceId: refundReason?.code,
+        },
+      })
     })
 
     emitEventStep({
