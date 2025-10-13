@@ -46,6 +46,7 @@
     "@graphql-tools/schema": "^10.0.6",
     "@medusajs/deps": "2.10.3",
     "@types/pluralize": "^0.0.33",
+    "bfj": "^9.1.2",
     "bignumber.js": "^9.1.2",
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",

@@ -1,4 +1,4 @@
-import { isDefined } from "@medusajs/utils"
+import { isDefined, parseStringifyIfNecessary } from "@medusajs/utils"
 import { EventEmitter } from "events"
 import { IDistributedTransactionStorage } from "./datastore/abstract-storage"
 import { BaseInMemoryDistributedTransactionStorage } from "./datastore/base-in-memory-storage"
@@ -10,6 +10,15 @@ import {
   TransactionHandlerType,
   TransactionState,
 } from "./types"
+
+async function isSerializable(obj) {
+  try {
+    await parseStringifyIfNecessary(obj)
+    return true
+  } catch {
+    return false
+  }
+}
 
 /**
  * @typedef TransactionMetadata
@@ -212,7 +221,7 @@ class DistributedTransaction extends EventEmitter {
       this.transactionId
     )
 
-    const rawData = this.#serializeCheckpointData()
+    const rawData = await this.#serializeCheckpointData()
 
     await DistributedTransaction.keyValueStore.save(key, rawData, ttl, options)
 
@@ -331,27 +340,18 @@ class DistributedTransaction extends EventEmitter {
    * @internal
    * @returns
    */
-  #serializeCheckpointData() {
+  async #serializeCheckpointData() {
     const data = new TransactionCheckpoint(
       this.getFlow(),
       this.getContext(),
       this.getErrors()
     )
 
-    const isSerializable = (obj) => {
-      try {
-        JSON.parse(JSON.stringify(obj))
-        return true
-      } catch {
-        return false
-      }
-    }
-
     let rawData
     try {
-      rawData = JSON.parse(JSON.stringify(data))
+      rawData = await parseStringifyIfNecessary(data)
     } catch (e) {
-      if (!isSerializable(this.context)) {
+      if (!(await isSerializable(this.context))) {
         // This is a safe guard, we should never reach this point
         // If we do, it means that the context is not serializable
         // and we should throw an error
@@ -360,10 +360,10 @@ class DistributedTransaction extends EventEmitter {
         )
       }
 
-      if (!isSerializable(this.errors)) {
+      if (!(await isSerializable(this.errors))) {
         const nonSerializableErrors: TransactionStepError[] = []
         for (const error of this.errors) {
-          if (!isSerializable(error.error)) {
+          if (!(await isSerializable(error.error))) {
             error.error = {
               name: error.error.name,
               message: error.error.message,
@@ -387,7 +387,7 @@ class DistributedTransaction extends EventEmitter {
         this.getErrors()
       )
 
-      rawData = JSON.parse(JSON.stringify(data))
+      rawData = await parseStringifyIfNecessary(data)
     }
 
     return rawData

@@ -202,7 +202,7 @@ export function resolveValue(
   if (input_?.__type) {
     result = resolveProperty(input_, transactionContext)
     if (result instanceof Promise) {
-      return result.then((r) => parseStringifyIfNecessary(r))
+      return result.then(async (r) => await parseStringifyIfNecessary(r))
     }
     return parseStringifyIfNecessary(result)
   } else {
@@ -212,7 +212,7 @@ export function resolveValue(
       transactionContext,
     })
     if (result instanceof Promise) {
-      return result.then((r) => parseStringifyIfNecessary(r))
+      return result.then(async (r) => await parseStringifyIfNecessary(r))
     }
     return parseStringifyIfNecessary(result)
   }
