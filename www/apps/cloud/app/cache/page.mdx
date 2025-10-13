@@ -26,12 +26,15 @@ Medusa Cache is enabled by default for all environments and plans if your Medusa
 
 ### Cached Data in API Routes
 
-By using Medusa Cache, data in the following API routes is cached by default:
+By using Medusa Cache, data is cached across several business-critical APIs to boost performance and throughput. This includes all cart-related operations, where the following data is cached:
 
-{/* TODO add more to the list */}
-
-- `GET /store/products`
-- ...
+- Regions
+- Promotion codes
+- Variant price sets
+- Variants
+- Shipping options
+- Sales channels
+- Customers
 
 ### Integrated into Query
 
@@ -66,25 +69,257 @@ Learn more about automatic invalidation in the [Caching Module documentation](#)
 
 ---
 
-## Benchmarks
+## Performance Benchmark Comparisons
 
-The following benchmarks demonstrate the performance improvements you can expect with Medusa Cache. These were conducted on a sample Medusa store with and without caching enabled, testing cart-related operations such as adding items or updating quantities:
+The following benchmark comparisons demonstrate the performance improvements you can expect with Medusa Cache. These were conducted on a Medusa Cloud environment with a standard setup.
 
 <Table>
   <Table.Header>
     <Table.Row>
-      <Table.HeaderCell>Operation</Table.HeaderCell>
-      <Table.HeaderCell>Average (Old -> New)</Table.HeaderCell>
-      <Table.HeaderCell>p95 (Old -> New)</Table.HeaderCell>
-      <Table.HeaderCell>Improvement</Table.HeaderCell>
+      <Table.HeaderCell className="w-1/2">
+        Endpoint
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Without Medusa Cache (ms)
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        With Medusa Cache (ms)
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Improvement
+      </Table.HeaderCell>
     </Table.Row>
   </Table.Header>
   <Table.Body>
     <Table.Row>
-      <Table.Cell>TBD</Table.Cell>
-      <Table.Cell>TBD</Table.Cell>
-      <Table.Cell>TBD</Table.Cell>
-      <Table.Cell>TBD</Table.Cell>
+      <Table.Cell colSpan={4} className="bg-medusa-bg-subtle">
+        **Product Operations**
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/products`
+      </Table.Cell>
+      <Table.Cell>
+        `354.00`
+      </Table.Cell>
+      <Table.Cell>
+        `83.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~77%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/product-categories`
+      </Table.Cell>
+      <Table.Cell>
+        `88.00`
+      </Table.Cell>
+      <Table.Cell>
+        `51.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~42%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/products/:id`
+      </Table.Cell>
+      <Table.Cell>
+        `161.00`
+      </Table.Cell>
+      <Table.Cell>
+        `123.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~24%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell colSpan={4} className="bg-medusa-bg-subtle">
+        **Cart Operations**
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/carts/:id/line-items`
+      </Table.Cell>
+      <Table.Cell>
+        `697.00`
+      </Table.Cell>
+      <Table.Cell>
+        `427.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~39%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/carts/:id/shipping-methods`
+      </Table.Cell>
+      <Table.Cell>
+        `1002.00`
+      </Table.Cell>
+      <Table.Cell>
+        `670.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~33%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/carts/:id/promotions`
+      </Table.Cell>
+      <Table.Cell>
+        `302.00`
+      </Table.Cell>
+      <Table.Cell>
+        `203.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~33%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/carts/:id`
+      </Table.Cell>
+      <Table.Cell>
+        `109.00`
+      </Table.Cell>
+      <Table.Cell>
+        `73.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~33%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/carts/:id`
+      </Table.Cell>
+      <Table.Cell>
+        `909.00`
+      </Table.Cell>
+      <Table.Cell>
+        `656.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~28%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/carts`
+      </Table.Cell>
+      <Table.Cell>
+        `446.00`
+      </Table.Cell>
+      <Table.Cell>
+        `329.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~26%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/carts/:id/complete`
+      </Table.Cell>
+      <Table.Cell>
+        `1357.00`
+      </Table.Cell>
+      <Table.Cell>
+        `1018.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~25%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell colSpan={4} className="bg-medusa-bg-subtle">
+        **Order Operations**
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/orders/:id`
+      </Table.Cell>
+      <Table.Cell>
+        `119.00`
+      </Table.Cell>
+      <Table.Cell>
+        `81.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~32%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell colSpan={4} className="bg-medusa-bg-subtle">
+        **Other Operations**
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/regions`
+      </Table.Cell>
+      <Table.Cell>
+        `89.00`
+      </Table.Cell>
+      <Table.Cell>
+        `51.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~43%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `GET /store/shipping-options`
+      </Table.Cell>
+      <Table.Cell>
+        `272.00`
+      </Table.Cell>
+      <Table.Cell>
+        `173.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~36%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/payment-collections`
+      </Table.Cell>
+      <Table.Cell>
+        `238.00`
+      </Table.Cell>
+      <Table.Cell>
+        `160.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~33%`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `POST /store/payment-collections/:id/payments`
+      </Table.Cell>
+      <Table.Cell>
+        `152.00`
+      </Table.Cell>
+      <Table.Cell>
+        `102.00`
+      </Table.Cell>
+      <Table.Cell>
+        `~33%`
+      </Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table>
