@@ -1,12 +1,11 @@
-import { BigNumberInput, OrderDTO } from "@medusajs/framework/types"
+import { BigNumberInput } from "@medusajs/framework/types"
 import { MathBN, PaymentEvents } from "@medusajs/framework/utils"
 import {
-  createStep,
   createWorkflow,
   transform,
   when,
   WorkflowData,
-  WorkflowResponse,
+  WorkflowResponse
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
@@ -38,14 +37,6 @@ export type RefundPaymentWorkflowInput = {
    */
   refund_reason_id?: string
 }
-
-/**
- * This step validate that the refund amount doesn't exceed the captured amount
- */
-export const validateOrderRefundCreditLinesStep = createStep(
-  "validate-order-refund-credit-lines",
-  async function ({ order }: { order: OrderDTO }) {}
-)
 
 export const refundPaymentWorkflowId = "refund-payment-workflow"
 /**

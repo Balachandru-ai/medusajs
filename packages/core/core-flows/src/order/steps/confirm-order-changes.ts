@@ -53,8 +53,6 @@ export const confirmOrderChanges = createStep(
       return
     }
 
-    console.log("currentChanges", currentChanges)
-
     const orderModuleService = container.resolve(Modules.ORDER)
     await orderModuleService.undoLastChange(
       currentChanges[0].order_id!,
