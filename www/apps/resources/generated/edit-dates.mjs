@@ -6612,5 +6612,6 @@ export const generatedEditDates = {
   "app/nextjs-starter/guides/storefront-returns/page.mdx": "2025-09-22T06:02:00.580Z",
   "references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx": "2025-09-18T17:04:59.240Z",
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-02T07:14:50.956Z",
-  "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z"
+  "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
+  "app/infrastructure-modules/caching/page.mdx": "2025-10-13T11:46:36.452Z"
 }
