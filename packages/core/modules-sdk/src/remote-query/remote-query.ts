@@ -296,6 +296,24 @@ export class RemoteQuery {
       }
     }
 
+    return this.executeFetchRequest({
+      expand,
+      keyField,
+      ids,
+      relationship,
+    })
+  }
+
+  private async executeFetchRequest(params: {
+    expand: RemoteExpandProperty
+    keyField: string
+    ids?: (unknown | unknown[])[] | object
+    relationship?: JoinerRelationship
+  }): Promise<{
+    data: unknown[] | { [path: string]: unknown }
+    path?: string
+  }> {
+    const { expand, keyField, ids, relationship } = params
     const serviceConfig = expand.serviceConfig
     const service = this.modulesMap.get(serviceConfig.serviceName)!
 
@@ -333,10 +351,6 @@ export class RemoteQuery {
       }
     }
 
-    if (ids) {
-      filters[keyField] = ids
-    }
-
     delete options.args?.[BASE_PREFIX]
     if (Object.keys(options.args ?? {}).length) {
       filters = {
@@ -347,6 +361,28 @@ export class RemoteQuery {
     }
 
     const hasPagination = this.hasPagination(options)
+    const isIdsArray = Array.isArray(ids)
+    const idsLength = isIdsArray ? ids.length : 1
+
+    if (ids) {
+      if (isIdsArray && !idsLength) {
+        if (hasPagination) {
+          return {
+            data: {
+              rows: [],
+              metadata: this.buildPagination(options, 0),
+            },
+            path: "rows",
+          }
+        } else {
+          return {
+            data: [],
+          }
+        }
+      }
+
+      filters[keyField] = ids
+    }
 
     let methodName = hasPagination ? "listAndCount" : "list"
 
@@ -362,11 +398,11 @@ export class RemoteQuery {
       )
     }
 
-    if (ids?.length && !hasPagination) {
+    if (isIdsArray && idsLength && !hasPagination) {
       options.take = null
     }
 
-    if (ids && ids.length >= MAX_BATCH_SIZE && !hasPagination) {
+    if (isIdsArray && idsLength >= MAX_BATCH_SIZE && !hasPagination) {
       const data = await this.fetchRemoteDataBatched({
         serviceName: serviceConfig.serviceName,
         keyField,

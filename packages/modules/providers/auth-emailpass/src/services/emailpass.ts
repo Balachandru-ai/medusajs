@@ -6,16 +6,18 @@ import {
   EmailPassAuthProviderOptions,
   Logger,
 } from "@medusajs/framework/types"
-import {
-  AbstractAuthModuleProvider,
-  clone,
-  isString,
-  MedusaError,
-} from "@medusajs/framework/utils"
+import { AbstractAuthModuleProvider, isString, MedusaError, } from "@medusajs/framework/utils"
 import Scrypt from "scrypt-kdf"
+import { isPresent } from "@medusajs/utils"
 
 type InjectedDependencies = {
   logger: Logger
+}
+
+type AuthIdentityParams = {
+  email: string;
+  password: string;
+  authIdentityService: AuthIdentityProviderService
 }
 
 interface LocalServiceConfig extends EmailPassAuthProviderOptions {}
@@ -80,25 +82,6 @@ export class EmailPassAuthService extends AbstractAuthModuleProvider {
     }
   }
 
-  protected async createAuthIdentity({ email, password, authIdentityService }) {
-    const passwordHash = await this.hashPassword(password)
-
-    const createdAuthIdentity = await authIdentityService.create({
-      entity_id: email,
-      provider_metadata: {
-        password: passwordHash,
-      },
-    })
-
-    const copy = clone(createdAuthIdentity, { sanitize: false })
-    const providerIdentity = copy.provider_identities?.find(
-      (pi) => pi.provider === this.provider
-    )!
-    delete providerIdentity.provider_metadata?.password
-
-    return copy
-  }
-
   async authenticate(
     userData: AuthenticationInput,
     authIdentityService: AuthIdentityProviderService
@@ -146,7 +129,7 @@ export class EmailPassAuthService extends AbstractAuthModuleProvider {
       const success = await Scrypt.verify(buf, password)
 
       if (success) {
-        const copy = clone(authIdentity, { sanitize: false })
+        const copy = JSON.parse(JSON.stringify(authIdentity))
         const providerIdentity = copy.provider_identities?.find(
           (pi) => pi.provider === this.provider
         )!
@@ -186,9 +169,23 @@ export class EmailPassAuthService extends AbstractAuthModuleProvider {
     }
 
     try {
-      await authIdentityService.retrieve({
+      const identity = await authIdentityService.retrieve({
         entity_id: email,
       })
+
+      // If app_metadata is not defined or empty, it means no actor was assigned to the auth_identity yet (still "claimable")
+      if (!isPresent(identity.app_metadata)) {
+        const updatedAuthIdentity = await this.upsertAuthIdentity('update', {
+          email,
+          password,
+          authIdentityService,
+        })
+
+        return {
+          success: true,
+          authIdentity: updatedAuthIdentity,
+        }
+      }
 
       return {
         success: false,
@@ -196,7 +193,7 @@ export class EmailPassAuthService extends AbstractAuthModuleProvider {
       }
     } catch (error) {
       if (error.type === MedusaError.Types.NOT_FOUND) {
-        const createdAuthIdentity = await this.createAuthIdentity({
+        const createdAuthIdentity = await this.upsertAuthIdentity('create', {
           email,
           password,
           authIdentityService,
@@ -210,5 +207,28 @@ export class EmailPassAuthService extends AbstractAuthModuleProvider {
 
       return { success: false, error: error.message }
     }
+  }
+
+  private async upsertAuthIdentity(type: 'update' | 'create', { email, password, authIdentityService }: AuthIdentityParams) {
+    const passwordHash = await this.hashPassword(password)
+
+    const authIdentity = type === 'create' ? await authIdentityService.create({
+        entity_id: email,
+        provider_metadata: {
+          password: passwordHash,
+        },
+      }) : await authIdentityService.update(email, {
+      provider_metadata: {
+        password: passwordHash,
+      },
+    })
+
+    const copy = JSON.parse(JSON.stringify(authIdentity))
+    const providerIdentity = copy.provider_identities?.find(
+      (pi) => pi.provider === this.provider
+    )!
+    delete providerIdentity.provider_metadata?.password
+
+    return copy
   }
 }

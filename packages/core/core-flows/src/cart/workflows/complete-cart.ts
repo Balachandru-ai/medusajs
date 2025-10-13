@@ -24,10 +24,9 @@ import {
   createRemoteLinkStep,
   emitEventStep,
   useQueryGraphStep,
-  useRemoteQueryStep,
 } from "../../common"
-import { acquireLockStep } from "../../locking/acquire-lock"
-import { releaseLockStep } from "../../locking/release-lock"
+import { acquireLockStep } from "../../locking/steps/acquire-lock"
+import { releaseLockStep } from "../../locking/steps/release-lock"
 import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
 import { createOrdersStep } from "../../order/steps/create-orders"
 import { authorizePaymentSessionStep } from "../../payment/steps/authorize-payment-session"
@@ -105,27 +104,33 @@ export const completeCartWorkflow = createWorkflow(
       ttl: TWO_MINUTES,
     })
 
-    const orderCart = useQueryGraphStep({
-      entity: "order_cart",
-      fields: ["cart_id", "order_id"],
-      filters: { cart_id: input.id },
-    })
+    const [orderCart, cartData] = parallelize(
+      useQueryGraphStep({
+        entity: "order_cart",
+        fields: ["cart_id", "order_id"],
+        filters: { cart_id: input.id },
+        options: {
+          isList: false,
+        },
+      }),
+      useQueryGraphStep({
+        entity: "cart",
+        fields: completeCartFields,
+        filters: { id: input.id },
+        options: {
+          isList: false,
+        },
+      }).config({
+        name: "cart-query",
+      })
+    )
 
     const orderId = transform({ orderCart }, ({ orderCart }) => {
-      return orderCart.data[0]?.order_id
-    })
-
-    const cart = useRemoteQueryStep({
-      entry_point: "cart",
-      fields: completeCartFields,
-      variables: { id: input.id },
-      list: false,
-    }).config({
-      name: "cart-query",
+      return orderCart?.data?.order_id
     })
 
     // this needs to be before the validation step
-    const paymentSessions = validateCartPaymentsStep({ cart })
+    const paymentSessions = validateCartPaymentsStep({ cart: cartData.data })
     // purpose of this step is to run compensation if cart completion fails
     // and tries to refund the payment if captured
     compensatePaymentIfNeededStep({
@@ -134,48 +139,58 @@ export const completeCartWorkflow = createWorkflow(
 
     const validate = createHook("validate", {
       input,
-      cart,
+      cart: cartData.data,
     })
 
     // If order ID does not exist, we are completing the cart for the first time
     const order = when("create-order", { orderId }, ({ orderId }) => {
       return !orderId
     }).then(() => {
-      const cartOptionIds = transform({ cart }, ({ cart }) => {
+      const cartOptionIds = transform({ cart: cartData.data }, ({ cart }) => {
         return cart.shipping_methods?.map((sm) => sm.shipping_option_id)
       })
 
-      const shippingOptions = useRemoteQueryStep({
-        entry_point: "shipping_option",
+      const shippingOptionsData = useQueryGraphStep({
+        entity: "shipping_option",
         fields: ["id", "shipping_profile_id"],
-        variables: { id: cartOptionIds },
-        list: true,
+        filters: { id: cartOptionIds },
+        options: {
+          cache: {
+            enable: true,
+          },
+        },
       }).config({
         name: "shipping-options-query",
       })
 
-      validateShippingStep({ cart, shippingOptions })
-
-      const { variants, sales_channel_id } = transform({ cart }, (data) => {
-        const variantsMap: Record<string, any> = {}
-        const allItems = data.cart?.items?.map((item) => {
-          variantsMap[item.variant_id] = item.variant
-
-          return {
-            id: item.id,
-            variant_id: item.variant_id,
-            quantity: item.quantity,
-          }
-        })
-
-        return {
-          variants: Object.values(variantsMap),
-          items: allItems,
-          sales_channel_id: data.cart.sales_channel_id,
-        }
+      validateShippingStep({
+        cart: cartData.data,
+        shippingOptions: shippingOptionsData.data,
       })
 
-      const cartToOrder = transform({ cart }, ({ cart }) => {
+      const { variants, sales_channel_id } = transform(
+        { cart: cartData.data },
+        (data) => {
+          const variantsMap: Record<string, any> = {}
+          const allItems = data.cart?.items?.map((item) => {
+            variantsMap[item.variant_id] = item.variant
+
+            return {
+              id: item.id,
+              variant_id: item.variant_id,
+              quantity: item.quantity,
+            }
+          })
+
+          return {
+            variants: Object.values(variantsMap),
+            items: allItems,
+            sales_channel_id: data.cart.sales_channel_id,
+          }
+        }
+      )
+
+      const cartToOrder = transform({ cart: cartData.data }, ({ cart }) => {
         const allItems = (cart.items ?? []).map((item) => {
           const input: PrepareLineItemDataInput = {
             item,
@@ -263,7 +278,7 @@ export const completeCartWorkflow = createWorkflow(
       const createdOrders = createOrdersStep([cartToOrder])
 
       const createdOrder = transform({ createdOrders }, ({ createdOrders }) => {
-        return createdOrders?.[0] ?? undefined
+        return createdOrders[0]
       })
 
       const reservationItemsData = transform(
@@ -287,15 +302,18 @@ export const completeCartWorkflow = createWorkflow(
         prepareConfirmInventoryInput
       )
 
-      const updateCompletedAt = transform({ cart }, ({ cart }) => {
-        return {
-          id: cart.id,
-          completed_at: new Date(),
+      const updateCompletedAt = transform(
+        { cart: cartData.data },
+        ({ cart }) => {
+          return {
+            id: cart.id,
+            completed_at: new Date(),
+          }
         }
-      })
+      )
 
       const promotionUsage = transform(
-        { cart },
+        { cart: cartData.data },
         ({ cart }: { cart: CartWorkflowDTO }) => {
           const promotionUsage: UsageComputedActions[] = []
 
@@ -321,12 +339,18 @@ export const completeCartWorkflow = createWorkflow(
             })
           }
 
-          return promotionUsage
+          return {
+            computedActions: promotionUsage,
+            registrationContext: {
+              customer_id: cart.customer?.id || null,
+              customer_email: cart.email || null,
+            },
+          }
         }
       )
 
       const linksToCreate = transform(
-        { cart, createdOrder },
+        { cart: cartData.data, createdOrder },
         ({ cart, createdOrder }) => {
           const links: LinkDefinition[] = [
             {
@@ -411,7 +435,7 @@ export const completeCartWorkflow = createWorkflow(
        */
       createHook("orderCreated", {
         order_id: createdOrder.id,
-        cart_id: cart.id,
+        cart_id: cartData.data.id,
       })
 
       return createdOrder

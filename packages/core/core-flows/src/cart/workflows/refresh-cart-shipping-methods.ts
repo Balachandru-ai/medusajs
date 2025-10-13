@@ -8,7 +8,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common"
+import { AdditionalData } from "@medusajs/types"
+import { useQueryGraphStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { removeShippingMethodFromCartStep } from "../steps"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
@@ -54,12 +56,32 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
     name: refreshCartShippingMethodsWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<RefreshCartShippingMethodsWorkflowInput>) => {
-    const fetchCart = when("fetch-cart", { input }, ({ input }) => {
-      return !input.cart
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "cart",
+  (
+    input: WorkflowData<
+      RefreshCartShippingMethodsWorkflowInput & AdditionalData
+    >
+  ) => {
+    const shouldExecute = transform({ input }, ({ input }) => {
+      if (input.cart) {
+        return !!input.cart.shipping_methods?.length
+      }
+
+      return !!input.cart_id
+    })
+
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
+    const fetchCart = when(
+      "fetch-cart",
+      { shouldExecute },
+      ({ shouldExecute }) => {
+        return shouldExecute
+      }
+    ).then(() => {
+      const { data: cart } = useQueryGraphStep({
+        entity: "cart",
         fields: [
           "id",
           "sales_channel_id",
@@ -73,14 +95,24 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
           "shipping_methods.data",
           "total",
         ],
-        variables: { id: input.cart_id },
-        throw_if_key_not_found: true,
-        list: false,
+        filters: { id: cartId },
+        options: {
+          throwIfKeyNotFound: true,
+          isList: false,
+        },
       }).config({ name: "get-cart" })
+
+      return cart
     })
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
-      return input.cart ?? fetchCart
+      return fetchCart ?? input.cart
+    })
+
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
     })
 
     const listShippingOptionsInput = transform({ cart }, ({ cart }) =>
@@ -110,6 +142,7 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
             options: listShippingOptionsInput,
             cart_id: cart.id,
             is_return: false,
+            additional_data: input.additional_data,
           },
         })
 
@@ -178,6 +211,10 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
         }),
         updateShippingMethodsStep(shippingMethodsData.shippingMethodsToUpdate)
       )
+
+      releaseLockStep({
+        key: cart.id,
+      })
     })
 
     return new WorkflowResponse(void 0, {

@@ -3,10 +3,6 @@ import { BigNumber as BigNumberJS } from "bignumber.js"
 import { isDefined } from "../common"
 import { BigNumber } from "./big-number"
 
-export const MEDUSA_EPSILON = new BigNumber(
-  process.env.MEDUSA_EPSILON || "0.0001"
-)
-
 type BNInput = BigNumberInput | BigNumber
 export class MathBN {
   static convert(num: BNInput, decimalPlaces?: number): BigNumberJS {

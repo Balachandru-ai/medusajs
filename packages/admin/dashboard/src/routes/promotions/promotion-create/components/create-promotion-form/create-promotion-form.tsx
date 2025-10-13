@@ -36,13 +36,17 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCampaigns } from "../../../../../hooks/api/campaigns"
 import { useCreatePromotion } from "../../../../../hooks/api/promotions"
-import { getCurrencySymbol } from "../../../../../lib/data/currencies"
+import {
+  currencies,
+  getCurrencySymbol,
+} from "../../../../../lib/data/currencies"
 import { DEFAULT_CAMPAIGN_VALUES } from "../../../../campaigns/common/constants"
 import { RulesFormField } from "../../../common/edit-rules/components/rules-form-field"
 import { AddCampaignPromotionFields } from "../../../promotion-add-campaign/components/add-campaign-promotion-form"
 import { Tab } from "./constants"
 import { CreatePromotionSchema } from "./form-schema"
 import { templates } from "./templates"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 const defaultValues = {
   campaign_id: undefined,
@@ -77,7 +81,7 @@ export const CreatePromotionForm = () => {
 
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
-
+  const direction = useDocumentDirection()
   const form = useForm<z.infer<typeof CreatePromotionSchema>>({
     defaultValues,
     resolver: zodResolver(CreatePromotionSchema),
@@ -135,6 +139,13 @@ export const CreatePromotionForm = () => {
           }))
       }
 
+      if (data.campaign) {
+        data.campaign.budget.attribute = data.campaign.budget.attribute || null
+        data.campaign.budget.type = data.campaign.budget.attribute
+          ? "use_by_attribute"
+          : data.campaign.budget.type
+      }
+
       createPromotion(
         {
           ...promotionData,
@@ -142,6 +153,7 @@ export const CreatePromotionForm = () => {
           application_method: {
             ...applicationMethodData,
             ...applicationMethodRuleData,
+            value: parseFloat(applicationMethodData.value as string) as number,
             target_rules: buildRulesData(targetRulesData),
             buy_rules: buildRulesData(buyRulesData),
           },
@@ -360,6 +372,7 @@ export const CreatePromotionForm = () => {
     <RouteFocusModal.Form form={form}>
       <KeyboundForm className="flex h-full flex-col" onSubmit={handleSubmit}>
         <ProgressTabs
+          dir={direction}
           value={tab}
           onValueChange={(tab) => handleTabChange(tab as Tab)}
           className="flex h-full flex-col overflow-hidden"
@@ -413,6 +426,7 @@ export const CreatePromotionForm = () => {
 
                           <Form.Control>
                             <RadioGroup
+                              dir={direction}
                               key={"template_id"}
                               className="flex-col gap-y-3"
                               {...field}
@@ -482,6 +496,7 @@ export const CreatePromotionForm = () => {
 
                           <Form.Control>
                             <RadioGroup
+                              dir={direction}
                               className="flex gap-y-3"
                               {...field}
                               value={field.value}
@@ -526,6 +541,7 @@ export const CreatePromotionForm = () => {
 
                           <Form.Control>
                             <RadioGroup
+                              dir={direction}
                               className="flex gap-y-3"
                               {...field}
                               value={field.value}
@@ -615,7 +631,8 @@ export const CreatePromotionForm = () => {
                                   </div>
                                   <Form.Control className="mr-2 self-center">
                                     <Switch
-                                      className="mt-[2px]"
+                                      dir="ltr"
+                                      className="mt-[2px] rtl:rotate-180"
                                       checked={!!value}
                                       onCheckedChange={onChange}
                                       {...field}
@@ -643,6 +660,7 @@ export const CreatePromotionForm = () => {
                             </Form.Label>
                             <Form.Control>
                               <RadioGroup
+                                dir={direction}
                                 className="flex gap-y-3"
                                 {...field}
                                 onValueChange={field.onChange}
@@ -695,7 +713,8 @@ export const CreatePromotionForm = () => {
                               </Form.Label>
                               <Form.Control>
                                 <RadioGroup
-                                  className="flex gap-y-3"
+                                  dir={direction}
+                                className="flex gap-y-3"
                                   {...field}
                                   onValueChange={field.onChange}
                                 >
@@ -742,6 +761,9 @@ export const CreatePromotionForm = () => {
                           const currencyCode =
                             form.getValues().application_method.currency_code
 
+                          const currencyInfo =
+                            currencies[currencyCode?.toUpperCase() || "USD"]
+
                           return (
                             <Form.Item className="basis-1/2">
                               <Form.Label
@@ -759,10 +781,16 @@ export const CreatePromotionForm = () => {
                                   <CurrencyInput
                                     {...field}
                                     min={0}
-                                    onValueChange={(value) => {
-                                      onChange(value ? parseInt(value) : "")
-                                    }}
                                     code={currencyCode || "USD"}
+                                    onValueChange={(_value, _name, values) =>
+                                      onChange(values?.value)
+                                    }
+                                    decimalScale={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
+                                    decimalsLimit={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
                                     symbol={
                                       currencyCode
                                         ? getCurrencySymbol(currencyCode)
@@ -783,7 +811,7 @@ export const CreatePromotionForm = () => {
                                       onChange(
                                         e.target.value === ""
                                           ? null
-                                          : parseInt(e.target.value)
+                                          : parseFloat(e.target.value)
                                       )
                                     }}
                                   />
@@ -876,6 +904,7 @@ export const CreatePromotionForm = () => {
 
                               <Form.Control>
                                 <RadioGroup
+                                  dir={direction}
                                   className="flex gap-y-3"
                                   {...field}
                                   onValueChange={field.onChange}

@@ -3,6 +3,7 @@ import { MagnifyingGlass } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import {
   Button,
+  clx,
   Divider,
   Heading,
   Hint,
@@ -10,7 +11,6 @@ import {
   Label,
   Select,
   Text,
-  clx,
   toast,
 } from "@medusajs/ui"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
@@ -37,6 +37,7 @@ import {
 } from "../../../common/schemas"
 import { createTaxRulePayload } from "../../../common/utils"
 import { InitialRuleValues } from "../../types"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 export const DISPLAY_OVERRIDE_ITEMS_LIMIT = 10
 
@@ -81,7 +82,7 @@ export const TaxRegionTaxOverrideEditForm = ({
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
   const { setIsOpen } = useStackedModal()
-
+  const direction = useDocumentDirection()
   const form = useForm<z.infer<typeof TaxRegionTaxRateEditSchema>>({
     defaultValues: {
       name: taxRate.name,
@@ -414,6 +415,7 @@ export const TaxRegionTaxOverrideEditForm = ({
                       <PercentageInput
                         {...field}
                         value={value?.value}
+                        decimalsLimit={4}
                         onValueChange={(value, _name, values) =>
                           onChange({
                             value: value,
@@ -513,6 +515,7 @@ export const TaxRegionTaxOverrideEditForm = ({
                               <div className="text-ui-fg-subtle grid gap-1.5 px-1.5 md:grid-cols-2">
                                 {isLast ? (
                                   <Select
+                                    dir={direction}
                                     value={type}
                                     onValueChange={handleChangeType}
                                   >

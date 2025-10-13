@@ -3,7 +3,8 @@ import {
   ApplicationMethodAllocation,
   ApplicationMethodType,
 } from "../../promotion"
-import { MathBN, MEDUSA_EPSILON } from "../math"
+import { MathBN } from "../math"
+import { MEDUSA_EPSILON } from "../big-number"
 
 function getPromotionValueForPercentage(promotion, lineItemAmount) {
   return MathBN.mult(MathBN.div(promotion.value, 100), lineItemAmount)

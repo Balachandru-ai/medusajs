@@ -5,6 +5,7 @@ import {
   IApiKeyModuleService,
   IAuthModuleService,
   ICacheService,
+  ICachingModuleService,
   ICartModuleService,
   ICurrencyModuleService,
   ICustomerModuleService,
@@ -32,8 +33,8 @@ import {
   RemoteQueryFunction,
 } from "@medusajs/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
-import { Knex } from "@mikro-orm/knex"
-import { AwilixContainer, ResolveOptions } from "awilix"
+import { Knex } from "../deps/mikro-orm-knex"
+import { AwilixContainer, ResolveOptions } from "../deps/awilix"
 
 declare module "@medusajs/types" {
   export interface ModuleImplementations {
@@ -76,6 +77,7 @@ declare module "@medusajs/types" {
     [Modules.NOTIFICATION]: INotificationModuleService
     [Modules.LOCKING]: ILockingModule
     [Modules.SETTINGS]: ISettingsModuleService
+    [Modules.CACHING]: ICachingModuleService
   }
 }
 

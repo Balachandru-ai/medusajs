@@ -1,4 +1,5 @@
 import { BaseFilterable, OperatorMap } from "../../dal"
+import { BaseRefundReason } from "../refund-reason/common"
 
 /**
  * The payment collection's status.
@@ -254,7 +255,7 @@ export interface BaseRefund {
   /**
    * The id of the refund_reason that is associated with the refund
    */
-  refund_reason?: RefundReason | null
+  refund_reason?: BaseRefundReason | null
 
   /**
    * A field to add some additional information about the refund
@@ -335,33 +336,6 @@ export interface BasePaymentSession {
    * @expandable
    */
   payment?: BasePayment
-}
-
-export interface RefundReason {
-  /**
-   * The ID of the refund reason
-   */
-  id: string
-  /**
-   * The label of the refund reason
-   */
-  label: string
-  /**
-   * The description of the refund reason
-   */
-  description?: string | null
-  /**
-   * The metadata of the refund reason
-   */
-  metadata: Record<string, unknown> | null
-  /**
-   * When the refund reason was created
-   */
-  created_at: Date | string
-  /**
-   * When the refund reason was updated
-   */
-  updated_at: Date | string
 }
 
 /**

@@ -10,9 +10,9 @@ import {
   RestoreReturn,
   SoftDeleteReturn,
 } from "@medusajs/types"
+import { EventArgs } from "@mikro-orm/core"
 import {
   camelToSnakeCase,
-  isString,
   lowerCaseFirst,
   mapObjectTo,
   MapToConfig,
@@ -21,10 +21,12 @@ import {
 } from "../common"
 import { DmlEntity } from "../dml"
 import { CommonEvents } from "../event-bus"
+import { createMedusaMikroOrmEventSubscriber } from "./create-medusa-mikro-orm-event-subscriber"
 import { EmitEvents, InjectManager, MedusaContext } from "./decorators"
 import { Modules } from "./definition"
 import { moduleEventBuilderFactory } from "./event-builder-factory"
 import { buildModelsNameToLinkableKeysMap } from "./joiner-config-builder"
+import { isMedusaInternalService } from "./medusa-internal-service"
 import {
   BaseMethods,
   ExtractKeysFromConfig,
@@ -137,37 +139,6 @@ export function MedusaService<
     ? ModelConfigurationsToConfigTemplate<TModels>
     : ModelsConfig
 > {
-  function emitSoftDeleteRestoreEvents(
-    this: AbstractModuleService_,
-    klassPrototype: any,
-    cascadedModelsMap: Record<string, string[]>,
-    action: string,
-    sharedContext: Context
-  ) {
-    const joinerConfig = (
-      typeof this.__joinerConfig === "function"
-        ? this.__joinerConfig()
-        : this.__joinerConfig
-    ) as ModuleJoinerConfig
-
-    const emittedEntities = new Set<string>()
-
-    Object.entries(cascadedModelsMap).forEach(([linkableKey, ids]) => {
-      const entity = joinerConfig.linkableKeys?.[linkableKey]!
-      if (entity && !emittedEntities.has(entity)) {
-        emittedEntities.add(entity)
-        const linkableKeyEntity = camelToSnakeCase(entity).toLowerCase()
-
-        klassPrototype.aggregatedEvents.bind(this)({
-          action: action,
-          object: linkableKeyEntity,
-          data: { id: ids },
-          context: sharedContext,
-        })
-      }
-    })
-  }
-
   const buildAndAssignMethodImpl = function (
     klassPrototype: any,
     method: string,
@@ -220,16 +191,9 @@ export function MedusaService<
           sharedContext: Context = {}
         ): Promise<T | T[]> {
           const service = this.__container__[serviceRegistrationName]
-          const models = await service.create(data, sharedContext)
+          const models_ = await service.create(data, sharedContext)
 
-          klassPrototype.aggregatedEvents.bind(this)({
-            action: CommonEvents.CREATED,
-            object: camelToSnakeCase(modelName).toLowerCase(),
-            data: models,
-            context: sharedContext,
-          })
-
-          return await this.baseRepository_.serialize<T | T[]>(models)
+          return await this.baseRepository_.serialize<T | T[]>(models_)
         }
 
         applyMethod(methodImplementation, 1)
@@ -243,13 +207,6 @@ export function MedusaService<
         ): Promise<T | T[]> {
           const service = this.__container__[serviceRegistrationName]
           const response = await service.update(data, sharedContext)
-
-          klassPrototype.aggregatedEvents.bind(this)({
-            action: CommonEvents.UPDATED,
-            object: camelToSnakeCase(modelName).toLowerCase(),
-            data: response,
-            context: sharedContext,
-          })
 
           return await this.baseRepository_.serialize<T | T[]>(response)
         }
@@ -300,18 +257,9 @@ export function MedusaService<
             ? primaryKeyValues
             : [primaryKeyValues]
 
-          const ids = await this.__container__[serviceRegistrationName].delete(
+          await this.__container__[serviceRegistrationName].delete(
             primaryKeyValues_,
             sharedContext
-          )
-
-          ids.map((id) =>
-            klassPrototype.aggregatedEvents.bind(this)({
-              action: CommonEvents.DELETED,
-              object: camelToSnakeCase(modelName).toLowerCase(),
-              data: isString(id) ? { id: id } : id,
-              context: sharedContext,
-            })
           )
         }
 
@@ -342,15 +290,6 @@ export function MedusaService<
               pick: config.returnLinkableKeys,
             }
           )
-
-          if (mappedCascadedModelsMap) {
-            emitSoftDeleteRestoreEvents.bind(this)(
-              klassPrototype,
-              mappedCascadedModelsMap,
-              CommonEvents.DELETED,
-              sharedContext
-            )
-          }
 
           return mappedCascadedModelsMap ? mappedCascadedModelsMap : void 0
         }
@@ -384,15 +323,6 @@ export function MedusaService<
             }
           )
 
-          if (mappedCascadedModelsMap) {
-            emitSoftDeleteRestoreEvents.bind(this)(
-              klassPrototype,
-              mappedCascadedModelsMap,
-              CommonEvents.CREATED,
-              sharedContext
-            )
-          }
-
           return mappedCascadedModelsMap ? mappedCascadedModelsMap : void 0
         }
 
@@ -424,6 +354,41 @@ export function MedusaService<
       this.__container__ = container
       this.baseRepository_ = container.baseRepository
 
+      const joinerConfig = this.__joinerConfig?.()
+      /**
+       * Create a global subscriber to listen to all the entities mutations
+       * and forward them to the module service interceptEntityMutationEvents
+       * method.
+       *
+       * Assign the global subscriber to all internal services or class that extends it
+       * such that it can attach it accordingly and forward the events to the module service.
+       */
+
+      if (joinerConfig?.serviceName !== "index") {
+        let globalSubscriber!: ReturnType<
+          typeof createMedusaMikroOrmEventSubscriber
+        >
+
+        Object.keys(container)
+          .filter((key) => {
+            return key.endsWith("Service")
+          })
+          .forEach((key: string) => {
+            globalSubscriber ??= createMedusaMikroOrmEventSubscriber(
+              ["__medusa_entities_subscriber__"],
+              this
+            )
+            try {
+              const service = container[key]
+              if (isMedusaInternalService(service)) {
+                service.setEventSubscriber(globalSubscriber)
+              }
+            } catch (error) {
+              // Prevent circular issue which in that case would represent ourselves so we can skip
+            }
+          })
+      }
+
       const hasEventBusModuleService = Object.keys(this.__container__).find(
         (key) => key === Modules.EVENT_BUS
       )
@@ -433,9 +398,72 @@ export function MedusaService<
         : undefined
 
       this[MedusaServiceModelNameToLinkableKeysMapSymbol] =
-        buildModelsNameToLinkableKeysMap(
-          this.__joinerConfig?.()?.linkableKeys ?? {}
-        )
+        buildModelsNameToLinkableKeysMap(joinerConfig?.linkableKeys ?? {})
+    }
+
+    /**
+     * @internal this method is meant to react to any event the orm might emit
+     * when an entity is being mutated (created, updated, deleted).
+     * The default implementation will handle all event to be emitted as part
+     * of the message aggregator from the context.
+     *
+     * If you want to handle the event differently, you can override this method.
+     *
+     * @example
+     *
+     * class MyService extends ModulesSdkUtils.MedusaService(models) {
+     *   interceptEntityMutationEvents(event: "afterCreate" | "afterUpdate" | "afterUpsert" | "afterDelete", args: EventArgs<any>, context: Context) {
+     *     console.log("interceptEntityMutationEvents", event, args.entity)
+     *   }
+     * }
+     *
+     * @param event - The event type
+     * @param args - The event arguments
+     * @param context - The context
+     */
+    interceptEntityMutationEvents(
+      event: "afterCreate" | "afterUpdate" | "afterUpsert" | "afterDelete",
+      args: EventArgs<any>,
+      context: Context
+    ) {
+      let action = ""
+      switch (event) {
+        case "afterCreate":
+          action = CommonEvents.CREATED
+          break
+        case "afterUpdate":
+          const isSoftDeleted =
+            !!args.changeSet?.entity.deleted_at &&
+            !args.changeSet?.originalEntity?.deleted_at
+
+          const isRestored =
+            !!args.changeSet?.originalEntity?.deleted_at &&
+            !args.changeSet?.entity.deleted_at
+
+          action = CommonEvents.UPDATED
+
+          if (isSoftDeleted) {
+            action = CommonEvents.DELETED
+          }
+
+          if (isRestored) {
+            action = CommonEvents.RESTORED
+          }
+
+          break
+        case "afterDelete":
+          action = CommonEvents.DELETED
+          break
+      }
+
+      const object = camelToSnakeCase(args.meta.className).toLowerCase()
+
+      this.aggregatedEvents({
+        action,
+        object,
+        data: { id: args.entity.id },
+        context,
+      })
     }
 
     /**
@@ -463,6 +491,10 @@ export function MedusaService<
       data: { id: any } | { id: any }[]
       context: Context
     }) {
+      if (!context.messageAggregator) {
+        return
+      }
+
       const __joinerConfig = (
         typeof this.__joinerConfig === "function"
           ? this.__joinerConfig()

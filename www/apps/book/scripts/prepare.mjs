@@ -220,6 +220,16 @@ async function main() {
         ),
       },
       {
+        dir: path.join(
+          process.cwd(),
+          "..",
+          "resources",
+          "app",
+          "nextjs-starter",
+          "guides"
+        ),
+      },
+      {
         dir: path.join(process.cwd(), "..", "api-reference", "markdown"),
       },
       {

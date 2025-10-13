@@ -200,6 +200,7 @@ export class MermaidDiagramDMLGenerator {
   getMermaidRelation(relation: string): MermaidRelationType | undefined {
     switch (relation) {
       case "HasOne":
+      case "HasOneWithForeignKey":
         return "one-to-one"
       case "HasMany":
         return "one-to-many"

@@ -55,6 +55,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to retrieve their address
  *       sdk.store.customer.retrieveAddress(
  *         "caddr_123"
  *       )
@@ -65,7 +66,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/store/customers/me/addresses/{address_id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Customers

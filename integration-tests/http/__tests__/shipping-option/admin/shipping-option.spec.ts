@@ -292,6 +292,54 @@ medusaIntegrationTestRunner({
             metadata: null,
           })
         })
+
+        it("should retrieve a shipping option with metadata successfully", async () => {
+          const shippingOptionPayload = {
+            name: "Test shipping option with metadata",
+            service_zone_id: fulfillmentSet.service_zones[0].id,
+            shipping_profile_id: shippingProfile.id,
+            provider_id: "manual_test-provider",
+            price_type: "flat",
+            type: {
+              label: "Test type",
+              description: "Test description",
+              code: "test-code",
+            },
+            prices: [{ currency_code: "usd", amount: 1000 }],
+            metadata: {
+              priority: "high",
+              tracking: "enabled",
+              carrier: "express",
+              specialHandling: true,
+            },
+          }
+
+          const {
+            data: { shipping_option: shippingOption },
+          } = await api.post(
+            `/admin/shipping-options`,
+            shippingOptionPayload,
+            adminHeaders
+          )
+
+          const shippingOptionRes = await api.get(
+            `/admin/shipping-options/${shippingOption.id}`,
+            adminHeaders
+          )
+
+          expect(shippingOptionRes.data.shipping_option).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              name: "Test shipping option with metadata",
+              metadata: {
+                priority: "high",
+                tracking: "enabled",
+                carrier: "express",
+                specialHandling: true,
+              },
+            })
+          )
+        })
       })
 
       describe("POST /admin/shipping-options", () => {

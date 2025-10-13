@@ -22,7 +22,7 @@ In this tutorial, you will learn how to generate invoices for orders in your Med
 
 When you install a Medusa application, you get a fully-fledged commerce platform with a Framework for customization. The Medusa application's commerce features are built around [Commerce Modules](../../../commerce-modules/page.mdx), which are available out-of-the-box. These features include order management capabilities.
 
-You can extend the Medusa application to automatically generate invoices for orders, manage invoice configurations through the admin dashboard, and provide customers with easy access to their invoices through the storefront.
+You can extend the Medusa application to automatically generate invoices (or sales orders), manage invoice configurations through the admin dashboard, and provide customers with easy access to their invoices through the storefront.
 
 ## Summary
 
@@ -434,6 +434,12 @@ The workflow that manages invoice configurations will have a single step that up
 #### Update Invoice Configuration Step
 
 To create a step, create the file `src/workflows/steps/update-invoice-config.ts` with the following content:
+
+<Note>
+
+If you get a type error on resolving the Invoice Generator Module, run the Medusa application once with the `npm run dev` or `yarn dev` command to generate the necessary type definitions, as explained in the [Automatically Generated Types guide](!docs!/learn/fundamentals/generated-types).
+
+</Note>
 
 export const updateInvoiceConfigHighlights = [
   ["19", "prevData", "Retrieve the invoice configurations before the update."],

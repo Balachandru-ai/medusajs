@@ -11,8 +11,12 @@ import { DeprecatedPercentageInput } from "../../../../../components/inputs/perc
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useUpdatePromotion } from "../../../../../hooks/api/promotions"
-import { getCurrencySymbol } from "../../../../../lib/data/currencies"
+import {
+  currencies,
+  getCurrencySymbol,
+} from "../../../../../lib/data/currencies"
 import { SwitchBox } from "../../../../../components/common/switch-box"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 type EditPromotionFormProps = {
   promotion: AdminPromotion
@@ -24,7 +28,7 @@ const EditPromotionSchema = zod.object({
   is_tax_inclusive: zod.boolean().optional(),
   status: zod.enum(["active", "inactive", "draft"]),
   value_type: zod.enum(["fixed", "percentage"]),
-  value: zod.number(),
+  value: zod.number().min(0).or(zod.string().min(1)),
   allocation: zod.enum(["each", "across"]),
   target_type: zod.enum(["order", "shipping_methods", "items"]),
 })
@@ -59,6 +63,13 @@ export const EditPromotionDetailsForm = ({
   const { mutateAsync, isPending } = useUpdatePromotion(promotion.id)
 
   const handleSubmit = form.handleSubmit(async (data) => {
+    const value = parseFloat(data.value)
+
+    if (isNaN(value) || value < 0) {
+      form.setError("value", { message: t("promotions.form.value.invalid") })
+      return
+    }
+
     await mutateAsync(
       {
         is_automatic: data.is_automatic === "true",
@@ -66,7 +77,7 @@ export const EditPromotionDetailsForm = ({
         status: data.status,
         is_tax_inclusive: data.is_tax_inclusive,
         application_method: {
-          value: data.value,
+          value: parseFloat(data.value),
           type: data.value_type as any,
           allocation: data.allocation as any,
         },
@@ -89,7 +100,7 @@ export const EditPromotionDetailsForm = ({
       form.setValue("is_tax_inclusive", false)
     }
   }, [allocationWatchValue, form, promotion])
-
+  const direction = useDocumentDirection()
   return (
     <RouteDrawer.Form form={form}>
       <KeyboundForm
@@ -107,6 +118,7 @@ export const EditPromotionDetailsForm = ({
                     <Form.Label>{t("promotions.form.status.label")}</Form.Label>
                     <Form.Control>
                       <RadioGroup
+                        dir={direction}
                         className="flex-col gap-y-3"
                         {...field}
                         value={field.value}
@@ -152,6 +164,7 @@ export const EditPromotionDetailsForm = ({
                     <Form.Label>{t("promotions.form.method.label")}</Form.Label>
                     <Form.Control>
                       <RadioGroup
+                        dir={direction}
                         className="flex-col gap-y-3"
                         {...field}
                         value={field.value}
@@ -232,6 +245,7 @@ export const EditPromotionDetailsForm = ({
                         </Form.Label>
                         <Form.Control>
                           <RadioGroup
+                            dir={direction}
                             className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
@@ -269,6 +283,9 @@ export const EditPromotionDetailsForm = ({
                     const currencyCode =
                       promotion.application_method?.currency_code ?? "USD"
 
+                    const currencyInfo =
+                      currencies[currencyCode?.toUpperCase() || "USD"]
+
                     return (
                       <Form.Item>
                         <Form.Label>
@@ -280,9 +297,11 @@ export const EditPromotionDetailsForm = ({
                           {isFixedValueType ? (
                             <CurrencyInput
                               min={0}
-                              onValueChange={(val) =>
-                                onChange(val ? parseInt(val) : null)
-                              }
+                              onValueChange={(val) => onChange(val)}
+                              decimalSeparator="."
+                              groupSeparator=","
+                              decimalScale={currencyInfo.decimal_digits}
+                              decimalsLimit={currencyInfo.decimal_digits}
                               code={currencyCode}
                               symbol={getCurrencySymbol(currencyCode)}
                               {...field}
@@ -299,7 +318,7 @@ export const EditPromotionDetailsForm = ({
                                 onChange(
                                   e.target.value === ""
                                     ? null
-                                    : parseInt(e.target.value)
+                                    : parseFloat(e.target.value)
                                 )
                               }}
                             />
@@ -321,6 +340,7 @@ export const EditPromotionDetailsForm = ({
                         </Form.Label>
                         <Form.Control>
                           <RadioGroup
+                            dir={direction}
                             className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}

@@ -20,6 +20,10 @@ export const cart = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
+    "title": "Agentic Commerce",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
     "title": "Implement First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -46,6 +50,10 @@ export const cart = [
   {
     "title": "Manage Cart's Items in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items"
+  },
+  {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
   },
   {
     "title": "Retrieve Cart in Storefront",

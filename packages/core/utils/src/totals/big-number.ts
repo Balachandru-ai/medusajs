@@ -1,6 +1,7 @@
 import { BigNumberInput, BigNumberRawValue, IBigNumber } from "@medusajs/types"
 import { BigNumber as BigNumberJS } from "bignumber.js"
-import { isBigNumber, isObject, isString } from "../common"
+import { isBigNumber } from "../common/is-big-number"
+import { isString } from "../common/is-string"
 
 export class BigNumber implements IBigNumber {
   static DEFAULT_PRECISION = 20
@@ -16,23 +17,13 @@ export class BigNumber implements IBigNumber {
     this.setRawValueOrThrow(rawValue, options)
   }
 
-  static isBigNumber(value: any): value is BigNumber {
-    return (
-      value instanceof BigNumber ||
-      (isObject(value) &&
-        "numeric_" in value &&
-        "raw_" in value &&
-        "bignumber_" in value)
-    )
-  }
-
   setRawValueOrThrow(
     rawValue: BigNumberInput | BigNumber,
     { precision }: { precision?: number } = {}
   ) {
     precision ??= BigNumber.DEFAULT_PRECISION
 
-    if (rawValue instanceof BigNumber || BigNumber.isBigNumber(rawValue)) {
+    if (rawValue instanceof BigNumber) {
       Object.assign(this, rawValue)
     } else if (BigNumberJS.isBigNumber(rawValue)) {
       /**
@@ -90,12 +81,19 @@ export class BigNumber implements IBigNumber {
   }
 
   get numeric(): number {
+    let value: number
     let raw = this.raw_ as BigNumberRawValue
     if (raw) {
-      return new BigNumberJS(raw.value).toNumber()
+      value = new BigNumberJS(raw.value).toNumber()
     } else {
-      return this.numeric_
+      value = this.numeric_
     }
+
+    if (Math.abs(value) <= MEDUSA_EPSILON.numeric_) {
+      return 0
+    }
+
+    return value
   }
 
   set numeric(value: BigNumberInput) {
@@ -121,15 +119,21 @@ export class BigNumber implements IBigNumber {
   }
 
   toJSON(): number {
-    return this.bignumber_ && this.bignumber_?.toNumber
-      ? this.bignumber_.toNumber()
+    const value = this.bignumber_
+      ? this.bignumber_?.toNumber()
       : this.raw_
       ? new BigNumberJS(this.raw_.value).toNumber()
       : this.numeric_
+
+    if (Math.abs(value) <= MEDUSA_EPSILON.numeric_) {
+      return 0
+    }
+
+    return value
   }
 
   valueOf(): number {
-    return this.numeric_
+    return this.numeric
   }
 
   [Symbol.toPrimitive](hint) {
@@ -137,6 +141,10 @@ export class BigNumber implements IBigNumber {
       return this.raw?.value
     }
 
-    return this.numeric_
+    return this.numeric
   }
 }
+
+export const MEDUSA_EPSILON = new BigNumber(
+  process.env.MEDUSA_EPSILON || "0.0001"
+)

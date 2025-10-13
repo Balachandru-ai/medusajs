@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "yarn"
 
       - name: Install dependencies
@@ -43,6 +43,9 @@ jobs:
           NEXT_PUBLIC_DOCS_URL: "https://medusa-docs.vercel.app"
           NODE_ENV: production
           NEXT_PUBLIC_RESOURCES_URL: "http://medusa-types-nine.vercel.app"
+          NEXT_PUBLIC_SANITY_PROJECT_ID: temp
+          NEXT_PUBLIC_SANITY_DATASET: temp
+          NEXT_PUBLIC_ENV: CI
           # TODO change once we have actual URLs
           NEXT_PUBLIC_USER_GUIDE_URL: "http://example.com"
 

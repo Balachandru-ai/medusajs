@@ -28,6 +28,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
+    "title": "Agentic Commerce",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
     "title": "First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -54,6 +58,10 @@ export const tutorial = [
   {
     "title": "Product Builder",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
+  },
+  {
+    "title": "Meta Product Feed",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
   },
   {
     "title": "Product Reviews",
@@ -98,5 +106,13 @@ export const tutorial = [
   {
     "title": "Personalized Products",
     "path": "https://docs.medusajs.com/resources/recipes/personalized-products/example"
+  },
+  {
+    "title": "Example",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example"
+  },
+  {
+    "title": "Storefront Customizations",
+    "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront"
   }
 ]

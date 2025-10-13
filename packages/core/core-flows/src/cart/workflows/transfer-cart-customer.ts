@@ -2,12 +2,15 @@ import { CartWorkflowEvents } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
+  parallelize,
   transform,
   when,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { AdditionalData } from "@medusajs/types"
 import { emitEventStep, useQueryGraphStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updateCartsStep } from "../steps"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
@@ -53,7 +56,7 @@ export const transferCartCustomerWorkflow = createWorkflow(
     name: transferCartCustomerWorkflowId,
     idempotent: false,
   },
-  (input: WorkflowData<TransferCartCustomerWorkflowInput>) => {
+  (input: WorkflowData<TransferCartCustomerWorkflowInput & AdditionalData>) => {
     const cartQuery = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.id },
@@ -80,12 +83,16 @@ export const transferCartCustomerWorkflow = createWorkflow(
       entity: "customer",
       filters: { id: input.customer_id },
       fields: ["id", "email"],
-      options: { throwIfKeyNotFound: true },
+      options: {
+        throwIfKeyNotFound: true,
+        isList: false,
+        cache: { enable: true },
+      },
     }).config({ name: "get-customer" })
 
     const customer = transform(
       { customerQuery },
-      ({ customerQuery }) => customerQuery.data[0]
+      ({ customerQuery }) => customerQuery.data
     )
 
     // If its the same customer, we don't want the email to be overridden, so we skip the
@@ -101,6 +108,12 @@ export const transferCartCustomerWorkflow = createWorkflow(
       { shouldTransfer },
       ({ shouldTransfer }) => shouldTransfer
     ).then(() => {
+      acquireLockStep({
+        key: cart.id,
+        timeout: 2,
+        ttl: 10,
+      })
+
       const cartInput = transform({ cart, customer }, ({ cart, customer }) => [
         {
           id: cart.id,
@@ -112,16 +125,25 @@ export const transferCartCustomerWorkflow = createWorkflow(
       updateCartsStep(cartInput)
 
       refreshCartItemsWorkflow.runAsStep({
-        input: { cart_id: input.id, force_refresh: true },
-      })
-
-      emitEventStep({
-        eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
-        data: {
-          id: input.id,
-          customer_id: customer.customer_id,
+        input: {
+          cart_id: input.id,
+          force_refresh: true,
+          additional_data: input.additional_data,
         },
       })
+
+      parallelize(
+        emitEventStep({
+          eventName: CartWorkflowEvents.CUSTOMER_TRANSFERRED,
+          data: {
+            id: input.id,
+            customer_id: customer.customer_id,
+          },
+        }),
+        releaseLockStep({
+          key: cart.id,
+        })
+      )
     })
 
     return new WorkflowResponse(void 0, {

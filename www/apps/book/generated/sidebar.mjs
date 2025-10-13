@@ -858,12 +858,22 @@ export const generatedSidebars = [
               {
                 "loaded": true,
                 "isPathHref": true,
+                "type": "link",
+                "path": "/learn/fundamentals/workflows/locks",
+                "title": "Using Locks",
+                "children": [],
+                "chapterTitle": "3.7.15. Using Locks",
+                "number": "3.7.15."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
                 "type": "ref",
                 "path": "/learn/debugging-and-testing/debug-workflows",
                 "title": "Debug Workflows",
                 "children": [],
-                "chapterTitle": "3.7.15. Debug Workflows",
-                "number": "3.7.15."
+                "chapterTitle": "3.7.16. Debug Workflows",
+                "number": "3.7.16."
               }
             ],
             "chapterTitle": "3.7. Workflows",
@@ -1233,6 +1243,27 @@ export const generatedSidebars = [
             ],
             "chapterTitle": "7.6. Logging",
             "number": "7.6."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/learn/debugging-and-testing/feature-flags",
+            "title": "Feature Flags",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/debugging-and-testing/feature-flags/create",
+                "title": "Create Feature Flag",
+                "children": [],
+                "chapterTitle": "7.7.1. Create Feature Flag",
+                "number": "7.7.1."
+              }
+            ],
+            "chapterTitle": "7.7. Feature Flags",
+            "number": "7.7."
           }
         ],
         "chapterTitle": "7. Debugging & Testing",

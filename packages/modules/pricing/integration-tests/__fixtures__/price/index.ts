@@ -1,6 +1,6 @@
 import { Price } from "@models"
 import { defaultPricesData } from "./data"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
 
 export * from "./data"

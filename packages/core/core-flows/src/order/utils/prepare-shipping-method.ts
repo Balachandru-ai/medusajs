@@ -1,4 +1,4 @@
-import { OrderChangeActionDTO } from "@medusajs/framework/types"
+import type { OrderChangeActionDTO } from "@medusajs/framework/types"
 import { isDefined } from "@medusajs/framework/utils"
 
 export function prepareShippingMethod(relatedEntityField?: string) {
@@ -14,7 +14,7 @@ export function prepareShippingMethod(relatedEntityField?: string) {
         : option.calculated_price.calculated_amount,
       is_custom_amount: isCustomPrice,
       is_tax_inclusive:
-        !!option.calculated_price.is_calculated_price_tax_inclusive,
+        !!option.calculated_price?.is_calculated_price_tax_inclusive,
       data: option.data ?? {},
       name: option.name,
       version: orderChange.version,

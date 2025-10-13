@@ -226,14 +226,14 @@ medusaIntegrationTestRunner({
         expect(regionResponse.data.region).toEqual(
           expect.objectContaining({
             id: regionResponse.data.region.id,
-            payment_providers: [
+            payment_providers: expect.arrayContaining([
               expect.objectContaining({
                 id: paymentProvider2Id,
               }),
               expect.objectContaining({
                 id: paymentProviderId,
               }),
-            ],
+            ]),
           })
         )
       })
