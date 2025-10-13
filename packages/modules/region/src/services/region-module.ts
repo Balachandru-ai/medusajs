@@ -101,15 +101,12 @@ export default class RegionModuleService
   ): Promise<InferEntityType<typeof Region>[]> {
     let normalizedInput = await RegionModuleService.normalizeInput(data)
 
-    let normalizedDbRegions = normalizedInput.map((region) =>
-      removeUndefined({
-        ...region,
-        countries: undefined,
-      })
-    )
+    normalizedInput.forEach((region) => {
+      delete region.countries
+    })
 
     const result = await this.regionService_.create(
-      normalizedDbRegions,
+      normalizedInput,
       sharedContext
     )
 
