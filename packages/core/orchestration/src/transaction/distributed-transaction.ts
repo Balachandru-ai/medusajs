@@ -237,7 +237,7 @@ class DistributedTransaction extends EventEmitter {
       options
     )
 
-    return JSON.parse(checkpoint.__getCachedStringified() ?? "")
+    return checkpoint
   }
 
   public static async loadTransaction(

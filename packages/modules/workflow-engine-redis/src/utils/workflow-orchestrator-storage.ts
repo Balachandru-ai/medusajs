@@ -489,34 +489,31 @@ export class RedisDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
+    // Prepare operations to be executed in batch or pipeline
+    // Check if stringified data is cached to avoid double JSON.stringify
+    let stringifiedData = (data as any).__getCachedStringified?.()
+    let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
+
+    if (!stringifiedData) {
+      stringifiedData = JSON.stringify(data)
+    }
+
     await this.#preventRaceConditionExecutionIfNecessary({
-      data,
+      data: data_,
       key,
       options,
     })
 
     if (hasFinished && retentionTime) {
-      Object.assign(data, {
+      Object.assign(data_, {
         retention_time: retentionTime,
       })
     }
 
     // Only set if not exists
     const shouldSetNX =
-      data.flow.state === TransactionState.NOT_STARTED &&
-      !data.flow.transactionId.startsWith("auto-")
-
-    // Prepare operations to be executed in batch or pipeline
-    // Check if stringified data is cached to avoid double JSON.stringify
-    let stringifiedData = (data as any).__getCachedStringified?.()
-
-    if (!stringifiedData) {
-      const data_ = {
-        errors: data.errors,
-        flow: data.flow,
-      }
-      stringifiedData = JSON.stringify(data_)
-    }
+      data_.flow.state === TransactionState.NOT_STARTED &&
+      !data_.flow.transactionId.startsWith("auto-")
 
     const pipeline = this.redisClient.pipeline()
 
@@ -550,7 +547,7 @@ export class RedisDistributedTransactionStorage
         if (!isOk) {
           throw new SkipExecutionError(
             "Transaction already started for transactionId: " +
-              data.flow.transactionId
+              data_.flow.transactionId
           )
         }
 
@@ -561,10 +558,10 @@ export class RedisDistributedTransactionStorage
     // Database operations
     if (hasFinished && !retentionTime) {
       // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
-      if (!data.flow.metadata?.parentStepIdempotencyKey) {
+      if (!data_.flow.metadata?.parentStepIdempotencyKey) {
         await promiseAll([execPipeline(), this.deleteFromDb(data)])
       } else {
-        await this.saveToDb(data, retentionTime)
+        await this.saveToDb(data_, retentionTime)
         await execPipeline()
       }
     } else {

@@ -349,34 +349,43 @@ export class InMemoryDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
+    // Prepare operations to be executed in batch or pipeline
+    // Check if stringified data is cached to avoid double JSON.stringify
+    let stringifiedData = (data as any).__getCachedStringified?.()
+    let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
+
+    if (!stringifiedData) {
+      stringifiedData = JSON.stringify(data)
+    }
+
     await this.#preventRaceConditionExecutionIfNecessary({
-      data,
+      data: data_,
       key,
       options,
     })
 
     // Only store retention time if it's provided
     if (retentionTime) {
-      Object.assign(data, {
+      Object.assign(data_, {
         retention_time: retentionTime,
       })
     }
 
     // Store in memory
-    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
-    const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
+    const isNotStarted = data_.flow.state === TransactionState.NOT_STARTED
+    const isManualTransactionId = !data_.flow.transactionId.startsWith("auto-")
 
     if (isNotStarted && isManualTransactionId) {
       const storedData = this.storage.get(key)
       if (storedData) {
         throw new SkipExecutionError(
           "Transaction already started for transactionId: " +
-            data.flow.transactionId
+            data_.flow.transactionId
         )
       }
     }
 
-    const { flow, errors } = data
+    const { flow, errors } = data_
     this.storage.set(
       key,
       new TransactionCheckpoint(flow, {} as TransactionContext, errors)
@@ -387,7 +396,7 @@ export class InMemoryDistributedTransactionStorage
       if (!retentionTime) {
         // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
         if (!flow.metadata?.parentStepIdempotencyKey) {
-          await this.deleteFromDb(data)
+          await this.deleteFromDb(data_)
         } else {
           await this.saveToDb(data, retentionTime)
         }
