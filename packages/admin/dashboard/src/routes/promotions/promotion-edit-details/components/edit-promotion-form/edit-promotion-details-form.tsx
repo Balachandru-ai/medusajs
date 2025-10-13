@@ -362,10 +362,7 @@ export const EditPromotionDetailsForm = ({
                               description={t(
                                 "promotions.form.allocation.each.description"
                               )}
-                              disabled={
-                                originalAllocation === "across" ||
-                                (originalAllocation === "once" ? false : originalAllocation !== "each")
-                              }
+                              disabled={originalAllocation === "across"}
                             />
 
                             <RadioGroup.ChoiceBox
@@ -388,10 +385,7 @@ export const EditPromotionDetailsForm = ({
                               description={t(
                                 "promotions.form.allocation.once.description"
                               )}
-                              disabled={
-                                originalAllocation === "across" ||
-                                (originalAllocation === "each" ? false : originalAllocation !== "once")
-                              }
+                              disabled={originalAllocation === "across"}
                             />
                           </RadioGroup>
                         </Form.Control>
