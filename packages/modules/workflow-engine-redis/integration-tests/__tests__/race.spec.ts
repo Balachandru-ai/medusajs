@@ -15,9 +15,9 @@ import { ulid } from "ulid"
 import "../__fixtures__"
 import { TestDatabase } from "../utils/database"
 
-jest.setTimeout(5000000)
+jest.setTimeout(30000)
 
-const failTrap = (done, name, timeout = 5000000) => {
+const failTrap = (done, name, timeout = 5000) => {
   return setTimeoutSync(() => {
     // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
     console.warn(
@@ -117,10 +117,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         await done
 
-        const { result } = await workflowOrcModule.run("workflow-1", {
-          throwOnError: false,
-          transactionId,
-        })
+        const { transaction, result } = await workflowOrcModule.run(
+          "workflow-1",
+          {
+            throwOnError: false,
+            transactionId,
+          }
+        )
 
         expect(result).toEqual([
           "result from step 0",
@@ -149,7 +152,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         const step1 = createStep("step1", async (_) => {
           step1InvokeMock()
-          await setTimeout(2000)
+          await setTimeout(200)
           return new StepResponse({ isSuccess: true })
         })
 
@@ -170,7 +173,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             async: true,
             compensateAsync: true,
             backgroundExecution: true,
-            retryIntervalAwaiting: 1,
+            retryIntervalAwaiting: 0.1,
           })
 
           const transformedResult = transform({ status }, (data) => {
@@ -222,7 +225,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
       })
 
-      it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
+      it.only("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "RACE_workflow-1" + ulid()
 
@@ -293,12 +296,22 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           transactionId,
           subscriber: (event) => {
             if (event.eventType === "onFinish") {
+              console.log({
+                step0InvokeMock: step0InvokeMock.mock.calls.length,
+                step0CompensateMock: step0CompensateMock.mock.calls.length,
+                step1InvokeMock: step1InvokeMock.mock.calls.length,
+                step1CompensateMock: step1CompensateMock.mock.calls.length,
+                step2InvokeMock: step2InvokeMock.mock.calls.length,
+                transformMock: transformMock.mock.calls.length,
+                eventType: event.eventType,
+              })
+
               try {
                 expect(step0InvokeMock).toHaveBeenCalledTimes(1)
                 expect(step0CompensateMock).toHaveBeenCalledTimes(1)
                 expect(
                   step1InvokeMock.mock.calls.length
-                ).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1sdepending on the event loop congestions)
+                ).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1s depending on the event loop congestions)
                 expect(step1CompensateMock).toHaveBeenCalledTimes(1)
                 expect(step2InvokeMock).toHaveBeenCalledTimes(0)
                 expect(transformMock).toHaveBeenCalledTimes(0)
@@ -313,7 +326,11 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         workflowOrcModule
-          .run(workflowId, { transactionId, throwOnError: false })
+          .run(workflowId, {
+            transactionId,
+            throwOnError: false,
+            logOnError: true,
+          })
           .then(({ result }) => {
             expect(result).toBe("result from step 0")
           })

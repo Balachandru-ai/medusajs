@@ -331,6 +331,11 @@ export class TransactionOrchestrator extends EventEmitter {
       flow.state = TransactionState.COMPENSATING
       this.flagStepsToRevert(flow)
 
+      console.log(
+        "Setting state to waiting to compensate",
+        transaction.getFlow().steps
+      )
+
       this.emit(DistributedTransactionEvent.COMPENSATE_BEGIN, { transaction })
 
       return await this.checkAllSteps(transaction)
@@ -908,7 +913,7 @@ export class TransactionOrchestrator extends EventEmitter {
     transaction: DistributedTransactionType
   ): Promise<void> {
     let continueExecution = true
-
+    let currentTrasactionVersion = transaction.getFlow()._v
     while (continueExecution) {
       if (transaction.hasFinished()) {
         return
@@ -917,7 +922,11 @@ export class TransactionOrchestrator extends EventEmitter {
       const flow = transaction.getFlow()
       const nextSteps = await this.checkAllSteps(transaction)
 
-      if (await this.checkTransactionTimeout(transaction, nextSteps.current)) {
+      const hasTimedOut = await this.checkTransactionTimeout(
+        transaction,
+        nextSteps.current
+      )
+      if (hasTimedOut) {
         continue
       }
 
@@ -949,17 +958,7 @@ export class TransactionOrchestrator extends EventEmitter {
 
       let i = 0
       let hasAsyncSteps = false
-      let asyncCount = 0
-      for (const step of nextSteps.next) {
-        const isAsync = step.isCompensating()
-          ? step.definition.compensateAsync
-          : step.definition.async
-
-        if (isAsync) {
-          asyncCount++
-        }
-      }
-
+      let bumpVersion = false
       for (const step of nextSteps.next) {
         const stepIndex = i++
         if (!stepsShouldContinueExecution[stepIndex]) {
@@ -993,10 +992,12 @@ export class TransactionOrchestrator extends EventEmitter {
             this.executeSyncStep(promise, transaction, step, nextSteps)
           )
         } else {
-          // if parallel steps are async, set a version for conflict resolution
-          if (asyncCount > 0) {
-            const version = transaction.getFlow()._v + 1
-            transaction.getFlow()._v = version
+          // if there are async steps, set a version for conflict resolution
+          if (!step._v) {
+            const version = currentTrasactionVersion + 1
+            currentTrasactionVersion = version
+
+            bumpVersion = true
             step._v = version
           }
 
@@ -1015,6 +1016,10 @@ export class TransactionOrchestrator extends EventEmitter {
       }
 
       if (hasAsyncSteps) {
+        if (bumpVersion) {
+          transaction.getFlow()._v = transaction.getFlow()._v + 1
+        }
+
         await transaction.saveCheckpoint().catch((error) => {
           if (TransactionOrchestrator.isExpectedError(error)) {
             continueExecution = false
@@ -1024,9 +1029,6 @@ export class TransactionOrchestrator extends EventEmitter {
         for (const exec of executionAsync) {
           void exec()
         }
-
-        // TODO: review this, if parallel sync steps have `noWait`, we should not stop the execution
-        continueExecution = false
       }
     }
   }

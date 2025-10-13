@@ -263,6 +263,7 @@ export class RedisDistributedTransactionStorage
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
+    const asyncVersion = data.flow._v
     const isFinished = [
       TransactionState.DONE,
       TransactionState.FAILED,
@@ -270,21 +271,6 @@ export class RedisDistributedTransactionStorage
     ].includes(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
-
-    /**
-     * Bit of explanation:
-     *
-     * When a workflow run, it run all sync step in memory until it reaches a async step.
-     * In that case, it might handover to another process to continue the execution. Thats why
-     * we need to save the current state of the flow. Then from there, it will run again all
-     * sync steps until the next async step. an so on so forth.
-     *
-     * To summarize, we only trully need to save the data when we are reaching any steps that
-     * trigger a handover to a potential other process.
-     *
-     * This allows us to spare some resources and time by not over communicating with the external
-     * database when it is not really needed
-     */
 
     const isFlowInvoking = data.flow.state === TransactionState.INVOKING
 
@@ -324,7 +310,8 @@ export class RedisDistributedTransactionStorage
 
     if (
       !(isNotStarted || isFinished || isWaitingToCompensate) &&
-      !currentStepsIsAsync
+      !currentStepsIsAsync &&
+      !asyncVersion
     ) {
       return
     }
@@ -499,6 +486,7 @@ export class RedisDistributedTransactionStorage
     const maxRetries = (options?.parallelSteps || 1) + 1
     while (retries < maxRetries) {
       let lockAcquired = false
+
       try {
         // if awaiting async step, _v > 0
         if (data.flow._v) {
@@ -511,13 +499,7 @@ export class RedisDistributedTransactionStorage
             continue
           }
 
-          await this.#performVersionCheckAndMerge(key, data, options?.stepId!)
-          console.log(
-            Object.values(data.flow.steps).map((step) => [
-              step.id,
-              step.invoke?.state,
-            ])
-          )
+          await this.#performVersionCheckAndMerge(key, data, options?.stepId)
         }
 
         const data_ = {
@@ -801,29 +783,31 @@ export class RedisDistributedTransactionStorage
   async #performVersionCheckAndMerge(
     key: string,
     data: TransactionCheckpoint,
-    stepId: string
+    stepId?: string
   ): Promise<void> {
     const currentData = (await this.get(key)) as TransactionCheckpoint
 
-    if (!stepId) {
-      return
-    }
+    const savingStep = data.flow.steps[stepId!]
 
-    const savingStep = data.flow.steps[stepId]
-
-    this.#mergeStepData(currentData, data, savingStep)
-    this.#mergeErrors(data.errors, currentData!.errors ?? [])
+    this.#mergeFlow(currentData, data, savingStep)
+    this.#mergeErrors(currentData!.errors ?? [], data.errors)
 
     data.context = currentData.context
     data.errors = currentData.errors
     data.flow = currentData.flow
   }
 
-  #mergeStepData(
+  #mergeFlow(
     currentData: TransactionCheckpoint,
     data: TransactionCheckpoint,
-    savingStep: TransactionStep
+    savingStep?: TransactionStep
   ): void {
+    console.log(
+      savingStep,
+      "===============",
+      data.context.invoke[savingStep?.definition.action!]
+    )
+
     const currentContext = currentData.context
     const latestContext = data.context
     const isCompensating =
@@ -835,6 +819,7 @@ export class RedisDistributedTransactionStorage
       "hasSkippedOnFailureSteps",
       "hasSkippedSteps",
       "hasRevertedSteps",
+      "_v",
       "timedOutAt",
       "state",
     ]
@@ -848,24 +833,37 @@ export class RedisDistributedTransactionStorage
       TransactionState.FAILED,
     ]
 
-    for (const prop of mergeProperties) {
-      if (prop === "state") {
-        const curState = stateFlowOrder.findIndex(
-          (state) => state === currentData.flow.state
-        )
-        const latestState = stateFlowOrder.findIndex(
-          (state) => state === data.flow.state
-        )
+    if (data.flow._v >= currentData.flow._v) {
+      for (const prop of mergeProperties) {
+        if (prop === "_v") {
+          currentData.flow._v = Math.max(data.flow._v, currentData.flow._v)
+        } else if (prop === "state") {
+          const curState = stateFlowOrder.findIndex(
+            (state) => state === currentData.flow.state
+          )
+          const latestState = stateFlowOrder.findIndex(
+            (state) => state === data.flow.state
+          )
 
-        if (latestState > curState) {
-          currentData.flow.state = data.flow.state
+          if (latestState >= curState) {
+            currentData.flow.state = data.flow.state
+          } else {
+            throw new SkipExecutionError(
+              `Transaction is behind another execution`
+            )
+          }
+        } else if (data.flow[prop] && !currentData.flow[prop]) {
+          currentData.flow[prop] = data.flow[prop]
         }
-      } else if (data.flow[prop] && !currentData.flow[prop]) {
-        currentData.flow[prop] = data.flow[prop]
       }
     }
 
+    if (!savingStep) {
+      return
+    }
+
     const stepName = savingStep.definition.action!
+    const stepId = savingStep.id
 
     if (
       !isCompensating &&
@@ -883,7 +881,12 @@ export class RedisDistributedTransactionStorage
       currentContext.compensate[stepName] = latestContext.compensate[stepName]
     }
 
-    const stepId = savingStep.id
+    const currentStepVersion = currentData.flow.steps[stepId]._v!
+    const savingStepVersion = data.flow.steps[stepId]._v!
+
+    if (currentStepVersion > savingStepVersion) {
+      throw new SkipExecutionError(`Transaction is behind another execution`)
+    }
 
     if (isCompensating) {
       const canUpdate = [
@@ -980,7 +983,9 @@ export class RedisDistributedTransactionStorage
 
         const finishedStates = [
           TransactionStepState.DONE,
+          TransactionState.REVERTED,
           TransactionStepState.FAILED,
+          TransactionStepState.SKIPPED,
         ]
 
         if (

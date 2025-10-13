@@ -163,6 +163,7 @@ export class InMemoryDistributedTransactionStorage
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
+    const asyncVersion = data.flow._v
     const isFinished = [
       TransactionState.DONE,
       TransactionState.FAILED,
@@ -170,21 +171,6 @@ export class InMemoryDistributedTransactionStorage
     ].includes(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
-
-    /**
-     * Bit of explanation:
-     *
-     * When a workflow run, it run all sync step in memory until it reaches a async step.
-     * In that case, it might handover to another process to continue the execution. Thats why
-     * we need to save the current state of the flow. Then from there, it will run again all
-     * sync steps until the next async step. an so on so forth.
-     *
-     * To summarize, we only trully need to save the data when we are reaching any steps that
-     * trigger a handover to a potential other process.
-     *
-     * This allows us to spare some resources and time by not over communicating with the external
-     * database when it is not really needed
-     */
 
     const isFlowInvoking = data.flow.state === TransactionState.INVOKING
 
@@ -224,7 +210,8 @@ export class InMemoryDistributedTransactionStorage
 
     if (
       !(isNotStarted || isFinished || isWaitingToCompensate) &&
-      !currentStepsIsAsync
+      !currentStepsIsAsync &&
+      !asyncVersion
     ) {
       return
     }
@@ -335,7 +322,7 @@ export class InMemoryDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
-    const { retentionTime, _v } = options ?? {}
+    const { retentionTime } = options ?? {}
 
     await this.#preventRaceConditionExecutionIfNecessary({
       data,
@@ -364,9 +351,8 @@ export class InMemoryDistributedTransactionStorage
       }
     }
 
-    const parallelSteps = options?.parallelSteps ?? 1
-
-    if (_v && parallelSteps > 1) {
+    // if awaiting async step, _v > 0
+    if (data.flow._v) {
       if (this.isLocked.get(key)) {
         await new Promise<void>((resolve) => {
           if (!this.lockQueue.has(key)) {
@@ -377,7 +363,7 @@ export class InMemoryDistributedTransactionStorage
       }
       this.isLocked.set(key, true)
 
-      await this.#performVersionCheckAndMerge(key, data, options?.stepId!)
+      await this.#performVersionCheckAndMerge(key, data, options?.stepId)
     }
 
     const { flow, errors, context } = data
@@ -425,14 +411,27 @@ export class InMemoryDistributedTransactionStorage
   async #performVersionCheckAndMerge(
     key: string,
     data: TransactionCheckpoint,
-    stepId: string
+    stepId?: string
   ): Promise<void> {
     const currentData = (await this.get(key)) as TransactionCheckpoint
+
+    if (!stepId) {
+      const currentSteps = currentData.flow.steps
+
+      data.context = currentData.context
+      data.errors = currentData.errors
+      data.flow = {
+        ...currentData.flow,
+        steps: currentSteps,
+      }
+
+      return
+    }
 
     const savingStep = data.flow.steps[stepId]
 
     this.#mergeStepData(currentData, data, savingStep)
-    this.#mergeErrors(data.errors, currentData!.errors ?? [])
+    this.#mergeErrors(currentData!.errors ?? [], data.errors)
 
     data.context = currentData.context
     data.errors = currentData.errors
@@ -456,6 +455,7 @@ export class InMemoryDistributedTransactionStorage
       "hasSkippedSteps",
       "hasRevertedSteps",
       "timedOutAt",
+      "_v",
       "state",
     ]
     const stateFlowOrder = [
@@ -469,7 +469,9 @@ export class InMemoryDistributedTransactionStorage
     ]
 
     for (const prop of mergeProperties) {
-      if (prop === "state") {
+      if (prop === "_v") {
+        currentData.flow._v = Math.max(data.flow._v, currentData.flow._v)
+      } else if (prop === "state") {
         const curState = stateFlowOrder.findIndex(
           (state) => state === currentData.flow.state
         )
@@ -504,7 +506,6 @@ export class InMemoryDistributedTransactionStorage
     }
 
     const stepId = savingStep.id
-
     if (isCompensating) {
       const canUpdate = [
         TransactionStepStatus.IDLE,

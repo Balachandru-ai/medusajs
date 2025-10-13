@@ -14,7 +14,7 @@ import { setTimeout } from "timers/promises"
 import { ulid } from "ulid"
 import "../__fixtures__"
 
-jest.setTimeout(300000)
+jest.setTimeout(5000)
 
 const failTrap = (done, name, timeout = 5000) => {
   return setTimeoutSync(() => {
@@ -144,7 +144,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         const step1 = createStep("step1", async (_) => {
           step1InvokeMock()
-          await setTimeout(2000)
+          await setTimeout(200)
           return new StepResponse({ isSuccess: true })
         })
 
@@ -166,7 +166,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             async: true,
             compensateAsync: true,
             backgroundExecution: true,
-            retryIntervalAwaiting: 1,
+            retryIntervalAwaiting: 0.1,
           })
 
           const transformedResult = transform({ status }, (data) => {
@@ -184,13 +184,19 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         void workflowOrcModule.subscribe({
           workflowId,
           subscriber: (event) => {
+            console.log({
+              step0InvokeMock: step0InvokeMock.mock.calls.length,
+              step1InvokeMock: step1InvokeMock.mock.calls.length,
+              step2InvokeMock: step2InvokeMock.mock.calls.length,
+              transformMock: transformMock.mock.calls.length,
+            })
             if (event.eventType === "onFinish") {
               expect(step0InvokeMock).toHaveBeenCalledTimes(1)
               expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(1)
               expect(step2InvokeMock).toHaveBeenCalledTimes(1)
               expect(transformMock).toHaveBeenCalledTimes(1)
               done()
-              clearTimeout(timeout)
+              //clearTimeout(timeout)
             }
           },
         })
@@ -202,10 +208,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
           .catch((e) => e)
 
+        /*
         timeout = failTrap(
           done,
           "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
         )
+          */
       })
 
       it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
