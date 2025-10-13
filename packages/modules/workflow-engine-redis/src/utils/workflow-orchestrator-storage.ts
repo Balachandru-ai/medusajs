@@ -565,7 +565,7 @@ export class RedisDistributedTransactionStorage
         await execPipeline()
       }
     } else {
-      await this.saveToDb(data, retentionTime)
+      await this.saveToDb(data_, retentionTime)
       await execPipeline()
     }
   }
