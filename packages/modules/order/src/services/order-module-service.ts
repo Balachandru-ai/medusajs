@@ -3116,6 +3116,22 @@ export default class OrderModuleService
       this.orderShippingService_.softDelete(orderShippingIds, sharedContext)
     )
 
+      // Order Credit Lines
+      const orderCreditLines = await this.orderCreditLineService_.list(
+        {
+          order_id: order.id,
+          version: currentVersion,
+        },
+        { select: ["id", "version"] },
+        sharedContext
+      )
+      console.log("orderCreditLines", orderCreditLines)
+      const orderCreditLineIds = orderCreditLines.map((summary) => summary.id)
+  
+      updatePromises.push(
+        this.orderCreditLineService_.softDelete(orderCreditLineIds, sharedContext)
+      )
+
     // Order
     updatePromises.push(
       this.orderService_.update(
@@ -3218,6 +3234,22 @@ export default class OrderModuleService
 
     updatePromises.push(
       this.orderShippingService_.softDelete(orderShippingIds, sharedContext)
+    )
+
+    // Order Credit Lines
+    const orderCreditLines = await this.orderCreditLineService_.list(
+      {
+        order_id: order.id,
+        version: currentVersion,
+      },
+      { select: ["id", "version"] },
+      sharedContext
+    )
+    console.log("orderCreditLines", orderCreditLines)
+    const orderCreditLineIds = orderCreditLines.map((summary) => summary.id)
+
+    updatePromises.push(
+      this.orderCreditLineService_.softDelete(orderCreditLineIds, sharedContext)
     )
 
     // Order
