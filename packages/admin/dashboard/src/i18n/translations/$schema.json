@@ -8397,6 +8397,12 @@
                 },
                 "totalUsedByAttribute": {
                   "type": "string"
+                },
+                "totalUsedByAttributeCustomerId": {
+                  "type": "string"
+                },
+                "totalUsedByAttributeEmail": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -8406,7 +8412,9 @@
                 "used",
                 "budgetAttribute",
                 "budgetAttributeTooltip",
-                "totalUsedByAttribute"
+                "totalUsedByAttribute",
+                "totalUsedByAttributeCustomerId",
+                "totalUsedByAttributeEmail"
               ],
               "additionalProperties": false
             },

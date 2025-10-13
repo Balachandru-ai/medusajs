@@ -2256,7 +2256,9 @@
         "used": "Used",
         "budgetAttribute": "Limit usage per",
         "budgetAttributeTooltip": "Define how many times the promotion can be used by a specific customer or email.",
-        "totalUsedByAttribute": "Budget limit per: {{attribute}}"
+        "totalUsedByAttribute": "Budget limit per: {{attribute}}",
+        "totalUsedByAttributeCustomerId": "Budget limit per customer",
+        "totalUsedByAttributeEmail": "Budget limit per email"
       },
       "type": {
         "spend": {
