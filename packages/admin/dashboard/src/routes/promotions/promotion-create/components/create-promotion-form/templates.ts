@@ -1,7 +1,6 @@
 const commonHiddenFields = [
   "type",
   "application_method.type",
-  // "application_method.allocation",
 ]
 
 const amountOfOrderHiddenFields = [
