@@ -370,7 +370,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("should not create credit lines if issuing a refund exceeds the payment amount", async () => {
+      it("should throw if the refund amount exceeds the payment amount", async () => {
         const payment = order.payment_collections[0].payments[0]
 
         const refundReason = (
@@ -420,7 +420,7 @@ medusaIntegrationTestRunner({
         } catch (error) {
           expect(error.response.status).toBe(400)
           expect(error.response.data.message).toBe(
-            "You cannot refund more than what is captured on the payment."
+            "You are not allowed to refund more than the captured amount"
           )
         }
 

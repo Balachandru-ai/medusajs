@@ -1,6 +1,12 @@
-import { BigNumberInput } from "@medusajs/framework/types"
-import { MathBN, PaymentEvents } from "@medusajs/framework/utils"
+import { BigNumberInput, PaymentDTO } from "@medusajs/framework/types"
 import {
+  BigNumber,
+  MathBN,
+  MedusaError,
+  PaymentEvents,
+} from "@medusajs/framework/utils"
+import {
+  createStep,
   createWorkflow,
   transform,
   when,
@@ -38,6 +44,49 @@ export type RefundPaymentWorkflowInput = {
   refund_reason_id?: string
 }
 
+/**
+ * This step validates that an order refund credit line can be issued
+ */
+export const validateRefundPaymentExceedsCapturedAmountStep = createStep(
+  "validate-refund-payment-exceeds-captured-amount",
+  async function ({
+    payment,
+    refundAmount,
+  }: {
+    payment: PaymentDTO
+    refundAmount: BigNumberInput
+  }) {
+    const capturedAmount = (payment.captures || []).reduce(
+      (captureAmount, next) => {
+        const amountAsBigNumber = new BigNumber(
+          next.raw_amount as BigNumberInput
+        )
+        return MathBN.add(captureAmount, amountAsBigNumber)
+      },
+      MathBN.convert(0)
+    )
+
+    const refundedAmount = (payment.refunds || []).reduce(
+      (refundedAmount, next) => {
+        const amountAsBigNumber = new BigNumber(
+          next.raw_amount as BigNumberInput
+        )
+        return MathBN.add(refundedAmount, amountAsBigNumber)
+      },
+      MathBN.convert(0)
+    )
+
+    const totalRefundedAmount = MathBN.add(refundedAmount, refundAmount)
+
+    if (MathBN.lt(capturedAmount, totalRefundedAmount)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `You are not allowed to refund more than the captured amount`
+      )
+    }
+  }
+)
+
 export const refundPaymentWorkflowId = "refund-payment-workflow"
 /**
  * This workflow refunds a payment. It's used by the
@@ -69,11 +118,20 @@ export const refundPaymentWorkflow = createWorkflow(
         "currency_code",
         "amount",
         "raw_amount",
+        "captures.raw_amount",
+        "refunds.raw_amount",
       ],
       variables: { id: input.payment_id },
       list: false,
       throw_if_key_not_found: true,
     })
+
+    when({ input }, ({ input }) => !!input.amount).then(() =>
+      validateRefundPaymentExceedsCapturedAmountStep({
+        payment,
+        refundAmount: input.amount as BigNumberInput,
+      })
+    )
 
     const orderPaymentCollection = useRemoteQueryStep({
       entry_point: "order_payment_collection",
