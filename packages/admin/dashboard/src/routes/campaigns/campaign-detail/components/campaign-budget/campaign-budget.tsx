@@ -27,7 +27,12 @@ export const CampaignBudget = ({ campaign }: CampaignBudgetProps) => {
           >
             {campaign.budget?.type === "use_by_attribute"
               ? t("campaigns.budget.fields.totalUsedByAttribute", {
-                  attribute: campaign.budget?.attribute,
+                  attribute: t(
+                    `campaigns.budget.attribute.${campaign.budget?.attribute}`,
+                    {
+                      defaultValue: campaign.budget?.attribute,
+                    }
+                  ),
                 })
               : t("campaigns.fields.budget_limit")}
           </Heading>

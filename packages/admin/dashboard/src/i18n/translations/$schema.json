@@ -8345,6 +8345,19 @@
         "budget": {
           "type": "object",
           "properties": {
+            "attribute": {
+              "type": "object",
+              "properties": {
+                "customer_id": {
+                  "type": "string"
+                },
+                "customer_email": {
+                  "type": "string"
+                }
+              },
+              "required": ["customer_id", "customer_email"],
+              "additionalProperties": false
+            },
             "create": {
               "type": "object",
               "properties": {
@@ -8432,11 +8445,22 @@
                     "title": {
                       "type": "string"
                     },
+                    "titleCustomerId": {
+                      "type": "string"
+                    },
+                    "titleEmail": {
+                      "type": "string"
+                    },
                     "description": {
                       "type": "string"
                     }
                   },
-                  "required": ["title", "description"],
+                  "required": [
+                    "title",
+                    "titleCustomerId",
+                    "titleEmail",
+                    "description"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -8454,7 +8478,14 @@
               "additionalProperties": false
             }
           },
-          "required": ["create", "details", "fields", "type", "edit"],
+          "required": [
+            "attribute",
+            "create",
+            "details",
+            "fields",
+            "type",
+            "edit"
+          ],
           "additionalProperties": false
         },
         "promotions": {
