@@ -29,6 +29,7 @@ import {
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
+import { setTimeout as setTimeoutPromise } from "timers/promises"
 
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 
@@ -95,7 +96,6 @@ export class InMemoryDistributedTransactionStorage
 
   private clearTimeout_: NodeJS.Timeout
   private isLocked: Map<string, boolean> = new Map()
-  private lockQueue: Map<string, (() => void)[]> = new Map()
 
   constructor({
     workflowExecutionService,
@@ -246,10 +246,6 @@ export class InMemoryDistributedTransactionStorage
       isCancelling?: boolean
     }
   ): Promise<TransactionCheckpoint | undefined> {
-    if (this.storage.has(key)) {
-      return this.storage.get(key)
-    }
-
     const [_, workflowId, transactionId] = key.split(":")
     const trx: InferEntityType<typeof WorkflowExecution> | undefined =
       await this.workflowExecutionService_
@@ -324,125 +320,149 @@ export class InMemoryDistributedTransactionStorage
 
     const { retentionTime } = options ?? {}
 
+    // Check if stringified data is cached to avoid double JSON.stringify
+    let stringifiedData = (data as any).__getCachedStringified?.()
+    let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
+
+    if (!stringifiedData) {
+      stringifiedData = JSON.stringify(data)
+    }
+
+    let cachedCheckpoint: TransactionCheckpoint | undefined
+
+    const getCheckpoint = async (options?: TransactionOptions) => {
+      if (!cachedCheckpoint) {
+        cachedCheckpoint = await this.get(key, options)
+      }
+      return cachedCheckpoint
+    }
+
     await this.#preventRaceConditionExecutionIfNecessary({
-      data,
+      data: data_,
       key,
       options,
+      getCheckpoint,
     })
 
     // Only store retention time if it's provided
     if (retentionTime) {
-      Object.assign(data, {
+      Object.assign(data_, {
         retention_time: retentionTime,
       })
     }
 
     // Store in memory
-    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
-    const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
+    const isNotStarted = data_.flow.state === TransactionState.NOT_STARTED
+    const isManualTransactionId = !data_.flow.transactionId.startsWith("auto-")
 
     if (isNotStarted && isManualTransactionId) {
       const storedData = this.storage.get(key)
       if (storedData) {
         throw new SkipExecutionError(
           "Transaction already started for transactionId: " +
-            data.flow.transactionId
+            data_.flow.transactionId
         )
       }
     }
 
-    // if awaiting async step, _v > 0
-    if (data.flow._v) {
-      if (this.isLocked.get(key)) {
-        await new Promise<void>((resolve) => {
-          if (!this.lockQueue.has(key)) {
-            this.lockQueue.set(key, [])
-          }
-          this.lockQueue.get(key)!.push(resolve)
-        })
-      }
-      this.isLocked.set(key, true)
+    let retries = 0
+    let backoffMs = 10
+    const maxRetries = (options?.parallelSteps || 1) + 1
+    while (retries < maxRetries) {
+      let lockAcquired = false
 
-      await this.#performVersionCheckAndMerge(key, data, options?.stepId)
+      // if awaiting async step, _v > 0
+      try {
+        if (data_.flow._v || options?._v) {
+          data_.flow._v = options?._v ?? data_.flow._v
+
+          if (this.isLocked.get(key)) {
+            retries++
+            // Exponential backoff with jitter
+            const jitter = Math.random() * backoffMs
+            await setTimeoutPromise(backoffMs + jitter)
+            backoffMs = Math.min(backoffMs * 2, 1000)
+            continue
+          }
+
+          this.isLocked.set(key, true)
+          lockAcquired = true
+
+          await this.#performVersionCheckAndMerge({
+            data: data_,
+            stepId: options?.stepId,
+            getCheckpoint,
+          })
+        }
+
+        const { flow, errors } = data_
+        this.storage.set(
+          key,
+          new TransactionCheckpoint(flow, {} as TransactionContext, errors)
+        )
+
+        // Optimize DB operations - only perform when necessary
+        if (hasFinished) {
+          if (!retentionTime) {
+            if (!flow.metadata?.parentStepIdempotencyKey) {
+              await this.deleteFromDb(data_)
+            } else {
+              await this.saveToDb(data_, retentionTime)
+            }
+          } else {
+            await this.saveToDb(data_, retentionTime)
+          }
+
+          this.storage.delete(key)
+        } else {
+          await this.saveToDb(data_, retentionTime)
+        }
+      } finally {
+        if (lockAcquired) {
+          this.isLocked.set(key, false)
+        }
+      }
+
+      return data_
     }
 
-    const { flow, errors } = data
-    this.storage.set(
-      key,
-      new TransactionCheckpoint(flow, {} as TransactionContext, errors)
+    throw new Error(
+      "Max retries exceeded for saving checkpoint due to version conflicts"
     )
-
-    // Optimize DB operations - only perform when necessary
-    if (hasFinished) {
-      if (!retentionTime) {
-        if (!flow.metadata?.parentStepIdempotencyKey) {
-          await this.deleteFromDb(data)
-        } else {
-          await this.saveToDb(data, retentionTime)
-        }
-      } else {
-        await this.saveToDb(data, retentionTime)
-      }
-
-      this.storage.delete(key)
-    } else {
-      await this.saveToDb(data, retentionTime)
-    }
-
-    // Release the lock if we acquired one
-    if (this.isLocked.has(key)) {
-      this.isLocked.set(key, false)
-      const queue = this.lockQueue.get(key)
-      if (queue) {
-        if (queue.length > 0) {
-          const nextResolve = queue.shift()
-          if (nextResolve) {
-            nextResolve()
-          }
-        } else {
-          this.isLocked.delete(key)
-          this.lockQueue.delete(key)
-        }
-      }
-    }
-
-    return data
   }
 
-  async #performVersionCheckAndMerge(
-    key: string,
-    data: TransactionCheckpoint,
+  async #performVersionCheckAndMerge({
+    data,
+    stepId,
+    getCheckpoint,
+  }: {
+    data: TransactionCheckpoint
     stepId?: string
-  ): Promise<void> {
-    const currentData = (await this.get(key)) as TransactionCheckpoint
-
-    if (!stepId) {
-      const currentSteps = currentData.flow.steps
-
-      data.context = currentData.context
-      data.errors = currentData.errors
-      data.flow = {
-        ...currentData.flow,
-        steps: currentSteps,
-      }
-
+    getCheckpoint: (
+      options?: TransactionOptions
+    ) => Promise<TransactionCheckpoint | undefined>
+  }): Promise<void> {
+    const currentData = (await getCheckpoint()) as TransactionCheckpoint
+    if (currentData.flow._v === data.flow._saved_v) {
       return
     }
 
-    const savingStep = data.flow.steps[stepId]
+    const savingStep = data.flow.steps[stepId!]
 
-    this.#mergeStepData(currentData, data, savingStep)
+    this.#mergeFlow(currentData, data, savingStep)
     this.#mergeErrors(currentData!.errors ?? [], data.errors)
 
     data.context = currentData.context
     data.errors = currentData.errors
     data.flow = currentData.flow
+    data.flow._saved_v =
+      Math.max(data.flow._saved_v, currentData.flow._saved_v) + 1
   }
 
-  #mergeStepData(
+  #mergeFlow(
     currentData: TransactionCheckpoint,
     data: TransactionCheckpoint,
-    savingStep: TransactionStep
+    savingStep?: TransactionStep
   ): void {
     const currentContext = currentData.context
     const latestContext = data.context
@@ -455,8 +475,9 @@ export class InMemoryDistributedTransactionStorage
       "hasSkippedOnFailureSteps",
       "hasSkippedSteps",
       "hasRevertedSteps",
-      "timedOutAt",
       "_v",
+      "_saved_v",
+      "timedOutAt",
       "state",
     ]
     const stateFlowOrder = [
@@ -469,26 +490,37 @@ export class InMemoryDistributedTransactionStorage
       TransactionState.FAILED,
     ]
 
-    for (const prop of mergeProperties) {
-      if (prop === "_v") {
-        currentData.flow._v = Math.max(data.flow._v, currentData.flow._v)
-      } else if (prop === "state") {
-        const curState = stateFlowOrder.findIndex(
-          (state) => state === currentData.flow.state
-        )
-        const latestState = stateFlowOrder.findIndex(
-          (state) => state === data.flow.state
-        )
+    if (data.flow._v >= currentData.flow._v) {
+      for (const prop of mergeProperties) {
+        if (prop === "_v") {
+          currentData.flow._v = Math.max(data.flow._v, currentData.flow._v)
+        } else if (prop === "state") {
+          const curState = stateFlowOrder.findIndex(
+            (state) => state === currentData.flow.state
+          )
+          const latestState = stateFlowOrder.findIndex(
+            (state) => state === data.flow.state
+          )
 
-        if (latestState > curState) {
-          currentData.flow.state = data.flow.state
+          if (latestState >= curState) {
+            currentData.flow.state = data.flow.state
+          } else {
+            throw new SkipExecutionError(
+              `Transaction is behind another execution`
+            )
+          }
+        } else if (data.flow[prop] && !currentData.flow[prop]) {
+          currentData.flow[prop] = data.flow[prop]
         }
-      } else if (data.flow[prop] && !currentData.flow[prop]) {
-        currentData.flow[prop] = data.flow[prop]
       }
     }
 
+    if (!savingStep) {
+      return
+    }
+
     const stepName = savingStep.definition.action!
+    const stepId = savingStep.id
 
     if (
       !isCompensating &&
@@ -506,7 +538,13 @@ export class InMemoryDistributedTransactionStorage
       currentContext.compensate[stepName] = latestContext.compensate[stepName]
     }
 
-    const stepId = savingStep.id
+    const currentStepVersion = currentData.flow.steps[stepId]._v!
+    const savingStepVersion = data.flow.steps[stepId]._v!
+
+    if (currentStepVersion > savingStepVersion) {
+      throw new SkipExecutionError(`Transaction is behind another execution`)
+    }
+
     if (isCompensating) {
       const canUpdate = [
         TransactionStepStatus.IDLE,
@@ -552,10 +590,14 @@ export class InMemoryDistributedTransactionStorage
     data,
     key,
     options,
+    getCheckpoint,
   }: {
     data: TransactionCheckpoint
     key: string
     options?: TransactionOptions
+    getCheckpoint: (
+      options: TransactionOptions
+    ) => Promise<TransactionCheckpoint | undefined>
   }) {
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
@@ -577,7 +619,7 @@ export class InMemoryDistributedTransactionStorage
       } as Parameters<typeof this.get>[1]
 
       data_ =
-        (await this.get(key, getOptions)) ??
+        (await getCheckpoint(getOptions as TransactionOptions)) ??
         ({ flow: {} } as TransactionCheckpoint)
     }
 

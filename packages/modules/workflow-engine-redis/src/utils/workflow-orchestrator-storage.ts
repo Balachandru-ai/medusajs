@@ -466,7 +466,6 @@ export class RedisDistributedTransactionStorage
       TransactionState.REVERTED,
     ].includes(data.flow.state)
 
-    // Prepare operations to be executed in batch or pipeline
     // Check if stringified data is cached to avoid double JSON.stringify
     let stringifiedData = (data as any).__getCachedStringified?.()
     let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
@@ -523,7 +522,6 @@ export class RedisDistributedTransactionStorage
           }
 
           await this.#performVersionCheckAndMerge({
-            key,
             data: data_,
             stepId: options?.stepId,
             getCheckpoint,
@@ -810,12 +808,10 @@ export class RedisDistributedTransactionStorage
   }
 
   async #performVersionCheckAndMerge({
-    key,
     data,
     stepId,
     getCheckpoint,
   }: {
-    key: string
     data: TransactionCheckpoint
     stepId?: string
     getCheckpoint: (

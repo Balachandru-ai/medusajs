@@ -15,7 +15,7 @@ import { ulid } from "ulid"
 import "../__fixtures__"
 import { TestDatabase } from "../utils/database"
 
-jest.setTimeout(3000000)
+jest.setTimeout(30000)
 
 const failTrap = (done, name, timeout = 5000) => {
   return setTimeoutSync(() => {
@@ -375,16 +375,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           transactionId,
           subscriber: (event) => {
             if (event.eventType === "onFinish") {
-              console.log({
-                step0InvokeMock: step0InvokeMock.mock.calls.length,
-                step0CompensateMock: step0CompensateMock.mock.calls.length,
-                step1InvokeMock: step1InvokeMock.mock.calls.length,
-                step1CompensateMock: step1CompensateMock.mock.calls.length,
-                step2InvokeMock: step2InvokeMock.mock.calls.length,
-                transformMock: transformMock.mock.calls.length,
-                eventType: event.eventType,
-              })
-
               try {
                 expect(step0InvokeMock).toHaveBeenCalledTimes(1)
                 expect(step0CompensateMock).toHaveBeenCalledTimes(1)
