@@ -23,7 +23,7 @@ export const wrapVariantsWithTaxPrices = async <T>(
 
   const items = variants
     .map(asTaxItem)
-    .filter((item): item is TaxableItemDTO => !!item)
+    .filter((item) => !!item) as TaxableItemDTO[]
 
   if (!items.length) {
     return
@@ -77,9 +77,7 @@ export const wrapVariantsWithTaxPrices = async <T>(
   })
 }
 
-const asTaxItem = (
-  variant: HttpTypes.StoreProductVariant
-): TaxableItemDTO | undefined => {
+const asTaxItem = (variant: HttpTypes.StoreProductVariant) => {
   if (!variant.calculated_price) {
     return
   }
@@ -94,7 +92,7 @@ const asTaxItem = (
     product_id: productId,
     product_type_id: variant.product?.type_id ?? undefined,
     quantity: 1,
-    unit_price: variant.calculated_price.calculated_amount as any, // TODO: fix this
-    currency_code: variant.calculated_price.currency_code as any, // TODO: fix this
+    unit_price: variant.calculated_price.calculated_amount,
+    currency_code: variant.calculated_price.currency_code,
   }
 }
