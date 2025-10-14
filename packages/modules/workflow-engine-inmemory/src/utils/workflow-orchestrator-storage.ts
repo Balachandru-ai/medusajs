@@ -455,8 +455,7 @@ export class InMemoryDistributedTransactionStorage
     data.context = currentData.context
     data.errors = currentData.errors
     data.flow = currentData.flow
-    data.flow._saved_v =
-      Math.max(data.flow._saved_v, currentData.flow._saved_v) + 1
+    data.flow._saved_v += 1
   }
 
   #mergeFlow(
@@ -466,9 +465,6 @@ export class InMemoryDistributedTransactionStorage
   ): void {
     const currentContext = currentData.context
     const latestContext = data.context
-    const isCompensating =
-      data.flow.state === TransactionState.COMPENSATING ||
-      data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
     const mergeProperties = [
       "hasFailedSteps",
@@ -522,16 +518,11 @@ export class InMemoryDistributedTransactionStorage
     const stepName = savingStep.definition.action!
     const stepId = savingStep.id
 
-    if (
-      !isCompensating &&
-      latestContext.invoke[stepName] &&
-      !currentContext.invoke[stepName]
-    ) {
+    if (latestContext.invoke[stepName] && !currentContext.invoke[stepName]) {
       currentContext.invoke[stepName] = latestContext.invoke[stepName]
     }
 
     if (
-      isCompensating &&
       latestContext.compensate[stepName] &&
       !currentContext.compensate[stepName]
     ) {
@@ -545,26 +536,42 @@ export class InMemoryDistributedTransactionStorage
       throw new SkipExecutionError(`Transaction is behind another execution`)
     }
 
-    if (isCompensating) {
-      const canUpdate = [
-        TransactionStepStatus.IDLE,
-        TransactionStepStatus.WAITING,
-        TransactionStepStatus.TEMPORARY_FAILURE,
+    const mergeStep = (currentStep, step) => {
+      const mergeProperties = [
+        "attempts",
+        "failures",
+        "temporaryFailedAt",
+        "retryRescheduledAt",
+        "lastAttempt",
+        "_v",
       ]
-      if (
-        canUpdate.includes(currentData.flow.steps[stepId].compensate.status)
-      ) {
-        currentData.flow.steps[stepId] = savingStep
+      for (const prop of mergeProperties) {
+        if (
+          prop === "attempts" ||
+          prop === "failures" ||
+          prop === "temporaryFailedAt" ||
+          prop === "retryRescheduledAt" ||
+          prop === "lastAttempt" ||
+          prop === "_v"
+        ) {
+          currentStep[prop] = Math.max(step[prop], currentStep[prop])
+        }
       }
-    } else {
-      const canUpdate = [
-        TransactionStepStatus.IDLE,
-        TransactionStepStatus.WAITING,
-        TransactionStepStatus.TEMPORARY_FAILURE,
-      ]
-      if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
-        currentData.flow.steps[stepId] = savingStep
-      }
+    }
+
+    let canUpdate = [
+      TransactionStepStatus.IDLE,
+      TransactionStepStatus.WAITING,
+      TransactionStepStatus.TEMPORARY_FAILURE,
+    ]
+    if (canUpdate.includes(currentData.flow.steps[stepId].compensate.status)) {
+      currentData.flow.steps[stepId].compensate = savingStep.compensate
+      mergeStep(currentData.flow.steps[stepId], savingStep)
+    }
+
+    if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
+      currentData.flow.steps[stepId].invoke = savingStep.invoke
+      mergeStep(currentData.flow.steps[stepId], savingStep)
     }
   }
 

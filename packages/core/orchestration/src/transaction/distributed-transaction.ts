@@ -272,6 +272,7 @@ class DistributedTransaction extends EventEmitter {
       ttl,
       options
     )
+
     if (_v) {
       this.setFlow(savedData.flow)
       this.setContext(savedData.context)

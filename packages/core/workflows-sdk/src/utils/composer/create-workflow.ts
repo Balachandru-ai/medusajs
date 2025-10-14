@@ -219,6 +219,8 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
           transaction = await workflowEngine.run(name, {
             input: stepInput as any,
             context: executionContext,
+            throwOnError: false,
+            logOnError: true,
           })
         } else {
           transaction = await workflow.run({

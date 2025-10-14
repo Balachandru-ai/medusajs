@@ -510,6 +510,13 @@ export class TransactionOrchestrator extends EventEmitter {
 
       const stepDef = flow.steps[step]
       const curState = stepDef.getStates()
+
+      if (stepDef._v) {
+        flow._v = 0
+        stepDef._v = 0
+        flow._saved_v = 0
+      }
+
       if (
         [TransactionStepState.DONE, TransactionStepState.TIMEOUT].includes(
           curState.state
