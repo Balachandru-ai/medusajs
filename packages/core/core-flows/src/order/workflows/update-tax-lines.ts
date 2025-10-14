@@ -209,13 +209,9 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       return orderLineItems
     })
 
-    const shippingMethods = when(
-      "get-shipping-methods",
-      { input },
-      ({ input }) => {
-        return input.shipping_method_ids!?.length > 0
-      }
-    ).then(() => {
+    const shippingMethods = when("get-order-shipping-methods", { input }, ({ input }) => {
+      return input.shipping_method_ids!?.length > 0
+    }).then(() => {
       const { data: orderShippingMethods } = useQueryGraphStep({
         entity: "order_shipping_method",
         filters: { id: input.shipping_method_ids },
