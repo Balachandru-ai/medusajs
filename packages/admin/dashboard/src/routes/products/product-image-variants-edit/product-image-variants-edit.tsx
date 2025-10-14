@@ -6,6 +6,11 @@ import { RouteDrawer } from "../../../components/modals"
 import { VariantsTableForm } from "./components/variants-table-form/variants-table-form"
 import { useProduct } from "../../../hooks/api"
 
+type VariantImagesPartial = {
+  id: string
+  variants: { id: string }[]
+}
+
 export const ProductImageVariantsEdit = () => {
   const { t } = useTranslation()
 
@@ -14,7 +19,7 @@ export const ProductImageVariantsEdit = () => {
     image_id: string
   }>()
 
-  const { product, isPending, isLoading } = useProduct(
+  const { product, isPending } = useProduct(
     product_id!,
     { fields: "images.id,images.url,images.variants.id" },
     {
@@ -47,7 +52,10 @@ export const ProductImageVariantsEdit = () => {
           </div>
         </div>
       </RouteDrawer.Header>
-      <VariantsTableForm productId={product_id} image={image!} />
+      <VariantsTableForm
+        productId={product_id}
+        image={image! as VariantImagesPartial}
+      />
     </RouteDrawer>
   )
 }
