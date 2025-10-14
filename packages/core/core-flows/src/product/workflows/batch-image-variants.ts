@@ -4,9 +4,14 @@ import {
   createWorkflow,
   parallelize,
   transform,
+  when,
 } from "@medusajs/framework/workflows-sdk"
-import { addImageToVariantsStep } from "../steps"
-import { removeImageFromVariantsStep } from "../steps"
+import {
+  addImageToVariantsStep,
+  removeImageFromVariantsStep,
+  updateProductVariantsStep,
+} from "../steps"
+import { useQueryGraphStep } from "../../common"
 
 /**
  * The input for the batch image-variant workflow.
@@ -80,6 +85,71 @@ export const batchImageVariantsWorkflow = createWorkflow(
       addImageToVariantsStep(normalizedInput),
       removeImageFromVariantsStep(normalizedInput)
     )
+
+    const updateData = when(
+      "shoud-variants-removed",
+      { normalizedInput },
+      (data) => data.normalizedInput.remove.length > 0
+    ).then(() => {
+      const imageId = transform({ normalizedInput }, (data) => {
+        return data.normalizedInput.image_id
+      })
+
+      const variantsQuery = useQueryGraphStep({
+        entity: "variants",
+        fields: ["id", "thumbnail"],
+        filters: {
+          id: normalizedInput.remove,
+        },
+      }).config({ name: "get-variants-for-thumbnail-check" })
+
+      const { data: image } = useQueryGraphStep({
+        entity: "product_image",
+        fields: ["id", "url"],
+        filters: {
+          id: imageId,
+        },
+        options: {
+          isList: false,
+        },
+      }).config({ name: "get-image-for-thumbnail-check" })
+
+      const updateData = transform(
+        {
+          variants: variantsQuery.data,
+          image: image,
+        },
+        (data) => {
+          const imageUrl =
+            typeof data.image?.url === "string" ? data.image.url : null
+
+          if (!imageUrl) {
+            return null
+          }
+
+          return {
+            selector: {
+              id: normalizedInput.remove,
+              thumbnail: imageUrl,
+            },
+            update: {
+              thumbnail: null,
+            },
+          }
+        }
+      )
+
+      return updateData
+    })
+
+    when(
+      "shoud-update-variant",
+      { updateData },
+      (data) =>
+        data.updateData !== null && typeof data.updateData !== "undefined"
+    ).then(() => {
+      updateProductVariantsStep(updateData!)
+    })
 
     const response = transform({ res, input }, (data) => {
       return {

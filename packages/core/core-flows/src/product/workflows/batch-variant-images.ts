@@ -4,9 +4,15 @@ import {
   createWorkflow,
   parallelize,
   transform,
+  when,
 } from "@medusajs/framework/workflows-sdk"
-import { addImagesToVariantStep } from "../steps"
-import { removeImagesFromVariantStep } from "../steps"
+import { ProductVariantDTO } from "@medusajs/types"
+import {
+  addImagesToVariantStep,
+  removeImagesFromVariantStep,
+  updateProductVariantsStep,
+} from "../steps"
+import { useQueryGraphStep } from "../../common"
 
 /**
  * The input for the batch variant-images workflow.
@@ -79,6 +85,57 @@ export const batchVariantImagesWorkflow = createWorkflow(
     const res = parallelize(
       addImagesToVariantStep(normalizedInput),
       removeImagesFromVariantStep(normalizedInput)
+    )
+
+    const shouldUpdateVariantThumbnail = when(
+      "images-removed",
+      { normalizedInput },
+      (data) => data.normalizedInput.remove.length > 0
+    ).then(() => {
+      const variantId = transform({ normalizedInput }, (data) => {
+        return data.normalizedInput.variant_id
+      })
+
+      const { data: variant } = useQueryGraphStep({
+        entity: "variant",
+        fields: ["id", "thumbnail"],
+        filters: {
+          id: variantId,
+        },
+        options: {
+          isList: false,
+        },
+      }).config({ name: "get-variant-thumbnail" })
+
+      const removedImagesQuery = useQueryGraphStep({
+        entity: "product_image",
+        fields: ["id", "url"],
+        filters: {
+          id: normalizedInput.remove,
+        },
+      }).config({ name: "get-removed-images" })
+
+      const shouldUpdateVariantThumbnail = transform(
+        { removedImagesQuery, variant },
+        (data) => {
+          const urls =
+            data.removedImagesQuery.data?.map((image) => image.url) ?? []
+          return !!urls.includes((data.variant as ProductVariantDTO).thumbnail)
+        }
+      )
+
+      return shouldUpdateVariantThumbnail
+    })
+
+    when(
+      "should-update-variant-thumbnail",
+      { shouldUpdateVariantThumbnail },
+      (data) => !!data.shouldUpdateVariantThumbnail
+    ).then(() =>
+      updateProductVariantsStep({
+        selector: { id: input.variant_id },
+        update: { thumbnail: null },
+      })
     )
 
     const response = transform({ res, input }, (data) => {

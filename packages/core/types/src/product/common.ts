@@ -193,6 +193,10 @@ export interface ProductVariantDTO {
    */
   manage_inventory: boolean
   /**
+   * The thumbnail of the product variant form the product images.
+   */
+  thumbnail: string | null
+  /**
    * Whether the product variant's requires shipping.
    */
   requires_shipping: boolean
