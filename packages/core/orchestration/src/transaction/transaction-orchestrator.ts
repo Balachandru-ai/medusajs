@@ -998,17 +998,19 @@ export class TransactionOrchestrator extends EventEmitter {
 
         const promise = this.createStepExecutionPromise(transaction, step)
 
+        const hasVersionControl = isAsync || step.hasAwaitingRetry()
+
+        if (hasVersionControl && !step._v) {
+          console.log("Setting version control for step", step.id)
+          transaction.getFlow()._v += 1
+          step._v = transaction.getFlow()._v
+        }
+
         if (!isAsync) {
           execution.push(
             this.executeSyncStep(promise, transaction, step, nextSteps)
           )
         } else {
-          // if there are async steps, set a version for conflict resolution
-          if (!step._v) {
-            transaction.getFlow()._v += 1
-            step._v = transaction.getFlow()._v
-          }
-
           // Execute async step in background as part of the next event loop cycle and continue the execution of the transaction
           hasAsyncSteps = true
           executionAsync.push(() =>

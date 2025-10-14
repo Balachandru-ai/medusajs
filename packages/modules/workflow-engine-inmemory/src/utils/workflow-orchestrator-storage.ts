@@ -546,16 +546,10 @@ export class InMemoryDistributedTransactionStorage
         "_v",
       ]
       for (const prop of mergeProperties) {
-        if (
-          prop === "attempts" ||
-          prop === "failures" ||
-          prop === "temporaryFailedAt" ||
-          prop === "retryRescheduledAt" ||
-          prop === "lastAttempt" ||
-          prop === "_v"
-        ) {
-          currentStep[prop] = Math.max(step[prop], currentStep[prop])
-        }
+        currentStep[prop] =
+          step[prop] && currentStep[prop]
+            ? Math.max(step[prop], currentStep[prop])
+            : step[prop] ?? currentStep[prop]
       }
     }
 
