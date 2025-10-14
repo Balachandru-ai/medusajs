@@ -2245,6 +2245,10 @@
       }
     },
     "budget": {
+      "attribute": {
+        "customer_id": "customer",
+        "customer_email": "email"
+      },
       "create": {
         "hint": "Create a budget for the campaign.",
         "header": "Campaign Budget"
@@ -2256,8 +2260,10 @@
         "limit": "Limit",
         "used": "Used",
         "budgetAttribute": "Limit usage per",
-        "budgetAttributeTooltip": "Define how many times the promotion can be used by a specific customer or email.",
-        "totalUsedByAttribute": "Budget limit per: {{attribute}}"
+        "budgetAttributeTooltip": "Define how many times the promotion can be used by each customer or email.",
+        "totalUsedByAttribute": "Budget limit per: {{attribute}}",
+        "totalUsedByAttributeCustomerId": "Budget limit per customer",
+        "totalUsedByAttributeEmail": "Budget limit per email"
       },
       "type": {
         "spend": {
@@ -2270,6 +2276,8 @@
         },
         "useByAttribute": {
           "title": "Usage by attribute (customer id, email, etc.)",
+          "titleCustomerId": "Usage per customer",
+          "titleEmail": "Usage per email",
           "description": "Set a limit on how many times the promotion can be used by a specific attribute value."
         }
       },
