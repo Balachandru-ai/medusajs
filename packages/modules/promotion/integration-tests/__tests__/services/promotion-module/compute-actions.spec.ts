@@ -7558,6 +7558,56 @@ moduleIntegrationTestRunner({
               },
             ])
           })
+
+          it("should distribute percentage discount across multiple items when max_quantity exceeds first item quantity", async () => {
+            await createDefaultPromotion(service, {
+              application_method: {
+                type: "percentage",
+                target_type: "items",
+                allocation: "once",
+                value: 25,
+                max_quantity: 5,
+              } as any,
+            })
+
+            const result = await service.computeActions(["PROMOTION_TEST"], {
+              currency_code: "usd",
+              items: [
+                {
+                  id: "item_a",
+                  quantity: 2,
+                  subtotal: 100, // $50/unit - cheapest
+                },
+                {
+                  id: "item_b",
+                  quantity: 3,
+                  subtotal: 180, // $60/unit - second cheapest
+                },
+                {
+                  id: "item_c",
+                  quantity: 4,
+                  subtotal: 400, // $100/unit - most expensive
+                },
+              ],
+            })
+
+            expect(JSON.parse(JSON.stringify(result))).toEqual([
+              {
+                action: "addItemAdjustment",
+                item_id: "item_a",
+                amount: 25, // 2 units * $50 * 25% = $25
+                code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
+              },
+              {
+                action: "addItemAdjustment",
+                item_id: "item_b",
+                amount: 45, // 3 units * $60 * 25% = $45 (remaining quota)
+                code: "PROMOTION_TEST",
+                is_tax_inclusive: false,
+              },
+            ])
+          })
         })
 
         describe("with target rules", () => {

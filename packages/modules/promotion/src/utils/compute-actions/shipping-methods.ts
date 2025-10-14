@@ -11,15 +11,10 @@ import {
   MathBN,
   MedusaError,
 } from "@medusajs/framework/utils"
-import { areRulesValidForContext } from "../validations"
-import { computeActionForBudgetExceeded } from "./usage"
 import { Promotion } from "@models"
-
-function sortByPriceAscending(a: any, b: any) {
-  const priceA = a.subtotal ?? 0
-  const priceB = b.subtotal ?? 0
-  return MathBN.lt(priceA, priceB) ? -1 : 1
-}
+import { areRulesValidForContext } from "../validations"
+import { sortShippingLineByPriceAscending } from "./sort-by-price"
+import { computeActionForBudgetExceeded } from "./usage"
 
 export function getComputedActionsForShippingMethods(
   promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
@@ -53,7 +48,7 @@ export function getComputedActionsForShippingMethods(
   const allocation = promotion.application_method?.allocation!
   if (allocation === ApplicationMethodAllocation.ONCE) {
     applicableShippingItems = [...applicableShippingItems].sort(
-      sortByPriceAscending
+      sortShippingLineByPriceAscending
     )
   }
 
@@ -80,7 +75,10 @@ export function applyPromotionToShippingMethods(
     allocation === ApplicationMethodAllocation.ONCE
   ) {
     for (const method of shippingMethods!) {
-      if (allocation === ApplicationMethodAllocation.ONCE && remainingQuota <= 0) {
+      if (
+        allocation === ApplicationMethodAllocation.ONCE &&
+        remainingQuota <= 0
+      ) {
         break
       }
       if (!method.subtotal) {

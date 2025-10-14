@@ -15,6 +15,7 @@ import {
 } from "@medusajs/framework/utils"
 import { Promotion } from "@models"
 import { areRulesValidForContext } from "../validations"
+import { sortLineItemByPriceAscending } from "./sort-by-price"
 import { computeActionForBudgetExceeded } from "./usage"
 
 function validateContext(
@@ -27,12 +28,6 @@ function validateContext(
       `"${contextKey}" should be present as an array in the context for computeActions`
     )
   }
-}
-
-function sortByPriceAscending(a: any, b: any) {
-  const priceA = MathBN.div(a.subtotal, a.quantity)
-  const priceB = MathBN.div(b.subtotal, b.quantity)
-  return MathBN.lt(priceA, priceB) ? -1 : 1
 }
 
 export function getComputedActionsForItems(
@@ -72,14 +67,17 @@ function applyPromotionToItems(
 
   const computedActions: PromotionTypes.ComputeActions[] = []
 
-  let applicableItems = getValidItemsForPromotion(items, promotion)
+  let applicableItems = getValidItemsForPromotion(
+    items,
+    promotion
+  ) as PromotionTypes.ComputeActionItemLine[]
 
   if (!applicableItems.length) {
     return computedActions
   }
 
   if (allocation === ApplicationMethodAllocation.ONCE) {
-    applicableItems = [...applicableItems].sort(sortByPriceAscending)
+    applicableItems = [...applicableItems].sort(sortLineItemByPriceAscending)
   }
 
   const isTargetLineItems = target === TargetType.ITEMS
@@ -109,7 +107,10 @@ function applyPromotionToItems(
   let remainingQuota = maxQuantity ?? 0
 
   for (const item of applicableItems) {
-    if (allocation === ApplicationMethodAllocation.ONCE && remainingQuota <= 0) {
+    if (
+      allocation === ApplicationMethodAllocation.ONCE &&
+      remainingQuota <= 0
+    ) {
       break
     }
     if (
