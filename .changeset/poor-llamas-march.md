@@ -6,4 +6,4 @@
 "@medusajs/product": patch
 ---
 
-fix(db): Remove redundant indexes from product, cart, order, customer, and inventory modules to improve database schema health.
+fix(): Remove redundant indexes from product, cart, order, customer, and inventory modules to improve database schema health.
