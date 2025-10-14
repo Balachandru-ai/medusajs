@@ -166,7 +166,7 @@ function applyPromotionToItems(
     if (allocation === ApplicationMethodAllocation.ONCE) {
       // We already know exactly how many units we applied via effectiveMaxQuantity
       const quantityApplied = Math.min(
-        effectiveMaxQuantity ?? 0,
+        effectiveMaxQuantity,
         Number(item.quantity)
       )
       remainingQuota -= quantityApplied
