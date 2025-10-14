@@ -47,7 +47,7 @@ export function getComputedActionsForShippingMethods(
 
   const allocation = promotion.application_method?.allocation!
   if (allocation === ApplicationMethodAllocation.ONCE) {
-    applicableShippingItems = [...applicableShippingItems].sort(
+    applicableShippingItems = applicableShippingItems.sort(
       sortShippingLineByPriceAscending
     )
   }

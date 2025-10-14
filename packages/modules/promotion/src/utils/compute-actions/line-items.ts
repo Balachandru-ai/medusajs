@@ -77,13 +77,14 @@ function applyPromotionToItems(
   }
 
   if (allocation === ApplicationMethodAllocation.ONCE) {
-    applicableItems = [...applicableItems].sort(sortLineItemByPriceAscending)
+    applicableItems = applicableItems.sort(sortLineItemByPriceAscending)
   }
 
   const isTargetLineItems = target === TargetType.ITEMS
   const isTargetOrder = target === TargetType.ORDER
   const promotionValue = applicationMethod?.value ?? 0
   const maxQuantity = applicationMethod?.max_quantity!
+  let remainingQuota = maxQuantity ?? 0
 
   let lineItemsAmount = MathBN.convert(0)
   if (allocation === ApplicationMethodAllocation.ACROSS) {
@@ -103,8 +104,6 @@ function applyPromotionToItems(
       return computedActions
     }
   }
-
-  let remainingQuota = maxQuantity ?? 0
 
   for (const item of applicableItems) {
     if (
