@@ -573,6 +573,27 @@ export class RedisDistributedTransactionStorage
           })
         }
 
+        if (data_.flow._v && options?.stepId) {
+          const stepId = options?.stepId!
+          const isCompensating =
+            data_.flow.state === TransactionState.COMPENSATING
+          const stepState = isCompensating
+            ? data_.flow.steps[stepId]?.compensate?.state
+            : data_.flow.steps[stepId]?.invoke?.state
+          const shouldBump = [
+            TransactionStepState.DONE,
+            TransactionStepState.REVERTED,
+            TransactionStepState.FAILED,
+            TransactionStepState.SKIPPED,
+            TransactionStepState.SKIPPED_FAILURE,
+            TransactionStepState.TIMEOUT,
+          ].includes(stepState)
+
+          if (shouldBump) {
+            data_.flow._saved_v += 1
+          }
+        }
+
         if (hasFinished && !retentionTime) {
           if (!data.flow.metadata?.parentStepIdempotencyKey) {
             await this.deleteFromDb(data_)
@@ -819,8 +840,8 @@ export class RedisDistributedTransactionStorage
     ) => Promise<TransactionCheckpoint | undefined>
   }): Promise<void> {
     const currentData = (await getCheckpoint()) as TransactionCheckpoint
-    if (currentData.flow._v === data.flow._saved_v) {
-      return
+    if (!currentData) {
+      throw new SkipExecutionError("Transaction already finished")
     }
 
     const savingStep = data.flow.steps[stepId!]
@@ -831,8 +852,6 @@ export class RedisDistributedTransactionStorage
     data.context = currentData.context
     data.errors = currentData.errors
     data.flow = currentData.flow
-    data.flow._saved_v =
-      Math.max(data.flow._saved_v, currentData.flow._saved_v) + 1
   }
 
   #mergeFlow(
@@ -877,7 +896,10 @@ export class RedisDistributedTransactionStorage
 
           if (latestState >= curState) {
             currentData.flow.state = data.flow.state
-          } else {
+          } else if (
+            latestState < curState &&
+            currentData.flow.state !== TransactionState.WAITING_TO_COMPENSATE
+          ) {
             throw new SkipExecutionError(
               `Transaction is behind another execution`
             )
@@ -888,61 +910,86 @@ export class RedisDistributedTransactionStorage
       }
     }
 
-    if (!savingStep) {
-      return
-    }
+    const onlyMergeVersion = !savingStep
+    const savingSteps = savingStep
+      ? [savingStep]
+      : Object.values(data.flow.steps)
 
-    const stepName = savingStep.definition.action!
-    const stepId = savingStep.id
-
-    if (latestContext.invoke[stepName] && !currentContext.invoke[stepName]) {
-      currentContext.invoke[stepName] = latestContext.invoke[stepName]
-    }
-
-    if (
-      latestContext.compensate[stepName] &&
-      !currentContext.compensate[stepName]
-    ) {
-      currentContext.compensate[stepName] = latestContext.compensate[stepName]
-    }
-
-    const currentStepVersion = currentData.flow.steps[stepId]._v!
-    const savingStepVersion = data.flow.steps[stepId]._v!
-
-    if (currentStepVersion > savingStepVersion) {
-      throw new SkipExecutionError(`Transaction is behind another execution`)
-    }
-
-    const mergeStep = (currentStep, step) => {
-      const mergeProperties = [
-        "attempts",
-        "failures",
-        "temporaryFailedAt",
-        "retryRescheduledAt",
-        "lastAttempt",
-        "_v",
-      ]
-      for (const prop of mergeProperties) {
-        currentStep[prop] =
-          step[prop] && currentStep[prop]
-            ? Math.max(step[prop], currentStep[prop])
-            : step[prop] ?? currentStep[prop]
+    for (const savingStep of savingSteps) {
+      if (savingStep.id === "_root") {
+        continue
       }
-    }
 
-    let canUpdate = [
-      TransactionStepStatus.IDLE,
-      TransactionStepStatus.WAITING,
-      TransactionStepStatus.TEMPORARY_FAILURE,
-    ]
-    if (canUpdate.includes(currentData.flow.steps[stepId].compensate.status)) {
-      currentData.flow.steps[stepId].compensate = savingStep.compensate
-      mergeStep(currentData.flow.steps[stepId], savingStep)
-    }
+      const stepName = savingStep.definition.action!
+      const stepId = savingStep.id
 
-    if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
-      currentData.flow.steps[stepId].invoke = savingStep.invoke
-      mergeStep(currentData.flow.steps[stepId], savingStep)
+      if (!onlyMergeVersion) {
+        if (
+          latestContext.invoke[stepName] &&
+          !currentContext.invoke[stepName]
+        ) {
+          currentContext.invoke[stepName] = latestContext.invoke[stepName]
+        }
+
+        if (
+          latestContext.compensate[stepName] &&
+          !currentContext.compensate[stepName]
+        ) {
+          currentContext.compensate[stepName] =
+            latestContext.compensate[stepName]
+        }
+      }
+
+      const currentStepVersion = currentData.flow.steps[stepId]._v!
+      const savingStepVersion = data.flow.steps[stepId]._v!
+
+      if (currentStepVersion > savingStepVersion) {
+        throw new SkipExecutionError(`Transaction is behind another execution`)
+      }
+
+      const mergeStep = (currentStep, step) => {
+        const mergeProperties = onlyMergeVersion
+          ? ["_v"]
+          : [
+              "attempts",
+              "failures",
+              "temporaryFailedAt",
+              "retryRescheduledAt",
+              "hasScheduledRetry",
+              "lastAttempt",
+              "_v",
+            ]
+        for (const prop of mergeProperties) {
+          if (prop === "hasScheduledRetry") {
+            currentStep[prop] = step[prop] ?? currentStep[prop]
+            continue
+          }
+
+          currentStep[prop] =
+            step[prop] && currentStep[prop]
+              ? Math.max(step[prop], currentStep[prop])
+              : step[prop] ?? currentStep[prop]
+        }
+      }
+
+      let canUpdate = [
+        TransactionStepStatus.IDLE,
+        TransactionStepStatus.WAITING,
+        TransactionStepStatus.TEMPORARY_FAILURE,
+      ]
+      if (
+        canUpdate.includes(currentData.flow.steps[stepId].compensate.status)
+      ) {
+        if (!onlyMergeVersion)
+          currentData.flow.steps[stepId].compensate = savingStep.compensate
+        mergeStep(currentData.flow.steps[stepId], savingStep)
+      }
+
+      if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
+        if (!onlyMergeVersion)
+          currentData.flow.steps[stepId].invoke = savingStep.invoke
+        mergeStep(currentData.flow.steps[stepId], savingStep)
+      }
     }
   }
 
@@ -1008,29 +1055,22 @@ export class RedisDistributedTransactionStorage
       const currentStep = data.flow.steps[stepId]
       const latestStep = latestUpdatedFlow.steps?.[stepId]
       if (latestStep && currentStep) {
-        const isCompensating =
-          data.flow.state === TransactionState.COMPENSATING ||
-          data.flow.state === TransactionState.WAITING_TO_COMPENSATE
+        const isCompensating = data.flow.state === TransactionState.COMPENSATING
 
         const latestState = isCompensating
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        const currentState = isCompensating
-          ? currentStep.compensate?.state
-          : currentStep.invoke?.state
-
-        const finishedStates = [
+        const shouldSkip = [
           TransactionStepState.DONE,
-          TransactionState.REVERTED,
+          TransactionStepState.REVERTED,
           TransactionStepState.FAILED,
           TransactionStepState.SKIPPED,
-        ]
+          TransactionStepState.SKIPPED_FAILURE,
+          TransactionStepState.TIMEOUT,
+        ].includes(latestState)
 
-        if (
-          finishedStates.includes(latestState) &&
-          !finishedStates.includes(currentState)
-        ) {
+        if (shouldSkip) {
           throw new SkipStepAlreadyFinishedError(
             `Step ${stepId} already finished by another execution`
           )

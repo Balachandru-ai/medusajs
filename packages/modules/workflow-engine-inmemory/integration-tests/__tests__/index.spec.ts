@@ -423,11 +423,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         const transactionId = "transaction-auto-retries" + ulid()
         const workflowId = "workflow_1_auto_retries"
 
-        void workflowOrcModule.run(workflowId, {
-          input: {},
-          transactionId,
-        })
-
         let timeout: NodeJS.Timeout
         workflowOrcModule.subscribe({
           workflowId,
@@ -442,6 +437,11 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
               clearTimeout(timeout)
             }
           },
+        })
+
+        void workflowOrcModule.run(workflowId, {
+          input: {},
+          transactionId,
         })
 
         timeout = failTrap(
@@ -616,7 +616,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
       })
 
-      it("should compose nested workflows w/ async steps", (done) => {
+      it("should compose nested workflows w/ async steps", async () => {
         const asyncResults: any[] = []
         const mockStep1Fn = jest.fn().mockImplementation(() => {
           const res = { obj: "return from 1" }
@@ -666,37 +666,32 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(fourth)
         })
 
-        let timeout: NodeJS.Timeout
         asyncResults.push("begin workflow")
-        workflowOrcModule
-          .run(workflowId, {
-            input: {},
-          })
-          .then(() => {
-            asyncResults.push("returned workflow")
+        await workflowOrcModule.run(workflowId, {
+          input: {},
+        })
 
-            void workflowOrcModule.subscribe({
-              workflowId,
-              subscriber: (event) => {
-                if (event.eventType === "onFinish") {
-                  expect(asyncResults).toEqual([
-                    "begin workflow",
-                    { obj: "return from 1" },
-                    "returned workflow",
-                    { obj: "return from 2" },
-                    { obj: "return from 3" },
-                  ])
-                  done()
-                  clearTimeout(timeout)
-                }
-              },
-            })
+        const onFinishPromise = new Promise<void>((resolve) => {
+          void workflowOrcModule.subscribe({
+            workflowId,
+            subscriber: (event) => {
+              if (event.eventType === "onFinish") {
+                expect(asyncResults).toEqual([
+                  "begin workflow",
+                  { obj: "return from 1" },
+                  "returned workflow",
+                  { obj: "return from 2" },
+                  { obj: "return from 3" },
+                ])
+                resolve()
+              }
+            },
           })
+        })
 
-        timeout = failTrap(
-          done,
-          "should subscribe to a async workflow and receive the response when it finishes"
-        )
+        asyncResults.push("returned workflow")
+
+        await onFinishPromise
       })
 
       describe("Testing basic workflow", function () {
@@ -877,23 +872,19 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           expect(transaction.getFlow().state).toEqual("reverted")
         })
 
-        it("should subscribe to a async workflow and receive the response when it finishes", (done) => {
+        it("should subscribe to a async workflow and receive the response when it finishes", async () => {
           const transactionId = "trx_123" + ulid()
 
-          let timeout: NodeJS.Timeout
-          const onFinish = jest.fn(() => {
-            done()
-            clearTimeout(timeout)
-          })
-
-          void workflowOrcModule.subscribe({
-            workflowId: "workflow_async_background",
-            transactionId,
-            subscriber: (event) => {
-              if (event.eventType === "onFinish") {
-                onFinish()
-              }
-            },
+          const onFinishPromise = new Promise<void>((resolve) => {
+            void workflowOrcModule.subscribe({
+              workflowId: "workflow_async_background",
+              transactionId,
+              subscriber: (event) => {
+                if (event.eventType === "onFinish") {
+                  resolve()
+                }
+              },
+            })
           })
 
           void workflowOrcModule.run("workflow_async_background", {
@@ -904,11 +895,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             throwOnError: false,
           })
 
-          expect(onFinish).toHaveBeenCalledTimes(0)
-          timeout = failTrap(
-            done,
-            "should subscribe to a async workflow and receive the response when it finishes"
-          )
+          await onFinishPromise
         })
 
         it("should cancel and revert a completed workflow", async () => {

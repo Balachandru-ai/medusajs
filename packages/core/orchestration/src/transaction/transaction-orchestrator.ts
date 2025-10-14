@@ -620,7 +620,14 @@ export class TransactionOrchestrator extends EventEmitter {
     transaction.getFlow().hasWaitingSteps = true
 
     try {
-      await transaction.saveCheckpoint()
+      await transaction.saveCheckpoint({
+        _v: step._v,
+        parallelSteps: TransactionOrchestrator.countSiblings(
+          transaction.getFlow(),
+          step
+        ),
+        stepId: step.id,
+      })
       await transaction.scheduleRetry(step, 0)
     } catch (error) {
       if (!TransactionOrchestrator.isExpectedError(error)) {
@@ -968,6 +975,15 @@ export class TransactionOrchestrator extends EventEmitter {
       const execution: Promise<void | unknown>[] = []
       const executionAsync: (() => Promise<void | unknown>)[] = []
 
+      // const hasMultipleAsyncSteps =
+      //   nextSteps.next.filter((step) => {
+      //     const isAsync = step.isCompensating()
+      //       ? step.definition.compensateAsync
+      //       : step.definition.async
+
+      //     return isAsync
+      //   }).length > 1
+
       let i = 0
       let hasAsyncSteps = false
       for (const step of nextSteps.next) {
@@ -1001,7 +1017,6 @@ export class TransactionOrchestrator extends EventEmitter {
         const hasVersionControl = isAsync || step.hasAwaitingRetry()
 
         if (hasVersionControl && !step._v) {
-          console.log("Setting version control for step", step.id)
           transaction.getFlow()._v += 1
           step._v = transaction.getFlow()._v
         }

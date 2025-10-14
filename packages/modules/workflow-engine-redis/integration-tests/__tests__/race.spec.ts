@@ -39,6 +39,11 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   },
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
     describe("Testing race condition of the workflow during retry", () => {
+      beforeEach(async () => {
+        await TestDatabase.clearTables()
+        jest.clearAllMocks()
+      })
+
       afterEach(async () => {
         await TestDatabase.clearTables()
       })
@@ -97,18 +102,16 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
 
         const transactionId = ulid()
-        let resolveDone: () => void
-        const done = new Promise<void>((resolve, reject) => {
-          resolveDone = resolve
-        })
-        void workflowOrcModule.subscribe({
-          workflowId: workflowId,
-          transactionId,
-          subscriber: async (event) => {
-            if (event.eventType === "onFinish") {
-              resolveDone()
-            }
-          },
+        const onFinishPromise = new Promise<void>((resolve) => {
+          void workflowOrcModule.subscribe({
+            workflowId: workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                resolve()
+              }
+            },
+          })
         })
 
         await workflowOrcModule.run(workflowId, {
@@ -117,7 +120,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           transactionId,
         })
 
-        await done
+        await onFinishPromise
 
         const { result } = await workflowOrcModule.run(workflowId, {
           throwOnError: false,
@@ -163,18 +166,16 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
 
         const transactionId = ulid()
-        let resolveDone: () => void
-        const done = new Promise<void>((resolve, reject) => {
-          resolveDone = resolve
-        })
-        void workflowOrcModule.subscribe({
-          workflowId: workflowId,
-          transactionId,
-          subscriber: async (event) => {
-            if (event.eventType === "onFinish") {
-              resolveDone()
-            }
-          },
+        const onFinishPromise = new Promise<void>((resolve) => {
+          void workflowOrcModule.subscribe({
+            workflowId: workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                resolve()
+              }
+            },
+          })
         })
 
         await workflowOrcModule.run(workflowId, {
@@ -197,7 +198,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
         }
 
-        await done
+        await onFinishPromise
 
         const { result } = await workflowOrcModule.run(workflowId, {
           throwOnError: false,
@@ -214,7 +215,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         ])
       })
 
-      it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", (done) => {
+      it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "workflow-1" + ulid()
         const subWorkflowId = "sub-" + workflowId
@@ -266,42 +267,30 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(build)
         })
 
-        let timeout: NodeJS.Timeout
-        void workflowOrcModule.subscribe({
-          workflowId,
-          transactionId,
-          subscriber: async (event) => {
-            if (event.eventType === "onFinish") {
-              try {
-                expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-                expect(
-                  step1InvokeMock.mock.calls.length
-                ).toBeGreaterThanOrEqual(1)
-                expect(step2InvokeMock).toHaveBeenCalledTimes(1)
-                expect(transformMock).toHaveBeenCalledTimes(1)
-
-                // Prevent killing the test to early
-                await setTimeout(500)
-                done()
-              } catch (e) {
-                return done(e)
-              } finally {
-                clearTimeout(timeout)
+        const onFinishPromise = new Promise<void>((resolve) => {
+          void workflowOrcModule.subscribe({
+            workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                resolve()
               }
-            }
-          },
+            },
+          })
         })
 
-        workflowOrcModule
-          .run(workflowId, { transactionId })
-          .then(({ result }) => {
-            expect(result).toBe("result from step 0")
-          })
+        const { result } = await workflowOrcModule.run(workflowId, {
+          transactionId,
+        })
 
-        timeout = failTrap(
-          done,
-          "should prevent race continuation of the workflow during retryIntervalAwaiting in background execution"
-        )
+        expect(result).toBe("result from step 0")
+
+        await onFinishPromise
+
+        expect(step0InvokeMock).toHaveBeenCalledTimes(1)
+        expect(step1InvokeMock.mock.calls.length).toBeGreaterThanOrEqual(1)
+        expect(step2InvokeMock).toHaveBeenCalledTimes(1)
+        expect(transformMock).toHaveBeenCalledTimes(1)
       })
 
       it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
