@@ -515,28 +515,33 @@ export class RedisDistributedTransactionStorage
       data_.flow.state === TransactionState.NOT_STARTED &&
       !data_.flow.transactionId.startsWith("auto-")
 
-    const pipeline = this.redisClient.pipeline()
+    const execPipeline = () => {
+      const pipeline = this.redisClient.pipeline()
 
-    // Execute Redis operations
-    if (!hasFinished) {
-      if (ttl) {
-        if (shouldSetNX) {
-          pipeline.set(key, stringifiedData, "EX", ttl, "NX")
+      const stringifiedData = JSON.stringify({
+        flow: data_.flow,
+        errors: data_.errors,
+      })
+
+      // Execute Redis operations
+      if (!hasFinished) {
+        if (ttl) {
+          if (shouldSetNX) {
+            pipeline.set(key, stringifiedData, "EX", ttl, "NX")
+          } else {
+            pipeline.set(key, stringifiedData, "EX", ttl)
+          }
         } else {
-          pipeline.set(key, stringifiedData, "EX", ttl)
+          if (shouldSetNX) {
+            pipeline.set(key, stringifiedData, "NX")
+          } else {
+            pipeline.set(key, stringifiedData)
+          }
         }
       } else {
-        if (shouldSetNX) {
-          pipeline.set(key, stringifiedData, "NX")
-        } else {
-          pipeline.set(key, stringifiedData)
-        }
+        pipeline.unlink(key)
       }
-    } else {
-      pipeline.unlink(key)
-    }
 
-    const execPipeline = () => {
       return pipeline.exec().then((result) => {
         if (!shouldSetNX) {
           return result
@@ -559,7 +564,7 @@ export class RedisDistributedTransactionStorage
     if (hasFinished && !retentionTime) {
       // If the workflow is nested, we cant just remove it because it would break the compensation algorithm. Instead, it will get deleted when the top level parent is deleted.
       if (!data_.flow.metadata?.parentStepIdempotencyKey) {
-        await promiseAll([execPipeline(), this.deleteFromDb(data)])
+        await promiseAll([execPipeline(), this.deleteFromDb(data_)])
       } else {
         await this.saveToDb(data_, retentionTime)
         await execPipeline()
