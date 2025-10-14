@@ -9,6 +9,7 @@ import {
   PromotionStatus,
   PromotionType,
 } from "@medusajs/utils"
+import { setTimeout } from "timers/promises"
 import {
   createAdminUser,
   generatePublishableKey,
@@ -17,7 +18,6 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
-import { setTimeout } from "timers/promises"
 
 jest.setTimeout(100000)
 
@@ -2100,6 +2100,220 @@ medusaIntegrationTestRunner({
                     ]),
                   }),
                 ]),
+              })
+            )
+          })
+
+          it("should fail to complete a cart if that would exceed the promotion limit", async () => {
+            const product = (
+              await api.post(
+                `/admin/products`,
+                {
+                  status: ProductStatus.PUBLISHED,
+                  title: "Product for camapign",
+                  description: "test",
+                  options: [
+                    {
+                      title: "Type",
+                      values: ["L"],
+                    },
+                  ],
+                  variants: [
+                    {
+                      title: "L",
+                      sku: "campaign-product-l",
+                      options: {
+                        Type: "L",
+                      },
+                      manage_inventory: false,
+                      prices: [
+                        {
+                          amount: 300,
+                          currency_code: "usd",
+                        },
+                      ],
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const campaign = (
+              await api.post(
+                `/admin/campaigns`,
+                {
+                  name: "TEST-1",
+                  budget: {
+                    type: "spend",
+                    currency_code: "usd",
+                    limit: 100, // -> promotions value can't exceed 100$
+                  },
+                  campaign_identifier: "PROMO_CAMPAIGN",
+                },
+                adminHeaders
+              )
+            ).data.campaign
+
+            const promotion = (
+              await api
+                .post(
+                  `/admin/promotions`,
+                  {
+                    code: "TEST_PROMO",
+                    type: PromotionType.STANDARD,
+                    status: PromotionStatus.ACTIVE,
+                    is_automatic: false,
+                    is_tax_inclusive: true,
+                    application_method: {
+                      target_type: "items",
+                      type: "fixed",
+                      allocation: "across",
+                      currency_code: "usd",
+                      value: 100, // -> promotion applies 100$ fixed discount on the entire order
+                    },
+                    campaign_id: campaign.id,
+                  },
+                  adminHeaders
+                )
+                .catch((e) => console.log(e))
+            ).data.promotion
+
+            const cart1 = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  shipping_address: shippingAddressData,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                  promo_codes: [promotion.code],
+                },
+                storeHeadersWithCustomer
+              )
+            ).data.cart
+
+            expect(cart1).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            const cart2 = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  shipping_address: shippingAddressData,
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                  promo_codes: [promotion.code],
+                },
+                storeHeadersWithCustomer
+              )
+            ).data.cart
+
+            expect(cart2).toEqual(
+              expect.objectContaining({
+                promotions: [
+                  expect.objectContaining({
+                    code: promotion.code,
+                  }),
+                ],
+              })
+            )
+
+            /**
+             * At this point both carts have the same promotion applied successfully
+             */
+
+            const paymentCollection1 = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart1.id },
+                storeHeaders
+              )
+            ).data.payment_collection
+
+            await api.post(
+              `/store/payment-collections/${paymentCollection1.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
+
+            const order1 = (
+              await api.post(
+                `/store/carts/${cart1.id}/complete`,
+                {},
+                storeHeaders
+              )
+            ).data.order
+
+            expect(order1).toEqual(
+              expect.objectContaining({ discount_total: 100 })
+            )
+
+            let campaignAfter = (
+              await api.get(
+                `/admin/campaigns/${campaign.id}?fields=budget.*`,
+                adminHeaders
+              )
+            ).data.campaign
+
+            expect(campaignAfter).toEqual(
+              expect.objectContaining({
+                budget: expect.objectContaining({
+                  used: 100,
+                  limit: 100,
+                }),
+              })
+            )
+
+            const paymentCollection2 = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart2.id },
+                storeHeaders
+              )
+            ).data.payment_collection
+
+            await api.post(
+              `/store/payment-collections/${paymentCollection2.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
+
+            const response2 = await api
+              .post(`/store/carts/${cart2.id}/complete`, {}, storeHeaders)
+              .catch((e) => e)
+
+            expect(response2.response.status).toEqual(400)
+            expect(response2.response.data).toEqual(
+              expect.objectContaining({
+                type: "not_allowed",
+                message: "Promotion usage exceeds the budget limit.",
+              })
+            )
+
+            campaignAfter = (
+              await api.get(
+                `/admin/campaigns/${campaign.id}?fields=budget.*`,
+                adminHeaders
+              )
+            ).data.campaign
+
+            expect(campaignAfter).toEqual(
+              expect.objectContaining({
+                budget: expect.objectContaining({
+                  used: 100,
+                  limit: 100,
+                }),
               })
             )
           })
@@ -4771,6 +4985,315 @@ medusaIntegrationTestRunner({
                   ]),
                 })
               )
+            })
+          })
+
+          describe("ONCE allocation promotions", () => {
+            it("should apply fixed promotion to lowest priced items first and respect max_quantity across cart", async () => {
+              // Create two products with different prices
+              const expensiveProduct = (
+                await api.post(
+                  "/admin/products",
+                  {
+                    title: "Expensive Product",
+                    status: ProductStatus.PUBLISHED,
+                    options: [{ title: "Size", values: ["L"] }],
+                    variants: [
+                      {
+                        title: "Large",
+                        sku: "expensive-l",
+                        options: { Size: "L" },
+                        manage_inventory: false,
+                        prices: [{ amount: 10000, currency_code: "usd" }], // $100
+                      },
+                    ],
+                    shipping_profile_id: shippingProfile.id,
+                  },
+                  adminHeaders
+                )
+              ).data.product
+
+              const cheapProduct = (
+                await api.post(
+                  "/admin/products",
+                  {
+                    title: "Cheap Product",
+                    status: ProductStatus.PUBLISHED,
+                    options: [{ title: "Size", values: ["M"] }],
+                    variants: [
+                      {
+                        title: "Medium",
+                        sku: "cheap-m",
+                        options: { Size: "M" },
+                        manage_inventory: false,
+                        prices: [{ amount: 5000, currency_code: "usd" }], // $50
+                      },
+                    ],
+                    shipping_profile_id: shippingProfile.id,
+                  },
+                  adminHeaders
+                )
+              ).data.product
+
+              const oncePromotion = (
+                await api.post(
+                  `/admin/promotions`,
+                  {
+                    code: "ONCE_PROMO_FIXED",
+                    type: PromotionType.STANDARD,
+                    status: PromotionStatus.ACTIVE,
+                    is_automatic: false,
+                    application_method: {
+                      type: "fixed",
+                      target_type: "items",
+                      allocation: "once",
+                      value: 1000, // $10 off
+                      max_quantity: 2,
+                      currency_code: "usd",
+                      target_rules: [],
+                    },
+                  },
+                  adminHeaders
+                )
+              ).data.promotion
+
+              cart = (
+                await api.post(
+                  `/store/carts`,
+                  {
+                    currency_code: "usd",
+                    sales_channel_id: salesChannel.id,
+                    region_id: region.id,
+                    shipping_address: shippingAddressData,
+                    items: [
+                      {
+                        variant_id: expensiveProduct.variants[0].id,
+                        quantity: 3,
+                      },
+                      { variant_id: cheapProduct.variants[0].id, quantity: 5 },
+                    ],
+                    promo_codes: [oncePromotion.code],
+                  },
+                  storeHeadersWithCustomer
+                )
+              ).data.cart
+
+              // Should apply $10 discount twice to the cheap product only (lowest price)
+              const cheapItem = cart.items.find(
+                (i) => i.variant_id === cheapProduct.variants[0].id
+              )
+              const expensiveItem = cart.items.find(
+                (i) => i.variant_id === expensiveProduct.variants[0].id
+              )
+
+              expect(cheapItem.adjustments).toHaveLength(1)
+              expect(cheapItem.adjustments[0].amount).toBe(2000) // 2 * $10
+              expect(cheapItem.adjustments[0].code).toBe(oncePromotion.code)
+
+              expect(expensiveItem.adjustments).toHaveLength(0)
+            })
+
+            it("should distribute promotion across multiple items when max_quantity exceeds first item quantity", async () => {
+              const product1 = (
+                await api.post(
+                  "/admin/products",
+                  {
+                    title: "Product 1",
+                    status: ProductStatus.PUBLISHED,
+                    options: [{ title: "Size", values: ["S"] }],
+                    variants: [
+                      {
+                        title: "Small",
+                        sku: "prod1-s",
+                        options: { Size: "S" },
+                        manage_inventory: false,
+                        prices: [{ amount: 5000, currency_code: "usd" }], // $50
+                      },
+                    ],
+                    shipping_profile_id: shippingProfile.id,
+                  },
+                  adminHeaders
+                )
+              ).data.product
+
+              const product2 = (
+                await api.post(
+                  "/admin/products",
+                  {
+                    title: "Product 2",
+                    status: ProductStatus.PUBLISHED,
+                    options: [{ title: "Size", values: ["M"] }],
+                    variants: [
+                      {
+                        title: "Medium",
+                        sku: "prod2-m",
+                        options: { Size: "M" },
+                        manage_inventory: false,
+                        prices: [{ amount: 6000, currency_code: "usd" }], // $60
+                      },
+                    ],
+                    shipping_profile_id: shippingProfile.id,
+                  },
+                  adminHeaders
+                )
+              ).data.product
+
+              const oncePromotion = (
+                await api.post(
+                  `/admin/promotions`,
+                  {
+                    code: "ONCE_PROMO_DISTRIBUTE",
+                    type: PromotionType.STANDARD,
+                    status: PromotionStatus.ACTIVE,
+                    is_automatic: false,
+                    application_method: {
+                      type: "fixed",
+                      target_type: "items",
+                      allocation: "once",
+                      value: 500, // $5 off
+                      max_quantity: 4,
+                      currency_code: "usd",
+                      target_rules: [],
+                    },
+                  },
+                  adminHeaders
+                )
+              ).data.promotion
+
+              cart = (
+                await api.post(
+                  `/store/carts`,
+                  {
+                    currency_code: "usd",
+                    sales_channel_id: salesChannel.id,
+                    region_id: region.id,
+                    shipping_address: shippingAddressData,
+                    items: [
+                      { variant_id: product1.variants[0].id, quantity: 2 },
+                      { variant_id: product2.variants[0].id, quantity: 3 },
+                    ],
+                    promo_codes: [oncePromotion.code],
+                  },
+                  storeHeadersWithCustomer
+                )
+              ).data.cart
+
+              // Should apply: 2 units to product1 ($50), 2 units to product2 ($60)
+              const item1 = cart.items.find(
+                (i) => i.variant_id === product1.variants[0].id
+              )
+              const item2 = cart.items.find(
+                (i) => i.variant_id === product2.variants[0].id
+              )
+
+              expect(item1.adjustments).toHaveLength(1)
+              expect(item1.adjustments[0].amount).toBe(1000) // 2 * $5
+
+              expect(item2.adjustments).toHaveLength(1)
+              expect(item2.adjustments[0].amount).toBe(1000) // 2 * $5
+            })
+
+            it("should apply percentage promotion with once allocation to lowest priced items", async () => {
+              const product1 = (
+                await api.post(
+                  "/admin/products",
+                  {
+                    title: "Expensive Product",
+                    status: ProductStatus.PUBLISHED,
+                    options: [{ title: "Size", values: ["L"] }],
+                    variants: [
+                      {
+                        title: "Large",
+                        sku: "expensive-prod",
+                        options: { Size: "L" },
+                        manage_inventory: false,
+                        prices: [{ amount: 10000, currency_code: "usd" }], // $100
+                      },
+                    ],
+                    shipping_profile_id: shippingProfile.id,
+                  },
+                  adminHeaders
+                )
+              ).data.product
+
+              const product2 = (
+                await api.post(
+                  "/admin/products",
+                  {
+                    title: "Cheap Product",
+                    status: ProductStatus.PUBLISHED,
+                    options: [{ title: "Size", values: ["S"] }],
+                    variants: [
+                      {
+                        title: "Small",
+                        sku: "cheap-prod",
+                        options: { Size: "S" },
+                        manage_inventory: false,
+                        prices: [{ amount: 5000, currency_code: "usd" }], // $50
+                      },
+                    ],
+                    shipping_profile_id: shippingProfile.id,
+                  },
+                  adminHeaders
+                )
+              ).data.product
+
+              const oncePromotion = (
+                await api.post(
+                  `/admin/promotions`,
+                  {
+                    code: "ONCE_PROMO_PERCENTAGE",
+                    type: PromotionType.STANDARD,
+                    status: PromotionStatus.ACTIVE,
+                    is_automatic: false,
+                    application_method: {
+                      type: "percentage",
+                      target_type: "items",
+                      allocation: "once",
+                      value: 20, // 20% off
+                      max_quantity: 3,
+                      currency_code: "usd",
+                      target_rules: [],
+                    },
+                  },
+                  adminHeaders
+                )
+              ).data.promotion
+
+              cart = (
+                await api.post(
+                  `/store/carts`,
+                  {
+                    currency_code: "usd",
+                    sales_channel_id: salesChannel.id,
+                    region_id: region.id,
+                    shipping_address: shippingAddressData,
+                    items: [
+                      { variant_id: product1.variants[0].id, quantity: 5 },
+                      { variant_id: product2.variants[0].id, quantity: 4 },
+                    ],
+                    promo_codes: [oncePromotion.code],
+                  },
+                  storeHeadersWithCustomer
+                )
+              ).data.cart
+
+              // Should apply 20% to 3 units of the cheap product
+              // Tax-inclusive calculation: (($50 * 1.05) * 3 * 20%) / 1.05 ≈ $28.57 per unit * 3 = ~$2857
+              // The promotion inherits tax_inclusive from the cart's currency settings
+              const cheapItem = cart.items.find(
+                (i) => i.variant_id === product2.variants[0].id
+              )
+              const expensiveItem = cart.items.find(
+                (i) => i.variant_id === product1.variants[0].id
+              )
+
+              expect(cheapItem.adjustments).toHaveLength(1)
+              // Tax-inclusive: 20% of (3 units * $50 tax-inclusive) accounting for 5% tax
+              expect(cheapItem.adjustments[0].amount).toBeCloseTo(2857.14, 0)
+              expect(cheapItem.adjustments[0].code).toBe(oncePromotion.code)
+
+              expect(expensiveItem.adjustments).toHaveLength(0)
             })
           })
         })
