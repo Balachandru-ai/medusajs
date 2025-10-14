@@ -19,7 +19,7 @@ import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 import { medusaTshirtProduct } from "../../../__fixtures__/product"
 
-jest.setTimeout(10000000)
+jest.setTimeout(100000)
 
 const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
