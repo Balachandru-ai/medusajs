@@ -2,6 +2,7 @@
 // Always ensure that cartFieldsForCalculateShippingOptionsPrices is present in cartFieldsForRefreshSteps
 export const cartFieldsForRefreshSteps = [
   "id",
+  "email",
   "currency_code",
   "quantity",
   "subtotal",
@@ -157,6 +158,7 @@ export const productVariantsFields = [
   "product.id",
   "product.title",
   "product.description",
+  "product.status",
   "product.subtitle",
   "product.thumbnail",
   "product.type.value",

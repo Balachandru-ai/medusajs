@@ -2021,6 +2021,7 @@
       "campaign": "Campaign",
       "method": "Method",
       "allocation": "Allocation",
+      "allocationTooltip": "Each enforces the quantity limit per item, while Once enforces the quantity limit across the entire cart",
       "addCondition": "Add condition",
       "clearAll": "Clear all",
       "taxInclusive": "Tax Inclusive",
@@ -2162,6 +2163,10 @@
         "across": {
           "title": "Across",
           "description": "Applies value across items"
+        },
+        "once": {
+          "title": "Once",
+          "description": "Applies value to a limited number of items"
         }
       },
       "code": {
@@ -2204,7 +2209,7 @@
     "delete": {
       "title": "Are you sure?",
       "description": "You are about to delete the campaign '{{name}}'. This action cannot be undone.",
-      "successToast": "Campaign '{{name}}' was successfully created."
+      "successToast": "Campaign '{{name}}' was successfully deleted."
     },
     "edit": {
       "header": "Edit Campaign",
@@ -2233,12 +2238,17 @@
       "end_date": "End date",
       "total_spend": "Budget spent",
       "total_used": "Budget used",
+      "totalUsedByAttribute": "Total used",
       "budget_limit": "Budget limit",
       "campaign_id": {
         "hint": "Disabled campaigns have budget in a different currency than the promotion."
       }
     },
     "budget": {
+      "attribute": {
+        "customer_id": "customer",
+        "customer_email": "email"
+      },
       "create": {
         "hint": "Create a budget for the campaign.",
         "header": "Campaign Budget"
@@ -2248,7 +2258,12 @@
         "type": "Type",
         "currency": "Currency",
         "limit": "Limit",
-        "used": "Used"
+        "used": "Used",
+        "budgetAttribute": "Limit usage per",
+        "budgetAttributeTooltip": "Define how many times the promotion can be used by each customer or email.",
+        "totalUsedByAttribute": "Budget limit per: {{attribute}}",
+        "totalUsedByAttributeCustomerId": "Budget limit per customer",
+        "totalUsedByAttributeEmail": "Budget limit per email"
       },
       "type": {
         "spend": {
@@ -2258,6 +2273,12 @@
         "usage": {
           "title": "Usage",
           "description": "Set a limit on how many times the promotion can be used."
+        },
+        "useByAttribute": {
+          "title": "Usage by attribute (customer id, email, etc.)",
+          "titleCustomerId": "Usage per customer",
+          "titleEmail": "Usage per email",
+          "description": "Set a limit on how many times the promotion can be used by a specific attribute value."
         }
       },
       "edit": {
@@ -3004,6 +3025,7 @@
     "category": "Category",
     "collection": "Collection",
     "discountable": "Discountable",
+    "promotionCode": "Promotion code",
     "handle": "Handle",
     "subtitle": "Subtitle",
     "by": "By",

@@ -436,20 +436,23 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         .getKnexQuery()
         .toSQL()
 
-      const where = [
-        whereSqlInfo.sql.split("where ")[1],
-        whereSqlInfo.bindings,
-      ] as [string, any[]]
-
-      return await (manager.getTransactionContext() ?? manager.getKnex())
+      const builder = (manager.getTransactionContext() ?? manager.getKnex())
         .queryBuilder()
         .from(this.tableName)
         .delete()
-        .where(manager.getKnex().raw(...where))
-        .returning("id")
-        .then((rows: { id: string }[]) => {
-          return rows.map((row: { id: string }) => row.id)
-        })
+
+      const hasWhere = whereSqlInfo.sql.includes("where ")
+      if (hasWhere) {
+        const where = [
+          whereSqlInfo.sql.split("where ")[1],
+          whereSqlInfo.bindings,
+        ] as [string, any[]]
+        builder.where(manager.getKnex().raw(...where))
+      }
+
+      return await builder.returning("id").then((rows: { id: string }[]) => {
+        return rows.map((row: { id: string }) => row.id)
+      })
     }
 
     async find(
@@ -465,7 +468,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         if (findOptions_.options.limit != null || findOptions_.options.offset) {
           // TODO: from 7+ it will be the default strategy
           Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.BALANCED,
+            strategy: LoadStrategy.SELECT_IN,
           })
         }
       }
@@ -494,7 +497,7 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         if (findOptions_.options.limit != null || findOptions_.options.offset) {
           // TODO: from 7+ it will be the default strategy
           Object.assign(findOptions_.options, {
-            strategy: LoadStrategy.BALANCED,
+            strategy: LoadStrategy.SELECT_IN,
           })
         }
       }
