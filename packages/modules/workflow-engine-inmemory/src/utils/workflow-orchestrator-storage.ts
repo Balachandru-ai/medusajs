@@ -311,7 +311,7 @@ export class InMemoryDistributedTransactionStorage
     data: TransactionCheckpoint,
     ttl?: number,
     options?: TransactionOptions
-  ): Promise<void> {
+  ): Promise<TransactionCheckpoint> {
     /**
      * Store the retention time only if the transaction is done, failed or reverted.
      * From that moment, this tuple can be later on archived or deleted after the retention time.
@@ -405,6 +405,8 @@ export class InMemoryDistributedTransactionStorage
         }
       }
     }
+
+    return data
   }
 
   async #performVersionCheckAndMerge(

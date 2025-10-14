@@ -140,6 +140,17 @@ class DistributedTransaction extends EventEmitter {
   }
 
   private setFlow(flow: TransactionFlow) {
+    const areStepInstanceOfTransactionStep = Object.values(flow.steps).every(
+      (step) => step instanceof TransactionStep
+    )
+    if (!areStepInstanceOfTransactionStep) {
+      const [steps] = TransactionOrchestrator.buildSteps(
+        flow.definition,
+        flow.steps
+      )
+      flow.steps = steps
+    }
+
     this.flow = flow
   }
 

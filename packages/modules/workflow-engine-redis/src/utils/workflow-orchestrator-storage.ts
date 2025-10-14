@@ -475,10 +475,20 @@ export class RedisDistributedTransactionStorage
       stringifiedData = JSON.stringify(data)
     }
 
+    let cachedCheckpoint: TransactionCheckpoint | undefined
+
+    const getCheckpoint = async (options?: TransactionOptions) => {
+      if (!cachedCheckpoint) {
+        cachedCheckpoint = await this.get(key, options)
+      }
+      return cachedCheckpoint
+    }
+
     await this.#preventRaceConditionExecutionIfNecessary({
       data: data_,
       key,
       options,
+      getCheckpoint,
     })
 
     // Only set if not exists
@@ -493,32 +503,31 @@ export class RedisDistributedTransactionStorage
     }
 
     let retries = 0
+    let backoffMs = 10
     const maxRetries = (options?.parallelSteps || 1) + 1
     while (retries < maxRetries) {
       let lockAcquired = false
 
       try {
         // if awaiting async step, _v > 0
-        if (data_.flow._v) {
+        if (data_.flow._v || options?._v) {
+          data_.flow._v = options?._v ?? data_.flow._v
           lockAcquired = await this.#acquireLock(key)
-
-          console.log(
-            "lockAcquired",
-            lockAcquired,
-            "for",
-            key,
-            data_.flow._v,
-            data_.flow._saved_v
-          )
 
           if (!lockAcquired) {
             retries++
-            // retry with jitter to avoid race conditions again
-            await setTimeout(Math.round(10 + 100 * Math.random()))
+            const jitter = Math.random() * backoffMs
+            await setTimeout(backoffMs + jitter)
+            backoffMs = Math.min(backoffMs * 2, 1000)
             continue
           }
 
-          await this.#performVersionCheckAndMerge(key, data_, options?.stepId)
+          await this.#performVersionCheckAndMerge({
+            key,
+            data: data_,
+            stepId: options?.stepId,
+            getCheckpoint,
+          })
         }
 
         const execPipeline = () => {
@@ -568,7 +577,8 @@ export class RedisDistributedTransactionStorage
 
         if (hasFinished && !retentionTime) {
           if (!data.flow.metadata?.parentStepIdempotencyKey) {
-            await promiseAll([execPipeline(), this.deleteFromDb(data_)])
+            await this.deleteFromDb(data_)
+            await execPipeline()
           } else {
             await this.saveToDb(data_, retentionTime)
             await execPipeline()
@@ -799,12 +809,20 @@ export class RedisDistributedTransactionStorage
     await this.redisClient.unlink(lockKey)
   }
 
-  async #performVersionCheckAndMerge(
-    key: string,
-    data: TransactionCheckpoint,
+  async #performVersionCheckAndMerge({
+    key,
+    data,
+    stepId,
+    getCheckpoint,
+  }: {
+    key: string
+    data: TransactionCheckpoint
     stepId?: string
-  ): Promise<void> {
-    const currentData = (await this.get(key)) as TransactionCheckpoint
+    getCheckpoint: (
+      options?: TransactionOptions
+    ) => Promise<TransactionCheckpoint | undefined>
+  }): Promise<void> {
+    const currentData = (await getCheckpoint()) as TransactionCheckpoint
     if (currentData.flow._v === data.flow._saved_v) {
       return
     }
@@ -817,7 +835,8 @@ export class RedisDistributedTransactionStorage
     data.context = currentData.context
     data.errors = currentData.errors
     data.flow = currentData.flow
-    data.flow._saved_v = (currentData.flow._saved_v ?? 0) + 1
+    data.flow._saved_v =
+      Math.max(data.flow._saved_v, currentData.flow._saved_v) + 1
   }
 
   #mergeFlow(
@@ -825,12 +844,6 @@ export class RedisDistributedTransactionStorage
     data: TransactionCheckpoint,
     savingStep?: TransactionStep
   ): void {
-    console.log(
-      savingStep,
-      "===============",
-      data.context.invoke[savingStep?.definition.action!]
-    )
-
     const currentContext = currentData.context
     const latestContext = data.context
     const isCompensating =
@@ -957,10 +970,14 @@ export class RedisDistributedTransactionStorage
     data,
     key,
     options,
+    getCheckpoint,
   }: {
     data: TransactionCheckpoint
     key: string
     options?: TransactionOptions
+    getCheckpoint: (
+      options: TransactionOptions
+    ) => Promise<TransactionCheckpoint | undefined>
   }) {
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
@@ -983,7 +1000,7 @@ export class RedisDistributedTransactionStorage
       } as Parameters<typeof this.get>[1]
 
       data_ =
-        (await this.get(key, getOptions)) ??
+        (await getCheckpoint(getOptions as TransactionOptions)) ??
         ({ flow: {} } as TransactionCheckpoint)
     }
 

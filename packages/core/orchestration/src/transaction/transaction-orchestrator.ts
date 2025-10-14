@@ -331,11 +331,6 @@ export class TransactionOrchestrator extends EventEmitter {
       flow.state = TransactionState.COMPENSATING
       this.flagStepsToRevert(flow)
 
-      console.log(
-        "Setting state to waiting to compensate",
-        transaction.getFlow().steps
-      )
-
       this.emit(DistributedTransactionEvent.COMPENSATE_BEGIN, { transaction })
 
       return await this.checkAllSteps(transaction)
@@ -917,12 +912,11 @@ export class TransactionOrchestrator extends EventEmitter {
     const savedVersion = transaction.getFlow()._saved_v ?? 0
 
     while (continueExecution) {
-      if (savedVersion !== currentTrasactionVersion) {
-        console.log(
-          "savedVersion !== currentTrasactionVersion",
-          savedVersion,
-          currentTrasactionVersion
-        )
+      if (
+        currentTrasactionVersion &&
+        savedVersion &&
+        savedVersion < currentTrasactionVersion
+      ) {
         break
       }
 
@@ -1571,7 +1565,7 @@ export class TransactionOrchestrator extends EventEmitter {
     return null
   }
 
-  private static buildSteps(
+  static buildSteps(
     flow: TransactionStepsDefinition,
     existingSteps?: { [key: string]: TransactionStep }
   ): [{ [key: string]: TransactionStep }, StepFeatures] {

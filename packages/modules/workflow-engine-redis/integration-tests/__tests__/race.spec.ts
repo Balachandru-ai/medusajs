@@ -82,9 +82,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse(ret)
         })
 
+        const workflowId = "workflow-1" + ulid()
         createWorkflow(
           {
-            name: "workflow-1",
+            name: workflowId,
             idempotent: true,
             retentionTime: 1,
           },
@@ -101,7 +102,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           resolveDone = resolve
         })
         void workflowOrcModule.subscribe({
-          workflowId: "workflow-1",
+          workflowId: workflowId,
           transactionId,
           subscriber: async (event) => {
             if (event.eventType === "onFinish") {
@@ -110,7 +111,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           },
         })
 
-        await workflowOrcModule.run("workflow-1", {
+        await workflowOrcModule.run(workflowId, {
           throwOnError: false,
           logOnError: true,
           transactionId,
@@ -118,13 +119,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         await done
 
-        const { transaction, result } = await workflowOrcModule.run(
-          "workflow-1",
-          {
-            throwOnError: false,
-            transactionId,
-          }
-        )
+        const { result } = await workflowOrcModule.run(workflowId, {
+          throwOnError: false,
+          transactionId,
+        })
 
         expect(result).toEqual([
           "result from step 0",
@@ -136,7 +134,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         ])
       })
 
-      it.only("should manage saving multiple async steps in concurrency without background execution while setting steps as success manually concurrently", async () => {
+      it("should manage saving multiple async steps in concurrency without background execution while setting steps as success manually concurrently", async () => {
         const step0 = createStep({ name: "step0", async: true }, async () => {})
 
         const step1 = createStep({ name: "step1", async: true }, async () => {})
@@ -150,9 +148,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse(ret)
         })
 
+        const workflowId = "workflow-1" + ulid()
         createWorkflow(
           {
-            name: "workflow-1",
+            name: workflowId,
             idempotent: true,
             retentionTime: 1,
           },
@@ -169,7 +168,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           resolveDone = resolve
         })
         void workflowOrcModule.subscribe({
-          workflowId: "workflow-1",
+          workflowId: workflowId,
           transactionId,
           subscriber: async (event) => {
             if (event.eventType === "onFinish") {
@@ -178,7 +177,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           },
         })
 
-        await workflowOrcModule.run("workflow-1", {
+        await workflowOrcModule.run(workflowId, {
           throwOnError: false,
           logOnError: true,
           transactionId,
@@ -189,7 +188,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         for (let i = 0; i <= 4; i++) {
           void workflowOrcModule.setStepSuccess({
             idempotencyKey: {
-              workflowId: "workflow-1",
+              workflowId: workflowId,
               transactionId: transactionId,
               stepId: `step${i}`,
               action: TransactionHandlerType.INVOKE,
@@ -200,13 +199,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         await done
 
-        const { transaction, result } = await workflowOrcModule.run(
-          "workflow-1",
-          {
-            throwOnError: false,
-            transactionId,
-          }
-        )
+        const { result } = await workflowOrcModule.run(workflowId, {
+          throwOnError: false,
+          transactionId,
+        })
 
         expect(result).toEqual([
           "result from step 0",
