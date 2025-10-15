@@ -7678,6 +7678,7 @@
             "campaign",
             "method",
             "allocation",
+            "allocationTooltip",
             "addCondition",
             "clearAll",
             "taxInclusive",
@@ -8127,6 +8128,19 @@
               },
               "required": ["fixed", "percentage"],
               "additionalProperties": false
+            },
+            "limit": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -8142,7 +8156,8 @@
             "allocation",
             "code",
             "value",
-            "value_type"
+            "value_type",
+            "limit"
           ],
           "additionalProperties": false
         },
