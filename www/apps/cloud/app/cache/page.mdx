@@ -326,12 +326,17 @@ The following benchmark comparisons demonstrate the performance improvements you
 
 ---
 
-## Opt-Out of Caching
+## Opt-Out of Medusa Cache
 
-To disable caching by default in your Medusa project, set the following feature flag:
+If you want to disable Medusa Cache for your Medusa project, you can do so by disabling the `caching` feature flag in `medusa-config.ts`:
 
-{/* TODO add once available */}
-
-```env
-TBD
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  featureFlags: {
+    caching: false
+  }
+})
 ```
+
+This will disable all Medusa Cache functionality in your project.
