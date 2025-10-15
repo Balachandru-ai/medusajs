@@ -725,7 +725,7 @@
           "description": "{{title}} was successfully deleted."
         },
         "error": {
-          "header": "Failed to delete product"
+          "header": "Failed to delete product: {{description}}"
         }
       }
     }
