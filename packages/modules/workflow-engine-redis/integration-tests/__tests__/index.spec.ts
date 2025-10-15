@@ -57,7 +57,7 @@ import {
 } from "../__fixtures__/workflow_1_manual_retry_step"
 import { TestDatabase } from "../utils"
 
-jest.setTimeout(20000)
+jest.setTimeout(30000)
 
 function times(num) {
   let resolver

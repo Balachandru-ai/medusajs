@@ -115,7 +115,7 @@ export class TransactionOrchestrator extends EventEmitter {
     }
   }
 
-  private static isExpectedError(error: Error): boolean {
+  public static isExpectedError(error: Error): boolean {
     return (
       SkipCancelledExecutionError.isSkipCancelledExecutionError(error) ||
       SkipExecutionError.isSkipExecutionError(error) ||
@@ -590,9 +590,7 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     if (cleaningUp.length) {
-      setImmediate(async () => {
-        await promiseAll(cleaningUp)
-      })
+      await promiseAll(cleaningUp)
     }
 
     if (shouldEmit) {
@@ -687,9 +685,7 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     if (cleaningUp.length) {
-      setImmediate(async () => {
-        await promiseAll(cleaningUp)
-      })
+      await promiseAll(cleaningUp)
     }
 
     if (shouldEmit) {
@@ -788,6 +784,7 @@ export class TransactionOrchestrator extends EventEmitter {
       }
     }
 
+    console.log("SET STEP FAILURE", error)
     if (
       !isTimeout &&
       step.getStates().status !== TransactionStepStatus.PERMANENT_FAILURE
@@ -900,9 +897,7 @@ export class TransactionOrchestrator extends EventEmitter {
     }
 
     if (cleaningUp.length) {
-      setImmediate(async () => {
-        await promiseAll(cleaningUp)
-      })
+      await promiseAll(cleaningUp)
     }
 
     if (!result.stopExecution) {
@@ -922,24 +917,14 @@ export class TransactionOrchestrator extends EventEmitter {
     transaction: DistributedTransactionType
   ): Promise<void> {
     let continueExecution = true
-    let currentTrasactionVersion = transaction.getFlow()._v ?? 0
-    const savedVersion = transaction.getFlow()._saved_v ?? 0
 
     while (continueExecution) {
-      if (
-        currentTrasactionVersion &&
-        savedVersion &&
-        savedVersion < currentTrasactionVersion
-      ) {
-        break
-      }
-
       if (transaction.hasFinished()) {
         return
       }
 
       const flow = transaction.getFlow()
-      const nextSteps = await this.checkAllSteps(transaction)
+      let nextSteps = await this.checkAllSteps(transaction)
 
       const hasTimedOut = await this.checkTransactionTimeout(
         transaction,
@@ -951,6 +936,7 @@ export class TransactionOrchestrator extends EventEmitter {
 
       if (nextSteps.remaining === 0) {
         await this.finalizeTransaction(transaction)
+
         return
       }
 

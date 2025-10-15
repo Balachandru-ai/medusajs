@@ -1,14 +1,16 @@
-import { isDefined } from "@medusajs/utils"
+import { isDefined, TransactionStepState } from "@medusajs/utils"
 import { EventEmitter } from "events"
+import { setTimeout as setTimeoutPromise } from "node:timers/promises"
 import { IDistributedTransactionStorage } from "./datastore/abstract-storage"
 import { BaseInMemoryDistributedTransactionStorage } from "./datastore/base-in-memory-storage"
-import { NonSerializableCheckPointError } from "./errors"
+import { NonSerializableCheckPointError, SkipExecutionError } from "./errors"
 import { TransactionOrchestrator } from "./transaction-orchestrator"
 import { TransactionStep, TransactionStepHandler } from "./transaction-step"
 import {
   TransactionFlow,
   TransactionHandlerType,
   TransactionState,
+  TransactionStepStatus,
 } from "./types"
 
 /**
@@ -51,25 +53,310 @@ export class TransactionStepError {
   ) {}
 }
 
-const STRINGIFIED_CACHE = Symbol("stringified")
-export class TransactionCheckpoint {
-  // @ts-ignore - Used internally for caching stringified result
-  private [STRINGIFIED_CACHE]?: string
+const stateFlowOrder = [
+  TransactionState.NOT_STARTED,
+  TransactionState.INVOKING,
+  TransactionState.DONE,
+  TransactionState.WAITING_TO_COMPENSATE,
+  TransactionState.COMPENSATING,
+  TransactionState.REVERTED,
+  TransactionState.FAILED,
+]
 
+export class TransactionCheckpoint {
   constructor(
     public flow: TransactionFlow,
     public context: TransactionContext,
     public errors: TransactionStepError[] = []
   ) {}
 
-  // Internal method to cache stringified data
-  __cacheStringified(value: string) {
-    this[STRINGIFIED_CACHE] = value
+  /**
+   * Merge the current checkpoint with incoming data from a concurrent save operation.
+   * This handles race conditions when multiple steps complete simultaneously.
+   *
+   * @param storedData - The checkpoint data being saved
+   * @param savingStepId - Optional step ID if this is a step-specific save
+   */
+  static mergeCheckpoints(
+    currentTransactionData: TransactionCheckpoint,
+    storedData?: TransactionCheckpoint
+  ): TransactionCheckpoint {
+    if (!currentTransactionData || !storedData) {
+      return currentTransactionData
+    }
+
+    TransactionCheckpoint.#mergeFlow(currentTransactionData, storedData)
+    TransactionCheckpoint.#mergeErrors(
+      currentTransactionData.errors ?? [],
+      storedData.errors
+    )
+
+    return currentTransactionData
   }
 
-  // Internal method to get cached stringified data
-  __getCachedStringified(): string | undefined {
-    return this[STRINGIFIED_CACHE]
+  static #mergeFlow(
+    currentTransactionData: TransactionCheckpoint,
+    storedData: TransactionCheckpoint
+  ): void {
+    const currentTransactionContext = currentTransactionData.context
+    const storedContext = storedData.context
+
+    const mergeProperties = [
+      "state",
+      "hasFailedSteps",
+      "hasSkippedOnFailureSteps",
+      "hasSkippedSteps",
+      "hasRevertedSteps",
+      "hasWaitingSteps",
+      "cancelledAt",
+      "startedAt",
+      "hasAsyncSteps",
+      "_v",
+      "timedOutAt",
+    ]
+
+    if (currentTransactionData.flow._v >= storedData.flow._v) {
+      for (const prop of mergeProperties) {
+        if (
+          prop === "startedAt" ||
+          prop === "cancelledAt" ||
+          prop === "timedOutAt"
+        ) {
+          currentTransactionData.flow[prop] =
+            storedData.flow[prop] || currentTransactionData.flow[prop]
+              ? Math.max(
+                  storedData.flow[prop] ?? 0,
+                  currentTransactionData.flow[prop] ?? 0
+                )
+              : currentTransactionData.flow[prop] ??
+                storedData.flow[prop] ??
+                (undefined as any)
+        } else if (prop === "_v") {
+          currentTransactionData.flow[prop] = Math.max(
+            storedData.flow[prop] ?? 0,
+            currentTransactionData.flow[prop] ?? 0
+          )
+        } else if (prop === "state") {
+          const curState = stateFlowOrder.findIndex(
+            (state) => state === currentTransactionData.flow.state
+          )
+          const storedState = stateFlowOrder.findIndex(
+            (state) => state === storedData.flow.state
+          )
+
+          if (storedState > curState) {
+            currentTransactionData.flow.state = storedData.flow.state
+          } else if (
+            curState < storedState &&
+            currentTransactionData.flow.state !==
+              TransactionState.WAITING_TO_COMPENSATE
+          ) {
+            throw new SkipExecutionError(
+              `Transaction is behind another execution`
+            )
+          }
+        } else if (
+          storedData.flow[prop] &&
+          !currentTransactionData.flow[prop]
+        ) {
+          currentTransactionData.flow[prop] = storedData.flow[prop]
+        }
+      }
+    }
+
+    const storedSteps = Object.values(storedData.flow.steps)
+
+    const mergeStep = (
+      currentStep: TransactionStep,
+      storedStep: TransactionStep
+    ) => {
+      const mergeProperties = [
+        "attempts",
+        "failures",
+        "temporaryFailedAt",
+        "retryRescheduledAt",
+        "hasScheduledRetry",
+        "lastAttempt",
+        "_v",
+        "stepFailed",
+        "startedAt",
+      ]
+
+      for (const prop of mergeProperties) {
+        if (prop === "hasScheduledRetry" || prop === "stepFailed") {
+          currentStep[prop] = storedStep[prop] ?? currentStep[prop]
+          continue
+        }
+
+        currentStep[prop] =
+          storedStep[prop] || currentStep[prop]
+            ? Math.max(storedStep[prop] ?? 0, currentStep[prop] ?? 0)
+            : currentStep[prop] ?? storedStep[prop]
+      }
+    }
+
+    for (const storedStep of storedSteps) {
+      if (storedStep.id === "_root") {
+        continue
+      }
+
+      const stepName = storedStep.definition.action!
+      const stepId = storedStep.id
+
+      // Merge context responses
+      if (
+        storedContext.invoke[stepName] &&
+        !currentTransactionContext.invoke[stepName]
+      ) {
+        currentTransactionContext.invoke[stepName] =
+          storedContext.invoke[stepName]
+      }
+
+      if (
+        storedContext.compensate[stepName] &&
+        !currentTransactionContext.compensate[stepName]
+      ) {
+        currentTransactionContext.compensate[stepName] =
+          storedContext.compensate[stepName]
+      }
+
+      const currentStepVersion = currentTransactionData.flow.steps[stepId]._v!
+      const storedStepVersion = storedData.flow.steps[stepId]._v!
+
+      if (storedStepVersion > currentStepVersion) {
+        throw new SkipExecutionError(`Transaction is behind another execution`)
+      }
+
+      // Determine which state is further along in the process
+      const shouldUpdateInvoke = TransactionCheckpoint.#shouldUpdateStepState(
+        currentTransactionData.flow.steps[stepId].invoke,
+        storedStep.invoke
+      )
+
+      const shouldUpdateCompensate =
+        TransactionCheckpoint.#shouldUpdateStepState(
+          currentTransactionData.flow.steps[stepId].compensate,
+          storedStep.compensate
+        )
+
+      if (shouldUpdateInvoke) {
+        currentTransactionData.flow.steps[stepId].invoke = storedStep.invoke
+      }
+
+      if (shouldUpdateCompensate) {
+        currentTransactionData.flow.steps[stepId].compensate =
+          storedStep.compensate
+      }
+
+      mergeStep(currentTransactionData.flow.steps[stepId], storedStep)
+    }
+  }
+
+  /**
+   * Determines if the stored step state should replace the current step state.
+   * This validates both state and status transitions according to TransactionStep rules.
+   */
+  static #shouldUpdateStepState(
+    currentStepState: {
+      state: TransactionStepState
+      status: TransactionStepStatus
+    },
+    storedStepState: {
+      state: TransactionStepState
+      status: TransactionStepStatus
+    }
+  ): boolean {
+    // Define allowed state transitions
+    const allowedStateTransitions = {
+      [TransactionStepState.DORMANT]: [TransactionStepState.NOT_STARTED],
+      [TransactionStepState.NOT_STARTED]: [
+        TransactionStepState.INVOKING,
+        TransactionStepState.COMPENSATING,
+        TransactionStepState.FAILED,
+        TransactionStepState.SKIPPED,
+        TransactionStepState.SKIPPED_FAILURE,
+      ],
+      [TransactionStepState.INVOKING]: [
+        TransactionStepState.FAILED,
+        TransactionStepState.DONE,
+        TransactionStepState.TIMEOUT,
+        TransactionStepState.SKIPPED,
+      ],
+      [TransactionStepState.COMPENSATING]: [
+        TransactionStepState.REVERTED,
+        TransactionStepState.FAILED,
+      ],
+      [TransactionStepState.DONE]: [TransactionStepState.COMPENSATING],
+    }
+
+    // Define allowed status transitions
+    const allowedStatusTransitions = {
+      [TransactionStepStatus.WAITING]: [
+        TransactionStepStatus.OK,
+        TransactionStepStatus.TEMPORARY_FAILURE,
+        TransactionStepStatus.PERMANENT_FAILURE,
+      ],
+      [TransactionStepStatus.TEMPORARY_FAILURE]: [
+        TransactionStepStatus.IDLE,
+        TransactionStepStatus.PERMANENT_FAILURE,
+      ],
+      [TransactionStepStatus.PERMANENT_FAILURE]: [TransactionStepStatus.IDLE],
+    }
+
+    if (
+      currentStepState.state === storedStepState.state &&
+      currentStepState.status === storedStepState.status
+    ) {
+      return false
+    }
+
+    // Check if state transition from stored to current is allowed
+    const allowedStatesFromCurrent =
+      allowedStateTransitions[currentStepState.state] || []
+    const isStateTransitionValid = allowedStatesFromCurrent.includes(
+      storedStepState.state
+    )
+
+    if (currentStepState.state !== storedStepState.state) {
+      console.log("STATE DIFF FROM", currentStepState, "TO", storedStepState, [
+        isStateTransitionValid,
+      ])
+      return isStateTransitionValid
+    }
+
+    // States are the same, check status transition
+    // Special case: WAITING status can always be transitioned
+    if (currentStepState.status === TransactionStepStatus.WAITING) {
+      return true
+    }
+
+    // Check if status transition from stored to current is allowed
+    const allowedStatusesFromCurrent =
+      allowedStatusTransitions[currentStepState.status] || []
+
+    console.log("STATUS ++++ FROM", storedStepState, "TO", currentStepState, [
+      allowedStatusesFromCurrent.includes(storedStepState.status),
+    ])
+
+    return allowedStatusesFromCurrent.includes(storedStepState.status)
+  }
+
+  static #mergeErrors(
+    currentErrors: TransactionStepError[],
+    incomingErrors: TransactionStepError[]
+  ): void {
+    const existingErrorSignatures = new Set(
+      currentErrors.map(
+        (err) => `${err.action}:${err.handlerType}:${err.error?.message}`
+      )
+    )
+
+    for (const error of incomingErrors) {
+      const signature = `${error.action}:${error.handlerType}:${error.error?.message}`
+      if (!existingErrorSignatures.has(signature)) {
+        currentErrors.push(error)
+      }
+    }
   }
 }
 
@@ -139,27 +426,8 @@ class DistributedTransaction extends EventEmitter {
     return this.flow
   }
 
-  private setFlow(flow: TransactionFlow) {
-    const areStepInstanceOfTransactionStep = Object.values(flow.steps).every(
-      (step) => step instanceof TransactionStep
-    )
-    if (!areStepInstanceOfTransactionStep) {
-      const [steps] = TransactionOrchestrator.buildSteps(
-        flow.definition,
-        flow.steps
-      )
-      flow.steps = steps
-    }
-
-    this.flow = flow
-  }
-
   public getContext() {
     return this.context
-  }
-
-  private setContext(context: TransactionContext) {
-    this.context = context
   }
 
   public getErrors(handlerType?: TransactionHandlerType) {
@@ -168,10 +436,6 @@ class DistributedTransaction extends EventEmitter {
     }
 
     return this.errors.filter((error) => error.handlerType === handlerType)
-  }
-
-  private setErrors(errors: TransactionStepError[]) {
-    this.errors = errors
   }
 
   public addError(
@@ -264,22 +528,70 @@ class DistributedTransaction extends EventEmitter {
       this.transactionId
     )
 
-    const checkpoint = this.#serializeCheckpointData()
+    let checkpoint
 
-    const savedData = await DistributedTransaction.keyValueStore.save(
-      key,
-      checkpoint,
-      ttl,
-      options
-    )
+    let retries = 0
+    let backoffMs = 50
+    const maxRetries = (options?.parallelSteps || 1) + 1
+    while (retries < maxRetries) {
+      checkpoint = this.#serializeCheckpointData()
 
-    if (_v) {
-      this.setFlow(savedData.flow)
-      this.setContext(savedData.context)
-      this.setErrors(savedData.errors)
+      try {
+        const savedCheckpoint = await DistributedTransaction.keyValueStore.save(
+          key,
+          checkpoint,
+          ttl,
+          options
+        )
+
+        return savedCheckpoint
+      } catch (error) {
+        if (TransactionOrchestrator.isExpectedError(error)) {
+          throw error
+        } else if (checkpoint.flow.state === TransactionState.NOT_STARTED) {
+          throw new SkipExecutionError(
+            "Transaction already started for transactionId: " +
+              this.transactionId
+          )
+        }
+
+        retries++
+        // Exponential backoff with jitter
+        const jitter = Math.random() * backoffMs
+
+        console.log("Retrying checkpoint save in", backoffMs + jitter)
+
+        await setTimeoutPromise(backoffMs + jitter)
+
+        backoffMs = Math.min(backoffMs * 2, 1000)
+
+        const lastCheckpoint = await DistributedTransaction.loadTransaction(
+          this.modelId,
+          this.transactionId
+        )
+
+        if (!lastCheckpoint) {
+          throw new SkipExecutionError("Transaction already finished")
+        }
+
+        TransactionCheckpoint.mergeCheckpoints(checkpoint, lastCheckpoint)
+
+        const [steps] = TransactionOrchestrator.buildSteps(
+          checkpoint.flow.definition,
+          checkpoint.flow.steps
+        )
+        checkpoint.flow.steps = steps
+        this.flow = checkpoint.flow
+        this.errors = checkpoint.errors
+        this.context = checkpoint.context
+
+        continue
+      }
     }
 
-    return checkpoint
+    throw new Error(
+      `Max retries (${maxRetries}) exceeded for saving checkpoint due to version conflicts`
+    )
   }
 
   public static async loadTransaction(
@@ -394,65 +706,66 @@ class DistributedTransaction extends EventEmitter {
    * @internal
    * @returns
    */
-  #serializeCheckpointData(): TransactionCheckpoint {
+  #serializeCheckpointData() {
     const data = new TransactionCheckpoint(
       this.getFlow(),
       this.getContext(),
       this.getErrors()
     )
 
-    let serialized: string
-
-    // First attempt: try to stringify everything at once (happy path - single stringify)
-    try {
-      serialized = JSON.stringify(data)
-      // Cache the stringified result to avoid re-stringify in Redis storage
-      data.__cacheStringified(serialized)
-      return data
-    } catch (e) {
-      // Serialization failed - need to identify and fix the problem
-    }
-
-    // Check if context is the issue by attempting to stringify it separately
-    try {
-      JSON.stringify(this.context)
-    } catch (contextError) {
-      // Context is not serializable - this is a critical error
-      throw new NonSerializableCheckPointError(
-        "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
-      )
-    }
-
-    const sanitizedErrors: TransactionStepError[] = []
-    for (const error of this.errors) {
+    const isSerializable = (obj) => {
       try {
-        JSON.stringify(error.error)
-        sanitizedErrors.push(error)
+        JSON.parse(JSON.stringify(obj))
+        return true
       } catch {
-        sanitizedErrors.push({
-          ...error,
-          error: {
-            name: error.error?.name || "Error",
-            message: error.error?.message || String(error.error),
-            stack: error.error?.stack,
-          },
-        })
+        return false
       }
     }
 
-    this.errors.push(...sanitizedErrors)
+    let rawData
+    try {
+      rawData = JSON.parse(JSON.stringify(data))
+    } catch (e) {
+      if (!isSerializable(this.context)) {
+        // This is a safe guard, we should never reach this point
+        // If we do, it means that the context is not serializable
+        // and we should throw an error
+        throw new NonSerializableCheckPointError(
+          "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
+        )
+      }
 
-    const sanitizedData = new TransactionCheckpoint(
-      this.getFlow(),
-      this.getContext(),
-      this.getErrors()
-    )
+      if (!isSerializable(this.errors)) {
+        const nonSerializableErrors: TransactionStepError[] = []
+        for (const error of this.errors) {
+          if (!isSerializable(error.error)) {
+            error.error = {
+              name: error.error.name,
+              message: error.error.message,
+              stack: error.error.stack,
+            }
+            nonSerializableErrors.push({
+              ...error,
+              error: e,
+            })
+          }
+        }
 
-    serialized = JSON.stringify(sanitizedData)
-    // Cache the stringified result to avoid re-stringify in Redis storage
-    sanitizedData.__cacheStringified(serialized)
+        if (nonSerializableErrors.length) {
+          this.errors.push(...nonSerializableErrors)
+        }
+      }
 
-    return sanitizedData
+      const data = new TransactionCheckpoint(
+        this.getFlow(),
+        this.getContext(),
+        this.getErrors()
+      )
+
+      rawData = JSON.parse(JSON.stringify(data))
+    }
+
+    return rawData
   }
 }
 

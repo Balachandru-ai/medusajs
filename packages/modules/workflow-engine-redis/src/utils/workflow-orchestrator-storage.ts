@@ -6,7 +6,6 @@ import {
   SchedulerOptions,
   SkipCancelledExecutionError,
   SkipExecutionError,
-  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -21,12 +20,10 @@ import {
   promiseAll,
   TransactionState,
   TransactionStepState,
-  TransactionStepStatus,
 } from "@medusajs/framework/utils"
 import { WorkflowOrchestratorService } from "@services"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
-import { setTimeout } from "timers/promises"
 
 enum JobType {
   SCHEDULE = "schedule",
@@ -317,6 +314,13 @@ export class RedisDistributedTransactionStorage
       return
     }
 
+    console.log(
+      "Saving to DB",
+      Object.keys(data.context.invoke),
+      "---------------",
+      data.flow._saved_v
+    )
+
     await this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
@@ -460,164 +464,147 @@ export class RedisDistributedTransactionStorage
      */
     const { retentionTime } = options ?? {}
 
-    const hasFinished = [
-      TransactionState.DONE,
-      TransactionState.FAILED,
-      TransactionState.REVERTED,
-    ].includes(data.flow.state)
+    let lockAcquired = false
 
-    // Check if stringified data is cached to avoid double JSON.stringify
-    let stringifiedData = (data as any).__getCachedStringified?.()
-    let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
+    try {
+      if (data.flow._v) {
+        lockAcquired = await this.#acquireLock(key)
 
-    if (!stringifiedData) {
-      stringifiedData = JSON.stringify(data)
-    }
+        if (!lockAcquired) {
+          throw new Error("Lock not acquired")
+        }
 
-    let cachedCheckpoint: TransactionCheckpoint | undefined
+        const storedData = await this.get(key, {
+          isCancelling: !!data.flow.cancelledAt,
+        } as any)
 
-    const getCheckpoint = async (options?: TransactionOptions) => {
-      if (!cachedCheckpoint) {
-        cachedCheckpoint = await this.get(key, options)
+        console.log(
+          "+++++++ DATA IN STORAGE +++++++",
+          storedData?.flow._v,
+          key,
+          Object.values(storedData?.flow.steps ?? {}).map((s: any) => [
+            s.id,
+            s.invoke?.state,
+            s.compensate?.state,
+          ]),
+          "+++++++ INCOMING DATA +++++++",
+          Object.values(data.flow.steps).map((s: any) => [
+            s.id,
+            s.invoke?.state,
+            s.compensate?.state,
+          ]),
+          storedData?.flow.state
+        )
+        TransactionCheckpoint.mergeCheckpoints(data, storedData)
+        console.log(
+          "------------------- MERGED TRANSACTION",
+          data.flow._v,
+          key,
+          Object.values(data.flow.steps).map((s: any) => [
+            s.id,
+            s.invoke?.state,
+            s.compensate?.state,
+          ]),
+          data.flow.state
+        )
       }
-      return cachedCheckpoint
-    }
 
-    await this.#preventRaceConditionExecutionIfNecessary({
-      data: data_,
-      key,
-      options,
-      getCheckpoint,
-    })
+      const hasFinished = [
+        TransactionState.DONE,
+        TransactionState.FAILED,
+        TransactionState.REVERTED,
+      ].includes(data.flow.state)
 
-    // Only set if not exists
-    const shouldSetNX =
-      data_.flow.state === TransactionState.NOT_STARTED &&
-      !data_.flow.transactionId.startsWith("auto-")
+      let cachedCheckpoint: TransactionCheckpoint | undefined
+      const getCheckpoint = async (options?: TransactionOptions) => {
+        if (!cachedCheckpoint) {
+          cachedCheckpoint = await this.get(key, options)
+        }
+        return cachedCheckpoint
+      }
 
-    if (hasFinished && retentionTime) {
-      Object.assign(data_, {
-        retention_time: retentionTime,
+      await this.#preventRaceConditionExecutionIfNecessary({
+        data: data,
+        key,
+        options,
+        getCheckpoint,
       })
-    }
 
-    let retries = 0
-    let backoffMs = 10
-    const maxRetries = (options?.parallelSteps || 1) + 1
-    while (retries < maxRetries) {
-      let lockAcquired = false
+      // Only set if not exists
+      const shouldSetNX =
+        data.flow.state === TransactionState.NOT_STARTED &&
+        !data.flow.transactionId.startsWith("auto-")
 
-      try {
-        // if awaiting async step, _v > 0
-        if (data_.flow._v || options?._v) {
-          data_.flow._v = options?._v ?? data_.flow._v
-          lockAcquired = await this.#acquireLock(key)
+      if (retentionTime) {
+        Object.assign(data, {
+          retention_time: retentionTime,
+        })
+      }
 
-          if (!lockAcquired) {
-            retries++
-            const jitter = Math.random() * backoffMs
-            await setTimeout(backoffMs + jitter)
-            backoffMs = Math.min(backoffMs * 2, 1000)
-            continue
-          }
-
-          await this.#performVersionCheckAndMerge({
-            data: data_,
-            stepId: options?.stepId,
-            getCheckpoint,
-          })
+      const execPipeline = () => {
+        const lightData_ = {
+          errors: data.errors,
+          flow: data.flow,
         }
+        const stringifiedData = JSON.stringify(lightData_)
 
-        const execPipeline = () => {
-          const lightData_ = {
-            errors: data_.errors,
-            flow: data_.flow,
-          }
-          const stringifiedData = JSON.stringify(lightData_)
+        const pipeline = this.redisClient.pipeline()
 
-          const pipeline = this.redisClient.pipeline()
-
-          if (!hasFinished) {
-            if (ttl) {
-              if (shouldSetNX) {
-                pipeline.set(key, stringifiedData, "EX", ttl, "NX")
-              } else {
-                pipeline.set(key, stringifiedData, "EX", ttl)
-              }
+        if (!hasFinished) {
+          if (ttl) {
+            if (shouldSetNX) {
+              pipeline.set(key, stringifiedData, "EX", ttl, "NX")
             } else {
-              if (shouldSetNX) {
-                pipeline.set(key, stringifiedData, "NX")
-              } else {
-                pipeline.set(key, stringifiedData)
-              }
+              pipeline.set(key, stringifiedData, "EX", ttl)
             }
           } else {
-            pipeline.unlink(key)
-          }
-
-          return pipeline.exec().then((result) => {
-            if (!shouldSetNX) {
-              return result
+            if (shouldSetNX) {
+              pipeline.set(key, stringifiedData, "NX")
+            } else {
+              pipeline.set(key, stringifiedData)
             }
-
-            const actionResult = result?.pop()
-            const isOk = !!actionResult?.pop()
-            if (!isOk) {
-              throw new SkipExecutionError(
-                "Transaction already started for transactionId: " +
-                  data.flow.transactionId
-              )
-            }
-
-            return result
-          })
-        }
-
-        if (data_.flow._v && options?.stepId) {
-          const stepId = options?.stepId!
-          const isCompensating =
-            data_.flow.state === TransactionState.COMPENSATING
-          const stepState = isCompensating
-            ? data_.flow.steps[stepId]?.compensate?.state
-            : data_.flow.steps[stepId]?.invoke?.state
-          const shouldBump = [
-            TransactionStepState.DONE,
-            TransactionStepState.REVERTED,
-            TransactionStepState.FAILED,
-            TransactionStepState.SKIPPED,
-            TransactionStepState.SKIPPED_FAILURE,
-            TransactionStepState.TIMEOUT,
-          ].includes(stepState)
-
-          if (shouldBump) {
-            data_.flow._saved_v += 1
-          }
-        }
-
-        if (hasFinished && !retentionTime) {
-          if (!data.flow.metadata?.parentStepIdempotencyKey) {
-            await this.deleteFromDb(data_)
-            await execPipeline()
-          } else {
-            await this.saveToDb(data_, retentionTime)
-            await execPipeline()
           }
         } else {
-          await this.saveToDb(data_, retentionTime)
-          await execPipeline()
+          pipeline.unlink(key)
         }
-      } finally {
-        if (lockAcquired) {
-          await this.#releaseLock(key)
-        }
+
+        return pipeline.exec().then((result) => {
+          if (!shouldSetNX) {
+            return result
+          }
+
+          const actionResult = result?.pop()
+          const isOk = !!actionResult?.pop()
+          if (!isOk) {
+            throw new SkipExecutionError(
+              "Transaction already started for transactionId: " +
+                data.flow.transactionId
+            )
+          }
+
+          return result
+        })
       }
 
-      return data_ as TransactionCheckpoint
-    }
+      if (hasFinished && !retentionTime) {
+        if (!data.flow.metadata?.parentStepIdempotencyKey) {
+          await this.deleteFromDb(data)
+          await execPipeline()
+        } else {
+          await this.saveToDb(data, retentionTime)
+          await execPipeline()
+        }
+      } else {
+        await this.saveToDb(data, retentionTime)
+        await execPipeline()
+      }
 
-    throw new Error(
-      "Max retries exceeded for saving checkpoint due to version conflicts"
-    )
+      return data as TransactionCheckpoint
+    } finally {
+      if (lockAcquired) {
+        await this.#releaseLock(key)
+      }
+    }
   }
 
   async scheduleRetry(
@@ -810,8 +797,9 @@ export class RedisDistributedTransactionStorage
     return `${key}:lock`
   }
 
-  async #acquireLock(key: string, ttlSeconds: number = 5): Promise<boolean> {
+  async #acquireLock(key: string, ttlSeconds: number = 2): Promise<boolean> {
     const lockKey = this.#getLockKey(key)
+
     const result = await this.redisClient.set(
       lockKey,
       1,
@@ -819,196 +807,12 @@ export class RedisDistributedTransactionStorage
       ttlSeconds,
       "NX"
     )
-
     return result === "OK"
   }
 
   async #releaseLock(key: string): Promise<void> {
     const lockKey = this.#getLockKey(key)
-    await this.redisClient.unlink(lockKey)
-  }
-
-  async #performVersionCheckAndMerge({
-    data,
-    stepId,
-    getCheckpoint,
-  }: {
-    data: TransactionCheckpoint
-    stepId?: string
-    getCheckpoint: (
-      options?: TransactionOptions
-    ) => Promise<TransactionCheckpoint | undefined>
-  }): Promise<void> {
-    const currentData = (await getCheckpoint()) as TransactionCheckpoint
-    if (!currentData) {
-      throw new SkipExecutionError("Transaction already finished")
-    }
-
-    const savingStep = data.flow.steps[stepId!]
-
-    this.#mergeFlow(currentData, data, savingStep)
-    this.#mergeErrors(currentData!.errors ?? [], data.errors)
-
-    data.context = currentData.context
-    data.errors = currentData.errors
-    data.flow = currentData.flow
-  }
-
-  #mergeFlow(
-    currentData: TransactionCheckpoint,
-    data: TransactionCheckpoint,
-    savingStep?: TransactionStep
-  ): void {
-    const currentContext = currentData.context
-    const latestContext = data.context
-
-    const mergeProperties = [
-      "hasFailedSteps",
-      "hasSkippedOnFailureSteps",
-      "hasSkippedSteps",
-      "hasRevertedSteps",
-      "_v",
-      "_saved_v",
-      "timedOutAt",
-      "state",
-    ]
-    const stateFlowOrder = [
-      TransactionState.NOT_STARTED,
-      TransactionState.INVOKING,
-      TransactionState.DONE,
-      TransactionState.WAITING_TO_COMPENSATE,
-      TransactionState.COMPENSATING,
-      TransactionState.REVERTED,
-      TransactionState.FAILED,
-    ]
-
-    if (data.flow._v >= currentData.flow._v) {
-      for (const prop of mergeProperties) {
-        if (prop === "_v") {
-          currentData.flow._v = Math.max(data.flow._v, currentData.flow._v)
-        } else if (prop === "state") {
-          const curState = stateFlowOrder.findIndex(
-            (state) => state === currentData.flow.state
-          )
-          const latestState = stateFlowOrder.findIndex(
-            (state) => state === data.flow.state
-          )
-
-          if (latestState >= curState) {
-            currentData.flow.state = data.flow.state
-          } else if (
-            latestState < curState &&
-            currentData.flow.state !== TransactionState.WAITING_TO_COMPENSATE
-          ) {
-            throw new SkipExecutionError(
-              `Transaction is behind another execution`
-            )
-          }
-        } else if (data.flow[prop] && !currentData.flow[prop]) {
-          currentData.flow[prop] = data.flow[prop]
-        }
-      }
-    }
-
-    const onlyMergeVersion = !savingStep
-    const savingSteps = savingStep
-      ? [savingStep]
-      : Object.values(data.flow.steps)
-
-    for (const savingStep of savingSteps) {
-      if (savingStep.id === "_root") {
-        continue
-      }
-
-      const stepName = savingStep.definition.action!
-      const stepId = savingStep.id
-
-      if (!onlyMergeVersion) {
-        if (
-          latestContext.invoke[stepName] &&
-          !currentContext.invoke[stepName]
-        ) {
-          currentContext.invoke[stepName] = latestContext.invoke[stepName]
-        }
-
-        if (
-          latestContext.compensate[stepName] &&
-          !currentContext.compensate[stepName]
-        ) {
-          currentContext.compensate[stepName] =
-            latestContext.compensate[stepName]
-        }
-      }
-
-      const currentStepVersion = currentData.flow.steps[stepId]._v!
-      const savingStepVersion = data.flow.steps[stepId]._v!
-
-      if (currentStepVersion > savingStepVersion) {
-        throw new SkipExecutionError(`Transaction is behind another execution`)
-      }
-
-      const mergeStep = (currentStep, step) => {
-        const mergeProperties = onlyMergeVersion
-          ? ["_v"]
-          : [
-              "attempts",
-              "failures",
-              "temporaryFailedAt",
-              "retryRescheduledAt",
-              "hasScheduledRetry",
-              "lastAttempt",
-              "_v",
-            ]
-        for (const prop of mergeProperties) {
-          if (prop === "hasScheduledRetry") {
-            currentStep[prop] = step[prop] ?? currentStep[prop]
-            continue
-          }
-
-          currentStep[prop] =
-            step[prop] && currentStep[prop]
-              ? Math.max(step[prop], currentStep[prop])
-              : step[prop] ?? currentStep[prop]
-        }
-      }
-
-      let canUpdate = [
-        TransactionStepStatus.IDLE,
-        TransactionStepStatus.WAITING,
-        TransactionStepStatus.TEMPORARY_FAILURE,
-      ]
-      if (
-        canUpdate.includes(currentData.flow.steps[stepId].compensate.status)
-      ) {
-        if (!onlyMergeVersion)
-          currentData.flow.steps[stepId].compensate = savingStep.compensate
-        mergeStep(currentData.flow.steps[stepId], savingStep)
-      }
-
-      if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
-        if (!onlyMergeVersion)
-          currentData.flow.steps[stepId].invoke = savingStep.invoke
-        mergeStep(currentData.flow.steps[stepId], savingStep)
-      }
-    }
-  }
-
-  #mergeErrors(
-    currentErrors: TransactionStepError[],
-    latestErrors: TransactionStepError[]
-  ): void {
-    const existingErrorSignatures = new Set(
-      currentErrors.map(
-        (err) => `${err.action}:${err.handlerType}:${err.error?.message}`
-      )
-    )
-
-    for (const error of latestErrors) {
-      const signature = `${error.action}:${error.handlerType}:${error.error?.message}`
-      if (!existingErrorSignatures.has(signature)) {
-        currentErrors.push(error)
-      }
-    }
+    await this.redisClient.del(lockKey)
   }
 
   async #preventRaceConditionExecutionIfNecessary({
@@ -1027,7 +831,6 @@ export class RedisDistributedTransactionStorage
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
     )
-
     /**
      * In case many execution can succeed simultaneously, we need to ensure that the latest
      * execution does continue if a previous execution is considered finished
@@ -1061,17 +864,19 @@ export class RedisDistributedTransactionStorage
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        const shouldSkip = [
+        const doneStates = [
           TransactionStepState.DONE,
           TransactionStepState.REVERTED,
           TransactionStepState.FAILED,
           TransactionStepState.SKIPPED,
           TransactionStepState.SKIPPED_FAILURE,
           TransactionStepState.TIMEOUT,
-        ].includes(latestState)
+        ]
+
+        const shouldSkip = doneStates.includes(latestState)
 
         if (shouldSkip) {
-          throw new SkipStepAlreadyFinishedError(
+          throw new SkipExecutionError(
             `Step ${stepId} already finished by another execution`
           )
         }

@@ -9,25 +9,12 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { setTimeout as setTimeoutSync } from "timers"
 import { setTimeout } from "timers/promises"
 import { ulid } from "ulid"
 import "../__fixtures__"
 import { TestDatabase } from "../utils/database"
 
-jest.setTimeout(30000)
-
-const failTrap = (done, name, timeout = 5000) => {
-  return setTimeoutSync(() => {
-    // REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
-    console.warn(
-      `Jest is breaking the event emit with its debouncer. This allows to continue the test by managing the timeout of the test manually. ${name}`
-    )
-    done()
-  }, timeout)
-}
-
-// REF:https://stackoverflow.com/questions/78028715/jest-async-test-with-event-emitter-isnt-ending
+jest.setTimeout(10000)
 
 moduleIntegrationTestRunner<IWorkflowEngineService>({
   moduleName: Modules.WORKFLOW_ENGINE,
@@ -151,7 +138,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse(ret)
         })
 
-        const workflowId = "workflow-1" + ulid()
+        const workflowId = "workflow-2" + ulid()
         createWorkflow(
           {
             name: workflowId,
@@ -217,7 +204,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
       it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
-        const workflowId = "workflow-1" + ulid()
+        const workflowId = "workflow-3" + ulid()
         const subWorkflowId = "sub-" + workflowId
 
         const step0InvokeMock = jest.fn()
@@ -293,9 +280,9 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         expect(transformMock).toHaveBeenCalledTimes(1)
       })
 
-      it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", (done) => {
+      it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
-        const workflowId = "RACE_workflow-1" + ulid()
+        const workflowId = "workflow-4" + ulid()
 
         const step0InvokeMock = jest.fn()
         const step0CompensateMock = jest.fn()
@@ -358,29 +345,16 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(build)
         })
 
-        let timeout: NodeJS.Timeout
-        void workflowOrcModule.subscribe({
-          workflowId: workflowId,
-          transactionId,
-          subscriber: (event) => {
-            if (event.eventType === "onFinish") {
-              try {
-                expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-                expect(step0CompensateMock).toHaveBeenCalledTimes(1)
-                expect(
-                  step1InvokeMock.mock.calls.length
-                ).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1s depending on the event loop congestions)
-                expect(step1CompensateMock).toHaveBeenCalledTimes(1)
-                expect(step2InvokeMock).toHaveBeenCalledTimes(0)
-                expect(transformMock).toHaveBeenCalledTimes(0)
-                done()
-              } catch (e) {
-                return done(e)
-              } finally {
-                clearTimeout(timeout)
+        const onFinishPromise = new Promise<void>((resolve) => {
+          void workflowOrcModule.subscribe({
+            workflowId: workflowId,
+            transactionId,
+            subscriber: (event) => {
+              if (event.eventType === "onFinish") {
+                resolve()
               }
-            }
-          },
+            },
+          })
         })
 
         workflowOrcModule
@@ -393,10 +367,14 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(result).toBe("result from step 0")
           })
 
-        timeout = failTrap(
-          done,
-          "should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution"
-        )
+        await onFinishPromise
+
+        expect(step0InvokeMock).toHaveBeenCalledTimes(1)
+        expect(step0CompensateMock).toHaveBeenCalledTimes(1)
+        expect(step1InvokeMock.mock.calls.length).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1s depending on the event loop congestions)
+        expect(step1CompensateMock).toHaveBeenCalledTimes(1)
+        expect(step2InvokeMock).toHaveBeenCalledTimes(0)
+        expect(transformMock).toHaveBeenCalledTimes(0)
       })
     })
   },

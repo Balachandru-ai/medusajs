@@ -177,7 +177,7 @@ export class WorkflowOrchestratorService {
     await this.redisDistributedTransactionStorage_.onApplicationStart()
   }
 
-  private async triggerParentStep(transaction, result) {
+  private async triggerParentStep(transaction, result, errors) {
     const metadata = transaction.flow.metadata
     const { parentStepIdempotencyKey } = metadata ?? {}
 
@@ -190,7 +190,7 @@ export class WorkflowOrchestratorService {
       if (hasFailed) {
         await this.setStepFailure({
           idempotencyKey: parentStepIdempotencyKey,
-          stepResponse: result,
+          stepResponse: errors,
           options: {
             logOnError: true,
           },
@@ -283,7 +283,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result)
+      await this.triggerParentStep(ret.transaction, result, errors)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -392,7 +392,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result)
+      await this.triggerParentStep(ret.transaction, result, errors)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -486,7 +486,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result)
+      await this.triggerParentStep(ret.transaction, result, errors)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -558,7 +558,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result)
+      await this.triggerParentStep(ret.transaction, result, errors)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -632,7 +632,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result)
+      await this.triggerParentStep(ret.transaction, result, errors)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {

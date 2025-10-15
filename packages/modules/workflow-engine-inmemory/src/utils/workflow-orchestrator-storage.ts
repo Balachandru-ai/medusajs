@@ -24,23 +24,20 @@ import {
   MedusaError,
   TransactionState,
   TransactionStepState,
-  TransactionStepStatus,
 } from "@medusajs/framework/utils"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
-import { setTimeout as setTimeoutPromise } from "timers/promises"
 
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 
-const stateFlowOrder = [
-  TransactionState.NOT_STARTED,
-  TransactionState.INVOKING,
-  TransactionState.DONE,
-  TransactionState.WAITING_TO_COMPENSATE,
-  TransactionState.COMPENSATING,
-  TransactionState.REVERTED,
-  TransactionState.FAILED,
+const doneStates = [
+  TransactionStepState.DONE,
+  TransactionStepState.REVERTED,
+  TransactionStepState.FAILED,
+  TransactionStepState.SKIPPED,
+  TransactionStepState.SKIPPED_FAILURE,
+  TransactionStepState.TIMEOUT,
 ]
 
 function calculateDelayFromExpression(expression: CronExpression): number {
@@ -90,7 +87,7 @@ export class InMemoryDistributedTransactionStorage
   private logger_: Logger
   private workflowOrchestratorService_: WorkflowOrchestratorService
 
-  private storage: Map<string, TransactionCheckpoint> = new Map()
+  private storage: Record<string, TransactionCheckpoint> = {}
   private scheduled: Map<
     string,
     {
@@ -226,6 +223,12 @@ export class InMemoryDistributedTransactionStorage
       return
     }
 
+    console.log(
+      "Saving to DB",
+      Object.keys(data.context.invoke),
+      "---------------",
+      data.flow._saved_v
+    )
     await this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
@@ -276,7 +279,9 @@ export class InMemoryDistributedTransactionStorage
         .catch(() => undefined)
 
     if (trx) {
-      const { flow, errors } = this.storage.get(key) ?? {}
+      const { flow, errors } = this.storage[key]
+        ? JSON.parse(JSON.stringify(this.storage[key]))
+        : {}
       const { idempotent } = options ?? {}
       const execution = trx.execution as TransactionFlow
 
@@ -302,11 +307,11 @@ export class InMemoryDistributedTransactionStorage
         }
       }
 
-      return new TransactionCheckpoint(
-        flow ?? (trx.execution as TransactionFlow),
-        trx.context?.data as TransactionContext,
-        errors ?? (trx.context?.errors as TransactionStepError[])
-      )
+      return {
+        flow: flow ?? (trx.execution as TransactionFlow),
+        context: trx.context?.data as TransactionContext,
+        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
+      } as TransactionCheckpoint
     }
 
     return
@@ -318,321 +323,133 @@ export class InMemoryDistributedTransactionStorage
     ttl?: number,
     options?: TransactionOptions
   ): Promise<TransactionCheckpoint> {
-    /**
-     * Store the retention time only if the transaction is done, failed or reverted.
-     * From that moment, this tuple can be later on archived or deleted after the retention time.
-     */
-    const hasFinished = [
-      TransactionState.DONE,
-      TransactionState.FAILED,
-      TransactionState.REVERTED,
-    ].includes(data.flow.state)
-
-    const { retentionTime } = options ?? {}
-
-    // Check if stringified data is cached to avoid double JSON.stringify
-    let stringifiedData = (data as any).__getCachedStringified?.()
-    let data_ = stringifiedData ? JSON.parse(stringifiedData) : data
-
-    if (!stringifiedData) {
-      stringifiedData = JSON.stringify(data)
-    }
-
-    let cachedCheckpoint: TransactionCheckpoint | undefined
-
-    const getCheckpoint = async (options?: TransactionOptions) => {
-      if (!cachedCheckpoint) {
-        cachedCheckpoint = await this.get(key, options)
+    try {
+      if (this.isLocked.has(key)) {
+        throw new Error("Transaction storage is locked")
       }
-      return cachedCheckpoint
-    }
 
-    await this.#preventRaceConditionExecutionIfNecessary({
-      data: data_,
-      key,
-      options,
-      getCheckpoint,
-    })
+      this.isLocked.set(key, true)
 
-    // Only store retention time if it's provided
-    if (retentionTime) {
-      Object.assign(data_, {
-        retention_time: retentionTime,
+      /**
+       * Store the retention time only if the transaction is done, failed or reverted.
+       * From that moment, this tuple can be later on archived or deleted after the retention time.
+       */
+      const { retentionTime } = options ?? {}
+
+      const hasFinished = [
+        TransactionState.DONE,
+        TransactionState.FAILED,
+        TransactionState.REVERTED,
+      ].includes(data.flow.state)
+
+      let cachedCheckpoint: TransactionCheckpoint | undefined
+      const getCheckpoint = async (options?: TransactionOptions) => {
+        if (!cachedCheckpoint) {
+          cachedCheckpoint = await this.get(key, options)
+        }
+        return cachedCheckpoint
+      }
+
+      await this.#preventRaceConditionExecutionIfNecessary({
+        data,
+        key,
+        options,
+        getCheckpoint,
       })
-    }
 
-    // Store in memory
-    const isNotStarted = data_.flow.state === TransactionState.NOT_STARTED
-    const isManualTransactionId = !data_.flow.transactionId.startsWith("auto-")
-
-    if (isNotStarted && isManualTransactionId) {
-      const storedData = this.storage.get(key)
-      if (storedData) {
-        throw new SkipExecutionError(
-          "Transaction already started for transactionId: " +
-            data_.flow.transactionId
-        )
+      // Only store retention time if it's provided
+      if (retentionTime) {
+        Object.assign(data, {
+          retention_time: retentionTime,
+        })
       }
-    }
 
-    let retries = 0
-    let backoffMs = 10
-    const maxRetries = (options?.parallelSteps || 1) + 1
-    while (retries < maxRetries) {
-      let lockAcquired = false
+      // Store in memory
+      const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
+      const isManualTransactionId = !data.flow.transactionId.startsWith("auto-")
 
-      // if awaiting async step, _v > 0
-      try {
-        if (data_.flow._v || options?._v) {
-          data_.flow._v = options?._v ?? data_.flow._v
-
-          if (this.isLocked.get(key)) {
-            retries++
-            // Exponential backoff with jitter
-            const jitter = Math.random() * backoffMs
-            await setTimeoutPromise(backoffMs + jitter)
-            backoffMs = Math.min(backoffMs * 2, 1000)
-            continue
-          }
-
-          this.isLocked.set(key, true)
-          lockAcquired = true
-
-          await this.#performVersionCheckAndMerge({
-            data: data_,
-            stepId: options?.stepId,
-            getCheckpoint,
-          })
+      if (isNotStarted && isManualTransactionId) {
+        const storedData = this.storage[key]
+        if (storedData) {
+          throw new SkipExecutionError(
+            "Transaction already started for transactionId: " +
+              data.flow.transactionId
+          )
         }
+      }
 
-        if (data_.flow._v && options?.stepId) {
-          const stepId = options?.stepId!
-          const isCompensating =
-            data_.flow.state === TransactionState.COMPENSATING
-          const stepState = isCompensating
-            ? data_.flow.steps[stepId]?.compensate?.state
-            : data_.flow.steps[stepId]?.invoke?.state
-          const shouldBump = [
-            TransactionStepState.DONE,
-            TransactionStepState.REVERTED,
-            TransactionStepState.FAILED,
-            TransactionStepState.SKIPPED,
-            TransactionStepState.SKIPPED_FAILURE,
-            TransactionStepState.TIMEOUT,
-          ].includes(stepState)
+      if (data.flow._v) {
+        const storedData = await this.get(key, {
+          isCancelling: !!data.flow.cancelledAt,
+        } as any)
 
-          if (shouldBump) {
-            data_.flow._saved_v += 1
-          }
-        }
-
-        const { flow, errors } = data_
-        this.storage.set(
+        console.log(
+          "+++++++ DATA IN STORAGE +++++++",
+          storedData?.flow._v,
           key,
-          new TransactionCheckpoint(flow, {} as TransactionContext, errors)
+          Object.values(storedData?.flow.steps ?? {}).map((s: any) => [
+            s.id,
+            s.invoke?.state,
+            s.compensate?.state,
+          ]),
+          "+++++++ INCOMING DATA +++++++",
+          Object.values(data.flow.steps).map((s: any) => [
+            s.id,
+            s.invoke?.state,
+            s.compensate?.state,
+          ]),
+          storedData?.flow.state
+        )
+        TransactionCheckpoint.mergeCheckpoints(data, storedData)
+        console.log(
+          "------------------- MERGED TRANSACTION",
+          data.flow._v,
+          key,
+          Object.values(data.flow.steps).map((s: any) => [
+            s.id,
+            s.invoke?.state,
+            s.compensate?.state,
+          ]),
+          data.flow.state
         )
 
-        // Optimize DB operations - only perform when necessary
-        if (hasFinished) {
-          if (!retentionTime) {
-            if (!flow.metadata?.parentStepIdempotencyKey) {
-              await this.deleteFromDb(data_)
-            } else {
-              await this.saveToDb(data_, retentionTime)
-            }
+        if (data.flow.state === TransactionState.DONE) {
+          console.log(
+            "+++++++ DONE +++++++",
+            JSON.stringify(storedData?.context, null, 2)
+          )
+          console.log("DONE", JSON.stringify(data.context, null, 2))
+        }
+      }
+
+      const { flow, errors } = data
+
+      this.storage[key] = {
+        flow,
+        context: {} as TransactionContext,
+        errors,
+      } as TransactionCheckpoint
+
+      // Optimize DB operations - only perform when necessary
+      if (hasFinished) {
+        if (!retentionTime) {
+          if (!flow.metadata?.parentStepIdempotencyKey) {
+            await this.deleteFromDb(data)
           } else {
-            await this.saveToDb(data_, retentionTime)
+            await this.saveToDb(data, retentionTime)
           }
-
-          this.storage.delete(key)
         } else {
-          await this.saveToDb(data_, retentionTime)
-        }
-      } finally {
-        if (lockAcquired) {
-          this.isLocked.set(key, false)
-        }
-      }
-
-      return data_
-    }
-
-    throw new Error(
-      "Max retries exceeded for saving checkpoint due to version conflicts"
-    )
-  }
-
-  async #performVersionCheckAndMerge({
-    data,
-    stepId,
-    getCheckpoint,
-  }: {
-    data: TransactionCheckpoint
-    stepId?: string
-    getCheckpoint: (
-      options?: TransactionOptions
-    ) => Promise<TransactionCheckpoint | undefined>
-  }): Promise<void> {
-    const currentData = (await getCheckpoint()) as TransactionCheckpoint
-    if (!currentData) {
-      throw new SkipExecutionError("Transaction already finished")
-    }
-
-    const savingStep = data.flow.steps[stepId!]
-
-    this.#mergeFlow(currentData, data, savingStep)
-    this.#mergeErrors(currentData!.errors ?? [], data.errors)
-
-    data.context = currentData.context
-    data.errors = currentData.errors
-    data.flow = currentData.flow
-  }
-
-  #mergeFlow(
-    currentData: TransactionCheckpoint,
-    data: TransactionCheckpoint,
-    savingStep?: TransactionStep
-  ): void {
-    const currentContext = currentData.context
-    const latestContext = data.context
-
-    const mergeProperties = [
-      "hasFailedSteps",
-      "hasSkippedOnFailureSteps",
-      "hasSkippedSteps",
-      "hasRevertedSteps",
-      "_v",
-      "_saved_v",
-      "timedOutAt",
-      "state",
-    ]
-
-    if (data.flow._v >= currentData.flow._v) {
-      for (const prop of mergeProperties) {
-        if (prop === "_v") {
-          currentData.flow._v = Math.max(data.flow._v, currentData.flow._v)
-        } else if (prop === "state") {
-          const curState = stateFlowOrder.findIndex(
-            (state) => state === currentData.flow.state
-          )
-          const latestState = stateFlowOrder.findIndex(
-            (state) => state === data.flow.state
-          )
-
-          if (latestState >= curState) {
-            currentData.flow.state = data.flow.state
-          } else if (
-            latestState < curState &&
-            currentData.flow.state !== TransactionState.WAITING_TO_COMPENSATE
-          ) {
-            throw new SkipExecutionError(
-              `Transaction is behind another execution`
-            )
-          }
-        } else if (data.flow[prop] && !currentData.flow[prop]) {
-          currentData.flow[prop] = data.flow[prop]
-        }
-      }
-    }
-
-    const onlyMergeVersion = !savingStep
-    const savingSteps = savingStep
-      ? [savingStep]
-      : Object.values(data.flow.steps)
-
-    for (const savingStep of savingSteps) {
-      if (savingStep.id === "_root") {
-        continue
-      }
-
-      const stepName = savingStep.definition.action!
-      const stepId = savingStep.id
-
-      if (!onlyMergeVersion) {
-        if (
-          latestContext.invoke[stepName] &&
-          !currentContext.invoke[stepName]
-        ) {
-          currentContext.invoke[stepName] = latestContext.invoke[stepName]
+          await this.saveToDb(data, retentionTime)
         }
 
-        if (
-          latestContext.compensate[stepName] &&
-          !currentContext.compensate[stepName]
-        ) {
-          currentContext.compensate[stepName] =
-            latestContext.compensate[stepName]
-        }
+        delete this.storage[key]
+      } else {
+        await this.saveToDb(data, retentionTime)
       }
 
-      const currentStepVersion = currentData.flow.steps[stepId]._v!
-      const savingStepVersion = data.flow.steps[stepId]._v!
-
-      if (currentStepVersion > savingStepVersion) {
-        throw new SkipExecutionError(`Transaction is behind another execution`)
-      }
-
-      const mergeStep = (currentStep, step) => {
-        const mergeProperties = onlyMergeVersion
-          ? ["_v"]
-          : [
-              "attempts",
-              "failures",
-              "temporaryFailedAt",
-              "retryRescheduledAt",
-              "hasScheduledRetry",
-              "lastAttempt",
-              "_v",
-            ]
-        for (const prop of mergeProperties) {
-          if (prop === "hasScheduledRetry") {
-            currentStep[prop] = step[prop] ?? currentStep[prop]
-            continue
-          }
-
-          currentStep[prop] =
-            step[prop] && currentStep[prop]
-              ? Math.max(step[prop], currentStep[prop])
-              : step[prop] ?? currentStep[prop]
-        }
-      }
-
-      let canUpdate = [
-        TransactionStepStatus.IDLE,
-        TransactionStepStatus.WAITING,
-        TransactionStepStatus.TEMPORARY_FAILURE,
-      ]
-      if (
-        canUpdate.includes(currentData.flow.steps[stepId].compensate.status)
-      ) {
-        if (!onlyMergeVersion)
-          currentData.flow.steps[stepId].compensate = savingStep.compensate
-        mergeStep(currentData.flow.steps[stepId], savingStep)
-      }
-
-      if (canUpdate.includes(currentData.flow.steps[stepId].invoke.status)) {
-        if (!onlyMergeVersion)
-          currentData.flow.steps[stepId].invoke = savingStep.invoke
-        mergeStep(currentData.flow.steps[stepId], savingStep)
-      }
-    }
-  }
-
-  #mergeErrors(
-    currentErrors: TransactionStepError[],
-    latestErrors: TransactionStepError[]
-  ): void {
-    const existingErrorSignatures = new Set(
-      currentErrors.map(
-        (err) => `${err.action}:${err.handlerType}:${err.error?.message}`
-      )
-    )
-
-    for (const error of latestErrors) {
-      const signature = `${error.action}:${error.handlerType}:${error.error?.message}`
-      if (!existingErrorSignatures.has(signature)) {
-        currentErrors.push(error)
-      }
+      return data
+    } finally {
+      this.isLocked.delete(key)
     }
   }
 
@@ -658,7 +475,7 @@ export class InMemoryDistributedTransactionStorage
      */
     const currentFlow = data.flow
 
-    const rawData = this.storage.get(key)
+    const rawData = this.storage[key]
     let data_ = {} as TransactionCheckpoint
     if (rawData) {
       data_ = rawData as TransactionCheckpoint
@@ -685,18 +502,7 @@ export class InMemoryDistributedTransactionStorage
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        // const currentState = isCompensating
-        //   ? currentStep.compensate?.state
-        //   : currentStep.invoke?.state
-
-        const shouldSkip = [
-          TransactionStepState.DONE,
-          TransactionStepState.REVERTED,
-          TransactionStepState.FAILED,
-          TransactionStepState.SKIPPED,
-          TransactionStepState.SKIPPED_FAILURE,
-          TransactionStepState.TIMEOUT,
-        ].includes(latestState)
+        const shouldSkip = doneStates.includes(latestState)
 
         if (shouldSkip) {
           throw new SkipStepAlreadyFinishedError(
