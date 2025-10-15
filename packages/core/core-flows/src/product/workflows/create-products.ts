@@ -6,18 +6,19 @@ import {
   ProductTypes,
 } from "@medusajs/framework/types"
 import {
-  ProductWorkflowEvents,
   isPresent,
   MedusaError,
   Modules,
+  ProductWorkflowEvents,
 } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createHook,
+  createStep,
   createWorkflow,
   transform,
-  createStep,
+  when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createRemoteLinkStep, emitEventStep } from "../../common"
 import { associateProductsWithSalesChannelsStep } from "../../sales-channel"
@@ -98,6 +99,10 @@ export type CreateProductsWorkflowInput = {
    * The products to create.
    */
   products: CreateProductWorkflowInputDTO[]
+  /**
+   * Controls if event emission gets skipped
+   */
+  skipEvent?: boolean
 } & AdditionalData
 
 export const createProductsWorkflowId = "create-products"
@@ -108,12 +113,12 @@ export const createProductsWorkflowId = "create-products"
  * This workflow has a hook that allows you to perform custom actions on the created products. You can see an example in [this guide](https://docs.medusajs.com/resources/commerce-modules/product/extend).
  *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around product creation.
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the product variant's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the product variant's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
  *
  * @example
@@ -267,16 +272,20 @@ export const createProductsWorkflow = createWorkflow(
       }
     )
 
-    const productIdEvents = transform({ response }, ({ response }) => {
-      return response.map((v) => {
-        return { id: v.id }
-      })
-    })
+    when("should-emit-event", { input }, ({ input }) => !input.skipEvent).then(
+      () => {
+        const productIdEvents = transform({ response }, ({ response }) => {
+          return response.map((v) => {
+            return { id: v.id }
+          })
+        })
 
-    emitEventStep({
-      eventName: ProductWorkflowEvents.CREATED,
-      data: productIdEvents,
-    })
+        emitEventStep({
+          eventName: ProductWorkflowEvents.CREATED,
+          data: productIdEvents,
+        })
+      }
+    )
 
     const productsCreated = createHook("productsCreated", {
       products: response,

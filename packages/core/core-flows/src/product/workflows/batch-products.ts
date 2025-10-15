@@ -6,16 +6,18 @@ import {
   UpdateProductWorkflowInputDTO,
 } from "@medusajs/framework/types"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createWorkflow,
   parallelize,
   transform,
   when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createProductsWorkflow } from "./create-products"
 import { deleteProductsWorkflow } from "./delete-products"
 import { updateProductsWorkflow } from "./update-products"
+import { emitEventStep } from "../../common"
+import { ProductWorkflowEvents } from "@medusajs/framework/utils"
 
 /**
  * The products to manage.
@@ -27,9 +29,24 @@ export interface BatchProductWorkflowInput
   > {}
 
 const conditionallyCreateProducts = (input: BatchProductWorkflowInput) =>
-  when({ input }, ({ input }) => !!input.create?.length).then(() =>
-    createProductsWorkflow.runAsStep({ input: { products: input.create! } })
-  )
+  when({ input }, ({ input }) => !!input.create?.length).then(() => {
+    const response = createProductsWorkflow.runAsStep({
+      input: { products: input.create! },
+    })
+
+    const productIdEvents = transform({ response }, ({ response }) => {
+      return response.map((v) => {
+        return { id: v.id }
+      })
+    })
+
+    emitEventStep({
+      eventName: ProductWorkflowEvents.CREATED,
+      data: productIdEvents,
+    })
+
+    return response
+  })
 
 const conditionallyUpdateProducts = (input: BatchProductWorkflowInput) =>
   when({ input }, ({ input }) => !!input.update?.length).then(() =>
