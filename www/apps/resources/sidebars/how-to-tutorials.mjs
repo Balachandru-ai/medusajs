@@ -81,6 +81,12 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
+        title: "Add Product Category Images",
+        path: "/how-to-tutorials/tutorials/category-images",
+        description: "Learn how to add images to product categories in Medusa.",
+      },
+      {
+        type: "link",
         title: "Agentic Commerce",
         path: "/how-to-tutorials/tutorials/agentic-commerce",
         description:

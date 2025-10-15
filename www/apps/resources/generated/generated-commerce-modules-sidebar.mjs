@@ -11849,6 +11849,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "title": "Localization with Contentful",
               "path": "https://docs.medusajs.com/resources/integrations/guides/contentful",
               "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Product Category Images",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
+              "children": []
             }
           ]
         },
