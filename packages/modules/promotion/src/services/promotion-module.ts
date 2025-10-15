@@ -344,7 +344,7 @@ export default class PromotionModuleService
 
       if (typeof promotion.limit === "number") {
         const promotionAlreadyCounted =
-          promotionCodeUsageMap.get(promotion.code!) || false
+          promotionCodeUsageMap.get(promotion.code!) || false //TODO: this has to be a separate map if promotion and capaign have usage limit
 
         if (!promotionAlreadyCounted) {
           const newUsedValue = (promotion.used ?? 0) + 1
@@ -361,13 +361,13 @@ export default class PromotionModuleService
             used: newUsedValue,
           })
         }
-      }
 
-      if (promotionUsageMap.size > 0) {
-        await this.promotionService_.update(
-          Array.from(promotionUsageMap.values()),
-          sharedContext
-        )
+        if (promotionUsageMap.size > 0) {
+          await this.promotionService_.update(
+            Array.from(promotionUsageMap.values()),
+            sharedContext
+          )
+        }
       }
 
       const campaignBudget = promotion.campaign?.budget
@@ -539,13 +539,13 @@ export default class PromotionModuleService
             used: newUsedValue,
           })
         }
-      }
 
-      if (promotionUsageMap.size > 0) {
-        await this.promotionService_.update(
-          Array.from(promotionUsageMap.values()),
-          sharedContext
-        )
+        if (promotionUsageMap.size > 0) {
+          await this.promotionService_.update(
+            Array.from(promotionUsageMap.values()),
+            sharedContext
+          )
+        }
       }
 
       const campaignBudget = promotion.campaign?.budget
