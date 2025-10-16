@@ -22,6 +22,7 @@
     "clsx": "^2.1.0",
     "docs-ui": "*",
     "next": "15.3.5",
+    "next-mdx-remote-client": "2",
     "posthog-js": "^1.269.1",
     "react": "rc",
     "react-dom": "rc",

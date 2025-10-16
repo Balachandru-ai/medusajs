@@ -1,8 +1,8 @@
-import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote/rsc"
-import { serialize } from "next-mdx-remote/serialize"
+import { cache, Suspense } from "react"
+import { Loading } from "docs-ui"
 import path from "path"
-import { promises as fs } from "fs"
-import { notFound } from "next/navigation"
+import fs from "fs/promises"
+import mdxOptions from "@/mdx-options.mjs"
 import {
   typeListLinkFixerPlugin,
   localLinksRehypePlugin,
@@ -10,12 +10,11 @@ import {
   prerequisitesLinkFixerPlugin,
   recmaInjectMdxDataPlugin,
 } from "remark-rehype-plugins"
-import MDXComponents from "@/components/MDXComponents"
-import mdxOptions from "../../../mdx-options.mjs"
-import { filesMap } from "../../../generated/files-map.mjs"
+import { MDXRemote } from "next-mdx-remote-client/rsc"
+import MDXComponents from "../../../components/MDXComponents"
+import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { cache, Suspense } from "react"
-import { Loading } from "docs-ui"
+import { getFrontMatterFromString } from "docs-utils"
 
 type PageProps = {
   params: Promise<{
@@ -27,8 +26,7 @@ export default async function ReferencesPage(props: PageProps) {
   const params = await props.params
   const { slug } = params
 
-  const fileData = await loadFile(slug)
-
+  const fileData = await loadReferencesFile(slug)
   if (!fileData) {
     return notFound()
   }
@@ -45,7 +43,10 @@ export default async function ReferencesPage(props: PageProps) {
           source={fileData.content}
           components={MDXComponents}
           options={{
+            disableImports: true,
             mdxOptions: {
+              development: process.env.NEXT_PUBLIC_ENV === "development",
+              format: "mdx",
               rehypePlugins: [
                 ...mdxOptions.options.rehypePlugins,
                 [
@@ -93,7 +94,7 @@ export async function generateMetadata({
   const slug = (await params).slug
   const metadata: Metadata = {}
 
-  const fileData = await loadFile(slug)
+  const fileData = await loadReferencesFile(slug)
 
   if (!fileData) {
     return metadata
@@ -106,28 +107,27 @@ export async function generateMetadata({
   }
 
   metadata.title = pageTitleMatch.groups.title
-  metadata.keywords = (fileData.source.frontmatter?.keywords || []) as string[]
+  const frontmatter = await getFrontMatterFromString(fileData.content)
+  metadata.keywords = (frontmatter.keywords || []) as string[]
 
   return metadata
 }
 
-const loadFile = cache(
-  async (
-    slug: string[]
-  ): Promise<
-    | {
-        content: string
-        source: MDXRemoteSerializeResult
-        path: string
-      }
-    | undefined
-  > => {
+export type LoadedReferenceFile = {
+  content: string
+  // source: MDXRemoteSerializeResult
+  path: string
+}
+
+const loadReferencesFile = cache(
+  async (slug: string[]): Promise<LoadedReferenceFile | undefined> => {
     path.join(process.cwd(), "references")
     const monoRepoPath = path.resolve("..", "..", "..")
 
     const pathname = `/references/${slug.join("/")}`
-    const slugChanges = (await import("../../../generated/slug-changes.mjs"))
+    const slugChanges = (await import("@/generated/slug-changes.mjs"))
       .slugChanges
+    const filesMap = (await import("@/generated/files-map.mjs")).filesMap
     const fileDetails =
       slugChanges.find((f) => f.newSlug === pathname) ||
       filesMap.find((f) => f.pathname === pathname)
@@ -137,12 +137,8 @@ const loadFile = cache(
     const fullPath = path.join(monoRepoPath, fileDetails.filePath)
 
     const fileContent = await fs.readFile(fullPath, "utf-8")
-    const serialized = await serialize(fileContent, {
-      parseFrontmatter: true,
-    })
     return {
       content: fileContent,
-      source: serialized,
       path: fullPath,
     }
   }
