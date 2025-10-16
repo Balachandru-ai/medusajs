@@ -218,6 +218,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
         if (workflowEngine && isAsync) {
           transaction = await workflowEngine.run(name, {
             input: stepInput as any,
+            transactionId: executionContext.transactionId,
             context: executionContext,
             throwOnError: false,
             logOnError: true,

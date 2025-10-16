@@ -514,11 +514,11 @@ export class TransactionOrchestrator extends EventEmitter {
       const stepDef = flow.steps[step]
       const curState = stepDef.getStates()
 
-      if (stepDef._v) {
-        flow._v = 0
-        stepDef._v = 0
-        flow._saved_v = 0
-      }
+      // if (stepDef._v) {
+      //   flow._v = 0
+      //   stepDef._v = 0
+      //   flow._saved_v = 0
+      // }
 
       if (
         [TransactionStepState.DONE, TransactionStepState.TIMEOUT].includes(
@@ -2001,6 +2001,10 @@ export class TransactionOrchestrator extends EventEmitter {
     onLoad?: (transaction: DistributedTransactionType) => Promise<void> | void
     forcePermanentFailure?: boolean
   }): Promise<DistributedTransactionType> {
+    console.log(
+      "================================================ REGISTER STEP FAILURE",
+      responseIdempotencyKey
+    )
     const [curTransaction, step] =
       await TransactionOrchestrator.getTransactionAndStepFromIdempotencyKey(
         responseIdempotencyKey,

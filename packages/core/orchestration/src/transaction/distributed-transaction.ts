@@ -13,6 +13,49 @@ import {
   TransactionStepStatus,
 } from "./types"
 
+const mergeableFlowProperties = [
+  "state",
+  "hasFailedSteps",
+  "hasSkippedOnFailureSteps",
+  "hasSkippedSteps",
+  "hasRevertedSteps",
+  "hasWaitingSteps",
+  "cancelledAt",
+  "startedAt",
+  "hasAsyncSteps",
+  "_v",
+  "timedOutAt",
+]
+
+const mergeStep = (
+  currentStep: TransactionStep,
+  storedStep: TransactionStep
+) => {
+  const mergeProperties = [
+    "attempts",
+    "failures",
+    "temporaryFailedAt",
+    "retryRescheduledAt",
+    "hasScheduledRetry",
+    "lastAttempt",
+    "_v",
+    "stepFailed",
+    "startedAt",
+  ]
+
+  for (const prop of mergeProperties) {
+    if (prop === "hasScheduledRetry" || prop === "stepFailed") {
+      currentStep[prop] = storedStep[prop] ?? currentStep[prop]
+      continue
+    }
+
+    currentStep[prop] =
+      storedStep[prop] || currentStep[prop]
+        ? Math.max(storedStep[prop] ?? 0, currentStep[prop] ?? 0)
+        : currentStep[prop] ?? storedStep[prop]
+  }
+}
+
 /**
  * @typedef TransactionMetadata
  * @property model_id - The id of the model_id that created the transaction (modelId).
@@ -101,22 +144,8 @@ export class TransactionCheckpoint {
     const currentTransactionContext = currentTransactionData.context
     const storedContext = storedData.context
 
-    const mergeProperties = [
-      "state",
-      "hasFailedSteps",
-      "hasSkippedOnFailureSteps",
-      "hasSkippedSteps",
-      "hasRevertedSteps",
-      "hasWaitingSteps",
-      "cancelledAt",
-      "startedAt",
-      "hasAsyncSteps",
-      "_v",
-      "timedOutAt",
-    ]
-
     if (currentTransactionData.flow._v >= storedData.flow._v) {
-      for (const prop of mergeProperties) {
+      for (const prop of mergeableFlowProperties) {
         if (
           prop === "startedAt" ||
           prop === "cancelledAt" ||
@@ -165,35 +194,6 @@ export class TransactionCheckpoint {
     }
 
     const storedSteps = Object.values(storedData.flow.steps)
-
-    const mergeStep = (
-      currentStep: TransactionStep,
-      storedStep: TransactionStep
-    ) => {
-      const mergeProperties = [
-        "attempts",
-        "failures",
-        "temporaryFailedAt",
-        "retryRescheduledAt",
-        "hasScheduledRetry",
-        "lastAttempt",
-        "_v",
-        "stepFailed",
-        "startedAt",
-      ]
-
-      for (const prop of mergeProperties) {
-        if (prop === "hasScheduledRetry" || prop === "stepFailed") {
-          currentStep[prop] = storedStep[prop] ?? currentStep[prop]
-          continue
-        }
-
-        currentStep[prop] =
-          storedStep[prop] || currentStep[prop]
-            ? Math.max(storedStep[prop] ?? 0, currentStep[prop] ?? 0)
-            : currentStep[prop] ?? storedStep[prop]
-      }
-    }
 
     for (const storedStep of storedSteps) {
       if (storedStep.id === "_root") {

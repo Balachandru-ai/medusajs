@@ -384,7 +384,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         expect(step0InvokeMock).toHaveBeenCalledTimes(1)
         expect(step0CompensateMock).toHaveBeenCalledTimes(1)
         expect(step1InvokeMock.mock.calls.length).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1s depending on the event loop congestions)
-        expect(step1CompensateMock).toBeGreaterThanOrEqual(1)
+        expect(step1CompensateMock.mock.calls.length).toBeGreaterThanOrEqual(1)
         expect(step2InvokeMock).toHaveBeenCalledTimes(0)
         expect(transformMock).toHaveBeenCalledTimes(0)
       })

@@ -187,6 +187,17 @@ export class TransactionStep {
   }
 
   canRetryAwaiting(): boolean {
+    console.log(
+      ">>>>>> CAN RETRY AWAITING",
+      !!(
+        this.hasAwaitingRetry() &&
+        this.lastAttempt &&
+        Date.now() - this.lastAttempt >
+          this.definition.retryIntervalAwaiting! * 1e3 &&
+        (!("maxAwaitingRetries" in this.definition) ||
+          this.attempts < this.definition.maxAwaitingRetries!)
+      )
+    )
     return !!(
       this.hasAwaitingRetry() &&
       this.lastAttempt &&

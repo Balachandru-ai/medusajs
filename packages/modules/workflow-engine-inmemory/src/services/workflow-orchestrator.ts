@@ -133,7 +133,7 @@ export class WorkflowOrchestratorService {
     await this.inMemoryDistributedTransactionStorage_.onApplicationShutdown()
   }
 
-  private async triggerParentStep(transaction, result, errors) {
+  private async triggerParentStep(transaction, result, errors, context) {
     const metadata = transaction.flow.metadata
     const { parentStepIdempotencyKey } = metadata ?? {}
 
@@ -144,11 +144,13 @@ export class WorkflowOrchestratorService {
       ].includes(transaction.flow.state)
 
       if (hasFailed) {
+        console.log("TRIGGERING PARENT STEP FAILURE", context)
         await this.setStepFailure({
           idempotencyKey: parentStepIdempotencyKey,
           stepResponse: errors,
           options: {
             logOnError: true,
+            context,
           },
         })
       } else {
@@ -157,6 +159,7 @@ export class WorkflowOrchestratorService {
           stepResponse: result,
           options: {
             logOnError: true,
+            context,
           },
         })
       }
@@ -244,7 +247,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result, errors)
+      await this.triggerParentStep(ret.transaction, result, errors, context)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -356,7 +359,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result, errors)
+      await this.triggerParentStep(ret.transaction, result, errors, context)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -450,7 +453,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result, errors)
+      await this.triggerParentStep(ret.transaction, result, errors, context)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -521,7 +524,7 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result, errors)
+      await this.triggerParentStep(ret.transaction, result, errors, context)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
@@ -570,6 +573,8 @@ export class WorkflowOrchestratorService {
       workflowId,
     })
 
+    console.log("REGISTERING STEP FAILURE", idempotencyKey_, context)
+
     const ret = await exportedWorkflow.registerStepFailure({
       idempotencyKey: idempotencyKey_,
       context,
@@ -594,7 +599,11 @@ export class WorkflowOrchestratorService {
         errors,
       })
 
-      await this.triggerParentStep(ret.transaction, result, errors)
+      console.log(
+        "TRIGGERING PARENT STEP FAILURE from set step failure",
+        context
+      )
+      await this.triggerParentStep(ret.transaction, result, errors, context)
     }
 
     if (throwOnError && (ret.thrownError || ret.errors?.length)) {
