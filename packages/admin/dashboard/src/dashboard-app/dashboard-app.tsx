@@ -386,18 +386,10 @@ export class DashboardApp {
   private populateI18n(
     plugins: DashboardPlugin[]
   ): I18nExtension {
-    const resources: I18nExtension = { ...coreTranslations }
+    let resources: I18nExtension = { ...coreTranslations }
 
     for (const plugin of plugins) {
-      for (const [lang, langResources] of Object.entries(plugin.i18nModule.resources)) {
-        if (!resources[lang]) {
-          resources[lang] = {}
-        }
-        resources[lang] = deepMerge(
-          resources[lang],
-          langResources
-        )
-      }
+      resources = deepMerge(resources, plugin.i18nModule.resources)
     }
 
     return resources
