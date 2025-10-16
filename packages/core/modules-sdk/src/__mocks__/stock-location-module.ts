@@ -20,4 +20,5 @@ export const StockLocationModule = {
 
   list: jest.fn(async () => []),
   softDelete: jest.fn(() => {}),
+  restore: jest.fn(() => {}),
 }

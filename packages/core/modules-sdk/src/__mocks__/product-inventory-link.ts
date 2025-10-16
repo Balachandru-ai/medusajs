@@ -73,4 +73,5 @@ export const ProductInventoryLinkModule = {
   ),
   list: jest.fn(async () => []),
   softDelete: jest.fn(() => {}),
+  restore: jest.fn(() => {}),
 }

@@ -16,6 +16,10 @@ const allModules = [
   InventoryStockLocationLink,
 ]
 describe("Remote Link", function () {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it("Should get all loaded modules and compose their relationships", async function () {
     const remoteLink = new Link(allModules as any)
 
@@ -211,5 +215,201 @@ describe("Remote Link", function () {
       { returnLinkableKeys: ["inventory_level_id", "stock_location_id"] },
       {}
     )
+  })
+
+  it("Should delete only specified services when using 'only' option", async function () {
+    const remoteLink = new Link(allModules as any)
+
+    ProductInventoryLinkModule.softDelete.mockImplementation(() => {
+      return {
+        variant_id: ["var_123"],
+        inventory_item_id: ["inv_123"],
+      }
+    })
+
+    ProductModule.softDelete.mockImplementation(() => {
+      return {
+        product_id: ["prod_123", "prod_abc"],
+        variant_id: ["var_123", "var_abc"],
+      }
+    })
+
+    InventoryModule.softDelete.mockImplementation(() => {
+      return {
+        inventory_item_id: ["inv_123"],
+        inventory_level_id: ["ilev_123"],
+      }
+    })
+
+    InventoryStockLocationLink.softDelete.mockImplementation(() => {
+      return {
+        inventory_level_id: ["ilev_123"],
+        stock_location_id: ["loc_123"],
+      }
+    })
+
+    await remoteLink.delete(
+      {
+        productService: {
+          variant_id: "var_123",
+        },
+      },
+      {
+        only: ["inventoryService"],
+      }
+    )
+
+    expect(ProductInventoryLinkModule.softDelete).toBeCalledTimes(2)
+    expect(ProductModule.softDelete).toBeCalledTimes(1)
+    expect(InventoryModule.softDelete).toBeCalledTimes(1)
+
+    expect(InventoryStockLocationLink.softDelete).not.toBeCalled()
+  })
+
+  it("Should exclude specified services when using 'exclude' option", async function () {
+    const remoteLink = new Link(allModules as any)
+
+    ProductInventoryLinkModule.softDelete.mockImplementation(() => {
+      return {
+        variant_id: ["var_123"],
+        inventory_item_id: ["inv_123"],
+      }
+    })
+
+    ProductModule.softDelete.mockImplementation(() => {
+      return {
+        product_id: ["prod_123", "prod_abc"],
+        variant_id: ["var_123", "var_abc"],
+      }
+    })
+
+    InventoryModule.softDelete.mockImplementation(() => {
+      return {
+        inventory_item_id: ["inv_123"],
+        inventory_level_id: ["ilev_123"],
+      }
+    })
+
+    InventoryStockLocationLink.softDelete.mockImplementation(() => {
+      return {
+        inventory_level_id: ["ilev_123"],
+        stock_location_id: ["loc_123"],
+      }
+    })
+
+    await remoteLink.delete(
+      {
+        productService: {
+          variant_id: "var_123",
+        },
+      },
+      {
+        exclude: ["inventoryService"],
+      }
+    )
+
+    expect(ProductInventoryLinkModule.softDelete).not.toBeCalled()
+    expect(ProductModule.softDelete).not.toBeCalled()
+    expect(InventoryModule.softDelete).not.toBeCalled()
+    expect(InventoryStockLocationLink.softDelete).not.toBeCalled()
+  })
+
+  it("Should restore only specified services when using 'only' option", async function () {
+    const remoteLink = new Link(allModules as any)
+
+    ProductInventoryLinkModule.restore.mockImplementation(() => {
+      return {
+        variant_id: ["var_123"],
+        inventory_item_id: ["inv_123"],
+      }
+    })
+
+    ProductModule.restore.mockImplementation(() => {
+      return {
+        product_id: ["prod_123", "prod_abc"],
+        variant_id: ["var_123", "var_abc"],
+      }
+    })
+
+    InventoryModule.restore.mockImplementation(() => {
+      return {
+        inventory_item_id: ["inv_123"],
+        inventory_level_id: ["ilev_123"],
+      }
+    })
+
+    InventoryStockLocationLink.restore.mockImplementation(() => {
+      return {
+        inventory_level_id: ["ilev_123"],
+        stock_location_id: ["loc_123"],
+      }
+    })
+
+    await remoteLink.restore(
+      {
+        productService: {
+          variant_id: "var_123",
+        },
+      },
+      {
+        only: ["inventoryService"],
+      }
+    )
+
+    expect(ProductInventoryLinkModule.restore).toBeCalledTimes(2)
+    expect(ProductModule.restore).toBeCalledTimes(1)
+    expect(InventoryModule.restore).toBeCalledTimes(1)
+
+    expect(InventoryStockLocationLink.restore).not.toBeCalled()
+  })
+
+  it("Should exclude specified services when restoring with 'exclude' option", async function () {
+    const remoteLink = new Link(allModules as any)
+
+    ProductInventoryLinkModule.restore.mockImplementation(() => {
+      return {
+        variant_id: ["var_123"],
+        inventory_item_id: ["inv_123"],
+      }
+    })
+
+    ProductModule.restore.mockImplementation(() => {
+      return {
+        product_id: ["prod_123", "prod_abc"],
+        variant_id: ["var_123", "var_abc"],
+      }
+    })
+
+    InventoryModule.restore.mockImplementation(() => {
+      return {
+        inventory_item_id: ["inv_123"],
+        inventory_level_id: ["ilev_123"],
+      }
+    })
+
+    InventoryStockLocationLink.restore.mockImplementation(() => {
+      return {
+        inventory_level_id: ["ilev_123"],
+        stock_location_id: ["loc_123"],
+      }
+    })
+
+    await remoteLink.restore(
+      {
+        productService: {
+          variant_id: "var_123",
+        },
+      },
+      {
+        exclude: ["inventoryService"],
+      }
+    )
+
+    expect(ProductInventoryLinkModule.restore).not.toBeCalled()
+    expect(ProductModule.restore).not.toBeCalled()
+
+    expect(InventoryModule.restore).not.toBeCalled()
+
+    expect(InventoryStockLocationLink.restore).not.toBeCalled()
   })
 })
