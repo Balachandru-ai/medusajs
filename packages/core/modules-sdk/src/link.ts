@@ -30,6 +30,23 @@ export type DeleteEntityInput = {
 }
 export type RestoreEntityInput = DeleteEntityInput
 
+/**
+ * Options for controlling which linked records should be deleted or restored.
+ */
+export type DeleteOptions = {
+  /**
+   * Only delete/restore links to these specific services/modules.
+   * If not provided, all linked records are deleted.
+   */
+  only?: string[]
+
+  /**
+   * Exclude links to these specific services/modules from deletion/restoration.
+   * All other linked records will be deleted/restored.
+   */
+  exclude?: string[]
+}
+
 type RemoteRelationship = ModuleJoinerRelationship & {
   isPrimary: boolean
   isForeign: boolean
@@ -178,6 +195,7 @@ export class Link {
   private async executeCascade(
     removedServices: DeleteEntityInput,
     executionMethod: "softDelete" | "restore",
+    options?: DeleteOptions,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[CascadeError[] | null, RemovedIds]> {
     const removedIds: RemovedIds = {}
@@ -225,8 +243,53 @@ export class Link {
             continue
           }
 
-          const relatedServicesPromises = relatedServices.map(
-            async (relatedService) => {
+          const relatedServicesPromises = relatedServices
+            .filter((relatedService) => {
+              const targetModule = this.modulesMap.get(relatedService.serviceName)
+              const isLinkModule = targetModule?.__joinerConfig?.isLink
+
+              if (isLinkModule) {
+                const linkRelationships = targetModule?.__joinerConfig?.relationships || []
+
+                if (options?.only) {
+                  for (const rel of linkRelationships) {
+                    // Exclude the source service from the check
+                    if (rel.serviceName === serviceInfo.serviceName) {
+                      continue
+                    }
+                    if (!options.only.includes(rel.serviceName)) {
+                      return false
+                    }
+                  }
+                  return true
+                }
+
+                if (options?.exclude) {
+                  // Don't delete the link module if any of its relationships (excluding source) are in the exclude list
+                  for (const rel of linkRelationships) {
+                    // Exclude the source service from the check
+                    if (rel.serviceName === serviceInfo.serviceName) {
+                      continue
+                    }
+                    // If any relationship is in the exclude list, don't delete this link module
+                    if (options.exclude.includes(rel.serviceName)) {
+                      return false
+                    }
+                  }
+                  return true
+                }
+
+                return true
+              }
+
+              // For non-link modules (regular services), only apply exclude filter
+              // The 'only' option is meant to filter link modules, not cascade paths
+              if (options?.exclude) {
+                return !options.exclude.includes(relatedService.serviceName)
+              }
+              return true
+            })
+            .map(async (relatedService) => {
               const { serviceName, primaryKey, args } = relatedService
               const processedHash = `${serviceName}-${primaryKey}`
 
@@ -569,20 +632,28 @@ export class Link {
 
   async delete(
     removedServices: DeleteEntityInput,
+    options?: DeleteOptions,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[CascadeError[] | null, RemovedIds]> {
     return await this.executeCascade(
       removedServices,
       "softDelete",
+      options,
       sharedContext
     )
   }
 
   async restore(
     removedServices: DeleteEntityInput,
+    options?: DeleteOptions,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[CascadeError[] | null, RestoredIds]> {
-    return await this.executeCascade(removedServices, "restore", sharedContext)
+    return await this.executeCascade(
+      removedServices,
+      "restore",
+      options,
+      sharedContext
+    )
   }
 
   async list(
