@@ -836,221 +836,159 @@ medusaIntegrationTestRunner({
           ).data.promotion
         })
 
-        // TODO: should not throw error, just don't apply promotion
+        it("should hit promotion limit first ", async () => {
+          // Complete 2 orders - should hit promotion limit
+          for (let i = 0; i < 2; i++) {
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  shipping_address: {
+                    address_1: "test address 1",
+                    address_2: "test address 2",
+                    city: "SF",
+                    country_code: "US",
+                    province: "CA",
+                    postal_code: "94016",
+                  },
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                  promo_codes: [campaignPromotion.code],
+                },
+                storeHeaders
+              )
+            ).data.cart
 
-        // it("should hit promotion limit first ", async () => {
-        //   // Complete 2 orders - should hit promotion limit
-        //   for (let i = 0; i < 2; i++) {
-        //     const cart = (
-        //       await api.post(
-        //         `/store/carts`,
-        //         {
-        //           currency_code: "usd",
-        //           sales_channel_id: salesChannel.id,
-        //           region_id: region.id,
-        //           shipping_address: {
-        //             address_1: "test address 1",
-        //             address_2: "test address 2",
-        //             city: "SF",
-        //             country_code: "US",
-        //             province: "CA",
-        //             postal_code: "94016",
-        //           },
-        //           items: [{ variant_id: product.variants[0].id, quantity: 1 }],
-        //           promo_codes: [campaignPromotion.code],
-        //         },
-        //         storeHeaders
-        //       )
-        //     ).data.cart
+            await api.post(
+              `/store/carts/${cart.id}/shipping-methods`,
+              { option_id: shippingOption.id },
+              storeHeaders
+            )
 
-        //     await api.post(
-        //       `/store/carts/${cart.id}/shipping-methods`,
-        //       { option_id: shippingOption.id },
-        //       storeHeaders
-        //     )
+            const paymentCollection = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart.id },
+                storeHeaders
+              )
+            ).data.payment_collection
 
-        //     const paymentCollection = (
-        //       await api.post(
-        //         `/store/payment-collections`,
-        //         { cart_id: cart.id },
-        //         storeHeaders
-        //       )
-        //     ).data.payment_collection
+            await api.post(
+              `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
 
-        //     await api.post(
-        //       `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
-        //       { provider_id: "pp_system_default" },
-        //       storeHeaders
-        //     )
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+          }
 
-        //     await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
-        //   }
+          // Third order should fail with promotion limit exceeded
+          const cart3 = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: {
+                  address_1: "test address 1",
+                  address_2: "test address 2",
+                  city: "SF",
+                  country_code: "US",
+                  province: "CA",
+                  postal_code: "94016",
+                },
+                items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                promo_codes: [campaignPromotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
 
-        //   // Third order should fail with promotion limit exceeded
-        //   const cart3 = (
-        //     await api.post(
-        //       `/store/carts`,
-        //       {
-        //         currency_code: "usd",
-        //         sales_channel_id: salesChannel.id,
-        //         region_id: region.id,
-        //         shipping_address: {
-        //           address_1: "test address 1",
-        //           address_2: "test address 2",
-        //           city: "SF",
-        //           country_code: "US",
-        //           province: "CA",
-        //           postal_code: "94016",
-        //         },
-        //         items: [{ variant_id: product.variants[0].id, quantity: 1 }],
-        //         promo_codes: [campaignPromotion.code],
-        //       },
-        //       storeHeaders
-        //     )
-        //   ).data.cart
+          expect(cart3.promotions).toHaveLength(0)
+        })
 
-        //   // Setup third cart
-        //   await api.post(
-        //     `/store/carts/${cart3.id}/shipping-methods`,
-        //     { option_id: shippingOption.id },
-        //     storeHeaders
-        //   )
+        it("should hit campaign limit first", async () => {
+          await api.post(
+            `/admin/promotions/${campaignPromotion.id}`,
+            {
+              limit: 5,
+            },
+            adminHeaders
+          )
+          // Complete 3 orders - should hit campaign limit
+          for (let i = 0; i < 3; i++) {
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  shipping_address: {
+                    address_1: "test address 1",
+                    address_2: "test address 2",
+                    city: "SF",
+                    country_code: "US",
+                    province: "CA",
+                    postal_code: "94016",
+                  },
+                  items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                  promo_codes: [campaignPromotion.code],
+                },
+                storeHeaders
+              )
+            ).data.cart
 
-        //   const paymentCollection3 = (
-        //     await api.post(
-        //       `/store/payment-collections`,
-        //       { cart_id: cart3.id },
-        //       storeHeaders
-        //     )
-        //   ).data.payment_collection
+            await api.post(
+              `/store/carts/${cart.id}/shipping-methods`,
+              { option_id: shippingOption.id },
+              storeHeaders
+            )
 
-        //   await api.post(
-        //     `/store/payment-collections/${paymentCollection3.id}/payment-sessions`,
-        //     { provider_id: "pp_system_default" },
-        //     storeHeaders
-        //   )
+            const paymentCollection = (
+              await api.post(
+                `/store/payment-collections`,
+                { cart_id: cart.id },
+                storeHeaders
+              )
+            ).data.payment_collection
 
-        //   const response = await api
-        //     .post(`/store/carts/${cart3.id}/complete`, {}, storeHeaders)
-        //     .catch((err) => {
-        //       return err.response
-        //     })
+            await api.post(
+              `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+              { provider_id: "pp_system_default" },
+              storeHeaders
+            )
 
-        //   expect(response.status).toBe(400)
-        //   expect(response.data.message).toContain(
-        //     "Promotion usage exceeds the limit"
-        //   )
-        // })
+            await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
+          }
 
-        // it("should hit campaign limit first", async () => {
-        //   await api.post(
-        //     `/admin/promotions/${campaignPromotion.id}`,
-        //     {
-        //       limit: 5,
-        //     },
-        //     adminHeaders
-        //   )
-        //   // Complete 3 orders - should hit campaign limit
-        //   for (let i = 0; i < 3; i++) {
-        //     const cart = (
-        //       await api.post(
-        //         `/store/carts`,
-        //         {
-        //           currency_code: "usd",
-        //           sales_channel_id: salesChannel.id,
-        //           region_id: region.id,
-        //           shipping_address: {
-        //             address_1: "test address 1",
-        //             address_2: "test address 2",
-        //             city: "SF",
-        //             country_code: "US",
-        //             province: "CA",
-        //             postal_code: "94016",
-        //           },
-        //           items: [{ variant_id: product.variants[0].id, quantity: 1 }],
-        //           promo_codes: [campaignPromotion.code],
-        //         },
-        //         storeHeaders
-        //       )
-        //     ).data.cart
+          const cart4 = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: {
+                  address_1: "test address 1",
+                  address_2: "test address 2",
+                  city: "SF",
+                  country_code: "US",
+                  province: "CA",
+                  postal_code: "94016",
+                },
+                items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                promo_codes: [campaignPromotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
 
-        //     await api.post(
-        //       `/store/carts/${cart.id}/shipping-methods`,
-        //       { option_id: shippingOption.id },
-        //       storeHeaders
-        //     )
-
-        //     const paymentCollection = (
-        //       await api.post(
-        //         `/store/payment-collections`,
-        //         { cart_id: cart.id },
-        //         storeHeaders
-        //       )
-        //     ).data.payment_collection
-
-        //     await api.post(
-        //       `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
-        //       { provider_id: "pp_system_default" },
-        //       storeHeaders
-        //     )
-
-        //     await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
-        //   }
-
-        //   // Fourth order should fail with campaign budget limit exceeded
-        //   const cart4 = (
-        //     await api.post(
-        //       `/store/carts`,
-        //       {
-        //         currency_code: "usd",
-        //         sales_channel_id: salesChannel.id,
-        //         region_id: region.id,
-        //         shipping_address: {
-        //           address_1: "test address 1",
-        //           address_2: "test address 2",
-        //           city: "SF",
-        //           country_code: "US",
-        //           province: "CA",
-        //           postal_code: "94016",
-        //         },
-        //         items: [{ variant_id: product.variants[0].id, quantity: 1 }],
-        //         promo_codes: [campaignPromotion.code],
-        //       },
-        //       storeHeaders
-        //     )
-        //   ).data.cart
-
-        //   await api.post(
-        //     `/store/carts/${cart4.id}/shipping-methods`,
-        //     { option_id: shippingOption.id },
-        //     storeHeaders
-        //   )
-
-        //   const paymentCollection4 = (
-        //     await api.post(
-        //       `/store/payment-collections`,
-        //       { cart_id: cart4.id },
-        //       storeHeaders
-        //     )
-        //   ).data.payment_collection
-
-        //   await api.post(
-        //     `/store/payment-collections/${paymentCollection4.id}/payment-sessions`,
-        //     { provider_id: "pp_system_default" },
-        //     storeHeaders
-        //   )
-
-        //   const response = await api
-        //     .post(`/store/carts/${cart4.id}/complete`, {}, storeHeaders)
-        //     .catch((err) => {
-        //       return err.response
-        //     })
-
-        //   expect(response.status).toBe(400)
-        //   expect(response.data.message).toContain(
-        //     "Promotion usage exceeds the budget limit"
-        //   )
-        // })
+          expect(cart4.promotions).toHaveLength(0)
+        })
       })
     })
   },
