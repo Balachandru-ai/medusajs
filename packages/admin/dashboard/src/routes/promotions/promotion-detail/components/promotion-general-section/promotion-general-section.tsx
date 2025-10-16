@@ -197,7 +197,7 @@ export const PromotionGeneralSection = ({
         </div>
       )}
 
-      {promotion.limit !== null && promotion.limit !== undefined && (
+      {typeof promotion.limit === "number" && (
         <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4">
           <Text size="small" weight="plus" leading="compact">
             Usage Limit
@@ -207,9 +207,6 @@ export const PromotionGeneralSection = ({
             <Text className="inline" size="small" leading="compact">
               {promotion.used || 0} / {promotion.limit}
             </Text>
-            <Badge size="2xsmall" rounded="full" color="grey">
-              Usage
-            </Badge>
           </div>
         </div>
       )}
