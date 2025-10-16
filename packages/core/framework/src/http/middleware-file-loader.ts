@@ -173,6 +173,11 @@ export class MiddlewareFileLoader {
       await this.#processMiddlewareFile(
         join(sourceDir, `${MIDDLEWARE_FILE_NAME}.js`)
       )
+    } else if (await fs.exists("middleware.ts") || (await fs.exists("middleware.js"))) {
+      // Show a warning if the user named the file "middleware" instead of "middlewares"
+      logger.warn(
+        `Found a file named "middleware" in ${sourceDir}. If you are trying to register middlewares, please rename the file to "middlewares.ts" or "middlewares.js".`
+      )
     }
   }
 
