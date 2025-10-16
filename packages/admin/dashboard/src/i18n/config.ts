@@ -9,6 +9,7 @@ export const defaultI18nOptions: InitOptions = {
     order: ["cookie", "localStorage", "header"],
   },
   fallbackLng: "en",
+  fallbackNS: "translation",
   interpolation: {
     escapeValue: false,
   }
