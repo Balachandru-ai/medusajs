@@ -115,7 +115,6 @@ export async function generateMetadata({
 
 export type LoadedReferenceFile = {
   content: string
-  // source: MDXRemoteSerializeResult
   path: string
 }
 
