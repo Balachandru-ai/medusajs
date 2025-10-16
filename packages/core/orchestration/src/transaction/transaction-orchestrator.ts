@@ -320,6 +320,7 @@ export class TransactionOrchestrator extends EventEmitter {
     completed: number
   }> {
     const flow = transaction.getFlow()
+    // console.log(">>>> check all steps,", JSON.stringify(flow.steps, null, 2))
     const result = await this.computeCurrentTransactionState(transaction)
 
     // Handle state transitions and emit events
@@ -352,6 +353,8 @@ export class TransactionOrchestrator extends EventEmitter {
           : TransactionState.DONE
       }
     }
+
+    // console.log(">>>> check all steps result,", JSON.stringify(result, null, 2))
 
     return {
       current: result.current,

@@ -229,13 +229,17 @@ export class TransactionCheckpoint {
 
       // Determine which state is further along in the process
       const shouldUpdateInvoke = TransactionCheckpoint.#shouldUpdateStepState(
+        stepId,
         currentTransactionData.flow.steps[stepId].invoke,
+        storedStep.id,
         storedStep.invoke
       )
 
       const shouldUpdateCompensate =
         TransactionCheckpoint.#shouldUpdateStepState(
+          stepId,
           currentTransactionData.flow.steps[stepId].compensate,
+          storedStep.id,
           storedStep.compensate
         )
 
@@ -257,10 +261,12 @@ export class TransactionCheckpoint {
    * This validates both state and status transitions according to TransactionStep rules.
    */
   static #shouldUpdateStepState(
+    stepId,
     currentStepState: {
       state: TransactionStepState
       status: TransactionStepStatus
     },
+    storedStepId: string,
     storedStepState: {
       state: TransactionStepState
       status: TransactionStepStatus
@@ -318,9 +324,15 @@ export class TransactionCheckpoint {
     )
 
     if (currentStepState.state !== storedStepState.state) {
-      console.log("STATE DIFF FROM", currentStepState, "TO", storedStepState, [
-        isStateTransitionValid,
-      ])
+      console.log(
+        "STATE DIFF FROM",
+        stepId,
+        currentStepState,
+        "TO",
+        storedStepId,
+        storedStepState,
+        [isStateTransitionValid]
+      )
       return isStateTransitionValid
     }
 
@@ -334,9 +346,15 @@ export class TransactionCheckpoint {
     const allowedStatusesFromCurrent =
       allowedStatusTransitions[currentStepState.status] || []
 
-    console.log("STATUS ++++ FROM", storedStepState, "TO", currentStepState, [
-      allowedStatusesFromCurrent.includes(storedStepState.status),
-    ])
+    console.log(
+      "STATUS ++++ FROM",
+      stepId,
+      storedStepState,
+      "TO",
+      stepId,
+      currentStepState,
+      [allowedStatusesFromCurrent.includes(storedStepState.status)]
+    )
 
     return allowedStatusesFromCurrent.includes(storedStepState.status)
   }
@@ -707,12 +725,6 @@ class DistributedTransaction extends EventEmitter {
    * @returns
    */
   #serializeCheckpointData() {
-    const data = new TransactionCheckpoint(
-      this.getFlow(),
-      this.getContext(),
-      this.getErrors()
-    )
-
     const isSerializable = (obj) => {
       try {
         JSON.parse(JSON.stringify(obj))
@@ -722,9 +734,21 @@ class DistributedTransaction extends EventEmitter {
       }
     }
 
+    let copiedFlow
+    let copiedContext
+
     let rawData
     try {
-      rawData = JSON.parse(JSON.stringify(data))
+      copiedFlow = JSON.parse(JSON.stringify(this.getFlow()))
+      copiedContext = JSON.parse(JSON.stringify(this.getContext()))
+
+      const data = new TransactionCheckpoint(
+        copiedFlow,
+        copiedContext,
+        JSON.parse(JSON.stringify(this.getErrors()))
+      )
+
+      rawData = data
     } catch (e) {
       if (!isSerializable(this.context)) {
         // This is a safe guard, we should never reach this point

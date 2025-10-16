@@ -22,12 +22,14 @@ import {
 import {
   isPresent,
   MedusaError,
+  toMikroORMEntity,
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
 import { WorkflowOrchestratorService } from "@services"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 
@@ -220,29 +222,72 @@ export class InMemoryDistributedTransactionStorage
       !currentStepsIsAsync &&
       !asyncVersion
     ) {
+      console.log(">>>>>>>>>> SKIPPING SAVE TO DB", {
+        isNotStarted,
+        isFinished,
+        isWaitingToCompensate,
+        currentStepsIsAsync,
+        asyncVersion,
+      })
       return
     }
 
     console.log(
       "Saving to DB",
-      Object.keys(data.context.invoke),
+      Date.now(),
+      JSON.stringify(data.context.invoke, null, 2),
       "---------------",
       data.flow._saved_v
     )
-    await this.workflowExecutionService_.upsert([
-      {
-        workflow_id: data.flow.modelId,
-        transaction_id: data.flow.transactionId,
-        run_id: data.flow.runId,
-        execution: data.flow,
-        context: {
-          data: data.context,
-          errors: data.errors,
-        },
-        state: data.flow.state,
-        retention_time: retentionTime,
+    const manager = (
+      this.workflowExecutionService_ as any
+    ).__workflowExecutionRepository__.getActiveManager() as SqlEntityManager
+
+    const mikroOrmEntity = toMikroORMEntity(WorkflowExecution)
+
+    const dataToSave = {
+      workflow_id: data.flow.modelId,
+      transaction_id: data.flow.transactionId,
+      run_id: data.flow.runId,
+      execution: data.flow,
+      context: {
+        data: data.context,
+        errors: data.errors,
       },
-    ])
+      state: data.flow.state,
+      retention_time: retentionTime,
+    } as unknown as InferEntityType<typeof WorkflowExecution>
+
+    const workflowExecution = await manager.findOne(mikroOrmEntity, {
+      workflow_id: data.flow.modelId,
+      transaction_id: data.flow.transactionId,
+      run_id: data.flow.runId,
+    })
+
+    if (workflowExecution) {
+      dataToSave.id = workflowExecution.id as string
+      await manager.upsert(toMikroORMEntity(WorkflowExecution), dataToSave)
+    } else {
+      await manager.create(mikroOrmEntity, dataToSave)
+    }
+
+    await manager.flush()
+
+    // await this.workflowExecutionService_.upsert([
+    //   {
+    //     workflow_id: data.flow.modelId,
+    //     transaction_id: data.flow.transactionId,
+    //     run_id: data.flow.runId,
+    //     execution: data.flow,
+    //     context: {
+    //       data: data.context,
+    //       errors: data.errors,
+    //     },
+    //     state: data.flow.state,
+    //     retention_time: retentionTime,
+    //   },
+    // ])
+    console.log(">>>>>>>>>> SAVED TO DB")
   }
 
   private async deleteFromDb(data: TransactionCheckpoint) {
@@ -272,10 +317,19 @@ export class InMemoryDistributedTransactionStorage
             order: {
               id: "desc",
             },
-            take: 1,
           }
         )
-        .then((trx) => trx[0])
+        .then((trx) => {
+          console.log(
+            ">>>>>>>>>> GET TRX",
+            Date.now(),
+            trx.length,
+            JSON.stringify(trx[0]?.context?.data ?? {}),
+            null,
+            2
+          )
+          return trx[0]
+        })
         .catch(() => undefined)
 
     if (trx) {
@@ -323,13 +377,21 @@ export class InMemoryDistributedTransactionStorage
     ttl?: number,
     options?: TransactionOptions
   ): Promise<TransactionCheckpoint> {
+    console.log(
+      ">>>>>>>>>> SAVE",
+      "hasLocked",
+      this.isLocked.has(key),
+      "key",
+      key,
+      options
+    )
+    if (this.isLocked.has(key)) {
+      throw new Error("Transaction storage is locked")
+    }
+
+    this.isLocked.set(key, true)
+
     try {
-      if (this.isLocked.has(key)) {
-        throw new Error("Transaction storage is locked")
-      }
-
-      this.isLocked.set(key, true)
-
       /**
        * Store the retention time only if the transaction is done, failed or reverted.
        * From that moment, this tuple can be later on archived or deleted after the retention time.
@@ -392,12 +454,14 @@ export class InMemoryDistributedTransactionStorage
             s.invoke?.state,
             s.compensate?.state,
           ]),
+          JSON.stringify(storedData?.context?.invoke ?? {}, null, 2),
           "+++++++ INCOMING DATA +++++++",
           Object.values(data.flow.steps).map((s: any) => [
             s.id,
             s.invoke?.state,
             s.compensate?.state,
           ]),
+          JSON.stringify(data.context?.invoke ?? {}, null, 2),
           storedData?.flow.state
         )
         TransactionCheckpoint.mergeCheckpoints(data, storedData)
