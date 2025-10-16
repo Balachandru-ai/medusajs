@@ -28,45 +28,44 @@ export function InjectTransactionManager(
         return await originalMethod.apply(this, args)
       }
 
-      return await (!managerProperty ? this : this[managerProperty])
-        .transaction(
-          async (transactionManager) => {
-            const copiedContext = {} as Context
-            for (const key in originalContext) {
-              if (key === "transactionManager") {
-                continue
-              }
-
-              Object.defineProperty(copiedContext, key, {
-                enumerable: true,
-                get: function () {
-                  return originalContext[key]
-                },
-                set: function (value) {
-                  originalContext[key] = value
-                },
-              })
+      return await (!managerProperty
+        ? this
+        : this[managerProperty]
+      ).transaction(
+        async (transactionManager) => {
+          const copiedContext = {} as Context
+          for (const key in originalContext) {
+            if (key === "transactionManager") {
+              continue
             }
 
-            copiedContext.transactionManager = transactionManager
-
-            copiedContext.__type = MedusaContextType
-
-            args[argIndex] = copiedContext
-
-            return await originalMethod.apply(this, args)
-          },
-          {
-            manager: originalContext?.manager,
-            transaction: originalContext?.transactionManager,
-            isolationLevel: (originalContext as Context)?.isolationLevel,
-            enableNestedTransactions:
-              (originalContext as Context).enableNestedTransactions ?? false,
+            Object.defineProperty(copiedContext, key, {
+              enumerable: true,
+              get: function () {
+                return originalContext[key]
+              },
+              set: function (value) {
+                originalContext[key] = value
+              },
+            })
           }
-        )
-        .then(() => {
-          console.log(">>>>>>>>>> TRANSACTION COMMITTED")
-        })
+
+          copiedContext.transactionManager = transactionManager
+
+          copiedContext.__type = MedusaContextType
+
+          args[argIndex] = copiedContext
+
+          return await originalMethod.apply(this, args)
+        },
+        {
+          manager: originalContext?.manager,
+          transaction: originalContext?.transactionManager,
+          isolationLevel: (originalContext as Context)?.isolationLevel,
+          enableNestedTransactions:
+            (originalContext as Context).enableNestedTransactions ?? false,
+        }
+      )
     }
   }
 }
