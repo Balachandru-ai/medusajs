@@ -87,31 +87,31 @@ export default async function ReferencesPage(props: PageProps) {
   )
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  // read route params
-  const slug = (await params).slug
-  const metadata: Metadata = {}
+// export async function generateMetadata({
+//   params,
+// }: PageProps): Promise<Metadata> {
+//   // read route params
+//   const slug = (await params).slug
+//   const metadata: Metadata = {}
 
-  const fileData = await loadReferencesFile(slug)
+//   const fileData = await loadReferencesFile(slug)
 
-  if (!fileData) {
-    return metadata
-  }
+//   if (!fileData) {
+//     return metadata
+//   }
 
-  const pageTitleMatch = /#(?<title>[\w -]+)/.exec(fileData.content)
+//   const pageTitleMatch = /#(?<title>[\w -]+)/.exec(fileData.content)
 
-  if (!pageTitleMatch?.groups?.title) {
-    return metadata
-  }
+//   if (!pageTitleMatch?.groups?.title) {
+//     return metadata
+//   }
 
-  metadata.title = pageTitleMatch.groups.title
-  const frontmatter = await getFrontMatterFromString(fileData.content)
-  metadata.keywords = (frontmatter.keywords || []) as string[]
+//   metadata.title = pageTitleMatch.groups.title
+//   const frontmatter = await getFrontMatterFromString(fileData.content)
+//   metadata.keywords = (frontmatter.keywords || []) as string[]
 
-  return metadata
-}
+//   return metadata
+// }
 
 export type LoadedReferenceFile = {
   content: string
