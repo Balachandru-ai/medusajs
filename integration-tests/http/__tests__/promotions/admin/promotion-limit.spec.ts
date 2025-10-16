@@ -37,7 +37,6 @@ medusaIntegrationTestRunner({
 
         await setupTaxStructure(appContainer.resolve(Modules.TAX))
 
-        // Create shipping profile
         shippingProfile = (
           await api.post(
             `/admin/shipping-profiles`,
@@ -46,7 +45,6 @@ medusaIntegrationTestRunner({
           )
         ).data.shipping_profile
 
-        // Create stock location
         stockLocation = (
           await api.post(
             `/admin/stock-locations`,
@@ -55,7 +53,6 @@ medusaIntegrationTestRunner({
           )
         ).data.stock_location
 
-        // Create fulfillment set
         const fulfillmentSets = (
           await api.post(
             `/admin/stock-locations/${stockLocation.id}/fulfillment-sets?fields=*fulfillment_sets`,
@@ -78,14 +75,12 @@ medusaIntegrationTestRunner({
           )
         ).data.fulfillment_set
 
-        // Add fulfillment provider
         await api.post(
           `/admin/stock-locations/${stockLocation.id}/fulfillment-providers`,
           { add: ["manual_test-provider"] },
           adminHeaders
         )
 
-        // Create shipping option
         shippingOption = (
           await api.post(
             `/admin/shipping-options`,
@@ -135,7 +130,6 @@ medusaIntegrationTestRunner({
           )
         ).data.sales_channel
 
-        // Link stock location to sales channel
         await api.post(
           `/admin/stock-locations/${stockLocation.id}/sales-channels`,
           { add: [salesChannel.id] },
@@ -257,7 +251,6 @@ medusaIntegrationTestRunner({
         })
 
         it("should increment used count when order is completed", async () => {
-          // Create cart with promotion
           const cart = (
             await api.post(
               `/store/carts`,
@@ -283,14 +276,12 @@ medusaIntegrationTestRunner({
           expect(cart.promotions).toHaveLength(1)
           expect(cart.promotions[0].code).toBe(promotion.code)
 
-          // Add shipping method
           await api.post(
             `/store/carts/${cart.id}/shipping-methods`,
             { option_id: shippingOption.id },
             storeHeaders
           )
 
-          // Create payment collection
           const paymentCollection = (
             await api.post(
               `/store/payment-collections`,
@@ -299,21 +290,18 @@ medusaIntegrationTestRunner({
             )
           ).data.payment_collection
 
-          // Add payment session
           await api.post(
             `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
             { provider_id: "pp_system_default" },
             storeHeaders
           )
 
-          // Complete the cart
           const order = (
             await api.post(`/store/carts/${cart.id}/complete`, {}, storeHeaders)
           ).data.order
 
           expect(order).toBeDefined()
 
-          // Check promotion usage was incremented
           const updatedPromotion = (
             await api.get(`/admin/promotions/${promotion.id}`, adminHeaders)
           ).data.promotion
@@ -380,7 +368,7 @@ medusaIntegrationTestRunner({
         })
 
         it("should allow completing 2 orders successfully", async () => {
-          // Complete first order
+          // Complete first cart
           const cart1 = (
             await api.post(
               `/store/carts`,
@@ -426,7 +414,7 @@ medusaIntegrationTestRunner({
 
           await api.post(`/store/carts/${cart1.id}/complete`, {}, storeHeaders)
 
-          // Complete second order
+          // Complete second cart
           const cart2 = (
             await api.post(
               `/store/carts`,
@@ -472,7 +460,6 @@ medusaIntegrationTestRunner({
 
           await api.post(`/store/carts/${cart2.id}/complete`, {}, storeHeaders)
 
-          // Check promotion usage
           const updatedPromotion = (
             await api.get(`/admin/promotions/${promotion.id}`, adminHeaders)
           ).data.promotion
@@ -688,7 +675,6 @@ medusaIntegrationTestRunner({
               )
             ).data.cart
 
-            // Setup first order cart
             await api.post(
               `/store/carts/${cart.id}/shipping-methods`,
               { option_id: shippingOption.id },
@@ -755,7 +741,6 @@ medusaIntegrationTestRunner({
             )
           ).data.cart
 
-          // Setup cart
           await api.post(
             `/store/carts/${cart.id}/shipping-methods`,
             { option_id: shippingOption.id },
