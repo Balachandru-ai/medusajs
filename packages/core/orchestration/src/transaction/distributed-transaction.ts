@@ -45,7 +45,7 @@ const mergeStep = (
 
   for (const prop of mergeProperties) {
     if (prop === "hasScheduledRetry" || prop === "stepFailed") {
-      currentStep[prop] = storedStep[prop] ?? currentStep[prop]
+      currentStep[prop] = !!storedStep[prop] || !!currentStep[prop]
       continue
     }
 
@@ -530,7 +530,7 @@ class DistributedTransaction extends EventEmitter {
         this.getFlow().options),
     }
 
-    if (!options?.store) {
+    if (!options?.store && !this.getFlow().metadata?.parentStepIdempotencyKey) {
       return
     }
 

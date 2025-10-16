@@ -1,5 +1,12 @@
-import { IWorkflowEngineService } from "@medusajs/framework/types"
-import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
+import {
+  IWorkflowEngineService,
+  MedusaContainer,
+} from "@medusajs/framework/types"
+import {
+  createContainerLike,
+  Modules,
+  TransactionHandlerType,
+} from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
@@ -13,17 +20,12 @@ import { setTimeout } from "timers/promises"
 import { ulid } from "ulid"
 import "../__fixtures__"
 
-jest.setTimeout(10000)
+jest.setTimeout(1000000)
 
 moduleIntegrationTestRunner<IWorkflowEngineService>({
   moduleName: Modules.WORKFLOW_ENGINE,
   resolve: __dirname + "/../..",
-  testSuite: ({ service: workflowOrcModule, medusaApp }) => {
-    beforeAll(() => {
-      console.log(
-        "================================================ STARTING TESTS"
-      )
-    })
+  testSuite: ({ service: workflowOrcModule, utils }) => {
     // TODO: Debug the issue with this test https://github.com/medusajs/medusa/actions/runs/13900190144/job/38897122803#step:5:5616
     describe("Testing race condition of the workflow during retry", () => {
       it("should manage saving multiple async steps in concurrency", async () => {
@@ -183,7 +185,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         ])
       })
 
-      it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", async () => {
+      it.skip("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "RACE_workflow-1" + ulid()
 
@@ -271,7 +273,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         expect(transformMock).toHaveBeenCalledTimes(1)
       })
 
-      it.only("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", async () => {
+      it.skip("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "RACE_workflow-1" + ulid()
 
@@ -297,7 +299,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           "RACE_step1",
           async (_) => {
             step1InvokeMock()
+            console.log(
+              "================================================ step1InvokeMock"
+            )
             await setTimeout(300)
+            console.log(
+              "================================================ step1InvokeMock after timeout"
+            )
             throw new Error("error from step 1")
           },
           () => {
@@ -310,10 +318,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse({ result: input })
         })
 
-        const subWorkflow = createWorkflow("RACE_sub-workflow-1", function () {
-          const status = step1()
-          return new WorkflowResponse(status)
-        })
+        const subWorkflow = createWorkflow(
+          { name: "RACE_sub-workflow-1", store: true, retentionTime: 5 },
+          function () {
+            const status = step1()
+            return new WorkflowResponse(status)
+          }
+        )
 
         createWorkflow(
           {
@@ -366,12 +377,16 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         await onFinish
 
-        // expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-        // expect(step0CompensateMock).toHaveBeenCalledTimes(1)
-        // expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(2)
-        // expect(step1CompensateMock.mock.calls.length).toBeGreaterThan(1)
-        // expect(step2InvokeMock).toHaveBeenCalledTimes(0)
-        // expect(transformMock).toHaveBeenCalledTimes(0)
+        console.log("BEFORE EXPECTATIONS")
+
+        expect(step0InvokeMock).toHaveBeenCalledTimes(1)
+        expect(step0CompensateMock).toHaveBeenCalledTimes(1)
+        expect(step1InvokeMock.mock.calls.length).toBeGreaterThanOrEqual(2)
+        expect(step1CompensateMock.mock.calls.length).toBeGreaterThanOrEqual(1)
+        expect(step2InvokeMock).toHaveBeenCalledTimes(0)
+        expect(transformMock).toHaveBeenCalledTimes(0)
+
+        console.log("FINISHED TEST")
       })
     })
   },

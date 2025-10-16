@@ -12,6 +12,9 @@ import * as fs from "fs"
 import { getDatabaseURL, getMikroOrmWrapper, TestDatabase } from "./database"
 import { initModules, InitModulesOptions } from "./init-modules"
 import { default as MockEventBusService } from "./mock-event-bus-service"
+import { container } from "@medusajs/framework"
+import { waitWorkflowExecutions } from "./medusa-test-runner-utils/wait-workflow-executions"
+import { MedusaContainer } from "@medusajs/framework/types"
 
 export interface SuiteOptions<TService = unknown> {
   MikroOrmWrapper: TestDatabase
@@ -20,6 +23,9 @@ export interface SuiteOptions<TService = unknown> {
   dbConfig: {
     schema: string
     clientUrl: string
+  }
+  utils: {
+    waitWorkflowExecutions: (container?: MedusaContainer) => Promise<void>
   }
 }
 
@@ -167,6 +173,10 @@ export function moduleIntegrationTestRunner<TService = any>({
     dbConfig: {
       schema,
       clientUrl: dbConfig.clientUrl,
+    },
+    utils: {
+      waitWorkflowExecutions: (container_?: MedusaContainer) =>
+        waitWorkflowExecutions(container_ ?? container),
     },
   } as SuiteOptions<TService>
 

@@ -2,6 +2,7 @@ import {
   DistributedTransaction,
   DistributedTransactionEvents,
   DistributedTransactionType,
+  SkipStepAlreadyFinishedError,
   TransactionHandlerType,
   TransactionStep,
   WorkflowScheduler,
@@ -137,12 +138,16 @@ export class WorkflowOrchestratorService {
     const metadata = transaction.flow.metadata
     const { parentStepIdempotencyKey } = metadata ?? {}
 
-    if (parentStepIdempotencyKey) {
-      const hasFailed = [
-        TransactionState.REVERTED,
-        TransactionState.FAILED,
-      ].includes(transaction.flow.state)
+    if (!parentStepIdempotencyKey) {
+      return
+    }
 
+    const hasFailed = [
+      TransactionState.REVERTED,
+      TransactionState.FAILED,
+    ].includes(transaction.flow.state)
+
+    try {
       if (hasFailed) {
         console.log("TRIGGERING PARENT STEP FAILURE", context)
         await this.setStepFailure({
@@ -163,6 +168,11 @@ export class WorkflowOrchestratorService {
           },
         })
       }
+    } catch (error) {
+      if (SkipStepAlreadyFinishedError.isSkipStepAlreadyFinishedError(error)) {
+        return
+      }
+      throw error
     }
   }
 

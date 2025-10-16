@@ -7,6 +7,7 @@ import {
   SkipCancelledExecutionError,
   SkipExecutionError,
   SkipStepAlreadyFinishedError,
+  TransactionAlreadyCancelledError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -223,6 +224,8 @@ export class InMemoryDistributedTransactionStorage
       !asyncVersion
     ) {
       console.log(">>>>>>>>>> SKIPPING SAVE TO DB", {
+        transactionId: data.flow.transactionId,
+        modelId: data.flow.modelId,
         isNotStarted,
         isFinished,
         isWaitingToCompensate,
@@ -234,7 +237,8 @@ export class InMemoryDistributedTransactionStorage
 
     console.log(
       "Saving to DB",
-      Date.now(),
+      data.flow.transactionId,
+      data.flow.modelId,
       JSON.stringify(data.context.invoke, null, 2),
       "---------------",
       data.flow._saved_v
@@ -291,6 +295,11 @@ export class InMemoryDistributedTransactionStorage
   }
 
   private async deleteFromDb(data: TransactionCheckpoint) {
+    console.log(
+      ">>>>>>>>>> DELETING FROM DB",
+      data.flow.transactionId,
+      data.flow.modelId
+    )
     await this.workflowExecutionService_.delete([
       {
         run_id: data.flow.runId,
@@ -344,19 +353,20 @@ export class InMemoryDistributedTransactionStorage
           TransactionState.REVERTED,
           TransactionState.FAILED,
         ].includes(execution.state)
-
         const isDone = execution.state === TransactionState.DONE
-
         const isCancellingAndFailedOrReverted =
           options?.isCancelling && isFailedOrReverted
-
         const isNotCancellingAndDoneOrFailedOrReverted =
           !options?.isCancelling && (isDone || isFailedOrReverted)
-
         if (
           isCancellingAndFailedOrReverted ||
           isNotCancellingAndDoneOrFailedOrReverted
         ) {
+          if (options?.isCancelling) {
+            throw new TransactionAlreadyCancelledError(
+              "Transaction already cancelled"
+            )
+          }
           return
         }
       }

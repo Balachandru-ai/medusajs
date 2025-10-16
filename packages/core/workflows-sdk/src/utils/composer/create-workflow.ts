@@ -1,4 +1,5 @@
 import {
+  TransactionAlreadyCancelledError,
   TransactionModelOptions,
   WorkflowHandler,
   WorkflowManager,
@@ -208,7 +209,10 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
         const executionContext = {
           ...(sharedContext?.context ?? {}),
           transactionId:
-            step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
+            step.__step__ +
+            "-" +
+            (stepContext.transactionId ?? ulid()) +
+            (stepContext.attempt > 1 ? "-attempt-" + stepContext.attempt : ""),
           parentStepIdempotencyKey: stepContext.idempotencyKey,
           preventReleaseEvents: true,
           runId: stepContext.runId,
@@ -216,12 +220,11 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
 
         let transaction
         if (workflowEngine && isAsync) {
-          transaction = await workflowEngine.run(name, {
+          console.log("sub workflow run", executionContext.transactionId)
+          void workflowEngine.run(name, {
             input: stepInput as any,
             transactionId: executionContext.transactionId,
             context: executionContext,
-            throwOnError: false,
-            logOnError: true,
           })
         } else {
           transaction = await workflow.run({
@@ -232,13 +235,14 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
         }
 
         return new StepResponse(
-          transaction.result,
+          isAsync ? stepContext.transactionId : transaction.result,
           isAsync ? stepContext.transactionId : transaction
         )
       },
       async (transaction, stepContext) => {
         // The step itself has failed, there is nothing to revert
-        if (!transaction) {
+        const transaction_ = transaction ?? stepContext.transactionId
+        if (!transaction_) {
           return
         }
 
@@ -257,21 +261,32 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
           preventReleaseEvents: true,
         }
 
-        const transactionId = step.__step__ + "-" + stepContext.transactionId
-
-        if (workflowEngine && isAsync) {
-          await workflowEngine.cancel(name, {
-            transactionId: transactionId,
-            context: executionContext,
-          })
-        } else {
-          await workflow(container).cancel({
-            transaction: (transaction as WorkflowResult<any>)?.transaction,
-            transactionId,
-            container,
-            context: executionContext,
-          })
+        try {
+          if (workflowEngine && isAsync) {
+            await workflowEngine.cancel(name, {
+              transactionId: executionContext.transactionId,
+              context: executionContext,
+            })
+          } else {
+            await workflow(container).cancel({
+              transaction: (transaction as WorkflowResult<any>)?.transaction,
+              transactionId: executionContext.transactionId,
+              container,
+              context: executionContext,
+            })
+          }
+        } catch (error) {
+          if (
+            TransactionAlreadyCancelledError.isTransactionAlreadyCancelledError(
+              error
+            )
+          ) {
+            return StepResponse.alreadyCancelled()
+          }
+          throw error
         }
+
+        return
       }
     )(input) as ReturnType<StepFunction<TData, TResult>>
 

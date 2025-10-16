@@ -1,3 +1,5 @@
+import { OrchestrationUtils } from "@medusajs/utils"
+
 class BaseStepErrror extends Error {
   #stepResponse: unknown
 
@@ -28,6 +30,8 @@ export class PermanentStepFailureError extends BaseStepErrror {
 }
 
 export class SkipStepResponse extends BaseStepErrror {
+  readonly #__type = OrchestrationUtils.SymbolWorkflowStepResponse
+
   static isSkipStepResponse(error: Error): error is SkipStepResponse {
     return (
       error instanceof SkipStepResponse || error?.name === "SkipStepResponse"
@@ -36,6 +40,10 @@ export class SkipStepResponse extends BaseStepErrror {
 
   constructor(message?: string, stepResponse?: unknown) {
     super("SkipStepResponse", message, stepResponse)
+  }
+
+  get __type() {
+    return this.#__type
   }
 }
 
@@ -66,6 +74,21 @@ export class TransactionTimeoutError extends BaseStepErrror {
 
   constructor(message?: string, stepResponse?: unknown) {
     super("TransactionTimeoutError", message, stepResponse)
+  }
+}
+
+export class TransactionAlreadyCancelledError extends BaseStepErrror {
+  static isTransactionAlreadyCancelledError(
+    error: Error
+  ): error is TransactionAlreadyCancelledError {
+    return (
+      error instanceof TransactionAlreadyCancelledError ||
+      error?.name === "TransactionAlreadyCancelledError"
+    )
+  }
+
+  constructor(message?: string, stepResponse?: unknown) {
+    super("TransactionAlreadyCancelledError", message, stepResponse)
   }
 }
 
@@ -116,6 +139,8 @@ export class SkipStepAlreadyFinishedError extends Error {
 }
 
 export class SkipCancelledExecutionError extends Error {
+  readonly #__type = OrchestrationUtils.SymbolWorkflowStepResponse
+
   static isSkipCancelledExecutionError(
     error: Error
   ): error is SkipCancelledExecutionError {
@@ -128,5 +153,9 @@ export class SkipCancelledExecutionError extends Error {
   constructor(message?: string) {
     super(message)
     this.name = "SkipCancelledExecutionError"
+  }
+
+  get __type() {
+    return this.#__type
   }
 }

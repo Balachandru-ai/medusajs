@@ -1,5 +1,6 @@
 import {
   PermanentStepFailureError,
+  SkipCancelledExecutionError,
   SkipStepResponse,
 } from "@medusajs/orchestration"
 import { OrchestrationUtils, isDefined } from "@medusajs/utils"
@@ -131,6 +132,9 @@ export class StepResponse<TOutput, TCompensateInput = TOutput> {
     return new SkipStepResponse()
   }
 
+  static alreadyCancelled(): SkipCancelledExecutionError {
+    return new SkipCancelledExecutionError("Transaction already cancelled")
+  }
   /**
    * @internal
    */

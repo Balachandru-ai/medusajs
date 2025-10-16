@@ -1206,7 +1206,12 @@ export class TransactionOrchestrator extends EventEmitter {
       .then(async (response: any) => {
         await this.handleStepExpiration(transaction, step, nextSteps)
 
-        const output = response?.__type ? response.output : response
+        const output = response?.__type
+          ? response?.output
+          : response?.output?.__type
+          ? response?.output
+          : response
+
         if (SkipStepResponse.isSkipStepResponse(output)) {
           await TransactionOrchestrator.skipStep({
             transaction,
@@ -1243,9 +1248,20 @@ export class TransactionOrchestrator extends EventEmitter {
     step: TransactionStep,
     nextSteps: { next: TransactionStep[] }
   ): Promise<void | unknown> {
+    console.log(
+      "================================================ EXECUTE ASYNC STEP",
+      transaction.getFlow().modelId,
+      transaction.getFlow().transactionId,
+      step.id,
+      JSON.stringify(promiseFn.toString(), null, 2)
+    )
     return promiseFn()
       .then(async (response: any) => {
-        const output = response?.__type ? response.output : response
+        const output = response?.__type
+          ? response?.output
+          : response?.output?.__type
+          ? response?.output
+          : response
 
         if (SkipStepResponse.isSkipStepResponse(output)) {
           await TransactionOrchestrator.skipStep({
@@ -1256,7 +1272,12 @@ export class TransactionOrchestrator extends EventEmitter {
           await transaction.scheduleRetry(step, 0)
           return
         } else {
-          if (!step.definition.backgroundExecution || step.definition.nested) {
+          if (
+            !SkipCancelledExecutionError.isSkipCancelledExecutionError(
+              output
+            ) &&
+            (!step.definition.backgroundExecution || step.definition.nested)
+          ) {
             const eventName = DistributedTransactionEvent.STEP_AWAITING
             transaction.emit(eventName, { step, transaction })
             return
@@ -1825,13 +1846,27 @@ export class TransactionOrchestrator extends EventEmitter {
 
     if (step === null) {
       throw new Error("Action not found.")
-    } else if (
-      step.isCompensating()
-        ? actionType !== TransactionHandlerType.COMPENSATE
-        : actionType !== TransactionHandlerType.INVOKE
-    ) {
-      throw new Error("Incorrect action type.")
+    } else {
+      const { state } = step.getStates()
+      if (
+        actionType === TransactionHandlerType.INVOKE &&
+        state === TransactionStepState.REVERTED
+      ) {
+        throw new SkipStepAlreadyFinishedError("Step already compensated")
+      } else if (
+        actionType === TransactionHandlerType.COMPENSATE &&
+        state === TransactionStepState.DONE
+      ) {
+        throw new SkipStepAlreadyFinishedError("Step already invoked")
+      } else if (
+        step.isCompensating()
+          ? actionType !== TransactionHandlerType.COMPENSATE
+          : actionType !== TransactionHandlerType.INVOKE
+      ) {
+        throw new Error("Incorrect action type.")
+      }
     }
+
     return [transaction, step]
   }
 
