@@ -7581,6 +7581,12 @@
             "taxInclusive": {
               "type": "string"
             },
+            "usageLimit": {
+              "type": "string"
+            },
+            "usage": {
+              "type": "string"
+            },
             "amount": {
               "type": "object",
               "properties": {
@@ -7682,6 +7688,8 @@
             "addCondition",
             "clearAll",
             "taxInclusive",
+            "usageLimit",
+            "usage",
             "amount",
             "conditions"
           ],
