@@ -10,11 +10,15 @@ export type CampaignBudgetUsageContext = {
    * The email of the customer.
    */
   customer_email: string | null
+  /*
+   * Allow any additional custom attributes
+   */
+  [key: string]: string | null
 }
 /**
  * Record of promotion usage as part of a campaign whose budget type
  * is `use_by_attribute` or `spend_by_attribute`.
- * 
+ *
  * @since 2.11.0
  */
 export interface CampaignBudgetUsageDTO {

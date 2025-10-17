@@ -772,11 +772,9 @@ export default class PromotionModuleService
         promotion.campaign?.budget?.type === CampaignBudgetType.USE_BY_ATTRIBUTE
       ) {
         const attribute = promotion.campaign?.budget?.attribute!
-        const budgetUsageContext =
-          ComputeActionUtils.getBudgetUsageContextFromComputeActionContext(
-            applicationContext
-          )
-        const attributeValue = budgetUsageContext[attribute]
+
+        const budgetContext = applicationContext.budget_context ?? {}
+        const attributeValue = budgetContext[attribute]
 
         if (!attributeValue) {
           throw new MedusaError(

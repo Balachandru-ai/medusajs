@@ -121,8 +121,34 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       action: action as PromotionActions,
     })
 
+    const customCampaignBudgetAttributes = createHook(
+      "getCustomCampaignBudgetAttributes",
+      {
+        cart,
+      }
+    )
+
+    const cartForCompute = transform(
+      { cart, customCampaignBudgetAttributes },
+      ({ cart, customCampaignBudgetAttributes }) => {
+        const defaultContext = {
+          customer_id: cart.customer?.id || null,
+          customer_email: cart.email || null,
+        }
+
+        const budget_context = customCampaignBudgetAttributes
+          ? { ...defaultContext, ...customCampaignBudgetAttributes }
+          : defaultContext
+
+        return {
+          ...cart,
+          budget_context,
+        }
+      }
+    )
+
     const actions = getActionsToComputeFromPromotionsStep({
-      cart,
+      cart: cartForCompute,
       promotionCodesToApply,
     })
 
@@ -155,7 +181,7 @@ export const updateCartPromotionsWorkflow = createWorkflow(
     })
 
     return new WorkflowResponse(void 0, {
-      hooks: [validate],
+      hooks: [validate, customCampaignBudgetAttributes],
     })
   }
 )

@@ -1,9 +1,7 @@
 import {
   BigNumberInput,
   CampaignBudgetExceededAction,
-  CampaignBudgetUsageContext,
   CampaignBudgetUsageDTO,
-  ComputeActionContext,
   InferEntityType,
   PromotionDTO,
 } from "@medusajs/framework/types"
@@ -56,18 +54,5 @@ export function computeActionForBudgetExceeded(
       action: ComputedActions.CAMPAIGN_BUDGET_EXCEEDED,
       code: promotion.code!,
     }
-  }
-}
-
-export function getBudgetUsageContextFromComputeActionContext(
-  computeActionContext: ComputeActionContext
-): CampaignBudgetUsageContext {
-  return {
-    customer_id:
-      computeActionContext.customer_id ??
-      (computeActionContext.customer as any)?.id ??
-      null,
-    customer_email:
-      (computeActionContext.email as string | undefined | null) ?? null,
   }
 }

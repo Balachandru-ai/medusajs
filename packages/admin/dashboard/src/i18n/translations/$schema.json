@@ -7678,6 +7678,7 @@
             "campaign",
             "method",
             "allocation",
+            "allocationTooltip",
             "addCondition",
             "clearAll",
             "taxInclusive",
@@ -11233,6 +11234,15 @@
         "promotionCode": {
           "type": "string"
         },
+        "customAttribute": {
+          "type": "string"
+        },
+        "customAttributeKey": {
+          "type": "string"
+        },
+        "customAttributeKeyTooltip": {
+          "type": "string"
+        },
         "handle": {
           "type": "string"
         },
@@ -11660,6 +11670,9 @@
         "collection",
         "discountable",
         "promotionCode",
+        "customAttribute",
+        "customAttributeKey",
+        "customAttributeKeyTooltip",
         "handle",
         "subtitle",
         "by",

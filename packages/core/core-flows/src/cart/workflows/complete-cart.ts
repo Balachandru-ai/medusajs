@@ -3,6 +3,7 @@ import {
   CartWorkflowDTO,
   LinkDefinition,
   PromotionDTO,
+  PromotionTypes,
   UsageComputedActions,
 } from "@medusajs/framework/types"
 import {
@@ -46,6 +47,7 @@ import {
   PrepareLineItemDataInput,
   prepareTaxLinesData,
 } from "../utils/prepare-line-item-data"
+
 /**
  * The data to complete a cart and place an order.
  */
@@ -141,6 +143,14 @@ export const completeCartWorkflow = createWorkflow(
       input,
       cart: cartData.data,
     })
+
+    // TODO: can we move this inside when-then
+    const customCampaignBudgetAttributes = createHook(
+      "getCustomCampaignBudgetAttributesForRegistration",
+      {
+        cart: cartData.data,
+      }
+    )
 
     // If order ID does not exist, we are completing the cart for the first time
     const order = when("create-order", { orderId }, ({ orderId }) => {
@@ -349,6 +359,24 @@ export const completeCartWorkflow = createWorkflow(
         }
       )
 
+      const registrationInput = transform(
+        { promotionUsage, customCampaignBudgetAttributes },
+        ({ promotionUsage, customCampaignBudgetAttributes }) => {
+          const registrationContext: PromotionTypes.CampaignBudgetUsageContext =
+            customCampaignBudgetAttributes
+              ? {
+                  ...promotionUsage.registrationContext,
+                  ...customCampaignBudgetAttributes,
+                }
+              : promotionUsage.registrationContext
+
+          return {
+            computedActions: promotionUsage.computedActions,
+            registrationContext,
+          }
+        }
+      )
+
       const linksToCreate = transform(
         { cart: cartData.data, createdOrder },
         ({ cart, createdOrder }) => {
@@ -385,7 +413,7 @@ export const completeCartWorkflow = createWorkflow(
         createRemoteLinkStep(linksToCreate),
         updateCartsStep([updateCompletedAt]),
         reserveInventoryStep(formatedInventoryItems),
-        registerUsageStep(promotionUsage),
+        registerUsageStep(registrationInput),
         emitEventStep({
           eventName: OrderWorkflowEvents.PLACED,
           data: { id: createdOrder.id },
@@ -450,7 +478,7 @@ export const completeCartWorkflow = createWorkflow(
     })
 
     return new WorkflowResponse(result, {
-      hooks: [validate],
+      hooks: [validate, customCampaignBudgetAttributes],
     })
   }
 )

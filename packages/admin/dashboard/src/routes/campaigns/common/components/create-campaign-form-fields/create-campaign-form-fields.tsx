@@ -5,11 +5,12 @@ import {
   Input,
   RadioGroup,
   Select,
+  Switch,
   Text,
   Textarea,
 } from "@medusajs/ui"
-import { useEffect } from "react"
-import { useWatch } from "react-hook-form"
+import { useEffect, useState } from "react"
+import { useWatch, UseFormReturn } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../components/common/form"
@@ -19,12 +20,18 @@ import {
   currencies,
   getCurrencySymbol,
 } from "../../../../../lib/data/currencies"
-import { Combobox } from "../../../../../components/inputs/combobox"
 
-export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
+export const CreateCampaignFormFields = ({
+  form,
+  fieldScope = "",
+}: {
+  form: UseFormReturn<any>
+  fieldScope?: string
+}) => {
   const { t } = useTranslation()
   const { store } = useStore()
   const direction = useDocumentDirection()
+  const [isCustomValue, setIsCustomValue] = useState(false)
   const watchValueType = useWatch({
     control: form.control,
     name: `${fieldScope}budget.type`,
@@ -52,7 +59,7 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
     } else {
       form.setValue(`campaign.budget.currency_code`, null)
     }
-  }, [promotionCurrencyValue, isTypeSpend])
+  }, [promotionCurrencyValue, isTypeSpend, fieldScope, form])
 
   if (promotionCurrencyValue) {
     const formCampaignBudget = form.getValues().campaign?.budget
@@ -347,54 +354,82 @@ export const CreateCampaignFormFields = ({ form, fieldScope = "" }) => {
         />
 
         {!isTypeSpend && (
-          <Form.Field
-            control={form.control}
-            name={`${fieldScope}budget.attribute`}
-            render={({ field }) => {
-              return (
-                <Form.Item className="basis-1/2">
-                  <Form.Label
-                    tooltip={t(
-                      "campaigns.budget.fields.budgetAttributeTooltip"
-                    )}
-                  >
-                    {t("campaigns.budget.fields.budgetAttribute")}
-                  </Form.Label>
+          <div className="basis-1/2">
+            <Form.Item>
+              <div className="flex items-center justify-between gap-x-3">
+                <Form.Label
+                  tooltip={t("campaigns.budget.fields.budgetAttributeTooltip")}
+                >
+                  {t("campaigns.budget.fields.budgetAttribute")}
+                </Form.Label>
 
-                  <Form.Control>
-                    <Combobox
-                      key="attribute"
-                      {...field}
-                      onChange={(e) => {
-                        if (typeof e === "undefined") {
-                          field.onChange(null)
-                        } else {
-                          field.onChange(e)
-                        }
-                      }}
-                      allowClear
-                      options={[
-                        {
-                          label: t("fields.customer"),
-                          value: "customer_id",
-                        },
-                        {
-                          label: t("fields.email"),
-                          value: "customer_email",
-                        },
-                        // TEMP disable promotion code for now
-                        // {
-                        //   label: t("fields.promotionCode"),
-                        //   value: "promotion_code",
-                        // },
-                      ]}
-                    ></Combobox>
-                  </Form.Control>
-                  <Form.ErrorMessage />
-                </Form.Item>
-              )
-            }}
-          />
+                <div className="flex items-center gap-x-3">
+                  <Text size="small" className="text-ui-fg-subtle">
+                    {t("fields.customAttribute")}
+                  </Text>
+                  <Switch
+                    checked={isCustomValue}
+                    onCheckedChange={(checked) => {
+                      setIsCustomValue(checked)
+                      // Clear the attribute value when toggling
+                      form.setValue(`${fieldScope}budget.attribute`, null)
+                    }}
+                  />
+                </div>
+              </div>
+
+              {isCustomValue ? (
+                <Form.Field
+                  control={form.control}
+                  name={`${fieldScope}budget.attribute`}
+                  render={({ field }) => {
+                    return (
+                      <Form.Control>
+                        <Input
+                          type="text"
+                          placeholder={t("fields.customAttributeKey")}
+                          {...field}
+                        />
+                      </Form.Control>
+                    )
+                  }}
+                />
+              ) : (
+                <Form.Field
+                  control={form.control}
+                  name={`${fieldScope}budget.attribute`}
+                  render={({ field }) => {
+                    return (
+                      <Form.Control>
+                        <Select
+                          dir={direction}
+                          {...field}
+                          onValueChange={field.onChange}
+                        >
+                          <Select.Trigger>
+                            <Select.Value placeholder={t("fields.customer")} />
+                          </Select.Trigger>
+                          <Select.Content>
+                            <Select.Item value="customer_id">
+                              {t("fields.customer")}
+                            </Select.Item>
+                            <Select.Item value="customer_email">
+                              {t("fields.email")}
+                            </Select.Item>
+                            {/* TEMP disable promotion code for now */}
+                            {/* <Select.Item value="promotion_code">
+                              {t("fields.promotionCode")}
+                            </Select.Item> */}
+                          </Select.Content>
+                        </Select>
+                      </Form.Control>
+                    )
+                  }}
+                />
+              )}
+              <Form.ErrorMessage />
+            </Form.Item>
+          </div>
         )}
       </div>
     </div>

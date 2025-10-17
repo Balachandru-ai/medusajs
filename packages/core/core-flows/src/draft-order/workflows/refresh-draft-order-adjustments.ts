@@ -1,11 +1,13 @@
 import { PromotionActions } from "@medusajs/framework/utils"
 import {
+  createHook,
   createWorkflow,
   parallelize,
+  transform,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import type { OrderDTO } from "@medusajs/framework/types"
+import type { CustomerDTO, OrderDTO } from "@medusajs/framework/types"
 import {
   getActionsToComputeFromPromotionsStep,
   getPromotionCodesToApply,
@@ -28,7 +30,9 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
   /**
    * The draft order to refresh the adjustments for.
    */
-  order: OrderDTO
+  order: OrderDTO & {
+    customer?: CustomerDTO
+  }
 
   // TODO: I will reintroduce this type, once I have migrated all of the order flows to fit the expected type.
   //   Doing this in a single PR is too much work, so I'm going to do it in smaller PRs.
@@ -91,8 +95,35 @@ export const refreshDraftOrderAdjustmentsWorkflow = createWorkflow(
       action: input.action,
     })
 
+    // Hook returns only custom campaign budget attributes
+    const customCampaignBudgetAttributes = createHook(
+      "getCustomCampaignBudgetAttributes",
+      {
+        cart: input.order,
+      }
+    )
+
+    const orderForCompute = transform(
+      { order: input.order, customCampaignBudgetAttributes },
+      ({ order, customCampaignBudgetAttributes }) => {
+        const defaultContext = {
+          customer_id: order.customer?.id || null,
+          customer_email: order.email || null,
+        }
+
+        const budgetContext = customCampaignBudgetAttributes
+          ? { ...defaultContext, ...customCampaignBudgetAttributes }
+          : defaultContext
+
+        return {
+          ...order,
+          budget_context: budgetContext,
+        }
+      }
+    )
+
     const actions = getActionsToComputeFromPromotionsStep({
-      cart: input.order as any,
+      cart: orderForCompute as any,
       promotionCodesToApply,
     })
 
@@ -129,6 +160,8 @@ export const refreshDraftOrderAdjustmentsWorkflow = createWorkflow(
       key: input.order.id,
     })
 
-    return new WorkflowResponse(void 0)
+    return new WorkflowResponse(void 0, {
+      hooks: [customCampaignBudgetAttributes],
+    })
   }
 )

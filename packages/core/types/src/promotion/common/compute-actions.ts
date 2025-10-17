@@ -1,4 +1,5 @@
 import { BigNumberInput } from "../../totals"
+import { CampaignBudgetUsageContext } from "./campaing-budget-usage"
 
 /**
  * A compute action informs you what adjustment must be made to a cart item or shipping method.
@@ -244,7 +245,7 @@ export interface ComputeActionContext extends Record<string, unknown> {
 
   /**
    * The cart's email
-   * 
+   *
    * @since 2.11.0
    */
   email?: string
@@ -258,6 +259,14 @@ export interface ComputeActionContext extends Record<string, unknown> {
    * The cart's shipping methods.
    */
   shipping_methods?: ComputeActionShippingLine[]
+
+  /**
+   * The budget context for campaign budget tracking.
+   * Contains customer identifiers and custom attributes.
+   *
+   * @since 2.12.0
+   */
+  budget_context?: CampaignBudgetUsageContext
 }
 
 /**
