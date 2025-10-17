@@ -31,6 +31,11 @@ const ShippingMethod = model
   )
   .indexes([
     {
+      name: "IDX_cart_shipping_method_cart_id",
+      on: ["cart_id"],
+      where: "deleted_at IS NULL AND cart_id IS NOT NULL",
+    },
+    {
       name: "IDX_shipping_method_option_id",
       on: ["shipping_option_id"],
       where: "deleted_at IS NULL AND shipping_option_id IS NOT NULL",

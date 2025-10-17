@@ -24,6 +24,11 @@ const LineItemAdjustment = model
       on: ["promotion_id"],
       where: "deleted_at IS NULL AND promotion_id IS NOT NULL",
     },
+     {
+      name: "IDX_cart_line_item_adjustment_item_id",
+      on: ["item_id"],
+      where: "deleted_at IS NULL AND item_id IS NOT NULL",
+    },
   ])
   .checks([(columns) => `${columns.amount} >= 0`])
 

@@ -22,6 +22,11 @@ const ShippingMethodTaxLine = model
   )
   .indexes([
     {
+      name: "IDX_cart_shipping_method_tax_line_shipping_method_id",
+      on: ["shipping_method_id"],
+      where: "deleted_at IS NULL AND shipping_method_id IS NOT NULL",
+    },
+    {
       name: "IDX_shipping_method_tax_line_tax_rate_id",
       on: ["tax_rate_id"],
       where: "deleted_at IS NULL AND tax_rate_id IS NOT NULL",

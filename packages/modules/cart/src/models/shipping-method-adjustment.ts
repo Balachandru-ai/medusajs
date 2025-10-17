@@ -26,6 +26,11 @@ const ShippingMethodAdjustment = model
       on: ["promotion_id"],
       where: "deleted_at IS NULL AND promotion_id IS NOT NULL",
     },
+    {
+      name: "IDX_cart_shipping_method_adjustment_shipping_method_id",
+      on: ["shipping_method_id"],
+      where: "deleted_at IS NULL AND shipping_method_id IS NOT NULL",
+    },
   ])
 
 export default ShippingMethodAdjustment
