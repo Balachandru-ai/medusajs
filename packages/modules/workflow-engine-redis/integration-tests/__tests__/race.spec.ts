@@ -153,7 +153,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             workflowId: workflowId,
             transactionId,
             subscriber: async (event) => {
-              console.log(JSON.stringify(event, null, 2))
               if (event.eventType === "onFinish") {
                 resolve(event.result)
               }
