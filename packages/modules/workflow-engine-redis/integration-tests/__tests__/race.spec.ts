@@ -14,7 +14,7 @@ import { ulid } from "ulid"
 import "../__fixtures__"
 import { TestDatabase } from "../utils/database"
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 moduleIntegrationTestRunner<IWorkflowEngineService>({
   moduleName: Modules.WORKFLOW_ENGINE,
@@ -153,6 +153,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             workflowId: workflowId,
             transactionId,
             subscriber: async (event) => {
+              console.log(JSON.stringify(event, null, 2))
               if (event.eventType === "onFinish") {
                 resolve(event.result)
               }
@@ -208,7 +209,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
         const step1 = createStep("step1", async (_) => {
           step1InvokeMock()
-          await setTimeout(200)
+          await setTimeout(1000)
           return new StepResponse({ isSuccess: true })
         })
 

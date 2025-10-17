@@ -12,7 +12,6 @@ import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { setTimeout } from "timers/promises"
 import { ulid } from "ulid"
 import "../__fixtures__"
-import { executionLogs } from "../../../../core/orchestration/dist/transaction"
 
 jest.setTimeout(30000)
 

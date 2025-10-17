@@ -40,13 +40,6 @@ import {
   TransactionTimeoutError,
 } from "./errors"
 
-export const executionLogs = [] as unknown as string[] & {
-  push_line: (...args: string[]) => void
-}
-executionLogs.push_line = (...args: string[]) => {
-  executionLogs.push(`[timestamp: ${Date.now().toString()}]`, ...args, "\n")
-}
-
 /**
  * @class TransactionOrchestrator is responsible for managing and executing distributed transactions.
  * It is based on a single transaction definition, which is used to execute all the transaction steps
@@ -326,15 +319,9 @@ export class TransactionOrchestrator extends EventEmitter {
     remaining: number
     completed: number
   }> {
-    executionLogs.push_line("checkAllSteps")
     const flow = transaction.getFlow()
-    executionLogs.push_line("flow = transaction.getFlow()")
-    executionLogs.push_line(JSON.stringify(flow.steps, null, 2))
+
     const result = await this.computeCurrentTransactionState(transaction)
-    executionLogs.push_line(
-      "result = await this.computeCurrentTransactionState(transaction)"
-    )
-    executionLogs.push_line(JSON.stringify(result, null, 2))
 
     // Handle state transitions and emit events
     if (
@@ -342,51 +329,33 @@ export class TransactionOrchestrator extends EventEmitter {
       result.next.length === 0 &&
       !flow.hasWaitingSteps
     ) {
-      executionLogs.push_line(
-        "flow.state === TransactionState.WAITING_TO_COMPENSATE && result.next.length === 0 && !flow.hasWaitingSteps"
-      )
-
       flow.state = TransactionState.COMPENSATING
       this.flagStepsToRevert(flow)
-      executionLogs.push_line("flow.state = TransactionState.COMPENSATING")
-      executionLogs.push_line(JSON.stringify(flow.steps, null, 2))
 
       this.emit(DistributedTransactionEvent.COMPENSATE_BEGIN, { transaction })
 
       const result = await this.checkAllSteps(transaction)
-      executionLogs.push_line("result = await this.checkAllSteps(transaction)")
-      executionLogs.push_line(JSON.stringify(result, null, 2))
+
       return result
     } else if (result.completed === result.total) {
-      executionLogs.push_line("result.completed === result.total")
       if (result.hasSkippedOnFailure) {
         flow.hasSkippedOnFailureSteps = true
-        executionLogs.push_line("flow.hasSkippedOnFailureSteps = true")
       }
       if (result.hasSkipped) {
         flow.hasSkippedSteps = true
-        executionLogs.push_line("flow.hasSkippedSteps = true")
       }
       if (result.hasIgnoredFailure) {
         flow.hasFailedSteps = true
-        executionLogs.push_line("flow.hasFailedSteps = true")
       }
       if (result.hasFailed) {
         flow.state = TransactionState.FAILED
-        executionLogs.push_line("flow.state = TransactionState.FAILED")
       } else {
         flow.state = result.hasReverted
           ? TransactionState.REVERTED
           : TransactionState.DONE
-        executionLogs.push_line(
-          "flow.state = result.hasReverted ? TransactionState.REVERTED : TransactionState.DONE"
-        )
-        executionLogs.push_line(JSON.stringify(flow.steps, null, 2))
       }
     }
 
-    executionLogs.push_line("checkAllSteps result")
-    executionLogs.push_line(JSON.stringify(result, null, 2))
     return {
       current: result.current,
       next: result.next,
@@ -448,17 +417,11 @@ export class TransactionOrchestrator extends EventEmitter {
         hasWaiting = true
 
         if (stepDef.hasAwaitingRetry()) {
-          executionLogs.push_line("stepDef.hasAwaitingRetry()")
-          executionLogs.push_line(stepDef.canRetryAwaiting().toString())
           if (stepDef.canRetryAwaiting()) {
-            executionLogs.push_line("stepDef.canRetryAwaiting()")
             stepDef.retryRescheduledAt = null
-            executionLogs.push_line("stepDef.retryRescheduledAt = null")
-            nextSteps.push(stepDef)
-            executionLogs.push_line("nextSteps.push(stepDef)")
-          } else if (!stepDef.retryRescheduledAt) {
-            executionLogs.push_line("!stepDef.retryRescheduledAt")
 
+            nextSteps.push(stepDef)
+          } else if (!stepDef.retryRescheduledAt) {
             stepDef.hasScheduledRetry = true
             stepDef.retryRescheduledAt = Date.now()
 
@@ -468,14 +431,11 @@ export class TransactionOrchestrator extends EventEmitter {
             )
           }
         } else if (stepDef.retryRescheduledAt) {
-          executionLogs.push_line("stepDef.retryRescheduledAt")
           // The step is not configured for awaiting retry but is manually force to retry
           stepDef.retryRescheduledAt = null
           nextSteps.push(stepDef)
-          executionLogs.push_line("nextSteps.push(stepDef)")
         }
 
-        executionLogs.push_line("continue")
         continue
       } else if (curState.status === TransactionStepStatus.TEMPORARY_FAILURE) {
         if (
@@ -965,33 +925,24 @@ export class TransactionOrchestrator extends EventEmitter {
     let continueExecution = true
 
     while (continueExecution) {
-      executionLogs.push("while (continueExecution)")
       if (transaction.hasFinished()) {
-        executionLogs.push("transaction.hasFinished()")
         return
       }
 
       const flow = transaction.getFlow()
-      executionLogs.push("flow = transaction.getFlow()")
-      executionLogs.push(JSON.stringify(flow.steps, null, 2))
+
       let nextSteps = await this.checkAllSteps(transaction)
-      executionLogs.push("nextSteps = await this.checkAllSteps(transaction)")
-      executionLogs.push(JSON.stringify(nextSteps, null, 2))
 
       const hasTimedOut = await this.checkTransactionTimeout(
         transaction,
         nextSteps.current
       )
-      executionLogs.push(
-        "hasTimedOut = await this.checkTransactionTimeout(transaction, nextSteps.current)"
-      )
-      executionLogs.push(hasTimedOut.toString())
+
       if (hasTimedOut) {
         continue
       }
 
       if (nextSteps.remaining === 0) {
-        executionLogs.push("nextSteps.remaining === 0")
         await this.finalizeTransaction(transaction)
 
         return
@@ -1006,25 +957,11 @@ export class TransactionOrchestrator extends EventEmitter {
         return shouldContinueExecution
       })
 
-      executionLogs.push(
-        "stepsShouldContinueExecution = nextSteps.next.map((step) => {"
-      )
-      executionLogs.push(JSON.stringify(stepsShouldContinueExecution, null, 2))
-
-      executionLogs.push("await transaction.saveCheckpoint()")
       await transaction.saveCheckpoint().catch((error) => {
-        executionLogs.push(
-          "await transaction.saveCheckpoint().catch((error) => {"
-        )
-
         if (TransactionOrchestrator.isExpectedError(error)) {
-          executionLogs.push("TransactionOrchestrator.isExpectedError(error)")
-          executionLogs.push(JSON.stringify(error, null, 2))
           continueExecution = false
           return
         }
-
-        executionLogs.push(JSON.stringify(error, null, 2))
 
         throw error
       })
@@ -1035,19 +972,12 @@ export class TransactionOrchestrator extends EventEmitter {
       let i = 0
       let hasAsyncSteps = false
       for (const step of nextSteps.next) {
-        executionLogs.push("step = nextSteps.next[i]")
-        executionLogs.push(JSON.stringify(step, null, 2))
-
         const stepIndex = i++
         if (!stepsShouldContinueExecution[stepIndex]) {
-          executionLogs.push("!stepsShouldContinueExecution[stepIndex]")
           continue
         }
 
         if (step.hasTimeout() && !step.timedOutAt && step.attempts === 1) {
-          executionLogs.push(
-            "step.hasTimeout() && !step.timedOutAt && step.attempts === 1"
-          )
           await transaction.scheduleStepTimeout(step, step.definition.timeout!)
         }
 
@@ -1065,36 +995,21 @@ export class TransactionOrchestrator extends EventEmitter {
         if (!continueExecution) {
           break
         }
-        executionLogs.push(
-          "await this.computeCurrentTransactionState(transaction)"
-        )
-        executionLogs.push(JSON.stringify(transaction.getFlow().steps, null, 2))
 
         const promise = this.createStepExecutionPromise(transaction, step)
 
         const hasVersionControl = isAsync || step.hasAwaitingRetry()
 
-        executionLogs.push(
-          "hasVersionControl = isAsync || step.hasAwaitingRetry()"
-        )
-        executionLogs.push(hasVersionControl.toString())
-
         if (hasVersionControl && !step._v) {
           transaction.getFlow()._v += 1
           step._v = transaction.getFlow()._v
-          executionLogs.push("transaction.getFlow()._v += 1")
-          executionLogs.push(transaction.getFlow()._v.toString())
-          executionLogs.push("step._v = transaction.getFlow()._v")
-          executionLogs.push(step._v.toString())
         }
 
         if (!isAsync) {
-          executionLogs.push("!isAsync")
           execution.push(
             this.executeSyncStep(promise, transaction, step, nextSteps)
           )
         } else {
-          executionLogs.push("isAsync")
           // Execute async step in background as part of the next event loop cycle and continue the execution of the transaction
           hasAsyncSteps = true
           executionAsync.push(() =>
@@ -1106,30 +1021,18 @@ export class TransactionOrchestrator extends EventEmitter {
       await promiseAll(execution)
 
       if (!nextSteps.next.length || (hasAsyncSteps && !execution.length)) {
-        executionLogs.push(
-          "!nextSteps.next.length || (hasAsyncSteps && !execution.length)"
-        )
-        executionLogs.push("continueExecution = false")
         continueExecution = false
       }
 
       if (hasAsyncSteps) {
-        executionLogs.push("hasAsyncSteps")
         await transaction.saveCheckpoint().catch((error) => {
-          executionLogs.push(
-            "await transaction.saveCheckpoint().catch((error) => {"
-          )
-          executionLogs.push(JSON.stringify(error, null, 2))
           if (TransactionOrchestrator.isExpectedError(error)) {
-            executionLogs.push("TransactionOrchestrator.isExpectedError(error)")
-            executionLogs.push(JSON.stringify(error, null, 2))
             continueExecution = false
           }
 
           throw error
         })
 
-        executionLogs.push("execute async steps concurrently")
         for (const exec of executionAsync) {
           void exec()
         }

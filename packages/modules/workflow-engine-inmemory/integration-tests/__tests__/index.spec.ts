@@ -2,7 +2,6 @@ import { MedusaContainer } from "@medusajs/framework"
 import { asFunction } from "@medusajs/framework/awilix"
 import {
   DistributedTransactionType,
-  executionLogs,
   TransactionState,
   WorkflowManager,
 } from "@medusajs/framework/orchestration"
@@ -95,10 +94,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   moduleName: Modules.WORKFLOW_ENGINE,
   resolve: __dirname + "/../..",
   testSuite: ({ service: workflowOrcModule, medusaApp }) => {
-    afterAll(() => {
-      console.log("execution logs", executionLogs.join("\n\n"))
-      executionLogs.length = 0
-    })
     describe("Workflow Orchestrator module", function () {
       let query: RemoteQueryFunction
       let sharedContainer_: MedusaContainer

@@ -263,8 +263,8 @@ export class WorkflowOrchestratorService {
       )
     }
 
+    const { onFinish, ...restEvents } = events
     const originalOnFinishHandler = events.onFinish!
-    delete events.onFinish
 
     const ret = await exportedWorkflow.run({
       input,
@@ -272,7 +272,7 @@ export class WorkflowOrchestratorService {
       logOnError,
       resultFrom,
       context,
-      events,
+      events: restEvents,
       container: container ?? this.container_,
     })
 
@@ -376,12 +376,15 @@ export class WorkflowOrchestratorService {
       transactionId: transactionId,
     })
 
+    const { onFinish, ...restEvents } = events
+    const originalOnFinishHandler = events.onFinish!
+
     const ret = await exportedWorkflow.cancel({
       transaction,
       throwOnError: false,
       logOnError,
       context,
-      events,
+      events: restEvents,
       container: container ?? this.container_,
     })
 
@@ -404,12 +407,8 @@ export class WorkflowOrchestratorService {
     if (hasFinished) {
       const { result, errors } = ret
 
-      this.notify({
-        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
-        eventType: "onFinish",
-        workflowId,
-        transactionId: transaction.transactionId,
-        state: transactionState as TransactionState,
+      await originalOnFinishHandler({
+        transaction: ret.transaction,
         result,
         errors,
       })
@@ -486,24 +485,23 @@ export class WorkflowOrchestratorService {
       workflowId,
     })
 
+    const { onFinish, ...restEvents } = events
+    const originalOnFinishHandler = events.onFinish!
+
     const ret = await exportedWorkflow.retryStep({
       idempotencyKey: idempotencyKey_,
       context,
       throwOnError: false,
       logOnError,
-      events,
+      events: restEvents,
       container: container ?? this.container_,
     })
 
     if (ret.transaction.hasFinished()) {
       const { result, errors } = ret
 
-      this.notify({
-        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
-        eventType: "onFinish",
-        workflowId,
-        transactionId,
-        state: ret.transaction.getFlow().state as TransactionState,
+      await originalOnFinishHandler({
+        transaction: ret.transaction,
         result,
         errors,
       })
@@ -556,13 +554,16 @@ export class WorkflowOrchestratorService {
       workflowId,
     })
 
+    const { onFinish, ...restEvents } = events
+    const originalOnFinishHandler = events.onFinish!
+
     const ret = await exportedWorkflow.registerStepSuccess({
       idempotencyKey: idempotencyKey_,
       context,
       resultFrom,
       throwOnError: false,
       logOnError,
-      events,
+      events: restEvents,
       response: stepResponse,
       container: container ?? this.container_,
     })
@@ -570,12 +571,8 @@ export class WorkflowOrchestratorService {
     if (ret.transaction.hasFinished()) {
       const { result, errors } = ret
 
-      this.notify({
-        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
-        eventType: "onFinish",
-        workflowId,
-        transactionId,
-        state: ret.transaction.getFlow().state as TransactionState,
+      await originalOnFinishHandler({
+        transaction: ret.transaction,
         result,
         errors,
       })
@@ -629,13 +626,16 @@ export class WorkflowOrchestratorService {
       workflowId,
     })
 
+    const { onFinish, ...restEvents } = events
+    const originalOnFinishHandler = events.onFinish!
+
     const ret = await exportedWorkflow.registerStepFailure({
       idempotencyKey: idempotencyKey_,
       context,
       resultFrom,
       throwOnError: false,
       logOnError,
-      events,
+      events: restEvents,
       response: stepResponse,
       container: container ?? this.container_,
       forcePermanentFailure,
@@ -644,12 +644,8 @@ export class WorkflowOrchestratorService {
     if (ret.transaction.hasFinished()) {
       const { result, errors } = ret
 
-      this.notify({
-        isFlowAsync: ret.transaction.getFlow().hasAsyncSteps,
-        eventType: "onFinish",
-        workflowId,
-        transactionId,
-        state: ret.transaction.getFlow().state as TransactionState,
+      await originalOnFinishHandler({
+        transaction: ret.transaction,
         result,
         errors,
       })
@@ -908,6 +904,9 @@ export class WorkflowOrchestratorService {
         await notify({
           eventType: "onFinish",
           isFlowAsync: transaction.getFlow().hasAsyncSteps,
+          result,
+          errors,
+          state: transaction.getFlow().state as TransactionState,
         })
       },
 
