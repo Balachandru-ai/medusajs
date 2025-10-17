@@ -6,6 +6,7 @@ import {
   SchedulerOptions,
   SkipCancelledExecutionError,
   SkipExecutionError,
+  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -35,6 +36,22 @@ enum JobType {
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
+const doneStates = [
+  TransactionStepState.DONE,
+  TransactionStepState.REVERTED,
+  TransactionStepState.FAILED,
+  TransactionStepState.SKIPPED,
+  TransactionStepState.SKIPPED_FAILURE,
+  TransactionStepState.TIMEOUT,
+]
+
+const finishedStates = [
+  TransactionState.DONE,
+  TransactionState.FAILED,
+  TransactionState.REVERTED,
+]
+
+const failedStates = [TransactionState.FAILED, TransactionState.REVERTED]
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
@@ -262,11 +279,7 @@ export class RedisDistributedTransactionStorage
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const asyncVersion = data.flow._v
 
-    const isFinished = [
-      TransactionState.DONE,
-      TransactionState.FAILED,
-      TransactionState.REVERTED,
-    ].includes(data.flow.state)
+    const isFinished = finishedStates.includes(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
@@ -313,13 +326,6 @@ export class RedisDistributedTransactionStorage
     ) {
       return
     }
-
-    console.log(
-      "Saving to DB",
-      Object.keys(data.context.invoke),
-      "---------------",
-      data.flow._saved_v
-    )
 
     await this.workflowExecutionService_.upsert([
       {
@@ -422,10 +428,7 @@ export class RedisDistributedTransactionStorage
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
-        const isFailedOrReverted = [
-          TransactionState.REVERTED,
-          TransactionState.FAILED,
-        ].includes(execution.state)
+        const isFailedOrReverted = failedStates.includes(execution.state)
 
         const isDone = execution.state === TransactionState.DONE
 
@@ -477,43 +480,11 @@ export class RedisDistributedTransactionStorage
         isCancelling: !!data.flow.cancelledAt,
       } as any)
 
-      console.log(
-        "+++++++ DATA IN STORAGE +++++++",
-        storedData?.flow._v,
-        key,
-        Object.values(storedData?.flow.steps ?? {}).map((s: any) => [
-          s.id,
-          s.invoke?.state,
-          s.compensate?.state,
-        ]),
-        "+++++++ INCOMING DATA +++++++",
-        Object.values(data.flow.steps).map((s: any) => [
-          s.id,
-          s.invoke?.state,
-          s.compensate?.state,
-        ]),
-        storedData?.flow.state
-      )
       TransactionCheckpoint.mergeCheckpoints(data, storedData)
-      console.log(
-        "------------------- MERGED TRANSACTION",
-        data.flow._v,
-        key,
-        Object.values(data.flow.steps).map((s: any) => [
-          s.id,
-          s.invoke?.state,
-          s.compensate?.state,
-        ]),
-        data.flow.state
-      )
     }
 
     try {
-      const hasFinished = [
-        TransactionState.DONE,
-        TransactionState.FAILED,
-        TransactionState.REVERTED,
-      ].includes(data.flow.state)
+      const hasFinished = finishedStates.includes(data.flow.state)
 
       let cachedCheckpoint: TransactionCheckpoint | undefined
       const getCheckpoint = async (options?: TransactionOptions) => {
@@ -864,26 +835,21 @@ export class RedisDistributedTransactionStorage
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        const doneStates = [
-          TransactionStepState.DONE,
-          TransactionStepState.REVERTED,
-          TransactionStepState.FAILED,
-          TransactionStepState.SKIPPED,
-          TransactionStepState.SKIPPED_FAILURE,
-          TransactionStepState.TIMEOUT,
-        ]
-
         const shouldSkip = doneStates.includes(latestState)
 
         if (shouldSkip) {
-          throw new SkipExecutionError(
+          throw new SkipStepAlreadyFinishedError(
             `Step ${stepId} already finished by another execution`
           )
         }
       }
     }
 
-    if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
+    if (
+      !isInitialCheckpoint &&
+      !isPresent(latestUpdatedFlow) &&
+      !data.flow.metadata?.parentStepIdempotencyKey
+    ) {
       /**
        * the initial checkpoint expect no other checkpoint to have been stored.
        * In case it is not the initial one and another checkpoint is trying to

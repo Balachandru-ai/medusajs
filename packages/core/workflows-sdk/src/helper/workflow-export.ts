@@ -111,8 +111,12 @@ function createContextualWorkflowRunner<
       flow.container = executionContainer
     }
 
-    const { eventGroupId, parentStepIdempotencyKey, preventReleaseEvents } =
-      context
+    const {
+      eventGroupId,
+      parentStepIdempotencyKey,
+      preventReleaseEvents,
+      cancelingFromParentStep,
+    } = context
 
     if (!preventReleaseEvents) {
       attachOnFinishReleaseEvents(events, flow, { logOnError })
@@ -123,6 +127,7 @@ function createContextualWorkflowRunner<
       parentStepIdempotencyKey,
       sourcePath: options?.sourcePath,
       preventReleaseEvents,
+      cancelingFromParentStep,
     }
 
     context.isCancelling = isCancel

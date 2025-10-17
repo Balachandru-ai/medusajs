@@ -279,6 +279,7 @@ export type TransactionFlow = {
   metadata?: {
     eventGroupId?: string
     parentIdempotencyKey?: string
+    cancelingFromParentStep?: boolean
     sourcePath?: string
     preventReleaseEvents?: boolean
     parentStepIdempotencyKey?: string

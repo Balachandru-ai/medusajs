@@ -14,6 +14,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   isString,
+  MedusaError,
   promiseAll,
   TransactionState,
 } from "@medusajs/framework/utils"
@@ -179,7 +180,15 @@ export class WorkflowOrchestratorService {
 
   private async triggerParentStep(transaction, result, errors) {
     const metadata = transaction.flow.metadata
-    const { parentStepIdempotencyKey } = metadata ?? {}
+    const { parentStepIdempotencyKey, cancelingFromParentStep } = metadata ?? {}
+
+    if (cancelingFromParentStep) {
+      /**
+       * If the sub workflow is cancelling from a parent step, we don't want to trigger the parent
+       * step.
+       */
+      return
+    }
 
     if (parentStepIdempotencyKey) {
       const hasFailed = [
@@ -188,13 +197,17 @@ export class WorkflowOrchestratorService {
       ].includes(transaction.flow.state)
 
       if (hasFailed) {
-        await this.setStepFailure({
-          idempotencyKey: parentStepIdempotencyKey,
-          stepResponse: errors,
-          options: {
-            logOnError: true,
-          },
-        })
+        try {
+          await this.setStepFailure({
+            idempotencyKey: parentStepIdempotencyKey,
+            stepResponse: errors,
+            options: {
+              logOnError: true,
+            },
+          })
+        } catch (e) {
+          throw e
+        }
       } else {
         await this.setStepSuccess({
           idempotencyKey: parentStepIdempotencyKey,
@@ -224,13 +237,16 @@ export class WorkflowOrchestratorService {
 
     throwOnError ??= true
     context ??= {}
-    context.transactionId = transactionId ?? ulid()
+    context.transactionId = transactionId ?? "auto-" + ulid()
     const workflowId = isString(workflowIdOrWorkflow)
       ? workflowIdOrWorkflow
       : workflowIdOrWorkflow.getName()
 
     if (!workflowId) {
-      throw new Error("Workflow ID is required")
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow ID is required`
+      )
     }
 
     const events: FlowRunOptions["events"] = this.buildWorkflowEvents({
@@ -241,7 +257,10 @@ export class WorkflowOrchestratorService {
 
     const exportedWorkflow = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
-      throw new Error(`Workflow with id "${workflowId}" not found.`)
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow with id "${workflowId}" not found.`
+      )
     }
 
     const originalOnFinishHandler = events.onFinish!
@@ -327,7 +346,10 @@ export class WorkflowOrchestratorService {
 
     const exportedWorkflow = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
-      throw new Error(`Workflow with id "${workflowId}" not found.`)
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow with id "${workflowId}" not found.`
+      )
     }
 
     const transaction = await this.getRunningTransaction(

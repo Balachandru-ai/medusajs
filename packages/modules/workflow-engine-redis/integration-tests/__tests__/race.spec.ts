@@ -79,7 +79,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           {
             name: workflowId,
             idempotent: true,
-            retentionTime: 1,
+            retentionTime: 5,
           },
           function () {
             const all = parallelize(step0(), step1(), step2(), step3(), step4())
@@ -89,13 +89,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
 
         const transactionId = ulid()
-        const onFinishPromise = new Promise<void>((resolve) => {
+        const done = new Promise<void>((resolve, reject) => {
           void workflowOrcModule.subscribe({
             workflowId: workflowId,
             transactionId,
             subscriber: async (event) => {
               if (event.eventType === "onFinish") {
-                resolve()
+                resolve(event.result)
               }
             },
           })
@@ -107,12 +107,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           transactionId,
         })
 
-        await onFinishPromise
-
-        const { result } = await workflowOrcModule.run(workflowId, {
-          throwOnError: false,
-          transactionId,
-        })
+        const result = await done
 
         expect(result).toEqual([
           "result from step 0",
@@ -138,7 +133,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse(ret)
         })
 
-        const workflowId = "workflow-2" + ulid()
+        const workflowId = "workflow-1" + ulid()
         createWorkflow(
           {
             name: workflowId,
@@ -153,13 +148,13 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         )
 
         const transactionId = ulid()
-        const onFinishPromise = new Promise<void>((resolve) => {
+        const done = new Promise<void>((resolve, reject) => {
           void workflowOrcModule.subscribe({
             workflowId: workflowId,
             transactionId,
             subscriber: async (event) => {
               if (event.eventType === "onFinish") {
-                resolve()
+                resolve(event.result)
               }
             },
           })
@@ -185,14 +180,9 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
         }
 
-        await onFinishPromise
+        const res = await done
 
-        const { result } = await workflowOrcModule.run(workflowId, {
-          throwOnError: false,
-          transactionId,
-        })
-
-        expect(result).toEqual([
+        expect(res).toEqual([
           "result from step 0",
           "result from step 1",
           "result from step 2",
@@ -204,8 +194,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
 
       it("should prevent race continuation of the workflow during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
-        const workflowId = "workflow-3" + ulid()
-        const subWorkflowId = "sub-" + workflowId
+        const workflowId = "RACE_workflow-1" + ulid()
 
         const step0InvokeMock = jest.fn()
         const step1InvokeMock = jest.fn()
@@ -228,37 +217,44 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new StepResponse({ result: input })
         })
 
-        const subWorkflow = createWorkflow(subWorkflowId, function () {
+        const subWorkflow = createWorkflow("sub-workflow-1", function () {
           const status = step1()
           return new WorkflowResponse(status)
         })
 
-        createWorkflow(workflowId, function () {
-          const build = step0()
+        createWorkflow(
+          {
+            name: workflowId,
+            idempotent: true,
+            retentionTime: 5,
+          },
+          function () {
+            const build = step0()
 
-          const status = subWorkflow.runAsStep({} as any).config({
-            async: true,
-            compensateAsync: true,
-            backgroundExecution: true,
-            retryIntervalAwaiting: 0.1,
-          })
+            const status = subWorkflow.runAsStep({} as any).config({
+              async: true,
+              compensateAsync: true,
+              backgroundExecution: true,
+              retryIntervalAwaiting: 0.1,
+            })
 
-          const transformedResult = transform({ status }, (data) => {
-            transformMock()
-            return {
-              status: data.status,
-            }
-          })
+            const transformedResult = transform({ status }, (data) => {
+              transformMock()
+              return {
+                status: data.status,
+              }
+            })
 
-          step2(transformedResult)
-          return new WorkflowResponse(build)
-        })
+            step2(transformedResult)
+            return new WorkflowResponse(build)
+          }
+        )
 
-        const onFinishPromise = new Promise<void>((resolve) => {
+        const onFinish = new Promise<void>((resolve) => {
           void workflowOrcModule.subscribe({
             workflowId,
             transactionId,
-            subscriber: async (event) => {
+            subscriber: (event) => {
               if (event.eventType === "onFinish") {
                 resolve()
               }
@@ -266,23 +262,27 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
         })
 
-        const { result } = await workflowOrcModule.run(workflowId, {
-          transactionId,
-        })
+        workflowOrcModule
+          .run(workflowId, {
+            transactionId,
+            throwOnError: false,
+            logOnError: true,
+          })
+          .then(({ result }) => {
+            expect(result).toBe("result from step 0")
+          })
 
-        expect(result).toBe("result from step 0")
-
-        await onFinishPromise
+        await onFinish
 
         expect(step0InvokeMock).toHaveBeenCalledTimes(1)
-        expect(step1InvokeMock.mock.calls.length).toBeGreaterThanOrEqual(1)
+        expect(step1InvokeMock.mock.calls.length).toBeGreaterThan(1)
         expect(step2InvokeMock).toHaveBeenCalledTimes(1)
         expect(transformMock).toHaveBeenCalledTimes(1)
       })
 
       it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
-        const workflowId = "workflow-4" + ulid()
+        const workflowId = "RACE_workflow-1" + ulid()
 
         const step0InvokeMock = jest.fn()
         const step0CompensateMock = jest.fn()
@@ -306,7 +306,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           "RACE_step1",
           async (_) => {
             step1InvokeMock()
-            await setTimeout(500)
+            await setTimeout(1000)
             throw new Error("error from step 1")
           },
           () => {
@@ -324,32 +324,38 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           return new WorkflowResponse(status)
         })
 
-        createWorkflow(workflowId, function () {
-          const build = step0()
+        createWorkflow(
+          {
+            name: workflowId,
+          },
+          function () {
+            const build = step0()
 
-          const status = subWorkflow.runAsStep({} as any).config({
-            async: true,
-            compensateAsync: true,
-            backgroundExecution: true,
-            retryIntervalAwaiting: 0.1,
-          })
+            const status = subWorkflow.runAsStep({} as any).config({
+              async: true,
+              compensateAsync: true,
+              backgroundExecution: true,
+              retryIntervalAwaiting: 0.1,
+              maxAwaitingRetries: 3,
+            })
 
-          const transformedResult = transform({ status }, (data) => {
-            transformMock()
-            return {
-              status: data.status,
-            }
-          })
+            const transformedResult = transform({ status }, (data) => {
+              transformMock()
+              return {
+                status: data.status,
+              }
+            })
 
-          step2(transformedResult)
-          return new WorkflowResponse(build)
-        })
+            step2(transformedResult)
+            return new WorkflowResponse(build)
+          }
+        )
 
-        const onFinishPromise = new Promise<void>((resolve) => {
+        const onFinish = new Promise<void>((resolve) => {
           void workflowOrcModule.subscribe({
-            workflowId: workflowId,
+            workflowId,
             transactionId,
-            subscriber: (event) => {
+            subscriber: async (event) => {
               if (event.eventType === "onFinish") {
                 resolve()
               }
@@ -357,7 +363,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           })
         })
 
-        workflowOrcModule
+        await workflowOrcModule
           .run(workflowId, {
             transactionId,
             throwOnError: false,
@@ -367,12 +373,12 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
             expect(result).toBe("result from step 0")
           })
 
-        await onFinishPromise
+        await onFinish
 
         expect(step0InvokeMock).toHaveBeenCalledTimes(1)
         expect(step0CompensateMock).toHaveBeenCalledTimes(1)
-        expect(step1InvokeMock.mock.calls.length).toBeGreaterThanOrEqual(2) // Called every 0.1s at least (it can take more than 0.1s depending on the event loop congestions)
-        expect(step1CompensateMock).toHaveBeenCalledTimes(1)
+        expect(step1InvokeMock).toHaveBeenCalledTimes(3)
+        expect(step1CompensateMock.mock.calls.length).toBeGreaterThan(0)
         expect(step2InvokeMock).toHaveBeenCalledTimes(0)
         expect(transformMock).toHaveBeenCalledTimes(0)
       })

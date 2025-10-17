@@ -318,9 +318,6 @@ export class TransactionCheckpoint {
     )
 
     if (currentStepState.state !== storedStepState.state) {
-      console.log("STATE DIFF FROM", currentStepState, "TO", storedStepState, [
-        isStateTransitionValid,
-      ])
       return isStateTransitionValid
     }
 
@@ -333,10 +330,6 @@ export class TransactionCheckpoint {
     // Check if status transition from stored to current is allowed
     const allowedStatusesFromCurrent =
       allowedStatusTransitions[currentStepState.status] || []
-
-    console.log("STATUS ++++ FROM", storedStepState, "TO", currentStepState, [
-      allowedStatusesFromCurrent.includes(storedStepState.status),
-    ])
 
     return allowedStatusesFromCurrent.includes(storedStepState.status)
   }
@@ -512,7 +505,7 @@ class DistributedTransaction extends EventEmitter {
         this.getFlow().options),
     }
 
-    if (!options?.store) {
+    if (!options?.store && !this.getFlow().metadata?.parentStepIdempotencyKey) {
       return
     }
 
@@ -532,7 +525,7 @@ class DistributedTransaction extends EventEmitter {
 
     let retries = 0
     let backoffMs = 50
-    const maxRetries = (options?.parallelSteps || 1) + 1
+    const maxRetries = (options?.parallelSteps || 1) + 2
     while (retries < maxRetries) {
       checkpoint = this.#serializeCheckpointData()
 
@@ -558,8 +551,6 @@ class DistributedTransaction extends EventEmitter {
         retries++
         // Exponential backoff with jitter
         const jitter = Math.random() * backoffMs
-
-        console.log("Retrying checkpoint save in", backoffMs + jitter)
 
         await setTimeoutPromise(backoffMs + jitter)
 

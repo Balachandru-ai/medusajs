@@ -40,6 +40,14 @@ const doneStates = [
   TransactionStepState.TIMEOUT,
 ]
 
+const finishedStates = [
+  TransactionState.DONE,
+  TransactionState.FAILED,
+  TransactionState.REVERTED,
+]
+
+const failedStates = [TransactionState.FAILED, TransactionState.REVERTED]
+
 function calculateDelayFromExpression(expression: CronExpression): number {
   const nextTime = expression.next().getTime()
   const now = Date.now()
@@ -171,11 +179,7 @@ export class InMemoryDistributedTransactionStorage
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const asyncVersion = data.flow._v
-    const isFinished = [
-      TransactionState.DONE,
-      TransactionState.FAILED,
-      TransactionState.REVERTED,
-    ].includes(data.flow.state)
+    const isFinished = finishedStates.includes(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
@@ -223,12 +227,6 @@ export class InMemoryDistributedTransactionStorage
       return
     }
 
-    console.log(
-      "Saving to DB",
-      Object.keys(data.context.invoke),
-      "---------------",
-      data.flow._saved_v
-    )
     await this.workflowExecutionService_.upsert([
       {
         workflow_id: data.flow.modelId,
@@ -286,10 +284,7 @@ export class InMemoryDistributedTransactionStorage
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
-        const isFailedOrReverted = [
-          TransactionState.REVERTED,
-          TransactionState.FAILED,
-        ].includes(execution.state)
+        const isFailedOrReverted = failedStates.includes(execution.state)
 
         const isDone = execution.state === TransactionState.DONE
 
@@ -307,11 +302,11 @@ export class InMemoryDistributedTransactionStorage
         }
       }
 
-      return {
-        flow: flow ?? (trx.execution as TransactionFlow),
-        context: trx.context?.data as TransactionContext,
-        errors: errors ?? (trx.context?.errors as TransactionStepError[]),
-      } as TransactionCheckpoint
+      return new TransactionCheckpoint(
+        flow ?? (trx?.execution as TransactionFlow),
+        trx?.context?.data as TransactionContext,
+        errors ?? (trx?.context?.errors as TransactionStepError[])
+      )
     }
 
     return
@@ -336,11 +331,7 @@ export class InMemoryDistributedTransactionStorage
        */
       const { retentionTime } = options ?? {}
 
-      const hasFinished = [
-        TransactionState.DONE,
-        TransactionState.FAILED,
-        TransactionState.REVERTED,
-      ].includes(data.flow.state)
+      const hasFinished = finishedStates.includes(data.flow.state)
 
       let cachedCheckpoint: TransactionCheckpoint | undefined
       const getCheckpoint = async (options?: TransactionOptions) => {
@@ -383,43 +374,7 @@ export class InMemoryDistributedTransactionStorage
           isCancelling: !!data.flow.cancelledAt,
         } as any)
 
-        console.log(
-          "+++++++ DATA IN STORAGE +++++++",
-          storedData?.flow._v,
-          key,
-          Object.values(storedData?.flow.steps ?? {}).map((s: any) => [
-            s.id,
-            s.invoke?.state,
-            s.compensate?.state,
-          ]),
-          "+++++++ INCOMING DATA +++++++",
-          Object.values(data.flow.steps).map((s: any) => [
-            s.id,
-            s.invoke?.state,
-            s.compensate?.state,
-          ]),
-          storedData?.flow.state
-        )
         TransactionCheckpoint.mergeCheckpoints(data, storedData)
-        console.log(
-          "------------------- MERGED TRANSACTION",
-          data.flow._v,
-          key,
-          Object.values(data.flow.steps).map((s: any) => [
-            s.id,
-            s.invoke?.state,
-            s.compensate?.state,
-          ]),
-          data.flow.state
-        )
-
-        if (data.flow.state === TransactionState.DONE) {
-          console.log(
-            "+++++++ DONE +++++++",
-            JSON.stringify(storedData?.context, null, 2)
-          )
-          console.log("DONE", JSON.stringify(data.context, null, 2))
-        }
       }
 
       const { flow, errors } = data
@@ -512,7 +467,11 @@ export class InMemoryDistributedTransactionStorage
       }
     }
 
-    if (!isInitialCheckpoint && !isPresent(latestUpdatedFlow)) {
+    if (
+      !isInitialCheckpoint &&
+      !isPresent(latestUpdatedFlow) &&
+      !data.flow.metadata?.parentStepIdempotencyKey
+    ) {
       /**
        * the initial checkpoint expect no other checkpoint to have been stored.
        * In case it is not the initial one and another checkpoint is trying to
@@ -792,7 +751,7 @@ export class InMemoryDistributedTransactionStorage
       updated_at: {
         $lte: raw(
           (alias) =>
-            `CURRENT_TIMESTAMP - (INTERVAL '1 second' * retention_time)`
+            `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
         ),
       },
       state: {

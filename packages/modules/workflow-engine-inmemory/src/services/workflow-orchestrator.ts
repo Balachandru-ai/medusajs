@@ -135,7 +135,15 @@ export class WorkflowOrchestratorService {
 
   private async triggerParentStep(transaction, result, errors) {
     const metadata = transaction.flow.metadata
-    const { parentStepIdempotencyKey } = metadata ?? {}
+    const { parentStepIdempotencyKey, cancelingFromParentStep } = metadata ?? {}
+
+    if (cancelingFromParentStep) {
+      /**
+       * If the sub workflow is cancelling from a parent step, we don't want to trigger the parent
+       * step.
+       */
+      return
+    }
 
     if (parentStepIdempotencyKey) {
       const hasFailed = [
@@ -144,13 +152,17 @@ export class WorkflowOrchestratorService {
       ].includes(transaction.flow.state)
 
       if (hasFailed) {
-        await this.setStepFailure({
-          idempotencyKey: parentStepIdempotencyKey,
-          stepResponse: errors,
-          options: {
-            logOnError: true,
-          },
-        })
+        try {
+          await this.setStepFailure({
+            idempotencyKey: parentStepIdempotencyKey,
+            stepResponse: errors,
+            options: {
+              logOnError: true,
+            },
+          })
+        } catch (e) {
+          throw e
+        }
       } else {
         await this.setStepSuccess({
           idempotencyKey: parentStepIdempotencyKey,
