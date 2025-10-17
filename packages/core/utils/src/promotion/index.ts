@@ -23,6 +23,7 @@ export enum ApplicationMethodTargetType {
 export enum ApplicationMethodAllocation {
   EACH = "each",
   ACROSS = "across",
+  ONCE = "once",
 }
 
 export enum PromotionRuleOperator {
@@ -38,6 +39,8 @@ export enum PromotionRuleOperator {
 export enum CampaignBudgetType {
   SPEND = "spend",
   USAGE = "usage",
+  USE_BY_ATTRIBUTE = "use_by_attribute",
+  SPEND_BY_ATTRIBUTE = "spend_by_attribute",
 }
 
 export enum ComputedActions {

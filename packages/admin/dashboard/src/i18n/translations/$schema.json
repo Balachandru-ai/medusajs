@@ -7684,6 +7684,9 @@
             "allocation": {
               "type": "string"
             },
+            "allocationTooltip": {
+              "type": "string"
+            },
             "addCondition": {
               "type": "string"
             },
@@ -8178,9 +8181,22 @@
                   },
                   "required": ["title", "description"],
                   "additionalProperties": false
+                },
+                "once": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["title", "description"],
+                  "additionalProperties": false
                 }
               },
-              "required": ["each", "across"],
+              "required": ["each", "across", "once"],
               "additionalProperties": false
             },
             "code": {
@@ -8442,6 +8458,9 @@
             "total_used": {
               "type": "string"
             },
+            "totalUsedByAttribute": {
+              "type": "string"
+            },
             "budget_limit": {
               "type": "string"
             },
@@ -8463,6 +8482,7 @@
             "end_date",
             "total_spend",
             "total_used",
+            "totalUsedByAttribute",
             "budget_limit",
             "campaign_id"
           ],
@@ -8471,6 +8491,19 @@
         "budget": {
           "type": "object",
           "properties": {
+            "attribute": {
+              "type": "object",
+              "properties": {
+                "customer_id": {
+                  "type": "string"
+                },
+                "customer_email": {
+                  "type": "string"
+                }
+              },
+              "required": ["customer_id", "customer_email"],
+              "additionalProperties": false
+            },
             "create": {
               "type": "object",
               "properties": {
@@ -8501,9 +8534,34 @@
                 },
                 "used": {
                   "type": "string"
+                },
+                "budgetAttribute": {
+                  "type": "string"
+                },
+                "budgetAttributeTooltip": {
+                  "type": "string"
+                },
+                "totalUsedByAttribute": {
+                  "type": "string"
+                },
+                "totalUsedByAttributeCustomerId": {
+                  "type": "string"
+                },
+                "totalUsedByAttributeEmail": {
+                  "type": "string"
                 }
               },
-              "required": ["type", "currency", "limit", "used"],
+              "required": [
+                "type",
+                "currency",
+                "limit",
+                "used",
+                "budgetAttribute",
+                "budgetAttributeTooltip",
+                "totalUsedByAttribute",
+                "totalUsedByAttributeCustomerId",
+                "totalUsedByAttributeEmail"
+              ],
               "additionalProperties": false
             },
             "type": {
@@ -8534,9 +8592,33 @@
                   },
                   "required": ["title", "description"],
                   "additionalProperties": false
+                },
+                "useByAttribute": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "titleCustomerId": {
+                      "type": "string"
+                    },
+                    "titleEmail": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "titleCustomerId",
+                    "titleEmail",
+                    "description"
+                  ],
+                  "additionalProperties": false
                 }
               },
-              "required": ["spend", "usage"],
+              "required": ["spend", "usage", "useByAttribute"],
               "additionalProperties": false
             },
             "edit": {
@@ -8550,7 +8632,14 @@
               "additionalProperties": false
             }
           },
-          "required": ["create", "details", "fields", "type", "edit"],
+          "required": [
+            "attribute",
+            "create",
+            "details",
+            "fields",
+            "type",
+            "edit"
+          ],
           "additionalProperties": false
         },
         "promotions": {
@@ -11306,6 +11395,9 @@
         "discountable": {
           "type": "string"
         },
+        "promotionCode": {
+          "type": "string"
+        },
         "handle": {
           "type": "string"
         },
@@ -11732,6 +11824,7 @@
         "category",
         "collection",
         "discountable",
+        "promotionCode",
         "handle",
         "subtitle",
         "by",
