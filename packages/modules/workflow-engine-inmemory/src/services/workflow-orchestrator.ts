@@ -100,7 +100,7 @@ type Subscribers = Map<WorkflowId, TransactionSubscribers>
 const AnySubscriber = "any"
 
 export class WorkflowOrchestratorService {
-  private subscribers: Subscribers = new Map()
+  private static subscribers: Subscribers = new Map()
   private container_: MedusaContainer
   private inMemoryDistributedTransactionStorage_: InMemoryDistributedTransactionStorage
   readonly #logger: Logger
@@ -110,7 +110,6 @@ export class WorkflowOrchestratorService {
     sharedContainer,
   }: {
     inMemoryDistributedTransactionStorage: InMemoryDistributedTransactionStorage
-    workflowOrchestratorService: WorkflowOrchestratorService
     sharedContainer: MedusaContainer
   }) {
     this.container_ = sharedContainer
@@ -627,7 +626,8 @@ export class WorkflowOrchestratorService {
     subscriberId,
   }: SubscribeOptions) {
     subscriber._id = subscriberId
-    const subscribers = this.subscribers.get(workflowId) ?? new Map()
+    const subscribers =
+      WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
 
     const handlerIndex = (handlers) => {
       return handlers.findIndex(
@@ -644,7 +644,7 @@ export class WorkflowOrchestratorService {
 
       transactionSubscribers.push(subscriber)
       subscribers.set(transactionId, transactionSubscribers)
-      this.subscribers.set(workflowId, subscribers)
+      WorkflowOrchestratorService.subscribers.set(workflowId, subscribers)
       return
     }
 
@@ -656,7 +656,7 @@ export class WorkflowOrchestratorService {
 
     workflowSubscribers.push(subscriber)
     subscribers.set(AnySubscriber, workflowSubscribers)
-    this.subscribers.set(workflowId, subscribers)
+    WorkflowOrchestratorService.subscribers.set(workflowId, subscribers)
   }
 
   unsubscribe({
@@ -664,7 +664,8 @@ export class WorkflowOrchestratorService {
     transactionId,
     subscriberOrId,
   }: UnsubscribeOptions) {
-    const subscribers = this.subscribers.get(workflowId) ?? new Map()
+    const subscribers =
+      WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
 
     const filterSubscribers = (handlers: SubscriberHandler[]) => {
       return handlers.filter((handler) => {
@@ -684,7 +685,7 @@ export class WorkflowOrchestratorService {
       } else {
         subscribers.delete(transactionId)
       }
-      this.subscribers.set(workflowId, subscribers)
+      WorkflowOrchestratorService.subscribers.set(workflowId, subscribers)
       return
     }
 
@@ -695,7 +696,7 @@ export class WorkflowOrchestratorService {
     } else {
       subscribers.delete(AnySubscriber)
     }
-    this.subscribers.set(workflowId, subscribers)
+    WorkflowOrchestratorService.subscribers.set(workflowId, subscribers)
   }
 
   private notify(options: NotifyOptions) {
@@ -706,7 +707,7 @@ export class WorkflowOrchestratorService {
   private async processSubscriberNotifications(options: NotifyOptions) {
     const { workflowId, transactionId, eventType } = options
     const subscribers: TransactionSubscribers =
-      this.subscribers.get(workflowId) ?? new Map()
+      WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
 
     const notifySubscribersAsync = async (handlers: SubscriberHandler[]) => {
       const promises = handlers.map(async (handler) => {

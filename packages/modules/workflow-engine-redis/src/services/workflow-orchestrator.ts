@@ -115,7 +115,7 @@ export class WorkflowOrchestratorService {
   protected redisPublisher: Redis
   protected redisSubscriber: Redis
   protected container_: MedusaContainer
-  private subscribers: Subscribers = new Map()
+  private static subscribers: Subscribers = new Map()
 
   readonly #logger: Logger
 
@@ -154,7 +154,7 @@ export class WorkflowOrchestratorService {
 
     this.redisSubscriber.on("message", async (channel, message) => {
       const workflowId = channel.split(":")[1]
-      if (!this.subscribers.has(workflowId)) return
+      if (!WorkflowOrchestratorService.subscribers.has(workflowId)) return
 
       try {
         const { instanceId, data } = JSON.parse(message)
@@ -671,10 +671,11 @@ export class WorkflowOrchestratorService {
     subscriberId,
   }: SubscribeOptions) {
     subscriber._id = subscriberId
-    const subscribers = this.subscribers.get(workflowId) ?? new Map()
+    const subscribers =
+      WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
 
     // Subscribe instance to redis
-    if (!this.subscribers.has(workflowId)) {
+    if (!WorkflowOrchestratorService.subscribers.has(workflowId)) {
       void this.redisSubscriber.subscribe(this.getChannelName(workflowId))
     }
 
@@ -693,7 +694,7 @@ export class WorkflowOrchestratorService {
 
       transactionSubscribers.push(subscriber)
       subscribers.set(transactionId, transactionSubscribers)
-      this.subscribers.set(workflowId, subscribers)
+      WorkflowOrchestratorService.subscribers.set(workflowId, subscribers)
       return
     }
 
@@ -705,7 +706,7 @@ export class WorkflowOrchestratorService {
 
     workflowSubscribers.push(subscriber)
     subscribers.set(AnySubscriber, workflowSubscribers)
-    this.subscribers.set(workflowId, subscribers)
+    WorkflowOrchestratorService.subscribers.set(workflowId, subscribers)
   }
 
   unsubscribe({
@@ -713,7 +714,7 @@ export class WorkflowOrchestratorService {
     transactionId,
     subscriberOrId,
   }: UnsubscribeOptions) {
-    const subscribers = this.subscribers.get(workflowId)
+    const subscribers = WorkflowOrchestratorService.subscribers.get(workflowId)
     if (!subscribers) {
       return
     }
@@ -753,7 +754,7 @@ export class WorkflowOrchestratorService {
     }
 
     if (subscribers.size === 0) {
-      this.subscribers.delete(workflowId)
+      WorkflowOrchestratorService.subscribers.delete(workflowId)
       void this.redisSubscriber.unsubscribe(this.getChannelName(workflowId))
     }
   }
@@ -792,7 +793,7 @@ export class WorkflowOrchestratorService {
   private async processSubscriberNotifications(options: NotifyOptions) {
     const { workflowId, transactionId, eventType } = options
     const subscribers: TransactionSubscribers =
-      this.subscribers.get(workflowId) ?? new Map()
+      WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
 
     const notifySubscribersAsync = async (handlers: SubscriberHandler[]) => {
       const promises = handlers.map(async (handler) => {
