@@ -266,7 +266,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         expect(transformMock).toHaveBeenCalledTimes(1)
       })
 
-      it.only("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", async () => {
+      it("should prevent race continuation of the workflow compensation during retryIntervalAwaiting in background execution", async () => {
         const transactionId = "transaction_id" + ulid()
         const workflowId = "RACE_workflow-1" + ulid()
 
