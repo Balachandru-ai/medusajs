@@ -300,5 +300,4 @@ export type TransactionFlow = {
     [key: string]: TransactionStep
   }
   _v: number
-  _saved_v: number
 }

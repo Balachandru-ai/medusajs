@@ -119,6 +119,75 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         ])
       })
 
+      it("should manage saving multiple sync steps in concurrency", async () => {
+        const step0 = createStep({ name: "step0" }, async () => {
+          return new StepResponse("result from step 0")
+        })
+
+        const step1 = createStep({ name: "step1" }, async () => {
+          return new StepResponse("result from step 1")
+        })
+
+        const step2 = createStep({ name: "step2" }, async () => {
+          return new StepResponse("result from step 2")
+        })
+        const step3 = createStep({ name: "step3" }, async () => {
+          return new StepResponse("result from step 3")
+        })
+
+        const step4 = createStep({ name: "step4" }, async () => {
+          return new StepResponse("result from step 4")
+        })
+        const step5 = createStep({ name: "step5" }, async (all: string[]) => {
+          const ret = [...all, "result from step 5"]
+          return new StepResponse(ret)
+        })
+
+        const workflowId = "workflow-1" + ulid()
+        createWorkflow(
+          {
+            name: workflowId,
+            idempotent: true,
+            retentionTime: 5,
+          },
+          function () {
+            const all = parallelize(step0(), step1(), step2(), step3(), step4())
+            const res = step5(all)
+            return new WorkflowResponse(res)
+          }
+        )
+
+        const transactionId = ulid()
+        const done = new Promise<void>((resolve, reject) => {
+          void workflowOrcModule.subscribe({
+            workflowId: workflowId,
+            transactionId,
+            subscriber: async (event) => {
+              if (event.eventType === "onFinish") {
+                resolve(event.result)
+              }
+            },
+          })
+        })
+
+        await workflowOrcModule.run(workflowId, {
+          throwOnError: false,
+          logOnError: true,
+          transactionId,
+        })
+
+        const result = await done
+
+        expect(result).toEqual([
+          "result from step 0",
+          "result from step 1",
+          "result from step 2",
+          "result from step 3",
+          "result from step 4",
+          "result from step 5",
+        ])
+      })
+
       it("should manage saving multiple async steps in concurrency without background execution while setting steps as success manually concurrently", async () => {
         const step0 = createStep({ name: "step0", async: true }, async () => {})
 

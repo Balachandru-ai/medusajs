@@ -518,7 +518,6 @@ export class TransactionOrchestrator extends EventEmitter {
       if (stepDef._v) {
         flow._v = 0
         stepDef._v = 0
-        flow._saved_v = 0
       }
 
       if (
@@ -529,9 +528,6 @@ export class TransactionOrchestrator extends EventEmitter {
       ) {
         stepDef.beginCompensation()
         stepDef.changeState(TransactionStepState.NOT_STARTED)
-        // Clear scheduled retries from invoke phase to prevent race conditions
-        // stepDef.hasScheduledRetry = false
-        // stepDef.retryRescheduledAt = null
       }
     }
   }
@@ -998,7 +994,17 @@ export class TransactionOrchestrator extends EventEmitter {
 
         const promise = this.createStepExecutionPromise(transaction, step)
 
-        const hasVersionControl = isAsync || step.hasAwaitingRetry()
+        const hasMultipleAsyncSteps =
+          nextSteps.next.filter((step) => {
+            const isAsync = step.isCompensating()
+              ? step.definition.compensateAsync
+              : step.definition.async
+
+            return isAsync
+          }).length > 1
+
+        const hasVersionControl =
+          hasMultipleAsyncSteps || step.hasAwaitingRetry()
 
         if (hasVersionControl && !step._v) {
           transaction.getFlow()._v += 1
@@ -1551,7 +1557,6 @@ export class TransactionOrchestrator extends EventEmitter {
       definition: this.definition,
       steps,
       _v: 0, // Initialize version to 0
-      _saved_v: 0, // Initialize saved version to 0
     }
 
     return flow
