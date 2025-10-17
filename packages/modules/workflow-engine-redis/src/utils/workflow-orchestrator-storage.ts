@@ -466,49 +466,49 @@ export class RedisDistributedTransactionStorage
 
     let lockAcquired = false
 
-    try {
-      if (data.flow._v) {
-        lockAcquired = await this.#acquireLock(key)
+    if (data.flow._v) {
+      lockAcquired = await this.#acquireLock(key)
 
-        if (!lockAcquired) {
-          throw new Error("Lock not acquired")
-        }
-
-        const storedData = await this.get(key, {
-          isCancelling: !!data.flow.cancelledAt,
-        } as any)
-
-        console.log(
-          "+++++++ DATA IN STORAGE +++++++",
-          storedData?.flow._v,
-          key,
-          Object.values(storedData?.flow.steps ?? {}).map((s: any) => [
-            s.id,
-            s.invoke?.state,
-            s.compensate?.state,
-          ]),
-          "+++++++ INCOMING DATA +++++++",
-          Object.values(data.flow.steps).map((s: any) => [
-            s.id,
-            s.invoke?.state,
-            s.compensate?.state,
-          ]),
-          storedData?.flow.state
-        )
-        TransactionCheckpoint.mergeCheckpoints(data, storedData)
-        console.log(
-          "------------------- MERGED TRANSACTION",
-          data.flow._v,
-          key,
-          Object.values(data.flow.steps).map((s: any) => [
-            s.id,
-            s.invoke?.state,
-            s.compensate?.state,
-          ]),
-          data.flow.state
-        )
+      if (!lockAcquired) {
+        throw new Error("Lock not acquired")
       }
 
+      const storedData = await this.get(key, {
+        isCancelling: !!data.flow.cancelledAt,
+      } as any)
+
+      console.log(
+        "+++++++ DATA IN STORAGE +++++++",
+        storedData?.flow._v,
+        key,
+        Object.values(storedData?.flow.steps ?? {}).map((s: any) => [
+          s.id,
+          s.invoke?.state,
+          s.compensate?.state,
+        ]),
+        "+++++++ INCOMING DATA +++++++",
+        Object.values(data.flow.steps).map((s: any) => [
+          s.id,
+          s.invoke?.state,
+          s.compensate?.state,
+        ]),
+        storedData?.flow.state
+      )
+      TransactionCheckpoint.mergeCheckpoints(data, storedData)
+      console.log(
+        "------------------- MERGED TRANSACTION",
+        data.flow._v,
+        key,
+        Object.values(data.flow.steps).map((s: any) => [
+          s.id,
+          s.invoke?.state,
+          s.compensate?.state,
+        ]),
+        data.flow.state
+      )
+    }
+
+    try {
       const hasFinished = [
         TransactionState.DONE,
         TransactionState.FAILED,

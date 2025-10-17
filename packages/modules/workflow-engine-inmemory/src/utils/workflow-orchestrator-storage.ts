@@ -323,13 +323,13 @@ export class InMemoryDistributedTransactionStorage
     ttl?: number,
     options?: TransactionOptions
   ): Promise<TransactionCheckpoint> {
+    if (this.isLocked.has(key)) {
+      throw new Error("Transaction storage is locked")
+    }
+
+    this.isLocked.set(key, true)
+
     try {
-      if (this.isLocked.has(key)) {
-        throw new Error("Transaction storage is locked")
-      }
-
-      this.isLocked.set(key, true)
-
       /**
        * Store the retention time only if the transaction is done, failed or reverted.
        * From that moment, this tuple can be later on archived or deleted after the retention time.
