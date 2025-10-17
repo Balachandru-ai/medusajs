@@ -176,7 +176,8 @@ export const AiAssistantChatWindowInput = ({
                 !active &&
                   "bg-transparent hover:bg-medusa-button-transparent-hover text-medusa-fg-muted hover:text-medusa-fg-subtle",
                 active &&
-                  "bg-medusa-tag-orange-bg hover:bg-medusa-tag-orange-bg-hover text-medusa-tag-orange-text"
+                  "bg-medusa-tag-orange-bg hover:bg-medusa-tag-orange-bg-hover text-medusa-tag-orange-text",
+                loading && "cursor-not-allowed opacity-50"
               )}
               type="button"
             >
