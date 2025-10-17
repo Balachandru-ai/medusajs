@@ -61,12 +61,6 @@ const _OrderShipping = model
       where: "claim_id IS NOT NULL AND deleted_at IS NULL",
     },
     {
-      name: "IDX_order_shipping_version",
-      on: ["version"],
-      unique: false,
-      where: "deleted_at IS NULL",
-    },
-    {
       name: "IDX_order_shipping_shipping_method_id",
       on: ["shipping_method_id"],
       unique: false,
