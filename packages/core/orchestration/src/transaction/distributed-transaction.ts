@@ -19,7 +19,6 @@ const flowMergeableProperties = [
   "hasSkippedOnFailureSteps",
   "hasSkippedSteps",
   "hasRevertedSteps",
-  "hasWaitingSteps",
   "cancelledAt",
   "startedAt",
   "hasAsyncSteps",
