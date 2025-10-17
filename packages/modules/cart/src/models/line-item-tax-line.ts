@@ -26,11 +26,6 @@ const LineItemTaxLine = model
       on: ["tax_rate_id"],
       where: "deleted_at IS NULL AND tax_rate_id IS NOT NULL",
     },
-    {
-      name: "IDX_tax_line_item_id",
-      on: ["item_id"],
-      where: "deleted_at IS NULL",
-    },
   ])
 
 export default LineItemTaxLine

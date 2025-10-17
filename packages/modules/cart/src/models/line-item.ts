@@ -46,11 +46,6 @@ const LineItem = model
   )
   .indexes([
     {
-      name: "IDX_line_item_cart_id",
-      on: ["cart_id"],
-      where: "deleted_at IS NULL",
-    },
-    {
       name: "IDX_line_item_variant_id",
       on: ["variant_id"],
       where: "deleted_at IS NULL AND variant_id IS NOT NULL",
