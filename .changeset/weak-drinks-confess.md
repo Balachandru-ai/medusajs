@@ -3,6 +3,7 @@
 "@medusajs/workflow-engine-redis": patch
 "@medusajs/orchestration": patch
 "@medusajs/workflows-sdk": patch
+"@medusajs/core-flows": patch
 ---
 
-Fix/workflow async concurrency
+fix: workflow async concurrency
