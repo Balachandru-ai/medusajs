@@ -48,7 +48,7 @@ const LineItem = model
     {
       name: "IDX_cart_line_item_cart_id",
       on: ["cart_id"],
-      where: "deleted_at IS NULL AND cart_id IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_line_item_variant_id",

@@ -29,7 +29,7 @@ const ShippingMethodAdjustment = model
     {
       name: "IDX_cart_shipping_method_adjustment_shipping_method_id",
       on: ["shipping_method_id"],
-      where: "deleted_at IS NULL AND shipping_method_id IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
   ])
 

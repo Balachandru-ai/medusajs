@@ -24,7 +24,7 @@ const ShippingMethodTaxLine = model
     {
       name: "IDX_cart_shipping_method_tax_line_shipping_method_id",
       on: ["shipping_method_id"],
-      where: "deleted_at IS NULL AND shipping_method_id IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_shipping_method_tax_line_tax_rate_id",

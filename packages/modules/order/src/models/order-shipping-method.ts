@@ -62,7 +62,7 @@ const _OrderShipping = model
     },
     {
       name: "IDX_order_shipping_order_id_version",
-      on: ["version", "order_id"],
+      on: ["order_id", "version"],
       unique: false,
       where: "deleted_at IS NULL",
     },
