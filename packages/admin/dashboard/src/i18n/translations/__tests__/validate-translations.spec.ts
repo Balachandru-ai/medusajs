@@ -3,26 +3,21 @@ import path from "path"
 import { describe, expect, test } from "vitest"
 
 import schema from "../$schema.json"
+import pluralConfig from "../../plural-config.json"
 
 const translationsDir = path.join(__dirname, "..")
 
-// Import plural rules (use require for CommonJS module)
-const {
-  getRequiredPluralForms,
-  isPluralKey,
-  getBaseKey,
-} = require("../../../../scripts/i18n/plural-rules.js")
-
-function getAllKeysFromSchema(schema: any, prefix = ""): string[] {
+function getRequiredKeysFromSchema(schema: any, prefix = ""): string[] {
   const keys: string[] = []
 
   if (schema.type === "object" && schema.properties) {
     Object.entries(schema.properties).forEach(([key, value]: [string, any]) => {
-      const newPrefix = prefix ? `${prefix}.${key}` : key
+      const fullKey = prefix ? `${prefix}.${key}` : key
+
       if (value.type === "object") {
-        keys.push(...getAllKeysFromSchema(value, newPrefix))
-      } else {
-        keys.push(newPrefix)
+        keys.push(...getRequiredKeysFromSchema(value, fullKey))
+      } else if (schema.required?.includes(key)) {
+        keys.push(fullKey)
       }
     })
   }
@@ -30,89 +25,71 @@ function getAllKeysFromSchema(schema: any, prefix = ""): string[] {
   return keys.sort()
 }
 
-function getRequiredKeysFromSchema(schema: any, prefix = ""): string[] {
-  const keys: string[] = []
+function getAllKeysFromSchema(schema: any, prefix = ""): Set<string> {
+  const keys = new Set<string>()
 
   if (schema.type === "object" && schema.properties) {
-    const requiredKeys = schema.required || []
-
     Object.entries(schema.properties).forEach(([key, value]: [string, any]) => {
-      const newPrefix = prefix ? `${prefix}.${key}` : key
+      const fullKey = prefix ? `${prefix}.${key}` : key
+      keys.add(fullKey)
+
       if (value.type === "object") {
-        keys.push(...getRequiredKeysFromSchema(value, newPrefix))
-      } else {
-        // Only include keys marked as required
-        if (requiredKeys.includes(key)) {
-          keys.push(newPrefix)
-        }
+        const nestedKeys = getAllKeysFromSchema(value, fullKey)
+        nestedKeys.forEach((k) => keys.add(k))
       }
     })
   }
 
-  return keys.sort()
+  return keys
 }
 
 function getTranslationKeys(obj: any, prefix = ""): string[] {
   const keys: string[] = []
 
   Object.entries(obj).forEach(([key, value]) => {
-    const newPrefix = prefix ? `${prefix}.${key}` : key
-    if (value && typeof value === "object") {
-      keys.push(...getTranslationKeys(value, newPrefix))
+    const fullKey = prefix ? `${prefix}.${key}` : key
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      keys.push(...getTranslationKeys(value, fullKey))
     } else {
-      keys.push(newPrefix)
+      keys.push(fullKey)
     }
   })
 
   return keys.sort()
 }
 
-/**
- * Get language code from filename (e.g., "en.json" -> "en", "zhCN.json" -> "zhCN")
- */
-function getLanguageCode(filename: string): string {
-  return filename.replace(".json", "")
-}
+function findPluralGroups(
+  obj: any,
+  currentPath = ""
+): Map<string, Set<string>> {
+  const groups = new Map<string, Set<string>>()
 
-/**
- * Validate plural forms for a specific language
- */
-function validatePluralForms(
-  translationKeys: string[],
-  languageCode: string
-): { missingPlurals: string[]; extraPlurals: string[] } {
-  const requiredPluralSuffixes = getRequiredPluralForms(languageCode)
-  const missingPlurals: string[] = []
-  const extraPlurals: string[] = []
+  if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+    return groups
+  }
 
-  // Group keys by their base form
-  const pluralGroups = new Map<string, Set<string>>()
+  Object.entries(obj).forEach(([key, value]) => {
+    const pluralMatch = key.match(/^(.+)_(zero|one|two|few|many|other)$/)
 
-  translationKeys.forEach((key) => {
-    if (isPluralKey(key)) {
-      const baseKey = getBaseKey(key)
-      if (!pluralGroups.has(baseKey)) {
-        pluralGroups.set(baseKey, new Set())
+    if (pluralMatch) {
+      const [, baseKey, form] = pluralMatch
+      const fullPath = currentPath ? `${currentPath}.${baseKey}` : baseKey
+
+      if (!groups.has(fullPath)) {
+        groups.set(fullPath, new Set())
       }
-      const suffix = key.substring(baseKey.length) // e.g., "_one", "_few"
-      pluralGroups.get(baseKey)!.add(suffix)
+      groups.get(fullPath)!.add(form)
+    }
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const fullPath = currentPath ? `${currentPath}.${key}` : key
+      const nestedGroups = findPluralGroups(value, fullPath)
+      nestedGroups.forEach((forms, path) => groups.set(path, forms))
     }
   })
 
-  // Check each plural group
-  pluralGroups.forEach((suffixes, baseKey: string) => {
-    // Check for missing required plural forms
-    requiredPluralSuffixes.forEach((requiredSuffix: string) => {
-      if (!suffixes.has(requiredSuffix)) {
-        missingPlurals.push(`${baseKey}${requiredSuffix}`)
-      }
-    })
-
-    // Note: We don't flag extra plural forms as errors anymore
-    // since languages may have additional forms for better UX
-  })
-
-  return { missingPlurals, extraPlurals }
+  return groups
 }
 
 describe("translation schema validation", () => {
@@ -120,112 +97,58 @@ describe("translation schema validation", () => {
     const enPath = path.join(translationsDir, "en.json")
     const enTranslations = JSON.parse(fs.readFileSync(enPath, "utf-8"))
 
-    const requiredSchemaKeys = getRequiredKeysFromSchema(schema)
+    const schemaKeys = getRequiredKeysFromSchema(schema)
     const translationKeys = getTranslationKeys(enTranslations)
 
-    const missingInTranslations = requiredSchemaKeys.filter(
-      (key) => !translationKeys.includes(key)
-    )
+    const missing = schemaKeys.filter((key) => !translationKeys.includes(key))
 
-    if (missingInTranslations.length > 0) {
-      console.warn(
-        "\nWarning: Missing required keys in en.json:",
-        missingInTranslations
-      )
-      console.warn(
-        "These keys exist in other translation files but not in English (source language)."
-      )
-      console.warn(
-        "This is informational only - the schema includes all keys from all languages.\n"
-      )
+    if (missing.length > 0) {
+      console.error("\nMissing required keys in en.json:", missing)
     }
 
-    // Don't fail - this is informational
-    // Missing keys in en.json means other languages added keys first
-    // which is fine since we merge all language keys into the schema
-    // expect(missingInTranslations).toEqual([])
+    expect(missing).toEqual([])
   })
 
-  test("all translation files should have correct plural forms for their language", () => {
-    const files = fs.readdirSync(translationsDir)
-    const translationFiles = files.filter(
-      (f) => f.endsWith(".json") && f !== "$schema.json"
-    )
-
-    const errors: Record<string, any> = {}
-
-    translationFiles.forEach((file) => {
-      const languageCode = getLanguageCode(file)
-      const filePath = path.join(translationsDir, file)
-      const translations = JSON.parse(fs.readFileSync(filePath, "utf-8"))
-      const translationKeys = getTranslationKeys(translations)
-
-      const { missingPlurals } = validatePluralForms(
-        translationKeys,
-        languageCode
-      )
-
-      if (missingPlurals.length > 0) {
-        errors[file] = {
-          missingPlurals,
-        }
-      }
-    })
-
-    if (Object.keys(errors).length > 0) {
-      console.warn("\n=== Plural Form Validation Warnings ===\n")
-      console.warn("Some translation files have incomplete plural forms.")
-      console.warn(
-        "This is not a critical error, but translations may not display correctly for all quantities.\n"
-      )
-      Object.entries(errors).forEach(([file, fileErrors]) => {
-        console.warn(
-          `\n${file}: ${fileErrors.missingPlurals.length} missing plural forms`
-        )
-      })
-      console.warn(
-        "\nNote: This validation is informational. Translations will still work but may fall back to default forms."
-      )
-    }
-
-    // Don't fail the test - just warn about incomplete plurals
-    // expect(Object.keys(errors)).toEqual([])
-  })
-
-  test("schema should include all keys from all translation files", () => {
-    const files = fs.readdirSync(translationsDir)
-    const translationFiles = files.filter(
-      (f) => f.endsWith(".json") && f !== "$schema.json"
-    )
+  test("en.json should not have extra keys", () => {
+    const enPath = path.join(translationsDir, "en.json")
+    const enTranslations = JSON.parse(fs.readFileSync(enPath, "utf-8"))
 
     const allSchemaKeys = getAllKeysFromSchema(schema)
-    const errors: Record<string, string[]> = {}
+    const translationKeys = getTranslationKeys(enTranslations)
+    const extra = translationKeys.filter((key) => !allSchemaKeys.has(key))
 
-    translationFiles.forEach((file) => {
-      const filePath = path.join(translationsDir, file)
-      const translations = JSON.parse(fs.readFileSync(filePath, "utf-8"))
-      const translationKeys = getTranslationKeys(translations)
-
-      const keysNotInSchema = translationKeys.filter(
-        (key) => !allSchemaKeys.includes(key)
-      )
-
-      if (keysNotInSchema.length > 0) {
-        errors[file] = keysNotInSchema
-      }
-    })
-
-    if (Object.keys(errors).length > 0) {
-      console.error("\n=== Keys not in schema ===\n")
-      console.error("Run 'npm run i18n:schema' to regenerate the schema\n")
-      Object.entries(errors).forEach(([file, keys]) => {
-        console.error(`${file}:`, keys.slice(0, 10))
-        if (keys.length > 10) {
-          console.error(`  ... and ${keys.length - 10} more`)
-        }
-      })
+    if (extra.length > 0) {
+      console.error("\nExtra keys in en.json:", extra)
     }
 
-    expect(Object.keys(errors)).toEqual([])
+    expect(extra).toEqual([])
+  })
+
+  test("en.json plural keys should match required forms", () => {
+    const enPath = path.join(translationsDir, "en.json")
+    const enTranslations = JSON.parse(fs.readFileSync(enPath, "utf-8"))
+
+    const requiredForms = pluralConfig.en
+    const pluralGroups = findPluralGroups(enTranslations)
+    const errors: string[] = []
+
+    pluralGroups.forEach((forms, baseKey) => {
+      forms.forEach((form) => {
+        if (!requiredForms.includes(form)) {
+          errors.push(`${baseKey}_${form} - English doesn't use "${form}" form`)
+        }
+      })
+      requiredForms.forEach((form) => {
+        if (!forms.has(form)) {
+          errors.push(`${baseKey}_${form} - Missing required form for English`)
+        }
+      })
+    })
+
+    if (errors.length > 0) {
+      console.error("\nPlural form errors in en.json:", errors)
+    }
+
+    expect(errors).toEqual([])
   })
 })
