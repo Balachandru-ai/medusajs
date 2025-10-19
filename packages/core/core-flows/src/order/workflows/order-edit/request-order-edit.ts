@@ -20,7 +20,6 @@ import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
-import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 function getOrderChangesData({
@@ -176,12 +175,12 @@ export const requestOrderEditRequestWorkflow = createWorkflow(
       }
     )
 
-    computeAdjustmentsForPreviewWorkflow.runAsStep({
-      input: {
-        order,
-        orderChange,
-      },
-    })
+    // computeAdjustmentsForPreviewWorkflow.runAsStep({
+    //   input: {
+    //     order,
+    //     orderChange,
+    //   },
+    // })
 
     emitEventStep({
       eventName: OrderEditWorkflowEvents.REQUESTED,

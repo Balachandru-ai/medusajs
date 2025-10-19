@@ -21,7 +21,6 @@ import {
 import { addOrderLineItemsWorkflow } from "../add-line-items"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
-import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
@@ -186,12 +185,12 @@ export const orderEditAddNewItemWorkflow = createWorkflow(
       input: orderChangeActionInput,
     })
 
-    computeAdjustmentsForPreviewWorkflow.runAsStep({
-      input: {
-        order,
-        orderChange,
-      },
-    })
+    // computeAdjustmentsForPreviewWorkflow.runAsStep({
+    //   input: {
+    //     order,
+    //     orderChange,
+    //   },
+    // })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))
   }

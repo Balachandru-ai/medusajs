@@ -1,5 +1,7 @@
 import {
+  BigNumber,
   ChangeActionType,
+  getLineItemTotals,
   MathBN,
   MedusaError,
 } from "@medusajs/framework/utils"
@@ -26,6 +28,29 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
 
     existing.quantity = currentQuantity
     existing.detail.quantity = currentQuantity
+    
+    if (action.details.adjustments) {
+      existing.adjustments = action.details.adjustments
+    }
+
+    // @ts-ignore
+    const itemTotals = getLineItemTotals(
+      {
+        id: existing.id,
+        unit_price: new BigNumber(existing.unit_price),
+        quantity: new BigNumber(currentQuantity),
+        // @ts-ignore
+        is_tax_inclusive: existing.is_tax_inclusive,
+        // @ts-ignore
+        tax_lines: existing.tax_lines,
+        adjustments: existing.adjustments,
+        // @ts-ignore
+        detail: existing.detail,
+      },
+      {}
+    )
+
+    const unitTotal = MathBN.div(itemTotals.total, itemTotals.quantity)
 
     if (action.details.unit_price) {
       const currentUnitPrice = MathBN.convert(action.details.unit_price)
@@ -42,7 +67,8 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
 
     setActionReference(existing, action, options)
 
-    return MathBN.mult(existing.unit_price, quantityDiff)
+    // @ts-ignore
+    return MathBN.mult(unitTotal, quantityDiff)
   },
   validate({ action, currentOrder }) {
     const refId = action.details?.reference_id

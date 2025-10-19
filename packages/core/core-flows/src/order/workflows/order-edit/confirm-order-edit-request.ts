@@ -9,8 +9,7 @@ import {
   deduplicate,
   MathBN,
   OrderChangeStatus,
-  OrderEditWorkflowEvents,
-  PromotionActions,
+  OrderEditWorkflowEvents
 } from "@medusajs/framework/utils"
 import {
   createStep,
@@ -24,7 +23,6 @@ import {
   requiredOrderFieldsForInventoryConfirmation,
 } from "../../../cart/utils/prepare-confirm-inventory-input"
 import { emitEventStep, useQueryGraphStep } from "../../../common"
-import { refreshDraftOrderAdjustmentsWorkflow } from "../../../draft-order/workflows/refresh-draft-order-adjustments"
 import { deleteReservationsByLineItemsStep } from "../../../reservation"
 import { previewOrderChangeStep } from "../../steps"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
@@ -218,13 +216,6 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
             return
           }
 
-          const unitPrice: BigNumberInput =
-            itemAction.raw_unit_price ?? itemAction.unit_price
-
-          const compareAtUnitPrice: BigNumberInput | undefined =
-            itemAction.raw_compare_at_unit_price ??
-            itemAction.compare_at_unit_price
-
           const updateAction = itemAction.actions!.find(
             (a) => a.action === ChangeActionType.ITEM_UPDATE
           )
@@ -245,8 +236,6 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
             id: ordItem.id,
             variant_id: ordItem.variant_id,
             quantity: reservationQuantity,
-            unit_price: unitPrice,
-            compare_at_unit_price: compareAtUnitPrice,
           })
           allVariants.push(ordItem.variant)
         })
@@ -276,17 +265,17 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
     deleteReservationsByLineItemsStep(toRemoveReservationLineItemIds)
     reserveInventoryStep(formatedInventoryItems)
 
-    const promoCodes = transform({ refreshedOrder }, ({ refreshedOrder }) => {
-      return refreshedOrder.promotions.map((p) => p.code)
-    })
+    // const promoCodes = transform({ refreshedOrder }, ({ refreshedOrder }) => {
+    //   return refreshedOrder.promotions.map((p) => p.code)
+    // })
 
-    refreshDraftOrderAdjustmentsWorkflow.runAsStep({
-      input: {
-        order: refreshedOrder,
-        promo_codes: promoCodes,
-        action: PromotionActions.REPLACE,
-      },
-    })
+    // refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+    //   input: {
+    //     order: refreshedOrder,
+    //     promo_codes: promoCodes,
+    //     action: PromotionActions.REPLACE,
+    //   },
+    // })
 
     createOrUpdateOrderPaymentCollectionWorkflow.runAsStep({
       input: {

@@ -93,10 +93,6 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
         const actions = getActionsToComputeFromPromotionsStep({
           computeActionContext: actionsToComputeItemsInput,
           promotionCodesToApply: orderPromotions,
-          options: {
-            force_all: input.orderChange.metadata
-              ?.force_all_promotions as boolean,
-          },
         })
 
         const { lineItemAdjustmentsToCreate } =

@@ -2307,6 +2307,11 @@ export interface OrderChangeActionDTO {
   internal_note: string | null
 
   /**
+   * The ordering of the order change action
+   */
+  ordering: number
+
+  /**
    * When the order change action was created
    */
   created_at: Date | string

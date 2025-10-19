@@ -1,4 +1,5 @@
 import {
+  ComputeActionContext,
   OrderChangeDTO,
   OrderDTO,
   OrderPreviewDTO,
@@ -7,16 +8,22 @@ import {
 import {
   BigNumber,
   ChangeActionType,
+  getLineItemTotals,
   MathBN,
   OrderChangeStatus,
 } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createStep,
   createWorkflow,
   transform,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import {
+  computeAdjustmentsForPreviewWorkflow,
+  getActionsToComputeFromPromotionsStep,
+  prepareAdjustmentsFromPromotionActionsStep,
+} from "../../.."
 import { useQueryGraphStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
@@ -24,7 +31,6 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
@@ -80,6 +86,10 @@ export const orderEditUpdateItemQuantityWorkflowId =
 /**
  * This workflow updates the quantity of an existing item in an order's edit. It's used by the
  * [Update Order Item Quantity Admin API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsiditemsitemitem_id).
+ *
+ * This workflow is different from the `updateOrderEditItemQuantityWorkflow` workflow in that this should be used
+ * when the item to update was part of the original order before the edit. The other workflow is for items
+ * that were added to the order as part of the edit.
  *
  * You can also use this workflow to remove an item from an order by setting its quantity to `0`.
  *
@@ -143,10 +153,73 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
       orderChange,
     })
 
+    const actionsToComputeItemsInput = transform(
+      { order, items: input.items },
+      ({ order, items }) => {
+        const itemsToComputeFor = order.items.map((item) => {
+          const updatedItem = items.find((i) => i.id === item.id)
+
+          const itemTotals = getLineItemTotals(
+            {
+              id: item.id,
+              unit_price: item.unit_price,
+              quantity: updatedItem?.quantity ?? item.quantity,
+              is_tax_inclusive: item.is_tax_inclusive,
+              tax_lines: item.tax_lines,
+              adjustments: item.adjustments,
+              detail: item.detail,
+            },
+            {}
+          )
+
+          console.log(item.adjustments)
+
+          return {
+            id: item.id,
+            quantity: updatedItem?.quantity ?? item.quantity,
+            subtotal: itemTotals.subtotal,
+            original_total: itemTotals.original_total,
+            is_discountable: item.is_discountable,
+            adjustments: item.adjustments,
+            product: { id: item.product_id },
+          }
+        })
+
+        return {
+          currency_code: order.currency_code,
+          items: itemsToComputeFor,
+        } as ComputeActionContext
+      }
+    )
+
+    const orderPromotions = transform({ order }, ({ order }) => {
+      return order.promotions.map((p) => p.code).filter((p) => p !== undefined)
+    })
+
+    const actions = getActionsToComputeFromPromotionsStep({
+      computeActionContext: actionsToComputeItemsInput,
+      promotionCodesToApply: orderPromotions,
+    })
+
+    const { lineItemAdjustmentsToCreate, lineItemAdjustmentIdsToRemove } =
+      prepareAdjustmentsFromPromotionActionsStep({ actions })
+
     const orderChangeActionInput = transform(
-      { order, orderChange, items: input.items },
-      ({ order, orderChange, items }) => {
-        return items.map((item) => {
+      {
+        order,
+        orderChange,
+        items: input.items,
+        lineItemAdjustmentsToCreate,
+        lineItemAdjustmentIdsToRemove,
+      },
+      ({
+        order,
+        orderChange,
+        items,
+        lineItemAdjustmentsToCreate,
+        lineItemAdjustmentIdsToRemove,
+      }) => {
+        const itemsUpdates = items.map((item) => {
           const existing = order?.items?.find(
             (exItem) => exItem.id === item.id
           )!
@@ -167,9 +240,28 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
               unit_price: item.unit_price,
               compare_at_unit_price: item.compare_at_unit_price,
               quantity_diff: quantityDiff,
+              // adjustments_to_create: lineItemAdjustmentsToCreate.filter(
+              //   (adjustment) => adjustment.item_id === item.id
+              // ),
+              // adjustments_to_remove: lineItemAdjustmentIdsToRemove.filter(
+              //   (adjustmentId) => adjustmentId === item.id
+              // ),
             },
           }
         })
+
+        // const itemAdjustmentsUpdate = {
+        //   order_change_id: orderChange.id,
+        //   order_id: order.id,
+        //   version: orderChange.version,
+        //   action: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
+        //   details: {
+        //     adjustments_to_create: lineItemAdjustmentsToCreate,
+        //     adjustments_to_remove: lineItemAdjustmentIdsToRemove,
+        //   },
+        // }
+
+        return [...itemsUpdates]
       }
     )
 

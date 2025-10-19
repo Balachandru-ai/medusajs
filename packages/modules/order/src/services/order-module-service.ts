@@ -2519,10 +2519,15 @@ export default class OrderModuleService
       sharedContext
     )
 
+    // We need to apply the latest ordering actions last
+    const sortedActions = orderChange.actions.sort((a, b) => {
+      return a.ordering - b.ordering
+    })
+
     const { itemsToUpsert, shippingMethodsToUpsert, calculatedOrders } =
       await applyChangesToOrder(
         [order],
-        { [order.id]: orderChange.actions },
+        { [order.id]: sortedActions },
         { addActionReferenceToObject: true }
       )
 
@@ -3489,6 +3494,7 @@ export default class OrderModuleService
       summariesToUpsert,
       orderToUpdate,
       creditLinesToCreate,
+      lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
       includeTaxLinesAndAdjustementsToPreview: async (...args) => {
@@ -3532,6 +3538,18 @@ export default class OrderModuleService
             sharedContext
           )
         : null,
+      lineItemAdjustmentsToCreate.length
+        ? this.orderLineItemAdjustmentService_.create(
+            lineItemAdjustmentsToCreate,
+            sharedContext
+          )
+        : null,
+        // lineItemAdjustmentIdsToRemove.length
+        // ? this.orderLineItemAdjustmentService_.delete(
+        //     lineItemAdjustmentIdsToRemove,
+        //     sharedContext
+        //   )
+        // : null,
     ])
 
     return {

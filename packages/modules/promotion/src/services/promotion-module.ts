@@ -599,7 +599,7 @@ export default class PromotionModuleService
     options: PromotionTypes.ComputeActionOptions = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PromotionTypes.ComputeActions[]> {
-    const { prevent_auto_promotions: preventAutoPromotions, force_all: forceAll } = options
+    const { prevent_auto_promotions: preventAutoPromotions } = options
     const computedActions: PromotionTypes.ComputeActions[] = []
     const { items = [], shipping_methods: shippingMethods = [] } =
       applicationContext
@@ -687,48 +687,24 @@ export default class PromotionModuleService
         : queryFilter
     }
 
-    let promotions: InferEntityType<typeof Promotion>[] = []
-
-
-    if (forceAll) {
-      promotions = await this.promotionService_.list(
-        queryFilter,
-        {
-          order: { application_method: { value: "DESC" } },
-          relations: [
-            "application_method",
-            "application_method.target_rules",
-            "application_method.target_rules.values",
-            "application_method.buy_rules",
-            "application_method.buy_rules.values",
-            "rules",
-            "rules.values",
-            "campaign",
-            "campaign.budget",
-          ],
-        },
-        sharedContext
-      )
-    } else {
-      promotions = await this.listActivePromotions_(
-        queryFilter,
-        {
-          order: { application_method: { value: "DESC" } },
-          relations: [
-            "application_method",
-            "application_method.target_rules",
-            "application_method.target_rules.values",
-            "application_method.buy_rules",
-            "application_method.buy_rules.values",
-            "rules",
-            "rules.values",
-            "campaign",
-            "campaign.budget",
-          ],
-        },
-        sharedContext
-      )
-    }
+    const promotions = await this.listActivePromotions_(
+      queryFilter,
+      {
+        order: { application_method: { value: "DESC" } },
+        relations: [
+          "application_method",
+          "application_method.target_rules",
+          "application_method.target_rules.values",
+          "application_method.buy_rules",
+          "application_method.buy_rules.values",
+          "rules",
+          "rules.values",
+          "campaign",
+          "campaign.budget",
+        ],
+      },
+      sharedContext
+    )
 
     const existingPromotionsMap = new Map<
       string,
@@ -749,6 +725,7 @@ export default class PromotionModuleService
           action: ComputedActions.REMOVE_ITEM_ADJUSTMENT,
           adjustment_id: adjustment.id,
           code,
+          item_id: adjustment.item_id as string,
         })
       }
 
@@ -757,6 +734,7 @@ export default class PromotionModuleService
           action: ComputedActions.REMOVE_SHIPPING_METHOD_ADJUSTMENT,
           adjustment_id: adjustment.id,
           code,
+          shipping_method_id: adjustment.shipping_method_id as string,
         })
       }
     }

@@ -1,5 +1,6 @@
 import {
   CreateOrderCreditLineDTO,
+  CreateOrderLineItemAdjustmentDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
@@ -33,6 +34,7 @@ export async function applyChangesToOrder(
   const creditLinesToCreate: CreateOrderCreditLineDTO[] = []
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
+  const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
   const summariesToUpsert: any[] = []
   const orderToUpdate: any[] = []
 
@@ -96,7 +98,11 @@ export async function applyChangesToOrder(
       } as any
 
       if (isDefined(item.adjustments)) {
-        itemToUpsert.adjustments = item.adjustments
+        for (const adjustment of item.adjustments) {
+          lineItemAdjustmentsToCreate.push({
+            ...adjustment,
+          })
+        }
       }
 
       itemsToUpsert.push(itemToUpsert)
@@ -193,6 +199,7 @@ export async function applyChangesToOrder(
   }
 
   return {
+    lineItemAdjustmentsToCreate,
     itemsToUpsert,
     creditLinesToCreate,
     shippingMethodsToUpsert,
