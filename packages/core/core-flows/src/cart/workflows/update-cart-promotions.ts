@@ -121,12 +121,15 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       action: action as PromotionActions,
     })
 
-    const customCampaignBudgetAttributes = createHook(
+    const customCampaignBudgetAttributesHook = createHook(
       "getCustomCampaignBudgetAttributes",
       {
         cart,
       }
     )
+
+    const customCampaignBudgetAttributes =
+      customCampaignBudgetAttributesHook.getResult()
 
     const cartForCompute = transform(
       { cart, customCampaignBudgetAttributes },

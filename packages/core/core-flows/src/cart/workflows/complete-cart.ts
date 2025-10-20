@@ -145,12 +145,15 @@ export const completeCartWorkflow = createWorkflow(
     })
 
     // TODO: can we move this inside when-then
-    const customCampaignBudgetAttributes = createHook(
+    const customCampaignBudgetAttributesHook = createHook(
       "getCustomCampaignBudgetAttributesForRegistration",
       {
         cart: cartData.data,
       }
     )
+
+    const customCampaignBudgetAttributes =
+      customCampaignBudgetAttributesHook.getResult()
 
     // If order ID does not exist, we are completing the cart for the first time
     const order = when("create-order", { orderId }, ({ orderId }) => {

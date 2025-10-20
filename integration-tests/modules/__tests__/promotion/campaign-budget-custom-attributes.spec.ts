@@ -8,6 +8,7 @@ import {
   IInventoryService,
   IStockLocationService,
   ITaxModuleService,
+  MedusaContainer,
 } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,
@@ -17,10 +18,13 @@ import {
   PromotionType,
   CampaignBudgetType,
   PromotionActions,
+  remoteQueryObjectFromString,
 } from "@medusajs/utils"
 import {
   updateCartPromotionsWorkflow,
   completeCartWorkflow,
+  createPaymentSessionsWorkflow,
+  createPaymentCollectionForCartWorkflow,
 } from "@medusajs/core-flows"
 import {
   adminHeaders,
@@ -30,6 +34,38 @@ import { setupTaxStructure } from "../fixtures"
 import { StepResponse } from "@medusajs/workflows-sdk"
 
 jest.setTimeout(200000)
+
+async function createPaymentCollectionForCart(
+  cartId: string,
+  appContainer: MedusaContainer
+) {
+  const remoteQuery = appContainer.resolve(
+    ContainerRegistrationKeys.REMOTE_QUERY
+  )
+
+  await createPaymentCollectionForCartWorkflow(appContainer).run({
+    input: {
+      cart_id: cartId,
+    },
+  })
+
+  const [payCol] = await remoteQuery(
+    remoteQueryObjectFromString({
+      entryPoint: "cart_payment_collection",
+      variables: { filters: { cart_id: cartId } },
+      fields: ["payment_collection_id"],
+    })
+  )
+
+  await createPaymentSessionsWorkflow(appContainer).run({
+    input: {
+      payment_collection_id: payCol.payment_collection_id,
+      provider_id: "pp_system_default",
+      context: {},
+      data: {},
+    },
+  })
+}
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
@@ -109,6 +145,7 @@ medusaIntegrationTestRunner({
         ])
 
         const inventoryItem = await inventoryModule.createInventoryItems({
+          requires_shipping: false,
           sku: "inv-1234",
         })
 
@@ -138,7 +175,6 @@ medusaIntegrationTestRunner({
           },
         ])
 
-        // Create promotion
         const [promotion] = await promotionModuleService.createPromotions([
           {
             code: "TEST_PROMO",
@@ -168,6 +204,7 @@ medusaIntegrationTestRunner({
               title: "Test item",
               product_id: product.id,
               variant_id: product.variants[0].id,
+              requires_shipping: false,
             } as any,
           ],
         })
@@ -184,11 +221,15 @@ medusaIntegrationTestRunner({
               title: "Test item",
               product_id: product.id,
               variant_id: product.variants[0].id,
+              requires_shipping: false,
             } as any,
           ],
         })
 
-        // Apply promotion to both carts using workflow
+        await createPaymentCollectionForCart(cart1.id, appContainer)
+        await createPaymentCollectionForCart(cart2.id, appContainer)
+
+        // Apply promotion to both carts
         await updateCartPromotionsWorkflow(appContainer).run({
           input: {
             cart_id: cart1.id,
@@ -216,7 +257,7 @@ medusaIntegrationTestRunner({
         expect(updatedCart1.items?.[0]?.adjustments).toHaveLength(1)
         expect(updatedCart2.items?.[0]?.adjustments).toHaveLength(1)
 
-        // complete both carts to register usage
+        // complete both carts
         await completeCartWorkflow(appContainer).run({
           input: { id: cart1.id },
         })
