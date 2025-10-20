@@ -916,6 +916,7 @@ export interface ITaxModuleService extends IModuleService {
     config?: RestoreReturn<TReturnableLinkableKeys>,
     sharedContext?: Context
   ): Promise<Record<string, string[]> | void>
+
   /**
    * This method returns the service of a Tax Module Provider by its ID. A Tax Module Provider's ID is of the format
    * `tp_{identifier}_{id}`, where `identifier` is the static `identifier` property defined in the provider's service,
