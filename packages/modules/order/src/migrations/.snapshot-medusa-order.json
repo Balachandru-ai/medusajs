@@ -1932,7 +1932,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (order_id, version) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_item_id",
@@ -4388,7 +4388,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id_version\" ON \"order_shipping\" (version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id_version\" ON \"order_shipping\" (order_id, version) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_shipping_method_id",
