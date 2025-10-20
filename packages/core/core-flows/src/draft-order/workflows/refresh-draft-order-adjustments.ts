@@ -96,12 +96,15 @@ export const refreshDraftOrderAdjustmentsWorkflow = createWorkflow(
     })
 
     // Hook returns only custom campaign budget attributes
-    const customCampaignBudgetAttributes = createHook(
+    const customCampaignBudgetAttributeHook = createHook(
       "getCustomCampaignBudgetAttributes",
       {
         cart: input.order,
       }
     )
+
+    const customCampaignBudgetAttributes =
+      customCampaignBudgetAttributeHook.getResult()
 
     const orderForCompute = transform(
       { order: input.order, customCampaignBudgetAttributes },
@@ -161,7 +164,7 @@ export const refreshDraftOrderAdjustmentsWorkflow = createWorkflow(
     })
 
     return new WorkflowResponse(void 0, {
-      hooks: [customCampaignBudgetAttributes],
+      hooks: [customCampaignBudgetAttributeHook],
     })
   }
 )
