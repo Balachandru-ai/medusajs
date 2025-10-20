@@ -374,9 +374,12 @@ medusaIntegrationTestRunner({
               title: "Test item",
               product_id: product.id,
               variant_id: product.variants[0].id,
+              requires_shipping: false,
             } as any,
           ],
         })
+
+        await createPaymentCollectionForCart(cart1.id, appContainer)
 
         await updateCartPromotionsWorkflow(appContainer).run({
           input: {
@@ -401,9 +404,12 @@ medusaIntegrationTestRunner({
               title: "Test item",
               product_id: product.id,
               variant_id: product.variants[0].id,
+              requires_shipping: false,
             } as any,
           ],
         })
+
+        await createPaymentCollectionForCart(cart2.id, appContainer)
 
         await updateCartPromotionsWorkflow(appContainer).run({
           input: {
@@ -518,6 +524,7 @@ medusaIntegrationTestRunner({
               title: "Test item",
               product_id: product.id,
               variant_id: product.variants[0].id,
+              requires_shipping: false,
             } as any,
           ],
         })
@@ -538,9 +545,13 @@ medusaIntegrationTestRunner({
               title: "Test item",
               product_id: product.id,
               variant_id: product.variants[0].id,
+              requires_shipping: false,
             } as any,
           ],
         })
+
+        await createPaymentCollectionForCart(cart1.id, appContainer)
+        await createPaymentCollectionForCart(cart2.id, appContainer)
 
         await updateCartPromotionsWorkflow(appContainer).run({
           input: {
