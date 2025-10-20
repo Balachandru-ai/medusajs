@@ -23,7 +23,7 @@ medusaIntegrationTestRunner({
           ({ cart }) => {
             return new StepResponse({
               account_id: cart.metadata?.account_id || null,
-            }
+            })
           }
         )
       })
