@@ -451,6 +451,7 @@ export class TransactionOrchestrator extends EventEmitter {
         currentSteps.push(stepDef)
 
         if (!stepDef.canRetry()) {
+          // Can't retry yet - schedule if not already scheduled
           if (stepDef.hasRetryInterval() && !stepDef.retryRescheduledAt) {
             stepDef.hasScheduledRetry = true
             stepDef.retryRescheduledAt = Date.now()
@@ -462,7 +463,10 @@ export class TransactionOrchestrator extends EventEmitter {
           }
           continue
         }
+
+        // Can retry now - clear any retry scheduling state
         stepDef.retryRescheduledAt = null
+        stepDef.hasScheduledRetry = false
       }
 
       if (stepDef.canInvoke(flow.state) || stepDef.canCompensate(flow.state)) {
@@ -1076,6 +1080,10 @@ export class TransactionOrchestrator extends EventEmitter {
 
     step.lastAttempt = Date.now()
     step.attempts++
+
+    // Clear retry scheduling state for fresh attempt
+    step.retryRescheduledAt = null
+    step.hasScheduledRetry = false
 
     if (curState.state === TransactionStepState.NOT_STARTED) {
       if (!step.startedAt) {
