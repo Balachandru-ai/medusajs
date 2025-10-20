@@ -92,14 +92,13 @@ export function OrderCreateShipmentForm({
                   <div className="flex flex-col max-md:gap-y-2 max-md:divide-y">
                     {labels.map((label, index) => (
                       <div
+                        key={label.id}
                         className={clx(
                           "grid grid-cols-1 gap-x-4 md:grid-cols-3",
                           { "max-md:pt-4": index > 0 }
                         )}
-                        key={label.id}
                       >
                         <Form.Field
-                          key={label.id}
                           control={form.control}
                           name={`labels.${index}.tracking_number`}
                           render={({ field }) => {
@@ -120,7 +119,6 @@ export function OrderCreateShipmentForm({
                           }}
                         />
                         <Form.Field
-                          key={label.id}
                           control={form.control}
                           name={`labels.${index}.tracking_url`}
                           render={({ field }) => {
@@ -143,7 +141,6 @@ export function OrderCreateShipmentForm({
                           }}
                         />
                         <Form.Field
-                          key={label.id}
                           control={form.control}
                           name={`labels.${index}.label_url`}
                           render={({ field }) => {
