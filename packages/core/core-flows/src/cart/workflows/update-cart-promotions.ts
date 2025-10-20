@@ -135,7 +135,7 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       { cart, customCampaignBudgetAttributes },
       ({ cart, customCampaignBudgetAttributes }) => {
         const defaultContext = {
-          customer_id: cart.customer?.id || null,
+          customer_id: cart.customer_id || cart.customer?.id || null,
           customer_email: cart.email || null,
         }
 

@@ -3060,6 +3060,10 @@ moduleIntegrationTestRunner({
                   },
                 },
               ],
+              budget_context: {
+                customer_id: null,
+                customer_email: "test@test.com",
+              },
             })
 
             expect(JSON.parse(JSON.stringify(result))).toEqual([
@@ -3109,6 +3113,10 @@ moduleIntegrationTestRunner({
                   },
                 },
               ],
+              budget_context: {
+                customer_id: null,
+                customer_email: "test@test.com",
+              },
             })
 
             expect(JSON.parse(JSON.stringify(result))).toEqual([
@@ -3139,6 +3147,10 @@ moduleIntegrationTestRunner({
                   },
                 },
               ],
+              budget_context: {
+                customer_id: null,
+                customer_email: "another@test.com",
+              },
             })
 
             expect(JSON.parse(JSON.stringify(result))).toEqual([

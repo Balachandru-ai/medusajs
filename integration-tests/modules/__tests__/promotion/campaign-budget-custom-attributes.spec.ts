@@ -604,8 +604,6 @@ medusaIntegrationTestRunner({
           (u) => u.attribute_value === "account_456"
         )
 
-        expect(account123Usage).toBeDefined()
-        expect(account456Usage).toBeDefined()
         expect(account123Usage?.used).toBe(1)
         expect(account456Usage?.used).toBe(1)
       })
