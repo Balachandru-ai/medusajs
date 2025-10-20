@@ -504,7 +504,7 @@ class DistributedTransaction extends EventEmitter {
         this.getFlow().options),
     }
 
-    if (!options?.store && !this.getFlow().metadata?.parentStepIdempotencyKey) {
+    if (!options?.store) {
       return
     }
 

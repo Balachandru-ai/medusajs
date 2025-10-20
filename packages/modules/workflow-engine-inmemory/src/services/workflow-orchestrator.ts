@@ -151,17 +151,13 @@ export class WorkflowOrchestratorService {
       ].includes(transaction.flow.state)
 
       if (hasFailed) {
-        try {
-          await this.setStepFailure({
-            idempotencyKey: parentStepIdempotencyKey,
-            stepResponse: errors,
-            options: {
-              logOnError: true,
-            },
-          })
-        } catch (e) {
-          throw e
-        }
+        await this.setStepFailure({
+          idempotencyKey: parentStepIdempotencyKey,
+          stepResponse: errors,
+          options: {
+            logOnError: true,
+          },
+        })
       } else {
         await this.setStepSuccess({
           idempotencyKey: parentStepIdempotencyKey,
