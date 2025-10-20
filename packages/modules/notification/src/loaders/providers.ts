@@ -1,3 +1,4 @@
+import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
 import {
   LoaderOptions,
@@ -13,9 +14,10 @@ import { NotificationProvider } from "@models"
 import { NotificationProviderService } from "@services"
 import {
   NotificationIdentifiersRegistrationName,
+  NotificationModuleOptions,
   NotificationProviderRegistrationPrefix,
 } from "@types"
-import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
+import { MedusaCloudEmailNotificationProvider } from "../providers/medusa-cloud-email"
 
 const registrationFn = async (klass, container, pluginOptions) => {
   container.register({
@@ -40,8 +42,24 @@ export default async ({
   (
     | ModulesSdkTypes.ModuleServiceInitializeOptions
     | ModulesSdkTypes.ModuleServiceInitializeCustomDataLayerOptions
-  ) & { providers: ModuleProvider[] }
+  ) &
+    NotificationModuleOptions
 >): Promise<void> => {
+  // We register the Medusa Cloud Email provider if there is no other email provider configured
+  const hasEmailProvider = options?.providers?.some((provider) =>
+    provider?.channels?.includes("email")
+  )
+  if (!hasEmailProvider) {
+    const { api_key, endpoint, environment_handle } =
+      options?.medusa_cloud_email ?? {}
+    if (api_key && endpoint && environment_handle) {
+      await registrationFn(MedusaCloudEmailNotificationProvider, container, {
+        options,
+        id: "medusa_cloud_email",
+      })
+    }
+  }
+
   await moduleProviderLoader({
     container,
     providers: options?.providers || [],

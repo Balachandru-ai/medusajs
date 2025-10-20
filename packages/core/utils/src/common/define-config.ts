@@ -356,6 +356,27 @@ function resolveModules(
     }
   }
 
+  for (const module of modules) {
+    /**
+     * We do this after processing the user module overrides,
+     * so that we inject the Medusa Cloud Email variables even if the user has overriden the module.
+     * This is necessary because the user may want to set e.g. a 'slack' provider, and still get the Medusa Cloud Email provider set up.
+     * If the user overrides the module by adding an email provider, the module internally skips adding the Medusa Cloud Email provider.
+     */
+    if (
+      isCloud &&
+      "resolve" in module &&
+      module.resolve === MODULE_PACKAGE_NAMES[Modules.NOTIFICATION]
+    ) {
+      module.options = {
+        ...(module.options?.medusa_cloud_email ?? {}),
+        api_key: process.env.MEDUSA_CLOUD_EMAIL_API_KEY,
+        endpoint: process.env.MEDUSA_CLOUD_EMAIL_ENDPOINT,
+        environment_handle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+      }
+    }
+  }
+
   return transformModules(modules)
 }
 
