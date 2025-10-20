@@ -168,7 +168,13 @@ export function OrderCreateShipmentForm({
 
                   <Button
                     type="button"
-                    onClick={() => append({ tracking_number: "" })}
+                    onClick={() =>
+                      append({
+                        tracking_number: "",
+                        label_url: "",
+                        tracking_url: "",
+                      })
+                    }
                     className="mt-2 self-end"
                     variant="secondary"
                   >
