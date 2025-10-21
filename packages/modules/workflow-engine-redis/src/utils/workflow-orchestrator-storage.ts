@@ -36,22 +36,25 @@ enum JobType {
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
-const doneStates = [
+const doneStates = new Set([
   TransactionStepState.DONE,
   TransactionStepState.REVERTED,
   TransactionStepState.FAILED,
   TransactionStepState.SKIPPED,
   TransactionStepState.SKIPPED_FAILURE,
   TransactionStepState.TIMEOUT,
-]
+])
 
-const finishedStates = [
+const finishedStates = new Set([
   TransactionState.DONE,
   TransactionState.FAILED,
   TransactionState.REVERTED,
-]
+])
 
-const failedStates = [TransactionState.FAILED, TransactionState.REVERTED]
+const failedStates = new Set([
+  TransactionState.FAILED,
+  TransactionState.REVERTED,
+])
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
@@ -279,7 +282,7 @@ export class RedisDistributedTransactionStorage
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const asyncVersion = data.flow._v
 
-    const isFinished = finishedStates.includes(data.flow.state)
+    const isFinished = finishedStates.has(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
@@ -435,7 +438,7 @@ export class RedisDistributedTransactionStorage
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
-        const isFailedOrReverted = failedStates.includes(execution.state)
+        const isFailedOrReverted = failedStates.has(execution.state)
 
         const isDone = execution.state === TransactionState.DONE
 
@@ -493,7 +496,7 @@ export class RedisDistributedTransactionStorage
     }
 
     try {
-      const hasFinished = finishedStates.includes(data.flow.state)
+      const hasFinished = finishedStates.has(data.flow.state)
 
       await this.#preventRaceConditionExecutionIfNecessary({
         data: data,
