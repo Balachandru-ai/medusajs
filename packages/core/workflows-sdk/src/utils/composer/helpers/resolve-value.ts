@@ -1,5 +1,4 @@
 import {
-  deepCopy,
   isObject,
   OrchestrationUtils,
   parseStringifyIfNecessary,
@@ -190,12 +189,11 @@ export function resolveValue(
     return input
   }
 
-  const input_ = deepCopy(
+  const input_ =
     (input as InputObject)?.__type ===
-      OrchestrationUtils.SymbolWorkflowWorkflowData
+    OrchestrationUtils.SymbolWorkflowWorkflowData
       ? (input as InputObject).output
       : input
-  )
 
   let result: any
 
