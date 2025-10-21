@@ -187,6 +187,7 @@ export class InMemoryDistributedTransactionStorage
 
     const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
     let currentStep!: TransactionStep
+    let currentStepsIsAsync = false
 
     const targetStates = isFlowInvoking
       ? [
@@ -196,7 +197,7 @@ export class InMemoryDistributedTransactionStorage
         ]
       : [TransactionStepState.COMPENSATING]
 
-    // Find the current step from the end
+    // Find the current step from the end and check for async steps in a single pass
     for (let i = stepsArray.length - 1; i >= 0; i--) {
       const step = stepsArray[i]
 
@@ -206,18 +207,20 @@ export class InMemoryDistributedTransactionStorage
 
       const isTargetState = targetStates.includes(step.invoke?.state)
 
-      if (isTargetState) {
+      if (isTargetState && !currentStep) {
         currentStep = step
+      }
+
+      // Once we have currentStep, check if any step at same depth is async
+      if (
+        currentStep &&
+        step.depth === currentStep.depth &&
+        step?.definition?.async === true
+      ) {
+        currentStepsIsAsync = true
         break
       }
     }
-
-    const currentStepsIsAsync = currentStep
-      ? stepsArray.some(
-          (step) =>
-            step?.definition?.async === true && step.depth === currentStep.depth
-        )
-      : false
 
     if (
       !(isNotStarted || isFinished || isWaitingToCompensate) &&
@@ -333,19 +336,10 @@ export class InMemoryDistributedTransactionStorage
 
       const hasFinished = finishedStates.includes(data.flow.state)
 
-      let cachedCheckpoint: TransactionCheckpoint | undefined
-      const getCheckpoint = async (options?: TransactionOptions) => {
-        if (!cachedCheckpoint) {
-          cachedCheckpoint = await this.get(key, options)
-        }
-        return cachedCheckpoint
-      }
-
       await this.#preventRaceConditionExecutionIfNecessary({
         data,
         key,
         options,
-        getCheckpoint,
       })
 
       // Only store retention time if it's provided
@@ -412,14 +406,10 @@ export class InMemoryDistributedTransactionStorage
     data,
     key,
     options,
-    getCheckpoint,
   }: {
     data: TransactionCheckpoint
     key: string
     options?: TransactionOptions
-    getCheckpoint: (
-      options: TransactionOptions
-    ) => Promise<TransactionCheckpoint | undefined>
   }) {
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
@@ -441,7 +431,7 @@ export class InMemoryDistributedTransactionStorage
       } as Parameters<typeof this.get>[1]
 
       data_ =
-        (await getCheckpoint(getOptions as TransactionOptions)) ??
+        (await this.get(key, getOptions as TransactionOptions)) ??
         ({ flow: {} } as TransactionCheckpoint)
     }
 
@@ -750,7 +740,7 @@ export class InMemoryDistributedTransactionStorage
       },
       updated_at: {
         $lte: raw(
-          (alias) =>
+          (_alias) =>
             `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
         ),
       },

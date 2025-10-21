@@ -399,7 +399,6 @@ export class RedisDistributedTransactionStorage
     key: string,
     options?: TransactionOptions & {
       isCancelling?: boolean
-      _cachedRawData?: string | null
     }
   ): Promise<TransactionCheckpoint | undefined> {
     const [_, workflowId, transactionId] = key.split(":")
@@ -421,9 +420,7 @@ export class RedisDistributedTransactionStorage
         )
         .then((trx) => trx[0])
         .catch(() => undefined),
-      options?._cachedRawData !== undefined
-        ? Promise.resolve(options._cachedRawData)
-        : this.redisClient.get(key),
+      this.redisClient.get(key),
     ])
 
     if (trx) {
@@ -479,6 +476,8 @@ export class RedisDistributedTransactionStorage
 
     let lockAcquired = false
 
+    let storedData: TransactionCheckpoint | undefined
+
     if (data.flow._v) {
       lockAcquired = await this.#acquireLock(key)
 
@@ -486,7 +485,7 @@ export class RedisDistributedTransactionStorage
         throw new Error("Lock not acquired")
       }
 
-      const storedData = await this.get(key, {
+      storedData = await this.get(key, {
         isCancelling: !!data.flow.cancelledAt,
       } as any)
 
@@ -500,6 +499,7 @@ export class RedisDistributedTransactionStorage
         data: data,
         key,
         options,
+        storedData,
       })
 
       // Only set if not exists
@@ -788,10 +788,12 @@ export class RedisDistributedTransactionStorage
     data,
     key,
     options,
+    storedData,
   }: {
     data: TransactionCheckpoint
     key: string
     options?: TransactionOptions
+    storedData?: TransactionCheckpoint
   }) {
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
@@ -802,21 +804,23 @@ export class RedisDistributedTransactionStorage
      */
     const currentFlow = data.flow
 
-    const rawData = await this.redisClient.get(key)
-    let data_ = {} as TransactionCheckpoint
-    if (rawData) {
-      data_ = JSON.parse(rawData)
-    } else {
-      // Pass cached raw data to avoid redundant Redis fetch
-      const getOptions = {
-        ...options,
-        isCancelling: !!data.flow.cancelledAt,
-        _cachedRawData: rawData,
-      } as Parameters<typeof this.get>[1]
+    let data_ = storedData ?? ({} as TransactionCheckpoint)
 
-      data_ =
-        (await this.get(key, getOptions as TransactionOptions)) ??
-        ({ flow: {} } as TransactionCheckpoint)
+    if (!storedData) {
+      const rawData = await this.redisClient.get(key)
+      if (rawData) {
+        data_ = storedData ? storedData : JSON.parse(rawData)
+      } else {
+        // Pass cached raw data to avoid redundant Redis fetch
+        const getOptions = {
+          ...options,
+          isCancelling: !!data.flow.cancelledAt,
+        } as Parameters<typeof this.get>[1]
+
+        data_ =
+          (await this.get(key, getOptions as TransactionOptions)) ??
+          ({ flow: {} } as TransactionCheckpoint)
+      }
     }
 
     const { flow: latestUpdatedFlow } = data_
