@@ -462,7 +462,6 @@ export class TransactionOrchestrator extends EventEmitter {
           }
           continue
         }
-
         stepDef.retryRescheduledAt = null
       }
 
