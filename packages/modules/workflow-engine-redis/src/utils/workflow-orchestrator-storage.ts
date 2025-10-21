@@ -16,6 +16,7 @@ import {
 } from "@medusajs/framework/orchestration"
 import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
+  isDefined,
   isPresent,
   MedusaError,
   promiseAll,
@@ -676,7 +677,7 @@ export class RedisDistributedTransactionStorage
       key.push(step.id, step.attempts + "")
 
       // Add suffix for retry scheduling (interval > 0) to avoid collision with async execution (interval = 0)
-      if (type === JobType.RETRY && interval !== undefined && interval > 0) {
+      if (type === JobType.RETRY && isDefined(interval) && interval > 0) {
         key.push("retry")
       }
 
