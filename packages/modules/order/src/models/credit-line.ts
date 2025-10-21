@@ -10,7 +10,7 @@ const OrderCreditLine_ = model
     amount: model.bigNumber(),
     raw_amount: model.json(),
     metadata: model.json().nullable(),
-    order: model.belongsTo<() => typeof Order>(() => Order, {
+    order: model.belongsTo(() => Order, {
       mappedBy: "credit_lines",
     }),
   })
