@@ -5003,6 +5003,12 @@
             "trackingNumber": {
               "type": "string"
             },
+            "trackingUrl": {
+              "type": "string"
+            },
+            "labelUrl": {
+              "type": "string"
+            },
             "addTracking": {
               "type": "string"
             },
@@ -5019,6 +5025,8 @@
           "required": [
             "title",
             "trackingNumber",
+            "trackingUrl",
+            "labelUrl",
             "addTracking",
             "sendNotification",
             "sendNotificationHint",
@@ -7678,6 +7686,7 @@
             "campaign",
             "method",
             "allocation",
+            "allocationTooltip",
             "addCondition",
             "clearAll",
             "taxInclusive",
