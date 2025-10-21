@@ -2,4 +2,4 @@
 "@medusajs/payment-stripe": patch
 ---
 
-Allow Stripe metadata to be send on payment creation
+feat(payment-stripe): merge custom metadata along with session_id on payment initiation
