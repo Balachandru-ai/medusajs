@@ -974,6 +974,10 @@ export class TransactionOrchestrator extends EventEmitter {
         throw error
       })
 
+      if (!continueExecution) {
+        break
+      }
+
       const execution: Promise<void | unknown>[] = []
       const executionAsync: (() => Promise<void | unknown>)[] = []
 
