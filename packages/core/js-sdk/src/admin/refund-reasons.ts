@@ -80,6 +80,8 @@ export class RefundReason {
    * [Get Refund Reason](https://docs.medusajs.com/api/admin#refund-reasons_getrefundreasonsid)
    * API route.
    *
+   * @since 2.11.0
+   *
    * @param id - The refund reason's ID.
    * @param query - Configure the fields and relations to retrieve in the refund reason.
    * @param headers - Headers to pass in the request.
@@ -99,7 +101,7 @@ export class RefundReason {
    *
    * ```ts
    * sdk.admin.refundReason.retrieve("refr_123", {
-   *   fields: "id,value"
+   *   fields: "id,code"
    * })
    * .then(({ refund_reason }) => {
    *   console.log(refund_reason)
@@ -127,6 +129,8 @@ export class RefundReason {
    * [Create Refund Reason](https://docs.medusajs.com/api/admin#refund-reasons_postrefundreasons)
    * API route.
    *
+   * @since 2.11.0
+   *
    * @param body - The details of the refund reason to create.
    * @param query - Configure the fields and relations to retrieve in the refund reason.
    * @param headers - Headers to pass in the request.
@@ -134,7 +138,7 @@ export class RefundReason {
    *
    * @example
    * sdk.admin.refundReason.create({
-   *   value: "refund",
+   *   code: "refund",
    *   label: "Refund",
    * })
    * .then(({ refund_reason }) => {
@@ -162,6 +166,8 @@ export class RefundReason {
    * [Update Refund Reason](https://docs.medusajs.com/api/admin#refund-reasons_postrefundreasonsid)
    * API route.
    *
+   * @since 2.11.0
+   *
    * @param id - The refund reason's ID.
    * @param body - The details of the refund reason to update.
    * @param query - Configure the fields and relations to retrieve in the refund reason.
@@ -170,7 +176,7 @@ export class RefundReason {
    *
    * @example
    * sdk.admin.refundReason.update("ret_123", {
-   *   value: "refund",
+   *   code: "refund",
    *   label: "Refund",
    * })
    * .then(({ refund_reason }) => {
@@ -198,6 +204,8 @@ export class RefundReason {
    * This method deletes a refund reason. It sends a request to the
    * [Delete Refund Reason](https://docs.medusajs.com/api/admin#refund-reasons_deleterefundreasonsid)
    * API route.
+   *
+   * @since 2.11.0
    *
    * @param id - The refund reason's ID.
    * @param query - Query parameters to pass to the request.
