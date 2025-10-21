@@ -11,17 +11,6 @@ required:
   - unit_price
   - cart
   - cart_id
-  - original_total
-  - original_subtotal
-  - original_tax_total
-  - item_total
-  - item_subtotal
-  - item_tax_total
-  - total
-  - subtotal
-  - tax_total
-  - discount_total
-  - discount_tax_total
 properties:
   id:
     type: string
@@ -133,9 +122,6 @@ properties:
   metadata:
     type: object
     description: The item's metadata.
-    externalDocs:
-      url: https://docs.medusajs.com/api/store#manage-metadata
-      description: Learn how to manage metadata
   created_at:
     type: string
     format: date-time

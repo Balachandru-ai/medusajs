@@ -1,7 +1,7 @@
 /**
  * @schema BaseShippingMethodAdjustment
  * type: object
- * description: The adjustment's details.
+ * description: The adjustment's adjustments.
  * x-schemaName: BaseShippingMethodAdjustment
  * required:
  *   - shipping_method
@@ -17,7 +17,7 @@
  *   shipping_method_id:
  *     type: string
  *     title: shipping_method_id
- *     description: The ID of the shipping method the adjustment is applied on.
+ *     description: The adjustment's shipping method id.
  *   id:
  *     type: string
  *     title: id
@@ -33,7 +33,7 @@
  *   cart_id:
  *     type: string
  *     title: cart_id
- *     description: The ID of the associated cart.
+ *     description: The adjustment's cart id.
  *   description:
  *     type: string
  *     title: description
@@ -41,21 +41,21 @@
  *   promotion_id:
  *     type: string
  *     title: promotion_id
- *     description: The ID of the promotion applied by this adjustment.
+ *     description: The adjustment's promotion id.
  *   provider_id:
  *     type: string
  *     title: provider_id
- *     description: The adjustment's provider ID.
+ *     description: The adjustment's provider id.
  *   created_at:
  *     type: string
  *     format: date-time
  *     title: created_at
- *     description: The date the adjustment was created.
+ *     description: The adjustment's created at.
  *   updated_at:
  *     type: string
  *     format: date-time
  *     title: updated_at
- *     description: The date the adjustment was updated.
+ *     description: The adjustment's updated at.
  * 
 */
 

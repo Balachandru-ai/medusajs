@@ -582,6 +582,20 @@
  *       type: boolean
  *       title: with_deleted
  *       description: Whether to include deleted records in the result.
+ *   - name: id
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: id
+ *           description: The collection's ID.
+ *         - type: array
+ *           description: The collection's ID.
+ *           items:
+ *             type: string
+ *             title: id
+ *             description: The id's ID.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
