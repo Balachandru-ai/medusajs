@@ -953,6 +953,18 @@ export class TransactionOrchestrator extends EventEmitter {
         return shouldContinueExecution
       })
 
+      let asyncStepCount = 0
+      for (const s of nextSteps.next) {
+        const stepIsAsync = s.isCompensating()
+          ? s.definition.compensateAsync
+          : s.definition.async
+        if (stepIsAsync) asyncStepCount++
+      }
+      const hasMultipleAsyncSteps = asyncStepCount > 1
+      const hasAsyncSteps = !!asyncStepCount
+
+      // If there is any async step, we don't need to save the checkpoint here as it will be saved
+      // later down there
       await transaction.saveCheckpoint().catch((error) => {
         if (TransactionOrchestrator.isExpectedError(error)) {
           continueExecution = false
@@ -966,7 +978,7 @@ export class TransactionOrchestrator extends EventEmitter {
       const executionAsync: (() => Promise<void | unknown>)[] = []
 
       let i = 0
-      let hasAsyncSteps = false
+
       for (const step of nextSteps.next) {
         const stepIndex = i++
         if (!stepsShouldContinueExecution[stepIndex]) {
@@ -988,23 +1000,8 @@ export class TransactionOrchestrator extends EventEmitter {
 
         // Compute current transaction state
         await this.computeCurrentTransactionState(transaction)
-        if (!continueExecution) {
-          break
-        }
 
         const promise = this.createStepExecutionPromise(transaction, step)
-
-        let asyncStepCount = 0
-        for (const s of nextSteps.next) {
-          const stepIsAsync = s.isCompensating()
-            ? s.definition.compensateAsync
-            : s.definition.async
-          if (stepIsAsync) {
-            asyncStepCount++
-            if (asyncStepCount > 1) break
-          }
-        }
-        const hasMultipleAsyncSteps = asyncStepCount > 1
 
         const hasVersionControl =
           hasMultipleAsyncSteps || step.hasAwaitingRetry()
@@ -1020,7 +1017,6 @@ export class TransactionOrchestrator extends EventEmitter {
           )
         } else {
           // Execute async step in background as part of the next event loop cycle and continue the execution of the transaction
-          hasAsyncSteps = true
           executionAsync.push(() =>
             this.executeAsyncStep(promise, transaction, step, nextSteps)
           )
