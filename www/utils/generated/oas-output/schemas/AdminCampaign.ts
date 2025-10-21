@@ -84,7 +84,9 @@
  *       attribute:
  *         type: string
  *         title: attribute
- *         description: The budget's attribute.
+ *         description: The cart attribute to limit the budget by.
+ *         externalDocs:
+ *           url: https://docs.medusajs.com/resources/commerce-modules/promotion/campaign#attribute-based-budgets
  *   created_at:
  *     type: string
  *     format: date-time

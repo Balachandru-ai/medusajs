@@ -1,8 +1,12 @@
 /**
  * @oas [post] /store/carts/{id}/customer
  * operationId: PostCartsIdCustomer
- * summary: Add Customer to Cart
- * description: Add a Customer to a cart
+ * summary: Change Cart's Customer to Logged-in Customer
+ * x-sidebar-summary: Change Customer
+ * description: Change the cart's customer to the currently logged-in customer. This is useful when you create the cart for a guest customer, then they log in with their account.
+ * externalDocs:
+ *   url: https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
+ *   description: "Storefront guide: How to set the cart's customer."
  * x-authenticated: true
  * parameters:
  *   - name: id
@@ -23,8 +27,8 @@
  *     in: query
  *     description: |-
  *       Comma-separated fields that should be included in the returned data.
- *        * if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
- *        * without prefix it will replace the entire default fields.
+ *       if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
+ *       without prefix it will replace the entire default fields.
  *     required: false
  *     schema:
  *       type: string
@@ -41,7 +45,7 @@
  *     application/json:
  *       schema:
  *         type: object
- *         description: SUMMARY
+ *         description: Optional additional data to pass to the underlying workflow.
  *         properties:
  *           additional_data:
  *             type: object
@@ -73,7 +77,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/carts/{id}/customer' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Carts

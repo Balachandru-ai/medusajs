@@ -589,13 +589,13 @@
  *       oneOf:
  *         - type: string
  *           title: id
- *           description: The collection's ID.
+ *           description: Filter by a collection's ID.
  *         - type: array
- *           description: The collection's ID.
+ *           description: Filter by collection IDs.
  *           items:
  *             type: string
  *             title: id
- *             description: The id's ID.
+ *             description: The collection's ID.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
