@@ -293,12 +293,12 @@ export class RedisDistributedTransactionStorage
     let currentStepsIsAsync = false
 
     const targetStates = isFlowInvoking
-      ? [
+      ? new Set([
           TransactionStepState.INVOKING,
           TransactionStepState.DONE,
           TransactionStepState.FAILED,
-        ]
-      : [TransactionStepState.COMPENSATING]
+        ])
+      : new Set([TransactionStepState.COMPENSATING])
 
     // Find the current step from the end and check for async steps in a single pass
     for (let i = stepsArray.length - 1; i >= 0; i--) {
@@ -308,7 +308,7 @@ export class RedisDistributedTransactionStorage
         break
       }
 
-      const isTargetState = targetStates.includes(step.invoke?.state)
+      const isTargetState = targetStates.has(step.invoke?.state)
 
       if (isTargetState && !currentStep) {
         currentStep = step
