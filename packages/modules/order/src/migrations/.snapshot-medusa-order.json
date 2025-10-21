@@ -1267,6 +1267,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_order_credit_line_order_id_version",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id_version\" ON \"order_credit_line\" (order_id, version) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_order_credit_line_deleted_at",
           "columnNames": [],
           "composite": false,
