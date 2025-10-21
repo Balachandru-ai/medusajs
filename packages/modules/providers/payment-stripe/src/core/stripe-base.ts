@@ -248,7 +248,7 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     const intentRequest: Stripe.PaymentIntentCreateParams = {
       amount: getSmallestUnit(amount, currency_code),
       currency: currency_code,
-      metadata: { session_id: data?.session_id as string },
+      metadata: { ...(data?.metadata ?? {}), session_id: data?.session_id as string },
       ...additionalParameters,
     }
 

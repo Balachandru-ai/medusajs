@@ -1267,15 +1267,6 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_order_credit_line_order_id_version",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id_version\" ON \"order_credit_line\" (order_id, version) WHERE deleted_at IS NULL"
-        },
-        {
           "keyName": "IDX_order_credit_line_deleted_at",
           "columnNames": [],
           "composite": false,
@@ -1950,13 +1941,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_deleted_at\" ON \"order_item\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_order_item_version",
+          "keyName": "IDX_order_item_order_id_version",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_version\" ON \"order_item\" (version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (order_id, version) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_item_id",
@@ -4426,13 +4417,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_claim_id\" ON \"order_shipping\" (claim_id) WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_order_shipping_version",
+          "keyName": "IDX_order_shipping_order_id_version",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_version\" ON \"order_shipping\" (version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id_version\" ON \"order_shipping\" (order_id, version) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_shipping_method_id",
