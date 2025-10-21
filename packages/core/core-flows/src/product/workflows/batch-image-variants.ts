@@ -6,6 +6,7 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
+import { ProductTypes } from "@medusajs/framework/types"
 import {
   addImageToVariantsStep,
   removeImageFromVariantsStep,
@@ -87,7 +88,7 @@ export const batchImageVariantsWorkflow = createWorkflow(
     )
 
     const updateData = when(
-      "shoud-variants-removed",
+      "should-remove-variants",
       { normalizedInput },
       (data) => data.normalizedInput.remove.length > 0
     ).then(() => {
@@ -143,12 +144,17 @@ export const batchImageVariantsWorkflow = createWorkflow(
     })
 
     when(
-      "shoud-update-variant",
+      "should-update-variants",
       { updateData },
       (data) =>
         data.updateData !== null && typeof data.updateData !== "undefined"
     ).then(() => {
-      updateProductVariantsStep(updateData!)
+      updateProductVariantsStep(
+        updateData! as {
+          selector: ProductTypes.FilterableProductVariantProps
+          update: ProductTypes.UpdateProductVariantDTO
+        }
+      )
     })
 
     const response = transform({ res, input }, (data) => {
