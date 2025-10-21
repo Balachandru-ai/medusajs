@@ -6423,6 +6423,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Manage Refund Reasons",
+              "path": "https://docs.medusajs.com/user-guide/settings/refund-reasons",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Manage Return Reasons",
               "path": "https://docs.medusajs.com/user-guide/settings/return-reasons",
               "children": []
@@ -14327,6 +14335,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/promotion/models/CampaignBudgetUsage",
+                      "title": "CampaignBudgetUsage",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/promotion/models/Promotion",
                       "title": "Promotion",
                       "description": "",
@@ -16868,6 +16885,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/tax/deleteTaxRegions",
                       "title": "deleteTaxRegions",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/tax/getProvider",
+                      "title": "getProvider",
                       "description": "",
                       "children": []
                     },

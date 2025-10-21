@@ -16,18 +16,20 @@
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@medusajs/icons": "2.10.3",
+    "@medusajs/icons": "2.11.0",
     "@next/mdx": "15.3.5",
     "@stefanprobst/rehype-extract-toc": "^3.0.0",
     "clsx": "^2.1.0",
     "docs-ui": "*",
     "next": "15.3.5",
+    "next-mdx-remote-client": "2",
     "posthog-js": "^1.269.1",
     "react": "rc",
     "react-dom": "rc",
     "rehype-mdx-code-props": "^2.0.0",
     "remark-directive": "^3.0.0",
-    "remark-frontmatter": "^5.0.0"
+    "remark-frontmatter": "^5.0.0",
+    "swr": "^2.3.6"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.3.5",
