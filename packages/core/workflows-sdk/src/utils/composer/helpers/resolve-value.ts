@@ -9,10 +9,10 @@ import * as util from "node:util"
 type InputPrimitive = string | Symbol
 type InputObject = object & { __type?: string | Symbol; output?: any }
 
-function resolveProperty(property, transactionContext) {
+function resolveProperty(property: any, transactionContext: any) {
   const { invoke: invokeRes } = transactionContext
 
-  let res
+  let res: any
 
   if (property.__type === OrchestrationUtils.SymbolInputReference) {
     res = transactionContext.payload
@@ -131,7 +131,7 @@ function unwrapInput({
       if (result != null && typeof result === "object") {
         const unwrapped = unwrapInput({
           inputTOUnwrap: result,
-          parentRef: parentRef[key] || {},
+          parentRef: {},
           transactionContext,
         })
         if (unwrapped instanceof Promise) {
@@ -160,7 +160,7 @@ function unwrapInput({
             if (resolved != null && typeof resolved === "object") {
               const unwrapped = unwrapInput({
                 inputTOUnwrap: resolved,
-                parentRef: parentRef[key] || {},
+                parentRef: {},
                 transactionContext,
               })
               if (unwrapped instanceof Promise) {
@@ -183,7 +183,7 @@ function unwrapInput({
 
 export function resolveValue(
   input: InputPrimitive | InputObject | unknown | undefined,
-  transactionContext
+  transactionContext: any
 ): Promise<any> | any {
   if (input == null || typeof input !== "object") {
     return input
