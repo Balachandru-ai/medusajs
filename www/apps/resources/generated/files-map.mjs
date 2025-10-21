@@ -1512,6 +1512,10 @@ export const filesMap = [
     "pathname": "/troubleshooting/storefront-pak-sc"
   },
   {
+    "filePath": "/www/apps/resources/app/troubleshooting/subscribers/not-working/page.mdx",
+    "pathname": "/troubleshooting/subscribers/not-working"
+  },
+  {
     "filePath": "/www/apps/resources/app/troubleshooting/test-errors/page.mdx",
     "pathname": "/troubleshooting/test-errors"
   },
