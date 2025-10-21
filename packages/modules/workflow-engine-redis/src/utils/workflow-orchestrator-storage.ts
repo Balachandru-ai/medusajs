@@ -300,7 +300,6 @@ export class RedisDistributedTransactionStorage
         ])
       : new Set([TransactionStepState.COMPENSATING])
 
-    // Find the current step from the end and check for async steps in a single pass
     for (let i = stepsArray.length - 1; i >= 0; i--) {
       const step = stepsArray[i]
 
@@ -312,16 +311,23 @@ export class RedisDistributedTransactionStorage
 
       if (isTargetState && !currentStep) {
         currentStep = step
-      }
-
-      // Once we have currentStep, check if any step at same depth is async
-      if (
-        currentStep &&
-        step.depth === currentStep.depth &&
-        step?.definition?.async === true
-      ) {
-        currentStepsIsAsync = true
         break
+      }
+    }
+
+    if (currentStep) {
+      for (const step of stepsArray) {
+        if (step.id === "_root") {
+          continue
+        }
+
+        if (
+          step.depth === currentStep.depth &&
+          step?.definition?.async === true
+        ) {
+          currentStepsIsAsync = true
+          break
+        }
       }
     }
 
@@ -402,6 +408,7 @@ export class RedisDistributedTransactionStorage
     key: string,
     options?: TransactionOptions & {
       isCancelling?: boolean
+      _cachedRawData?: string | null
     }
   ): Promise<TransactionCheckpoint | undefined> {
     const [_, workflowId, transactionId] = key.split(":")
@@ -423,7 +430,9 @@ export class RedisDistributedTransactionStorage
         )
         .then((trx) => trx[0])
         .catch(() => undefined),
-      this.redisClient.get(key),
+      options?._cachedRawData !== undefined
+        ? Promise.resolve(options._cachedRawData)
+        : this.redisClient.get(key),
     ])
 
     if (trx) {
@@ -812,12 +821,13 @@ export class RedisDistributedTransactionStorage
     if (!storedData) {
       const rawData = await this.redisClient.get(key)
       if (rawData) {
-        data_ = storedData ? storedData : JSON.parse(rawData)
+        data_ = JSON.parse(rawData)
       } else {
         // Pass cached raw data to avoid redundant Redis fetch
         const getOptions = {
           ...options,
           isCancelling: !!data.flow.cancelledAt,
+          _cachedRawData: rawData,
         } as Parameters<typeof this.get>[1]
 
         data_ =

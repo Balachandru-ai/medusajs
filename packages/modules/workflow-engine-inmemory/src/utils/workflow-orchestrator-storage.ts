@@ -193,14 +193,13 @@ export class InMemoryDistributedTransactionStorage
     let currentStepsIsAsync = false
 
     const targetStates = isFlowInvoking
-      ? [
+      ? new Set([
           TransactionStepState.INVOKING,
           TransactionStepState.DONE,
           TransactionStepState.FAILED,
-        ]
-      : [TransactionStepState.COMPENSATING]
+        ])
+      : new Set([TransactionStepState.COMPENSATING])
 
-    // Find the current step from the end and check for async steps in a single pass
     for (let i = stepsArray.length - 1; i >= 0; i--) {
       const step = stepsArray[i]
 
@@ -208,20 +207,27 @@ export class InMemoryDistributedTransactionStorage
         break
       }
 
-      const isTargetState = targetStates.includes(step.invoke?.state)
+      const isTargetState = targetStates.has(step.invoke?.state)
 
       if (isTargetState && !currentStep) {
         currentStep = step
-      }
-
-      // Once we have currentStep, check if any step at same depth is async
-      if (
-        currentStep &&
-        step.depth === currentStep.depth &&
-        step?.definition?.async === true
-      ) {
-        currentStepsIsAsync = true
         break
+      }
+    }
+
+    if (currentStep) {
+      for (const step of stepsArray) {
+        if (step.id === "_root") {
+          continue
+        }
+
+        if (
+          step.depth === currentStep.depth &&
+          step?.definition?.async === true
+        ) {
+          currentStepsIsAsync = true
+          break
+        }
       }
     }
 
@@ -374,12 +380,12 @@ export class InMemoryDistributedTransactionStorage
         TransactionCheckpoint.mergeCheckpoints(data, storedData)
       }
 
-      const { flow, errors } = data
+      const { flow, context, errors } = data
 
       this.storage[key] = {
-        flow,
-        context: {} as TransactionContext,
-        errors,
+        flow: JSON.parse(JSON.stringify(flow)),
+        context: JSON.parse(JSON.stringify(context)),
+        errors: [...errors],
       } as TransactionCheckpoint
 
       // Optimize DB operations - only perform when necessary

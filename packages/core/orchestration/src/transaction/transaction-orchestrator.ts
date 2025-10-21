@@ -777,7 +777,9 @@ export class TransactionOrchestrator extends EventEmitter {
     } else {
       try {
         const serialized = JSON.stringify(error)
-        error = error?.message ? JSON.parse(serialized) : { message: serialized }
+        error = error?.message
+          ? JSON.parse(serialized)
+          : { message: serialized }
       } catch (e) {
         error = {
           message: "Unknown non-serializable error",

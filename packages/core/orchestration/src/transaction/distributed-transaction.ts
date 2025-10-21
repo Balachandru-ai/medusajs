@@ -560,7 +560,7 @@ class DistributedTransaction extends EventEmitter {
 
         await setTimeoutPromise(backoffMs + jitter)
 
-        backoffMs = Math.min(backoffMs * 2, 1000)
+        backoffMs = Math.min(backoffMs * 2, 500)
 
         const lastCheckpoint = await DistributedTransaction.loadTransaction(
           this.modelId,
@@ -704,23 +704,19 @@ class DistributedTransaction extends EventEmitter {
    * @returns
    */
   #serializeCheckpointData() {
-    const data = new TransactionCheckpoint(
-      this.getFlow(),
-      this.getContext(),
-      this.getErrors()
-    )
-
     try {
-      return JSON.parse(JSON.stringify(data))
-    } catch (e) {
-      try {
-        JSON.stringify(this.context)
-      } catch {
-        throw new NonSerializableCheckPointError(
-          "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
-        )
-      }
+      JSON.stringify(this.context)
+    } catch {
+      throw new NonSerializableCheckPointError(
+        "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
+      )
+    }
 
+    let errorsToUse = this.getErrors()
+    try {
+      JSON.stringify(errorsToUse)
+    } catch {
+      // Sanitize non-serializable errors
       const sanitizedErrors: TransactionStepError[] = []
       for (const error of this.errors) {
         try {
@@ -738,17 +734,15 @@ class DistributedTransaction extends EventEmitter {
           })
         }
       }
-
+      errorsToUse = sanitizedErrors
       this.errors = sanitizedErrors
-
-      const sanitizedData = new TransactionCheckpoint(
-        this.getFlow(),
-        this.getContext(),
-        this.errors
-      )
-
-      return JSON.parse(JSON.stringify(sanitizedData))
     }
+
+    return new TransactionCheckpoint(
+      JSON.parse(JSON.stringify(this.getFlow())),
+      this.getContext(),
+      [...errorsToUse]
+    )
   }
 }
 
