@@ -838,7 +838,7 @@ export class RedisDistributedTransactionStorage
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        const shouldSkip = doneStates.includes(latestState)
+        const shouldSkip = doneStates.has(latestState)
 
         if (shouldSkip) {
           throw new SkipStepAlreadyFinishedError(
