@@ -389,7 +389,7 @@ export class DashboardApp {
     let resources: I18nExtension = { ...coreTranslations }
 
     for (const plugin of plugins) {
-      resources = deepMerge(resources, plugin.i18nModule.resources)
+      resources = deepMerge(resources, plugin.i18nModule?.resources)
     }
 
     return resources

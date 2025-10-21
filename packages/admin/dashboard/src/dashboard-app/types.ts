@@ -137,5 +137,5 @@ export type DashboardPlugin = {
   menuItemModule: MenuItemModule
   widgetModule: WidgetModule
   routeModule: RouteModule
-  i18nModule: I18nModule
+  i18nModule?: I18nModule
 }
