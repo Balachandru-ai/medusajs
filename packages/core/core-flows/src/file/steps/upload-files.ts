@@ -23,7 +23,7 @@ export type UploadFilesStepInput = {
     mimeType: string
     /**
      * The content of the file. For images, for example,
-     * use binary string. For CSV files, use the CSV content.
+     * use base64 string. For CSV files, use the CSV content.
      */
     content: string
     /**
