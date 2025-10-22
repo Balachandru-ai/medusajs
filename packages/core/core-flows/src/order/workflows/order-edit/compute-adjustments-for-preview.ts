@@ -68,10 +68,11 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
     when({ order: input.order }, ({ order }) => !!order.promotions.length).then(
       () => {
         const actionsToComputeItemsInput = transform(
-          { previewedOrder },
-          ({ previewedOrder }) => {
+          { previewedOrder, order: input.order },
+          ({ previewedOrder, order }) => {
+            console.log(JSON.stringify(order.promotions, null, 2))
             return {
-              currency_code: input.order.currency_code,
+              currency_code: order.currency_code,
               items: previewedOrder.items.map((item) => ({
                 ...item,
                 // Buy-Get promotions rely on the product ID, so we need to manually set it before refreshing adjustments
@@ -112,6 +113,7 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
             lineItemAdjustmentsToCreate,
           }) => {
             return previewedOrder.items.map((item) => {
+              console.log(JSON.stringify(lineItemAdjustmentsToCreate, null, 2))
               const itemAdjustments = lineItemAdjustmentsToCreate.filter(
                 (adjustment) => adjustment.item_id === item.id
               )

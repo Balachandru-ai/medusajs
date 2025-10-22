@@ -1255,6 +1255,22 @@ medusaIntegrationTestRunner({
           currency_code: "usd",
         })
 
+        await orderModule.createOrderLineItemTaxLines(order.id, [
+          {
+            // TODO check why item_id is not in param
+            // @ts-ignore
+            item_id: "item-1",
+            code: "tax-1",
+            rate: 10,
+            description: "tax-1",
+            // @ts-ignore
+            code: "standard",
+            provider_id: "system",
+            total: 1.2,
+            subtotal: 1.2,
+          },
+        ])
+
         await orderModule.createOrderLineItemAdjustments([
           {
             code: appliedPromotion.code!,
@@ -1285,10 +1301,12 @@ medusaIntegrationTestRunner({
         result = (await api.get(`/admin/orders/${orderId}`, adminHeaders)).data
           .order
 
-        expect(result.original_total).toEqual(10)
-        expect(result.total).toEqual(9)
+        console.log(JSON.stringify(result, null, 2))
 
-        // Add item with price $12 + $1.2 in taxes
+        expect(result.original_total).toEqual(11) // $10 + 10% tax
+        expect(result.total).toEqual(10 * 0.9 * 1.1) // ($10 - 10% discount) + 10% tax
+
+        // Add item with price $12, 10% discount and 10% tax
         result = (
           await api.post(
             `/admin/order-edits/${orderId}/items`,
@@ -1304,10 +1322,21 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        // 10% discount on two items of $12 and $10 = $2.2
-        // Aside from this there is a tax rate of 10%, which adds ($1.2 - $0.12 (discount tax)) of taxes on the item of $12.
-        expect(result.total).toEqual(20.88)
-        expect(result.original_total).toEqual(23.2)
+        console.log(
+          JSON.stringify(
+            result.items.find(
+              (item) => item.variant_id === productExtra.variants[0].id
+            ),
+            null,
+            2
+          )
+        )
+
+        // two items of $12 and $10 and 10% discount -> subtotal is $22 - 10% discount = $19.8
+        // Aside from this there is a tax rate of 10%, which adds (19.8 / 10 = $1.98)
+        // Total is $19.8 + $1.98 = $21.78
+        expect(result.total).toEqual(21.78)
+        expect(result.original_total).toEqual(22 * 1.1) // $22 + 10% tax
 
         // Confirm that the adjustment values are correct
         const adjustments = result.items[0].adjustments
