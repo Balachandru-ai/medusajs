@@ -608,6 +608,14 @@ moduleIntegrationTestRunner<IOrderModuleService>({
                 quantity: 1,
               },
             },
+            {
+              action: ChangeActionType.CREDIT_LINE_ADD,
+              order_id: createdOrder.id,
+              version: createdOrder.version,
+              reference: "gesture_of_goodwill",
+              reference_id: "refr_123",
+              amount: 10,
+            },
           ],
         })
 
@@ -627,9 +635,15 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             "items.detail",
             "summary",
             "shipping_methods",
+            "credit_lines",
             "transactions",
           ],
-          relations: ["items", "shipping_methods", "transactions"],
+          relations: [
+            "items",
+            "shipping_methods",
+            "credit_lines",
+            "transactions",
+          ],
         })
 
         const serializedModifiedOrder = JSON.parse(JSON.stringify(modified))
@@ -642,6 +656,10 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         expect(serializedModifiedOrder.shipping_methods).toHaveLength(1)
         expect(serializedModifiedOrder.shipping_methods[0].amount).toEqual(10)
+
+        expect(serializedModifiedOrder.credit_lines).toHaveLength(1)
+        expect(serializedModifiedOrder.credit_lines[0].amount).toEqual(10)
+        expect(serializedModifiedOrder.credit_lines[0].version).toEqual(2)
 
         expect(serializedModifiedOrder.items).toEqual(
           expect.arrayContaining([
@@ -694,8 +712,9 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             "items.detail",
             "summary",
             "shipping_methods",
+            "credit_lines",
           ],
-          relations: ["items"],
+          relations: ["items", "credit_lines"],
         })
 
         const serializedRevertedOrder = JSON.parse(
@@ -709,6 +728,8 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         expect(serializedRevertedOrder.shipping_methods).toHaveLength(1)
         expect(serializedRevertedOrder.shipping_methods[0].amount).toEqual(10)
+
+        expect(serializedRevertedOrder.credit_lines).toHaveLength(0)
 
         expect(serializedRevertedOrder.items).toEqual(
           expect.arrayContaining([
