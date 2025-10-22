@@ -1,5 +1,4 @@
 import {
-  CreateOrderCreditLineDTO,
   CreateOrderLineItemAdjustmentDTO,
   InferEntityType,
   OrderChangeActionDTO,
