@@ -440,7 +440,7 @@ response?.lines?.forEach((line) => {
       code: line.taxCode || detail.rateTypeCode || detail.signatureCode || "",
       provider_id: this.getIdentifier(),
     }
-    if (isShippingLine) {
+    if (!isShippingLine) {
       taxLines.push({
         ...commonData,
         line_item_id: line.lineNumber ?? "",
