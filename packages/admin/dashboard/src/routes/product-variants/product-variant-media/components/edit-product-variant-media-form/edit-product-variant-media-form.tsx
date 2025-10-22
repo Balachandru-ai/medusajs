@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ThumbnailBadge } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Button, Checkbox, clx, CommandBar, toast, Tooltip } from "@medusajs/ui"
-import { Fragment, useCallback, useEffect, useState } from "react"
+import { Fragment, useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -43,12 +43,15 @@ export const EditProductVariantMediaForm = ({
   const { handleSuccess } = useRouteModal()
 
   const allProductImages = variant.product?.images || []
-  // find images directly scoped to the variant without general product images
   const allVariantImages = (variant.images || []).filter((image) =>
     image.variants?.some((variant) => variant.id === variant.id)
   )
 
-  const [selection, setSelection] = useState<Record<string, true>>(() =>
+  const unassociatedImages = allProductImages.filter(
+    (image) => !image.variants?.some((variant) => variant.id === variant.id)
+  )
+
+  const [variantImages, setVariantImages] = useState<Record<string, true>>(() =>
     allVariantImages.reduce(
       // @eslint-disable-next-line
       (acc: Record<string, true>, image) => {
@@ -57,6 +60,17 @@ export const EditProductVariantMediaForm = ({
       },
       {}
     )
+  )
+
+  const [selection, setSelection] = useState<Record<string, true>>({})
+  const [sidebarSelection, setSidebarSelection] = useState<
+    Record<string, true>
+  >({})
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const availableImages = unassociatedImages.filter(
+    (image) => !variantImages[image.id!]
   )
 
   const form = useForm<MediaSchemaType>({
@@ -79,8 +93,8 @@ export const EditProductVariantMediaForm = ({
 
   const handleSubmit = form.handleSubmit(async (data) => {
     const currentVariantImageIds = data.image_ids
-    const newVariantImageIds = Object.keys(selection).filter(
-      (id) => selection[id]
+    const newVariantImageIds = Object.keys(variantImages).filter(
+      (id) => variantImages[id]
     )
 
     const imagesToAdd = newVariantImageIds.filter(
@@ -90,7 +104,6 @@ export const EditProductVariantMediaForm = ({
       (id) => !newVariantImageIds.includes(id)
     )
 
-    // Update thumbnail if it has changed
     if (data.thumbnail !== variant.thumbnail) {
       let thumbnail = data.thumbnail
       if (
@@ -151,6 +164,55 @@ export const EditProductVariantMediaForm = ({
     }
   }
 
+  const handleRemoveSelectedImages = () => {
+    const selectedIds = Object.keys(selection)
+    if (selectedIds.length === 0) {
+      return
+    }
+
+    setVariantImages((prev) => {
+      const newVariantImages = { ...prev }
+      selectedIds.forEach((id) => {
+        delete newVariantImages[id]
+      })
+      return newVariantImages
+    })
+
+    setSelection({})
+  }
+
+  const handleSidebarSelectionChange = useCallback(
+    (id: string) => {
+      return (val: boolean) => {
+        if (!val) {
+          const { [id]: _, ...rest } = sidebarSelection
+          setSidebarSelection(rest)
+        } else {
+          setSidebarSelection((prev) => ({ ...prev, [id]: true }))
+        }
+      }
+    },
+    [sidebarSelection]
+  )
+
+  const handleAddSelectedToVariant = () => {
+    const selectedIds = Object.keys(sidebarSelection)
+    if (selectedIds.length === 0) {
+      return
+    }
+
+    setVariantImages((prev) => {
+      const newVariantImages = { ...prev }
+      selectedIds.forEach((id) => {
+        newVariantImages[id] = true
+      })
+      return newVariantImages
+    })
+
+    setSidebarSelection({})
+    setIsSidebarOpen(false)
+  }
+
   const selectedImageThumbnail = form.watch("thumbnail")
 
   const isSelectedImageThumbnail =
@@ -168,27 +230,137 @@ export const EditProductVariantMediaForm = ({
       >
         <RouteFocusModal.Header />
         <RouteFocusModal.Body className="flex flex-col overflow-hidden">
-          <div className="flex size-full flex-col-reverse lg:grid lg:grid-cols-[1fr]">
-            <div className="bg-ui-bg-subtle size-full overflow-auto">
-              <div className="grid h-fit auto-rows-auto grid-cols-6 gap-6 p-6">
-                {allProductImages.map((image) => (
-                  <MediaGridItem
-                    key={image.id}
-                    media={image}
-                    checked={!!selection[image.id!]}
-                    onCheckedChange={handleCheckedChange(image.id!)}
-                    isThumbnail={image.url === form.watch("thumbnail")}
-                  />
-                ))}
+          <div className="relative flex size-full">
+            <div className="bg-ui-bg-subtle flex-1 overflow-auto">
+              <div className="flex items-center justify-between p-4 lg:hidden">
+                <h3 className="text-sm font-medium">
+                  {t("products.media.variantImages")}
+                </h3>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="small"
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                >
+                  {t("products.media.showAvailableImages")}
+                </Button>
+              </div>
+              <div className="grid h-fit auto-rows-auto grid-cols-2 gap-4 p-4 sm:grid-cols-3 lg:grid-cols-6 lg:gap-6 lg:p-6">
+                {allProductImages
+                  .filter((image) => variantImages[image.id!])
+                  .map((image) => (
+                    <MediaGridItem
+                      key={image.id}
+                      media={image}
+                      checked={!!selection[image.id!]}
+                      onCheckedChange={handleCheckedChange(image.id!)}
+                      isThumbnail={image.url === form.watch("thumbnail")}
+                    />
+                  ))}
               </div>
             </div>
+
+            {/* Desktop sidebar - always visible */}
+            <div className="border-ui-border-base bg-ui-bg-base hidden w-80 border-l lg:block">
+              <div className="border-ui-border-base border-b p-4">
+                <div>
+                  <h3 className="ui-fg-base ">
+                    {t("products.media.availableImages")}
+                  </h3>
+                  <p className="text-ui-fg-dimmed mt-1 text-sm">
+                    {t("products.media.selectToAdd")}
+                  </p>
+                </div>
+              </div>
+              <div className="max-h-[calc(100vh-200px)] overflow-auto">
+                <div className="grid grid-cols-2 gap-4 p-4">
+                  {availableImages.map((image) => (
+                    <UnassociatedImageItem
+                      key={image.id}
+                      media={image}
+                      checked={!!sidebarSelection[image.id!]}
+                      onCheckedChange={handleSidebarSelectionChange(image.id!)}
+                    />
+                  ))}
+                </div>
+                {Object.keys(sidebarSelection).length > 0 && (
+                  <div className="border-ui-border-base border-t p-4">
+                    <Button
+                      size="small"
+                      onClick={handleAddSelectedToVariant}
+                      className="w-full"
+                    >
+                      {t("products.media.addSelected", {
+                        count: Object.keys(sidebarSelection).length,
+                      })}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile sidebar - overlay */}
+            {isSidebarOpen && (
+              <div
+                className="fixed inset-0 z-50 bg-black/50 lg:hidden"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <div
+                  className="bg-ui-bg-base border-ui-border-base absolute right-0 top-0 h-full w-80 border-l"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="border-ui-border-base border-b p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="ui-fg-base text-sm font-medium">
+                          {t("products.media.availableImages")}
+                        </h3>
+                        <p className="ui-fg-muted mt-1 text-xs">
+                          {t("products.media.selectToAdd")}
+                        </p>
+                      </div>
+                      <Button
+                        variant="transparent"
+                        size="small"
+                        onClick={() => setIsSidebarOpen(false)}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="max-h-[calc(100vh-200px)] overflow-auto">
+                    <div className="grid grid-cols-2 gap-4 p-4">
+                      {availableImages.map((image) => (
+                        <UnassociatedImageItem
+                          key={image.id}
+                          media={image}
+                          checked={!!sidebarSelection[image.id!]}
+                          onCheckedChange={handleSidebarSelectionChange(
+                            image.id!
+                          )}
+                        />
+                      ))}
+                    </div>
+                    {Object.keys(sidebarSelection).length > 0 && (
+                      <div className="border-ui-border-base border-t p-4">
+                        <Button
+                          size="small"
+                          onClick={handleAddSelectedToVariant}
+                          className="w-full"
+                        >
+                          {t("products.media.addSelected", {
+                            count: Object.keys(sidebarSelection).length,
+                          })}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </RouteFocusModal.Body>
-        <CommandBar
-          open={
-            Object.keys(selection).length === 1 && !isSelectedImageThumbnail
-          }
-        >
+        <CommandBar open={Object.keys(selection).length > 0}>
           <CommandBar.Bar>
             <CommandBar.Value>
               {t("general.countSelected", {
@@ -196,10 +368,21 @@ export const EditProductVariantMediaForm = ({
               })}
             </CommandBar.Value>
             <CommandBar.Seperator />
+            {Object.keys(selection).length === 1 &&
+              !isSelectedImageThumbnail && (
+                <Fragment>
+                  <CommandBar.Command
+                    action={handlePromoteToThumbnail}
+                    label={t("products.media.makeThumbnail")}
+                    shortcut="t"
+                  />
+                  <CommandBar.Seperator />
+                </Fragment>
+              )}
             <CommandBar.Command
-              action={handlePromoteToThumbnail}
-              label={t("products.media.makeThumbnail")}
-              shortcut="t"
+              action={handleRemoveSelectedImages}
+              label={t("products.media.removeSelected")}
+              shortcut="r"
             />
           </CommandBar.Bar>
         </CommandBar>
@@ -262,6 +445,50 @@ const MediaGridItem = ({
           </Tooltip>
         </div>
       )}
+      <div
+        className={clx("transition-fg absolute right-2 top-2 opacity-0", {
+          "group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100":
+            !checked,
+          "opacity-100": checked,
+        })}
+      >
+        <Checkbox
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          checked={checked}
+          onCheckedChange={handleToggle}
+        />
+      </div>
+      <img src={media.url} className="size-full object-cover object-center" />
+    </div>
+  )
+}
+
+interface UnassociatedImageItemProps {
+  media: MediaView
+  checked: boolean
+  onCheckedChange: (value: boolean) => void
+}
+
+const UnassociatedImageItem = ({
+  media,
+  checked,
+  onCheckedChange,
+}: UnassociatedImageItemProps) => {
+  const handleToggle = useCallback(
+    (value: boolean) => {
+      onCheckedChange(value)
+    },
+    [onCheckedChange]
+  )
+
+  return (
+    <div
+      className={clx(
+        "shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full overflow-hidden rounded-lg outline-none"
+      )}
+    >
       <div
         className={clx("transition-fg absolute right-2 top-2 opacity-0", {
           "group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100":

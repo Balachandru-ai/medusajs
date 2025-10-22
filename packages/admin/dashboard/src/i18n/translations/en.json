@@ -527,7 +527,13 @@
         "description": "Add media to showcase it in your storefront.",
         "action": "Add media"
       },
-      "successToast": "Media was successfully updated."
+      "successToast": "Media was successfully updated.",
+      "addSelected": "Add selected ({{count}})",
+      "variantImages": "Variant images",
+      "showAvailableImages": "Show available images",
+      "availableImages": "Available images",
+      "selectToAdd": "Select to add to variant",
+      "removeSelected": "Remove Selected"
     },
     "variantMedia": {
       "label": "Variant Media",
