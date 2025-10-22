@@ -20,7 +20,6 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
-  computeAdjustmentsForPreviewWorkflow,
   getActionsToComputeFromPromotionsStep,
   prepareAdjustmentsFromPromotionActionsStep,
 } from "../../.."
@@ -31,6 +30,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
