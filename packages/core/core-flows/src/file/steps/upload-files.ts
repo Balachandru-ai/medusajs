@@ -1,6 +1,6 @@
 import type { IFileModuleService } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The data to upload files.
@@ -48,7 +48,7 @@ export const uploadFilesStepId = "upload-files"
  *     {
  *       filename: "test.jpg",
  *       mimeType: "img/jpg",
- *       content: "binary-string",
+ *       content: "base64-string",
  *       access: "public"
  *     }
  *   ]
