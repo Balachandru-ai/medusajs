@@ -177,7 +177,7 @@ export class TransactionStep {
       !!(
         this.lastAttempt &&
         this.definition.retryInterval &&
-        Date.now() - this.lastAttempt > this.definition.retryInterval * 1e3
+        Date.now() - this.lastAttempt >= this.definition.retryInterval * 1e3
       )
     )
   }

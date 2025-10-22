@@ -137,7 +137,7 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
                 "bg-medusa-bg-subtle rounded-br"
             )}
           >
-            <div className="w-full">
+            <div className="w-full flex flex-col gap-0.25">
               {option.buttons.map((button) => (
                 <Link
                   key={button._key}
@@ -149,9 +149,15 @@ const HeroPricing: React.FC<HeroPricingProps> = ({ data }) => {
                     variant={
                       button.variant === "primary" || button.variant === "dark"
                         ? "primary"
-                        : "secondary"
+                        : button.variant === "transparent"
+                          ? "transparent"
+                          : "secondary"
                     }
-                    className="w-full txt-compact-xsmall-plus"
+                    className={clsx(
+                      "w-full txt-compact-xsmall-plus",
+                      button.variant === "transparent" &&
+                        "text-medusa-fg-subtle"
+                    )}
                   >
                     {button.link.label}
                   </Button>

@@ -224,6 +224,11 @@ function configurePopulateWhere(
     popWhere.summary.version = version
   }
 
+  if (hasRelation("credit_lines")) {
+    popWhere.credit_lines ??= {}
+    popWhere.credit_lines.version = version
+  }
+
   if (hasRelation("items") || hasRelation("order.items")) {
     popWhere.items ??= {}
     popWhere.items.version = version
