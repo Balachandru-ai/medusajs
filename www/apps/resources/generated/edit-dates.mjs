@@ -6560,7 +6560,7 @@ export const generatedEditDates = {
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-10-09T11:26:43.515Z",
   "app/how-to-tutorials/tutorials/product-builder/page.mdx": "2025-10-09T11:28:24.756Z",
-  "app/integrations/guides/payload/page.mdx": "2025-10-09T11:30:44.665Z",
+  "app/integrations/guides/payload/page.mdx": "2025-10-22T15:05:39.648Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z",
   "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-10-16T09:31:19.269Z",
