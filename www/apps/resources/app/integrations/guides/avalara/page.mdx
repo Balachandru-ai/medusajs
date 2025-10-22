@@ -27,10 +27,9 @@ When you install a Medusa application, you get a fully-fledged commerce platform
 By following this tutorial, you'll learn how to:
 
 - Install and set up Medusa.
-- Create a Tax Module Provider for Avalara.
-    - Test the integration in the checkout process.
+- Create the Avalara Tax Module Provider that calculates taxes using Avalara.
 - Create transactions in Avalara when an order is placed.
-- Sync product variants to Avalara for tax code management.
+- Sync products to Avalara to manage their tax codes and classifications.
 
 You can follow this tutorial whether you're new to Medusa or an advanced Medusa developer.
 
@@ -158,97 +157,17 @@ The module options include:
 - `companyCode`: The Avalara company code to use for tax calculations. If not provided, the default company in Avalara is used.
 - `companyId`: The Avalara company ID, which is necessary later when creating items in Avalara.
 
-You'll learn how to set these options when you [register the module](#h-add-module-provider-to-medusas-configuration).
+You'll learn how to set these options when you [register the module](#f-add-module-provider-to-medusas-configuration).
 
-### d. Create Connection Loader
-
-A module can have a function, called a [loader](!docs!/learn/fundamentals/modules/loaders), that runs on application startup. Loaders are useful for setting up connections to external services, which you can then use throughout the module.
-
-To create a loader that connects to Avalara, create the file `src/modules/avalara/loaders/connection.ts` with the following content:
-
-export const loaderHighlights = [
-  ["15", "", "Validate that the required options are provided."],
-  ["23", "client", "Create a new Avatax client with the provided options."],
-  ["35", "ping", "Test the connection by calling the ping method."],
-  ["44", "register", "Register the Avatax client in the module's container for later use."]
-]
-
-```ts title="src/modules/avalara/loaders/connection.ts" highlights={loaderHighlights} collapsibleLines="1-8" expandButtonLabel="Show Imports"
-import {
-  LoaderOptions,
-} from "@medusajs/framework/types"
-import Avatax from "avatax"
-import { ModuleOptions } from "../types"
-import { MedusaError } from "@medusajs/framework/utils"
-import { asValue } from "@medusajs/framework/awilix"
-
-export default async function avalaraConnectionLoader({
-  container,
-  options,
-}: LoaderOptions<ModuleOptions>) {
-  const logger = container.resolve("logger")
-
-  if (!options?.username || !options?.password || !options?.companyId) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      "Avalara module options are required: username, password and companyId"
-    )
-  }
-
-  try {
-    const client = new Avatax({
-      appName: options.appName || "medusa",
-      appVersion: options.appVersion || "1.0.0",
-      machineName: options.machineName || "medusa",
-      environment: options.appEnvironment === "production" ? "production" : "sandbox",
-      timeout: options.timeout || 3000,
-    }).withSecurity({
-      username: options.username,
-      password: options.password,
-    })
-
-    // Test connection
-    const pingResponse = await client.ping()
-    if (!pingResponse.authenticated) {
-      throw new MedusaError(
-        MedusaError.Types.UNEXPECTED_STATE,
-        "Avalara (Avatax) authentication failed"
-      )
-    }
-
-    logger.info("[AVALARA] Avalara (Avatax) connection established")
-    container.register("avatax", asValue(client))
-  } catch (error) {
-    throw new MedusaError(
-      MedusaError.Types.UNEXPECTED_STATE,
-      `Error establishing Avalara connection: ${error}`
-    )
-  }
-}
-```
-
-A loader file must export an asynchronous function that receives an object with the following properties:
-
-- `container`: The [Module's container](!docs!/learn/fundamentals/modules/container), which is useful for resolving Framework resources or registering custom ones.
-- `options`: The options passed to the module when it's registered.
-
-In the loader, you:
-
-1. Throw an error if the required `username`, `password`, and `companyId` options aren't provided.
-2. Create a new `Avatax` client using the provided options.
-3. Test the connection by calling the `ping` method of the client.
-4. If the connection is successful, register the `Avatax` client in the module's container for later use.
-
-### e. Create Avalara Service
+### d. Create Avalara Service
 
 A module has a service that contains its logic. For Tax Module Providers, the service implements the logic to calculate taxes using the third-party service.
 
 To create the service for the Avalara Tax Module Provider, create the file `src/modules/avalara/service.ts` with the following content:
 
 export const serviceHighlights = [
-  ["7", "avatax", "Resolve the Avatax client from the module's container."],
   ["11", "identifier", "The unique identifier of the Avalara Tax Module Provider."],
-  ["15", "constructor", "Resolve the Avatax client from the module's container and store the module options."],
+  ["15", "constructor", "Create the Avatax client instance and validate module options."],
 ]
 
 ```ts title="src/modules/avalara/service.ts" highlights={serviceHighlights}
@@ -258,7 +177,7 @@ import { MedusaError } from "@medusajs/framework/utils"
 import { ModuleOptions } from "./types"
 
 type InjectedDependencies = {
-  avatax: Avatax
+  // Add any dependencies you want to inject via the module container
 }
 
 class AvalaraTaxModuleProvider implements ITaxProvider {
@@ -266,9 +185,24 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
   private readonly avatax: Avatax
   private readonly options: ModuleOptions
 
-  constructor({ avatax }: InjectedDependencies, options: ModuleOptions) {
-    this.avatax = avatax
+  constructor({}: InjectedDependencies, options: ModuleOptions) {
     this.options = options
+    if (!options?.username || !options?.password || !options?.companyId) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Avalara module options are required: username, password and companyId"
+      )
+    }
+    this.avatax = new Avatax({
+      appName: options.appName || "medusa",
+      appVersion: options.appVersion || "1.0.0",
+      machineName: options.machineName || "medusa",
+      environment: options.appEnvironment === "production" ? "production" : "sandbox",
+      timeout: options.timeout || 3000,
+    }).withSecurity({
+      username: options.username,
+      password: options.password,
+    })
   }
   getIdentifier(): string {
     return AvalaraTaxModuleProvider.identifier
@@ -280,9 +214,14 @@ export default AvalaraTaxModuleProvider
 
 A Tax Module Provider's service must implement the `ITaxProvider` interface. It must also have an `identifier` static property with the unique identifier of the provider.
 
-In the constructor, you can resolve resources from the module's container. Here, you resolve the `avatax` client that you registered in the loader. You also receive the module options as a second parameter, which you store for later use.
+The constructor of a module's service receives the following parameters:
 
-In addition, you define the `getIdentifier` method required by the `ITaxProvider` interface, which returns the provider's identifier.
+1. An object with the dependencies to resolve from the [Module's container](!docs!/learn/fundamentals/modules/module-container).
+2. An object with the module options passed to the provider when it's registered.
+
+In the constructor, you validate that the required module options are provided. Then, you create an instance of the `Avatax` client using the provided options.
+
+You also define the `getIdentifier` method required by the `ITaxProvider` interface, which returns the provider's identifier.
 
 #### getTaxLines Method
 
@@ -348,7 +287,7 @@ Then, add the method to the `AvalaraTaxModuleProvider` class:
 export const getTaxLinesHighlights = [
   ["10", "currencyCode", "Determine the currency code from the line items or shipping methods."],
   ["13", "createTransaction", "Create a transaction in Avalara for the line items and shipping methods."],
-  ["46", "type", "Set the transaction type to SalesOrder to calculate taxes without saving the transaction."]
+  ["47", "type", "Set the transaction type to SalesOrder to calculate taxes without saving the transaction."]
 ]
 
 ```ts title="src/modules/avalara/service.ts" highlights={getTaxLinesHighlights}
@@ -373,6 +312,7 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
               quantity,
               amount: quantity * (Number(line.line_item.unit_price) ?? 0),
               taxCode: line.rates.find((rate) => rate.is_default)?.code ?? "",
+              itemCode: line.line_item.product_id,
             }
           }) : []),
           ...(shippingLines.length ? shippingLines.map((line) => {
@@ -459,7 +399,7 @@ return taxLines
 
 This code extracts the tax details from the Avalara response and constructs an array of tax lines in the expected format. Finally, it returns the array of tax lines.
 
-### f. Export Module Definition
+### e. Export Module Definition
 
 You've finished implementing the Avalara Tax Module Provider's service and its required method.
 
@@ -473,20 +413,18 @@ import {
   ModuleProvider, 
   Modules,
 } from "@medusajs/framework/utils"
-import avalaraConnectionLoader from "./loaders/connection"
 
 export default ModuleProvider(Modules.TAX, {
   services: [AvalaraTaxModuleProvider],
-  loaders: [avalaraConnectionLoader],
 })
 ```
 
 You use `ModuleProvider` from the Modules SDK to create the module provider's definition. It accepts two parameters:
 
 1. The name of the module that this provider belongs to, which is `Modules.TAX` in this case.
-2. An object with a required `services` property indicating the Module Provider's services. You also pass the connection loader in the `loaders` property.
+2. An object with a required `services` property indicating the Module Provider's services.
 
-### h. Add Module Provider to Medusa's Configuration
+### f. Add Module Provider to Medusa's Configuration
 
 After finishing the module, add it to Medusa's configuration to start using it.
 
@@ -528,7 +466,7 @@ The Tax Module accepts a `providers` option, which is an array of Tax Module Pro
 
 You register the Avalara Tax Module Provider and pass it the expected options.
 
-### i. Set Environment Variables
+### g. Set Environment Variables
 
 Finally, set the required environment variables in your `.env` file:
 
@@ -555,7 +493,7 @@ You set the following variables:
 ![The Avalara license key tab with the "Generate new key" button](https://res.cloudinary.com/dza7lstvk/image/upload/v1760967334/Medusa%20Resources/CleanShot_2025-10-20_at_16.35.06_2x_fe7cym.png)
 
 3. `AVALARA_APP_ENVIRONMENT`: The environment of your application, which can be either `production` or `sandbox`. Set it based on your Avalara account type. Note that Avalara provides separate accounts for production and sandbox environments.
-4. `AVALARA_COMPANY_ID`: The company ID in Avalara for creating product variants for tax code management. To retrieve it from the Avalara dashboard:
+4. `AVALARA_COMPANY_ID`: The company ID in Avalara for creating products for tax code management. To retrieve it from the Avalara dashboard:
     1. From the sidebar, click on "Settings" → "All settings."
     2. Find the "Companies" card and click on "Manage."
     3. Click on the company you want to use.
@@ -890,7 +828,7 @@ const transactionInput = transform({ orders }, ({ orders }) => {
           taxCode: item?.tax_lines?.find(
             (taxLine) => taxLine?.provider_id === providerId
           )?.code ?? "",
-          itemCode: item?.variant?.sku ?? "",
+          itemCode: item?.product_id ?? "",
         }
       }) ?? []),
       ...(orders[0]?.shipping_methods?.map((shippingMethod) => {
@@ -1013,17 +951,17 @@ You can view the tax details calculated by Avalara for the order, with the line 
 
 ---
 
-## Step 5: Sync Product Variants with Avalara
+## Step 5: Sync Products with Avalara
 
 In Avalara, you can manage the items you sell to set classifications, tax codes, exemptions, and other tax-related settings.
 
-In this step, you'll sync Medusa's product variants with Avalara items. This way, you can manage tax codes and other settings for your product variants directly from Avalara.
+In this step, you'll sync Medusa's products with Avalara items. This way, you can manage tax codes and other settings for your products directly from Avalara.
 
 To do this, you will:
 
 1. Add methods to the Avalara Tax Module Provider's service to manage Avalara items.
 2. Build workflows to create, update, and delete Avalara items.
-3. Create subscribers that listen to product variant events and trigger the workflows.
+3. Create subscribers that listen to product events and trigger the workflows.
 
 ### a. Add Methods to Avalara Tax Module Provider
 
@@ -1043,9 +981,8 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
   // ...
   async createItems(items: {
     medusaId: string
-    title: string
-    sku: string
-    upc?: string
+    itemCode: string
+    description: string
     [key: string]: unknown
   }[]) {
     try {
@@ -1054,10 +991,10 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
         model: await Promise.all(
           items.map(async (item) => {
             return {
+              ...item,
               id: 0, // Avalara will generate an ID for the item
-              itemCode: item.sku,
-              description: item.title,
-              upc: item.upc,
+              itemCode: item.itemCode,
+              description: item.description,
               source: "medusa",
               sourceEntityId: item.medusaId,
             }
@@ -1079,7 +1016,6 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
       const response = await this.avatax.getItem({
         companyId: this.options.companyId!,
         id,
-        // include: "Details"
       })
 
       return response
@@ -1093,9 +1029,8 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
 
   async updateItem(item: {
     id: number
-    title: string
-    sku: string
-    upc?: string
+    itemCode: string
+    description: string
     [key: string]: unknown
   }) {
     try {
@@ -1103,11 +1038,11 @@ class AvalaraTaxModuleProvider implements ITaxProvider {
         companyId: this.options.companyId!,
         id: item.id,
         model: {
+          ...item,
           id: item.id,
-          itemCode: item.sku,
-          description: item.title,
+          itemCode: item.itemCode,
+          description: item.description,
           source: "medusa",
-          upc: item.upc,
         },
       })
 
@@ -1145,33 +1080,33 @@ You add the following methods:
 3. `updateItem`: Updates an item in Avalara using their [Update Item API](https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Items/UpdateItem/).
 4. `deleteItem`: Deletes an item in Avalara using their [Delete Item API](https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Items/DeleteItem/).
 
-You'll use these methods in the next sections to build workflows that sync product variants with Avalara items.
+You'll use these methods in the next sections to build workflows that sync products with Avalara items.
 
 ### b. Create Avalara Item Workflow
 
-The first workflow you'll build creates an item for a product variant in Avalara. It has the following steps:
+The first workflow you'll build creates an item for a product in Avalara. It has the following steps:
 
 <WorkflowDiagram
   workflow={{
-    name: "createVariantItemWorkflow",
+    name: "createProductItemWorkflow",
     steps: [
       {
         type: "step",
         name: "useQueryGraphStep",
         link: "/references/helper-steps/useQueryGraphStep",
-        description: "Retrieve product variant's details.",
+        description: "Retrieve product's details.",
       },
       {
         type: "step",
         name: "createItemStep",
-        description: "Create Avalara item for product variant.",
+        description: "Create Avalara item for the product.",
         depth: 2
       },
       {
         type: "workflow",
-        name: "updateProductVariantsWorkflow",
-        description: "Save Avalara item ID in product variant metadata.",
-        link: "/references/medusa-workflows/updateProductVariantsWorkflow",
+        name: "updateProductsWorkflow",
+        description: "Save Avalara item ID in product metadata.",
+        link: "/references/medusa-workflows/updateProductsWorkflow",
         depth: 3
       }
     ]
@@ -1193,10 +1128,9 @@ import AvalaraTaxModuleProvider from "../../modules/avalara/service"
 type StepInput = {
   item: {
     medusaId: string
-    sku: string
-    country?: string | null
-    upc?: string
-    title: string
+    itemCode: string
+    description: string
+    [key: string]: unknown
   }
 }
 
@@ -1240,65 +1174,55 @@ Refer to [Avalara's documentation](https://developer.avalara.com/api-reference/a
 
 </Note>
 
-#### Create Variant Item Workflow
+#### Create Product Item Workflow
 
-You can now create the workflow. Create the file `src/workflows/create-variant-item.ts` with the following content:
+You can now create the workflow. Create the file `src/workflows/create-product-item.ts` with the following content:
 
-export const createVariantItemWorkflowHighlights = [
-  ["12", "variants", "Retrieve the product variant's details."],
-  ["28", "stepInput", "Prepare the input for the createItemStep."],
-  ["41", "createItemStep", "Create the item in Avalara."],
-  ["43", "updateProductVariantsWorkflow", "Save the created item's ID in the product variant's metadata."]
+export const createProductItemWorkflowHighlights = [
+  ["12", "products", "Retrieve the product's details."],
+  ["26", "createItemStep", "Create the item in Avalara."],
+  ["34", "updateProductsWorkflow", "Save the created item's ID in the product's metadata."]
 ]
 
-```ts title="src/workflows/create-variant-item.ts" highlights={createVariantItemWorkflowHighlights}
-import { createWorkflow, WorkflowResponse, transform } from "@medusajs/framework/workflows-sdk"
-import { updateProductVariantsWorkflow, useQueryGraphStep } from "@medusajs/medusa/core-flows"
+```ts title="src/workflows/create-product-item.ts" highlights={createProductItemWorkflowHighlights}
+import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
+import { updateProductsWorkflow, useQueryGraphStep } from "@medusajs/medusa/core-flows"
 import { createItemStep } from "./steps/create-item"
 
 type WorkflowInput = {
-  variant_id: string
+  product_id: string
 }
 
-export const createVariantItemWorkflow = createWorkflow(
-  "create-variant-item",
+export const createProductItemWorkflow = createWorkflow(
+  "create-product-item",
   (input: WorkflowInput) => {
-    const { data: variants } = useQueryGraphStep({
-      entity: "product_variant",
+    const { data: products } = useQueryGraphStep({
+      entity: "product",
       fields: [
         "id",
-        "sku",
         "title",
-        "upc",
       ],
       filters: {
-        id: input.variant_id,
+        id: input.product_id,
       },
       options: {
         throwIfKeyNotFound: true,
       },
     })
 
-    const stepInput = transform({ variants }, ({ variants }) => {
-      const variant = variants[0]
-
-      return {
-        item: {
-          medusaId: variant.id,
-          sku: variant.sku ?? "",
-          title: variant.title!,
-          upc: variant.upc ?? undefined,
-        },
-      }
+    const response = createItemStep({
+      item: {
+        medusaId: products[0].id,
+        itemCode: products[0].id,
+        description: products[0].title,
+      },
     })
 
-    const response = createItemStep(stepInput)
-
-    updateProductVariantsWorkflow.runAsStep({
+    updateProductsWorkflow.runAsStep({
       input: {
-        product_variants: [
+        products: [
           {
-            id: input.variant_id,
+            id: input.product_id,
             metadata: {
               avalara_item_id: response.id,
             },
@@ -1312,83 +1236,82 @@ export const createVariantItemWorkflow = createWorkflow(
 )
 ```
 
-The workflow receives the product variant ID as input.
+The workflow receives the product ID as input.
 
 In the workflow, you:
 
-1. Retrieve the product variant's details using the `useQueryGraphStep`.
-2. Prepare the input for the `createItemStep` using the `transform` function.
-3. Call the `createItemStep` to create the item in Avalara.
-4. Use the `updateProductVariantsWorkflow` to save the created item's ID in the product variant's metadata. This ID is useful when you want to update or delete the item later.
+1. Retrieve the product's details using the `useQueryGraphStep`.
+2. Create the item in Avalara using the `createItemStep`.
+3. Save the created item's ID in the product's metadata using the `updateProductsWorkflow`. This ID is useful when you want to update or delete the item later.
 
 You return the created item as the workflow's output.
 
-### c. Create Product Variant Created Subscriber
+### c. Create Product Created Subscriber
 
-Next, you'll create a subscriber that listens to the `product-variant.created` event and executes the `createVariantItemWorkflow`.
+Next, you'll create a subscriber that listens to the `product.created` event and executes the `createProductItemWorkflow`.
 
-Create the file `src/subscribers/variant-created.ts` with the following content:
+Create the file `src/subscribers/product-created.ts` with the following content:
 
-```ts title="src/subscribers/variant-created.ts"
+```ts title="src/subscribers/product-created.ts"
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { createVariantItemWorkflow } from "../workflows/create-variant-item"
+import { createProductItemWorkflow } from "../workflows/create-product-item"
 
-export default async function variantCreatedHandler({
+export default async function productCreatedHandler({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string }>) {
-  await createVariantItemWorkflow(container).run({
+  await createProductItemWorkflow(container).run({
     input: {
-      variant_id: data.id,
+      product_id: data.id,
     },
   })
 }
 
 export const config: SubscriberConfig = {
-  event: `product-variant.created`,
+  event: `product.created`,
 }
 ```
 
-You create a subscriber similar to the one you created for the `order.placed` event. This time, it listens to the `product-variant.created` event and triggers the `createVariantItemWorkflow` with the product variant ID.
+You create a subscriber similar to the one you created for the `order.placed` event. This time, it listens to the `product.created` event and triggers the `createProductItemWorkflow` with the product ID.
 
-### d. Test Product Variant Creation with Avalara Item
+### d. Test Product Creation with Avalara Item
 
-To test the product variant creation with Avalara item creation, make sure the Medusa server is running.
+To test the product creation with Avalara item creation, make sure the Medusa server is running.
 
 Then:
 
 1. Open the Medusa Admin dashboard at `http://localhost:9000/admin`.
-2. Go to "Products," and either create a new product or create a variant for an existing product.
-3. After creating the product variant, go to your Avalara dashboard.
+2. Go to "Products," and create a new product.
+3. After creating the product, go to your Avalara dashboard.
 4. From the sidebar, click on "Settings" → "What you sell and buy."
 
-This will open the Items page, where you can see the variant(s) you created as items in Avalara. You can click on an item to view it, add a classification, and more.
+This will open the Items page, where you can see the product you created as items in Avalara. You can click on an item to view it, add a classification, and more.
 
-![The list of items in the Avalara dashboard showing the item created for the product variant](https://res.cloudinary.com/dza7lstvk/image/upload/v1761123470/Medusa%20Resources/CleanShot_2025-10-22_at_11.57.33_2x_jbb4km.png)
+![The list of items in the Avalara dashboard showing the item created for the product](https://res.cloudinary.com/dza7lstvk/image/upload/v1761123470/Medusa%20Resources/CleanShot_2025-10-22_at_11.57.33_2x_jbb4km.png)
 
 ### e. Update Avalara Item Workflow
 
-Next, you'll create a workflow that updates a product variant's item in Avalara. The workflow has the following steps:
+Next, you'll create a workflow that updates a product's item in Avalara. The workflow has the following steps:
 
 <WorkflowDiagram
   workflow={{
-    name: "updateVariantItemWorkflow",
+    name: "updateProductItemWorkflow",
     steps: [
       {
         type: "step",
         name: "useQueryGraphStep",
-        description: "Retrieve product variant's details.",
+        description: "Retrieve product's details.",
         link: "/references/helper-steps/useQueryGraphStep",
         depth: 1
       },
       {
         type: "when",
-        condition: "variants.length > 0 && !variants[0].metadata?.avalara_item_id",
+        condition: "products.length > 0 && !products[0].metadata?.avalara_item_id",
         steps: [
           {
             type: "workflow",
-            name: "createVariantItemWorkflow",
-            description: "Create an item for the variant.",
+            name: "createProductItemWorkflow",
+            description: "Create an item for the product.",
             depth: 1
           }
         ],
@@ -1396,12 +1319,12 @@ Next, you'll create a workflow that updates a product variant's item in Avalara.
       },
       {
         type: "when",
-        condition: "variants.length > 0 && !!variants[0].metadata?.avalara_item_id",
+        condition: "products.length > 0 && !!products[0].metadata?.avalara_item_id",
         steps: [
           {
             type: "step",
             name: "updateItemStep",
-            description: "Update Avalara item for product variant.",
+            description: "Update Avalara item for product.",
             depth: 2
           }
         ],
@@ -1411,7 +1334,7 @@ Next, you'll create a workflow that updates a product variant's item in Avalara.
   }}
 />
 
-Medusa provides the first step out of the box, and you have already created the `createVariantItemWorkflow`. You only need to create the `updateItemStep`.
+Medusa provides the first step out of the box, and you have already created the `createProductItemWorkflow`. You only need to create the `updateItemStep`.
 
 #### updateItemStep
 
@@ -1420,9 +1343,9 @@ The `updateItemStep` updates an item in Avalara.
 To create the step, create the file `src/workflows/steps/update-item.ts` with the following content:
 
 export const updateItemStepHighlights = [
-  ["22", "getItem", "Retrieve the original item before updating."],
-  ["25", "updateItem", "Update the item in Avalara using the provider's updateItem method."],
-  ["42", "updateItem", "Revert the updates by restoring the original values if an error occurs during the workflow's execution."]
+  ["23", "getItem", "Retrieve the original item before updating."],
+  ["26", "updateItem", "Update the item in Avalara using the provider's updateItem method."],
+  ["43", "updateItem", "Revert the updates by restoring the original values if an error occurs during the workflow's execution."]
 ]
 
 ```ts title="src/workflows/steps/update-item.ts" highlights={updateItemStepHighlights}
@@ -1432,9 +1355,10 @@ import AvalaraTaxModuleProvider from "../../modules/avalara/service"
 type StepInput = {
   item: {
     id: number
-    sku: string
-    upc?: string
-    title: string
+    medusaId: string
+    itemCode: string
+    description: string
+    [key: string]: unknown
   }
 }
 
@@ -1469,9 +1393,8 @@ export const updateItemStep = createStep(
     // Revert the updates by restoring original values
     await avalaraProviderService.updateItem({
       id: data.originalItem.id,
-      sku: data.originalItem.itemCode,
-      title: data.originalItem.description,
-      upc: data.originalItem.upc,
+      itemCode: data.originalItem.itemCode,
+      description: data.originalItem.description,
     })
   }
 )
@@ -1488,76 +1411,70 @@ In the step, you:
 
 In the compensation function, you revert the updates by restoring the original values if an error occurs during the workflow's execution.
 
-#### Update Variant Item Workflow
+#### Update Product Item Workflow
 
-You can now create the workflow. Create the file `src/workflows/update-variant-item.ts` with the following content:
+You can now create the workflow. Create the file `src/workflows/update-product-item.ts` with the following content:
 
-export const updateVariantItemWorkflowHighlights = [
-  ["13", "variants", "Retrieve the product variant's details."],
-  ["30", "when", "Check whether variant does not have an Avalara item ID in its metadata."],
-  ["34", "createVariantItemWorkflow", "Create the item in Avalara if it doesn't exist."],
-  ["41", "when", "Check whether variant has an Avalara item ID in its metadata."],
-  ["45", "transform", "Prepare the input for the updateItemStep."],
-  ["55", "updateItemStep", "Update the item in Avalara if it exists."],
-  ["58", "transform", "Return either the created or updated item as the workflow's output."]
+export const updateProductItemWorkflowHighlights = [
+  ["13", "products", "Retrieve the product's details."],
+  ["28", "when", "Check whether product does not have an Avalara item ID in its metadata."],
+  ["32", "createProductItemWorkflow", "Create the item in Avalara if it doesn't exist."],
+  ["39", "when", "Check whether product has an Avalara item ID in its metadata."],
+  ["43", "updateItemStep", "Update the item in Avalara if it exists."],
+  ["53", "transform", "Return either the created or updated item as the workflow's output."]
 ]
 
 ```ts title="src/workflows/update-variant-item.ts" highlights={updateVariantItemWorkflowHighlights}
 import { createWorkflow, WorkflowResponse, transform, when } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
 import { updateItemStep } from "./steps/update-item"
-import { createVariantItemWorkflow } from "./create-variant-item"
+import { createProductItemWorkflow } from "./create-product-item"
 
 type WorkflowInput = {
-  variant_id: string
+  product_id: string
 }
 
-export const updateVariantItemWorkflow = createWorkflow(
-  "update-variant-item",
+export const updateProductItemWorkflow = createWorkflow(
+  "update-product-item",
   (input: WorkflowInput) => {
-    const { data: variants } = useQueryGraphStep({
-      entity: "product_variant",
+    const { data: products } = useQueryGraphStep({
+      entity: "product",
       fields: [
         "id",
-        "sku",
         "title",
-        "upc",
         "metadata",
       ],
       filters: {
-        id: input.variant_id,
+        id: input.product_id,
       },
       options: {
         throwIfKeyNotFound: true,
       },
     })
 
-    const createResponse = when({ variants }, ({ variants }) => 
-      variants.length > 0 && !variants[0].metadata?.avalara_item_id
+    const createResponse = when({ products }, ({ products }) => 
+      products.length > 0 && !products[0].metadata?.avalara_item_id
     )
       .then(() => {
-        return createVariantItemWorkflow.runAsStep({
+        return createProductItemWorkflow.runAsStep({
           input: {
-            variant_id: input.variant_id,
+            product_id: input.product_id,
           },
         })
       })
 
-    const updateResponse = when({ variants }, ({ variants }) => 
-      variants.length > 0 && !!variants[0].metadata?.avalara_item_id
+    const updateResponse = when({ products }, ({ products }) => 
+      products.length > 0 && !!products[0].metadata?.avalara_item_id
     )
       .then(() => {
-        const item = transform({ variants }, ({ variants }) => {
-          const variant = variants[0]
-    
-          return {
-            id: variant.metadata?.avalara_item_id as number,
-            sku: variant.sku ?? "",
-            title: variant.title!,
-            upc: variant.upc ?? undefined,
-          }
+        return updateItemStep({
+          item: {
+            id: products[0].metadata?.avalara_item_id as number,
+            medusaId: products[0].id,
+            itemCode: products[0].id,
+            description: products[0].title,
+          },
         })
-        return updateItemStep({ item })
       })
 
     const response = transform({
@@ -1572,13 +1489,13 @@ export const updateVariantItemWorkflow = createWorkflow(
 )
 ```
 
-The workflow receives the product variant ID as input.
+The workflow receives the product ID as input.
 
 In the workflow, you:
 
-1. Retrieve the product variant's details using the `useQueryGraphStep`.
-2. Use a `when` condition to check whether the variant has an Avalara item ID in its metadata.
-    - If it doesn't, you call the `createVariantItemWorkflow` to create the item in Avalara.
+1. Retrieve the product's details using the `useQueryGraphStep`.
+2. Use a `when` condition to check whether the product has an Avalara item ID in its metadata.
+    - If it doesn't, you call the `createProductItemWorkflow` to create the item in Avalara.
     - If it does, you prepare the input and call the `updateItemStep` to update the item in Avalara.
 3. Use `transform` to return either the created or updated item as the workflow's output.
 
@@ -1588,70 +1505,72 @@ In the workflow, you:
 
 </Note>
 
-### f. Create Product Variant Updated Subscriber
+### f. Create Product Updated Subscriber
 
-Next, you'll create a subscriber that listens to the `product-variant.updated` event and executes the `updateVariantItemWorkflow`.
+Next, you'll create a subscriber that listens to the `product.updated` event and executes the `updateProductItemWorkflow`.
 
-Create the file `src/subscribers/variant-updated.ts` with the following content:
+Create the file `src/subscribers/product-updated.ts` with the following content:
 
-```ts title="src/subscribers/variant-updated.ts"
+```ts title="src/subscribers/product-updated.ts"
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { updateVariantItemWorkflow } from "../workflows/update-variant-item"
+import { updateProductItemWorkflow } from "../workflows/update-product-item"
 
-export default async function variantUpdatedHandler({
+export default async function productUpdatedHandler({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string }>) {
-  await updateVariantItemWorkflow(container).run({
+  await updateProductItemWorkflow(container).run({
     input: {
-      variant_id: data.id,
+      product_id: data.id,
     },
   })
 }
 
 export const config: SubscriberConfig = {
-  event: `product-variant.updated`,
+  event: `product.updated`,
 }
+
+
 ```
 
-You create a subscriber similar to the one you created for the `product-variant.created` event. This time, it listens to the `product-variant.updated` event and triggers the `updateVariantItemWorkflow` with the product variant ID.
+You create a subscriber similar to the one you created for the `product.created` event. This time, it listens to the `product.updated` event and triggers the `updateProductItemWorkflow` with the product ID.
 
-### g. Test Product Variant Update with Avalara Item
+### g. Test Product Update with Avalara Item
 
-To test the product variant update with Avalara item update, make sure the Medusa server is running.
+To test the product update with Avalara item update, make sure the Medusa server is running.
 
 Then:
 
 1. Open the Medusa Admin dashboard at `http://localhost:9000/admin`.
-2. Go to "Products," and edit an existing product variant. For example, you can edit its name.
-3. After updating the product variant, go to your Avalara dashboard.
+2. Go to "Products," and edit an existing product. For example, you can edit its title.
+3. After updating the product, go to your Avalara dashboard.
 4. From the sidebar, click on "Settings" → "What you sell and buy."
-    - If the product variant already had an item in Avalara, click on it to view its details and confirm that the changes were applied.
-    - If the product variant didn't have an item in Avalara, you should see a new item created for it.
+    - If the product already had an item in Avalara, click on it to view its details and confirm that the changes were applied.
+    - If the product didn't have an item in Avalara, you should see a new item created for it.
 
 ### h. Delete Avalara Item Workflow
 
-The last workflow you'll build deletes a product variant's item from Avalara. The workflow has the following steps:
+The last workflow you'll build deletes a product's item from Avalara. The workflow has the following steps:
 
 <WorkflowDiagram
   workflow={{
-    name: "deleteVariantItemWorkflow",
+    name: "deleteProductItemWorkflow",
     steps: [
       {
         type: "step",
         name: "useQueryGraphStep",
-        description: "Retrieve the variant's details.",
+        description: "Retrieve the product's details.",
         link: "/references/helper-steps/useQueryGraphStep",
         depth: 1,
       },
       {
         type: "when",
-        condition: "variants.length > 0 && !!variants[0].metadata?.avalara_item_id",
+        condition: "products.length > 0 && !!products[0].metadata?.avalara_item_id",
         steps: [
           {
             type: "step",
             name: "deleteItemStep",
-            description: "Delete the variant's item from Avalara.",
+            description: "Delete the product's item from Avalara.",
             depth: 1
           }
         ],
@@ -1719,9 +1638,8 @@ export const deleteItemStep = createStep(
     await avalaraProviderService.createItems(
       [{
         medusaId: data.originalItem.sourceEntityId ?? "",
-        sku: data.originalItem.itemCode ?? "",
-        title: data.originalItem.description,
-        upc: data.originalItem.upc,
+        description: data.originalItem.description,
+        itemCode: data.originalItem.itemCode,
       }]
     )
   }
@@ -1739,48 +1657,48 @@ In the step, you:
 
 In the compensation function, you recreate the item using the original values if an error occurs during the workflow's execution.
 
-#### Delete Variant Item Workflow
+#### Delete Product Item Workflow
 
-You can now create the workflow. Create the file `src/workflows/delete-variant-item.ts` with the following content:
+You can now create the workflow. Create the file `src/workflows/delete-product-item.ts` with the following content:
 
-export const deleteVariantItemWorkflowHighlights = [
-  ["12", "variants", "Retrieve the product variant's details."],
-  ["27", "when", "Check whether variant has an Avalara item ID in its metadata."],
+export const deleteProductItemWorkflowHighlights = [
+  ["12", "products", "Retrieve the product's details."],
+  ["27", "when", "Check whether product has an Avalara item ID in its metadata."],
   ["31", "deleteItemStep", "Delete the item in Avalara if it exists."]
 ]
 
-```ts title="src/workflows/delete-variant-item.ts" highlights={deleteVariantItemWorkflowHighlights}
+```ts title="src/workflows/delete-product-item.ts" highlights={deleteProductItemWorkflowHighlights}
 import { createWorkflow, when, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
 import { deleteItemStep } from "./steps/delete-item"
 import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
 
 type WorkflowInput = {
-  variant_id: string
+  product_id: string
 }
 
-export const deleteVariantItemWorkflow = createWorkflow(
-  "delete-item",
+export const deleteProductItemWorkflow = createWorkflow(
+  "delete-product-item",
   (input: WorkflowInput) => {
-    const { data: variants } = useQueryGraphStep({
-      entity: "product_variant",
+    const { data: products } = useQueryGraphStep({
+      entity: "product",
       fields: [
         "id",
         "metadata",
       ],
       filters: {
-        id: input.variant_id,
+        id: input.product_id,
       },
       withDeleted: true,
       options: {
         throwIfKeyNotFound: true,
       },
     })
-    
-    when({ variants }, ({ variants }) => 
-      variants.length > 0 && !!variants[0].metadata?.avalara_item_id
+
+    when({ products }, ({ products }) =>
+      products.length > 0 && !!products[0].metadata?.avalara_item_id
     )
     .then(() => {
-      deleteItemStep({ item_id: variants[0].metadata!.avalara_item_id as number })
+      deleteItemStep({ item_id: products[0].metadata!.avalara_item_id as number })
     })
 
     return new WorkflowResponse(void 0)
@@ -1788,110 +1706,61 @@ export const deleteVariantItemWorkflow = createWorkflow(
 )
 ```
 
-The workflow receives the product variant ID as input.
+The workflow receives the product ID as input.
 
 In the workflow, you:
 
-1. Retrieve the product variant's details using the `useQueryGraphStep`, including deleted variants.
-2. Use a `when` condition to check whether the variant has an Avalara item ID in its metadata.
+1. Retrieve the product's details using the `useQueryGraphStep`, including deleted products.
+2. Use a `when` condition to check whether the product has an Avalara item ID in its metadata.
     - If it does, you call the `deleteItemStep` to delete the item in Avalara.
 
-### g. Create Product Variant Deleted Subscriber
+### i. Create Product Deleted Subscriber
 
-Finally, you'll execute the workflow when a product variant is deleted. You need to listen to two events:
+Finally, you'll create a subscriber to delete the Avalara item when a product is deleted.
 
-1. `product-variant.deleted`: Emitted when a product variant is deleted.
-2. `product.deleted`: Emitted when a product is deleted. In this case, you need to delete the items for all variants of the deleted product.
-
-#### Product Variant Deleted Subscriber
-
-To handle a single variant deletion, create the file `src/subscribers/variant-deleted.ts` with the following content:
-
-```ts title="src/subscribers/variant-deleted.ts"
-import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { deleteVariantItemWorkflow } from "../workflows/delete-variant-item"
-
-export default async function variantDeletedHandler({
-  event: { data },
-  container,
-}: SubscriberArgs<{ id: string }>) {
-  await deleteVariantItemWorkflow(container).run({
-    input: {
-      variant_id: data.id,
-    },
-  })
-}
-
-export const config: SubscriberConfig = {
-  event: `product-variant.deleted`,
-}
-```
-
-You create a subscriber similar to the ones you created before. This time, the subscriber listens to the `product-variant.deleted` event and triggers the `deleteVariantItemWorkflow` with the product variant ID.
-
-#### Product Deleted Subscriber
-
-To handle the deletion of all variants of a deleted product, create the file `src/subscribers/product-deleted.ts` with the following content:
+Create the file `src/subscribers/product-deleted.ts` with the following content:
 
 ```ts title="src/subscribers/product-deleted.ts"
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
-import { deleteVariantItemWorkflow } from "../workflows/delete-variant-item"
+import { deleteProductItemWorkflow } from "../workflows/delete-product-item"
 
 export default async function productDeletedHandler({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string }>) {
-  const query = container.resolve("query")
-  const { data: [product] } = await query.graph({
-    entity: "product",
-    fields: [
-      "variants.id",
-    ],
-    filters: {
-      id: data.id,
+  await deleteProductItemWorkflow(container).run({
+    input: {
+      product_id: data.id,
     },
-    withDeleted: true,
+    throwOnError: false,
   })
-  for (const variant of product.variants) {
-    await deleteVariantItemWorkflow(container).run({
-      input: {
-        variant_id: variant.id,
-      },
-      throwOnError: false,
-    })
-  }
 }
 
 export const config: SubscriberConfig = {
   event: `product.deleted`,
 }
+
+
 ```
 
-You create a subscriber that listens to the `product.deleted` event.
+You create a subscriber similar to the previous ones. This time, the subscriber listens to the `product.deleted` event and triggers the `deleteProductItemWorkflow` with the product ID.
 
-In the subscriber, you:
+### j. Test Product Deletion with Avalara Item
 
-1. Retrieve the deleted product's variants using Query. Notice that you pass the `withDeleted: true` option to include deleted products and their variants.
-2. Loop through the variants and call the `deleteVariantItemWorkflow` for each variant to delete its item from Avalara.
-
-### h. Test Product Variant Deletion with Avalara Item
-
-To test the product variant deletion with Avalara item deletion, make sure the Medusa server is running.
+To test the product deletion with Avalara item deletion, make sure the Medusa server is running.
 
 Then:
 
 1. Open the Medusa Admin dashboard at `http://localhost:9000/admin`.
-2. Go to "Products," and either delete a single product variant or delete an entire product.
-3. After deleting the product variant or product, go to your Avalara dashboard.
-4. From the sidebar, click on "Settings" → "What you sell and buy."
-    - If you deleted a single product variant, confirm that its corresponding item was removed from Avalara.
-    - If you deleted an entire product, confirm that all its variants' corresponding items were removed from Avalara.
+2. Go to "Products," and delete a product.
+3. After deleting the product, go to your Avalara dashboard.
+4. From the sidebar, click on "Settings" → "What you sell and buy." The product's item should no longer be listed.
 
 ---
 
 ## Next Steps
 
-You've successfully integrated Avalara with Medusa to handle tax calculations during checkout, create transactions when orders are placed, and sync product variants with Avalara items.
+You've successfully integrated Avalara with Medusa to handle tax calculations during checkout, create transactions when orders are placed, and sync products with Avalara items.
 
 You can expand on this integration by managing tax features in Avalara, such as exemptions. You can also handle order events like `order.canceled` to void transactions in Avalara when orders are canceled.
 
