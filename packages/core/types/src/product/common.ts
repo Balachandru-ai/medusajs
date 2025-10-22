@@ -1207,6 +1207,10 @@ export interface CreateProductOptionDTO {
    * The ID of the associated product.
    */
   product_id?: string
+  /**
+   * Whether the product option is exclusive or global.
+   */
+  isExclusive?: boolean
 }
 
 export interface CreateProductOptionValueDTO {

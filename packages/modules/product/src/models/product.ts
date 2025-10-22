@@ -43,8 +43,11 @@ const Product = model
       mappedBy: "products",
       pivotTable: "product_tags",
     }),
-    options: model.hasMany(() => ProductOption, {
-      mappedBy: "product",
+    options: model.manyToMany(() => ProductOption, {
+      pivotTable: "product_product_option",
+      mappedBy: "products",
+      joinColumn: "product_id",
+      inverseJoinColumn: "product_option_id",
     }),
     images: model.hasMany(() => ProductImage, {
       mappedBy: "product",
@@ -60,7 +63,7 @@ const Product = model
     }),
   })
   .cascades({
-    delete: ["variants", "options", "images"],
+    delete: ["variants", "images"],
   })
   .indexes([
     {

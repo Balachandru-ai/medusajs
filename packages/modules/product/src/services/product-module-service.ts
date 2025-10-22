@@ -303,10 +303,12 @@ export default class ProductModuleService
 
     const productOptions = await this.productOptionService_.list(
       {
-        product_id: [...new Set<string>(data.map((v) => v.product_id!))],
+        products: {
+          id: [...new Set<string>(data.map((v) => v.product_id!))],
+        },
       },
       {
-        relations: ["values"],
+        relations: ["values", "products"],
       },
       sharedContext
     )
@@ -470,11 +472,13 @@ export default class ProductModuleService
 
     const productOptions = await this.productOptionService_.list(
       {
-        product_id: Array.from(
-          new Set(variantsWithProductId.map((v) => v.product_id!))
-        ),
+        products: {
+          id: Array.from(
+            new Set(variantsWithProductId.map((v) => v.product_id!))
+          ),
+        },
       },
-      { relations: ["values"] },
+      { relations: ["values", "products"] },
       sharedContext
     )
 
@@ -801,19 +805,13 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductOptionDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductOption>[]> {
-    if (data.some((v) => !v.product_id)) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "Tried to create options without specifying a product_id"
-      )
-    }
-
     const normalizedInput = data.map((opt) => {
       return {
         ...opt,
         values: opt.values?.map((v) => {
           return typeof v === "string" ? { value: v } : v
         }),
+        isExclusive: true,
       }
     })
 
@@ -1673,7 +1671,14 @@ export default class ProductModuleService
         id: data.map((d) => d.id),
       },
       {
-        relations: ["options", "options.values", "variants", "images", "tags"],
+        relations: [
+          "options",
+          "options.values",
+          "options.products",
+          "variants",
+          "images",
+          "tags",
+        ],
       },
       sharedContext
     )
@@ -1953,9 +1958,7 @@ export default class ProductModuleService
       if (productData.options?.length) {
         ;(productData as any).options = productData.options?.map((option) => {
           const dbOption = dbOptions.find(
-            (o) =>
-              (o.title === option.title || o.id === option.id) &&
-              o.product_id === productData.id
+            (o) => o.title === option.title || o.id === option.id
           )
           return {
             title: option.title,
@@ -2037,7 +2040,10 @@ export default class ProductModuleService
       variants.map((v) => ({
         ...v,
         // adding product_id to the variant to make it valid for the assignOptionsToVariants function
-        ...(options.length ? { product_id: options[0].product_id } : {}),
+        // get product_id from the first product in the products array of the first option
+        ...(options.length && options[0].products?.length
+          ? { product_id: options[0].products[0].id }
+          : {}),
       })),
       options
     )
@@ -2063,9 +2069,13 @@ export default class ProductModuleService
         variant.options || {}
       ).length
 
-      const productsOptions = options.filter(
-        (o) => o.product_id === variant.product_id
-      )
+      const productsOptions = options.filter((o) => {
+        // products could be a Collection object or array, normalize to array
+        const productsArray = Array.isArray(o.products)
+          ? o.products
+          : (o.products as any)?.toArray?.() ?? []
+        return productsArray.some((p) => p.id === variant.product_id)
+      })
 
       if (
         numOfProvidedVariantOptionValues &&

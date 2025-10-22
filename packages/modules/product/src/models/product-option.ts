@@ -6,8 +6,9 @@ const ProductOption = model
   .define("ProductOption", {
     id: model.id({ prefix: "opt" }).primaryKey(),
     title: model.text().searchable(),
+    is_exclusive: model.boolean().default(false),
     metadata: model.json().nullable(),
-    product: model.belongsTo(() => Product, {
+    products: model.manyToMany(() => Product, {
       mappedBy: "options",
     }),
     values: model.hasMany(() => ProductOptionValue, {
@@ -17,13 +18,5 @@ const ProductOption = model
   .cascades({
     delete: ["values"],
   })
-  .indexes([
-    {
-      name: "IDX_option_product_id_title_unique",
-      on: ["product_id", "title"],
-      unique: true,
-      where: "deleted_at IS NULL",
-    },
-  ])
 
 export default ProductOption
