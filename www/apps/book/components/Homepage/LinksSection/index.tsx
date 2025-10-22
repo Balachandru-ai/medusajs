@@ -11,8 +11,8 @@ const HomepageLinksSection = () => {
           text: "Create your first application",
         },
         {
-          href: "/learn/customization/custom-features/module",
-          text: "Build a Module",
+          href: "https://docs.medusajs.com/cloud/sign-up",
+          text: "Deploy to Medusa Cloud",
         },
         {
           href: "https://docs.medusajs.com/resources/integrations",

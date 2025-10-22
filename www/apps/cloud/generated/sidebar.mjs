@@ -106,7 +106,16 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Deployments",
             "path": "/deployments",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Troubleshooting",
+                "path": "/deployments/troubleshooting",
+                "children": []
+              }
+            ]
           }
         ]
       },
@@ -139,6 +148,14 @@ export const generatedSidebars = [
             "type": "link",
             "title": "S3",
             "path": "/s3",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Cache",
+            "path": "/cache",
             "children": []
           }
         ]

@@ -72,6 +72,13 @@ export const sidebar = [
             type: "link",
             title: "Deployments",
             path: "/deployments",
+            children: [
+              {
+                type: "link",
+                title: "Troubleshooting",
+                path: "/deployments/troubleshooting",
+              },
+            ],
           },
         ],
       },
@@ -94,6 +101,11 @@ export const sidebar = [
             type: "link",
             title: "S3",
             path: "/s3",
+          },
+          {
+            type: "link",
+            title: "Cache",
+            path: "/cache",
           },
         ],
       },
