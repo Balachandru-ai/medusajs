@@ -216,7 +216,7 @@ A Tax Module Provider's service must implement the `ITaxProvider` interface. It 
 
 The constructor of a module's service receives the following parameters:
 
-1. An object with the dependencies to resolve from the [Module's container](!docs!/learn/fundamentals/modules/module-container).
+1. An object with the dependencies to resolve from the [Module's container](!docs!/learn/fundamentals/modules/container).
 2. An object with the module options passed to the provider when it's registered.
 
 In the constructor, you validate that the required module options are provided. Then, you create an instance of the `Avatax` client using the provided options.
