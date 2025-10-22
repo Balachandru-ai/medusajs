@@ -185,4 +185,16 @@ export const integrationsSidebar = [
       },
     ],
   },
+  {
+    type: "category",
+    title: "Tax",
+    initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/integrations/guides/avalara",
+        title: "Avalara",
+      },
+    ],
+  },
 ]
