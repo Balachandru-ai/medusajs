@@ -44,7 +44,7 @@ export function OrderCreateShipmentForm({
 
   const handleSubmit = form.handleSubmit(async (data) => {
     const addedLabels = data.labels
-      .filter((l) => !!l.tracking_number && !!l.tracking_url && !!l.label_url)
+      .filter((l) => !!l.tracking_number || !!l.tracking_url || !!l.label_url)
       .map((l) => ({
         tracking_number: l.tracking_number,
         tracking_url: l.tracking_url || "#",
