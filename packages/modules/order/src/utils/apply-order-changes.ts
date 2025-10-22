@@ -27,7 +27,7 @@ export async function applyChangesToOrder(
   actionsMap: Record<string, any[]>,
   options?: {
     addActionReferenceToObject?: boolean
-    includeTaxLinesAndAdjustementsToPreview?: (...args) => void
+    includeTaxLinesAndAdjustmentsToPreview?: (...args) => void
   }
 ) {
   const itemsToUpsert: InferEntityType<typeof OrderItem>[] = []
@@ -168,8 +168,8 @@ export async function applyChangesToOrder(
     }
 
     // Including tax lines and adjustments for added items and shipping methods
-    if (options?.includeTaxLinesAndAdjustementsToPreview) {
-      await options?.includeTaxLinesAndAdjustementsToPreview(
+    if (options?.includeTaxLinesAndAdjustmentsToPreview) {
+      await options?.includeTaxLinesAndAdjustmentsToPreview(
         calculated.order,
         itemsToUpsert,
         shippingMethodsToUpsert

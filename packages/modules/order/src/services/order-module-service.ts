@@ -2533,7 +2533,7 @@ export default class OrderModuleService
 
     const calculated = calculatedOrders[order.id]
 
-    await this.includeTaxLinesAndAdjustementsToPreview(
+    await this.includeTaxLinesAndAdjustmentsToPreview(
       calculated.order,
       itemsToUpsert,
       shippingMethodsToUpsert,
@@ -2552,7 +2552,7 @@ export default class OrderModuleService
     return calcOrder
   }
 
-  private async includeTaxLinesAndAdjustementsToPreview(
+  private async includeTaxLinesAndAdjustmentsToPreview(
     order,
     itemsToUpsert,
     shippingMethodsToUpsert,
@@ -3527,9 +3527,9 @@ export default class OrderModuleService
       lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
-      includeTaxLinesAndAdjustementsToPreview: async (...args) => {
+      includeTaxLinesAndAdjustmentsToPreview: async (...args) => {
         args.push(sharedContext)
-        return await this.includeTaxLinesAndAdjustementsToPreview.apply(
+        return await this.includeTaxLinesAndAdjustmentsToPreview.apply(
           this,
           args
         )
@@ -3574,12 +3574,12 @@ export default class OrderModuleService
             sharedContext
           )
         : null,
-        // lineItemAdjustmentIdsToRemove.length
-        // ? this.orderLineItemAdjustmentService_.delete(
-        //     lineItemAdjustmentIdsToRemove,
-        //     sharedContext
-        //   )
-        // : null,
+      // lineItemAdjustmentIdsToRemove.length
+      // ? this.orderLineItemAdjustmentService_.delete(
+      //     lineItemAdjustmentIdsToRemove,
+      //     sharedContext
+      //   )
+      // : null,
     ])
 
     return {
