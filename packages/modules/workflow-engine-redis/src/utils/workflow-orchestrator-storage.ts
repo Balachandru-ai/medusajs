@@ -16,6 +16,7 @@ import {
 } from "@medusajs/framework/orchestration"
 import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
+  isDefined,
   isPresent,
   MedusaError,
   promiseAll,
@@ -594,7 +595,7 @@ export class RedisDistributedTransactionStorage
       },
       {
         delay: interval > 0 ? interval * 1000 : undefined,
-        jobId: this.getJobId(JobType.RETRY, transaction, step),
+        jobId: this.getJobId(JobType.RETRY, transaction, step, interval),
         removeOnComplete: true,
       }
     )
@@ -604,7 +605,9 @@ export class RedisDistributedTransactionStorage
     transaction: DistributedTransactionType,
     step: TransactionStep
   ): Promise<void> {
-    await this.removeJob(JobType.RETRY, transaction, step)
+    // Pass retry interval to ensure we remove the correct job (with -retry suffix if interval > 0)
+    const interval = step.definition.retryInterval || 0
+    await this.removeJob(JobType.RETRY, transaction, step, interval)
   }
 
   async scheduleTransactionTimeout(
@@ -665,12 +668,19 @@ export class RedisDistributedTransactionStorage
   private getJobId(
     type: JobType,
     transaction: DistributedTransactionType,
-    step?: TransactionStep
+    step?: TransactionStep,
+    interval?: number
   ) {
     const key = [type, transaction.modelId, transaction.transactionId]
 
     if (step) {
       key.push(step.id, step.attempts + "")
+
+      // Add suffix for retry scheduling (interval > 0) to avoid collision with async execution (interval = 0)
+      if (type === JobType.RETRY && isDefined(interval) && interval > 0) {
+        key.push("retry")
+      }
+
       if (step.isCompensating()) {
         key.push("compensate")
       }
@@ -682,9 +692,10 @@ export class RedisDistributedTransactionStorage
   private async removeJob(
     type: JobType,
     transaction: DistributedTransactionType,
-    step?: TransactionStep
+    step?: TransactionStep,
+    interval?: number
   ) {
-    const jobId = this.getJobId(type, transaction, step)
+    const jobId = this.getJobId(type, transaction, step, interval)
 
     if (type === JobType.SCHEDULE) {
       const job = await this.jobQueue?.getJob(jobId)

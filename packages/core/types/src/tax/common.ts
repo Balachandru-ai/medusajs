@@ -490,6 +490,31 @@ export interface TaxCalculationContext {
    * Whether the tax lines are calculated for an order return.
    */
   is_return?: boolean
+
+  /**
+   * The shipping method details.
+   */
+  shipping_methods?: {
+    /**
+     * The associated shipping method's ID.
+     */
+    id: string
+
+    /**
+     * The name of the shipping method.
+     */
+    name: string
+
+    /**
+     * The associated shipping options's ID.
+     */
+    shipping_option_id: string
+
+    /**
+     * The amount of the shipping method.
+     */
+    amount: number
+  }[]
 }
 
 /**

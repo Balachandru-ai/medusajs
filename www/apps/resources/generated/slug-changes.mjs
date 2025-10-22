@@ -165,6 +165,16 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/cache/interfaces/cache.ICacheService/page.mdx"
   },
   {
+    "origSlug": "/references/caching/interfaces/caching.ICachingModuleService",
+    "newSlug": "/references/caching-service",
+    "filePath": "/www/apps/resources/references/caching/interfaces/caching.ICachingModuleService/page.mdx"
+  },
+  {
+    "origSlug": "/references/caching/interfaces/caching.ICachingProviderService",
+    "newSlug": "/references/caching-module-provider",
+    "filePath": "/www/apps/resources/references/caching/interfaces/caching.ICachingProviderService/page.mdx"
+  },
+  {
     "origSlug": "/references/cart/ICartModuleService/methods/cart.ICartModuleService.addLineItemAdjustments",
     "newSlug": "/references/cart/addLineItemAdjustments",
     "filePath": "/www/apps/resources/references/cart/ICartModuleService/methods/cart.ICartModuleService.addLineItemAdjustments/page.mdx"
@@ -7080,6 +7090,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/promotion_models/variables/promotion_models.CampaignBudget/page.mdx"
   },
   {
+    "origSlug": "/references/promotion_models/variables/promotion_models.CampaignBudgetUsage",
+    "newSlug": "/references/promotion/models/CampaignBudgetUsage",
+    "filePath": "/www/apps/resources/references/promotion_models/variables/promotion_models.CampaignBudgetUsage/page.mdx"
+  },
+  {
     "origSlug": "/references/promotion_models/variables/promotion_models.Promotion",
     "newSlug": "/references/promotion/models/Promotion",
     "filePath": "/www/apps/resources/references/promotion_models/variables/promotion_models.Promotion/page.mdx"
@@ -7388,6 +7403,11 @@ export const slugChanges = [
     "origSlug": "/references/tax/ITaxModuleService/methods/tax.ITaxModuleService.deleteTaxRegions",
     "newSlug": "/references/tax/deleteTaxRegions",
     "filePath": "/www/apps/resources/references/tax/ITaxModuleService/methods/tax.ITaxModuleService.deleteTaxRegions/page.mdx"
+  },
+  {
+    "origSlug": "/references/tax/ITaxModuleService/methods/tax.ITaxModuleService.getProvider",
+    "newSlug": "/references/tax/getProvider",
+    "filePath": "/www/apps/resources/references/tax/ITaxModuleService/methods/tax.ITaxModuleService.getProvider/page.mdx"
   },
   {
     "origSlug": "/references/tax/ITaxModuleService/methods/tax.ITaxModuleService.getTaxLines",
