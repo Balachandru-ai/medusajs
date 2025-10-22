@@ -528,7 +528,6 @@
         "action": "Add media"
       },
       "successToast": "Media was successfully updated.",
-      "addSelected": "Add selected ({{count}})",
       "variantImages": "Variant images",
       "showAvailableImages": "Show available images",
       "availableImages": "Available images",

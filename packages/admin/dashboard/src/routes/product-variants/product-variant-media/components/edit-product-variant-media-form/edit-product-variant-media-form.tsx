@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ThumbnailBadge } from "@medusajs/icons"
+import { Plus, ThumbnailBadge } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Button, Checkbox, clx, CommandBar, toast, Tooltip } from "@medusajs/ui"
 import { Fragment, useCallback, useState } from "react"
@@ -63,10 +63,6 @@ export const EditProductVariantMediaForm = ({
   )
 
   const [selection, setSelection] = useState<Record<string, true>>({})
-  const [sidebarSelection, setSidebarSelection] = useState<
-    Record<string, true>
-  >({})
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const availableImages = unassociatedImages.filter(
@@ -137,6 +133,13 @@ export const EditProductVariantMediaForm = ({
     )
   })
 
+  const handleAddImageToVariant = (imageId: string) => {
+    setVariantImages((prev) => ({
+      ...prev,
+      [imageId]: true,
+    }))
+  }
+
   const handleCheckedChange = useCallback(
     (id: string) => {
       return (val: boolean) => {
@@ -179,38 +182,6 @@ export const EditProductVariantMediaForm = ({
     })
 
     setSelection({})
-  }
-
-  const handleSidebarSelectionChange = useCallback(
-    (id: string) => {
-      return (val: boolean) => {
-        if (!val) {
-          const { [id]: _, ...rest } = sidebarSelection
-          setSidebarSelection(rest)
-        } else {
-          setSidebarSelection((prev) => ({ ...prev, [id]: true }))
-        }
-      }
-    },
-    [sidebarSelection]
-  )
-
-  const handleAddSelectedToVariant = () => {
-    const selectedIds = Object.keys(sidebarSelection)
-    if (selectedIds.length === 0) {
-      return
-    }
-
-    setVariantImages((prev) => {
-      const newVariantImages = { ...prev }
-      selectedIds.forEach((id) => {
-        newVariantImages[id] = true
-      })
-      return newVariantImages
-    })
-
-    setSidebarSelection({})
-    setIsSidebarOpen(false)
   }
 
   const selectedImageThumbnail = form.watch("thumbnail")
@@ -278,24 +249,10 @@ export const EditProductVariantMediaForm = ({
                     <UnassociatedImageItem
                       key={image.id}
                       media={image}
-                      checked={!!sidebarSelection[image.id!]}
-                      onCheckedChange={handleSidebarSelectionChange(image.id!)}
+                      onAdd={() => handleAddImageToVariant(image.id!)}
                     />
                   ))}
                 </div>
-                {Object.keys(sidebarSelection).length > 0 && (
-                  <div className="border-ui-border-base border-t p-4">
-                    <Button
-                      size="small"
-                      onClick={handleAddSelectedToVariant}
-                      className="w-full"
-                    >
-                      {t("products.media.addSelected", {
-                        count: Object.keys(sidebarSelection).length,
-                      })}
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -334,26 +291,10 @@ export const EditProductVariantMediaForm = ({
                         <UnassociatedImageItem
                           key={image.id}
                           media={image}
-                          checked={!!sidebarSelection[image.id!]}
-                          onCheckedChange={handleSidebarSelectionChange(
-                            image.id!
-                          )}
+                          onAdd={() => handleAddImageToVariant(image.id!)}
                         />
                       ))}
                     </div>
-                    {Object.keys(sidebarSelection).length > 0 && (
-                      <div className="border-ui-border-base border-t p-4">
-                        <Button
-                          size="small"
-                          onClick={handleAddSelectedToVariant}
-                          className="w-full"
-                        >
-                          {t("products.media.addSelected", {
-                            count: Object.keys(sidebarSelection).length,
-                          })}
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -467,42 +408,32 @@ const MediaGridItem = ({
 
 interface UnassociatedImageItemProps {
   media: MediaView
-  checked: boolean
-  onCheckedChange: (value: boolean) => void
+  onAdd: () => void
 }
 
 const UnassociatedImageItem = ({
   media,
-  checked,
-  onCheckedChange,
+  onAdd,
 }: UnassociatedImageItemProps) => {
-  const handleToggle = useCallback(
-    (value: boolean) => {
-      onCheckedChange(value)
-    },
-    [onCheckedChange]
-  )
-
   return (
     <div
       className={clx(
-        "shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full overflow-hidden rounded-lg outline-none"
+        "shadow-elevation-card-rest hover:shadow-elevation-card-hover focus-visible:shadow-borders-focus bg-ui-bg-subtle-hover group relative aspect-square h-auto max-w-full cursor-pointer overflow-hidden rounded-lg outline-none"
       )}
+      onClick={onAdd}
     >
       <div
-        className={clx("transition-fg absolute right-2 top-2 opacity-0", {
-          "group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100":
-            !checked,
-          "opacity-100": checked,
-        })}
+        className={clx(
+          "transition-fg absolute inset-0 flex items-center justify-center bg-black/30 opacity-0",
+          {
+            "group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100":
+              true,
+          }
+        )}
       >
-        <Checkbox
-          onClick={(e) => {
-            e.stopPropagation()
-          }}
-          checked={checked}
-          onCheckedChange={handleToggle}
-        />
+        <div className="bg-ui-bg-base border-ui-border-base flex h-12 w-12 items-center justify-center rounded-full border shadow-lg">
+          <Plus />
+        </div>
       </div>
       <img src={media.url} className="size-full object-cover object-center" />
     </div>

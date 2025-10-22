@@ -1981,9 +1981,6 @@
             "successToast": {
               "type": "string"
             },
-            "addSelected": {
-              "type": "string"
-            },
             "variantImages": {
               "type": "string"
             },
@@ -2019,7 +2016,6 @@
             "deleteImageLabel",
             "emptyState",
             "successToast",
-            "addSelected",
             "variantImages",
             "showAvailableImages",
             "availableImages",
