@@ -12,7 +12,7 @@ export class Migration20250929204438 extends Migration {
         "deleted_at" timestamptz null, 
         constraint "product_variant_product_image_pkey" primary key ("id"),
         constraint "product_variant_product_image_image_id_foreign" 
-          foreign key ("image_id") references "product_image" ("id") on delete cascade
+          foreign key ("image_id") references "image" ("id") on delete cascade
       );`
     )
     this.addSql(
