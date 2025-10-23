@@ -115,7 +115,7 @@ A module is created under the `src/modules` directory of your Medusa application
 
 ### c. Define Module Options
 
-Next, define a TypeScript type for the Avalara module options. These options configure the module when it's registered in the Medusa application.
+Next, define a TypeScript type for the Avalara Module options. These options configure the module when it's registered in the Medusa application.
 
 Create the file `src/modules/avalara/types.ts` with the following content:
 
@@ -219,7 +219,7 @@ The constructor of a module's service receives the following parameters:
 1. An object with the dependencies to resolve from the [Module's container](!docs!/learn/fundamentals/modules/container).
 2. An object with the module options passed to the provider when it's registered.
 
-In the constructor, you validate that the required module options are provided. Then, you create an instance of the `Avatax` client using the provided options.
+In the constructor, you validate that the required options are provided. Then, you create an instance of the `Avatax` client using the provided options.
 
 You also define the `getIdentifier` method required by the `ITaxProvider` interface, which returns the provider's identifier.
 
