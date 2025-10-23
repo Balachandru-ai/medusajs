@@ -1071,6 +1071,113 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "product_id": {
+          "name": "product_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "option_id": {
+          "name": "option_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "product_product_option",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "IDX_product_product_option_product_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_product_id\" ON \"product_product_option\" (product_id) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_product_option_option_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_option_id\" ON \"product_product_option\" (option_id) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_product_option_deleted_at",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_deleted_at\" ON \"product_product_option\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "product_product_option_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "url": {
           "name": "url",
           "type": "text",
@@ -1290,75 +1397,6 @@
             "id"
           ],
           "referencedTableName": "public.product_tag",
-          "createForeignKeyConstraint": true,
-          "deleteRule": "cascade",
-          "updateRule": "cascade"
-        }
-      },
-      "nativeEnums": {}
-    },
-    {
-      "columns": {
-        "product_id": {
-          "name": "product_id",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
-        "product_option_id": {
-          "name": "product_option_id",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        }
-      },
-      "name": "product_product_option",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "product_product_option_pkey",
-          "columnNames": [
-            "product_id",
-            "product_option_id"
-          ],
-          "composite": true,
-          "constraint": true,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "product_product_option_product_id_foreign": {
-          "constraintName": "product_product_option_product_id_foreign",
-          "columnNames": [
-            "product_id"
-          ],
-          "localTableName": "public.product_product_option",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.product",
-          "createForeignKeyConstraint": true,
-          "deleteRule": "cascade",
-          "updateRule": "cascade"
-        },
-        "product_product_option_product_option_id_foreign": {
-          "constraintName": "product_product_option_product_option_id_foreign",
-          "columnNames": [
-            "product_option_id"
-          ],
-          "localTableName": "public.product_product_option",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.product_option",
           "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
