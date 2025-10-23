@@ -11,7 +11,10 @@ import {
 import { refetchShippingProfile } from "./helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateShippingProfile>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateShippingProfile,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminShippingProfileResponse>
 ) => {
   const shippingProfilePayload = req.validatedBody
