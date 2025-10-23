@@ -31,22 +31,25 @@ import { WorkflowExecution } from "../models/workflow-execution"
 
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 
-const doneStates = [
+const doneStates = new Set([
   TransactionStepState.DONE,
   TransactionStepState.REVERTED,
   TransactionStepState.FAILED,
   TransactionStepState.SKIPPED,
   TransactionStepState.SKIPPED_FAILURE,
   TransactionStepState.TIMEOUT,
-]
+])
 
-const finishedStates = [
+const finishedStates = new Set([
   TransactionState.DONE,
   TransactionState.FAILED,
   TransactionState.REVERTED,
-]
+])
 
-const failedStates = [TransactionState.FAILED, TransactionState.REVERTED]
+const failedStates = new Set([
+  TransactionState.FAILED,
+  TransactionState.REVERTED,
+])
 
 function calculateDelayFromExpression(expression: CronExpression): number {
   const nextTime = expression.next().getTime()
@@ -179,7 +182,7 @@ export class InMemoryDistributedTransactionStorage
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const asyncVersion = data.flow._v
-    const isFinished = finishedStates.includes(data.flow.state)
+    const isFinished = finishedStates.has(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
@@ -187,16 +190,16 @@ export class InMemoryDistributedTransactionStorage
 
     const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
     let currentStep!: TransactionStep
+    let currentStepsIsAsync = false
 
     const targetStates = isFlowInvoking
-      ? [
+      ? new Set([
           TransactionStepState.INVOKING,
           TransactionStepState.DONE,
           TransactionStepState.FAILED,
-        ]
-      : [TransactionStepState.COMPENSATING]
+        ])
+      : new Set([TransactionStepState.COMPENSATING])
 
-    // Find the current step from the end
     for (let i = stepsArray.length - 1; i >= 0; i--) {
       const step = stepsArray[i]
 
@@ -204,20 +207,29 @@ export class InMemoryDistributedTransactionStorage
         break
       }
 
-      const isTargetState = targetStates.includes(step.invoke?.state)
+      const isTargetState = targetStates.has(step.invoke?.state)
 
-      if (isTargetState) {
+      if (isTargetState && !currentStep) {
         currentStep = step
         break
       }
     }
 
-    const currentStepsIsAsync = currentStep
-      ? stepsArray.some(
-          (step) =>
-            step?.definition?.async === true && step.depth === currentStep.depth
-        )
-      : false
+    if (currentStep) {
+      for (const step of stepsArray) {
+        if (step.id === "_root") {
+          continue
+        }
+
+        if (
+          step.depth === currentStep.depth &&
+          step?.definition?.async === true
+        ) {
+          currentStepsIsAsync = true
+          break
+        }
+      }
+    }
 
     if (
       !(isNotStarted || isFinished || isWaitingToCompensate) &&
@@ -284,7 +296,7 @@ export class InMemoryDistributedTransactionStorage
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
-        const isFailedOrReverted = failedStates.includes(execution.state)
+        const isFailedOrReverted = failedStates.has(execution.state)
 
         const isDone = execution.state === TransactionState.DONE
 
@@ -331,21 +343,12 @@ export class InMemoryDistributedTransactionStorage
        */
       const { retentionTime } = options ?? {}
 
-      const hasFinished = finishedStates.includes(data.flow.state)
-
-      let cachedCheckpoint: TransactionCheckpoint | undefined
-      const getCheckpoint = async (options?: TransactionOptions) => {
-        if (!cachedCheckpoint) {
-          cachedCheckpoint = await this.get(key, options)
-        }
-        return cachedCheckpoint
-      }
+      const hasFinished = finishedStates.has(data.flow.state)
 
       await this.#preventRaceConditionExecutionIfNecessary({
         data,
         key,
         options,
-        getCheckpoint,
       })
 
       // Only store retention time if it's provided
@@ -377,12 +380,12 @@ export class InMemoryDistributedTransactionStorage
         TransactionCheckpoint.mergeCheckpoints(data, storedData)
       }
 
-      const { flow, errors } = data
+      const { flow, context, errors } = data
 
       this.storage[key] = {
-        flow,
-        context: {} as TransactionContext,
-        errors,
+        flow: JSON.parse(JSON.stringify(flow)),
+        context: JSON.parse(JSON.stringify(context)),
+        errors: [...errors],
       } as TransactionCheckpoint
 
       // Optimize DB operations - only perform when necessary
@@ -412,14 +415,10 @@ export class InMemoryDistributedTransactionStorage
     data,
     key,
     options,
-    getCheckpoint,
   }: {
     data: TransactionCheckpoint
     key: string
     options?: TransactionOptions
-    getCheckpoint: (
-      options: TransactionOptions
-    ) => Promise<TransactionCheckpoint | undefined>
   }) {
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
@@ -441,7 +440,7 @@ export class InMemoryDistributedTransactionStorage
       } as Parameters<typeof this.get>[1]
 
       data_ =
-        (await getCheckpoint(getOptions as TransactionOptions)) ??
+        (await this.get(key, getOptions as TransactionOptions)) ??
         ({ flow: {} } as TransactionCheckpoint)
     }
 
@@ -457,7 +456,7 @@ export class InMemoryDistributedTransactionStorage
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        const shouldSkip = doneStates.includes(latestState)
+        const shouldSkip = doneStates.has(latestState)
 
         if (shouldSkip) {
           throw new SkipStepAlreadyFinishedError(
@@ -750,7 +749,7 @@ export class InMemoryDistributedTransactionStorage
       },
       updated_at: {
         $lte: raw(
-          (alias) =>
+          (_alias) =>
             `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
         ),
       },

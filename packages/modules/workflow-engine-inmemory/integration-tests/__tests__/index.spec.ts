@@ -1102,7 +1102,7 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
           expect(executionsListAfter).toHaveLength(1)
         })
 
-        it("should display error when multple async steps are running in parallel", async () => {
+        it("should display error when multiple async steps are running in parallel", async () => {
           let errors: Error[] = []
           const onFinishPromise = new Promise<void>((resolve) => {
             void workflowOrcModule.subscribe({
