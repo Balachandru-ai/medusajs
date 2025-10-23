@@ -4,11 +4,14 @@ import {
 } from "@medusajs/framework/http"
 
 import { addOrRemoveCampaignPromotionsWorkflow } from "@medusajs/core-flows"
-import { HttpTypes, LinkMethodRequest } from "@medusajs/framework/types"
+import { HttpTypes } from "@medusajs/framework/types"
 import { refetchCampaign } from "../../helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<LinkMethodRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchLink,
+    HttpTypes.AdminGetCampaignParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCampaignResponse>
 ) => {
   const { id } = req.params
