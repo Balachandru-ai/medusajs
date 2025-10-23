@@ -8,9 +8,7 @@ const ProductOption = model
     title: model.text().searchable(),
     is_exclusive: model.boolean().default(false),
     metadata: model.json().nullable(),
-    products: model.manyToMany(() => Product, {
-      mappedBy: "options",
-    }),
+    products: model.manyToMany(() => Product),
     values: model.hasMany(() => ProductOptionValue, {
       mappedBy: "option",
     }),

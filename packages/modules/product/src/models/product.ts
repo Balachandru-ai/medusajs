@@ -7,6 +7,7 @@ import ProductOption from "./product-option"
 import ProductTag from "./product-tag"
 import ProductType from "./product-type"
 import ProductVariant from "./product-variant"
+import ProductProductOption from "./product-product-option"
 
 const Product = model
   .define("Product", {
@@ -44,10 +45,7 @@ const Product = model
       pivotTable: "product_tags",
     }),
     options: model.manyToMany(() => ProductOption, {
-      pivotTable: "product_product_option",
-      mappedBy: "products",
-      joinColumn: "product_id",
-      inverseJoinColumn: "product_option_id",
+      pivotEntity: () => ProductProductOption,
     }),
     images: model.hasMany(() => ProductImage, {
       mappedBy: "product",
