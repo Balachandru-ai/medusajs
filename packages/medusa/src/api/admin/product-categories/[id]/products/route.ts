@@ -1,7 +1,7 @@
 import { batchLinkProductsToCategoryWorkflow } from "@medusajs/core-flows"
 import {
   AdminProductCategoryResponse,
-  LinkMethodRequest,
+  HttpTypes,
 } from "@medusajs/framework/types"
 import {
   AuthenticatedMedusaRequest,
@@ -10,7 +10,10 @@ import {
 } from "@medusajs/framework/http"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<LinkMethodRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchLink,
+    HttpTypes.AdminProductCategoryParams
+  >,
   res: MedusaResponse<AdminProductCategoryResponse>
 ) => {
   const { id } = req.params
