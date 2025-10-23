@@ -490,6 +490,7 @@
             "id"
           ],
           "referencedTableName": "public.order_address",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -503,6 +504,7 @@
             "id"
           ],
           "referencedTableName": "public.order_address",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -843,6 +845,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -1127,6 +1130,7 @@
             "id"
           ],
           "referencedTableName": "public.order_change",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -1144,14 +1148,15 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "order_id": {
-          "name": "order_id",
-          "type": "text",
+        "version": {
+          "name": "version",
+          "type": "integer",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "default": "1",
+          "mappedType": "integer"
         },
         "reference": {
           "name": "reference",
@@ -1197,6 +1202,15 @@
           "primary": false,
           "nullable": true,
           "mappedType": "json"
+        },
+        "order_id": {
+          "name": "order_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
         },
         "created_at": {
           "name": "created_at",
@@ -1253,6 +1267,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (deleted_at) WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_order_credit_line_order_id_version",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id_version\" ON \"order_credit_line\" (order_id, version) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_order_credit_line_deleted_at",
           "columnNames": [],
           "composite": false,
@@ -1284,6 +1307,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -1975,6 +1999,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -1988,6 +2013,7 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -2163,6 +2189,7 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2320,6 +2347,7 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2640,6 +2668,7 @@
             "id"
           ],
           "referencedTableName": "public.order_shipping_method",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2797,6 +2826,7 @@
             "id"
           ],
           "referencedTableName": "public.order_shipping_method",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2937,6 +2967,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -3213,6 +3244,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
         "return_exchange_id_foreign": {
@@ -3225,6 +3257,7 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -3238,6 +3271,7 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -3460,6 +3494,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
         "order_exchange_return_id_foreign": {
@@ -3472,6 +3507,7 @@
             "id"
           ],
           "referencedTableName": "public.return",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -3638,6 +3674,7 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -3651,6 +3688,7 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -3875,6 +3913,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
         "order_claim_return_id_foreign": {
@@ -3887,6 +3926,7 @@
             "id"
           ],
           "referencedTableName": "public.return",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -4162,6 +4202,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4175,6 +4216,7 @@
             "id"
           ],
           "referencedTableName": "public.return",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4188,6 +4230,7 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4201,6 +4244,7 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -4431,6 +4475,7 @@
             "id"
           ],
           "referencedTableName": "public.order",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4444,6 +4489,7 @@
             "id"
           ],
           "referencedTableName": "public.return",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4457,6 +4503,7 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -4470,6 +4517,7 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -4483,6 +4531,7 @@
             "id"
           ],
           "referencedTableName": "public.order_shipping_method",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -4673,6 +4722,7 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4686,6 +4736,7 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -4815,6 +4866,7 @@
             "id"
           ],
           "referencedTableName": "public.order_claim_item",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -4972,6 +5024,7 @@
             "id"
           ],
           "referencedTableName": "public.return_reason",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -5194,6 +5247,7 @@
             "id"
           ],
           "referencedTableName": "public.return_reason",
+          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -5207,6 +5261,7 @@
             "id"
           ],
           "referencedTableName": "public.return",
+          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -5220,6 +5275,7 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
+          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
