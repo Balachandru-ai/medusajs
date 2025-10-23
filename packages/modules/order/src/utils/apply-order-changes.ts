@@ -94,15 +94,19 @@ export async function applyChangesToOrder(
         return_dismissed_quantity: orderItem.return_dismissed_quantity ?? 0,
         written_off_quantity: orderItem.written_off_quantity ?? 0,
         metadata: orderItem.metadata,
+        adjustments: item.adjustments?.map((adjustment) => ({
+          ...adjustment,
+          id: adjustment.version === version ? adjustment.id : undefined,
+          order_id: order.id,
+          version,
+          amount: adjustment.amount,
+          description: adjustment.description,
+          promotion_id: adjustment.promotion_id,
+          code: adjustment.code,
+          is_tax_inclusive: adjustment.is_tax_inclusive,
+          item_id: itemId,
+        })),
       } as any
-
-      if (isDefined(item.adjustments)) {
-        for (const adjustment of item.adjustments) {
-          lineItemAdjustmentsToCreate.push({
-            ...adjustment,
-          })
-        }
-      }
 
       itemsToUpsert.push(itemToUpsert)
     }

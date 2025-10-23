@@ -18,7 +18,7 @@ export type VirtualOrder = {
     unit_price: BigNumberInput
     compare_at_unit_price: BigNumberInput | null
     quantity: BigNumberInput
-    adjustments?: LineItemAdjustmentDTO[]
+    adjustments?: (LineItemAdjustmentDTO & { version: number })[]
 
     detail: {
       id?: string

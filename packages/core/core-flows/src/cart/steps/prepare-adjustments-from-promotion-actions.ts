@@ -108,8 +108,6 @@ export const prepareAdjustmentsFromPromotionActionsStep = createStep(
 
     const { actions = [] } = data
 
-    console.log(JSON.stringify({ actions }, null, 2))
-
     if (!actions.length) {
       return new StepResponse({
         lineItemAdjustmentsToCreate: [],

@@ -2524,12 +2524,18 @@ export default class OrderModuleService
       return a.ordering - b.ordering
     })
 
-    const { itemsToUpsert, shippingMethodsToUpsert, calculatedOrders } =
-      await applyChangesToOrder(
-        [order],
-        { [order.id]: sortedActions },
-        { addActionReferenceToObject: true }
-      )
+    const {
+      itemsToUpsert,
+      shippingMethodsToUpsert,
+      calculatedOrders,
+      lineItemAdjustmentsToCreate,
+    } = await applyChangesToOrder(
+      [order],
+      { [order.id]: sortedActions },
+      { addActionReferenceToObject: true }
+    )
+
+    console.log("efgh", JSON.stringify(lineItemAdjustmentsToCreate, null, 2))
 
     const calculated = calculatedOrders[order.id]
 
@@ -3535,6 +3541,8 @@ export default class OrderModuleService
         )
       },
     })
+
+    console.log("abcd", JSON.stringify(lineItemAdjustmentsToCreate, null, 2))
 
     const [
       _orderUpdate,

@@ -70,7 +70,6 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
         const actionsToComputeItemsInput = transform(
           { previewedOrder, order: input.order },
           ({ previewedOrder, order }) => {
-            console.log(JSON.stringify(order.promotions, null, 2))
             return {
               currency_code: order.currency_code,
               items: previewedOrder.items.map((item) => ({
@@ -113,7 +112,6 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
             lineItemAdjustmentsToCreate,
           }) => {
             return previewedOrder.items.map((item) => {
-              console.log(JSON.stringify(lineItemAdjustmentsToCreate, null, 2))
               const itemAdjustments = lineItemAdjustmentsToCreate.filter(
                 (adjustment) => adjustment.item_id === item.id
               )
