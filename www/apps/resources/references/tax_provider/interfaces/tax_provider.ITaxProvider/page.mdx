@@ -25,9 +25,17 @@ A Tax Module Provider is used to retrieve the tax lines in a provided context. T
 
 ---
 
+## Implementation Example
+
+As you implement your Tax Module Provider, it can be useful to refer to an existing provider and how it's implemeted.
+
+If you need to refer to an existing implementation as an example, check the [Avalara Tax Module Provider tutorial](https://docs.medusajs.com/resources/integrations/guides/avalara).
+
+---
+
 ## Understanding Tax Module Provider Implementation
 
-The Tax Module Provider handles calculating taxes with a third-party provirder. However, it's not responsible for managing tax concepts within Medusa, such as creating a tax region. The Tax Module uses your Tax Module Provider within core operations.
+The Tax Module Provider handles calculating taxes with a third-party provider. However, it's not responsible for managing tax concepts within Medusa, such as creating a tax region. The Tax Module uses your Tax Module Provider within core operations.
 
 For example, during checkout, the Tax Module Provider of the tax region that the customer is in is used to calculate the tax for the cart and order. So, you only have to implement the third-party tax calculation logic in your Tax Module Provider.
 

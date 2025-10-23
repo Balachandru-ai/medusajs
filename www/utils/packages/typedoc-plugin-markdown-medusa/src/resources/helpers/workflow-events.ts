@@ -17,7 +17,7 @@ export default function () {
         return ""
       }
 
-      let str = `${Handlebars.helpers.titleLevel()} Emitted Events\n\nThis section lists the events that are either triggered by the \`emitEventStep\` in the workflow, or by another workflow executed within this workflow.\n\nYou can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.\n\n`
+      let str = `${Handlebars.helpers.titleLevel()} Emitted Events\n\nThis section lists the events that are either triggered by the \`emitEventStep\` in the workflow, or by another workflow executed within this workflow.\n\n:::note\n\nThe \`emitEventStep\` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.\n\n:::\n\nYou can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.\n\n`
 
       str += `<Table>\n`
       str += `  <Table.Header>\n`
