@@ -5,14 +5,16 @@ import {
   MedusaResponse,
   refetchEntity,
 } from "@medusajs/framework/http"
-import { AdminCreatePaymentCollectionType } from "./validators"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreatePaymentCollectionType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreatePaymentCollection,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPaymentCollectionResponse>
 ) => {
   const { result } = await createOrderPaymentCollectionWorkflow(req.scope).run({
-    input: req.body,
+    input: req.validatedBody,
   })
 
   const paymentCollection = await refetchEntity({
