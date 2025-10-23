@@ -1,17 +1,16 @@
 import {
-  CreateOrderCreditLineDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
 } from "@medusajs/framework/types"
 import {
   ChangeActionType,
-  MathBN,
   createRawPropertiesFromBigNumber,
   decorateCartTotals,
   isDefined,
+  MathBN,
 } from "@medusajs/framework/utils"
-import { OrderItem, OrderShippingMethod } from "@models"
+import { OrderCreditLine, OrderItem, OrderShippingMethod } from "@models"
 import { calculateOrderChange } from "./calculate-order-change"
 
 export interface ApplyOrderChangeDTO extends OrderChangeActionDTO {
@@ -30,7 +29,7 @@ export async function applyChangesToOrder(
   }
 ) {
   const itemsToUpsert: InferEntityType<typeof OrderItem>[] = []
-  const creditLinesToCreate: CreateOrderCreditLineDTO[] = []
+  const creditLinesToUpsert: InferEntityType<typeof OrderCreditLine>[] = []
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
   const summariesToUpsert: any[] = []
@@ -98,23 +97,29 @@ export async function applyChangesToOrder(
       itemsToUpsert.push(itemToUpsert)
     }
 
-    const creditLines = (calculated.order.credit_lines ?? []).filter(
-      (creditLine) => !("id" in creditLine)
-    )
+    if (version > order.version) {
+      // Handle credit line versioning
+      for (const creditLine of calculated.order.credit_lines ?? []) {
+        const creditLine_ = creditLine as any
+        if (!creditLine_) {
+          continue
+        }
 
-    for (const creditLine of creditLines) {
-      const creditLineToCreate = {
-        order_id: order.id,
-        amount: creditLine.amount,
-        reference: creditLine.reference,
-        reference_id: creditLine.reference_id,
-        metadata: creditLine.metadata,
+        const upsertCreditLine = {
+          id: creditLine_.version === version ? creditLine_.id : undefined,
+          order_id: order.id,
+          version,
+          reference: creditLine_.reference,
+          reference_id: creditLine_.reference_id,
+          amount: creditLine_.amount,
+          raw_amount: creditLine_.raw_amount,
+          metadata: creditLine_.metadata,
+        } as any
+
+        creditLinesToUpsert.push(upsertCreditLine)
       }
 
-      creditLinesToCreate.push(creditLineToCreate)
-    }
-
-    if (version > order.version) {
+      // Handle shipping method versioning
       for (const shippingMethod of calculated.order.shipping_methods ?? []) {
         const shippingMethod_ = shippingMethod as any
         const isNewShippingMethod = !isDefined(shippingMethod_?.detail)
@@ -190,7 +195,7 @@ export async function applyChangesToOrder(
 
   return {
     itemsToUpsert,
-    creditLinesToCreate,
+    creditLinesToUpsert,
     shippingMethodsToUpsert,
     summariesToUpsert,
     orderToUpdate,

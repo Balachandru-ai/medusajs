@@ -38,7 +38,6 @@ import {
 } from "@medusajs/ui"
 
 import { AdminReservation } from "@medusajs/types/src/http"
-import { format } from "date-fns"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import DisplayId from "../../../../../components/common/display-id/display-id"
 import { Thumbnail } from "../../../../../components/common/thumbnail"
@@ -869,26 +868,6 @@ const DiscountAndTotalBreakdown = ({
                       >
                         <DisplayId id={creditLine.id} />
                       </Text>
-                      <span className="txt-small text-ui-fg-subtle mx-1">
-                        -
-                      </span>
-                      <Tooltip
-                        content={format(
-                          new Date(creditLine.created_at),
-                          "dd MMM, yyyy, HH:mm:ss"
-                        )}
-                      >
-                        <Text
-                          size="small"
-                          leading="compact"
-                          className="txt-small text-ui-fg-subtle"
-                        >
-                          {format(
-                            new Date(creditLine.created_at),
-                            "dd MMM, yyyy"
-                          )}
-                        </Text>
-                      </Tooltip>
                       <span className="txt-small text-ui-fg-subtle mx-1">
                         -
                       </span>
