@@ -1,8 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import {
-  adminHeaders,
-  createAdminUser,
-} from "../../../../helpers/create-admin-user"
+import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
 import { getProductFixture } from "../../../../helpers/fixtures"
 
 jest.setTimeout(50000)
@@ -670,7 +667,6 @@ medusaIntegrationTestRunner({
                       expect.objectContaining({ value: "100" }),
                     ]),
                     id: expect.stringMatching(/^opt_*/),
-                    product_id: expect.stringMatching(/^prod_*/),
                     created_at: expect.any(String),
                     updated_at: expect.any(String),
                   }),
@@ -758,7 +754,6 @@ medusaIntegrationTestRunner({
                 options: expect.arrayContaining([
                   expect.objectContaining({
                     id: expect.stringMatching(/^opt_*/),
-                    product_id: expect.stringMatching(/^prod_*/),
                     created_at: expect.any(String),
                     updated_at: expect.any(String),
                   }),
@@ -1517,7 +1512,6 @@ medusaIntegrationTestRunner({
               options: expect.arrayContaining([
                 expect.objectContaining({
                   id: expect.stringMatching(/^opt_*/),
-                  product_id: expect.stringMatching(/^prod_*/),
                   title: "size",
                   values: expect.arrayContaining([
                     expect.objectContaining({ value: "large" }),
@@ -1527,7 +1521,6 @@ medusaIntegrationTestRunner({
                 }),
                 expect.objectContaining({
                   id: expect.stringMatching(/^opt_*/),
-                  product_id: expect.stringMatching(/^prod_*/),
                   title: "color",
                   values: expect.arrayContaining([
                     expect.objectContaining({ value: "green" }),
@@ -1979,7 +1972,6 @@ medusaIntegrationTestRunner({
                 expect.objectContaining({
                   created_at: expect.any(String),
                   id: expect.stringMatching(/^opt_*/),
-                  product_id: baseProduct.id,
                   title: "size",
                   values: expect.arrayContaining([
                     expect.objectContaining({ value: "large" }),
@@ -2625,7 +2617,6 @@ medusaIntegrationTestRunner({
               options: expect.arrayContaining([
                 expect.objectContaining({
                   title: "should_add",
-                  product_id: baseProduct.id,
                   values: expect.arrayContaining([
                     expect.objectContaining({ value: "100" }),
                   ]),

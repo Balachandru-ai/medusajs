@@ -70,6 +70,7 @@ type InjectedDependencies = {
   productImageProductService: ModulesSdkTypes.IMedusaInternalService<any>
   productTypeService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionService: ModulesSdkTypes.IMedusaInternalService<any>
+  productProductOptionService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionValueService: ModulesSdkTypes.IMedusaInternalService<any>
   [Modules.EVENT_BUS]?: IEventBusModuleService
 }
@@ -805,13 +806,20 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductOptionDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductOption>[]> {
+    // TODO - This is just temporary until next PR updates the way we create options and associate them to products
+    const manager = (sharedContext.transactionManager ??
+      sharedContext.manager) as EntityManager
+
     const normalizedInput = data.map((opt) => {
       return {
         ...opt,
         values: opt.values?.map((v) => {
           return typeof v === "string" ? { value: v } : v
         }),
-        isExclusive: true,
+        is_exclusive: true, // TODO - Next PR will update this when we actually support new global options
+        ...(opt.product_id
+          ? { products: [manager.getReference(Product, opt.product_id)] }
+          : {}),
       }
     })
 

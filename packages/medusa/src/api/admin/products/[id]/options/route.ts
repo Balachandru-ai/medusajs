@@ -16,7 +16,7 @@ export const GET = async (
   const productId = req.params.id
   const { data: product_options, metadata } = await refetchEntities({
     entity: "product_option",
-    idOrFilter: { ...req.filterableFields, product_id: productId },
+    idOrFilter: { ...req.filterableFields, products: { id: productId } },
     scope: req.scope,
     fields: req.queryConfig.fields,
     pagination: req.queryConfig.pagination,

@@ -1210,7 +1210,7 @@ export interface CreateProductOptionDTO {
   /**
    * Whether the product option is exclusive or global.
    */
-  isExclusive?: boolean
+  is_exclusive?: boolean
 }
 
 export interface CreateProductOptionValueDTO {
