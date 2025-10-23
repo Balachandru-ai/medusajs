@@ -8,11 +8,11 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminOrderCreateFulfillmentType } from "../../validators"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
-    AdminOrderCreateFulfillmentType & AdditionalData
+    HttpTypes.AdminCreateOrderFulfillment & AdditionalData,
+    HttpTypes.AdminGetOrderParams
   >,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {

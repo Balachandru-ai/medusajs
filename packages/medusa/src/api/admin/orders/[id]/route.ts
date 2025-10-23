@@ -8,13 +8,11 @@ import {
 } from "@medusajs/framework/http"
 import { AdminOrder, HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import {
-  AdminGetOrdersOrderParamsType,
-  AdminUpdateOrderType,
-} from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetOrdersOrderParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminGetOrderDetailsParams
+  >,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const workflow = getOrderDetailWorkflow(req.scope)
@@ -30,7 +28,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateOrderType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateOrder,
+    HttpTypes.AdminGetOrderDetailsParams
+  >,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
