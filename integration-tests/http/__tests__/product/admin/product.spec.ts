@@ -1,5 +1,8 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
+import {
+  adminHeaders,
+  createAdminUser,
+} from "../../../../helpers/create-admin-user"
 import { getProductFixture } from "../../../../helpers/fixtures"
 
 jest.setTimeout(50000)
@@ -2594,7 +2597,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("add option", async () => {
+        it.only("add option", async () => {
           const payload = {
             title: "should_add",
             values: ["100"],

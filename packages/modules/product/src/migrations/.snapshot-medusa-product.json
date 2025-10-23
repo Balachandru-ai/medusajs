@@ -1080,8 +1080,8 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "option_id": {
-          "name": "option_id",
+        "product_option_id": {
+          "name": "product_option_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -1135,13 +1135,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_product_id\" ON \"product_product_option\" (product_id) WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_product_product_option_option_id",
+          "keyName": "IDX_product_product_option_product_option_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_option_id\" ON \"product_product_option\" (option_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_product_option_id\" ON \"product_product_option\" (product_option_id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_product_option_deleted_at",

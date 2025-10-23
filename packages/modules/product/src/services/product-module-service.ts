@@ -17,6 +17,7 @@ import {
   ProductImage,
   ProductOption,
   ProductOptionValue,
+  ProductProductOption,
   ProductTag,
   ProductType,
   ProductVariant,
@@ -44,7 +45,6 @@ import {
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
-import { EntityManager } from "@mikro-orm/core"
 import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
@@ -57,6 +57,7 @@ import {
 } from "../types"
 import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
+import { EntityManager } from "@mikro-orm/core"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -144,6 +145,9 @@ export default class ProductModuleService
   protected readonly productOptionValueService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ProductOptionValue>
   >
+  protected readonly productProductOptionService_: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof ProductProductOption>
+  >
   protected readonly eventBusModuleService_?: IEventBusModuleService
 
   constructor(
@@ -158,6 +162,7 @@ export default class ProductModuleService
       productImageService,
       productTypeService,
       productOptionService,
+      productProductOptionService,
       productOptionValueService,
       [Modules.EVENT_BUS]: eventBusModuleService,
     }: InjectedDependencies,
@@ -177,6 +182,7 @@ export default class ProductModuleService
     this.productImageService_ = productImageService
     this.productTypeService_ = productTypeService
     this.productOptionService_ = productOptionService
+    this.productProductOptionService_ = productProductOptionService
     this.productOptionValueService_ = productOptionValueService
     this.eventBusModuleService_ = eventBusModuleService
   }
@@ -806,10 +812,6 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductOptionDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductOption>[]> {
-    // TODO - This is just temporary until next PR updates the way we create options and associate them to products
-    const manager = (sharedContext.transactionManager ??
-      sharedContext.manager) as EntityManager
-
     const normalizedInput = data.map((opt) => {
       return {
         ...opt,
@@ -817,16 +819,35 @@ export default class ProductModuleService
           return typeof v === "string" ? { value: v } : v
         }),
         is_exclusive: true, // TODO - Next PR will update this when we actually support new global options
-        ...(opt.product_id
-          ? { products: [manager.getReference(Product, opt.product_id)] }
-          : {}),
       }
     })
 
-    return await this.productOptionService_.create(
+    const createdOptions = await this.productOptionService_.create(
       normalizedInput,
       sharedContext
     )
+
+    // Create pivot table entries for options with product_id
+    const pivotEntries = data
+      .map((opt, index) => {
+        if (opt.product_id) {
+          return {
+            product: opt.product_id,
+            product_option: createdOptions[index].id,
+          }
+        }
+        return null
+      })
+      .filter(Boolean)
+
+    if (pivotEntries.length > 0) {
+      await this.productProductOptionService_.create(
+        pivotEntries,
+        sharedContext
+      )
+    }
+
+    return createdOptions
   }
 
   async upsertProductOptions(

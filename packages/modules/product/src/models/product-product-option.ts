@@ -7,7 +7,7 @@ const ProductProductOption = model.define("ProductProductOption", {
   product: model.belongsTo(() => Product, {
     mappedBy: "options",
   }),
-  option: model.belongsTo(() => ProductOption, {
+  product_option: model.belongsTo(() => ProductOption, {
     mappedBy: "products",
   }),
 })
