@@ -103,7 +103,7 @@ export const generatedEditDates = {
   "app/deployment/admin/vercel/page.mdx": "2024-10-16T08:10:29.377Z",
   "app/deployment/storefront/vercel/page.mdx": "2025-05-20T07:51:40.712Z",
   "app/deployment/page.mdx": "2025-09-29T10:23:47.833Z",
-  "app/integrations/page.mdx": "2025-09-17T08:08:37.954Z",
+  "app/integrations/page.mdx": "2025-10-22T07:14:23.467Z",
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
@@ -6476,7 +6476,7 @@ export const generatedEditDates = {
   "references/types/interfaces/types.IPaymentProvider/page.mdx": "2025-10-21T08:10:48.134Z",
   "references/types/interfaces/types.WebhookActionResult/page.mdx": "2025-05-20T07:51:41.086Z",
   "references/types/interfaces/types.WebhookActionData/page.mdx": "2025-05-20T07:51:41.086Z",
-  "app/commerce-modules/tax/tax-provider/page.mdx": "2025-05-20T07:51:40.711Z",
+  "app/commerce-modules/tax/tax-provider/page.mdx": "2025-10-22T07:14:23.461Z",
   "app/recipes/bundled-products/examples/standard/page.mdx": "2025-06-26T11:52:18.819Z",
   "app/recipes/bundled-products/page.mdx": "2025-05-20T07:51:40.718Z",
   "app/infrastructure-modules/analytics/local/page.mdx": "2025-08-21T05:30:26.867Z",
@@ -6683,5 +6683,6 @@ export const generatedEditDates = {
   "references/types/types/types.ListShippingOptionsForCartWorkflowInput/page.mdx": "2025-10-21T08:10:45.503Z",
   "references/utils/Fulfillment/variables/utils.Fulfillment.ShippingOptionTypeWorkflowEvents/page.mdx": "2025-10-21T08:10:52.748Z",
   "references/utils/PromotionUtils/enums/utils.PromotionUtils.ApplicationMethodAllocation/page.mdx": "2025-10-21T08:10:52.665Z",
-  "references/utils/PromotionUtils/enums/utils.PromotionUtils.CampaignBudgetType/page.mdx": "2025-10-21T08:10:52.672Z"
+  "references/utils/PromotionUtils/enums/utils.PromotionUtils.CampaignBudgetType/page.mdx": "2025-10-21T08:10:52.672Z",
+  "app/integrations/guides/avalara/page.mdx": "2025-10-22T09:56:11.929Z"
 }
