@@ -36,7 +36,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateReturnReason>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateReturnReason,
+    HttpTypes.AdminReturnReasonParams
+  >,
   res: MedusaResponse<HttpTypes.AdminReturnReasonResponse>
 ) => {
   const workflow = createReturnReasonsWorkflow(req.scope)
