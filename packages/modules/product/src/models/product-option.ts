@@ -1,7 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import { Product } from "./index"
 import ProductOptionValue from "./product-option-value"
-import ProductProductOption from "./product-product-option"
 
 const ProductOption = model
   .define("ProductOption", {
@@ -9,10 +8,7 @@ const ProductOption = model
     title: model.text().searchable(),
     is_exclusive: model.boolean().default(false),
     metadata: model.json().nullable(),
-    products: model.manyToMany(() => Product, {
-      mappedBy: "options",
-      pivotEntity: () => ProductProductOption,
-    }),
+    products: model.manyToMany(() => Product),
     values: model.hasMany(() => ProductOptionValue, {
       mappedBy: "option",
     }),
