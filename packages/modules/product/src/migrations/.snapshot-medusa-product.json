@@ -1318,11 +1318,11 @@
           "mappedType": "text"
         }
       },
-      "name": "product_product_option",
+      "name": "product_options",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "product_product_option_pkey",
+          "keyName": "product_options_pkey",
           "columnNames": [
             "product_id",
             "product_option_id"
@@ -1335,12 +1335,12 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "product_product_option_product_id_foreign": {
-          "constraintName": "product_product_option_product_id_foreign",
+        "product_options_product_id_foreign": {
+          "constraintName": "product_options_product_id_foreign",
           "columnNames": [
             "product_id"
           ],
-          "localTableName": "public.product_product_option",
+          "localTableName": "public.product_options",
           "referencedColumnNames": [
             "id"
           ],
@@ -1349,12 +1349,12 @@
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
-        "product_product_option_product_option_id_foreign": {
-          "constraintName": "product_product_option_product_option_id_foreign",
+        "product_options_product_option_id_foreign": {
+          "constraintName": "product_options_product_option_id_foreign",
           "columnNames": [
             "product_option_id"
           ],
-          "localTableName": "public.product_product_option",
+          "localTableName": "public.product_options",
           "referencedColumnNames": [
             "id"
           ],

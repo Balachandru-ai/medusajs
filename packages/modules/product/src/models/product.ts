@@ -45,6 +45,7 @@ const Product = model
       pivotTable: "product_tags",
     }),
     options: model.manyToMany(() => ProductOption, {
+      mappedBy: "products",
       pivotEntity: () => ProductProductOption,
     }),
     images: model.hasMany(() => ProductImage, {
