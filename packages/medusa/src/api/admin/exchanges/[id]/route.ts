@@ -1,4 +1,4 @@
-import { AdminExchangeResponse } from "@medusajs/framework/types"
+import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 import {
   AuthenticatedMedusaRequest,
@@ -7,8 +7,8 @@ import {
 } from "@medusajs/framework/http"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
-  res: MedusaResponse<AdminExchangeResponse>
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
+  res: MedusaResponse<HttpTypes.AdminExchangeResponse>
 ) => {
   const exchange = await refetchEntity({
     entity: "order_exchange",
