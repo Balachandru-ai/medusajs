@@ -3,12 +3,14 @@ import { rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 import type * as Vite from "vite"
 import { generateCustomFieldHashes } from "./custom-fields"
+import { generateI18nHash } from "./i18n"
 import { generateRouteHashes } from "./routes"
 import { MedusaVitePlugin } from "./types"
 import { AdminSubdirectory, isFileInAdminSubdirectory } from "./utils"
 import {
   generateVirtualDisplayModule,
   generateVirtualFormModule,
+  generateVirtualI18nModule,
   generateVirtualLinkModule,
   generateVirtualMenuItemModule,
   generateVirtualRouteModule,
@@ -84,6 +86,7 @@ export const medusaVitePlugin: MedusaVitePlugin = (options) => {
     const menuItemModule = await generateVirtualMenuItemModule(sources, true)
     const formModule = await generateVirtualFormModule(sources, true)
     const displayModule = await generateVirtualDisplayModule(sources, true)
+    const i18nModule = await generateVirtualI18nModule(sources, true)
 
     // Create the index.js content that re-exports everything
     return `
@@ -93,13 +96,15 @@ export const medusaVitePlugin: MedusaVitePlugin = (options) => {
     ${menuItemModule.code}
     ${formModule.code}
     ${displayModule.code}
+    ${i18nModule.code}
     
     const plugin = {
       widgetModule,
       routeModule,
       menuItemModule,
       formModule,
-      displayModule
+      displayModule,
+      i18nModule
     }
 
     export default plugin
@@ -229,6 +234,11 @@ const loadConfigs: Record<string, ModuleConfig> = {
     moduleGenerator: async (sources) => generateVirtualMenuItemModule(sources),
     hashKey: vmod.virtual.menuItem,
   },
+  [vmod.resolved.i18n]: {
+    hashGenerator: async (sources) => generateI18nHash(sources),
+    moduleGenerator: async (sources) => generateVirtualI18nModule(sources),
+    hashKey: vmod.virtual.i18n,
+  },
 }
 
 type WatcherConfig = {
@@ -289,6 +299,19 @@ const watcherConfigs: WatcherConfig[] = [
         virtualModule: vmod.virtual.display,
         resolvedModule: vmod.resolved.display,
         hashKey: "displayHash",
+      },
+    ],
+  },
+  {
+    subdirectory: "i18n",
+    hashGenerator: async (sources) => ({
+      i18nHash: await generateI18nHash(sources),
+    }),
+    modules: [
+      {
+        virtualModule: vmod.virtual.i18n,
+        resolvedModule: vmod.resolved.i18n,
+        hashKey: "i18nHash",
       },
     ],
   },
