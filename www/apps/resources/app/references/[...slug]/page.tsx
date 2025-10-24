@@ -1,5 +1,4 @@
-import { cache, Suspense } from "react"
-import { Loading } from "docs-ui"
+import { cache } from "react"
 import path from "path"
 import fs from "fs/promises"
 import { ReferenceMDX } from "../../../components/ReferenceMDX"

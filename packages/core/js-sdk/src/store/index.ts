@@ -683,6 +683,7 @@ export class Store {
      *
      * @param cartId - The cart's ID.
      * @param lineItemId - The item's ID.
+     * @param query - Configure the fields to retrieve in the cart.
      * @param headers - Headers to pass in the request.
      * @returns The deletion's details.
      *

@@ -36,6 +36,7 @@ export async function getViteConfig(
         "react/jsx-runtime",
         "react-dom/client",
         "react-router-dom",
+        "react-i18next",
         "@medusajs/ui",
         "@medusajs/dashboard",
         "@medusajs/js-sdk",

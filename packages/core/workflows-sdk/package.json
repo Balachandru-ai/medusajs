@@ -49,7 +49,7 @@
   "scripts": {
     "build": "rimraf dist && tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --bail --forceExit",
+    "test": "jest --bail --forceExit -- src/**/__tests__/**/*.spec.ts",
     "test:run": "node ./dist/utils/_playground.js"
   }
 }
