@@ -739,7 +739,7 @@ export default class PromotionModuleService
       }
     }
 
-    const promotionCodeSet = new Set<string>(uniquePromotionCodes)
+    const promotionCodeSet = new Set<string>(promotionCodes) // TODO: uniquePromotionCodes
     const automaticPromotionCodeSet = new Set<string>(automaticPromotionCodes)
 
     const sortedPromotionsToApply = promotions
