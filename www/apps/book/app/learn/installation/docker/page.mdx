@@ -467,18 +467,6 @@ This command shows the logs of the `medusa` service, allowing you to see any err
 
 ## Troubleshooting
 
-### Couldn't Find X File or Directory Errors
-
-If you encounter errors indicating that certain files or directories couldn't be found, make sure you're running the commands from the root directory of your Medusa application (the same directory where the `docker-compose.yml` file is located).
-
-For example, if you run the `docker:up` command and see an error like this:
-
-```bash
-error Couldn't find a package.json file in "/"
-```
-
-Ensure that your terminal's current working directory is the root of your Medusa application, then try running the command again.
-
 ### start.sh Not Found Error
 
 If you get the following error when starting the Medusa application with Docker:
@@ -491,6 +479,18 @@ medusa_backend   | /usr/local/bin/docker-entrypoint.sh: exec: line 11: ./start.s
 This is a common error for Windows users. It usually occurs when the `start.sh` file uses CRLF line endings instead of LF.
 
 To fix this, ensure that the `start.sh` file uses LF line endings. You can configure Git to maintain LF line endings by following [this guide from GitHub](https://docs.github.com/en/get-started/git-basics/configuring-git-to-handle-line-endings).
+
+### Couldn't Find X File or Directory Errors
+
+If you encounter errors indicating that certain files or directories couldn't be found, make sure you're running the commands from the root directory of your Medusa application (the same directory where the `docker-compose.yml` file is located).
+
+For example, if you run the `docker:up` command and see an error like this:
+
+```bash
+error Couldn't find a package.json file in "/"
+```
+
+Ensure that your terminal's current working directory is the root of your Medusa application, then try running the command again.
 
 ### Container Name Conflicts
 
