@@ -25,9 +25,17 @@ A Tax Module Provider is used to retrieve the tax lines in a provided context. T
 
 ---
 
+## Implementation Example
+
+As you implement your Tax Module Provider, it can be useful to refer to an existing provider and how it's implemeted.
+
+If you need to refer to an existing implementation as an example, check the [Avalara Tax Module Provider tutorial](https://docs.medusajs.com/resources/integrations/guides/avalara).
+
+---
+
 ## Understanding Tax Module Provider Implementation
 
-The Tax Module Provider handles calculating taxes with a third-party provirder. However, it's not responsible for managing tax concepts within Medusa, such as creating a tax region. The Tax Module uses your Tax Module Provider within core operations.
+The Tax Module Provider handles calculating taxes with a third-party provider. However, it's not responsible for managing tax concepts within Medusa, such as creating a tax region. The Tax Module uses your Tax Module Provider within core operations.
 
 For example, during checkout, the Tax Module Provider of the tax region that the customer is in is used to calculate the tax for the cart and order. So, you only have to implement the third-party tax calculation logic in your Tax Module Provider.
 
@@ -78,7 +86,7 @@ export default class MyTaxProvider implements ITaxProvider {
 
 ### constructor
 
-You can use the `constructor` of your tax provider to access the resources registered in the [Module Container](https://docs.medusajs.com/resources/medusa-container-resources#module-container-resources).
+You can use the `constructor` of your Tax Module Provider's service to access the resources registered in the [Module Container](https://docs.medusajs.com/resources/medusa-container-resources#module-container-resources).
 
 You can also use the constructor to initialize your integration with the third-party provider. For example, if you use a client to connect to the third-party provider’s APIs, you can initialize it in the constructor and use it in other methods in the service.
 
@@ -87,19 +95,60 @@ Additionally, if you’re creating your tax provider as a plugin or a module pro
 For example:
 
 ```ts
-export default class MyTaxProvider implements ITaxProvider {
-  // ...
-  constructor(container, options) {
-    // you can access options here
+import {
+  ITaxProvider,
+  Logger
+} from "@medusajs/framework/types"
 
-    // you can also initialize a client that
-    // communicates with a third-party service.
+type InjectedDependencies = {
+  logger: Logger
+}
+
+type Options = {
+  apiKey: string
+}
+
+export default class MyTaxProvider implements ITaxProvider {
+  static identifier = "my-tax"
+  protected logger_: Logger
+  protected options_: Options
+  // assuming you're initializing a client
+  protected client
+
+  constructor (
+    { logger }: InjectedDependencies,
+    options: Options
+  ) {
+    this.logger_ = logger
+    this.options_ = options
+
+    // assuming you're initializing a client
     this.client = new Client(options)
   }
 }
 ```
 
 ---
+
+### getIdentifier
+
+This method is used to retrieve the unique identifier of the tax provider.
+
+#### Example
+
+```ts
+export default class MyTaxProvider implements ITaxProvider {
+  static identifier = "my-tax"
+  
+  getIdentifier(): string {
+    return MyTaxProvider.identifier
+  }
+}
+```
+
+#### Returns
+
+<TypeList types={[{"name":"string","type":"`string`","optional":false,"defaultValue":"","description":"The unique identifier of the tax provider.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getIdentifier"/>
 
 ### getTaxLines
 
@@ -125,8 +174,8 @@ export default class SystemTaxService implements ITaxProvider {
     let taxLines: (TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] =
       itemLines.flatMap((l) => {
         return l.rates.map((r) => ({
-          rate_id: r.id,
-          rate: r.rate || 0,
+          rate_id: r.id, // this is optional. When integrating with a third-party, you don't need to provide it
+          rate: r.rate || 0, // For example, 10 for 10%
           name: r.name,
           code: r.code,
           line_item_id: l.line_item.id,
@@ -137,8 +186,8 @@ export default class SystemTaxService implements ITaxProvider {
     taxLines = taxLines.concat(
       shippingLines.flatMap((l) => {
         return l.rates.map((r) => ({
-          rate_id: r.id,
-          rate: r.rate || 0,
+          rate_id: r.id, // this is optional. When integrating with a third-party, you don't need to provide it
+          rate: r.rate || 0, // For example, 10 for 10%
           name: r.name,
           code: r.code,
           shipping_line_id: l.shipping_line.id,

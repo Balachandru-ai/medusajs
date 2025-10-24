@@ -265,7 +265,9 @@ export const UpdateProduct = z
     status: statusEnum.optional(),
     subtitle: z.string().nullish(),
     description: z.string().nullish(),
-    images: z.array(z.object({ url: z.string() })).optional(),
+    images: z
+      .array(z.object({ id: z.string().optional(), url: z.string() }))
+      .optional(),
     thumbnail: z.string().nullish(),
     handle: z.string().nullish(),
     type_id: z.string().nullish(),

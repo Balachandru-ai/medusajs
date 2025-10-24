@@ -3,6 +3,7 @@ import {
   CustomFieldFormTab,
   CustomFieldFormZone,
   CustomFieldModel,
+  deepMerge,
   InjectionZone,
   NESTED_ROUTE_POSITIONS,
 } from "@medusajs/admin-shared"
@@ -14,6 +15,7 @@ import {
 } from "react-router-dom"
 import { INavItem } from "../components/layout/nav-item"
 import { Providers } from "../providers"
+import coreTranslations from "../i18n/translations"
 import { getRouteMap } from "./routes/get-route.map"
 import { createRouteMap, getRouteExtensions } from "./routes/utils"
 import {
@@ -28,6 +30,7 @@ import {
   FormFieldExtension,
   FormFieldMap,
   FormZoneMap,
+  I18nExtension,
   MenuItemExtension,
   MenuItemKey,
   MenuMap,
@@ -47,6 +50,7 @@ export class DashboardApp {
   private displays: DisplayMap
   private coreRoutes: RouteObject[]
   private settingsRoutes: RouteObject[]
+  private i18nResources: I18nExtension
 
   constructor({ plugins }: DashboardAppProps) {
     this.widgets = this.populateWidgets(plugins)
@@ -60,6 +64,7 @@ export class DashboardApp {
     this.fields = fields
     this.configs = configs
     this.displays = this.populateDisplays(plugins)
+    this.i18nResources = this.populateI18n(plugins)
   }
 
   private populateRoutes(plugins: DashboardPlugin[]) {
@@ -378,6 +383,18 @@ export class DashboardApp {
     return displays
   }
 
+  private populateI18n(
+    plugins: DashboardPlugin[]
+  ): I18nExtension {
+    let resources: I18nExtension = { ...coreTranslations }
+
+    for (const plugin of plugins) {
+      resources = deepMerge(resources, plugin.i18nModule?.resources)
+    }
+
+    return resources
+  }
+
   private processDisplays(
     displays: DisplayExtension[]
   ): Map<CustomFieldContainerZone, React.ComponentType<{ data: any }>[]> {
@@ -431,6 +448,10 @@ export class DashboardApp {
     return this.displays.get(model)?.get(zone) || []
   }
 
+  private getI18nResources() {
+    return this.i18nResources
+  }
+
   get api() {
     return {
       getMenu: this.getMenu.bind(this),
@@ -438,6 +459,7 @@ export class DashboardApp {
       getFormFields: this.getFormFields.bind(this),
       getFormConfigs: this.getFormConfigs.bind(this),
       getDisplays: this.getDisplays.bind(this),
+      getI18nResources: this.getI18nResources.bind(this),
     }
   }
 
