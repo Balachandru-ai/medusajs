@@ -818,36 +818,10 @@ export default class ProductModuleService
         values: opt.values?.map((v) => {
           return typeof v === "string" ? { value: v } : v
         }),
-        is_exclusive: true, // TODO - Next PR will update this when we actually support new global options
       }
     })
 
-    const createdOptions = await this.productOptionService_.create(
-      normalizedInput,
-      sharedContext
-    )
-
-    // Create pivot table entries for options with product_id
-    const pivotEntries = data
-      .map((opt, index) => {
-        if (opt.product_id) {
-          return {
-            product: opt.product_id,
-            product_option: createdOptions[index].id,
-          }
-        }
-        return null
-      })
-      .filter(Boolean)
-
-    if (pivotEntries.length > 0) {
-      await this.productProductOptionService_.create(
-        pivotEntries,
-        sharedContext
-      )
-    }
-
-    return createdOptions
+    return this.productOptionService_.create(normalizedInput, sharedContext)
   }
 
   async upsertProductOptions(

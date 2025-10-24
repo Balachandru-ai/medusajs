@@ -3,10 +3,10 @@ import type {
   ProductTypes,
 } from "@medusajs/framework/types"
 import {
-  Modules,
   getSelectsAndRelationsFromObjectArray,
+  Modules,
 } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The data to identify and update the product options.
@@ -67,8 +67,6 @@ export const updateProductOptionsStep = createStep(
       prevData.map((o) => ({
         ...o,
         values: o.values?.map((v) => v.value),
-        product: undefined,
-        product_id: o.product_id ?? undefined,
       }))
     )
   }

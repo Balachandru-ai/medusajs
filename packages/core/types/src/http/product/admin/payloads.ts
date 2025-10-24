@@ -515,6 +515,10 @@ export interface AdminCreateProductOption {
    * The option's values.
    */
   values: string[]
+  /**
+   * Whether the option is exclusive or global.
+   */
+  is_exclusive?: boolean
 }
 
 export interface AdminUpdateProductOption {
@@ -526,6 +530,10 @@ export interface AdminUpdateProductOption {
    * The option's values.
    */
   values?: string[]
+  /**
+   * Whether the option is exclusive or global.
+   */
+  is_exclusive?: boolean
 }
 
 interface AdminCreateProductVariantInventoryItem {

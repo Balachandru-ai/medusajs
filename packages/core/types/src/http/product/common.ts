@@ -257,13 +257,13 @@ export interface BaseProductOption {
    */
   title: string
   /**
-   * The product that the option belongs to.
+   * Whether the option is exclusive or global.
    */
-  product?: BaseProduct | null
+  is_exclusive: boolean
   /**
-   * The ID of the product that the option belongs to.
+   * The products that the option is associated to.
    */
-  product_id?: string | null
+  products?: BaseProduct[] | null
   /**
    * The option's values.
    */
@@ -417,13 +417,42 @@ export interface BaseProductListParams
   deleted_at?: OperatorMap<string>
 }
 
+export interface BaseProductOptionListParams
+  extends FindParams,
+    BaseFilterable<BaseProductOptionListParams> {
+  /**
+   * A query or keywords to search the searchable fields by.
+   */
+  q?: string
+  /**
+   * Filter by the option's title(s).
+   */
+  title?: string | string[]
+  /**
+   * Filter by whether the option is exclusive or global.
+   */
+  is_exclusive?: boolean
+  /**
+   * Apply filers on the product's creation date.
+   */
+  created_at?: OperatorMap<string>
+  /**
+   * Apply filers on the product's update date.
+   */
+  updated_at?: OperatorMap<string>
+  /**
+   * Apply filers on the product's deletion date.
+   */
+  deleted_at?: OperatorMap<string>
+}
+
 export interface BaseProductOptionParams
   extends FindParams,
     BaseFilterable<BaseProductOptionParams> {
   q?: string
   id?: string | string[]
   title?: string | string[]
-  product_id?: string | string[]
+  is_exclusive?: boolean
 }
 
 export interface BaseProductVariantParams

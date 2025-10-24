@@ -22,6 +22,7 @@ import { adminPriceListsRoutesMiddlewares } from "./admin/price-lists/middleware
 import { adminPricePreferencesRoutesMiddlewares } from "./admin/price-preferences/middlewares"
 import { adminProductCategoryRoutesMiddlewares } from "./admin/product-categories/middlewares"
 import { adminProductTagRoutesMiddlewares } from "./admin/product-tags/middlewares"
+import { adminProductOptionRoutesMiddlewares } from "./admin/product-options/middlewares"
 import { adminProductTypeRoutesMiddlewares } from "./admin/product-types/middlewares"
 import { adminProductVariantRoutesMiddlewares } from "./admin/product-variants/middlewares"
 import { adminProductRoutesMiddlewares } from "./admin/products/middlewares"
@@ -109,6 +110,7 @@ export default defineMiddlewares([
   ...adminShippingOptionTypeRoutesMiddlewares,
   ...adminProductTypeRoutesMiddlewares,
   ...adminProductTagRoutesMiddlewares,
+  ...adminProductOptionRoutesMiddlewares,
   ...adminUploadRoutesMiddlewares,
   ...adminFulfillmentSetsRoutesMiddlewares,
   ...adminNotificationRoutesMiddlewares,

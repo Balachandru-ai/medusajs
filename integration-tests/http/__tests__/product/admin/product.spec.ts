@@ -8,6 +8,7 @@ import { getProductFixture } from "../../../../helpers/fixtures"
 jest.setTimeout(50000)
 
 medusaIntegrationTestRunner({
+  debug: true,
   testSuite: ({ dbConnection, getContainer, api }) => {
     let baseProduct
     let proposedProduct

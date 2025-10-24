@@ -1,11 +1,11 @@
 import type { AdditionalData, ProductTypes } from "@medusajs/framework/types"
 import { ProductOptionWorkflowEvents } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createHook,
   createWorkflow,
   transform,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { createProductOptionsStep } from "../steps"
@@ -41,6 +41,7 @@ export const createProductOptionsWorkflowId = "create-product-options"
  *       {
  *         title: "Color",
  *         values: ["Red", "Blue", "Green"]
+ *         is_exclusive: true
  *       }
  *     ],
  *     additional_data: {

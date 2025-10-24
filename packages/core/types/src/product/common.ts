@@ -543,15 +543,15 @@ export interface ProductOptionDTO {
    */
   title: string
   /**
-   * The associated product.
+   * Whether the product option is exclusive or global.
+   */
+  is_exclusive: boolean
+  /**
+   * The associated products.
    *
    * @expandable
    */
-  product?: ProductDTO | null
-  /**
-   * The associated product id.
-   */
-  product_id?: string | null
+  products?: ProductDTO[] | null
   /**
    * The associated product option values.
    *
@@ -834,9 +834,9 @@ export interface FilterableProductOptionProps
    */
   title?: string | string[]
   /**
-   * Filter the product options by their associated products' IDs.
+   * Filter the product options by exclusivity.
    */
-  product_id?: string | string[]
+  is_exclusive?: boolean
 }
 
 /**
@@ -1204,10 +1204,6 @@ export interface CreateProductOptionDTO {
    */
   values: string[]
   /**
-   * The ID of the associated product.
-   */
-  product_id?: string
-  /**
    * Whether the product option is exclusive or global.
    */
   is_exclusive?: boolean
@@ -1248,9 +1244,9 @@ export interface UpdateProductOptionDTO {
    */
   values?: string[]
   /**
-   * The ID of the associated product.
+   * Whether the product option is exclusive or global.
    */
-  product_id?: string
+  is_exclusive?: boolean
 }
 
 export interface UpdateProductOptionValueDTO {
