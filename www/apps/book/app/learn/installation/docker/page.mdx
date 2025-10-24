@@ -246,7 +246,7 @@ WORKDIR /server
 COPY package.json package-lock.json ./
 
 # Install all dependencies using npm
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -280,9 +280,29 @@ If you're using a different Yarn version, or you're using NPM, you need to insta
 
 To install the dependencies, run the following command:
 
-```bash npm2yarn
-npm install
+<CodeTabs group="npm2yarn">
+  <CodeTab value="npm" label="npm">
+
+```bash
+npm install --legacy-peer-deps
 ```
+
+  </CodeTab>
+  <CodeTab value="yarn" label="yarn">
+
+```bash
+yarn install
+```
+
+  </CodeTab>
+  <CodeTab value="pnpm" label="pnpm">
+
+```bash
+pnpm install
+```
+
+  </CodeTab>
+</CodeTabs>
 
 This will update `yarn.lock` or generate a `package-lock.json` file, depending on your package manager.
 
@@ -471,6 +491,24 @@ medusa_backend   | /usr/local/bin/docker-entrypoint.sh: exec: line 11: ./start.s
 This is a common error for Windows users. It usually occurs when the `start.sh` file uses CRLF line endings instead of LF.
 
 To fix this, ensure that the `start.sh` file uses LF line endings. You can configure Git to maintain LF line endings by following [this guide from GitHub](https://docs.github.com/en/get-started/git-basics/configuring-git-to-handle-line-endings).
+
+### Container Name Conflicts
+
+If you're running multiple Medusa projects with Docker or have previously run this guide, you may encounter container name conflicts.
+
+To resolve this, ensure that the `container_name` values in your `docker-compose.yml` file are unique for each project. You can modify them by appending a unique identifier to each name.
+
+For example, change:
+
+```yaml
+container_name: medusa_postgres
+```
+
+to
+
+```yaml
+container_name: medusa_postgres_myproject
+```
 
 ---
 
