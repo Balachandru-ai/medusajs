@@ -16,6 +16,10 @@ export interface StripeOptions {
    */
   automaticPaymentMethods?: boolean
   /**
+   * Automatically authorize the payment when processing (default is false)
+   */
+  authorizeOnProcessing?: boolean
+  /**
    * Set a default description on the intent if the context does not provide one
    */
   paymentDescription?: string

@@ -605,7 +605,7 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
         return { status: PaymentSessionStatus.PENDING, data: paymentIntent }
       case "requires_confirmation":
       case "processing":
-        return { status: PaymentSessionStatus.PENDING, data: paymentIntent }
+        return { status: this.options_.authorizeOnProcessing?PaymentSessionStatus.AUTHORIZED:PaymentSessionStatus.PENDING, data: paymentIntent }
       case "requires_action":
         return {
           status: PaymentSessionStatus.REQUIRES_MORE,
