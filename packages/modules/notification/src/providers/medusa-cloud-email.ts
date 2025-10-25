@@ -16,16 +16,22 @@ export class MedusaCloudEmailNotificationProvider extends AbstractNotificationPr
   async send(
     notification: NotificationTypes.ProviderSendNotificationDTO
   ): Promise<NotificationTypes.ProviderSendNotificationResultsDTO> {
-    const { channel, ...httpNotification } = notification // no need to send the channel, since email is implied
     try {
-      const response = await fetch(this.options_.endpoint, {
+      const response = await fetch(`${this.options_.endpoint}/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Basic ${this.options_.api_key}`,
           "x-medusa-environment-handle": this.options_.environment_handle,
         },
-        body: JSON.stringify(httpNotification),
+        body: JSON.stringify({
+          to: notification.to,
+          from: notification.from,
+          attachments: notification.attachments,
+          template: notification.template,
+          data: notification.data,
+          content: notification.content,
+        }),
       })
       const responseBody = await response.json()
 

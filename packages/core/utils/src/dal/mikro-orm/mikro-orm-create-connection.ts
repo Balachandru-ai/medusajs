@@ -1,6 +1,6 @@
-import { ModuleServiceInitializeOptions } from "@medusajs/types"
 import { Filter as MikroORMFilter } from "@medusajs/deps/mikro-orm/core"
 import { TSMigrationGenerator } from "@medusajs/deps/mikro-orm/migrations"
+import { ModuleServiceInitializeOptions } from "@medusajs/types"
 import { isString, retryExecution, stringifyCircular } from "../../common"
 import { normalizeMigrationSQL } from "../utils"
 import { CustomDBMigrator } from "./custom-db-migrator"
@@ -147,6 +147,7 @@ export async function mikroOrmCreateConnection(
       maxRetries,
       retryDelay,
       onRetry: (error) => {
+        console.warn(error.message)
         console.warn(
           `MikroORM failed to connect to the database. Retrying...\n${stringifyCircular(
             error

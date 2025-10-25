@@ -45,7 +45,9 @@ export default async ({
   ) &
     NotificationModuleOptions
 >): Promise<void> => {
-  // We register the Medusa Cloud Email provider if there is no other email provider configured
+  let providers: Omit<ModuleProvider, "resolve">[] = options?.providers || []
+
+  // We add the Medusa Cloud Email provider if there is no other email provider configured
   const hasEmailProvider = options?.providers?.some((provider) =>
     provider?.channels?.includes("email")
   )
@@ -54,9 +56,17 @@ export default async ({
       options?.medusa_cloud_email ?? {}
     if (api_key && endpoint && environment_handle) {
       await registrationFn(MedusaCloudEmailNotificationProvider, container, {
-        options,
+        options: options?.medusa_cloud_email,
         id: "medusa_cloud_email",
       })
+      const provider = {
+        id: "medusa_cloud_email",
+        options: {
+          ...options?.medusa_cloud_email,
+          channels: ["email"],
+        },
+      }
+      providers = [...providers, provider]
     }
   }
 
@@ -68,7 +78,7 @@ export default async ({
 
   await syncDatabaseProviders({
     container,
-    providers: options?.providers || [],
+    providers: providers,
   })
 }
 
@@ -77,7 +87,7 @@ async function syncDatabaseProviders({
   providers,
 }: {
   container: any
-  providers: ModuleProvider[]
+  providers: Omit<ModuleProvider, "resolve">[]
 }) {
   const providerServiceRegistrationKey = lowerCaseFirst(
     NotificationProviderService.name

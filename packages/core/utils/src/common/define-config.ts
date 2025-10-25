@@ -3,6 +3,7 @@ import {
   InputConfig,
   InputConfigModules,
   InternalModuleDeclaration,
+  MedusaCloudOptions,
 } from "@medusajs/types"
 import {
   MODULE_PACKAGE_NAMES,
@@ -49,6 +50,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
   const modules = resolveModules(config.modules, options, config.projectConfig)
+  applyCloudOptionsToModules(modules, projectConfig?.medusaCloudOptions)
   const plugins = resolvePlugins(config.plugins, options)
 
   return {
@@ -356,27 +358,6 @@ function resolveModules(
     }
   }
 
-  for (const module of modules) {
-    /**
-     * We do this after processing the user module overrides,
-     * so that we inject the Medusa Cloud Email variables even if the user has overriden the module.
-     * This is necessary because the user may want to set e.g. a 'slack' provider, and still get the Medusa Cloud Email provider set up.
-     * If the user overrides the module by adding an email provider, the module internally skips adding the Medusa Cloud Email provider.
-     */
-    if (
-      isCloud &&
-      "resolve" in module &&
-      module.resolve === MODULE_PACKAGE_NAMES[Modules.NOTIFICATION]
-    ) {
-      module.options = {
-        ...(module.options?.medusa_cloud_email ?? {}),
-        api_key: process.env.MEDUSA_CLOUD_EMAIL_API_KEY,
-        endpoint: process.env.MEDUSA_CLOUD_EMAIL_ENDPOINT,
-        environment_handle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
-      }
-    }
-  }
-
   return transformModules(modules)
 }
 
@@ -384,8 +365,13 @@ function normalizeProjectConfig(
   projectConfig: InputConfig["projectConfig"],
   { isCloud }: { isCloud: boolean }
 ): ConfigModule["projectConfig"] {
-  const { http, redisOptions, sessionOptions, ...restOfProjectConfig } =
-    projectConfig || {}
+  const {
+    http,
+    redisOptions,
+    sessionOptions,
+    medusaCloudOptions,
+    ...restOfProjectConfig
+  } = projectConfig || {}
 
   /**
    * The defaults to use for the project config. They are shallow merged
@@ -447,6 +433,12 @@ function normalizeProjectConfig(
         : {}),
       ...sessionOptions,
     },
+    medusaCloudOptions: {
+      environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+      apiKey: process.env.MEDUSA_CLOUD_API_KEY,
+      emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
+      ...medusaCloudOptions,
+    },
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
 
@@ -464,5 +456,37 @@ function normalizeAdminConfig(
     backendUrl: process.env.MEDUSA_BACKEND_URL || DEFAULT_ADMIN_URL,
     path: "/app",
     ...adminConfig,
+  }
+}
+
+function applyCloudOptionsToModules(
+  modules: Exclude<ConfigModule["modules"], undefined>,
+  config?: MedusaCloudOptions
+) {
+  if (!config) {
+    return
+  }
+
+  for (const name in modules) {
+    const module = modules[name]
+    if (typeof module !== "object") {
+      continue
+    }
+
+    switch (name) {
+      case Modules.NOTIFICATION:
+        module.options = {
+          medusa_cloud_email: {
+            api_key: config.apiKey,
+            endpoint: config.emailsEndpoint,
+            environment_handle: config.environmentHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
+      // Will add payment module soon
+      default:
+        break
+    }
   }
 }
