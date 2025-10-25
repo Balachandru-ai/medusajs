@@ -24,34 +24,6 @@
  *     required: true
  *     schema:
  *       type: string
- *   - name: offset
- *     in: query
- *     description: The number of items to skip when retrieving a list.
- *     required: false
- *     schema:
- *       type: number
- *       title: offset
- *       description: The number of items to skip when retrieving a list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: limit
- *     in: query
- *     description: Limit the number of items returned in the list.
- *     required: false
- *     schema:
- *       type: number
- *       title: limit
- *       description: Limit the number of items returned in the list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: order
- *     in: query
- *     description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *     required: false
- *     schema:
- *       type: string
- *       title: order
- *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
  *   - name: promotion_type
  *     in: query
  *     description: The promotion type to retrieve rules for.
@@ -74,14 +46,6 @@
  *       enum:
  *         - fixed
  *         - percentage
- *   - name: with_deleted
- *     in: query
- *     description: Whether to include deleted records in the result.
- *     required: false
- *     schema:
- *       type: boolean
- *       title: with_deleted
- *       description: Whether to include deleted records in the result.
  *   - name: application_method_target_type
  *     in: query
  *     description: The application method target type to retrieve rules for.

@@ -562,14 +562,6 @@ get:
         items:
           type: object
         title: $or
-    - name: with_deleted
-      in: query
-      description: Whether to include deleted records in the result.
-      required: false
-      schema:
-        type: boolean
-        title: with_deleted
-        description: Whether to include deleted records in the result.
   security:
     - api_token: []
     - cookie_auth: []
@@ -609,25 +601,6 @@ post:
   summary: Create Stock Location
   description: Create a stock location.
   x-authenticated: true
-  parameters:
-    - name: fields
-      in: query
-      description: >-
-        Comma-separated fields that should be included in the returned data. if
-        a field is prefixed with `+` it will be added to the default fields,
-        using `-` will remove it from the default fields. without prefix it will
-        replace the entire default fields.
-      required: false
-      schema:
-        type: string
-        title: fields
-        description: >-
-          Comma-separated fields that should be included in the returned data.
-          if a field is prefixed with `+` it will be added to the default
-          fields, using `-` will remove it from the default fields. without
-          prefix it will replace the entire default fields.
-        externalDocs:
-          url: '#select-fields-and-relations'
   security:
     - api_token: []
     - cookie_auth: []

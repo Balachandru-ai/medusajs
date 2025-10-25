@@ -49,14 +49,6 @@
  *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
  *       externalDocs:
  *         url: "#pagination"
- *   - name: with_deleted
- *     in: query
- *     description: Whether to include deleted records in the result.
- *     required: false
- *     schema:
- *       type: boolean
- *       title: with_deleted
- *       description: Whether to include deleted records in the result.
  *   - name: q
  *     in: query
  *     description: Search query to apply on the shipping option type's searchable properties.
