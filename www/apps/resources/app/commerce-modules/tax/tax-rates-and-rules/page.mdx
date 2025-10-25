@@ -14,9 +14,11 @@ Refer to this [Medusa Admin User Guide](!user-guide!/settings/tax-regions#manage
 
 ## What are Tax Rates?
 
-A tax rate is a percentage amount used to calculate the tax amount for each taxable item’s price, such as line items or shipping methods, in a cart. The sum of all calculated tax amounts are then added to the cart’s total as a tax total.
+A tax rate, represented by the [TaxRate data model](/references/tax/models/TaxRate), is a percentage amount used to calculate the tax amount for each taxable item’s price, such as line items or shipping methods, in a cart. The sum of all calculated tax amounts are then added to the cart’s total as a tax total.
 
 Each tax region has a default tax rate. This tax rate is applied to all taxable items of a cart in that region.
+
+The `TaxRate` data model has a `rate` property that represents the percentage amount. For example, a `rate` of `10` means a tax rate of 10%.
 
 ### Combinable Tax Rates
 

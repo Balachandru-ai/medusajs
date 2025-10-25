@@ -60,6 +60,8 @@ export type ConfigExtension = {
   fields: Record<string, ConfigFieldExtension>
 }
 
+export type I18nExtension = Record<string, Record<string, any>>
+
 export type LinkModule = {
   links: Record<CustomFieldModel, (string | string[])[]>
 }
@@ -88,6 +90,10 @@ export type RouteModule = {
 
 export type MenuItemModule = {
   menuItems: MenuItemExtension[]
+}
+
+export type I18nModule = {
+  resources: I18nExtension
 }
 
 export type MenuItemKey = "coreExtensions" | "settingsExtensions"
@@ -131,4 +137,5 @@ export type DashboardPlugin = {
   menuItemModule: MenuItemModule
   widgetModule: WidgetModule
   routeModule: RouteModule
+  i18nModule?: I18nModule
 }
