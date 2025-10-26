@@ -1,5 +1,19 @@
 # @medusajs/dashboard
 
+## 2.11.1
+
+### Patch Changes
+
+- [#13763](https://github.com/medusajs/medusa/pull/13763) [`226984cf0f229bec00ee33a3a1a981b57889c11a`](https://github.com/medusajs/medusa/commit/226984cf0f229bec00ee33a3a1a981b57889c11a) Thanks [@leobenzol](https://github.com/leobenzol)! - feat(admin-\*,dashboard): add dashboard i18n extensions
+
+- [#13766](https://github.com/medusajs/medusa/pull/13766) [`fe4e7481a9ee6e360623d15ecfaf51f3df00f9d7`](https://github.com/medusajs/medusa/commit/fe4e7481a9ee6e360623d15ecfaf51f3df00f9d7) Thanks [@willbouch](https://github.com/willbouch)! - feat(order,dashboard): version order credit lines
+
+- Updated dependencies [[`226984cf0f229bec00ee33a3a1a981b57889c11a`](https://github.com/medusajs/medusa/commit/226984cf0f229bec00ee33a3a1a981b57889c11a), [`22d23b148e610bd0dd1980620c2ebc85af65be55`](https://github.com/medusajs/medusa/commit/22d23b148e610bd0dd1980620c2ebc85af65be55)]:
+  - @medusajs/admin-shared@2.11.1
+  - @medusajs/js-sdk@2.11.1
+  - @medusajs/icons@2.11.1
+  - @medusajs/ui@4.0.25
+
 ## 2.11.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @medusajs/inventory-next
 
+## 2.11.1
+
+### Patch Changes
+
+- [#13736](https://github.com/medusajs/medusa/pull/13736) [`a34fcfab351a79badfb24255602ca3c6ff60bffd`](https://github.com/medusajs/medusa/commit/a34fcfab351a79badfb24255602ca3c6ff60bffd) Thanks [@DDA1O1](https://github.com/DDA1O1)! - fix(): Remove redundant indexes from product, cart, order, customer, and inventory modules to improve database schema health.
+
+- Updated dependencies []:
+  - @medusajs/framework@2.11.1
+
 ## 2.11.0
 
 ### Patch Changes

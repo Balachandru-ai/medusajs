@@ -122,6 +122,8 @@
     "continue": "Continue",
     "continueWithEmail": "Continue with Email",
     "idCopiedToClipboard": "ID copied to clipboard",
+    "editVariantImages": "Edit variant images",
+    "editImages": "Edit images",
     "addReason": "Add Reason",
     "addNote": "Add Note",
     "reset": "Reset",
@@ -506,6 +508,7 @@
     "media": {
       "label": "Media",
       "editHint": "Add media to the product to showcase it in your storefront.",
+      "manageImageVariants": "Manage associated variants",
       "makeThumbnail": "Make thumbnail",
       "uploadImagesLabel": "Upload images",
       "uploadImagesHint": "Drag and drop images here or click to upload.",
@@ -521,10 +524,27 @@
       "deleteImageLabel": "Delete current image",
       "emptyState": {
         "header": "No media yet",
-        "description": "Add media to the product to showcase it in your storefront.",
+        "description": "Add media to showcase it in your storefront.",
         "action": "Add media"
       },
-      "successToast": "Media was successfully updated."
+      "successToast": "Media was successfully updated.",
+      "variantImages": "Variant images",
+      "showAvailableImages": "Show available images",
+      "availableImages": "Available images",
+      "selectToAdd": "Select to add to variant",
+      "removeSelected": "Remove Selected"
+    },
+    "variantMedia": {
+      "label": "Variant Media",
+      "manageVariants": "Manage variants",
+      "addToMultipleVariants": "Add to multiple variants",
+      "manageVariantsDescription": "Manage associated variants for the image",
+      "successToast": "Image variants successfully updated.",
+      "emptyState": {
+        "header": "No media yet",
+        "description": "Add media to the variant to showcase it in your storefront.",
+        "action": "Add media"
+      }
     },
     "discountableHint": "When unchecked, discounts will not be applied to this product.",
     "noSalesChannels": "Not available in any sales channels",

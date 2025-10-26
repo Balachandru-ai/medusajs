@@ -317,6 +317,10 @@ export interface AdminUpdateProductVariant {
    */
   mid_code?: string | null
   /**
+   * The variant's thumbnail.
+   */
+  thumbnail?: string | null
+  /**
    * Whether the variant can be ordered even if it's out of stock.
    */
   allow_backorder?: boolean
@@ -569,6 +573,28 @@ interface AdminDeleteProductVariantInventoryItem {
    * The ID of the variant.
    */
   variant_id: string
+}
+
+export interface AdminBatchImageVariantRequest {
+  /**
+   * The variant IDs to add to the image.
+   */
+  add?: string[]
+  /**
+   * The variant IDs to remove from the image.
+   */
+  remove?: string[]
+}
+
+export interface AdminBatchVariantImagesRequest {
+  /**
+   * The image IDs to add to the variant.
+   */
+  add?: string[]
+  /**
+   * The image IDs to remove from the variant.
+   */
+  remove?: string[]
 }
 
 export interface AdminImportProductsRequest {

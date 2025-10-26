@@ -115,3 +115,25 @@ export interface AdminProductVariantInventoryLinkDeleteResponse {
   deleted: boolean
   parent: AdminProductVariant
 }
+
+export interface AdminBatchImageVariantResponse {
+  /**
+   * The variant IDs that were added to the image.
+   */
+  added: string[]
+  /**
+   * The variant IDs that were removed from the image.
+   */
+  removed: string[]
+}
+
+export interface AdminBatchVariantImagesResponse {
+  /**
+   * The image IDs that were added to the variant.
+   */
+  added: string[]
+  /**
+   * The image IDs that were removed from the variant.
+   */
+  removed: string[]
+}
