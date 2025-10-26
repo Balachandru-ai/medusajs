@@ -193,6 +193,10 @@ export interface ProductVariantDTO {
    */
   manage_inventory: boolean
   /**
+   * The thumbnail of the product variant form the product images.
+   */
+  thumbnail: string | null
+  /**
    * Whether the product variant's requires shipping.
    */
   requires_shipping: boolean
@@ -234,6 +238,12 @@ export interface ProductVariantDTO {
    * @expandable
    */
   options: ProductOptionValueDTO[]
+  /**
+   * The associated product images.
+   *
+   * @expandable
+   */
+  images: ProductImageDTO[]
   /**
    * Holds custom data in key-value pairs.
    */
@@ -1402,6 +1412,10 @@ export interface UpdateProductVariantDTO {
    * The UPC of the product variant.
    */
   upc?: string | null
+  /**
+   * The thumbnail of the product variant.
+   */
+  thumbnail?: string | null
   /**
    * Whether the product variant can be ordered when it's out of stock.
    */

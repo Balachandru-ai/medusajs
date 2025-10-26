@@ -59,6 +59,7 @@ type ProductVariant {
   height: Float
   width: Float
   options: [ProductOptionValue!]!
+  images: [ProductImage!]!
   metadata: JSON
   product: Product
   product_id: String
