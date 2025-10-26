@@ -609,7 +609,7 @@ The second step in the workflow will create a wishlist for the customer. To crea
 
 ![Directory structure after adding the step file](https://res.cloudinary.com/dza7lstvk/image/upload/v1737467998/Medusa%20Resources/wishlist-10_xex4d0.jpg)
 
-export const createWishlistStepHiglights = [
+export const createWishlistStepHighlights = [
   ["13", "wishlistModuleService", "Resolve the Wishlist Module's service from the container."],
   ["16", "createWishlists", "Create the wishlist."],
   ["18", "wishlist", "Return the wishlist"],
@@ -617,7 +617,7 @@ export const createWishlistStepHiglights = [
   ["24", "deleteWishlists", "Delete the wishlist if an error occurs in the workflow."]
 ]
 
-```ts title="src/workflows/steps/create-wishlist.ts" highlights={createWishlistStepHiglights}
+```ts title="src/workflows/steps/create-wishlist.ts" highlights={createWishlistStepHighlights}
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { WISHLIST_MODULE } from "../../modules/wishlist"
 import WishlistModuleService from "../../modules/wishlist/service"
@@ -1979,7 +1979,7 @@ export default class WishlistModuleService extends MedusaService({
 
 To perform queries on the database in a method, add the `@InjectManager` decorator to the method. This will inject a [forked MikroORM entity manager](https://mikro-orm.io/docs/identity-map#forking-entity-manager) that you can use in your method.
 
-Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this paramter.
+Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this parameter.
 
 The method accepts an array of variant IDs as a parameter. In the method, you use the `createQueryBuilder` to construct a query, passing it the name of the `WishlistItem`'s table. You then select distinct `wishlist_id`s where the `product_variant_id` of the wishlist item is in the array of variant IDs.
 
