@@ -32,7 +32,11 @@ export type NotificationModuleOptions =
        */
       options?: Record<string, unknown> & { channels: string[] }
     }[]
-    medusa_cloud_email?: MedusaCloudEmailOptions
+    /**
+     * Options for the default Medusa Cloud Email provider
+     * @private
+     */
+    cloud?: MedusaCloudEmailOptions
   }
 
 export type MedusaCloudEmailOptions = {

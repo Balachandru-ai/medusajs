@@ -2087,7 +2087,7 @@ describe("defineConfig", function () {
           },
           "notification": {
             "options": {
-              "medusa_cloud_email": {
+              "cloud": {
                 "api_key": "test-api-key",
                 "endpoint": "test-emails-endpoint",
                 "environment_handle": "test-environment",
@@ -2275,7 +2275,7 @@ describe("defineConfig", function () {
           },
           "notification": {
             "options": {
-              "medusa_cloud_email": {
+              "cloud": {
                 "api_key": "overriden-api-key",
                 "endpoint": "overriden-emails-endpoint",
                 "environment_handle": "overriden-environment",

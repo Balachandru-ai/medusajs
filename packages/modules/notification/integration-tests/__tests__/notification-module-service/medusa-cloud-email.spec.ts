@@ -24,7 +24,7 @@ const testNotification = {
 moduleIntegrationTestRunner<INotificationModuleService>({
   moduleName: Modules.NOTIFICATION,
   moduleOptions: {
-    medusa_cloud_email: {
+    cloud: {
       api_key: "test-api-key",
       endpoint: "https://medusacloud.com/emails",
       environment_handle: "test-environment",
@@ -50,7 +50,7 @@ moduleIntegrationTestRunner<INotificationModuleService>({
         const result = await service.createNotifications(testNotification)
         expect(result).toEqual(
           expect.objectContaining({
-            provider_id: "medusa_cloud_email",
+            provider_id: "cloud",
             external_id: "external_id_1",
             status: NotificationStatus.SUCCESS,
           })
@@ -94,7 +94,7 @@ moduleIntegrationTestRunner<INotificationModuleService>({
 moduleIntegrationTestRunner<INotificationModuleService>({
   moduleName: Modules.NOTIFICATION,
   moduleOptions: {
-    medusa_cloud_email: {
+    cloud: {
       api_key: "test-api-key",
       endpoint: "https://medusacloud.com/emails",
       environment_handle: "test-environment",
@@ -142,7 +142,7 @@ moduleIntegrationTestRunner<INotificationModuleService>({
   moduleName: Modules.NOTIFICATION,
   moduleOptions: {},
   testSuite: ({ service }) =>
-    describe("Medusa Cloud Email provider - when medusa_cloud_email options are not provided", () => {
+    describe("Medusa Cloud Email provider - when cloud options are not provided", () => {
       let fetchMock: jest.SpyInstance
 
       beforeEach(() => {

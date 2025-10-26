@@ -48,18 +48,17 @@ export default async ({
     provider.options?.channels?.some((channel) => channel === "email")
   )
   if (!hasEmailProvider) {
-    const { api_key, endpoint, environment_handle } =
-      options?.medusa_cloud_email ?? {}
+    const { api_key, endpoint, environment_handle } = options?.cloud ?? {}
     if (api_key && endpoint && environment_handle) {
       await registrationFn(MedusaCloudEmailNotificationProvider, container, {
-        options: options?.medusa_cloud_email,
-        id: "medusa_cloud_email",
+        options: options?.cloud,
+        id: "cloud",
       })
       const provider = {
-        id: "medusa_cloud_email",
+        id: "cloud",
         resolve: "",
         options: {
-          ...options?.medusa_cloud_email,
+          ...options?.cloud,
           channels: ["email"],
         },
       }

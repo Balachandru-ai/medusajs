@@ -482,7 +482,7 @@ function applyCloudOptionsToModules(
     switch (name) {
       case Modules.NOTIFICATION:
         module.options = {
-          medusa_cloud_email: {
+          cloud: {
             api_key: config.apiKey,
             endpoint: config.emailsEndpoint,
             environment_handle: config.environmentHandle,
