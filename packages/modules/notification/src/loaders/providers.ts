@@ -1,10 +1,6 @@
 import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
-import {
-  LoaderOptions,
-  ModuleProvider,
-  ModulesSdkTypes,
-} from "@medusajs/framework/types"
+import { LoaderOptions, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   lowerCaseFirst,
@@ -45,11 +41,11 @@ export default async ({
   ) &
     NotificationModuleOptions
 >): Promise<void> => {
-  let providers: Omit<ModuleProvider, "resolve">[] = options?.providers || []
+  let providers = options?.providers || []
 
   // We add the Medusa Cloud Email provider if there is no other email provider configured
   const hasEmailProvider = options?.providers?.some((provider) =>
-    provider?.channels?.includes("email")
+    provider.options?.channels?.some((channel) => channel === "email")
   )
   if (!hasEmailProvider) {
     const { api_key, endpoint, environment_handle } =
@@ -61,6 +57,7 @@ export default async ({
       })
       const provider = {
         id: "medusa_cloud_email",
+        resolve: "",
         options: {
           ...options?.medusa_cloud_email,
           channels: ["email"],
@@ -87,7 +84,7 @@ async function syncDatabaseProviders({
   providers,
 }: {
   container: any
-  providers: Omit<ModuleProvider, "resolve">[]
+  providers: Exclude<NotificationModuleOptions["providers"], undefined>
 }) {
   const providerServiceRegistrationKey = lowerCaseFirst(
     NotificationProviderService.name
@@ -104,13 +101,12 @@ async function syncDatabaseProviders({
       )
     }
 
-    const config = provider.options as { channels: string[] }
     return {
       id: provider.id,
       handle: provider.id,
       name: provider.id,
       is_enabled: true,
-      channels: config?.channels ?? [],
+      channels: provider.options?.channels ?? [],
     }
   })
 

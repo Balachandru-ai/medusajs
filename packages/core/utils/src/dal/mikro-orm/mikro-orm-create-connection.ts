@@ -147,7 +147,6 @@ export async function mikroOrmCreateConnection(
       maxRetries,
       retryDelay,
       onRetry: (error) => {
-        console.warn(error.message)
         console.warn(
           `MikroORM failed to connect to the database. Retrying...\n${stringifyCircular(
             error

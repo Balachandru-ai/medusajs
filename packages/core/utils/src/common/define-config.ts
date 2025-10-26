@@ -373,6 +373,16 @@ function normalizeProjectConfig(
     ...restOfProjectConfig
   } = projectConfig || {}
 
+  const mergedCloudOptions: MedusaCloudOptions = {
+    environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+    apiKey: process.env.MEDUSA_CLOUD_API_KEY,
+    emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
+    ...medusaCloudOptions,
+  }
+  const hasCloudOptions = Object.values(mergedCloudOptions).some(
+    (value) => value !== undefined
+  )
+
   /**
    * The defaults to use for the project config. They are shallow merged
    * with the user defined config.
@@ -433,12 +443,8 @@ function normalizeProjectConfig(
         : {}),
       ...sessionOptions,
     },
-    medusaCloudOptions: {
-      environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
-      apiKey: process.env.MEDUSA_CLOUD_API_KEY,
-      emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
-      ...medusaCloudOptions,
-    },
+    // If there are no cloud options, we better don't pollute the project config for people not using the cloud
+    ...(hasCloudOptions ? { medusaCloudOptions: mergedCloudOptions } : {}),
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
 
