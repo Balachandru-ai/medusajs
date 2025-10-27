@@ -251,7 +251,9 @@ export const dbTestUtilFactory = (): any => ({
 
         tablesToTruncate.push(`${schema}."${table_name}"`)
       }
-      await runRawQuery(`TRUNCATE ${tablesToTruncate.join(", ")};`)
+      if (tablesToTruncate.length > 0) {
+        await runRawQuery(`TRUNCATE ${tablesToTruncate.join(", ")};`)
+      }
 
       if (hasIndexTables) {
         await runRawQuery(
