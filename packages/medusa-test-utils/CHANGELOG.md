@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.11.1
+
+### Patch Changes
+
+- [#13798](https://github.com/medusajs/medusa/pull/13798) [`2d1d51a2af71092127c0af79786ece735b47f13f`](https://github.com/medusajs/medusa/commit/2d1d51a2af71092127c0af79786ece735b47f13f) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(test-utils): Event subscribers duplicated durin tests
+
+- Updated dependencies [[`90162ebeacf6e093a06b70ac2e87de9f12674a17`](https://github.com/medusajs/medusa/commit/90162ebeacf6e093a06b70ac2e87de9f12674a17)]:
+  - @medusajs/medusa@2.11.1
+  - @medusajs/framework@2.11.1
+
 ## 2.11.0
 
 ### Patch Changes

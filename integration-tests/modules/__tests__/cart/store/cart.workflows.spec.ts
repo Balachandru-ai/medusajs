@@ -1565,6 +1565,146 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("should add one item with variant thumbnail and one item with product thumbnail", async () => {
+          const salesChannel = await scModuleService.createSalesChannels({
+            name: "Webshop",
+          })
+
+          const location = await stockLocationModule.createStockLocations({
+            name: "Warehouse",
+          })
+
+          let cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+          })
+
+          await remoteLink.create([
+            {
+              [Modules.SALES_CHANNEL]: {
+                sales_channel_id: salesChannel.id,
+              },
+              [Modules.STOCK_LOCATION]: {
+                stock_location_id: location.id,
+              },
+            },
+          ])
+
+          const [product1, product2] = await productModule.createProducts([
+            {
+              title: "Test product 1",
+              status: ProductStatus.PUBLISHED,
+              thumbnail: "product-thumbnail-1",
+              variants: [
+                {
+                  title: "Test variant 1",
+                  manage_inventory: false,
+                },
+              ],
+            },
+            {
+              title: "Test product 2",
+              status: ProductStatus.PUBLISHED,
+              thumbnail: "product-thumbnail-2",
+              variants: [
+                {
+                  title: "Test variant 2",
+                  manage_inventory: false,
+                  thumbnail: "variant-thumbnail-2",
+                },
+              ],
+            },
+          ])
+
+          const priceSet1 = await pricingModule.createPriceSets({
+            prices: [
+              {
+                amount: 30,
+                currency_code: "usd",
+              },
+            ],
+          })
+
+          const priceSet2 = await pricingModule.createPriceSets({
+            prices: [
+              {
+                amount: 30,
+                currency_code: "usd",
+              },
+            ],
+          })
+
+          await pricingModule.createPricePreferences({
+            attribute: "currency_code",
+            value: "usd",
+            is_tax_inclusive: true,
+          })
+
+          await remoteLink.create([
+            {
+              [Modules.PRODUCT]: {
+                variant_id: product1.variants[0].id,
+              },
+              [Modules.PRICING]: {
+                price_set_id: priceSet1.id,
+              },
+            },
+          ])
+
+          await remoteLink.create([
+            {
+              [Modules.PRODUCT]: {
+                variant_id: product2.variants[0].id,
+              },
+              [Modules.PRICING]: {
+                price_set_id: priceSet2.id,
+              },
+            },
+          ])
+
+          cart = await cartModuleService.retrieveCart(cart.id, {
+            select: ["id", "region_id", "currency_code", "sales_channel_id"],
+          })
+
+          await addToCartWorkflow(appContainer).run({
+            input: {
+              items: [
+                {
+                  variant_id: product1.variants[0].id,
+                  quantity: 1,
+                },
+                {
+                  variant_id: product2.variants[0].id,
+                  quantity: 1,
+                },
+              ],
+              cart_id: cart.id,
+            },
+          })
+
+          cart = await cartModuleService.retrieveCart(cart.id, {
+            relations: ["items"],
+          })
+
+          expect(cart.items).toHaveLength(2)
+          expect(cart.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                variant_id: product1.variants.find(
+                  (v) => v.title === "Test variant 1"
+                )!.id,
+                thumbnail: "product-thumbnail-1",
+              }),
+              expect.objectContaining({
+                variant_id: product2.variants.find(
+                  (v) => v.title === "Test variant 2"
+                )!.id,
+                thumbnail: "variant-thumbnail-2",
+              }),
+            ])
+          )
+        })
+
         it("should add custom item to cart", async () => {
           const salesChannel = await scModuleService.createSalesChannels({
             name: "Webshop",

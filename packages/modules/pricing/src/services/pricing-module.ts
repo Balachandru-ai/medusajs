@@ -365,7 +365,7 @@ export default class PricingModuleService
   ): Promise<PricingTypes.PricePreferenceDTO[]> {
     const pricePreferences = await this.listPricePreferences_(
       filters,
-      { ...config, select: [...(config.select || []), "id"] },
+      config,
       sharedContext
     )
 

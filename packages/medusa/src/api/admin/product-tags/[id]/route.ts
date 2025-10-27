@@ -7,16 +7,13 @@ import {
   MedusaResponse,
   refetchEntity,
 } from "@medusajs/framework/http"
-
-import {
-  AdminGetProductTagParamsType,
-  AdminUpdateProductTagType,
-} from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetProductTagParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminProductTagParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTagResponse>
 ) => {
   const productTag = await refetchEntity({
@@ -30,7 +27,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateProductTagType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateProductTag,
+    HttpTypes.AdminProductTagParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTagResponse>
 ) => {
   const existingProductTag = await refetchEntity({

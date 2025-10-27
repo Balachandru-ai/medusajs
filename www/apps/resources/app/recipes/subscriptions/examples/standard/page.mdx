@@ -597,7 +597,7 @@ Create the file `src/workflows/create-subscription/steps/create-subscription.ts`
 export const createSubscriptionsHighlights = [
   ["28", "linkDefs", "An array of links to be created later."],
   ["30", "createSubscriptions", "Create the subscription."],
-  ["33", "main_order_id", "Store the ID of the order created for the subscription purhcase."],
+  ["33", "main_order_id", "Store the ID of the order created for the subscription purchase."],
   ["43", "subscription", "Pass the subscription to the compensation function."]
 ]
 
@@ -1772,7 +1772,7 @@ You create a `getLatestPaymentMethod` function that receives an array of payment
 
 Then, you create the `getPaymentMethodStep` that receives the customer's data and account holder as an input.
 
-Next, you'll add the implemenation of the step. Replace `getPaymentMethodStep` with the following:
+Next, you'll add the implementation of the step. Replace `getPaymentMethodStep` with the following:
 
 ```tsx title="src/workflows/create-subscription-order/steps/get-payment-method.ts"
 export const getPaymentMethodStep = createStep(
