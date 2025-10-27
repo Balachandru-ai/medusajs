@@ -13,7 +13,7 @@ import { refetchCollection } from "../helpers"
 import { AdminUpdateCollectionType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminCollectionParams>,
   res: MedusaResponse<HttpTypes.AdminCollectionResponse>
 ) => {
   const collection = await refetchCollection(
@@ -26,7 +26,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateCollectionType & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    AdminUpdateCollectionType & AdditionalData,
+    HttpTypes.AdminCollectionParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCollectionResponse>
 ) => {
   const existingCollection = await refetchCollection(req.params.id, req.scope, [

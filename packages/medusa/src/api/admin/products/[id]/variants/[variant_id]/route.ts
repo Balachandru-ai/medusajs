@@ -17,7 +17,7 @@ import {
 } from "../../../helpers"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductVariantResponse>
 ) => {
   const productId = req.params.id
@@ -36,7 +36,8 @@ export const GET = async (
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
-    HttpTypes.AdminUpdateProductVariant & AdditionalData
+    HttpTypes.AdminUpdateProductVariant & AdditionalData,
+    HttpTypes.SelectParams
   >,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {
@@ -63,7 +64,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductVariantDeleteResponse>
 ) => {
   const productId = req.params.id

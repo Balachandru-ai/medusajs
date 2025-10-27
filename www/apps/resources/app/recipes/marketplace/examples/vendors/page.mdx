@@ -672,7 +672,7 @@ In the workflow function, you run the following steps:
 
 1. `createVendorStep` to create the vendor.
 2. `createVendorAdminStep` to create the vendor admin.
-    - Notice that you use `transform` from the Workflows SDK to prepare the data you pass into the step. Medusa doesn't allow direct manipulation of variables within the worflow's constructor function. Learn more in the [Data Manipulation in Workflows documentation](!docs!/learn/fundamentals/workflows/variable-manipulation).
+    - Notice that you use `transform` from the Workflows SDK to prepare the data you pass into the step. Medusa doesn't allow direct manipulation of variables within the workflow's constructor function. Learn more in the [Data Manipulation in Workflows documentation](!docs!/learn/fundamentals/workflows/variable-manipulation).
 3. `setAuthAppMetadataStep` to associate the vendor admin with its auth identity of actor type `vendor`. This will allow the vendor admin to send authenticated requests afterwards.
 4. `useQueryGraphStep` to retrieve the created vendor with its admins using [Query](!docs!/learn/fundamentals/module-links/query). Query allows you to retrieve data across modules.
 
@@ -1547,7 +1547,7 @@ try {
   )
 } catch (e) {
   return StepResponse.permanentFailure(
-    `An error occured while creating vendor orders: ${e}`,
+    `An error occurred while creating vendor orders: ${e}`,
     {
       created_orders: createdOrders,
     }
@@ -1831,7 +1831,7 @@ In the next step, you'll create an API route to retrieve the vendor's orders, al
 In this step, you’ll create an API route that retrieves a vendor’s orders. Create the file `src/api/vendors/orders/route.ts` with the following content:
 
 export const getOrderHighlights = [
-  ["11", "graph", "Retrive the vendor admin's vendor and orders."],
+  ["11", "graph", "Retrieve the vendor admin's vendor and orders."],
   ["19", "getOrdersListWorkflow", "Use Medusa's workflow to retrieve the list of orders."],
 ]
 
