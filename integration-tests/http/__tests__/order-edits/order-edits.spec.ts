@@ -1273,11 +1273,11 @@ medusaIntegrationTestRunner({
 
         await orderModule.createOrderLineItemAdjustments([
           {
+            version: 1,
             code: appliedPromotion.code!,
             amount: 1,
             item_id: "item-1",
             promotion_id: appliedPromotion.id,
-            version: 1,
           },
         ])
 

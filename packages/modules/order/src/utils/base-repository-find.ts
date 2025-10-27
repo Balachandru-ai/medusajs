@@ -203,11 +203,25 @@ function configurePopulateWhere(
       popWhereOrder.items.version = isSelectIn
         ? getVersionSubQuery(manager, "o0", "id")
         : version
+
+      popWhere.items ??= {}
+      popWhere.items.item ??= {}
+      popWhere.items.item.adjustments ??= {}
+      popWhere.items.item.adjustments.version = version
     }
 
     if (hasRelation("shipping_methods")) {
       popWhereOrder.shipping_methods ??= {}
       popWhereOrder.shipping_methods.version = isSelectIn
+        ? getVersionSubQuery(manager, "o0", "id")
+        : version
+    }
+
+    if (hasRelation("items.adjustments")) {
+      popWhere.items ??= {}
+      popWhere.items.item ??= {}
+      popWhere.items.item.adjustments ??= {}
+      popWhere.items.item.adjustments.version = isSelectIn
         ? getVersionSubQuery(manager, "o0", "id")
         : version
     }
