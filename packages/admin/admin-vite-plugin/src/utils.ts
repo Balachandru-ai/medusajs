@@ -49,7 +49,7 @@ export function generateModule(code: string) {
   }
 }
 
-export const VALID_FILE_EXTENSIONS = [".tsx", ".jsx", ".js"]
+export const VALID_FILE_EXTENSIONS = [".tsx", ".jsx", ".js", ".ts"]
 
 /**
  * Crawls a directory and returns all files that match the criteria.
@@ -176,7 +176,7 @@ export function generateHash(content: string) {
   return crypto.createHash("md5").update(content).digest("hex")
 }
 
-const ADMIN_SUBDIRECTORIES = ["routes", "custom-fields", "widgets"] as const
+const ADMIN_SUBDIRECTORIES = ["routes", "custom-fields", "widgets", "i18n"] as const
 
 export type AdminSubdirectory = (typeof ADMIN_SUBDIRECTORIES)[number]
 

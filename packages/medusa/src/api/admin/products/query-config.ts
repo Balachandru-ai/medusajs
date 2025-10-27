@@ -1,6 +1,7 @@
 export const defaultAdminProductsVariantFields = [
   "id",
   "product_id",
+  "thumbnail",
   "title",
   "sku",
   "allow_backorder",

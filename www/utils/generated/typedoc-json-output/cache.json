@@ -1,19 +1,19 @@
 {
-	"id": 61185,
+	"id": 61192,
 	"name": "cache",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 61186,
+			"id": 61193,
 			"name": "ICacheService",
 			"variant": "declaration",
 			"kind": 256,
 			"flags": {},
 			"children": [
 				{
-					"id": 61187,
+					"id": 61194,
 					"name": "get",
 					"variant": "declaration",
 					"kind": 2048,
@@ -23,12 +23,12 @@
 							"fileName": "service.ts",
 							"line": 11,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L11"
+							"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L11"
 						}
 					],
 					"signatures": [
 						{
-							"id": 61188,
+							"id": 61195,
 							"name": "get",
 							"variant": "signature",
 							"kind": 4096,
@@ -66,12 +66,12 @@
 									"fileName": "service.ts",
 									"line": 11,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L11"
+									"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L11"
 								}
 							],
 							"typeParameters": [
 								{
-									"id": 61189,
+									"id": 61196,
 									"name": "T",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -80,7 +80,7 @@
 							],
 							"parameters": [
 								{
-									"id": 61190,
+									"id": 61197,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -115,7 +115,7 @@
 											},
 											{
 												"type": "reference",
-												"target": 61189,
+												"target": 61196,
 												"name": "T",
 												"package": "@medusajs/types",
 												"refersToTypeParameter": true
@@ -130,7 +130,7 @@
 					]
 				},
 				{
-					"id": 61191,
+					"id": 61198,
 					"name": "set",
 					"variant": "declaration",
 					"kind": 2048,
@@ -140,12 +140,12 @@
 							"fileName": "service.ts",
 							"line": 22,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L22"
+							"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L22"
 						}
 					],
 					"signatures": [
 						{
-							"id": 61192,
+							"id": 61199,
 							"name": "set",
 							"variant": "signature",
 							"kind": 4096,
@@ -174,12 +174,12 @@
 									"fileName": "service.ts",
 									"line": 22,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L22"
+									"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L22"
 								}
 							],
 							"parameters": [
 								{
-									"id": 61193,
+									"id": 61200,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -198,7 +198,7 @@
 									}
 								},
 								{
-									"id": 61194,
+									"id": 61201,
 									"name": "data",
 									"variant": "param",
 									"kind": 32768,
@@ -217,7 +217,7 @@
 									}
 								},
 								{
-									"id": 61195,
+									"id": 61202,
 									"name": "ttl",
 									"variant": "param",
 									"kind": 32768,
@@ -257,7 +257,7 @@
 					]
 				},
 				{
-					"id": 61196,
+					"id": 61203,
 					"name": "invalidate",
 					"variant": "declaration",
 					"kind": 2048,
@@ -267,12 +267,12 @@
 							"fileName": "service.ts",
 							"line": 31,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L31"
+							"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L31"
 						}
 					],
 					"signatures": [
 						{
-							"id": 61197,
+							"id": 61204,
 							"name": "invalidate",
 							"variant": "signature",
 							"kind": 4096,
@@ -301,12 +301,12 @@
 									"fileName": "service.ts",
 									"line": 31,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L31"
+									"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L31"
 								}
 							],
 							"parameters": [
 								{
-									"id": 61198,
+									"id": 61205,
 									"name": "key",
 									"variant": "param",
 									"kind": 32768,
@@ -348,9 +348,9 @@
 				{
 					"title": "Methods",
 					"children": [
-						61187,
-						61191,
-						61196
+						61194,
+						61198,
+						61203
 					]
 				}
 			],
@@ -359,7 +359,7 @@
 					"fileName": "service.ts",
 					"line": 1,
 					"character": 17,
-					"url": "https://github.com/medusajs/medusa/blob/33f788be42975c3bd05db3074b1aa636f84d6fd4/packages/core/types/src/cache/service.ts#L1"
+					"url": "https://github.com/medusajs/medusa/blob/bafd0060946049bc2cd1490ef26b7ed2650c561f/packages/core/types/src/cache/service.ts#L1"
 				}
 			]
 		}
@@ -368,65 +368,65 @@
 		{
 			"title": "Interfaces",
 			"children": [
-				61186
+				61193
 			]
 		}
 	],
 	"packageName": "@medusajs/types",
 	"symbolIdMap": {
-		"61185": {
+		"61192": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
 			"qualifiedName": ""
 		},
-		"61186": {
+		"61193": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
 			"qualifiedName": "ICacheService"
 		},
-		"61187": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ICacheService.get"
-		},
-		"61188": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ICacheService.get"
-		},
-		"61189": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "T"
-		},
-		"61190": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "key"
-		},
-		"61191": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ICacheService.set"
-		},
-		"61192": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ICacheService.set"
-		},
-		"61193": {
-			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "key"
-		},
 		"61194": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "data"
+			"qualifiedName": "ICacheService.get"
 		},
 		"61195": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ttl"
+			"qualifiedName": "ICacheService.get"
 		},
 		"61196": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ICacheService.invalidate"
+			"qualifiedName": "T"
 		},
 		"61197": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
-			"qualifiedName": "ICacheService.invalidate"
+			"qualifiedName": "key"
 		},
 		"61198": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "ICacheService.set"
+		},
+		"61199": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "ICacheService.set"
+		},
+		"61200": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "key"
+		},
+		"61201": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "data"
+		},
+		"61202": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "ttl"
+		},
+		"61203": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "ICacheService.invalidate"
+		},
+		"61204": {
+			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
+			"qualifiedName": "ICacheService.invalidate"
+		},
+		"61205": {
 			"sourceFileName": "../../../../packages/core/types/src/cache/service.ts",
 			"qualifiedName": "key"
 		}
@@ -436,7 +436,7 @@
 			"1": "../../../../packages/core/types/src/cache/service.ts"
 		},
 		"reflections": {
-			"1": 61185
+			"1": 61192
 		}
 	}
 }

@@ -1,5 +1,11 @@
 # @medusajs/js-sdk
 
+## 2.11.1
+
+### Patch Changes
+
+- [#13835](https://github.com/medusajs/medusa/pull/13835) [`22d23b148e610bd0dd1980620c2ebc85af65be55`](https://github.com/medusajs/medusa/commit/22d23b148e610bd0dd1980620c2ebc85af65be55) Thanks [@andershermansen](https://github.com/andershermansen)! - add missing query param to deleteLineItem jsdoc
+
 ## 2.11.0
 
 ### Patch Changes
