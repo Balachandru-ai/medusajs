@@ -51,8 +51,7 @@ export const updateCartsStep = createStep(
 	// but won't update its fields, we do this separately
 	const addressesInput = data.flatMap(cart => [cart.shipping_address, cart.billing_address])
 		.filter(address => !!address)
-	const addressesToUpdate = addressesInput.map(address => 'id' in address ? address : null)
-		.filter(addressToUpdate => !!addressToUpdate)
+	const addressesToUpdate = addressesInput.filter(address => "id" in address)
 	const addressesBeforeUpdate = await cartModule.listAddresses(
 		{ id: addressesToUpdate.map(address => address.id as string)}
 	)
