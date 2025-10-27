@@ -3,6 +3,7 @@ import {
   InputConfig,
   InputConfigModules,
   InternalModuleDeclaration,
+  MedusaCloudOptions,
 } from "@medusajs/types"
 import {
   MODULE_PACKAGE_NAMES,
@@ -49,6 +50,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
   const modules = resolveModules(config.modules, options, config.projectConfig)
+  applyCloudOptionsToModules(modules, projectConfig?.medusaCloudOptions)
   const plugins = resolvePlugins(config.plugins, options)
 
   return {
@@ -363,8 +365,23 @@ function normalizeProjectConfig(
   projectConfig: InputConfig["projectConfig"],
   { isCloud }: { isCloud: boolean }
 ): ConfigModule["projectConfig"] {
-  const { http, redisOptions, sessionOptions, ...restOfProjectConfig } =
-    projectConfig || {}
+  const {
+    http,
+    redisOptions,
+    sessionOptions,
+    medusaCloudOptions,
+    ...restOfProjectConfig
+  } = projectConfig || {}
+
+  const mergedCloudOptions: MedusaCloudOptions = {
+    environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+    apiKey: process.env.MEDUSA_CLOUD_API_KEY,
+    emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
+    ...medusaCloudOptions,
+  }
+  const hasCloudOptions = Object.values(mergedCloudOptions).some(
+    (value) => value !== undefined
+  )
 
   /**
    * The defaults to use for the project config. They are shallow merged
@@ -426,6 +443,8 @@ function normalizeProjectConfig(
         : {}),
       ...sessionOptions,
     },
+    // If there are no cloud options, we better don't pollute the project config for people not using the cloud
+    ...(hasCloudOptions ? { medusaCloudOptions: mergedCloudOptions } : {}),
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
 
@@ -443,5 +462,37 @@ function normalizeAdminConfig(
     backendUrl: process.env.MEDUSA_BACKEND_URL || DEFAULT_ADMIN_URL,
     path: "/app",
     ...adminConfig,
+  }
+}
+
+function applyCloudOptionsToModules(
+  modules: Exclude<ConfigModule["modules"], undefined>,
+  config?: MedusaCloudOptions
+) {
+  if (!config) {
+    return
+  }
+
+  for (const name in modules) {
+    const module = modules[name]
+    if (typeof module !== "object") {
+      continue
+    }
+
+    switch (name) {
+      case Modules.NOTIFICATION:
+        module.options = {
+          cloud: {
+            api_key: config.apiKey,
+            endpoint: config.emailsEndpoint,
+            environment_handle: config.environmentHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
+      // Will add payment module soon
+      default:
+        break
+    }
   }
 }
