@@ -1350,6 +1350,8 @@
     "shipment": {
       "title": "Mark fulfillment shipped",
       "trackingNumber": "Tracking number",
+      "trackingUrl": "Tracking URL",
+      "labelUrl": "Label URL",
       "addTracking": "Add tracking number",
       "sendNotification": "Send notification",
       "sendNotificationHint": "Notify the customer about this shipment.",

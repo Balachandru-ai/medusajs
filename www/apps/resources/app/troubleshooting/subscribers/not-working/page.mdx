@@ -74,7 +74,7 @@ If the event is not being emitted, check the logic in your code to ensure that t
 Make sure that your subscriber is correctly set up to listen to the event you're emitting. Check the following:
 
 1. The subscriber is created under the `src/subscribers` directory.
-2. The subscriber exports an asynchronus function that handles the event. For example:
+2. The subscriber exports an asynchronous function that handles the event. For example:
 
 ```ts title="src/subscribers/your-subscriber.ts"
 import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
