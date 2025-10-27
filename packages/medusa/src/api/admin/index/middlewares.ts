@@ -13,6 +13,7 @@ import {
 } from "@medusajs/framework/utils"
 import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { authenticate } from "../../../utils/middlewares/authenticate-middleware"
+import { AdminIndexSyncPayload } from "./validator"
 
 const isIndexEnabledMiddleware = (
   req: AuthenticatedMedusaRequest,
@@ -55,7 +56,7 @@ export const adminIndexRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       authenticate("user", ["session", "bearer", "api-key"]),
       isIndexEnabledMiddleware,
-      validateAndTransformBody(AdminCreateInvite),
+      validateAndTransformBody(AdminIndexSyncPayload),
     ],
   },
 ]
