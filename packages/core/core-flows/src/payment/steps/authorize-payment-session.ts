@@ -58,6 +58,11 @@ export const authorizePaymentSessionStep = createStep(
       logger.error(
         `Error was thrown trying to authorize payment session - ${input.id} - ${e}`
       )
+      // this implies the error is already a MedusaError, so we can throw it safely,
+      if (e instanceof MedusaError) {
+        throw e
+      }
+      
     }
 
     const paymentSession = await paymentModule.retrievePaymentSession(
