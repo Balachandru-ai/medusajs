@@ -7,7 +7,7 @@ import { remapKeysForProduct } from "../helpers"
 import { exportProductsWorkflow } from "@medusajs/core-flows"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.AdminProductExportParams>,
   res: MedusaResponse<HttpTypes.AdminExportProductResponse>
 ) => {
   const selectFields = remapKeysForProduct(req.queryConfig.fields ?? [])

@@ -1,3 +1,5 @@
+import { CardList } from "docs-ui"
+
 export const metadata = {
   title: `Tax Module Provider`,
 }
@@ -20,9 +22,7 @@ The Medusa application uses the Tax Module Provider whenever it needs to calcula
 
 ![Diagram showcasing the communication between Medusa the Tax Module Provider, and the third-party tax provider.](https://res.cloudinary.com/dza7lstvk/image/upload/v1746790996/Medusa%20Resources/tax-provider-service_kcgpne.jpg)
 
----
-
-## Default Tax Provider
+### Default Tax Provider
 
 The Tax Module provides a `system` tax provider that acts as a placeholder tax provider. It performs basic tax calculation, as you can see in the [Create Tax Module Provider](/references/tax/provider#gettaxlines) guide.
 
@@ -33,6 +33,22 @@ This provider is installed by default in your application and you can use it wit
 The identifier of the system tax provider is `tp_system`.
 
 </Note>
+
+### Other Tax Providers
+
+<CardList
+  items={[
+    {
+      href: "/integrations/guides/avalara",
+      title: "Avalara",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    }
+  ]}
+  className="mb-1"
+/>
 
 ---
 

@@ -1646,7 +1646,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -2539,7 +2539,7 @@ const { transaction } = await myLongRunningWorkflow(req.scope)
   .run()
 ```
 
-2. In an API route, workflow, or other resource, change a step's status to successful using the [Worfklow Engine Module](../infrastructure-modules/workflow-engine/page.mdx):
+2. In an API route, workflow, or other resource, change a step's status to successful using the [Workflow Engine Module](../infrastructure-modules/workflow-engine/page.mdx):
 
 export const stepSuccessHighlights = [
   ["5", "setStepSuccess", "Change a step's status to success"],
@@ -2971,7 +2971,7 @@ To register a resource in the Module's container using a loader, use the `contai
 import {
   LoaderOptions,
 } from "@medusajs/framework/types"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/framework/awilix"
 
 export default async function helloWorldLoader({
   container,
@@ -2995,7 +2995,7 @@ You can customize the Medusa Admin to inject widgets in existing pages, or creat
 
 <Note>
 
-For a list of components to use in the admin dashboard, refere to [this documentation](../admin-components/page.mdx).
+For a list of components to use in the admin dashboard, refer to [this documentation](../admin-components/page.mdx).
 
 </Note>
 

@@ -450,7 +450,7 @@ export const validateVariantOutOfStockStep = createStep(
       sales_channel_id,
     })
     
-    if (availability[variant_id].availability > 0) {
+    if ((availability[variant_id].availability || 0) > 0) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         "Variant isn't out of stock."
@@ -1133,7 +1133,7 @@ Before adding the step that does this, you'll add a method in the `RestockModule
 // other imports...
 import { InjectManager, MedusaContext } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
 
 class RestockModuleService extends MedusaService({
   RestockSubscription,
@@ -1153,7 +1153,7 @@ export default RestockModuleService
 
 To perform queries on the database in a method, add the `@InjectManager` decorator to the method. This will inject a [forked MikroORM entity manager](https://mikro-orm.io/docs/identity-map#forking-entity-manager) that you can use in your method.
 
-Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this paramter.
+Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this parameter.
 
 In the method, you use the `createQueryBuilder` to construct a query, passing it the name of the `RestockSubscription`'s table. You then select distinct `variant_id` and `sales_channel` pairings, and execute and return the query's result.
 
@@ -1212,7 +1212,7 @@ export const getRestockedStep = createStep(
           sales_channel_id: restockSubscription.sales_channel_id,
         })
 
-        if (variantAvailability[restockSubscription.variant_id].availability > 0) {
+        if ((variantAvailability[restockSubscription.variant_id].availability || 0) > 0) {
           restocked.push(restockSubscription)
         }
       })

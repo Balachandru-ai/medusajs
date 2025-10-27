@@ -1,3 +1,4 @@
+import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
 import {
   CreatePaymentProviderDTO,
@@ -5,7 +6,6 @@ import {
   ModuleProvider,
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
 import { MedusaError } from "@medusajs/framework/utils"
 
 import { PaymentProviderService } from "@services"

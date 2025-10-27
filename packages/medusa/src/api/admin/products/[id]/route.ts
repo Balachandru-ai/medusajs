@@ -12,7 +12,7 @@ import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 import { refetchEntity } from "@medusajs/framework/http"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {
   const selectFields = remapKeysForProduct(req.queryConfig.fields ?? [])
@@ -32,7 +32,8 @@ export const GET = async (
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
-    HttpTypes.AdminUpdateProduct & AdditionalData
+    HttpTypes.AdminUpdateProduct & AdditionalData,
+    HttpTypes.SelectParams
   >,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {

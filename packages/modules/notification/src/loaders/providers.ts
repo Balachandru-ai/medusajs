@@ -1,9 +1,6 @@
+import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
-import {
-  LoaderOptions,
-  ModuleProvider,
-  ModulesSdkTypes,
-} from "@medusajs/framework/types"
+import { LoaderOptions, ModulesSdkTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   lowerCaseFirst,
@@ -13,9 +10,10 @@ import { NotificationProvider } from "@models"
 import { NotificationProviderService } from "@services"
 import {
   NotificationIdentifiersRegistrationName,
+  NotificationModuleOptions,
   NotificationProviderRegistrationPrefix,
 } from "@types"
-import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
+import { MedusaCloudEmailNotificationProvider } from "../providers/medusa-cloud-email"
 
 const registrationFn = async (klass, container, pluginOptions) => {
   container.register({
@@ -40,8 +38,34 @@ export default async ({
   (
     | ModulesSdkTypes.ModuleServiceInitializeOptions
     | ModulesSdkTypes.ModuleServiceInitializeCustomDataLayerOptions
-  ) & { providers: ModuleProvider[] }
+  ) &
+    NotificationModuleOptions
 >): Promise<void> => {
+  let providers = options?.providers || []
+
+  // We add the Medusa Cloud Email provider if there is no other email provider configured
+  const hasEmailProvider = options?.providers?.some((provider) =>
+    provider.options?.channels?.some((channel) => channel === "email")
+  )
+  if (!hasEmailProvider) {
+    const { api_key, endpoint, environment_handle } = options?.cloud ?? {}
+    if (api_key && endpoint && environment_handle) {
+      await registrationFn(MedusaCloudEmailNotificationProvider, container, {
+        options: options?.cloud,
+        id: "cloud",
+      })
+      const provider = {
+        id: "cloud",
+        resolve: "",
+        options: {
+          ...options?.cloud,
+          channels: ["email"],
+        },
+      }
+      providers = [...providers, provider]
+    }
+  }
+
   await moduleProviderLoader({
     container,
     providers: options?.providers || [],
@@ -50,7 +74,7 @@ export default async ({
 
   await syncDatabaseProviders({
     container,
-    providers: options?.providers || [],
+    providers: providers,
   })
 }
 
@@ -59,7 +83,7 @@ async function syncDatabaseProviders({
   providers,
 }: {
   container: any
-  providers: ModuleProvider[]
+  providers: Exclude<NotificationModuleOptions["providers"], undefined>
 }) {
   const providerServiceRegistrationKey = lowerCaseFirst(
     NotificationProviderService.name
@@ -76,13 +100,12 @@ async function syncDatabaseProviders({
       )
     }
 
-    const config = provider.options as { channels: string[] }
     return {
       id: provider.id,
       handle: provider.id,
       name: provider.id,
       is_enabled: true,
-      channels: config?.channels ?? [],
+      channels: provider.options?.channels ?? [],
     }
   })
 

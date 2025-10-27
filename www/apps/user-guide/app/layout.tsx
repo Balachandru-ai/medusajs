@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
-import { Inter, Roboto_Mono } from "next/font/google"
 import Providers from "@/providers"
 import "./globals.css"
 import { BareboneLayout, TightLayout } from "docs-ui"
 import { config } from "@/config"
 import clsx from "clsx"
 import Footer from "../components/Footer"
+import { inter, robotoMono } from "./fonts"
 
 const ogImage =
   "https://res.cloudinary.com/dza7lstvk/image/upload/v1732200992/Medusa%20Resources/opengraph-image_daq6nx.jpg"
@@ -40,17 +40,6 @@ export const metadata: Metadata = {
     ],
   },
 }
-
-export const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500"],
-})
-
-export const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  variable: "--font-roboto-mono",
-})
 
 export default function RootLayout({
   children,
