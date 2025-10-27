@@ -1,5 +1,3 @@
-import { AdminCreateInvite } from "./validators"
-
 import { validateAndTransformBody } from "@medusajs/framework"
 import {
   AuthenticatedMedusaRequest,
@@ -7,14 +5,14 @@ import {
   MedusaResponse,
   MiddlewareRoute,
 } from "@medusajs/framework/http"
-import { authenticate } from "../../../utils/middlewares/authenticate-middleware"
+import { Logger } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   FeatureFlag,
   Modules,
 } from "@medusajs/framework/utils"
-import { Logger } from "@medusajs/framework/types"
 import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
+import { authenticate } from "../../../utils/middlewares/authenticate-middleware"
 
 const isIndexEnabledMiddleware = (
   req: AuthenticatedMedusaRequest,
