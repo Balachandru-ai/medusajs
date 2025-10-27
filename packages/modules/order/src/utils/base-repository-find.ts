@@ -249,9 +249,9 @@ function configurePopulateWhere(
     popWhere.items ??= {}
     popWhere.items.version = version
 
-    popWhere.items.item ??= {}
-    popWhere.items.item.adjustments ??= {}
-    popWhere.items.item.adjustments.version = version
+    // popWhere.items.item ??= {}
+    // popWhere.items.item.adjustments ??= {}
+    // popWhere.items.item.adjustments.version = version
   }
 
   if (hasRelation("shipping_methods")) {
