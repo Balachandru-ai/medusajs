@@ -310,8 +310,8 @@ const useReferenceValues = (
 
   const shippingOptions = useShippingOptions(
     {
-		id: ids.slice(0, DISPLAY_OVERRIDE_ITEMS_LIMIT),
-		limit: DISPLAY_OVERRIDE_ITEMS_LIMIT,
+      id: ids.slice(0, DISPLAY_OVERRIDE_ITEMS_LIMIT),
+      limit: DISPLAY_OVERRIDE_ITEMS_LIMIT,
     },
     {
       enabled:
@@ -338,15 +338,16 @@ const useReferenceValues = (
   //     enabled: !!ids.length && type === TaxRateRuleReferenceType.CUSTOMER_GROUP,
   //   }
   // )
-
+  const additionalCount =
+    ids.length > DISPLAY_OVERRIDE_ITEMS_LIMIT
+      ? ids.length - DISPLAY_OVERRIDE_ITEMS_LIMIT
+      : 0
   switch (type) {
     case TaxRateRuleReferenceType.PRODUCT:
       return {
         labels: products.products?.map((product) => product.title),
         isPending: products.isPending,
-        additional: ids.length > DISPLAY_OVERRIDE_ITEMS_LIMIT
-			? ids.length - DISPLAY_OVERRIDE_ITEMS_LIMIT
-			: 0,
+        additional: additionalCount,
         isError: products.isError,
         error: products.error,
       }
@@ -365,9 +366,7 @@ const useReferenceValues = (
       return {
         labels: productTypes.product_types?.map((type) => type.value),
         isPending: productTypes.isPending,
-        additional: ids.length > DISPLAY_OVERRIDE_ITEMS_LIMIT
-			? ids.length - DISPLAY_OVERRIDE_ITEMS_LIMIT
-			: 0,
+        additional: additionalCount,
         isError: productTypes.isError,
         error: productTypes.error,
       }
@@ -375,9 +374,7 @@ const useReferenceValues = (
       return {
         labels: shippingOptions.shipping_options?.map((option) => option.name),
         isPending: shippingOptions.isPending,
-        additional: ids.length > DISPLAY_OVERRIDE_ITEMS_LIMIT
-			? ids.length - DISPLAY_OVERRIDE_ITEMS_LIMIT
-			: 0,
+        additional: additionalCount,
         isError: shippingOptions.isError,
         error: shippingOptions.error,
       }
