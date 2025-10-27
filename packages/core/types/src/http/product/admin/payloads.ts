@@ -405,6 +405,11 @@ export interface AdminUpdateProduct {
    */
   images?: {
     /**
+     * The ID of the image to update
+     * or set for existing images.
+     */
+    id?: string
+    /**
      * The image's URL.
      */
     url: string
