@@ -1596,6 +1596,7 @@ export default class OrderModuleService
         }
       }
 
+      console.log("ADDING ADJUSTMENTS:", JSON.stringify(adjustments, null, 2))
       addedAdjustments = await this.orderLineItemAdjustmentService_.create(
         adjustments as OrderTypes.CreateOrderLineItemAdjustmentDTO[],
         sharedContext
@@ -1605,6 +1606,7 @@ export default class OrderModuleService
         ? orderIdOrData
         : [orderIdOrData]
 
+      console.log("ADDING ADJUSTMENTS:", JSON.stringify(data, null, 2))
       addedAdjustments = await this.orderLineItemAdjustmentService_.create(
         data as OrderTypes.CreateOrderLineItemAdjustmentDTO[],
         sharedContext
@@ -2793,7 +2795,6 @@ export default class OrderModuleService
       return change.actions
     })
 
-    console.log("CONFIRMING ORDER CHANGES")
     return await this.applyOrderChanges_(orderChanges.flat(), sharedContext)
   }
 
@@ -2980,7 +2981,6 @@ export default class OrderModuleService
       sharedContext
     )
 
-    console.log("APPLYING PENDING ORDER ACTIONS")
     return await this.applyOrderChanges_(
       changes as unknown as ApplyOrderChangeDTO[],
       sharedContext
