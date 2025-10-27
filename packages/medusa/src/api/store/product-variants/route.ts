@@ -36,13 +36,20 @@ export const GET = async (
     context["calculated_price"] = QueryContext(req.pricingContext)
   }
 
-  const { data: variants = [], metadata } = await query.graph({
-    entity: "variant",
-    fields: req.queryConfig.fields,
-    filters: req.filterableFields,
-    pagination: req.queryConfig.pagination,
-    context,
-  })
+  const { data: variants = [], metadata } = await query.graph(
+    {
+      entity: "variant",
+      fields: req.queryConfig.fields,
+      filters: req.filterableFields,
+      pagination: req.queryConfig.pagination,
+      context,
+    },
+    {
+      cache: {
+        enable: true,
+      },
+    }
+  )
 
   if (withInventoryQuantity) {
     await wrapVariantsWithInventoryQuantityForSalesChannel(req, variants)
