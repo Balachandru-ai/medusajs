@@ -34,6 +34,6 @@ export const retrieveProductVariantConfig = {
 
 export const listProductVariantConfig = {
   ...retrieveProductVariantConfig,
-  defaultLimit: 50,
+  defaultLimit: 20,
   isList: true,
 }

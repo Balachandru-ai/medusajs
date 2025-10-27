@@ -7,12 +7,11 @@ import {
 } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
 import { StoreRequestWithContext } from "../../../store/types"
+import { DEFAULT_PRICE_FIELD_PATHS } from "./constants"
 
 type TaxContextOptions = {
   priceFieldPaths?: string[]
 }
-
-const DEFAULT_PRICE_FIELD_PATHS = ["variants.calculated_price"]
 
 export function setTaxContext(options: TaxContextOptions = {}) {
   const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options

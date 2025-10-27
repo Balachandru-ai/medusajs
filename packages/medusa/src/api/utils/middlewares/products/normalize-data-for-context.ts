@@ -5,12 +5,11 @@ import {
   refetchEntities,
   refetchEntity,
 } from "@medusajs/framework/http"
+import { DEFAULT_PRICE_FIELD_PATHS } from "./constants"
 
 type PricingContextOptions = {
   priceFieldPaths?: string[]
 }
-
-const DEFAULT_PRICE_FIELD_PATHS = ["variants.calculated_price"]
 
 export function normalizeDataForContext(options: PricingContextOptions = {}) {
   const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options

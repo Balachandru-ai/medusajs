@@ -6,12 +6,11 @@ import {
 import { MedusaPricingContext } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 import { NextFunction } from "express"
+import { DEFAULT_PRICE_FIELD_PATHS } from "./constants"
 
 type PricingContextOptions = {
   priceFieldPaths?: string[]
 }
-
-const DEFAULT_PRICE_FIELD_PATHS = ["variants.calculated_price"]
 
 export function setPricingContext(options: PricingContextOptions = {}) {
   const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options

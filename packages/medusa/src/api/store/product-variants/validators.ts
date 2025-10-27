@@ -45,7 +45,7 @@ export type StoreProductVariantParamsType = z.infer<
 
 export const StoreProductVariantListParams = createFindParams({
   offset: 0,
-  limit: 50,
+  limit: 20,
 })
   .merge(StoreProductVariantContextFields)
   .merge(StoreProductVariantFilterFields)
