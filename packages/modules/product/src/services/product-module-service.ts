@@ -200,23 +200,19 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     @MedusaContext() sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO> {
-    const shouldLoadVariantImages =
-      config?.relations?.includes("variants.images")
-
-    // Ensure we load necessary relations
-    const relations = [...(config?.relations || [])]
+    const relationsSet = new Set(config?.relations ?? [])
+    const shouldLoadVariantImages = relationsSet.has("variants.images")
     if (shouldLoadVariantImages) {
-      if (!relations.includes("variants")) {
-        relations.push("variants")
-      }
-      if (!relations.includes("images")) {
-        relations.push("images")
-      }
+      relationsSet.add("variants")
+      relationsSet.add("images")
     }
 
     const product = await this.productService_.retrieve(
       productId,
-      this.getProductFindConfig_({ ...config, relations }),
+      this.getProductFindConfig_({
+        ...config,
+        relations: Array.from(relationsSet),
+      }),
       sharedContext
     )
 
@@ -238,23 +234,19 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO[]> {
-    const shouldLoadVariantImages =
-      config?.relations?.includes("variants.images")
-
-    // Ensure we load necessary relations
-    const relations = [...(config?.relations || [])]
+    const relationsSet = new Set(config?.relations ?? [])
+    const shouldLoadVariantImages = relationsSet.has("variants.images")
     if (shouldLoadVariantImages) {
-      if (!relations.includes("variants")) {
-        relations.push("variants")
-      }
-      if (!relations.includes("images")) {
-        relations.push("images")
-      }
+      relationsSet.add("variants")
+      relationsSet.add("images")
     }
 
     const products = await this.productService_.list(
       filters,
-      this.getProductFindConfig_({ ...config, relations }),
+      this.getProductFindConfig_({
+        ...config,
+        relations: Array.from(relationsSet),
+      }),
       sharedContext
     )
 
