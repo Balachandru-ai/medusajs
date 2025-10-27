@@ -1,10 +1,13 @@
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
-  refetchEntity,
 } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
-import { MedusaError, QueryContext } from "@medusajs/framework/utils"
+import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+  QueryContext,
+} from "@medusajs/framework/utils"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import { StoreRequestWithContext } from "../../types"
 import { wrapVariantsWithTaxPrices } from "../helpers"
@@ -18,6 +21,8 @@ export const GET = async (
   req: StoreVariantRetrieveRequest,
   res: MedusaResponse<HttpTypes.StoreProductVariantResponse>
 ) => {
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+
   const withInventoryQuantity =
     req.queryConfig.fields.includes("inventory_quantity")
 
@@ -27,23 +32,23 @@ export const GET = async (
     )
   }
 
-  const idOrFilter: Record<string, unknown> = {
-    ...req.filterableFields,
-    id: req.params.id,
-  }
+  const context: QueryContextType = {}
 
   if (req.pricingContext) {
-    idOrFilter.context = {
-      calculated_price: QueryContext(req.pricingContext),
-    }
+    context["calculated_price"] = QueryContext(req.pricingContext)
   }
 
-  const variant = await refetchEntity({
+  const { data: variants = [] } = await query.graph({
     entity: "variant",
-    idOrFilter,
-    scope: req.scope,
+    filters: {
+      ...req.filterableFields,
+      id: req.params.id,
+    },
     fields: req.queryConfig.fields,
+    context,
   })
+
+  const variant = variants[0]
 
   if (!variant) {
     throw new MedusaError(
