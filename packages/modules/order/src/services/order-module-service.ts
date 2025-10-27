@@ -2528,24 +2528,12 @@ export default class OrderModuleService
       itemsToUpsert,
       shippingMethodsToUpsert,
       calculatedOrders,
-      // lineItemAdjustmentsToCreate,
+      lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(
       [order],
       { [order.id]: sortedActions },
       { addActionReferenceToObject: true }
     )
-
-    // const createdLineItemAdjustments =
-    //   await this.orderLineItemAdjustmentService_.create(
-    //     lineItemAdjustmentsToCreate,
-    //     sharedContext
-    //   )
-
-    // for (const item of itemsToUpsert) {
-    //   ;(item as any).adjustments = createdLineItemAdjustments.filter(
-    //     (adjustment) => adjustment.item_id === item.item_id
-    //   )
-    // }
 
     const calculated = calculatedOrders[order.id]
 
@@ -2553,6 +2541,7 @@ export default class OrderModuleService
       calculated.order,
       itemsToUpsert,
       shippingMethodsToUpsert,
+      lineItemAdjustmentsToCreate,
       sharedContext
     )
 
@@ -2572,6 +2561,7 @@ export default class OrderModuleService
     order,
     itemsToUpsert,
     shippingMethodsToUpsert,
+    lineItemAdjustmentsToCreate,
     sharedContext: Context = {}
   ) {
     const addedItems = {}
@@ -2620,7 +2610,9 @@ export default class OrderModuleService
         //@ts-ignore
         const newItem = itemsToUpsert.find((d) => d.item_id === item.id)!
 
-        console.log("NEW ITEM:", JSON.stringify(newItem, null, 2))
+        const adjustments = lineItemAdjustmentsToCreate.filter(
+          (d) => d.item_id === newItem.item_id
+        )
 
         const unitPrice = newItem?.unit_price ?? item.unit_price
         const compareAtUnitPrice =
@@ -2635,7 +2627,7 @@ export default class OrderModuleService
           quantity: newItem.quantity,
           unit_price: unitPrice,
           compare_at_unit_price: compareAtUnitPrice || null,
-          adjustments: newItem.adjustments,
+          adjustments: adjustments,
           detail: {
             ...newItem,
             ...item,
@@ -3545,7 +3537,7 @@ export default class OrderModuleService
       summariesToUpsert,
       orderToUpdate,
       creditLinesToUpsert,
-      // lineItemAdjustmentsToCreate,
+      lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
       includeTaxLinesAndAdjustmentsToPreview: async (...args) => {
@@ -3590,12 +3582,13 @@ export default class OrderModuleService
             sharedContext
           )
         : null,
-      // lineItemAdjustmentsToCreate.length
-      //   ? this.orderLineItemAdjustmentService_.create(
-      //       lineItemAdjustmentsToCreate,
-      //       sharedContext
-      //     )
-      //   : null,
+      lineItemAdjustmentsToCreate.length
+        ? // TODO: upsert
+          this.orderLineItemAdjustmentService_.create(
+            lineItemAdjustmentsToCreate,
+            sharedContext
+          )
+        : null,
       // lineItemAdjustmentIdsToRemove.length
       // ? this.orderLineItemAdjustmentService_.delete(
       //     lineItemAdjustmentIdsToRemove,

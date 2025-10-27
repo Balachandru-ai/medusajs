@@ -238,4 +238,12 @@ function configurePopulateWhere(
     popWhere.shipping_methods ??= {}
     popWhere.shipping_methods.version = version
   }
+
+  // TODO: check + add migration script to set existing OLIADJ to latest order version
+  if (hasRelation("adjustments")) {
+    popWhere.items ??= {}
+    popWhere.items.item ??= {}
+    popWhere.items.item.adjustments ??= {}
+    popWhere.items.item.adjustments.version = version
+  }
 }

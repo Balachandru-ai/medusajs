@@ -1,5 +1,5 @@
 import {
-  // CreateOrderLineItemAdjustmentDTO,
+  CreateOrderLineItemAdjustmentDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
@@ -33,7 +33,7 @@ export async function applyChangesToOrder(
   const creditLinesToUpsert: InferEntityType<typeof OrderCreditLine>[] = []
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
-  // const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
+  const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
   const summariesToUpsert: any[] = []
   const orderToUpdate: any[] = []
 
@@ -68,8 +68,6 @@ export async function applyChangesToOrder(
       }
     }
 
-    console.log("CALCULATED ORDER:", JSON.stringify(calculated.order, null, 2))
-
     for (const item of calculated.order.items) {
       if (MathBN.lte(item.quantity, 0)) {
         continue
@@ -96,31 +94,20 @@ export async function applyChangesToOrder(
         return_dismissed_quantity: orderItem.return_dismissed_quantity ?? 0,
         written_off_quantity: orderItem.written_off_quantity ?? 0,
         metadata: orderItem.metadata,
-        adjustments: item.adjustments?.map((adjustment) => ({
-          ...adjustment,
-          id: adjustment.version === version ? adjustment.id : undefined,
-          order_id: order.id,
-          version,
-          amount: adjustment.amount,
-          description: adjustment.description,
-          promotion_id: adjustment.promotion_id,
-          code: adjustment.code,
-          is_tax_inclusive: adjustment.is_tax_inclusive,
-          item_id: itemId,
-        })),
       } as any
 
-      // if (version > order.version) {
-      //   lineItemAdjustmentsToCreate.push({
-      //     item_id: itemId,
-      //     version,
-      //     amount: item.adjustments?.[0]?.amount ?? 0,
-      //     description: item.adjustments?.[0]?.description ?? "",
-      //     promotion_id: item.adjustments?.[0]?.promotion_id ?? "",
-      //     code: item.adjustments?.[0]?.code ?? "",
-      //     is_tax_inclusive: item.adjustments?.[0]?.is_tax_inclusive ?? false,
-      //   })
-      // }
+      if (version > order.version) {
+        // TODO: rename to lineItemAdjustmentsToUpsert to handle updates on the same version
+        lineItemAdjustmentsToCreate.push({
+          item_id: itemId, // todo check: should be line item id
+          version,
+          amount: item.adjustments?.[0]?.amount ?? 0,
+          description: item.adjustments?.[0]?.description ?? "",
+          promotion_id: item.adjustments?.[0]?.promotion_id ?? "",
+          code: item.adjustments?.[0]?.code ?? "",
+          is_tax_inclusive: item.adjustments?.[0]?.is_tax_inclusive ?? false,
+        })
+      }
 
       itemsToUpsert.push(itemToUpsert)
     }
@@ -189,7 +176,8 @@ export async function applyChangesToOrder(
       await options?.includeTaxLinesAndAdjustmentsToPreview(
         calculated.order,
         itemsToUpsert,
-        shippingMethodsToUpsert
+        shippingMethodsToUpsert,
+        lineItemAdjustmentsToCreate
       )
       decorateCartTotals(calculated.order)
     }
@@ -222,7 +210,7 @@ export async function applyChangesToOrder(
   }
 
   return {
-    // lineItemAdjustmentsToCreate,
+    lineItemAdjustmentsToCreate,
     itemsToUpsert,
     creditLinesToUpsert,
     shippingMethodsToUpsert,

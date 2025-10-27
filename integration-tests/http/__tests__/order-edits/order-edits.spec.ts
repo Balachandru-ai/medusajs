@@ -1345,11 +1345,9 @@ medusaIntegrationTestRunner({
           await api.get(`/admin/orders/${orderId}`, adminHeaders)
         ).data.order
 
-        console.log("orderResult", JSON.stringify(orderResult, null, 2))
-
         // confirm original order is not updated
-        // expect(orderResult.total).toEqual(9.9) //  initial item 10$ and 10% discount and 10% tax
-        // expect(orderResult.original_total).toEqual(11) // initial item 10$ + 10% tax
+        expect(orderResult.total).toEqual(9.9) //  initial item 10$ and 10% discount and 10% tax
+        expect(orderResult.original_total).toEqual(11) // initial item 10$ + 10% tax
 
         await api.post(
           `/admin/order-edits/${orderId}/confirm`,
@@ -1361,7 +1359,7 @@ medusaIntegrationTestRunner({
           await api.get(`/admin/orders/${orderId}`, adminHeaders)
         ).data.order
 
-        // orderResult2 -> doesn't have new adjustments, and version is not updated to 2 for adjustments
+        console.log("orderResult2", JSON.stringify(orderResult2, null, 2))
 
         expect(orderResult2.total).toEqual(21.78)
         expect(orderResult2.original_total).toEqual(24.2)
