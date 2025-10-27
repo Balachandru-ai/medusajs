@@ -63,6 +63,7 @@ import { storeRegionRoutesMiddlewares } from "./store/regions/middlewares"
 import { storeReturnReasonRoutesMiddlewares } from "./store/return-reasons/middlewares"
 import { storeShippingOptionRoutesMiddlewares } from "./store/shipping-options/middlewares"
 import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
+import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
 
 export default defineMiddlewares([
   ...storeRoutesMiddlewares,
@@ -130,4 +131,5 @@ export default defineMiddlewares([
   ...adminPaymentCollectionsMiddlewares,
   ...viewConfigurationRoutesMiddlewares,
   ...columnRoutesMiddlewares,
+  ...adminIndexRoutesMiddlewares,
 ])
