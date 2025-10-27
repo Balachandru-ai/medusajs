@@ -30,6 +30,9 @@ module.exports = defineConfig({
       jwtSecret: "test",
     },
   },
+  featureFlags: {
+    index_engine: process.env.ENABLE_INDEX_MODULE === "true",
+  },
   modules: {
     [Modules.FULFILLMENT]: {
       /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
@@ -70,6 +73,10 @@ module.exports = defineConfig({
           },
         ],
       },
+    },
+    [Modules.INDEX]: {
+      resolve: "@medusajs/index",
+      disable: process.env.ENABLE_INDEX_MODULE !== "true",
     },
   },
 })
