@@ -5,7 +5,6 @@ export const defaultStoreProductVariantFields = [
   "barcode",
   "ean",
   "upc",
-  // "*images", TODO: uncomment
   "allow_backorder",
   "manage_inventory",
   "variant_rank",
@@ -23,6 +22,7 @@ export const defaultStoreProductVariantFields = [
   "updated_at",
   "metadata",
   "*options",
+  "*images",
   "product.id",
   "product.type_id",
 ]
