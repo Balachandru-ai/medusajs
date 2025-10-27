@@ -27,7 +27,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateProductCategory>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateProductCategory,
+    HttpTypes.AdminProductCategoryParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductCategoryResponse>
 ) => {
   const { result } = await createProductCategoriesWorkflow(req.scope).run({
