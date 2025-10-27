@@ -1,5 +1,5 @@
 import {
-  CreateOrderLineItemAdjustmentDTO,
+  // CreateOrderLineItemAdjustmentDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
@@ -33,7 +33,7 @@ export async function applyChangesToOrder(
   const creditLinesToUpsert: InferEntityType<typeof OrderCreditLine>[] = []
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
-  const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
+  // const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
   const summariesToUpsert: any[] = []
   const orderToUpdate: any[] = []
 
@@ -67,6 +67,8 @@ export async function applyChangesToOrder(
         orderAttributes[attr] = calculated.order[attr]
       }
     }
+
+    console.log("CALCULATED ORDER:", JSON.stringify(calculated.order, null, 2))
 
     for (const item of calculated.order.items) {
       if (MathBN.lte(item.quantity, 0)) {
@@ -107,6 +109,18 @@ export async function applyChangesToOrder(
           item_id: itemId,
         })),
       } as any
+
+      // if (version > order.version) {
+      //   lineItemAdjustmentsToCreate.push({
+      //     item_id: itemId,
+      //     version,
+      //     amount: item.adjustments?.[0]?.amount ?? 0,
+      //     description: item.adjustments?.[0]?.description ?? "",
+      //     promotion_id: item.adjustments?.[0]?.promotion_id ?? "",
+      //     code: item.adjustments?.[0]?.code ?? "",
+      //     is_tax_inclusive: item.adjustments?.[0]?.is_tax_inclusive ?? false,
+      //   })
+      // }
 
       itemsToUpsert.push(itemToUpsert)
     }
@@ -208,7 +222,7 @@ export async function applyChangesToOrder(
   }
 
   return {
-    lineItemAdjustmentsToCreate,
+    // lineItemAdjustmentsToCreate,
     itemsToUpsert,
     creditLinesToUpsert,
     shippingMethodsToUpsert,

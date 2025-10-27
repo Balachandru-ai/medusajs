@@ -2528,14 +2528,24 @@ export default class OrderModuleService
       itemsToUpsert,
       shippingMethodsToUpsert,
       calculatedOrders,
-      lineItemAdjustmentsToCreate,
+      // lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(
       [order],
       { [order.id]: sortedActions },
       { addActionReferenceToObject: true }
     )
 
-    console.log("efgh", JSON.stringify(lineItemAdjustmentsToCreate, null, 2))
+    // const createdLineItemAdjustments =
+    //   await this.orderLineItemAdjustmentService_.create(
+    //     lineItemAdjustmentsToCreate,
+    //     sharedContext
+    //   )
+
+    // for (const item of itemsToUpsert) {
+    //   ;(item as any).adjustments = createdLineItemAdjustments.filter(
+    //     (adjustment) => adjustment.item_id === item.item_id
+    //   )
+    // }
 
     const calculated = calculatedOrders[order.id]
 
@@ -2609,6 +2619,9 @@ export default class OrderModuleService
 
         //@ts-ignore
         const newItem = itemsToUpsert.find((d) => d.item_id === item.id)!
+
+        console.log("NEW ITEM:", JSON.stringify(newItem, null, 2))
+
         const unitPrice = newItem?.unit_price ?? item.unit_price
         const compareAtUnitPrice =
           newItem?.compare_at_unit_price ?? item.compare_at_unit_price
@@ -2788,6 +2801,7 @@ export default class OrderModuleService
       return change.actions
     })
 
+    console.log("CONFIRMING ORDER CHANGES")
     return await this.applyOrderChanges_(orderChanges.flat(), sharedContext)
   }
 
@@ -2974,6 +2988,7 @@ export default class OrderModuleService
       sharedContext
     )
 
+    console.log("APPLYING PENDING ORDER ACTIONS")
     return await this.applyOrderChanges_(
       changes as unknown as ApplyOrderChangeDTO[],
       sharedContext
@@ -3530,7 +3545,7 @@ export default class OrderModuleService
       summariesToUpsert,
       orderToUpdate,
       creditLinesToUpsert,
-      lineItemAdjustmentsToCreate,
+      // lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
       includeTaxLinesAndAdjustmentsToPreview: async (...args) => {
@@ -3542,8 +3557,6 @@ export default class OrderModuleService
       },
     })
 
-    console.log("abcd", JSON.stringify(lineItemAdjustmentsToCreate, null, 2))
-
     const [
       _orderUpdate,
       _orderChangeActionUpdate,
@@ -3551,6 +3564,7 @@ export default class OrderModuleService
       _orderSummaryUpdate,
       orderShippingMethods,
       orderCreditLines,
+      // orderLineItemAdjustments,
     ] = await promiseAll([
       orderToUpdate.length
         ? this.orderService_.update(orderToUpdate, sharedContext)
@@ -3576,12 +3590,12 @@ export default class OrderModuleService
             sharedContext
           )
         : null,
-      lineItemAdjustmentsToCreate.length
-        ? this.orderLineItemAdjustmentService_.create(
-            lineItemAdjustmentsToCreate,
-            sharedContext
-          )
-        : null,
+      // lineItemAdjustmentsToCreate.length
+      //   ? this.orderLineItemAdjustmentService_.create(
+      //       lineItemAdjustmentsToCreate,
+      //       sharedContext
+      //     )
+      //   : null,
       // lineItemAdjustmentIdsToRemove.length
       // ? this.orderLineItemAdjustmentService_.delete(
       //     lineItemAdjustmentIdsToRemove,
