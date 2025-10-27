@@ -28,8 +28,19 @@ export type NotificationModuleOptions =
        */
       id: string
       /**
-       * key value pair of the configuration to be passed to the provider constructor
+       * key value pair of the configuration to be passed to the provider constructor, plus the channels supported by the provider
        */
-      options?: Record<string, unknown>
+      options?: Record<string, unknown> & { channels: string[] }
     }[]
+    /**
+     * Options for the default Medusa Cloud Email provider
+     * @private
+     */
+    cloud?: MedusaCloudEmailOptions
   }
+
+export type MedusaCloudEmailOptions = {
+  api_key: string
+  endpoint: string
+  environment_handle: string
+}

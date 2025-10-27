@@ -495,9 +495,9 @@ class MemcachedCachingProviderService implements ICachingProviderService {
       const tagResult = tagResults[i]
       
       if (tagResult.value) {
-        const currrentTag = tagResult.value.toString()
+        const currentTag = tagResult.value.toString()
         // If the namespace has changed since the key was stored, it's invalid
-        if (currrentTag !== storedTags[tag]) {
+        if (currentTag !== storedTags[tag]) {
           return false
         }
       } else {

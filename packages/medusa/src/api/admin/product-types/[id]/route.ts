@@ -8,15 +8,13 @@ import {
 } from "@medusajs/framework/http"
 
 import { refetchProductType } from "../helpers"
-import {
-  AdminGetProductTypeParamsType,
-  AdminUpdateProductTypeType,
-} from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetProductTypeParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminProductTypeParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTypeResponse>
 ) => {
   const productType = await refetchProductType(
@@ -29,7 +27,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateProductTypeType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateProductType,
+    HttpTypes.AdminProductTypeParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTypeResponse>
 ) => {
   const existingProductType = await refetchProductType(

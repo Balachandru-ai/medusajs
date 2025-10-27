@@ -676,7 +676,7 @@ const {
 ```ts highlights={[["8", "skip", "The number of records to skip before fetching the results."], ["9", "take", "The number of records to fetch."]]}
 const { 
   data: posts,
-  metadata
+  metadata,
 } = useQueryGraphStep({
   entity: "post",
   fields: ["id", "title"],
@@ -933,7 +933,7 @@ const { data: posts } = useQueryGraphStep({
   },
   options: {
     throwIfKeyNotFound: true,
-  }
+  },
 })
 ```
 
@@ -979,7 +979,7 @@ const { data: posts } = useQueryGraphStep({
   },
   options: {
     throwIfKeyNotFound: true,
-  }
+  },
 })
 ```
 
@@ -1020,8 +1020,8 @@ const { data: products } = await query.graph({
   fields: ["id", "title"],
 }, {
   cache: {
-    enable: true
-  }
+    enable: true,
+  },
 })
 ```
 
@@ -1034,9 +1034,9 @@ const { data: products } = useQueryGraphStep({
   fields: ["id", "title"],
   options: {
     cache: {
-      enable: true
-    }
-  }
+      enable: true,
+    },
+  },
 })
 ```
 
@@ -1114,7 +1114,7 @@ const { data: products } = await query.graph({
     key: "products-123456",
     // to disable auto invalidation:
     // autoInvalidate: false,
-  }
+  },
 })
 ```
 
@@ -1131,8 +1131,8 @@ const { data: products } = useQueryGraphStep({
       key: "products-123456",
       // to disable auto invalidation:
       // autoInvalidate: false,
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1165,10 +1165,10 @@ const { data: products } = await query.graph({
     key: async (args, cachingModuleService) => {
       return await cachingModuleService.computeKey({
         ...args,
-        prefix: "products"
+        prefix: "products",
       })
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1198,7 +1198,7 @@ const { data: products } = await query.graph({
   cache: {
     enable: true,
     tags: ["Product:list:*"],
-  }
+  },
 })
 ```
 
@@ -1215,8 +1215,8 @@ const { data: products } = useQueryGraphStep({
       tags: ["Product:list:*"],
       // to disable auto invalidation:
       // autoInvalidate: false,
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1253,7 +1253,7 @@ const { data: products } = await query.graph({
         collectionId ? `ProductCollection:${collectionId}` : undefined,
       ]
     },
-  }
+  },
 })
 ```
 
@@ -1280,7 +1280,7 @@ const { data: products } = await query.graph({
   cache: {
     enable: true,
     ttl: 100, // 100 seconds
-  }
+  },
 })
 ```
 
@@ -1295,8 +1295,8 @@ const { data: products } = useQueryGraphStep({
     cache: {
       enable: true,
       ttl: 100, // 100 seconds
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1318,15 +1318,15 @@ const { data: products } = await query.graph({
   entity: "product",
   fields: ["id", "title"],
   filters: {
-    id: "prod_123"
-  }
+    id: "prod_123",
+  },
 }, {
   cache: {
     enable: true,
     ttl: (args) => {
       return args[0].filters.id === "test" ? 10 : 100
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1353,7 +1353,7 @@ const { data: products } = await query.graph({
   cache: {
     enable: true,
     autoInvalidate: false,
-  }
+  },
 })
 ```
 
@@ -1368,8 +1368,8 @@ const { data: products } = useQueryGraphStep({
     cache: {
       enable: true,
       autoInvalidate: false,
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1395,8 +1395,8 @@ const { data: products } = await query.graph({
     enable: true,
     autoInvalidate: (args) => {
       return !args[0].fields.includes("custom_field")
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -1428,8 +1428,8 @@ const { data: products } = await query.graph({
 }, {
   cache: {
     enable: true,
-    providers: ["caching-redis", "caching-memcached"]
-  }
+    providers: ["caching-redis", "caching-memcached"],
+  },
 })
 ```
 
@@ -1443,9 +1443,9 @@ const { data: products } = useQueryGraphStep({
   options: {
     cache: {
       enable: true,
-      providers: ["caching-redis", "caching-memcached"]
-    }
-  }
+      providers: ["caching-redis", "caching-memcached"],
+    },
+  },
 })
 ```
 
@@ -1469,15 +1469,15 @@ const { data: products } = await query.graph({
   entity: "product",
   fields: ["id", "title"],
   filters: {
-    id: "prod_123"
-  }
+    id: "prod_123",
+  },
 }, {
   cache: {
     enable: true,
     providers: (args) => {
       return args[0].filters.id === "test" ? ["caching-redis"] : ["caching-memcached"]
-    }
-  }
+    },
+  },
 })
 ```
 

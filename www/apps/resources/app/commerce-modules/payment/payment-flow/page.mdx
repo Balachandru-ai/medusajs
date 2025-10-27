@@ -127,7 +127,7 @@ import { createPaymentSessionsWorkflow } from "@medusajs/medusa/core-flows"
 
 // ...
 
-const { result: paymentSesion } = await createPaymentSessionsWorkflow(container)
+const { result: paymentSession } = await createPaymentSessionsWorkflow(container)
   .run({
     input: {
       payment_collection_id: "paycol_123",
