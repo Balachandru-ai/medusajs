@@ -74,7 +74,14 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     const version = config.where?.version ?? defaultVersion
     delete config.where?.version
 
-    configurePopulateWhere(config, isRelatedEntity, version, strategy, manager, entity)
+    configurePopulateWhere(
+      config,
+      isRelatedEntity,
+      version,
+      strategy,
+      manager,
+      entity
+    )
 
     if (!config.options.orderBy) {
       config.options.orderBy = { id: "ASC" }
@@ -136,7 +143,14 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     const version = config.where.version ?? defaultVersion
     delete config.where.version
 
-    configurePopulateWhere(config, isRelatedEntity, version, strategy, manager, entity)
+    configurePopulateWhere(
+      config,
+      isRelatedEntity,
+      version,
+      strategy,
+      manager,
+      entity
+    )
 
     if (!config.options.orderBy) {
       config.options.orderBy = { id: "ASC" }
@@ -329,7 +343,6 @@ function createPopulateAliasResolver(
       .select(["id"])
       .populate(normalizedPopulate, {}, undefined)
 
-    // build join map without executing the query
     qb.getKnexQuery()
 
     return (path: string) =>
