@@ -14,7 +14,7 @@ export const GET = async (
     Modules.WORKFLOW_ENGINE
   )
 
-  const { workflow_id } = req.params
+  const { workflow_id, transaction_id } = req.params
 
   const subscriberId = "__sub__" + Math.random().toString(36).substring(2, 9)
   res.writeHead(200, {
@@ -28,6 +28,7 @@ export const GET = async (
 
     void workflowEngineService.unsubscribe({
       workflowId: workflow_id,
+      transactionId: transaction_id,
       subscriberOrId: subscriberId,
     })
   })
@@ -40,6 +41,7 @@ export const GET = async (
 
   void workflowEngineService.subscribe({
     workflowId: workflow_id,
+    transactionId: transaction_id,
     subscriber: async (args) => {
       const {
         eventType,
