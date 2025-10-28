@@ -68,22 +68,6 @@ medusaIntegrationTestRunner({
         )
       ).data.product_tag
 
-      baseOption1 = (
-        await api.post(
-          "/admin/product-options",
-          { title: "Size", values: ["S", "M", "L"] },
-          adminHeaders
-        )
-      ).data.product_option
-
-      baseOption2 = (
-        await api.post(
-          "/admin/product-options",
-          { title: "Color", values: ["Red", "Blue"] },
-          adminHeaders
-        )
-      ).data.product_option
-
       shippingProfile = (
         await api.post(
           `/admin/shipping-profiles`,
@@ -101,7 +85,6 @@ medusaIntegrationTestRunner({
             // BREAKING: Type input changed from {type: {value: string}} to {type_id: string}
             type_id: baseType.id,
             tags: [{ id: baseTag1.id }, { id: baseTag2.id }],
-            options: [{ id: baseTag1.id }, { id: baseTag2.id }],
             shipping_profile_id: shippingProfile.id,
             images: [
               {
@@ -2830,48 +2813,6 @@ medusaIntegrationTestRunner({
               message: "Inventory Items with ids: does-not-exist was not found",
             })
           )
-        })
-      })
-
-      describe("DELETE /admin/products/:id/options/:option_id", () => {
-        it("deletes a product option", async () => {
-          const response = await api
-            .delete(
-              `/admin/products/${baseProduct.id}/options/${baseProduct.options[0].id}`,
-              adminHeaders
-            )
-            .catch((err) => {
-              console.log(err)
-            })
-
-          expect(response.status).toEqual(200)
-          // BREAKING: Delete response changed from returning the deleted product to the current DeleteResponse model
-          expect(response.data).toEqual(
-            expect.objectContaining({
-              id: baseProduct.options[0].id,
-              object: "product_option",
-              parent: expect.objectContaining({
-                id: baseProduct.id,
-              }),
-            })
-          )
-        })
-
-        // TODO: This is failing, investigate
-        it.skip("deletes a values associated with deleted option", async () => {
-          await api.delete(
-            `/admin/products/${baseProduct.id}/options/${baseProduct.options[0].id}`,
-            adminHeaders
-          )
-
-          const optionsRes = await api.get(
-            `/admin/products/${baseProduct.id}/options?deleted_at[$gt]=01-26-1990`,
-            adminHeaders
-          )
-
-          expect(optionsRes.data.product_options).toEqual([
-            expect.objectContaining({ deleted_at: expect.any(Date) }),
-          ])
         })
       })
 

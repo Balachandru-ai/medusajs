@@ -1649,7 +1649,7 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
-    const normalizedProducts = await this.normalizeCreateProductInput(
+    const normalizedProducts = this.normalizeCreateProductInput(
       data,
       sharedContext
     )
@@ -1675,6 +1675,11 @@ export default class ProductModuleService
 
     const existingTagsMap = new Map(existingTags.map((tag) => [tag.id, tag]))
 
+    const productOptionsToCreate = new Map<
+      string,
+      ProductTypes.CreateProductOptionDTO[]
+    >()
+
     const productsToCreate = normalizedProducts.map((product) => {
       const productId = generateEntityId(product.id, "prod")
       product.id = productId
@@ -1683,6 +1688,10 @@ export default class ProductModuleService
         ;(product as any).categories = (product as any).categories.map(
           (category: { id: string }) => category.id
         )
+      }
+
+      if (product.options?.length) {
+        productOptionsToCreate.set(productId, product.options as any)
       }
 
       if (product.variants?.length) {
@@ -1725,13 +1734,55 @@ export default class ProductModuleService
         )
       }
 
+      delete product.options
+
       return product
     })
 
-    const createdProducts = await this.productService_.create(
-      productsToCreate,
-      sharedContext
-    )
+    const productToOptionIdsMap = new Map<string, string[]>()
+    const allOptionsWithIds: (ProductTypes.CreateProductOptionDTO & {
+      id: string
+    })[] = []
+
+    for (const [productId, options] of productOptionsToCreate.entries()) {
+      const optionIds: string[] = []
+
+      for (const option of options) {
+        const optionId = generateEntityId((option as any).id, "opt")
+        optionIds.push(optionId)
+        allOptionsWithIds.push({
+          ...option,
+          id: optionId,
+        })
+      }
+
+      productToOptionIdsMap.set(productId, optionIds)
+    }
+
+    // Create products and options in parallel since IDs are pre-generated
+    const [createdProducts] = await Promise.all([
+      this.productService_.create(productsToCreate, sharedContext),
+      allOptionsWithIds.length > 0
+        ? this.createOptions_(allOptionsWithIds, sharedContext)
+        : Promise.resolve([]),
+    ])
+
+    const linkPairs: ProductTypes.ProductOptionProductPair[] = []
+    for (const product of createdProducts) {
+      const optionIds = productToOptionIdsMap.get(product.id)
+      if (optionIds) {
+        for (const optionId of optionIds) {
+          linkPairs.push({
+            product_id: product.id,
+            product_option_id: optionId,
+          })
+        }
+      }
+    }
+
+    if (linkPairs.length > 0) {
+      await this.addProductOptionToProduct_(linkPairs, sharedContext)
+    }
 
     return createdProducts
   }
@@ -1773,7 +1824,7 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const normalizedProducts = await this.normalizeUpdateProductInput(
+    const normalizedProducts = this.normalizeUpdateProductInput(
       data,
       originalProducts
     )
@@ -1946,20 +1997,17 @@ export default class ProductModuleService
     this.validateProductPayload(productData)
   }
 
-  protected async normalizeCreateProductInput<
+  protected normalizeCreateProductInput<
     T extends ProductTypes.CreateProductDTO | ProductTypes.CreateProductDTO[],
     TOutput = T extends ProductTypes.CreateProductDTO[]
       ? ProductTypes.CreateProductDTO[]
       : ProductTypes.CreateProductDTO
-  >(
-    products: T,
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<TOutput> {
+  >(products: T, @MedusaContext() sharedContext: Context = {}): TOutput {
     const products_ = Array.isArray(products) ? products : [products]
 
-    const normalizedProducts = (await this.normalizeUpdateProductInput(
+    const normalizedProducts = this.normalizeUpdateProductInput(
       products_ as UpdateProductInput[]
-    )) as ProductTypes.CreateProductDTO[]
+    ) as ProductTypes.CreateProductDTO[]
 
     for (const productData of normalizedProducts) {
       if (!productData.handle && productData.title) {
@@ -2012,7 +2060,7 @@ export default class ProductModuleService
    * @param originalProducts - The original products to use for the normalization (must include options and option values relations)
    * @returns The normalized products
    */
-  protected async normalizeUpdateProductInput<
+  protected normalizeUpdateProductInput<
     T extends UpdateProductInput | UpdateProductInput[],
     TOutput = T extends UpdateProductInput[]
       ? UpdateProductInput[]
@@ -2020,7 +2068,7 @@ export default class ProductModuleService
   >(
     products: T,
     originalProducts?: InferEntityType<typeof Product>[]
-  ): Promise<TOutput> {
+  ): TOutput {
     const products_ = Array.isArray(products) ? products : [products]
     const productsIds = products_.map((p) => p.id).filter(Boolean)
 
