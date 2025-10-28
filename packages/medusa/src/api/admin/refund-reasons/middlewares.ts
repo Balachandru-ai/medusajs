@@ -6,6 +6,7 @@ import {
 import * as queryConfig from "./query-config"
 import {
   AdminCreatePaymentRefundReason,
+  AdminGetRefundReasonParams,
   AdminGetRefundReasonsParams,
   AdminUpdatePaymentRefundReason,
 } from "./validators"
@@ -38,7 +39,7 @@ export const adminRefundReasonsRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformBody(AdminUpdatePaymentRefundReason),
       validateAndTransformQuery(
-        AdminGetRefundReasonsParams,
+        AdminGetRefundReasonParams,
         queryConfig.retrieveTransformQueryConfig
       ),
     ],

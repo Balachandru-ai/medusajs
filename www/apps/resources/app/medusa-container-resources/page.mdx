@@ -121,6 +121,24 @@ You can use the `ContainerRegistrationKeys` enum imported from `@medusajs/framew
     <Table.Row>
       <Table.Cell>
 
+      Knex
+
+      </Table.Cell>
+      <Table.Cell>
+
+      [Knex query builder](https://knexjs.org/) connected to your application's database. Avoid performing database operations with this query builder and instead use [services](!docs!/learn/fundamentals/modules#2-create-service). This is only available for general database connectivity purposes.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `__pg_connection__` or `ContainerRegistrationKeys.PG_CONNECTION`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
       Modules' main services
 
       </Table.Cell>

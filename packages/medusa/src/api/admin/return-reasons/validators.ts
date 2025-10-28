@@ -7,20 +7,7 @@ import {
 import { applyAndAndOrOperators } from "../../utils/common-validators"
 
 export const AdminGetReturnReasonsReturnReasonParams =
-  createSelectParams().merge(
-    z.object({
-      id: z.union([z.string(), z.array(z.string())]).optional(),
-      value: z.union([z.string(), z.array(z.string())]).optional(),
-      label: z.union([z.string(), z.array(z.string())]).optional(),
-      description: z.union([z.string(), z.array(z.string())]).optional(),
-      parent_return_reason_id: z
-        .union([z.string(), z.array(z.string())])
-        .optional(),
-      created_at: createOperatorMap().optional(),
-      updated_at: createOperatorMap().optional(),
-      deleted_at: createOperatorMap().optional(),
-    })
-  )
+  createSelectParams()
 
 export type AdminGetReturnReasonsReturnReasonParamsType = z.infer<
   typeof AdminGetReturnReasonsReturnReasonParams
