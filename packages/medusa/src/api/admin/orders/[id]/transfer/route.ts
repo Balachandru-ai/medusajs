@@ -8,10 +8,12 @@ import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import { AdminTransferOrderType } from "../../validators"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminTransferOrderType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminRequestOrderTransfer,
+    HttpTypes.AdminGetOrderParams
+  >,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

@@ -38,7 +38,7 @@ export interface AdminCreatePriceList {
   /**
    * The price list's description.
    */
-  description?: string | null
+  description: string
   /**
    * The price list's start date.
    */
@@ -50,11 +50,11 @@ export interface AdminCreatePriceList {
   /**
    * The price list's status.
    */
-  status: PriceListStatus
+  status?: PriceListStatus
   /**
    * The price list's type.
    */
-  type: PriceListType
+  type?: PriceListType
   /**
    * The price list's rules.
    */
