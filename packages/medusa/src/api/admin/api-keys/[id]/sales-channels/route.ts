@@ -1,5 +1,5 @@
 import { linkSalesChannelsToApiKeyWorkflow } from "@medusajs/core-flows"
-import { HttpTypes, LinkMethodRequest } from "@medusajs/framework/types"
+import { HttpTypes } from "@medusajs/framework/types"
 import { ApiKeyType, MedusaError } from "@medusajs/framework/utils"
 import {
   AuthenticatedMedusaRequest,
@@ -8,7 +8,10 @@ import {
 import { refetchApiKey } from "../../helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<LinkMethodRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchLink,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminApiKeyResponse>
 ) => {
   const { add, remove } = req.validatedBody

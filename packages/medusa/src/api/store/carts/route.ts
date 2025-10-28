@@ -11,7 +11,10 @@ import {
 import { refetchCart } from "./helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreCreateCart & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCreateCart & AdditionalData,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const workflowInput = {

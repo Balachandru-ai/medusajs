@@ -15,7 +15,6 @@ import {
 import { refetchCustomer } from "../../../helpers"
 import {
   StoreGetCustomerAddressParamsType,
-  StoreUpdateCustomerAddressType,
 } from "../../../validators"
 
 export const GET = async (
@@ -45,7 +44,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<StoreUpdateCustomerAddressType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreUpdateCustomerAddress,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCustomerResponse>
 ) => {
   const id = req.auth_context.actor_id!
@@ -65,7 +67,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCustomerAddressDeleteResponse>
 ) => {
   const id = req.auth_context.actor_id

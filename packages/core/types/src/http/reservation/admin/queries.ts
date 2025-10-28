@@ -1,15 +1,11 @@
 import { OperatorMap } from "../../../dal"
-import { SelectParams } from "../../common"
+import { FindParams, SelectParams } from "../../common"
 
-export interface AdminGetReservationsParams {
+export interface AdminGetReservationsParams extends FindParams {
   /**
-   * The maximum number of reservations to retrieve.
+   * A search term to search for reservations by their searchable fields.
    */
-  limit?: number
-  /**
-   * The number of reservations to skip.
-   */
-  offset?: number
+  q?: string
   /**
    * Filter by the ID(s) of the location(s) to retrieve the
    * reservations for.
@@ -26,10 +22,6 @@ export interface AdminGetReservationsParams {
    */
   line_item_id?: string | string[]
   /**
-   * Sort the reservations by the given field.
-   */
-  order_id?: string | string[]
-  /**
    * Filter by the ID(s) of the user(s) to retrieve the
    * reservations they created.
    */
@@ -38,6 +30,10 @@ export interface AdminGetReservationsParams {
    * Filter by reservation description(s).
    */
   description?: string | OperatorMap<string>
+  /**
+   * Filter by reservation quantity.
+   */
+  quantity?: OperatorMap<number>
   /**
    * Apply filters on the reservation's creation date.
    */

@@ -5,7 +5,6 @@ import {
 
 import {
   StoreGetCustomerParamsType,
-  StoreUpdateCustomerType,
 } from "../validators"
 import { refetchCustomer } from "../helpers"
 import { MedusaError } from "@medusajs/framework/utils"
@@ -30,7 +29,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<StoreUpdateCustomerType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreUpdateCustomer,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCustomerResponse>
 ) => {
   const customerId = req.auth_context.actor_id

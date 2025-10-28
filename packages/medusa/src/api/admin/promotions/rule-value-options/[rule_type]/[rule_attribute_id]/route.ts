@@ -12,7 +12,6 @@ import {
   validateRuleAttribute,
   validateRuleType,
 } from "../../../utils"
-import { AdminGetPromotionRuleParamsType } from "../../../validators"
 import {
   ApplicationMethodTargetTypeValues,
   RuleTypeValues,
@@ -26,7 +25,7 @@ import {
   from the currency module.
 */
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetPromotionRuleParamsType>,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminGetPromotionsRuleValueParams>,
   res: MedusaResponse<HttpTypes.AdminRuleValueOptionsListResponse>
 ) => {
   const { rule_type: ruleType, rule_attribute_id: ruleAttributeId } = req.params
