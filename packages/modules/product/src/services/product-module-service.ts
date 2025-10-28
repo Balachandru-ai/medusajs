@@ -41,6 +41,7 @@ import {
   MedusaService,
   MessageAggregator,
   Modules,
+  partitionArray,
   ProductStatus,
   removeUndefined,
   toHandle,
@@ -199,11 +200,29 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     @MedusaContext() sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO> {
+    const relationsSet = new Set(config?.relations ?? [])
+    const shouldLoadVariantImages = relationsSet.has("variants.images")
+    if (shouldLoadVariantImages) {
+      relationsSet.add("variants")
+      relationsSet.add("images")
+    }
+
     const product = await this.productService_.retrieve(
       productId,
-      this.getProductFindConfig_(config),
+      this.getProductFindConfig_({
+        ...config,
+        relations: Array.from(relationsSet),
+      }),
       sharedContext
     )
+
+    if (shouldLoadVariantImages && product.variants && product.images) {
+      await this.buildVariantImagesFromProduct(
+        product.variants,
+        product.images,
+        sharedContext
+      )
+    }
 
     return this.baseRepository_.serialize<ProductTypes.ProductDTO>(product)
   }
@@ -215,11 +234,33 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO[]> {
+    const relationsSet = new Set(config?.relations ?? [])
+    const shouldLoadVariantImages = relationsSet.has("variants.images")
+    if (shouldLoadVariantImages) {
+      relationsSet.add("variants")
+      relationsSet.add("images")
+    }
+
     const products = await this.productService_.list(
       filters,
-      this.getProductFindConfig_(config),
+      this.getProductFindConfig_({
+        ...config,
+        relations: Array.from(relationsSet),
+      }),
       sharedContext
     )
+
+    if (shouldLoadVariantImages) {
+      for (const product of products) {
+        if (product.variants && product.images) {
+          await this.buildVariantImagesFromProduct(
+            product.variants,
+            product.images,
+            sharedContext
+          )
+        }
+      }
+    }
 
     return this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
   }
@@ -231,11 +272,37 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<[ProductTypes.ProductDTO[], number]> {
+    const shouldLoadVariantImages =
+      config?.relations?.includes("variants.images")
+
+    // Ensure we load necessary relations
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadVariantImages) {
+      if (!relations.includes("variants")) {
+        relations.push("variants")
+      }
+      if (!relations.includes("images")) {
+        relations.push("images")
+      }
+    }
+
     const [products, count] = await this.productService_.listAndCount(
       filters,
-      this.getProductFindConfig_(config),
+      this.getProductFindConfig_({ ...config, relations }),
       sharedContext
     )
+
+    if (shouldLoadVariantImages) {
+      for (const product of products) {
+        if (product.variants && product.images) {
+          await this.buildVariantImagesFromProduct(
+            product.variants,
+            product.images,
+            sharedContext
+          )
+        }
+      }
+    }
 
     const serializedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
@@ -2449,5 +2516,58 @@ export default class ProductModuleService
     }
 
     return result
+  }
+
+  private async buildVariantImagesFromProduct(
+    variants: InferEntityType<typeof ProductVariant>[],
+    productImages: InferEntityType<typeof ProductImage>[],
+    sharedContext: Context = {}
+  ): Promise<void> {
+    // Create a clean map of images without problematic collections
+    const imagesMap = new Map<string, InferEntityType<typeof ProductImage>>()
+    for (const img of productImages) {
+      imagesMap.set(img.id, img)
+    }
+
+    const variantIds = variants.map((v) => v.id)
+    const variantImageRelations =
+      await this.productVariantProductImageService_.list(
+        { variant_id: variantIds },
+        { select: ["variant_id", "image_id"] },
+        sharedContext
+      )
+
+    const variantIdImageIdsMap = new Map<string, string[]>()
+    const imageIdVariantIdsMap = new Map<string, string[]>()
+
+    // build both lookup
+    for (const relation of variantImageRelations) {
+      if (!variantIdImageIdsMap.has(relation.variant_id)) {
+        variantIdImageIdsMap.set(relation.variant_id, [])
+      }
+      variantIdImageIdsMap.get(relation.variant_id)!.push(relation.image_id)
+
+      if (!imageIdVariantIdsMap.has(relation.image_id)) {
+        imageIdVariantIdsMap.set(relation.image_id, [])
+      }
+      imageIdVariantIdsMap.get(relation.image_id)!.push(relation.variant_id)
+    }
+
+    const [generalImages, variantImages] = partitionArray(
+      productImages,
+      (img) => !imageIdVariantIdsMap.has(img.id) // if image doesn't have any variants, it is a general image
+    )
+
+    for (const variant of variants) {
+      const variantImageIds = variantIdImageIdsMap.get(variant.id) || []
+
+      variant.images = [...generalImages]
+
+      for (const image of variantImages) {
+        if (variantImageIds.includes(image.id)) {
+          variant.images.push(image)
+        }
+      }
+    }
   }
 }

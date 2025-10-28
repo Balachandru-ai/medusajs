@@ -7,10 +7,12 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
-import { StoreRequestOrderTransferType } from "../../../validators"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<StoreRequestOrderTransferType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreRequestOrderTransfer,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreOrderResponse>
 ) => {
   const orderId = req.params.id

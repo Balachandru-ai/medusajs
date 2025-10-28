@@ -1,9 +1,10 @@
+import { FindParams } from "../../common"
 import {
   BasePaymentCollectionFilters,
   BasePaymentSessionFilters,
 } from "../common"
 
-export interface StorePaymentProviderFilters {
+export interface StorePaymentProviderFilters extends FindParams {
   /**
    * The ID of the region to retrieve its payment providers.
    */

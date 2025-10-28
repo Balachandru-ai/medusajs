@@ -7,11 +7,10 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { fetchPriceList } from "../helpers"
-import { AdminUpdatePriceListType } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminPriceListParams>,
   res: MedusaResponse<HttpTypes.AdminPriceListResponse>
 ) => {
   const price_list = await fetchPriceList(
@@ -24,7 +23,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdatePriceListType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdatePriceList,
+    HttpTypes.AdminPriceListParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPriceListResponse>
 ) => {
   const id = req.params.id

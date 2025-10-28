@@ -12,7 +12,8 @@ export const POST = async (
     BatchMethodRequest<
       HttpTypes.AdminCreatePromotionRule,
       HttpTypes.AdminUpdatePromotionRule
-    >
+    >,
+    HttpTypes.AdminGetPromotionRuleParams
   >,
   res: MedusaResponse<HttpTypes.AdminPromotionRuleBatchResponse>
 ) => {

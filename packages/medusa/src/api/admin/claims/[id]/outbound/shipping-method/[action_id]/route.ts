@@ -10,11 +10,13 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminPostClaimsShippingActionReqSchemaType } from "../../../../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminPostClaimsShippingActionReqSchemaType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminClaimUpdateOutboundShipping,
+    HttpTypes.AdminClaimActionsParams
+  >,
   res: MedusaResponse<HttpTypes.AdminClaimPreviewResponse>
 ) => {
   const { id, action_id } = req.params
@@ -49,7 +51,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.AdminClaimActionsParams>,
   res: MedusaResponse<HttpTypes.AdminClaimPreviewResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
