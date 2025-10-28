@@ -1,5 +1,5 @@
 ---
-"@medusajs/medusa": patch
+"@medusajs/medusa": minor
 ---
 
 fix(medusa): API workflow subscription
