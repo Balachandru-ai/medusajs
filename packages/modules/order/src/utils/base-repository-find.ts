@@ -32,7 +32,6 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     config.options.populate ??= []
 
     const strategy = findOptions_.options.strategy ?? LoadStrategy.JOINED
-
     let orderAlias = "o0"
     if (isRelatedEntity) {
       if (entity === OrderClaim) {
@@ -233,10 +232,6 @@ function configurePopulateWhere(
   if (hasRelation("items") || hasRelation("order.items")) {
     popWhere.items ??= {}
     popWhere.items.version = version
-
-    popWhere.items.item ??= {}
-    popWhere.items.item.adjustments ??= {}
-    popWhere.items.item.adjustments.version = version
   }
 
   if (hasRelation("shipping_methods")) {
