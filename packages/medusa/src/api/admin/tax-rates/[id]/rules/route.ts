@@ -3,12 +3,14 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminCreateTaxRateRuleType } from "../../validators"
 import { refetchTaxRate } from "../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateTaxRateRuleType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateTaxRateRule,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminTaxRateResponse>
 ) => {
   await createTaxRateRulesWorkflow(req.scope).run({

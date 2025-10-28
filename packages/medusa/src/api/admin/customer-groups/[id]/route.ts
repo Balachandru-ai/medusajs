@@ -9,11 +9,10 @@ import {
 
 import { MedusaError } from "@medusajs/framework/utils"
 import { refetchCustomerGroup } from "../helpers"
-import { AdminUpdateCustomerGroupType } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminCustomerGroupResponse>
 ) => {
   const customerGroup = await refetchCustomerGroup(
@@ -33,7 +32,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateCustomerGroupType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateCustomerGroup,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCustomerGroupResponse>
 ) => {
   const existingCustomerGroup = await refetchCustomerGroup(

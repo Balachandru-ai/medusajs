@@ -1,7 +1,7 @@
 import { MiddlewareRoute } from "@medusajs/framework/http"
 import { validateAndTransformQuery } from "@medusajs/framework"
 import * as QueryConfig from "./query-config"
-import { StoreReturnReasonParams } from "./validators"
+import { StoreReturnReasonParams, StoreReturnReasonsParams } from "./validators"
 
 export const storeReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
   {
@@ -9,7 +9,7 @@ export const storeReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/store/return-reasons",
     middlewares: [
       validateAndTransformQuery(
-        StoreReturnReasonParams,
+        StoreReturnReasonsParams,
         QueryConfig.listTransformQueryConfig
       ),
     ],
