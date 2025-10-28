@@ -2177,7 +2177,7 @@ describe("defineConfig", function () {
             },
             "storeCors": "http://localhost:8000",
           },
-          "medusaCloudOptions": {
+          "cloud": {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
             "environmentHandle": "test-environment",
@@ -2358,7 +2358,7 @@ describe("defineConfig", function () {
             },
             "storeCors": "http://localhost:8000",
           },
-          "medusaCloudOptions": {
+          "cloud": {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
             "environmentHandle": undefined,
@@ -2373,7 +2373,7 @@ describe("defineConfig", function () {
     `)
   })
 
-  it("should merge custom projectConfig.medusaCloudOptions", function () {
+  it("should merge custom projectConfig.cloud", function () {
     const originalEnv = { ...process.env }
     process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE = "test-environment"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
@@ -2381,7 +2381,7 @@ describe("defineConfig", function () {
     const config = defineConfig({
       projectConfig: {
         http: {} as any,
-        medusaCloudOptions: {
+        cloud: {
           environmentHandle: "overriden-environment",
           apiKey: "overriden-api-key",
           emailsEndpoint: "overriden-emails-endpoint",
@@ -2548,7 +2548,7 @@ describe("defineConfig", function () {
             },
             "storeCors": "http://localhost:8000",
           },
-          "medusaCloudOptions": {
+          "cloud": {
             "apiKey": "overriden-api-key",
             "emailsEndpoint": "overriden-emails-endpoint",
             "environmentHandle": "overriden-environment",

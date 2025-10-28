@@ -50,7 +50,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
   const modules = resolveModules(config.modules, options, config.projectConfig)
-  applyCloudOptionsToModules(modules, projectConfig?.medusaCloudOptions)
+  applyCloudOptionsToModules(modules, projectConfig?.cloud)
   const plugins = resolvePlugins(config.plugins, options)
 
   return {
@@ -369,7 +369,7 @@ function normalizeProjectConfig(
     http,
     redisOptions,
     sessionOptions,
-    medusaCloudOptions,
+    cloud,
     ...restOfProjectConfig
   } = projectConfig || {}
 
@@ -378,7 +378,7 @@ function normalizeProjectConfig(
     sandboxHandle: process.env.MEDUSA_CLOUD_SANDBOX_HANDLE,
     apiKey: process.env.MEDUSA_CLOUD_API_KEY,
     emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
-    ...medusaCloudOptions,
+    ...cloud,
   }
   const hasCloudOptions = Object.values(mergedCloudOptions).some(
     (value) => value !== undefined
@@ -445,7 +445,7 @@ function normalizeProjectConfig(
       ...sessionOptions,
     },
     // If there are no cloud options, we better don't pollute the project config for people not using the cloud
-    ...(hasCloudOptions ? { medusaCloudOptions: mergedCloudOptions } : {}),
+    ...(hasCloudOptions ? { cloud: mergedCloudOptions } : {}),
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
 
