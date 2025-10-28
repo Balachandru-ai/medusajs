@@ -8,11 +8,12 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { refetchRegion } from "../helpers"
-import { AdminGetRegionParamsType, AdminUpdateRegionType } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetRegionParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminRegionResponse>
 ) => {
   const region = await refetchRegion(
@@ -32,7 +33,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateRegionType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateRegion,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminRegionResponse>
 ) => {
   const existingRegion = await refetchRegion(req.params.id, req.scope, ["id"])

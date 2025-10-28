@@ -8,7 +8,7 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminGetStoreParamsType, AdminUpdateStoreType } from "../validators"
+import { AdminGetStoreParamsType } from "../validators"
 import { refetchStore } from "../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
@@ -30,7 +30,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateStoreType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateStore,
+    HttpTypes.AdminStoreParams
+  >,
   res: MedusaResponse<HttpTypes.AdminStoreResponse>
 ) => {
   const existingStore = await refetchStore(req.params.id, req.scope, ["id"])

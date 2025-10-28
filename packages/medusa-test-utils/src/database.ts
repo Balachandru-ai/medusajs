@@ -228,7 +228,6 @@ export const dbTestUtilFactory = (): any => ({
       const runRawQuery = this.pgConnection_.raw.bind(this.pgConnection_)
       schema ??= "public"
 
-      await runRawQuery(`SET session_replication_role = 'replica';`)
       const { rows: tableNames } = await runRawQuery(`SELECT table_name
                                               FROM information_schema.tables
                                               WHERE table_schema = '${schema}';`)
@@ -237,6 +236,7 @@ export const dbTestUtilFactory = (): any => ({
       const mainPartitionTables = ["index_data", "index_relation"]
       let hasIndexTables = false
 
+      const tablesToTruncate: string[] = []
       for (const { table_name } of tableNames) {
         if (mainPartitionTables.includes(table_name)) {
           hasIndexTables = true
@@ -249,15 +249,17 @@ export const dbTestUtilFactory = (): any => ({
           continue
         }
 
-        await runRawQuery(`DELETE FROM ${schema}."${table_name}";`)
+        tablesToTruncate.push(`${schema}."${table_name}"`)
+      }
+      if (tablesToTruncate.length > 0) {
+        await runRawQuery(`TRUNCATE ${tablesToTruncate.join(", ")};`)
       }
 
       if (hasIndexTables) {
-        await runRawQuery(`TRUNCATE TABLE ${schema}.index_data;`)
-        await runRawQuery(`TRUNCATE TABLE ${schema}.index_relation;`)
+        await runRawQuery(
+          `TRUNCATE ${schema}.index_data, ${schema}.index_relation;`
+        )
       }
-
-      await runRawQuery(`SET session_replication_role = 'origin';`)
     } catch (error) {
       logger.error("Error during database teardown:", error)
       throw error

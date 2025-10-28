@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createFindParams, createOperatorMap } from "../../utils/validators"
+import { createFindParams, createOperatorMap, createSelectParams } from "../../utils/validators"
 
 export type AdminCreatePaymentRefundReasonType = z.infer<
   typeof AdminCreatePaymentRefundReason
@@ -40,4 +40,10 @@ export const AdminGetRefundReasonsParams = createFindParams({
 )
 export type AdminGetRefundReasonsParamsType = z.infer<
   typeof AdminGetRefundReasonsParams
+>
+
+export const AdminGetRefundReasonParams = createSelectParams()
+
+export type AdminGetRefundReasonParamsType = z.infer<
+  typeof AdminGetRefundReasonParams
 >
