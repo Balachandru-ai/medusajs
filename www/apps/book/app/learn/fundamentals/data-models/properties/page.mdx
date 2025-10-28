@@ -79,7 +79,7 @@ const Post = model.define("post", {
   {
     name: "limit_name_length",
     expression: (columns) => `LENGTH(${columns.name}) <= 50`,
-  }
+  },
 ])
 
 export default Post

@@ -7,11 +7,11 @@ import {
   NotificationEvents,
   NotificationStatus,
 } from "@medusajs/framework/utils"
-import { NotificationModuleService } from "@services"
 import {
   MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
+import { NotificationModuleService } from "@services"
 import { resolve } from "path"
 
 let moduleOptions = {

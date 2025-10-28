@@ -405,6 +405,11 @@ export interface AdminUpdateProduct {
    */
   images?: {
     /**
+     * The ID of the image to update
+     * or set for existing images.
+     */
+    id?: string
+    /**
      * The image's URL.
      */
     url: string
@@ -532,6 +537,12 @@ export interface AdminUpdateProductOption {
   values?: string[]
 }
 
+/**
+ * @privateRemarks
+ * These types don't match the validators, however, they're used by the admin
+ * dashboard. We should update the admin dashboard to use different types that it
+ * needs instead.
+ */
 interface AdminCreateProductVariantInventoryItem {
   /**
    * The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the
@@ -548,6 +559,12 @@ interface AdminCreateProductVariantInventoryItem {
   variant_id: string
 }
 
+/**
+ * @privateRemarks
+ * These types don't match the validators, however, they're used by the admin
+ * dashboard. We should update the admin dashboard to use different types that it
+ * needs instead.
+ */
 interface AdminUpdateProductVariantInventoryItem {
   /**
    * The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the

@@ -11,10 +11,9 @@ import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import { AdminUpdateTaxRegionType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminUpdateTaxRegion>,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminTaxRegionParams>,
   res: MedusaResponse<HttpTypes.AdminTaxRegionResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
@@ -32,7 +31,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateTaxRegionType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateTaxRegion,
+    HttpTypes.AdminTaxRegionParams
+  >,
   res: MedusaResponse<HttpTypes.AdminTaxRegionResponse>
 ) => {
   const { id } = req.params

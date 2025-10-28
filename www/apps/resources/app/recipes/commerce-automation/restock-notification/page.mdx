@@ -1153,7 +1153,7 @@ export default RestockModuleService
 
 To perform queries on the database in a method, add the `@InjectManager` decorator to the method. This will inject a [forked MikroORM entity manager](https://mikro-orm.io/docs/identity-map#forking-entity-manager) that you can use in your method.
 
-Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this paramter.
+Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this parameter.
 
 In the method, you use the `createQueryBuilder` to construct a query, passing it the name of the `RestockSubscription`'s table. You then select distinct `variant_id` and `sales_channel` pairings, and execute and return the query's result.
 

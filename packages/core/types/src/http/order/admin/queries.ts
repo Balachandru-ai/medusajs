@@ -1,5 +1,5 @@
 import { OperatorMap } from "../../../dal"
-import { FindParams } from "../../common"
+import { FindParams, SelectParams } from "../../common"
 import { BaseOrderChangesFilters, BaseOrderFilters } from "../common"
 
 export interface AdminOrderFilters extends FindParams, BaseOrderFilters {
@@ -33,7 +33,7 @@ export interface AdminOrderFilters extends FindParams, BaseOrderFilters {
   updated_at?: OperatorMap<string>
 }
 
-export interface AdminOrderItemsFilters extends FindParams {
+export interface AdminOrderItemsFilters extends SelectParams {
   /**
    * Filter by order item ID(s).
    */
@@ -48,6 +48,26 @@ export interface AdminOrderItemsFilters extends FindParams {
   version?: number[] | number
 }
 
-export interface AdminOrderChangesFilters extends BaseOrderChangesFilters {}
+export interface AdminOrderChangesFilters extends BaseOrderChangesFilters, SelectParams {
+  /**
+   * Apply filters on the change's creation date.
+   */
+  created_at?: OperatorMap<string>
+  /**
+   * Apply filters on the change's update date.
+   */
+  updated_at?: OperatorMap<string>
+  /**
+   * Apply filters on the change's deletion date.
+   */
+  deleted_at?: OperatorMap<string>
+}
 
 export interface AdminGetOrderShippingOptionList {}
+export interface AdminGetOrderParams extends SelectParams {}
+export interface AdminGetOrderDetailsParams extends SelectParams {
+  /**
+   * The version of the order to retrieve details for.
+   */
+  version?: number
+}
