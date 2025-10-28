@@ -212,6 +212,54 @@ export function getRouteMap({
               ],
             },
             {
+              path: "/product-options",
+              errorElement: <ErrorBoundary />,
+              handle: {
+                breadcrumb: () => t("productOptions.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/product-options/product-option-list"),
+                },
+                {
+                  path: ":id",
+                  lazy: async () => {
+                    const { Component, Breadcrumb, loader } = await import(
+                      "../../routes/product-options/product-option-detail"
+                    )
+
+                    return {
+                      Component,
+                      loader,
+                      handle: {
+                        breadcrumb: (match: UIMatch<any>) => (
+                          <Breadcrumb {...match} />
+                        ),
+                      },
+                    }
+                  },
+                  // children: [
+                  //   {
+                  //     path: "edit",
+                  //     lazy: () =>
+                  //       import(
+                  //         "../../routes/product-options/product-option-edit"
+                  //       ),
+                  //   },
+                  //   {
+                  //     path: "metadata/edit",
+                  //     lazy: () =>
+                  //       import(
+                  //         "../../routes/product-options/product-option-metadata"
+                  //       ),
+                  //   },
+                  // ],
+                },
+              ],
+            },
+            {
               path: "/categories",
               errorElement: <ErrorBoundary />,
               handle: {

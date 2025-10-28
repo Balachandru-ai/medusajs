@@ -23,6 +23,7 @@ import { PricePreference } from "./price-preference"
 import { Product } from "./product"
 import { ProductCategory } from "./product-category"
 import { ProductCollection } from "./product-collection"
+import { ProductOption } from "./product-option"
 import { ProductTag } from "./product-tag"
 import { ProductType } from "./product-type"
 import { ProductVariant } from "./product-variant"
@@ -63,6 +64,10 @@ export class Admin {
    * @tags product
    */
   public productCategory: ProductCategory
+  /**
+   * @tags product
+   */
+  public productOption: ProductOption
   /**
    * @tags pricing
    */
@@ -238,6 +243,7 @@ export class Admin {
     this.customer = new Customer(client)
     this.productCollection = new ProductCollection(client)
     this.productCategory = new ProductCategory(client)
+    this.productOption = new ProductOption(client)
     this.priceList = new PriceList(client)
     this.pricePreference = new PricePreference(client)
     this.product = new Product(client)

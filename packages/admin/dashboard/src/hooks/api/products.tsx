@@ -62,28 +62,6 @@ export const useUpdateProductOption = (
   })
 }
 
-export const useDeleteProductOption = (
-  productId: string,
-  optionId: string,
-  options?: UseMutationOptions<any, FetchError, void>
-) => {
-  return useMutation({
-    mutationFn: () => sdk.admin.product.deleteOption(productId, optionId),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({ queryKey: optionsQueryKeys.lists() })
-      queryClient.invalidateQueries({
-        queryKey: optionsQueryKeys.detail(optionId),
-      })
-      queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.detail(productId),
-      })
-
-      options?.onSuccess?.(data, variables, context)
-    },
-    ...options,
-  })
-}
-
 export const useProductVariant = (
   productId: string,
   variantId: string,

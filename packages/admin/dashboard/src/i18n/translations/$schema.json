@@ -178,6 +178,12 @@
         },
         "noMoreData": {
           "type": "string"
+        },
+        "exclusive": {
+          "type": "string"
+        },
+        "global": {
+          "type": "string"
         }
       },
       "required": [
@@ -237,7 +243,9 @@
         "unsavedChangesDescription",
         "includesTaxTooltip",
         "excludesTaxTooltip",
-        "noMoreData"
+        "noMoreData",
+        "exclusive",
+        "global"
       ],
       "additionalProperties": false
     },
@@ -503,6 +511,9 @@
         },
         "cannotUndo": {
           "type": "string"
+        },
+        "organize": {
+          "type": "string"
         }
       },
       "required": [
@@ -547,7 +558,8 @@
         "hide",
         "export",
         "import",
-        "cannotUndo"
+        "cannotUndo",
+        "organize"
       ],
       "additionalProperties": false
     },
@@ -3073,6 +3085,42 @@
         "organize",
         "fields"
       ],
+      "additionalProperties": false
+    },
+    "productOptions": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "values": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            }
+          },
+          "required": ["header"],
+          "additionalProperties": false
+        },
+        "delete": {
+          "type": "object",
+          "properties": {
+            "confirmation": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["confirmation", "successToast"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["domain", "subtitle", "values", "delete"],
       "additionalProperties": false
     },
     "inventory": {
@@ -7678,6 +7726,7 @@
             "campaign",
             "method",
             "allocation",
+            "allocationTooltip",
             "addCondition",
             "clearAll",
             "taxInclusive",
@@ -11625,6 +11674,9 @@
         },
         "values": {
           "type": "string"
+        },
+        "exclusive": {
+          "type": "string"
         }
       },
       "required": [
@@ -11790,7 +11842,8 @@
         "startDate",
         "endDate",
         "draft",
-        "values"
+        "values",
+        "exclusive"
       ],
       "additionalProperties": false
     },
@@ -11948,6 +12001,7 @@
     "products",
     "collections",
     "categories",
+    "productOptions",
     "inventory",
     "giftCards",
     "customers",

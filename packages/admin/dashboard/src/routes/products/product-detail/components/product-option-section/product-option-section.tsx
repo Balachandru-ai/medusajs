@@ -1,9 +1,8 @@
-import { PencilSquare, Plus, Trash } from "@medusajs/icons"
+import { PencilSquare, Plus } from "@medusajs/icons"
 import { Badge, Container, Heading, usePrompt } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
-import { useDeleteProductOption } from "../../../../../hooks/api/products"
 import { HttpTypes } from "@medusajs/types"
 
 const OptionActions = ({
@@ -14,25 +13,7 @@ const OptionActions = ({
   option: HttpTypes.AdminProductOption
 }) => {
   const { t } = useTranslation()
-  const { mutateAsync } = useDeleteProductOption(product.id, option.id)
   const prompt = usePrompt()
-
-  const handleDelete = async () => {
-    const res = await prompt({
-      title: t("general.areYouSure"),
-      description: t("products.options.deleteWarning", {
-        title: option.title,
-      }),
-      confirmText: t("actions.delete"),
-      cancelText: t("actions.cancel"),
-    })
-
-    if (!res) {
-      return
-    }
-
-    await mutateAsync()
-  }
 
   return (
     <ActionMenu
@@ -46,15 +27,15 @@ const OptionActions = ({
             },
           ],
         },
-        {
-          actions: [
-            {
-              label: t("actions.delete"),
-              onClick: handleDelete,
-              icon: <Trash />,
-            },
-          ],
-        },
+        // {
+        //   actions: [
+        //     {
+        //       label: t("actions.delete"),
+        //       onClick: handleDelete,
+        //       icon: <Trash />,
+        //     },
+        //   ],
+        // },
       ]}
     />
   )

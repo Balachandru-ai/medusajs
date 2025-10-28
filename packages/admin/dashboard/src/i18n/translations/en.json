@@ -57,7 +57,9 @@
     "unsavedChangesDescription": "You have unsaved changes that will be lost if you exit this form.",
     "includesTaxTooltip": "Prices in this column are tax inclusive.",
     "excludesTaxTooltip": "Prices in this column are tax exclusive.",
-    "noMoreData": "No more data"
+    "noMoreData": "No more data",
+    "exclusive": "Exclusive",
+    "global": "Global"
   },
   "json": {
     "header": "JSON",
@@ -139,7 +141,8 @@
     "hide": "Hide",
     "export": "Export",
     "import": "Import",
-    "cannotUndo": "This action cannot be undone"
+    "cannotUndo": "This action cannot be undone",
+    "organize": "Organize"
   },
   "operators": {
     "in": "In"
@@ -818,6 +821,17 @@
       "new": {
         "label": "New"
       }
+    }
+  },
+  "productOptions": {
+    "domain": "Options",
+    "subtitle": "Manage product options and their associated values.",
+    "values": {
+      "header": "Values"
+    },
+    "delete": {
+      "confirmation": "You are about to delete the product option \"{{title}}\". This action cannot be undone.",
+      "successToast": "Product option was successfully deleted."
     }
   },
   "inventory": {
@@ -3156,7 +3170,8 @@
     "startDate": "Start date",
     "endDate": "End date",
     "draft": "Draft",
-    "values": "Values"
+    "values": "Values",
+    "exclusive": "Exclusive"
   },
   "dateTime": {
     "years_one": "Year",
