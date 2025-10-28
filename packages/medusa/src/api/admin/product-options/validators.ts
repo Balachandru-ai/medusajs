@@ -4,7 +4,10 @@ import {
   createOperatorMap,
   createSelectParams,
 } from "../../utils/validators"
-import { applyAndAndOrOperators } from "../../utils/common-validators"
+import {
+  applyAndAndOrOperators,
+  booleanString,
+} from "../../utils/common-validators"
 
 export type AdminGetProductOptionParamsType = z.infer<
   typeof AdminGetProductOptionParams
@@ -15,7 +18,7 @@ export const AdminGetProductOptionsParamsFields = z.object({
   q: z.string().optional(),
   id: z.union([z.string(), z.array(z.string())]).optional(),
   title: z.union([z.string(), z.array(z.string())]).optional(),
-  is_exclusive: z.string().optional(),
+  is_exclusive: booleanString().optional(),
   created_at: createOperatorMap().optional(),
   updated_at: createOperatorMap().optional(),
   deleted_at: createOperatorMap().optional(),
