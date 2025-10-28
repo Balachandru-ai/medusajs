@@ -58,7 +58,8 @@ export function formatOrder<T = any>(
         detail,
         // TEMP: filter out versioned adjustments manually -> todo: try doing this in the base repo method
         adjustments: orderItem.item.adjustments?.filter(
-          (adjustment) => adjustment.version === order.version
+          (adjustment) =>
+            !adjustment.version || adjustment.version === order.version
         ),
       }
     })
