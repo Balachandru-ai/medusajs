@@ -204,12 +204,11 @@ function configurePopulateWhere(
         ? getVersionSubQuery(manager, "o0", "id")
         : version
 
-      popWhere.items ??= {}
-      popWhere.items.item ??= {}
-      popWhere.items.item.adjustments ??= {}
-      popWhere.items.item.adjustments.version = isSelectIn
-        ? getVersionSubQuery(manager, "o0", "id")
-        : version
+      // popWhere.items.item ??= {}
+      // popWhere.items.item.adjustments ??= {}
+      // popWhere.items.item.adjustments.version = isSelectIn
+      //   ? getVersionSubQuery(manager, "o0", "id")
+      //   : version
     }
 
     if (hasRelation("shipping_methods")) {
@@ -219,14 +218,14 @@ function configurePopulateWhere(
         : version
     }
 
-    if (hasRelation("adjustments") || hasRelation("items.adjustments")) {
-      popWhere.items ??= {}
-      popWhere.items.item ??= {}
-      popWhere.items.item.adjustments ??= {}
-      popWhere.items.item.adjustments.version = isSelectIn
-        ? getVersionSubQuery(manager, "o0", "id")
-        : version
-    }
+    // if (hasRelation("adjustments") || hasRelation("items.adjustments")) {
+    //   popWhere.items ??= {}
+    //   popWhere.items.item ??= {}
+    //   popWhere.items.item.adjustments ??= {}
+    //   popWhere.items.item.adjustments.version = isSelectIn
+    //     ? getVersionSubQuery(manager, "o0", "id")
+    //     : version
+    // }
 
     return
   }
@@ -260,10 +259,10 @@ function configurePopulateWhere(
   }
 
   // TODO: check + add migration script to set existing OLIADJ to latest order version
-  if (hasRelation("items.adjustments")) {
-    popWhere.items ??= {}
-    popWhere.items.item ??= {}
-    popWhere.items.item.adjustments ??= {}
-    popWhere.items.item.adjustments.version = version
-  }
+  // if (hasRelation("items.adjustments")) {
+  //   popWhere.items ??= {}
+  //   popWhere.items.item ??= {}
+  //   popWhere.items.item.adjustments ??= {}
+  //   popWhere.items.item.adjustments.version = version
+  // }
 }
