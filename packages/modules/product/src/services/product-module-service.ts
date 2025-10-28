@@ -987,6 +987,93 @@ export default class ProductModuleService
     return productOptions
   }
 
+  async addProductOptionToProduct(
+    productOptionProductPair: ProductTypes.ProductOptionProductPair,
+    sharedContext?: Context
+  ): Promise<{ id: string }>
+
+  async addProductOptionToProduct(
+    productOptionProductPairs: ProductTypes.ProductOptionProductPair[],
+    sharedContext?: Context
+  ): Promise<{ id: string }[]>
+
+  @InjectManager()
+  @EmitEvents()
+  async addProductOptionToProduct(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    const productOptionProducts = await this.addProductOptionToProduct_(
+      data,
+      sharedContext
+    )
+
+    return productOptionProducts
+  }
+
+  @InjectTransactionManager()
+  protected async addProductOptionToProduct_(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    const productOptionProducts =
+      await this.productProductOptionService_.create(data, sharedContext)
+
+    if (Array.isArray(data)) {
+      return (
+        productOptionProducts as unknown as InferEntityType<
+          typeof ProductProductOption
+        >[]
+      ).map((ppo) => ({ id: ppo.id }))
+    }
+
+    return { id: productOptionProducts.id }
+  }
+
+  async removeProductOptionFromProduct(
+    groupCustomerPair: ProductTypes.ProductOptionProductPair,
+    sharedContext?: Context
+  ): Promise<void>
+
+  async removeProductOptionFromProduct(
+    groupCustomerPairs: ProductTypes.ProductOptionProductPair[],
+    sharedContext?: Context
+  ): Promise<void>
+
+  @InjectManager()
+  @EmitEvents()
+  async removeProductOptionFromProduct(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.removeProductOptionFromProduct_(data, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async removeProductOptionFromProduct_(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    const pairs = Array.isArray(data) ? data : [data]
+    const productOptionsProducts = await this.productProductOptionService_.list(
+      {
+        $or: pairs,
+      }
+    )
+    await this.productProductOptionService_.delete(
+      productOptionsProducts.map(({ id }) => id),
+      sharedContext
+    )
+  }
+
   // @ts-expect-error
   createProductCollections(
     data: ProductTypes.CreateProductCollectionDTO[],
@@ -1980,8 +2067,8 @@ export default class ProductModuleService
       }
 
       if (productData.tag_ids) {
-        ;(productData as any).tags = productData.tag_ids.map((cid) => ({
-          id: cid,
+        ;(productData as any).tags = productData.tag_ids.map((tid) => ({
+          id: tid,
         }))
         delete productData.tag_ids
       }

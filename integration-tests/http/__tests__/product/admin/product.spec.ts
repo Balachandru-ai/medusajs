@@ -68,6 +68,22 @@ medusaIntegrationTestRunner({
         )
       ).data.product_tag
 
+      baseOption1 = (
+        await api.post(
+          "/admin/product-options",
+          { title: "Size", values: ["S", "M", "L"] },
+          adminHeaders
+        )
+      ).data.product_option
+
+      baseOption2 = (
+        await api.post(
+          "/admin/product-options",
+          { title: "Color", values: ["Red", "Blue"] },
+          adminHeaders
+        )
+      ).data.product_option
+
       shippingProfile = (
         await api.post(
           `/admin/shipping-profiles`,
@@ -85,6 +101,7 @@ medusaIntegrationTestRunner({
             // BREAKING: Type input changed from {type: {value: string}} to {type_id: string}
             type_id: baseType.id,
             tags: [{ id: baseTag1.id }, { id: baseTag2.id }],
+            options: [{ id: baseTag1.id }, { id: baseTag2.id }],
             shipping_profile_id: shippingProfile.id,
             images: [
               {
@@ -712,15 +729,7 @@ medusaIntegrationTestRunner({
             title: "Test Giftcard",
             is_giftcard: true,
             description: "test-giftcard-description",
-            options: [{ title: "size", values: ["x", "l"] }],
             shipping_profile_id: shippingProfile.id,
-            variants: [
-              {
-                title: "Test variant",
-                prices: [{ currency_code: "usd", amount: 100 }],
-                options: { size: "x" },
-              },
-            ],
           }
 
           await api
@@ -2594,38 +2603,6 @@ medusaIntegrationTestRunner({
                   title: "third",
                 }),
               ],
-            })
-          )
-        })
-
-        it.only("add option", async () => {
-          const payload = {
-            title: "should_add",
-            values: ["100"],
-          }
-
-          const response = await api
-            .post(
-              `/admin/products/${baseProduct.id}/options`,
-              payload,
-              adminHeaders
-            )
-            .catch((err) => {
-              console.log(err)
-            })
-
-          expect(response.status).toEqual(200)
-
-          expect(response.data.product).toEqual(
-            expect.objectContaining({
-              options: expect.arrayContaining([
-                expect.objectContaining({
-                  title: "should_add",
-                  values: expect.arrayContaining([
-                    expect.objectContaining({ value: "100" }),
-                  ]),
-                }),
-              ]),
             })
           )
         })

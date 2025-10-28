@@ -1207,6 +1207,10 @@ export interface CreateProductOptionDTO {
    * Whether the product option is exclusive or global.
    */
   is_exclusive?: boolean
+  /**
+   * The metadata of the product option.
+   */
+  metadata?: MetadataType
 }
 
 export interface CreateProductOptionValueDTO {
@@ -1247,6 +1251,10 @@ export interface UpdateProductOptionDTO {
    * Whether the product option is exclusive or global.
    */
   is_exclusive?: boolean
+  /**
+   * The metadata of the product option.
+   */
+  metadata?: MetadataType
 }
 
 export interface UpdateProductOptionValueDTO {
@@ -1684,4 +1692,21 @@ export interface UpdateProductDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: MetadataType
+}
+
+/**
+ * @interface
+ *
+ * The details of a product option and product pair.
+ */
+export type ProductOptionProductPair = {
+  /**
+   * The product option's ID.
+   */
+  product_option_id: string
+
+  /**
+   * The product's ID.
+   */
+  product_id: string
 }

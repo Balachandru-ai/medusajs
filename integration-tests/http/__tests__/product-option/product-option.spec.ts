@@ -113,7 +113,7 @@ medusaIntegrationTestRunner({
               expect.objectContaining({ value: "B" }),
               expect.objectContaining({ value: "C" }),
             ]),
-          }),
+          })
         )
       })
     })
@@ -153,10 +153,7 @@ medusaIntegrationTestRunner({
 
     describe("DELETE /admin/product-options/[id]", () => {
       it("deletes a product option", async () => {
-        await api.delete(
-          `/admin/product-options/${option2.id}`,
-          adminHeaders
-        )
+        await api.delete(`/admin/product-options/${option2.id}`, adminHeaders)
 
         const res = await api.get("/admin/product-options", adminHeaders)
 

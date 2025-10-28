@@ -1,3 +1,4 @@
+export * from "./link-product-options-to-product"
 export * from "./batch-link-products-collection"
 export * from "./batch-product-variants"
 export * from "./batch-products"

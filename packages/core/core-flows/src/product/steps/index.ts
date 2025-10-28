@@ -1,3 +1,4 @@
+export * from "./link-product-options-to-product"
 export * from "./create-products"
 export * from "./update-products"
 export * from "./delete-products"

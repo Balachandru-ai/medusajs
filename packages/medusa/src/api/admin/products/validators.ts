@@ -13,6 +13,7 @@ import {
   createSelectParams,
   WithAdditionalData,
 } from "../../utils/validators"
+import { AdminCreateProductOption } from "../product-options/validators"
 
 const statusEnum = z.nativeEnum(ProductStatus)
 
@@ -100,12 +101,14 @@ export const AdminUpdateProductTag = z.object({
   value: z.string().optional(),
 })
 
-export type AdminCreateProductOptionType = z.infer<typeof CreateProductOption>
-export const CreateProductOption = z.object({
-  title: z.string(),
-  values: z.array(z.string()),
+export type AdminLinkProductOptionsType = z.infer<
+  typeof AdminLinkProductOptions
+>
+export const AdminLinkProductOptions = z.object({
+  product_id: z.string(),
+  add: z.array(z.union([z.string(), AdminCreateProductOption])).optional(),
+  remove: z.array(z.string()).optional(),
 })
-export const AdminCreateProductOption = WithAdditionalData(CreateProductOption)
 
 export type AdminUpdateProductOptionType = z.infer<typeof UpdateProductOption>
 export const UpdateProductOption = z.object({
@@ -236,7 +239,7 @@ export const CreateProduct = z
     collection_id: z.string().nullish(),
     categories: z.array(IdAssociation).optional(),
     tags: z.array(IdAssociation).optional(),
-    options: z.array(CreateProductOption).optional(),
+    options: z.array(AdminCreateProductOption).optional(),
     variants: z.array(CreateProductVariant).optional(),
     sales_channels: z.array(z.object({ id: z.string() })).optional(),
     shipping_profile_id: z.string().optional(),
