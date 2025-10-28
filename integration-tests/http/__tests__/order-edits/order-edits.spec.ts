@@ -1359,7 +1359,7 @@ medusaIntegrationTestRunner({
           await api.get(`/admin/orders/${orderId}`, adminHeaders)
         ).data.order
 
-        console.log("orderResult2", JSON.stringify(orderResult2, null, 2))
+        // console.log("orderResult2", JSON.stringify(orderResult2, null, 2))
 
         expect(orderResult2.total).toEqual(21.78)
         expect(orderResult2.original_total).toEqual(24.2)

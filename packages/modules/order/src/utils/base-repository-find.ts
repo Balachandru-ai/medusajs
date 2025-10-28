@@ -1,6 +1,6 @@
-import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
 import { Constructor, Context, DAL } from "@medusajs/framework/types"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
+import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
 import { Order, OrderClaim } from "@models"
 import { mapRepositoryToOrderModel } from "."
 
@@ -32,6 +32,7 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     config.options.populate ??= []
 
     const strategy = findOptions_.options.strategy ?? LoadStrategy.JOINED
+
     let orderAlias = "o0"
     if (isRelatedEntity) {
       if (entity === OrderClaim) {
@@ -74,14 +75,7 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     const version = config.where?.version ?? defaultVersion
     delete config.where?.version
 
-    configurePopulateWhere(
-      config,
-      isRelatedEntity,
-      version,
-      strategy,
-      manager,
-      entity
-    )
+    configurePopulateWhere(config, isRelatedEntity, version)
 
     if (!config.options.orderBy) {
       config.options.orderBy = { id: "ASC" }
@@ -147,9 +141,8 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
       config,
       isRelatedEntity,
       version,
-      strategy,
-      manager,
-      entity
+      strategy === LoadStrategy.SELECT_IN,
+      manager
     )
 
     if (!config.options.orderBy) {
@@ -176,11 +169,9 @@ function configurePopulateWhere(
   config: any,
   isRelatedEntity: boolean,
   version: any,
-  strategy: LoadStrategy,
-  manager?,
-  rootEntity?
+  isSelectIn = false,
+  manager?
 ) {
-  const isSelectIn = strategy === LoadStrategy.SELECT_IN
   const requestedPopulate = config.options?.populate ?? []
   const hasRelation = (relation: string) =>
     requestedPopulate.some(
@@ -189,31 +180,6 @@ function configurePopulateWhere(
 
   config.options.populateWhere ??= {}
   const popWhere = config.options.populateWhere
-
-  const baseSegments = [isRelatedEntity ? "order" : undefined, "items"].filter(
-    Boolean
-  ) as string[]
-  const itemsAdjustmentsRelation = joinPopulatePath(
-    ...baseSegments,
-    "item",
-    "adjustments"
-  )
-
-  const aliasResolver =
-    manager && rootEntity
-      ? createPopulateAliasResolver(
-          manager,
-          rootEntity,
-          requestedPopulate,
-          strategy
-        )
-      : undefined
-
-  const adjustmentsAlias = aliasResolver?.(itemsAdjustmentsRelation)
-  const adjustmentVersion = getAdjustmentVersionExpression(
-    manager,
-    adjustmentsAlias
-  )
 
   // isSelectIn && isRelatedEntity - Order is always the FROM clause (field o0.id)
   if (isRelatedEntity) {
@@ -238,13 +204,6 @@ function configurePopulateWhere(
       popWhereOrder.items.version = isSelectIn
         ? getVersionSubQuery(manager, "o0", "id")
         : version
-
-      if (adjustmentVersion) {
-        popWhere.items ??= {}
-        popWhere.items.item ??= {}
-        popWhere.items.item.adjustments ??= {}
-        popWhere.items.item.adjustments.version = adjustmentVersion
-      }
     }
 
     if (hasRelation("shipping_methods")) {
@@ -253,15 +212,6 @@ function configurePopulateWhere(
         ? getVersionSubQuery(manager, "o0", "id")
         : version
     }
-
-    // if (hasRelation("adjustments") || hasRelation("items.adjustments")) {
-    //   popWhere.items ??= {}
-    //   popWhere.items.item ??= {}
-    //   popWhere.items.item.adjustments ??= {}
-    //   popWhere.items.item.adjustments.version = isSelectIn
-    //     ? getVersionSubQuery(manager, "o0", "id")
-    //     : version
-    // }
 
     return
   }
@@ -284,92 +234,13 @@ function configurePopulateWhere(
     popWhere.items ??= {}
     popWhere.items.version = version
 
-    if (hasRelation(itemsAdjustmentsRelation) && adjustmentVersion) {
-      popWhere.items.item ??= {}
-      popWhere.items.item.adjustments ??= {}
-      popWhere.items.item.adjustments.version = adjustmentVersion
-    }
+    popWhere.items.item ??= {}
+    popWhere.items.item.adjustments ??= {}
+    popWhere.items.item.adjustments.version = version
   }
 
   if (hasRelation("shipping_methods")) {
     popWhere.shipping_methods ??= {}
     popWhere.shipping_methods.version = version
   }
-
-  // TODO: check + add migration script to set existing OLIADJ to latest order version
-  // if (hasRelation("items.adjustments")) {
-  //   popWhere.items ??= {}
-  //   popWhere.items.item ??= {}
-  //   popWhere.items.item.adjustments ??= {}
-  //   popWhere.items.item.adjustments.version = version
-  // }
-}
-
-function joinPopulatePath(...segments: (string | undefined)[]) {
-  return segments.filter((segment) => segment && segment.length).join(".")
-}
-
-function createPopulateAliasResolver(
-  manager: any,
-  rootEntity: any,
-  populate: any[],
-  strategy: LoadStrategy
-): ((path: string) => string | undefined) | undefined {
-  if (!populate?.length || !manager?.qb) {
-    return undefined
-  }
-
-  try {
-    const entity = toMikroORMEntity(rootEntity)
-    const entityName =
-      typeof rootEntity === "string" ? rootEntity : rootEntity?.name
-
-    if (!entity || !entityName) {
-      return undefined
-    }
-
-    const normalizedPopulate = manager.entityLoader?.normalizePopulate?.(
-      entityName,
-      Array.isArray(populate) ? [...populate] : populate,
-      strategy
-    )
-
-    if (!normalizedPopulate?.length) {
-      return undefined
-    }
-
-    const qb = manager
-      .qb(entity, "o0")
-      .select(["id"])
-      .populate(normalizedPopulate, {}, undefined)
-
-    qb.getKnexQuery()
-
-    return (path: string) =>
-      qb.getAliasForJoinPath(path, {
-        preferNoBranch: true,
-        ignoreBranching: true,
-        matchPopulateJoins: true,
-      })
-  } catch {
-    return undefined
-  }
-}
-
-function getAdjustmentVersionExpression(manager: any, alias?: string) {
-  if (!manager || !alias) {
-    return undefined
-  }
-
-  const knex = manager.getKnex()
-
-  return knex.raw(
-    `(select "ord"."version"
-        from "order" as "ord"
-        inner join "order_item" as "oi"
-          on "oi"."order_id" = "ord"."id"
-         where "oi"."item_id" = "${alias}"."item_id"
-           and "oi"."version" = "${alias}"."version"
-        limit 1)`
-  )
 }

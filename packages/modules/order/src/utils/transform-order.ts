@@ -57,10 +57,10 @@ export function formatOrder<T = any>(
           orderItem.item.raw_compare_at_unit_price,
         detail,
         // TEMP: filter out versioned adjustments manually -> todo: try doing this in the base repo method
-        // adjustments: orderItem.item.adjustments?.filter(
-        //   (adjustment) =>
-        //     !adjustment.version || adjustment.version === order.version
-        // ),
+        adjustments: orderItem.item.adjustments?.filter(
+          (adjustment) =>
+            !adjustment.version || adjustment.version === order.version
+        ),
       }
     })
 
