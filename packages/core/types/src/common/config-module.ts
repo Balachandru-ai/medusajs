@@ -231,6 +231,10 @@ export type MedusaCloudOptions = {
    * The endpoint of the Medusa Cloud email service.
    */
   emailsEndpoint?: string
+  /**
+   * The sandbox handle of the Medusa Cloud sandbox.
+   */
+  sandboxHandle?: string
 }
 
 /**

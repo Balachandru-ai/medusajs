@@ -375,6 +375,7 @@ function normalizeProjectConfig(
 
   const mergedCloudOptions: MedusaCloudOptions = {
     environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+    sandboxHandle: process.env.MEDUSA_CLOUD_SANDBOX_HANDLE,
     apiKey: process.env.MEDUSA_CLOUD_API_KEY,
     emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
     ...medusaCloudOptions,
@@ -486,6 +487,7 @@ function applyCloudOptionsToModules(
             api_key: config.apiKey,
             endpoint: config.emailsEndpoint,
             environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
           },
           ...(module.options ?? {}),
         }
