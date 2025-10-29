@@ -19,5 +19,8 @@ export interface AdminUpdateApiKey {
 }
 
 export interface AdminRevokeApiKey {
+  /**
+   * The number of seconds to wait before revoking the API key.
+   */
   revoke_in?: number
 }

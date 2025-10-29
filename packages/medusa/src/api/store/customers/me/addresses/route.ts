@@ -5,10 +5,6 @@ import {
 
 import { createCustomerAddressesWorkflow } from "@medusajs/core-flows"
 import {
-  StoreCreateCustomerAddressType,
-  StoreGetCustomerAddressesParamsType,
-} from "../../validators"
-import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
@@ -16,7 +12,9 @@ import { refetchCustomer } from "../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<StoreGetCustomerAddressesParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCustomerAddressFilters
+  >,
   res: MedusaResponse<HttpTypes.StoreCustomerAddressListResponse>
 ) => {
   const customerId = req.auth_context.actor_id
@@ -42,7 +40,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<StoreCreateCustomerAddressType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCreateCustomerAddress,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCustomerResponse>
 ) => {
   const customerId = req.auth_context.actor_id

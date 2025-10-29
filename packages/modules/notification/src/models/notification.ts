@@ -8,7 +8,7 @@ export const Notification = model.define("notification", {
   to: model.text().searchable(),
   channel: model.text(),
   // The template name in the provider's system.
-  template: model.text(),
+  template: model.text().nullable(),
   // The data that gets passed over to the provider for rendering the notification.
   data: model.json().nullable(),
   // This can be the event name, the workflow, or anything else that can help to identify what triggered the notification.

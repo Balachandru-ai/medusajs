@@ -13,10 +13,12 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminPostReceiveReturnsReqSchemaType } from "../../validators"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminPostReceiveReturnsReqSchemaType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminInitiateReceiveReturn,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminOrderReturnResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

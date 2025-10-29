@@ -1057,11 +1057,21 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "path": "/learn/fundamentals/admin/translations",
+            "title": "Translations",
+            "children": [],
+            "chapterTitle": "4.6. Translations",
+            "number": "4.6."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "path": "/learn/fundamentals/admin/constraints",
             "title": "Constraints",
             "children": [],
-            "chapterTitle": "4.6. Constraints",
-            "number": "4.6."
+            "chapterTitle": "4.7. Constraints",
+            "number": "4.7."
           },
           {
             "loaded": true,
@@ -1070,8 +1080,8 @@ export const generatedSidebars = [
             "path": "/learn/fundamentals/admin/tips",
             "title": "Tips",
             "children": [],
-            "chapterTitle": "4.7. Tips",
-            "number": "4.7."
+            "chapterTitle": "4.8. Tips",
+            "number": "4.8."
           }
         ],
         "chapterTitle": "4. Admin Development",

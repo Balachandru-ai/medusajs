@@ -11,14 +11,12 @@ import {
   MedusaResponse,
   refetchEntities,
 } from "@medusajs/framework/http"
-import {
-  AdminProductCategoryParamsType,
-  AdminUpdateProductCategoryType,
-} from "../validators"
 import { MedusaError } from "@medusajs/framework/utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminProductCategoryParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminProductCategoryListParams
+  >,
   res: MedusaResponse<AdminProductCategoryResponse>
 ) => {
   const {
@@ -42,7 +40,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateProductCategoryType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateProductCategory,
+    HttpTypes.AdminProductCategoryParams
+  >,
   res: MedusaResponse<AdminProductCategoryResponse>
 ) => {
   const { id } = req.params
