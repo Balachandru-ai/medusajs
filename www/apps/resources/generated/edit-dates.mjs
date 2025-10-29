@@ -6684,5 +6684,6 @@ export const generatedEditDates = {
   "references/utils/Fulfillment/variables/utils.Fulfillment.ShippingOptionTypeWorkflowEvents/page.mdx": "2025-10-21T08:10:52.748Z",
   "references/utils/PromotionUtils/enums/utils.PromotionUtils.ApplicationMethodAllocation/page.mdx": "2025-10-21T08:10:52.665Z",
   "references/utils/PromotionUtils/enums/utils.PromotionUtils.CampaignBudgetType/page.mdx": "2025-10-21T08:10:52.672Z",
-  "app/integrations/guides/avalara/page.mdx": "2025-10-22T09:56:11.929Z"
+  "app/integrations/guides/avalara/page.mdx": "2025-10-22T09:56:11.929Z",
+  "app/how-to-tutorials/tutorials/product-rentals/page.mdx": "2025-10-28T16:09:26.244Z"
 }
