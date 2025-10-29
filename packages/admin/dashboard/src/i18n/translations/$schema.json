@@ -3135,6 +3135,22 @@
           "required": ["header", "hint", "successToast", "tabs"],
           "additionalProperties": false
         },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "description", "successToast"],
+          "additionalProperties": false
+        },
         "delete": {
           "type": "object",
           "properties": {
@@ -3187,6 +3203,7 @@
         "subtitle",
         "values",
         "create",
+        "edit",
         "delete",
         "fields"
       ],

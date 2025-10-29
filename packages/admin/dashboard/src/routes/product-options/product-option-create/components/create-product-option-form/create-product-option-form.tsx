@@ -9,7 +9,7 @@ import {
   useRouteModal,
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useCreateProductOption } from "../../../../../hooks/api/product-options"
+import { useCreateProductOption } from "../../../../../hooks/api"
 import { CreateProductOptionDetails } from "./create-product-option-details"
 import { CreateProductOptionOrganize } from "./create-product-option-organize"
 import {
@@ -74,20 +74,11 @@ export const CreateProductOptionForm = () => {
   const handleSubmit = form.handleSubmit((data) => {
     const { title, values, value_ranks } = data
 
-    // Sort values by rank if ranks are defined
-    let orderedValues = values
-    if (value_ranks && Object.keys(value_ranks).length > 0) {
-      orderedValues = [...values].sort((a, b) => {
-        const rankA = value_ranks[a] ?? values.indexOf(a)
-        const rankB = value_ranks[b] ?? values.indexOf(b)
-        return rankA - rankB
-      })
-    }
-
     mutateAsync(
       {
         title,
-        values: orderedValues,
+        values,
+        ranks: value_ranks,
       },
       {
         onSuccess: ({ product_option }) => {

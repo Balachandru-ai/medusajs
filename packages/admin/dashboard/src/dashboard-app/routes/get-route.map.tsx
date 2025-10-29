@@ -250,13 +250,13 @@ export function getRouteMap({
                     }
                   },
                   children: [
-                    // {
-                    //   path: "edit",
-                    //   lazy: () =>
-                    //     import(
-                    //       "../../routes/product-options/product-option-edit"
-                    //     ),
-                    // },
+                    {
+                      path: "edit",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-options/product-option-edit"
+                        ),
+                    },
                     {
                       path: "metadata/edit",
                       lazy: () =>

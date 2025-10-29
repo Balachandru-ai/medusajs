@@ -838,6 +838,11 @@
         "organize": "Organize"
       }
     },
+    "edit": {
+      "header": "Edit Product Option",
+      "description": "Edit the product option to update its details and associated values.",
+      "successToast": "Product option \"{{title}}\" was successfully updated."
+    },
     "delete": {
       "confirmation": "You are about to delete the product option \"{{title}}\". This action cannot be undone.",
       "successToast": "Product option was successfully deleted."
