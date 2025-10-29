@@ -44,18 +44,18 @@ import {
   simpleHash,
 } from "@medusajs/framework/utils"
 
-import {
-  Price,
-  PriceList,
-  PriceListRule,
-  PricePreference,
-  PriceRule,
-  PriceSet,
-} from "@models"
+import PriceSet from "#models/price-set"
+import PriceList from "#models/price-list"
+import PriceListRule from "#models/price-list-rule"
+import PriceRule from "#models/price-rule"
+import Price from "#models/price"
+import PricePreference from "#models/price-preference"
+
+import { ServiceTypes } from "#types/index"
+import { validatePriceListDates } from "#utils/validate-price-list-dates"
 
 import { Collection } from "@medusajs/framework/mikro-orm/core"
-import { ServiceTypes } from "@types"
-import { validatePriceListDates } from "@utils"
+
 import { joinerConfig } from "../joiner-config"
 
 type InjectedDependencies = {
