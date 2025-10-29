@@ -43,6 +43,14 @@ git clone https://github.com/medusajs/medusa-starter-default.git --depth=1 my-me
 
 This command clones the repository into a directory named `my-medusa-store`.
 
+Make sure to change into the newly created directory:
+
+```bash
+cd my-medusa-store
+```
+
+The rest of the steps will be performed inside this directory.
+
 ---
 
 ## 2. Create `docker-compose.yml`
@@ -96,8 +104,8 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/server
+      - /server/node_modules
     networks:
       - medusa_network
 
@@ -238,7 +246,7 @@ WORKDIR /server
 COPY package.json package-lock.json ./
 
 # Install all dependencies using npm
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -272,9 +280,29 @@ If you're using a different Yarn version, or you're using NPM, you need to insta
 
 To install the dependencies, run the following command:
 
-```bash npm2yarn
-npm install
+<CodeTabs group="npm2yarn">
+  <CodeTab value="npm" label="npm">
+
+```bash
+npm install --legacy-peer-deps
 ```
+
+  </CodeTab>
+  <CodeTab value="yarn" label="yarn">
+
+```bash
+yarn install
+```
+
+  </CodeTab>
+  <CodeTab value="pnpm" label="pnpm">
+
+```bash
+pnpm install
+```
+
+  </CodeTab>
+</CodeTabs>
 
 This will update `yarn.lock` or generate a `package-lock.json` file, depending on your package manager.
 
@@ -434,6 +462,53 @@ docker compose logs -f medusa
 ```
 
 This command shows the logs of the `medusa` service, allowing you to see any errors or messages from the Medusa application.
+
+---
+
+## Troubleshooting
+
+### start.sh Not Found Error
+
+If you get the following error when starting the Medusa application with Docker:
+
+```bash
+medusa_backend exited with code 127 (restarting)
+medusa_backend   | /usr/local/bin/docker-entrypoint.sh: exec: line 11: ./start.sh: not found
+```
+
+This is a common error for Windows users. It usually occurs when the `start.sh` file uses CRLF line endings instead of LF.
+
+To fix this, ensure that the `start.sh` file uses LF line endings. You can configure Git to maintain LF line endings by following [this guide from GitHub](https://docs.github.com/en/get-started/git-basics/configuring-git-to-handle-line-endings).
+
+### Couldn't Find X File or Directory Errors
+
+If you encounter errors indicating that certain files or directories couldn't be found, make sure you're running the commands from the root directory of your Medusa application (the same directory where the `docker-compose.yml` file is located).
+
+For example, if you run the `docker:up` command and see an error like this:
+
+```bash
+error Couldn't find a package.json file in "/"
+```
+
+Ensure that your terminal's current working directory is the root of your Medusa application, then try running the command again.
+
+### Container Name Conflicts
+
+If you're running multiple Medusa projects with Docker or have previously run this guide, you may encounter container name conflicts.
+
+To resolve this, ensure that the `container_name` values in your `docker-compose.yml` file are unique for each project. You can modify them by appending a unique identifier to each name.
+
+For example, change:
+
+```yaml title="docker-compose.yml"
+container_name: medusa_postgres
+```
+
+to
+
+```yaml title="docker-compose.yml"
+container_name: medusa_postgres_myproject
+```
 
 ---
 

@@ -175,7 +175,7 @@ export const CodeTabs = ({
     group,
   })
 
-  const tabRefs: (HTMLButtonElement | null)[] = useMemo(() => [], [])
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
   const codeTabSelectorRef = useRef<HTMLSpanElement | null>(null)
   const codeTabsWrapperRef = useRef<HTMLDivElement | null>(null)
 
@@ -221,8 +221,8 @@ export const CodeTabs = ({
   )
 
   useEffect(() => {
-    if (codeTabSelectorRef?.current && tabRefs.length) {
-      const selectedTabElm = tabRefs.find(
+    if (codeTabSelectorRef?.current && tabRefs.current.length) {
+      const selectedTabElm = tabRefs.current.find(
         (tab) => tab?.getAttribute("aria-selected") === "true"
       )
       if (selectedTabElm) {
@@ -249,6 +249,9 @@ export const CodeTabs = ({
       isCollapsed: false,
     }
   }, [selectedTab])
+
+  // Reset tabRefs array before each render
+  tabRefs.current = []
 
   return (
     <div
@@ -299,7 +302,7 @@ export const CodeTabs = ({
                   {...(typeof child.props === "object" ? child.props : {})}
                   changeSelectedTab={changeSelectedTab}
                   pushRef={(tabButton: HTMLButtonElement | null) =>
-                    tabRefs.push(tabButton)
+                    tabRefs.current.push(tabButton)
                   }
                   blockStyle={blockStyle}
                   isSelected={

@@ -9,7 +9,7 @@ import {
 } from "@medusajs/framework/http"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminOrderChangesFilters>,
   res: MedusaResponse<HttpTypes.AdminOrderChangesResponse>
 ) => {
   const { id } = req.params

@@ -1075,4 +1075,76 @@ export class Product {
       }
     )
   }
+
+  /**
+   * This method manages image-variant associations for a specific image. It sends a request to the
+   * [Batch Image Variants](https://docs.medusajs.com/api/admin#products_postproductsidimagesimage_idvariantsbatch)
+   * API route.
+   *
+   * @param productId - The product's ID.
+   * @param imageId - The image's ID.
+   * @param body - The variants to add or remove from the image.
+   * @param headers - Headers to pass in the request
+   * @returns The batch operation details.
+   *
+   * @example
+   * sdk.admin.product.batchImageVariants("prod_123", "img_123", {
+   *   add: ["variant_123", "variant_456"],
+   *   remove: ["variant_789"]
+   * })
+   * .then(({ added, removed }) => {
+   *   console.log(added, removed)
+   * })
+   */
+  async batchImageVariants(
+    productId: string,
+    imageId: string,
+    body: HttpTypes.AdminBatchImageVariantRequest,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminBatchImageVariantResponse>(
+      `/admin/products/${productId}/images/${imageId}/variants/batch`,
+      {
+        method: "POST",
+        headers,
+        body,
+      }
+    )
+  }
+
+  /**
+   * This method manages variant-image associations for a specific variant. It sends a request to the
+   * [Batch Variant Images](https://docs.medusajs.com/api/admin#products_postproductsidvariantsvariant_idimagesbatch)
+   * API route.
+   *
+   * @param productId - The product's ID.
+   * @param variantId - The variant's ID.
+   * @param body - The images to add or remove from the variant.
+   * @param headers - Headers to pass in the request
+   * @returns The batch operation details.
+   *
+   * @example
+   * sdk.admin.product.batchVariantImages("prod_123", "variant_123", {
+   *   add: ["img_123", "img_456"],
+   *   remove: ["img_789"]
+   * })
+   * .then(({ added, removed }) => {
+   *   console.log(added, removed)
+   * })
+   */
+  async batchVariantImages(
+    productId: string,
+    variantId: string,
+    body: HttpTypes.AdminBatchVariantImagesRequest,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminBatchVariantImagesResponse>(
+      `/admin/products/${productId}/variants/${variantId}/images/batch`,
+      {
+        method: "POST",
+        headers,
+        body,
+      }
+    )
+  }
 }

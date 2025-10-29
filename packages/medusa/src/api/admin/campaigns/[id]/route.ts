@@ -8,12 +8,11 @@ import {
 } from "@medusajs/core-flows"
 
 import { refetchCampaign } from "../helpers"
-import { AdminUpdateCampaignType } from "../validators"
 import { MedusaError } from "@medusajs/framework/utils"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminGetCampaignParams>,
   res: MedusaResponse<HttpTypes.AdminCampaignResponse>
 ) => {
   const campaign = await refetchCampaign(
@@ -33,7 +32,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateCampaignType & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateCampaign & AdditionalData,
+    HttpTypes.AdminGetCampaignParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCampaignResponse>
 ) => {
   const existingCampaign = await refetchCampaign(req.params.id, req.scope, [

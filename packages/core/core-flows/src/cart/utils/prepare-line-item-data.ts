@@ -57,6 +57,7 @@ type AddItemProductDTO = ProductDTO & {
 }
 
 export interface PrepareVariantLineItemInput extends ProductVariantDTO {
+  thumbnail: string
   inventory_items: { inventory: InventoryItemDTO }[]
   calculated_price: {
     calculated_price: {
@@ -140,7 +141,8 @@ export function prepareLineItemData(data: PrepareLineItemDataInput) {
     quantity: item?.quantity,
     title: variant?.product?.title ?? item?.title,
     subtitle: variant?.title ?? item?.subtitle,
-    thumbnail: variant?.product?.thumbnail ?? item?.thumbnail,
+    thumbnail:
+      variant?.thumbnail ?? variant?.product?.thumbnail ?? item?.thumbnail,
 
     product_id: variant?.product?.id ?? item?.product_id,
     product_title: variant?.product?.title ?? item?.product_title,

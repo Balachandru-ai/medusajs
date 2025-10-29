@@ -8,7 +8,10 @@ import {
 import { fetchPriceList, fetchPriceListPriceIdsForProduct } from "../../helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminLinkPriceListProducts>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminLinkPriceListProducts,
+    HttpTypes.AdminPriceListParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPriceListResponse>
 ) => {
   const id = req.params.id

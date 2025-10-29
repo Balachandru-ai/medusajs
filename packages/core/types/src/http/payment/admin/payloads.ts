@@ -15,11 +15,11 @@ export interface AdminRefundPayment {
   /**
    * The ID of the refund's reason.
    */
-  refund_reason_id?: string | null
+  refund_reason_id?: string
   /**
    * A note to attach to the refund.
    */
-  note?: string | null
+  note?: string
 }
 
 export interface AdminCreatePaymentCollection {
@@ -28,10 +28,9 @@ export interface AdminCreatePaymentCollection {
    */
   order_id: string
   /**
-   * The payment collection's amount. If not specified, 
-   * the order's total is used as the amount instead.
+   * The payment collection's amount.
    */
-  amount?: number
+  amount: number
 }
 
 export interface AdminMarkPaymentCollectionAsPaid {

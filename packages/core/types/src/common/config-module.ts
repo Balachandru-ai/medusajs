@@ -216,6 +216,26 @@ export type HttpCompressionOptions = {
 /**
  * @interface
  *
+ * Medusa Cloud configurations.
+ */
+export type MedusaCloudOptions = {
+  /**
+   * The environment handle of the Medusa Cloud environment.
+   */
+  environmentHandle?: string
+  /**
+   * The API key used to access Medusa Cloud services.
+   */
+  apiKey?: string
+  /**
+   * The endpoint of the Medusa Cloud email service.
+   */
+  emailsEndpoint?: string
+}
+
+/**
+ * @interface
+ *
  * Essential configurations related to the Medusa application, such as database and CORS configurations.
  */
 export type ProjectConfigOptions = {
@@ -865,6 +885,12 @@ export type ProjectConfigOptions = {
       /*admin?: string[]*/
     }
   }
+
+  /**
+   * This property holds configurations for running in Medusa Cloud.
+   * It gets automatically populated in the cloud, and is not needed outside of it.
+   */
+  medusaCloudOptions?: MedusaCloudOptions
 }
 
 /**

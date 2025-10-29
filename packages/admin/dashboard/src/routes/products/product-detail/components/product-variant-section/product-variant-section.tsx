@@ -103,6 +103,7 @@ export const ProductVariantSection = ({
         pageSize={PAGE_SIZE}
         isLoading={isPending}
         heading={t("products.variants.header")}
+        headingLevel="h2"
         emptyState={{
           empty: {
             heading: t("products.variants.empty.heading"),

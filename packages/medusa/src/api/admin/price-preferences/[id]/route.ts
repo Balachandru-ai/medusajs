@@ -11,7 +11,7 @@ import {
 } from "@medusajs/framework/http"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminPricePreferenceParams>,
   res: MedusaResponse<HttpTypes.AdminPricePreferenceResponse>
 ) => {
   const price_preference = await refetchEntity({
@@ -25,7 +25,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminUpdatePricePreference>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdatePricePreference,
+    HttpTypes.AdminPricePreferenceParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPricePreferenceResponse>
 ) => {
   const id = req.params.id
