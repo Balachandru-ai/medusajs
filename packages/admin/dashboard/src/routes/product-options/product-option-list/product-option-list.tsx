@@ -11,6 +11,7 @@ export const ProductOptionList = () => {
         after: getWidgets("product_option.list.after"),
         before: getWidgets("product_option.list.before"),
       }}
+      hasOutlet
     >
       <ProductOptionListTable />
     </SingleColumnPage>

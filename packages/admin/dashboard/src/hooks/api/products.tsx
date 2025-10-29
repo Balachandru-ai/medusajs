@@ -21,47 +21,6 @@ export const variantsQueryKeys = queryKeysFactory(VARIANTS_QUERY_KEY)
 const OPTIONS_QUERY_KEY = "product_options" as const
 export const optionsQueryKeys = queryKeysFactory(OPTIONS_QUERY_KEY)
 
-export const useCreateProductOption = (
-  productId: string,
-  options?: UseMutationOptions<any, FetchError, any>
-) => {
-  return useMutation({
-    mutationFn: (payload: HttpTypes.AdminCreateProductOption) =>
-      sdk.admin.product.createOption(productId, payload),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({ queryKey: optionsQueryKeys.lists() })
-      queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.detail(productId),
-      })
-      options?.onSuccess?.(data, variables, context)
-    },
-    ...options,
-  })
-}
-
-export const useUpdateProductOption = (
-  productId: string,
-  optionId: string,
-  options?: UseMutationOptions<any, FetchError, any>
-) => {
-  return useMutation({
-    mutationFn: (payload: HttpTypes.AdminUpdateProductOption) =>
-      sdk.admin.product.updateOption(productId, optionId, payload),
-    onSuccess: (data: any, variables: any, context: any) => {
-      queryClient.invalidateQueries({ queryKey: optionsQueryKeys.lists() })
-      queryClient.invalidateQueries({
-        queryKey: optionsQueryKeys.detail(optionId),
-      })
-      queryClient.invalidateQueries({
-        queryKey: productsQueryKeys.detail(productId),
-      })
-
-      options?.onSuccess?.(data, variables, context)
-    },
-    ...options,
-  })
-}
-
 export const useProductVariant = (
   productId: string,
   variantId: string,

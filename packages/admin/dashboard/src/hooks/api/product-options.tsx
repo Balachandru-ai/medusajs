@@ -59,6 +59,50 @@ export const useProductOptions = (
   return { ...data, ...rest }
 }
 
+export const useCreateProductOption = (
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductOptionResponse,
+    FetchError,
+    HttpTypes.AdminCreateProductOption
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload) => sdk.admin.productOption.create(payload),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productOptionsQueryKeys.lists(),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useUpdateProductOption = (
+  id: string,
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductOptionResponse,
+    FetchError,
+    HttpTypes.AdminUpdateProductOption
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload) => sdk.admin.productOption.update(id, payload),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: productOptionsQueryKeys.lists(),
+      })
+      queryClient.invalidateQueries({
+        queryKey: productOptionsQueryKeys.detail(id),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useDeleteProductOption = (
   id: string,
   options?: UseMutationOptions<

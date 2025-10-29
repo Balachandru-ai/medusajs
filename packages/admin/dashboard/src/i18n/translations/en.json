@@ -829,9 +829,28 @@
     "values": {
       "header": "Values"
     },
+    "create": {
+      "header": "Create Product Option",
+      "hint": "Create a new product option and manage its values.",
+      "successToast": "Product option \"{{title}}\" was successfully created.",
+      "tabs": {
+        "details": "Details",
+        "organize": "Organize"
+      }
+    },
     "delete": {
       "confirmation": "You are about to delete the product option \"{{title}}\". This action cannot be undone.",
       "successToast": "Product option was successfully deleted."
+    },
+    "fields": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Size"
+      },
+      "values": {
+        "label": "Values",
+        "placeholder": "S, M, L"
+      }
     }
   },
   "inventory": {

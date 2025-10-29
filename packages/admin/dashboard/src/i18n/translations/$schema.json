@@ -3106,6 +3106,35 @@
           "required": ["header"],
           "additionalProperties": false
         },
+        "create": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "hint": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
+            "tabs": {
+              "type": "object",
+              "properties": {
+                "details": {
+                  "type": "string"
+                },
+                "organize": {
+                  "type": "string"
+                }
+              },
+              "required": ["details", "organize"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "hint", "successToast", "tabs"],
+          "additionalProperties": false
+        },
         "delete": {
           "type": "object",
           "properties": {
@@ -3118,9 +3147,49 @@
           },
           "required": ["confirmation", "successToast"],
           "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "placeholder"],
+              "additionalProperties": false
+            },
+            "values": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "placeholder"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["title", "values"],
+          "additionalProperties": false
         }
       },
-      "required": ["domain", "subtitle", "values", "delete"],
+      "required": [
+        "domain",
+        "subtitle",
+        "values",
+        "create",
+        "delete",
+        "fields"
+      ],
       "additionalProperties": false
     },
     "inventory": {

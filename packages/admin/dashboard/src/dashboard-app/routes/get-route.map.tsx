@@ -222,6 +222,15 @@ export function getRouteMap({
                   path: "",
                   lazy: () =>
                     import("../../routes/product-options/product-option-list"),
+                  children: [
+                    {
+                      path: "create",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-options/product-option-create"
+                        ),
+                    },
+                  ],
                 },
                 {
                   path: ":id",
@@ -240,22 +249,22 @@ export function getRouteMap({
                       },
                     }
                   },
-                  // children: [
-                  //   {
-                  //     path: "edit",
-                  //     lazy: () =>
-                  //       import(
-                  //         "../../routes/product-options/product-option-edit"
-                  //       ),
-                  //   },
-                  //   {
-                  //     path: "metadata/edit",
-                  //     lazy: () =>
-                  //       import(
-                  //         "../../routes/product-options/product-option-metadata"
-                  //       ),
-                  //   },
-                  // ],
+                  children: [
+                    // {
+                    //   path: "edit",
+                    //   lazy: () =>
+                    //     import(
+                    //       "../../routes/product-options/product-option-edit"
+                    //     ),
+                    // },
+                    {
+                      path: "metadata/edit",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-options/product-option-metadata"
+                        ),
+                    },
+                  ],
                 },
               ],
             },

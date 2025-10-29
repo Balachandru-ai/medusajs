@@ -15,6 +15,77 @@ export class ProductOption {
   }
 
   /**
+   * This method creates a product option. It sends a request to the
+   * [Create Option](TODO)
+   * API route.
+   *
+   * @param body - The details of the option to create.
+   * @param query - Configure the fields to retrieve in the option.
+   * @param headers - Headers to pass in the request
+   * @returns The option's details.
+   *
+   * @example
+   * sdk.admin.productOption.create({
+   *   title: "Size",
+   *   values: ["S", "M"]
+   * })
+   * .then(({ product_option }) => {
+   *   console.log(product_option)
+   * })
+   */
+  async create(
+    body: HttpTypes.AdminCreateProductOption,
+    query?: HttpTypes.AdminProductOptionParams,
+    headers?: ClientHeaders
+  ) {
+    return this.client.fetch<HttpTypes.AdminProductOptionResponse>(
+      `/admin/product-options`,
+      {
+        method: "POST",
+        headers,
+        body,
+        query,
+      }
+    )
+  }
+
+  /**
+   * This method updates a product option. It sends a request to the
+   * [Update Option](TODO)
+   * API route.
+   *
+   * @param id - The product option's ID.
+   * @param body - The data to update in the option.
+   * @param query - Configure the fields to retrieve in the option.
+   * @param headers - Headers to pass in the request
+   * @returns The option's details.
+   *
+   * @example
+   * sdk.admin.productOption.update("opt_123", {
+   *   title: "Size"
+   * })
+   * .then(({ product_option }) => {
+   *   console.log(product_option)
+   * })
+   */
+  async update(
+    id: string,
+    body: HttpTypes.AdminUpdateProductOption,
+    query?: HttpTypes.AdminProductOptionParams,
+    headers?: ClientHeaders
+  ) {
+    return this.client.fetch<HttpTypes.AdminProductOptionResponse>(
+      `/admin/product-options/${id}`,
+      {
+        method: "POST",
+        headers,
+        body,
+        query,
+      }
+    )
+  }
+
+  /**
    * This method retrieves a paginated list of product options. It sends a request to the
    * List Product Options API route.
    *
