@@ -23,26 +23,11 @@ async function executeWithConcurrency<T>(
   const results: PromiseSettledResult<Awaited<T>>[] = new Array(promises.length)
   let index = 0
 
-  const enqueue = async (promiseIndex: number): Promise<void> => {
-    try {
-      const result = await promises[promiseIndex]
-      results[promiseIndex] = {
-        status: "fulfilled",
-        value: result,
-      } as PromiseFulfilledResult<Awaited<T>>
-    } catch (error) {
-      results[promiseIndex] = {
-        status: "rejected",
-        reason: error,
-      } as PromiseRejectedResult
-    }
-  }
-
   const executing = new Set<Promise<void>>()
 
   while (index < promises.length) {
     const promiseIndex = index++
-    const execution = enqueue(promiseIndex).then(() => {
+    const execution = (promises[promiseIndex] as Promise<T>).then(() => {
       executing.delete(execution)
     })
 
@@ -53,7 +38,7 @@ async function executeWithConcurrency<T>(
     }
   }
 
-  await Promise.all(Array.from(executing))
+  await promiseAll(Array.from(executing))
 
   return results
 }
