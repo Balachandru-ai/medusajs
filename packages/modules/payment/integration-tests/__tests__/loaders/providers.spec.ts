@@ -8,16 +8,20 @@ jest.setTimeout(30000)
 moduleIntegrationTestRunner<IPaymentModuleService>({
   moduleName: Modules.PAYMENT,
   moduleOptions: {
-    apiKey: "test",
-    environmentHandle: "test",
-    webhookSecret: "test",
-    endpoint: "test",
+    cloud: {
+      api_key: "test",
+      environment_handle: "test",
+      webhook_secret: "test",
+      endpoint: "test",
+    },
   },
   testSuite: ({ service }) => {
     describe("Payment Module Service", () => {
       describe("providers", () => {
         it("should load the system and medusa payments providers by default", async () => {
           const paymentProviders = await service.listPaymentProviders()
+
+          expect(paymentProviders).toHaveLength(2)
           expect(paymentProviders).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
@@ -82,4 +86,17 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
       })
     })
   },
+})
+
+moduleIntegrationTestRunner<IPaymentModuleService>({
+  moduleName: Modules.PAYMENT,
+  moduleOptions: {},
+  testSuite: ({ service }) =>
+    describe("providers", () => {
+      it("should not load the medusa payments provider if the cloud options are not provided", async () => {
+        const paymentProviders = await service.listPaymentProviders()
+        expect(paymentProviders).toHaveLength(1)
+        expect(paymentProviders[0].id).toBe("pp_system_default")
+      })
+    }),
 })

@@ -2,11 +2,11 @@ export interface MedusaPaymentsOptions {
   /**
    * The API key for the Stripe account
    */
-  apiKey: string
+  api_key: string
   /**
    * The webhook secret used to verify webhooks
    */
-  webhookSecret: string
+  webhook_secret: string
   /**
    * The endpoint to use for the payments
    */
@@ -14,5 +14,9 @@ export interface MedusaPaymentsOptions {
   /**
    * The handle of the cloud environment
    */
-  environmentHandle: string
+  environment_handle: string
+  /**
+   * The handle of the cloud sandbox
+   */
+  sandbox_handle: string
 }

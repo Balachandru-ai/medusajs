@@ -43,10 +43,13 @@ export default async ({
     | ModulesSdkTypes.ModuleServiceInitializeCustomDataLayerOptions
   ) & {
     providers: ModuleProvider[]
-    apiKey?: string
-    endpoint?: string
-    environmentHandle?: string
-    webhookSecret?: string
+    cloud: {
+      api_key?: string
+      endpoint?: string
+      environment_handle?: string
+      sandbox_handle?: string
+      webhook_secret?: string
+    }
   }
 >): Promise<void> => {
   await registrationFn(providers.SystemPaymentProvider, container, {
@@ -54,14 +57,27 @@ export default async ({
   })
 
   // We only want to register medusa payments if the options for it have been provided.
-  const { apiKey, endpoint, environmentHandle, webhookSecret } = options ?? {}
-  if (apiKey && endpoint && environmentHandle && webhookSecret) {
+  const {
+    api_key,
+    endpoint,
+    environment_handle,
+    sandbox_handle,
+    webhook_secret,
+  } = options?.cloud ?? {}
+
+  if (
+    api_key &&
+    endpoint &&
+    webhook_secret &&
+    (environment_handle || sandbox_handle)
+  ) {
     await registrationFn(providers.MedusaPaymentsProvider, container, {
       options: {
-        apiKey,
+        api_key,
         endpoint,
-        environmentHandle,
-        webhookSecret,
+        environment_handle,
+        sandbox_handle,
+        webhook_secret,
       },
       id: "default",
     })

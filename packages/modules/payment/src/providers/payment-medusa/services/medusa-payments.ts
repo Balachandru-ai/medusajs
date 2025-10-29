@@ -58,19 +58,22 @@ import {
   UpdateAccountHolderRequest,
 } from "../types/medusa-payments"
 
-export class MedusaPaymentsError extends Error {
-  public statusCode: number
-  public errorType?: string
+type HandledErrorType = { retry: true } | { retry: false; data: any }
+class CloudServiceError extends Error {
+  type: string
+  originalType: string
+  data: any
+  message: string
 
-  constructor(statusCode: number, errorType?: string, message?: string) {
+  constructor(type: string, originalType: string, data: any, message: string) {
     super(message)
-
-    this.statusCode = statusCode
-    this.errorType = errorType
+    this.type = type
+    this.originalType = originalType
+    this.data = data
+    this.message = message
   }
 }
 
-// TODO: Handle errors and retries (similar to Stripe)
 export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymentsOptions> {
   static identifier = "medusa-payments"
   protected readonly options_: MedusaPaymentsOptions
@@ -89,32 +92,44 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
 
     validateOptions(options ?? {})
     this.options_ = options
-    this.stripeClient = new stripe(options.apiKey)
+    this.stripeClient = new stripe(options.api_key)
   }
 
   request<T>(
     url: string,
     options: Omit<RequestInit, "body"> & { body?: object }
   ): Promise<T> {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${this.options_.api_key}`,
+    }
+    if (this.options_.environment_handle) {
+      headers["x-medusa-environment-handle"] = this.options_.environment_handle
+    }
+    if (this.options_.sandbox_handle) {
+      headers["x-medusa-sandbox-handle"] = this.options_.sandbox_handle
+    }
+
     return fetch(`${this.options_.endpoint}${url}`, {
       ...options,
       body: options.body ? JSON.stringify(options.body) : undefined,
       headers: {
         ...options.headers,
-        "x-medusa-environment-handle": this.options_.environmentHandle,
-        "Content-Type": "application/json",
-        Authorization: `Basic ${this.options_.apiKey}`,
+        ...headers,
       },
-    }).then((res) => {
+    }).then(async (res) => {
+      const body = await res.json().catch(() => ({}))
+
       if (!res.ok) {
-        throw new MedusaPaymentsError(
-          res.status,
-          res.statusText,
-          `Request to ${url} failed with status ${res.status}: ${res.statusText}`
+        throw new CloudServiceError(
+          body.type,
+          body.originalType,
+          body.data,
+          body.message
         )
       }
 
-      return res.json()
+      return body
     })
   }
 
@@ -139,6 +154,44 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
     return res
   }
 
+  handleStripeError(error: CloudServiceError): HandledErrorType {
+    switch (error.type) {
+      case "MedusaCardError":
+        // Medusa has created a payment but it failed
+        // Extract and return payment object to be stored in payment_session
+        // Allows for reference to the failed intent and potential webhook reconciliation
+        const medusaPayment = error.data as MedusaPayment | undefined
+        if (medusaPayment) {
+          return {
+            retry: false,
+            data: medusaPayment,
+          }
+        } else {
+          throw error
+        }
+
+      case "MedusaConnectionError":
+      case "MedusaRateLimitError":
+        // Connection or rate limit errors indicate an uncertain result
+        // Retry the operation
+        return {
+          retry: true,
+        }
+      case "MedusaAPIError": {
+        // API errors should be treated as indeterminate per Stripe documentation
+        // Rely on webhooks rather than assuming failure
+        return {
+          retry: false,
+          data: {
+            indeterminate_due_to: "medusa_api_error",
+          },
+        }
+      }
+      default:
+        throw error
+    }
+  }
+
   async executeWithRetry<T>(
     apiCall: () => Promise<T>,
     maxRetries: number = 3,
@@ -148,7 +201,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
     try {
       return await apiCall()
     } catch (error) {
-      const handledError = { retry: false, data: error }
+      const handledError = this.handleStripeError(error)
 
       if (!handledError.retry) {
         // If retry is false, we know data exists per the type definition
@@ -171,9 +224,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       }
 
       // Retries are exhausted
-      throw new Error(
-        `An error occurred in InitiatePayment during creation of medusa payments payment intent: ${error.message}. ${error.stack}`
-      )
+      throw error
     }
   }
 
@@ -672,7 +723,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
     const stripeEvent = this.stripeClient.webhooks.constructEvent(
       data.rawData as string | Buffer,
       signature,
-      this.options_.webhookSecret
+      this.options_.webhook_secret
     )
 
     return stripeEvent
@@ -685,19 +736,23 @@ const validateOptions = (options: MedusaPaymentsOptions): void => {
       "Required option `endpoint` is missing in Medusa payments plugin"
     )
   }
-  if (!isDefined(options.environmentHandle)) {
+  if (!isDefined(options.webhook_secret)) {
     throw new Error(
-      "Required option `environmentHandle` is missing in Medusa payments plugin"
+      "Required option `webhook_secret` is missing in Medusa payments plugin"
     )
   }
-  if (!isDefined(options.webhookSecret)) {
+  if (!isDefined(options.api_key)) {
     throw new Error(
-      "Required option `webhookSecret` is missing in Medusa payments plugin"
+      "Required option `api_key` is missing in Medusa payments plugin"
     )
   }
-  if (!isDefined(options.apiKey)) {
+
+  if (
+    !isDefined(options.environment_handle) &&
+    !isDefined(options.sandbox_handle)
+  ) {
     throw new Error(
-      "Required option `apiKey` is missing in Medusa payments plugin"
+      "Required option `environment_handle` or `sandbox_handle` is missing in Medusa payments plugin"
     )
   }
 }
