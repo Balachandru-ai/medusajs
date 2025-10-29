@@ -1548,7 +1548,7 @@ medusaIntegrationTestRunner({
         expect(orderResult2.original_total).toEqual(11)
       })
 
-      it.skip("should not create adjustments when adding a new item if promotion is disabled", async () => {
+      it("should not create adjustments when adding a new item if promotion is disabled", async () => {
         let result = await api.post(
           "/admin/order-edits",
           {
@@ -1593,7 +1593,7 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.total).toEqual(13.2 + 9.9)
+        expect(result.total).toEqual(13.2 + 11) // since action is replace -> old adjustments are not recreated in this version
         expect(result.original_total).toEqual(13.2 + 11)
 
         // Confirm that the adjustment values are correct
@@ -1607,7 +1607,7 @@ medusaIntegrationTestRunner({
         ).data.order
 
         // confirm original order is not updated
-        expect(orderResult.total).toEqual(11)
+        expect(orderResult.total).toEqual(9.9) // but adjustments of the intial version are still there despite the promotion being disabled in the meantime
         expect(orderResult.original_total).toEqual(11)
 
         await api.post(

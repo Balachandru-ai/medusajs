@@ -97,15 +97,16 @@ export async function applyChangesToOrder(
       } as any
 
       if (version > order.version) {
-        // TODO: rename to lineItemAdjustmentsToUpsert to handle updates on the same version
-        lineItemAdjustmentsToCreate.push({
-          item_id: itemId, // todo check: should be line item id
-          version,
-          amount: item.adjustments?.[0]?.amount ?? 0,
-          description: item.adjustments?.[0]?.description ?? "",
-          promotion_id: item.adjustments?.[0]?.promotion_id ?? "",
-          code: item.adjustments?.[0]?.code ?? "",
-          is_tax_inclusive: item.adjustments?.[0]?.is_tax_inclusive ?? false,
+        item.adjustments?.forEach((adjustment) => {
+          lineItemAdjustmentsToCreate.push({
+            item_id: itemId,
+            version,
+            amount: adjustment.amount,
+            description: adjustment.description,
+            promotion_id: adjustment.promotion_id,
+            code: adjustment.code,
+            is_tax_inclusive: adjustment.is_tax_inclusive,
+          })
         })
       }
 

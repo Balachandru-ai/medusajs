@@ -172,8 +172,6 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
             {}
           )
 
-          console.log(item.adjustments)
-
           return {
             id: item.id,
             quantity: updatedItem?.quantity ?? item.quantity,

@@ -2541,7 +2541,7 @@ export default class OrderModuleService
       calculated.order,
       itemsToUpsert,
       shippingMethodsToUpsert,
-      lineItemAdjustmentsToCreate,
+      lineItemAdjustmentsToCreate, // this will add "virtual" adjustments for the preview version but no actual adjustments will be created in the DB
       sharedContext
     )
 
@@ -3581,18 +3581,13 @@ export default class OrderModuleService
           )
         : null,
       lineItemAdjustmentsToCreate.length
-        ? // TODO: upsert
-          this.orderLineItemAdjustmentService_.create(
+        ? this.orderLineItemAdjustmentService_.create(
+            // this is called when a new order version is confirmed so we only create a new set of adjustments for that version
+            // there is no removal or upsert
             lineItemAdjustmentsToCreate,
             sharedContext
           )
         : null,
-      // lineItemAdjustmentIdsToRemove.length
-      // ? this.orderLineItemAdjustmentService_.delete(
-      //     lineItemAdjustmentIdsToRemove,
-      //     sharedContext
-      //   )
-      // : null,
     ])
 
     return {
