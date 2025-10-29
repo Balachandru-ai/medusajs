@@ -12,6 +12,7 @@ import {
   IEventBusModuleService,
   IFileModuleService,
   IFulfillmentModuleService,
+  IIndexService,
   IInventoryService,
   ILockingModule,
   INotificationModuleService,
@@ -78,6 +79,7 @@ declare module "@medusajs/types" {
     [Modules.LOCKING]: ILockingModule
     [Modules.SETTINGS]: ISettingsModuleService
     [Modules.CACHING]: ICachingModuleService
+    [Modules.INDEX]: IIndexService
   }
 }
 

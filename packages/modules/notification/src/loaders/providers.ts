@@ -15,6 +15,21 @@ import {
 } from "@types"
 import { MedusaCloudEmailNotificationProvider } from "../providers/medusa-cloud-email"
 
+const validateCloudOptions = (options: NotificationModuleOptions["cloud"]) => {
+  const { api_key, endpoint, environment_handle, sandbox_handle } =
+    options ?? {}
+
+  if (!environment_handle && !sandbox_handle) {
+    return false
+  }
+
+  if (!api_key || !endpoint) {
+    return false
+  }
+
+  return true
+}
+
 const registrationFn = async (klass, container, pluginOptions) => {
   container.register({
     [NotificationProviderRegistrationPrefix + pluginOptions.id]: asFunction(
@@ -48,8 +63,11 @@ export default async ({
     provider.options?.channels?.some((channel) => channel === "email")
   )
   if (!hasEmailProvider) {
-    const { api_key, endpoint, environment_handle } = options?.cloud ?? {}
-    if (api_key && endpoint && environment_handle) {
+    const shouldRegisterMedusaCloudEmailProvider = validateCloudOptions(
+      options?.cloud
+    )
+
+    if (shouldRegisterMedusaCloudEmailProvider) {
       await registrationFn(MedusaCloudEmailNotificationProvider, container, {
         options: options?.cloud,
         id: "cloud",

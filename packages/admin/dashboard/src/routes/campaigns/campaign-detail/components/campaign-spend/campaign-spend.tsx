@@ -19,7 +19,7 @@ export const CampaignSpend = ({ campaign }: CampaignSpendProps) => {
           </div>
         </div>
 
-        <Heading level="h3" className="text-ui-fg-subtle font-normal">
+        <Heading level="h2">
           {campaign.budget?.type === "use_by_attribute"
             ? t("campaigns.fields.totalUsedByAttribute")
             : campaign.budget?.type === "spend"

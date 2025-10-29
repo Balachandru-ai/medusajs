@@ -45,7 +45,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -72,7 +72,7 @@ class BlogModuleService {
 
 You add two methods `getCount` and `getCountSql` that have the `InjectManager` decorator. Each of the methods also accept the `sharedContext` parameter which has the `MedusaContext` decorator.
 
-The entity manager is injected to the `sharedContext.manager` property, which is an instance of [EntityManager from the `@medusajs/framework/@mikro-orm/knex` package](https://mikro-orm.io/api/knex/class/EntityManager).
+The entity manager is injected to the `sharedContext.manager` property, which is an instance of [EntityManager from the `@medusajs/framework/mikro-orm/knex` package](https://mikro-orm.io/api/knex/class/EntityManager).
 
 You use the manager in the `getCount` method to retrieve the number of records in a table, and in the `getCountSql` to run a PostgreSQL query that retrieves the count.
 
@@ -119,7 +119,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -180,7 +180,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -227,7 +227,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -386,7 +386,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -518,7 +518,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...
@@ -588,7 +588,7 @@ The second parameter of the `baseRepository_.transaction` method is an object of
 
 ```ts highlights={[["24"]]}
 // other imports...
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 import { 
   InjectTransactionManager,
   MedusaContext,
@@ -631,8 +631,8 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
-import { IsolationLevel } from "@medusajs/framework/@mikro-orm/core"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
+import { IsolationLevel } from "@medusajs/framework/mikro-orm/core"
 
 class BlogModuleService {
   // ...
@@ -666,7 +666,7 @@ import {
   MedusaContext,
 } from "@medusajs/framework/utils"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@medusajs/framework/@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class BlogModuleService {
   // ...

@@ -2091,6 +2091,7 @@ describe("defineConfig", function () {
                 "api_key": "test-api-key",
                 "endpoint": "test-emails-endpoint",
                 "environment_handle": "test-environment",
+                "sandbox_handle": undefined,
               },
               "providers": [
                 {
@@ -2160,6 +2161,12 @@ describe("defineConfig", function () {
           },
         ],
         "projectConfig": {
+          "cloud": {
+            "apiKey": "test-api-key",
+            "emailsEndpoint": "test-emails-endpoint",
+            "environmentHandle": "test-environment",
+            "sandboxHandle": undefined,
+          },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
@@ -2176,10 +2183,186 @@ describe("defineConfig", function () {
             },
             "storeCors": "http://localhost:8000",
           },
-          "medusaCloudOptions": {
+          "redisOptions": {
+            "retryStrategy": [Function],
+          },
+          "sessionOptions": {},
+        },
+      }
+    `)
+  })
+
+  it("should add cloud options to the project config and relevant modules if the environment varianbles is set for a sandbox", function () {
+    const originalEnv = { ...process.env }
+    process.env.MEDUSA_CLOUD_SANDBOX_HANDLE = "test-sandbox"
+    process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
+    process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT = "test-emails-endpoint"
+    const config = defineConfig()
+    process.env = { ...originalEnv }
+
+    expect(config).toMatchInlineSnapshot(`
+      {
+        "admin": {
+          "backendUrl": "/",
+          "path": "/app",
+        },
+        "featureFlags": {},
+        "logger": undefined,
+        "modules": {
+          "api_key": {
+            "resolve": "@medusajs/medusa/api-key",
+          },
+          "auth": {
+            "options": {
+              "providers": [
+                {
+                  "id": "emailpass",
+                  "resolve": "@medusajs/medusa/auth-emailpass",
+                },
+              ],
+            },
+            "resolve": "@medusajs/medusa/auth",
+          },
+          "cache": {
+            "resolve": "@medusajs/medusa/cache-inmemory",
+          },
+          "cart": {
+            "resolve": "@medusajs/medusa/cart",
+          },
+          "currency": {
+            "resolve": "@medusajs/medusa/currency",
+          },
+          "customer": {
+            "resolve": "@medusajs/medusa/customer",
+          },
+          "event_bus": {
+            "resolve": "@medusajs/medusa/event-bus-local",
+          },
+          "file": {
+            "options": {
+              "providers": [
+                {
+                  "id": "local",
+                  "resolve": "@medusajs/medusa/file-local",
+                },
+              ],
+            },
+            "resolve": "@medusajs/medusa/file",
+          },
+          "fulfillment": {
+            "options": {
+              "providers": [
+                {
+                  "id": "manual",
+                  "resolve": "@medusajs/medusa/fulfillment-manual",
+                },
+              ],
+            },
+            "resolve": "@medusajs/medusa/fulfillment",
+          },
+          "inventory": {
+            "resolve": "@medusajs/medusa/inventory",
+          },
+          "locking": {
+            "resolve": "@medusajs/medusa/locking",
+          },
+          "notification": {
+            "options": {
+              "cloud": {
+                "api_key": "test-api-key",
+                "endpoint": "test-emails-endpoint",
+                "environment_handle": undefined,
+                "sandbox_handle": "test-sandbox",
+              },
+              "providers": [
+                {
+                  "id": "local",
+                  "options": {
+                    "channels": [
+                      "feed",
+                    ],
+                    "name": "Local Notification Provider",
+                  },
+                  "resolve": "@medusajs/medusa/notification-local",
+                },
+              ],
+            },
+            "resolve": "@medusajs/medusa/notification",
+          },
+          "order": {
+            "resolve": "@medusajs/medusa/order",
+          },
+          "payment": {
+            "resolve": "@medusajs/medusa/payment",
+          },
+          "pricing": {
+            "resolve": "@medusajs/medusa/pricing",
+          },
+          "product": {
+            "resolve": "@medusajs/medusa/product",
+          },
+          "promotion": {
+            "resolve": "@medusajs/medusa/promotion",
+          },
+          "region": {
+            "resolve": "@medusajs/medusa/region",
+          },
+          "sales_channel": {
+            "resolve": "@medusajs/medusa/sales-channel",
+          },
+          "settings": {
+            "resolve": "@medusajs/medusa/settings",
+          },
+          "stock_location": {
+            "resolve": "@medusajs/medusa/stock-location",
+          },
+          "store": {
+            "resolve": "@medusajs/medusa/store",
+          },
+          "tax": {
+            "resolve": "@medusajs/medusa/tax",
+          },
+          "user": {
+            "options": {
+              "jwt_options": undefined,
+              "jwt_public_key": undefined,
+              "jwt_secret": "supersecret",
+              "jwt_verify_options": undefined,
+            },
+            "resolve": "@medusajs/medusa/user",
+          },
+          "workflows": {
+            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+          },
+        },
+        "plugins": [
+          {
+            "options": {},
+            "resolve": "@medusajs/draft-order",
+          },
+        ],
+        "projectConfig": {
+          "cloud": {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
-            "environmentHandle": "test-environment",
+            "environmentHandle": undefined,
+            "sandboxHandle": "test-sandbox",
+          },
+          "databaseUrl": "postgres://localhost/medusa-starter-default",
+          "http": {
+            "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
+            "authCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
+            "cookieSecret": "supersecret",
+            "jwtPublicKey": undefined,
+            "jwtSecret": "supersecret",
+            "restrictedFields": {
+              "store": [
+                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
+                  ",\n                "
+                )},
+              ],
+            },
+            "storeCors": "http://localhost:8000",
           },
           "redisOptions": {
             "retryStrategy": [Function],
@@ -2190,7 +2373,7 @@ describe("defineConfig", function () {
     `)
   })
 
-  it("should merge custom projectConfig.medusaCloudOptions", function () {
+  it("should merge custom projectConfig.cloud", function () {
     const originalEnv = { ...process.env }
     process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE = "test-environment"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
@@ -2198,7 +2381,7 @@ describe("defineConfig", function () {
     const config = defineConfig({
       projectConfig: {
         http: {} as any,
-        medusaCloudOptions: {
+        cloud: {
           environmentHandle: "overriden-environment",
           apiKey: "overriden-api-key",
           emailsEndpoint: "overriden-emails-endpoint",
@@ -2279,6 +2462,7 @@ describe("defineConfig", function () {
                 "api_key": "overriden-api-key",
                 "endpoint": "overriden-emails-endpoint",
                 "environment_handle": "overriden-environment",
+                "sandbox_handle": undefined,
               },
               "providers": [
                 {
@@ -2348,6 +2532,12 @@ describe("defineConfig", function () {
           },
         ],
         "projectConfig": {
+          "cloud": {
+            "apiKey": "overriden-api-key",
+            "emailsEndpoint": "overriden-emails-endpoint",
+            "environmentHandle": "overriden-environment",
+            "sandboxHandle": undefined,
+          },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
@@ -2363,11 +2553,6 @@ describe("defineConfig", function () {
               ],
             },
             "storeCors": "http://localhost:8000",
-          },
-          "medusaCloudOptions": {
-            "apiKey": "overriden-api-key",
-            "emailsEndpoint": "overriden-emails-endpoint",
-            "environmentHandle": "overriden-environment",
           },
           "redisOptions": {
             "retryStrategy": [Function],
