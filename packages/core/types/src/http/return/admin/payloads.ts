@@ -69,6 +69,10 @@ export interface AdminUpdateReturnItems {
    * The ID of the return reason to associate with the item.
    */
   reason_id?: string | null
+  /**
+   * Custom key-value pairs that can be added to the return item.
+   */
+  metadata?: Record<string, unknown> | null
 }
 
 export interface AdminAddReturnShipping {
@@ -179,7 +183,11 @@ export interface AdminReceiveItems {
      * A note that is viewed by admins only to
      * describe the received item.
      */
-    internal_note?: string 
+    internal_note?: string
+    /**
+     * The description of the received item.
+     */
+    description?: string
   }[]
 }
 
@@ -204,6 +212,12 @@ export interface AdminDismissItems {
   }[]
 }
 
+/**
+ * @privateRemarks
+ * This type doesn't match the validator of the API route,
+ * however, it's used by the admin dashboard. We should
+ * consider creating separate types for the admin.
+ */
 export interface AdminUpdateReceiveItems {
   /**
    * The received quantity of the item.
@@ -224,6 +238,12 @@ export interface AdminUpdateReceiveItems {
   metadata?: Record<string, unknown>
 }
 
+/**
+ * @privateRemarks
+ * This type doesn't match the validator of the API route,
+ * however, it's used by the admin dashboard. We should
+ * consider creating separate types for the admin.
+ */
 export interface AdminUpdateDismissItems {
   /**
    * The quantity of the item that is damaged.

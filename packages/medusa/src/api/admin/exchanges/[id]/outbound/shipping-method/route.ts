@@ -7,11 +7,13 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminPostExchangesShippingReqSchemaType } from "../../../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminPostExchangesShippingReqSchemaType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminExchangeAddOutboundShipping,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminExchangePreviewResponse>
 ) => {
   const { id } = req.params

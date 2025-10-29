@@ -17,7 +17,7 @@ import {
 } from "../../utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminGetPromotionRuleTypeParams>,
   res: MedusaResponse<HttpTypes.AdminPromotionRuleListResponse>
 ) => {
   const { id, rule_type: ruleType } = req.params

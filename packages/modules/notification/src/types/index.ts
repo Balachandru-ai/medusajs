@@ -42,5 +42,6 @@ export type NotificationModuleOptions =
 export type MedusaCloudEmailOptions = {
   api_key: string
   endpoint: string
-  environment_handle: string
+  environment_handle?: string
+  sandbox_handle?: string
 }

@@ -9,7 +9,10 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { refetchCustomer } from "./helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreCreateCustomer>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCreateCustomer,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCustomerResponse>
 ) => {
   // If `actor_id` is present, the request carries authentication for an existing customer

@@ -7,7 +7,7 @@ import { AdminOrder, HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.AdminGetOrderParams>,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

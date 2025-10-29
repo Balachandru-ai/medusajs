@@ -38,7 +38,7 @@ export class Configuration {
     this.#logger.info("[Index engine] Checking for index changes")
     const schemaObjectRepresentation = this.#schemaObjectRepresentation
 
-    const currentConfig = await this.#indexMetadataService.list()
+    const currentConfig = await this.#indexMetadataService.list({})
     const currentConfigMap = new Map(
       currentConfig.map((c) => [c.entity, c] as const)
     )

@@ -7,7 +7,10 @@ import { refetchPaymentCollection } from "../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreInitializePaymentSession>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreInitializePaymentSession,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StorePaymentCollectionResponse>
 ) => {
   const collectionId = req.params.id

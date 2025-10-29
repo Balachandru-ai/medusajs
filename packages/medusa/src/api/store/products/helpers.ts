@@ -1,24 +1,17 @@
-import { MedusaStoreRequest, refetchEntity } from "@medusajs/framework/http"
+import { refetchEntity } from "@medusajs/framework/http"
 import {
   HttpTypes,
   ItemTaxLineDTO,
   MedusaContainer,
   TaxableItemDTO,
-  TaxCalculationContext,
 } from "@medusajs/framework/types"
 import { calculateAmountsWithTax, Modules } from "@medusajs/framework/utils"
+import { StoreRequestWithContext } from "../types"
 
 export type RequestWithContext<
   Body,
   QueryFields = Record<string, unknown>
-> = MedusaStoreRequest<Body, QueryFields> & {
-  taxContext: {
-    taxLineContext?: TaxCalculationContext
-    taxInclusivityContext?: {
-      automaticTaxes: boolean
-    }
-  }
-}
+> = StoreRequestWithContext<Body, QueryFields>
 
 export const refetchProduct = async (
   idOrFilter: string | object,
