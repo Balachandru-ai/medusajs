@@ -365,19 +365,16 @@ function normalizeProjectConfig(
   projectConfig: InputConfig["projectConfig"],
   { isCloud }: { isCloud: boolean }
 ): ConfigModule["projectConfig"] {
-  const {
-    http,
-    redisOptions,
-    sessionOptions,
-    cloud,
-    ...restOfProjectConfig
-  } = projectConfig || {}
+  const { http, redisOptions, sessionOptions, cloud, ...restOfProjectConfig } =
+    projectConfig || {}
 
   const mergedCloudOptions: MedusaCloudOptions = {
     environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
     sandboxHandle: process.env.MEDUSA_CLOUD_SANDBOX_HANDLE,
     apiKey: process.env.MEDUSA_CLOUD_API_KEY,
+    webhookSecret: process.env.MEDUSA_CLOUD_WEBHOOK_SECRET,
     emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
+    paymentsEndpoint: process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT,
     ...cloud,
   }
   const hasCloudOptions = Object.values(mergedCloudOptions).some(
@@ -492,7 +489,18 @@ function applyCloudOptionsToModules(
           ...(module.options ?? {}),
         }
         break
-      // Will add payment module soon
+      case Modules.PAYMENT:
+        module.options = {
+          cloud: {
+            api_key: config.apiKey,
+            webhook_secret: config.webhookSecret,
+            endpoint: config.paymentsEndpoint,
+            environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
       default:
         break
     }
