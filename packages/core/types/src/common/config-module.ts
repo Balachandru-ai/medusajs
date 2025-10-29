@@ -224,17 +224,25 @@ export type MedusaCloudOptions = {
    */
   environmentHandle?: string
   /**
+   * The sandbox handle of the Medusa Cloud sandbox.
+   */
+  sandboxHandle?: string
+  /**
    * The API key used to access Medusa Cloud services.
    */
   apiKey?: string
   /**
+   * The webhook secret used to verify webhooks.
+   */
+  webhookSecret?: string
+  /**
+   * The endpoint of the Medusa Cloud payment service.
+   */
+  paymentsEndpoint?: string
+  /**
    * The endpoint of the Medusa Cloud email service.
    */
   emailsEndpoint?: string
-  /**
-   * The sandbox handle of the Medusa Cloud sandbox.
-   */
-  sandboxHandle?: string
 }
 
 /**
