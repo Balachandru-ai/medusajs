@@ -813,10 +813,26 @@ export default class ProductModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductOption>[]> {
     const normalizedInput = data.map((opt) => {
+      Object.keys(opt.ranks ?? []).forEach((value) => {
+        if (!opt.values.includes(value)) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `Value "${value}" is assigned a rank but is not defined in the list of values.`
+          )
+        }
+      })
+
       return {
         ...opt,
         values: opt.values?.map((v) => {
-          return typeof v === "string" ? { value: v } : v
+          // Normalize each value into an object and attach rank if available
+          const valueObj = typeof v === "string" ? { value: v } : v
+          const rank =
+            opt.ranks && typeof v === "string"
+              ? opt.ranks[v]
+              : opt.ranks?.[valueObj.value]
+
+          return rank !== undefined ? { ...valueObj, rank } : valueObj
         }),
       }
     })
@@ -945,35 +961,66 @@ export default class ProductModuleService
 
     // Data normalization
     const normalizedInput = data.map((opt) => {
-      const dbValues = dbOptions.find(({ id }) => id === opt.id)?.values || []
-      const normalizedValues = opt.values?.map((v) => {
-        return typeof v === "string" ? { value: v } : v
-      })
+      const dbOption = dbOptions.find(({ id }) => id === opt.id)
+      const dbValues = dbOption?.values || []
 
+      if (opt.ranks) {
+        const validValues = opt.values ?? dbValues.map((v) => v.value)
+
+        Object.keys(opt.ranks).forEach((value) => {
+          if (!validValues.includes(value)) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Value "${value}" is assigned a rank but is not defined in the list of values.`
+            )
+          }
+        })
+      }
+
+      let normalizedValues
+      if (opt.values) {
+        // If new values are provided → normalize and apply ranks
+        normalizedValues = opt.values.map((v) => {
+          const valueObj = typeof v === "string" ? { value: v } : v
+
+          const rank =
+            opt.ranks && typeof v === "string"
+              ? opt.ranks[v]
+              : opt.ranks?.[valueObj.value]
+
+          const rankedValue =
+            rank !== undefined ? { ...valueObj, rank } : valueObj
+
+          if ("id" in rankedValue) {
+            return rankedValue
+          }
+
+          const dbVal = dbValues.find(
+            (dbVal) => dbVal.value === rankedValue.value
+          )
+          if (!dbVal) {
+            return rankedValue
+          }
+
+          return {
+            id: dbVal.id,
+            ...rankedValue,
+          }
+        })
+      } else if (opt.ranks) {
+        // If only ranks were provided → update existing DB values with ranks
+        normalizedValues = dbValues.map((dbVal) => {
+          const rank = opt.ranks![dbVal.value]
+          return rank !== undefined
+            ? { id: dbVal.id, value: dbVal.value, rank }
+            : { id: dbVal.id, value: dbVal.value }
+        })
+      }
+
+      const { ranks, ...cleanOpt } = opt
       return {
-        ...opt,
-        ...(normalizedValues
-          ? {
-              // Oftentimes the options are only passed by value without an id, even if they exist in the DB
-              values: normalizedValues.map((normVal) => {
-                if ("id" in normVal) {
-                  return normVal
-                }
-
-                const dbVal = dbValues.find(
-                  (dbVal) => dbVal.value === normVal.value
-                )
-                if (!dbVal) {
-                  return normVal
-                }
-
-                return {
-                  id: dbVal.id,
-                  value: normVal.value,
-                }
-              }),
-            }
-          : {}),
+        ...cleanOpt,
+        ...(normalizedValues ? { values: normalizedValues } : {}),
       } as UpdateProductOptionInput
     })
 

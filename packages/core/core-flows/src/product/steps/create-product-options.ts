@@ -3,7 +3,7 @@ import type {
   ProductTypes,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 export const createProductOptionsStepId = "create-product-options"
 /**
@@ -12,7 +12,12 @@ export const createProductOptionsStepId = "create-product-options"
  * @example
  * const data = createProductOptionsStep([{
  *   title: "Size",
- *   values: ["S", "M", "L"]
+ *   values: ["S", "M", "L"],
+ *   ranks: {
+ *    "S": 2,
+ *    "M": 1,
+ *    "L": 3
+ *   }
  * }])
  */
 export const createProductOptionsStep = createStep(

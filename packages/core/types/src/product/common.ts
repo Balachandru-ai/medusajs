@@ -1204,6 +1204,10 @@ export interface CreateProductOptionDTO {
    */
   values: string[]
   /**
+   * The rank for each option value.
+   */
+  ranks?: Record<string, number>
+  /**
    * Whether the product option is exclusive or global.
    */
   is_exclusive?: boolean
@@ -1218,6 +1222,10 @@ export interface CreateProductOptionValueDTO {
    * The value of the product option value.
    */
   value: string
+  /**
+   * The rank of the product option value.
+   */
+  rank?: number
   /**
    * The metadata of the product option value.
    */
@@ -1247,6 +1255,10 @@ export interface UpdateProductOptionDTO {
    * The product option values.
    */
   values?: string[]
+  /**
+   * The rank for each option value.
+   */
+  ranks?: Record<string, number>
   /**
    * Whether the product option is exclusive or global.
    */
