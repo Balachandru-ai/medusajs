@@ -7,6 +7,8 @@ import {
   CancelPaymentOutput,
   CapturePaymentInput,
   CapturePaymentOutput,
+  RetrieveAccountHolderInput,
+  RetrieveAccountHolderOutput,
   CreateAccountHolderInput,
   CreateAccountHolderOutput,
   DeleteAccountHolderInput,
@@ -32,7 +34,7 @@ import {
   PaymentSessionStatus,
 } from "@medusajs/framework/utils"
 
-export class SystemProviderService extends AbstractPaymentProvider {
+export class SystemPaymentProvider extends AbstractPaymentProvider {
   static identifier = "system"
 
   async getStatus(_): Promise<string> {
@@ -81,6 +83,12 @@ export class SystemProviderService extends AbstractPaymentProvider {
     return { data: {} }
   }
 
+  async retrieveAccountHolder(
+    input: RetrieveAccountHolderInput
+  ): Promise<RetrieveAccountHolderOutput> {
+    return { id: input.id }
+  }
+
   async createAccountHolder(
     input: CreateAccountHolderInput
   ): Promise<CreateAccountHolderOutput> {
@@ -108,4 +116,4 @@ export class SystemProviderService extends AbstractPaymentProvider {
   }
 }
 
-export default SystemProviderService
+export default SystemPaymentProvider
