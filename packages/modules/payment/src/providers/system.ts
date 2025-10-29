@@ -115,3 +115,5 @@ export class SystemPaymentProvider extends AbstractPaymentProvider {
     return { action: PaymentActions.NOT_SUPPORTED }
   }
 }
+
+export default SystemPaymentProvider

@@ -43,7 +43,7 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
           const paymentSession = await service.createPaymentSession(
             paymentCollection.id,
             {
-              provider_id: "pp_medusa-payments_default",
+              provider_id: "pp_system_default",
               amount: 200,
               currency_code: "USD",
               data: {},
