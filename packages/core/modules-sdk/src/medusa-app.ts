@@ -22,6 +22,7 @@ import {
   createMedusaContainer,
   discoverFeatureFlagsFromDir,
   dynamicImport,
+  executeWithConcurrency,
   FeatureFlag,
   GraphQLUtils,
   isObject,
@@ -557,12 +558,14 @@ async function MedusaApp_({
       }
     }
 
+    // Migrate the first module to ensure migration table is created
     const initialMigration = moduleResolutions.shift()!
     await run(initialMigration)
 
-    await promiseAll(moduleResolutions.map(run), {
-      concurrency: 4,
-    })
+    await executeWithConcurrency(
+      moduleResolutions.map((a) => () => run(a)),
+      4
+    )
   }
 
   const runMigrations: RunMigrationFn = async (): Promise<void> => {
