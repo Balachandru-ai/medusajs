@@ -377,7 +377,7 @@ export default defineLink(
   },
   OrderModule.linkable.order,
   {
-    readOnly: true
+    readOnly: true,
   }
 )
 ```
@@ -400,7 +400,7 @@ export default defineLink(
   },
   OrderModule.linkable.orderLineItem,
   {
-    readOnly: true
+    readOnly: true,
   }
 )
 ```
@@ -423,10 +423,10 @@ export default defineLink(
   },
   {
     ...RentalModule.linkable.rental.id,
-    primaryKey: "customer_id"
+    primaryKey: "customer_id",
   },
   {
-    readOnly: true
+    readOnly: true,
   }
 )
 ```
@@ -449,7 +449,7 @@ export default defineLink(
   },
   ProductModule.linkable.productVariant,
   {
-    readOnly: true
+    readOnly: true,
   }
 )
 ```
@@ -569,7 +569,7 @@ export const createRentalConfigurationStep = createStep(
     return new StepResponse(rentalConfig, rentalConfig.id)
   },
   async (rentalConfigId, { container }) => {
-    if (!rentalConfigId) return
+    if (!rentalConfigId) {return}
 
     const rentalModuleService: RentalModuleService = container.resolve(
       RENTAL_MODULE
@@ -635,7 +635,7 @@ export const updateRentalConfigurationStep = createStep(
     return new StepResponse(updatedRentalConfig, existingRentalConfig)
   },
   async (existingRentalConfig, { container }) => {
-    if (!existingRentalConfig) return
+    if (!existingRentalConfig) {return}
 
     const rentalModuleService: RentalModuleService = container.resolve(
       RENTAL_MODULE
@@ -674,17 +674,17 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { 
   useQueryGraphStep, 
-  createRemoteLinkStep
+  createRemoteLinkStep,
 } from "@medusajs/medusa/core-flows"
 import { Modules } from "@medusajs/framework/utils"
 import { 
-  createRentalConfigurationStep
+  createRentalConfigurationStep,
 } from "./steps/create-rental-configuration"
 import { 
-  updateRentalConfigurationStep
+  updateRentalConfigurationStep,
 } from "./steps/update-rental-configuration"
 import { 
-  RENTAL_MODULE
+  RENTAL_MODULE,
 } from "../modules/rental"
 
 type UpsertRentalConfigWorkflowInput = {
@@ -721,7 +721,7 @@ export const upsertRentalConfigWorkflow = createWorkflow(
       // Create link between product and rental configuration
       const linkData = transform({ 
         newConfig, 
-        product_id: input.product_id
+        product_id: input.product_id,
       }, (data) => {
         return [
           {
@@ -810,10 +810,10 @@ To create an API route that upserts rental configurations of a product, create t
 ```ts title="src/api/admin/products/[id]/rental-config/route.ts"
 import type { 
   MedusaRequest, 
-  MedusaResponse
+  MedusaResponse,
 } from "@medusajs/framework/http"
 import { 
-  upsertRentalConfigWorkflow
+  upsertRentalConfigWorkflow,
 } from "../../../../../workflows/upsert-rental-config"
 import { z } from "zod"
 
@@ -834,7 +834,7 @@ export const POST = async (
       product_id: id,
       min_rental_days: req.validatedBody.min_rental_days,
       max_rental_days: req.validatedBody.max_rental_days,
-      status: req.validatedBody.status
+      status: req.validatedBody.status,
     },
   })
 
@@ -860,9 +860,9 @@ To apply a middleware, create the file `src/api/middlewares.ts` with the followi
 import { 
   defineMiddlewares, 
   validateAndTransformBody,
-} from "@medusajs/framework/http";
+} from "@medusajs/framework/http"
 import { 
-  PostRentalConfigBodySchema
+  PostRentalConfigBodySchema,
 } from "./admin/products/[id]/rental-config/route"
 
 export default defineMiddlewares({
@@ -871,10 +871,10 @@ export default defineMiddlewares({
       matcher: "/admin/products/:id/rental-config",
       methods: ["POST"],
       middlewares: [
-        validateAndTransformBody(PostRentalConfigBodySchema)
-      ]
+        validateAndTransformBody(PostRentalConfigBodySchema),
+      ],
     },
-  ]
+  ],
 })
 ```
 
@@ -1083,7 +1083,7 @@ const handleSubmit = () => {
 }
 
 const handleToggleStatus = async () => {
-  if (!data?.rental_config) return
+  if (!data?.rental_config) {return}
   
   const newStatus = 
     data.rental_config.status === "active" ? 
@@ -1097,7 +1097,7 @@ const handleToggleStatus = async () => {
     variant: newStatus === "inactive" ? "danger" : "confirmation",
   })) {
     upsertMutation.mutate({
-      status: newStatus
+      status: newStatus,
     })
   }
 }
@@ -1294,10 +1294,10 @@ class RentalModuleService extends MedusaService({
       $or: [
         { 
           rental_start_date: { 
-            $lte: end_date
+            $lte: end_date,
           },
           rental_end_date: {
-            $gte: start_date
+            $gte: start_date,
           },
         },
       ],
@@ -1334,7 +1334,7 @@ export default function validateRentalDates(
 ) {
   const startDate = rentalStartDate instanceof Date ? rentalStartDate : new Date(rentalStartDate)
   const endDate = rentalEndDate instanceof Date ? rentalEndDate : new Date(rentalEndDate)
-  const days = typeof rentalDays === 'number' ? rentalDays : Number(rentalDays)
+  const days = typeof rentalDays === "number" ? rentalDays : Number(rentalDays)
 
   // Validate rental period meets configuration requirements
   if (days < rentalConfiguration.min_rental_days) {
@@ -1423,7 +1423,7 @@ export const GET = async (
     variant_id, 
     start_date, 
     end_date,
-    currency_code
+    currency_code,
   } = req.validatedQuery
 
   const query = req.scope.resolve("query")
@@ -1519,7 +1519,7 @@ res.json({
   price: {
     amount: price,
     currency_code: currency_code,
-  }
+  },
 })
 ```
 
@@ -1538,10 +1538,10 @@ In `src/api/middlewares.ts`, add the following imports at the top of the file:
 ```ts title="src/api/middlewares.ts"
 import { 
   validateAndTransformQuery,
-} from "@medusajs/framework/http";
+} from "@medusajs/framework/http"
 import { 
-  GetRentalAvailabilitySchema
-} from "./store/products/[id]/rental-availability/route";
+  GetRentalAvailabilitySchema,
+} from "./store/products/[id]/rental-availability/route"
 ```
 
 Then, pass a new object to the `routes` array in `defineMiddlewares`:
@@ -1554,10 +1554,10 @@ export default defineMiddlewares({
       matcher: "/store/products/:id/rental-availability",
       methods: ["GET"],
       middlewares: [
-        validateAndTransformQuery(GetRentalAvailabilitySchema, {})
-      ]
+        validateAndTransformQuery(GetRentalAvailabilitySchema, {}),
+      ],
     },
-  ]
+  ],
 })
 ```
 
@@ -1773,7 +1773,7 @@ Next, you'll add the functions to handle date selection and availability checkin
 ```tsx title="src/modules/products/components/rental-date-picker/index.tsx" badgeLabel="Storefront" badgeColor="blue"
 // Memoized rental days calculation for display
 const rentalDays = useCallback((start: Date, end: Date) => {
-  if (!start || !end) return 0
+  if (!start || !end) {return 0}
   return Math.ceil(
     (end.getTime() - start.getTime()) / (1000 * 3600 * 24)
   ) + 1 // +1 to include both start and end dates
@@ -1789,8 +1789,8 @@ const isDateInPast = (date: Date) => {
 // Helper function to format date to YYYY-MM-DD string
 const formatDateToString = (date: Date): string => {
   const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
   return `${year}-${month}-${day}`
 }
 
@@ -1845,7 +1845,7 @@ const validateAndCheckAvailability = useCallback(async (start: Date, end: Date) 
       startDate: startDateString,
       endDate: endDateString,
       days: days,
-      price: availability.price
+      price: availability.price,
     })
 
   } catch (err) {
@@ -2056,7 +2056,7 @@ In `src/modules/products/components/product-actions/index.tsx`, add the followin
 import RentalDatePicker from "../rental-date-picker"
 import { 
   RentalAvailabilityResponse, 
-  RentalConfiguration
+  RentalConfiguration,
 } from "../../../../types/rental"
 ```
 
@@ -2304,7 +2304,7 @@ export default function hasCartOverlap(
     // Check if dates overlap
     const hasOverlap = item.rental_start_date <= existingEndDate && item.rental_end_date >= existingStartDate
 
-    if (hasOverlap) return true
+    if (hasOverlap) {return true}
   }
 
   return false
@@ -2352,7 +2352,7 @@ export const validateRentalCartItemStep = createStep(
     quantity, 
     metadata, 
     rental_configuration, 
-    existing_cart_items
+    existing_cart_items,
   }: ValidateRentalCartItemInput, { container }) => {
     const rentalModuleService: RentalModuleService = container.resolve(RENTAL_MODULE)
 
@@ -2401,7 +2401,7 @@ if (!rentalStartDate || !rentalEndDate || !rentalDays) {
 
 const startDate = new Date(rentalStartDate as string)
 const endDate = new Date(rentalEndDate as string)
-const days = typeof rentalDays === 'number' ? rentalDays : Number(rentalDays)
+const days = typeof rentalDays === "number" ? rentalDays : Number(rentalDays)
 
 validateRentalDates(
   startDate, 
@@ -2437,7 +2437,7 @@ const hasCartOverlapResult = hasCartOverlap(
 if (hasCartOverlapResult) {
   throw new MedusaError(
     MedusaError.Types.INVALID_DATA,
-    `Rental variant ${variant.id} is already in the cart with overlapping dates (${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]})`
+    `Rental variant ${variant.id} is already in the cart with overlapping dates (${startDate.toISOString().split("T")[0]} to ${endDate.toISOString().split("T")[0]})`
   )
 }
 
@@ -2454,7 +2454,7 @@ if (hasOverlap) {
 return new StepResponse({ 
   is_rental: true,
   rental_days: days,
-  price: ((variant as any).calculated_price?.calculated_amount || 0) * days
+  price: ((variant as any).calculated_price?.calculated_amount || 0) * days,
 })
 ```
 
@@ -2477,7 +2477,7 @@ import {
   createWorkflow, 
   WorkflowResponse, 
   transform,
-  when 
+  when, 
 } from "@medusajs/framework/workflows-sdk"
 import { addToCartWorkflow, useQueryGraphStep } from "@medusajs/medusa/core-flows"
 import { QueryContext } from "@medusajs/framework/utils"
@@ -2603,10 +2603,10 @@ Create the file `src/api/store/carts/[id]/line-items/rentals/route.ts` with the 
 ```ts title="src/api/store/carts/[id]/line-items/rentals/route.ts" badgeLabel="Medusa Application" badgeColor="green" collapsibleLines="1-9" expandButtonLabel="Show Imports"
 import type { 
   MedusaRequest, 
-  MedusaResponse
+  MedusaResponse,
 } from "@medusajs/framework/http"
 import { 
-  addToCartWithRentalWorkflow
+  addToCartWithRentalWorkflow,
 } from "../../../../../../workflows/add-to-cart-with-rental"
 import { z } from "zod"
 
@@ -2649,7 +2649,7 @@ Next, you'll add validation middleware to ensure that the request body for addin
 In `src/api/middlewares.ts`, add the following import at the top of the file:
 
 ```ts title="src/api/middlewares.ts" badgeLabel="Medusa Application" badgeColor="green"
-import { PostCartItemsRentalsBody } from "./store/carts/[id]/line-items/rentals/route";
+import { PostCartItemsRentalsBody } from "./store/carts/[id]/line-items/rentals/route"
 ```
 
 Then, pass a new object to the `routes` array in `defineMiddlewares`:
@@ -2662,10 +2662,10 @@ export default defineMiddlewares({
       matcher: "/store/carts/:id/line-items/rentals",
       methods: ["POST"],
       middlewares: [
-        validateAndTransformBody(PostCartItemsRentalsBody)
-      ]
-    }
-  ]
+        validateAndTransformBody(PostCartItemsRentalsBody),
+      ],
+    },
+  ],
 })
 ```
 
@@ -2727,7 +2727,7 @@ In `src/modules/products/components/product-actions/index.tsx`, find the `handle
 
 ```tsx title="src/modules/products/components/product-actions/index.tsx" badgeLabel="Storefront" badgeColor="blue"
 const handleAddToCart = async () => {
-  if (!selectedVariant?.id) return null
+  if (!selectedVariant?.id) {return null}
 
   setIsAdding(true)
 
@@ -2738,7 +2738,7 @@ const handleAddToCart = async () => {
     metadata: isRentable ? {
       rental_start_date: rentalStartDate,
       rental_end_date: rentalEndDate,
-      rental_days: rentalDays
+      rental_days: rentalDays,
     } : undefined,
   })
 
@@ -2757,15 +2757,15 @@ In `src/modules/cart/components/item/index.tsx`, add the following below the `Li
 ```tsx title="src/modules/cart/components/item/index.tsx" badgeLabel="Storefront" badgeColor="blue"
 {!!item.metadata?.rental_start_date && !!item.metadata?.rental_end_date && (
   <Text className="txt-small text-ui-fg-muted">
-    Rental: {new Date(item.metadata.rental_start_date as string).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    Rental: {new Date(item.metadata.rental_start_date as string).toLocaleDateString("en-US", { 
+      month: "short", 
+      day: "numeric", 
+      year: "numeric", 
     })}
-    {item.metadata.rental_days !== 1 && ` - ${new Date(item.metadata.rental_end_date as string).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    {item.metadata.rental_days !== 1 && ` - ${new Date(item.metadata.rental_end_date as string).toLocaleDateString("en-US", { 
+      month: "short", 
+      day: "numeric", 
+      year: "numeric", 
     })}`}
   </Text>
 )}
@@ -2898,7 +2898,7 @@ export const validateRentalStep = createStep(
         rental_configuration, 
         rental_start_date, 
         rental_end_date, 
-        rental_days
+        rental_days,
       } = rentalItem
 
       if (rental_configuration.status !== "active") {
@@ -2952,7 +2952,7 @@ export const validateRentalStep = createStep(
             rental_start_date: item.rental_start_date.toISOString(),
             rental_end_date: item.rental_end_date.toISOString(),
             rental_days: item.rental_days,
-          }
+          },
         }))
       )
 
@@ -3043,7 +3043,7 @@ export const createRentalsForOrderStep = createStep(
     )
   },
   async (rentalIds, { container }) => {
-    if (!rentalIds) return
+    if (!rentalIds) {return}
 
     const rentalModuleService: RentalModuleService = container.resolve(RENTAL_MODULE)
 
@@ -3071,21 +3071,21 @@ Create the file `src/workflows/create-rentals.ts` with the following content:
 import { 
   createWorkflow, 
   WorkflowResponse, 
-  transform
+  transform,
 } from "@medusajs/framework/workflows-sdk"
 import { 
   completeCartWorkflow, 
   useQueryGraphStep,
   acquireLockStep,
-  releaseLockStep
+  releaseLockStep,
 } from "@medusajs/medusa/core-flows"
 import { 
   ValidateRentalInput, 
-  validateRentalStep
+  validateRentalStep,
 } from "./steps/validate-rental"
 import { 
   CreateRentalsForOrderInput, 
-  createRentalsForOrderStep
+  createRentalsForOrderStep,
 } from "./steps/create-rentals-for-order"
 
 type CreateRentalsWorkflowInput = {
@@ -3140,7 +3140,7 @@ export const createRentalsWorkflow = createWorkflow(
     })
 
     const lockKey = transform({
-      cart_id
+      cart_id,
     }, (data) => `cart_rentals_creation_${data.cart_id}`)
 
     acquireLockStep({
@@ -3148,7 +3148,7 @@ export const createRentalsWorkflow = createWorkflow(
     })
 
     validateRentalStep({ 
-      rental_items: rentalItems
+      rental_items: rentalItems,
     } as unknown as ValidateRentalInput)
 
     const order = completeCartWorkflow.runAsStep({
@@ -3280,15 +3280,15 @@ In `src/modules/order/components/item/index.tsx`, add the following below the `L
 ```tsx title="src/modules/order/components/item/index.tsx" badgeLabel="Storefront" badgeColor="blue"
 {!!item.metadata?.rental_start_date && !!item.metadata?.rental_end_date && (
   <Text className="txt-small text-ui-fg-muted">
-    Rental: {new Date(item.metadata.rental_start_date as string).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    Rental: {new Date(item.metadata.rental_start_date as string).toLocaleDateString("en-US", { 
+      month: "short", 
+      day: "numeric", 
+      year: "numeric", 
     })}
-    {item.metadata.rental_days !== 1 && ` - ${new Date(item.metadata.rental_end_date as string).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    {item.metadata.rental_days !== 1 && ` - ${new Date(item.metadata.rental_end_date as string).toLocaleDateString("en-US", { 
+      month: "short", 
+      day: "numeric", 
+      year: "numeric", 
     })}`}
   </Text>
 )}
@@ -3340,7 +3340,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
       "product_variant.title",
       "product_variant.product.id",
       "product_variant.product.title",
-      "product_variant.product.thumbnail"
+      "product_variant.product.thumbnail",
     ],
     filters: {
       order_id: id,
@@ -3382,7 +3382,7 @@ export const updateRentalStep = createStep(
     const rentalModuleService: RentalModuleService = container.resolve(RENTAL_MODULE)
 
     const existingRental = await rentalModuleService.retrieveRental(rental_id)
-    let actualReturnDate = status === "returned" ? new Date() : null
+    const actualReturnDate = status === "returned" ? new Date() : null
 
     if (status === "active" && existingRental.status !== "pending") {
       throw new MedusaError(
@@ -3414,7 +3414,7 @@ export const updateRentalStep = createStep(
     return new StepResponse(updatedRental, existingRental)
   },
   async (existingRental, { container }) => {
-    if (!existingRental) return
+    if (!existingRental) {return}
 
     const rentalModuleService: RentalModuleService = container.resolve(RENTAL_MODULE)
 
@@ -3512,7 +3512,7 @@ Next, you'll add validation middleware to ensure that the request body for updat
 In `src/api/middlewares.ts`, add the following import at the top of the file:
 
 ```ts title="src/api/middlewares.ts" badgeLabel="Medusa Application" badgeColor="green"
-import { PostRentalStatusBodySchema } from "./admin/rentals/[id]/route";
+import { PostRentalStatusBodySchema } from "./admin/rentals/[id]/route"
 ```
 
 Then, pass a new object to the `routes` array in `defineMiddlewares`:
@@ -3525,10 +3525,10 @@ export default defineMiddlewares({
       matcher: "/admin/rentals/:id",
       methods: ["POST"],
       middlewares: [
-        validateAndTransformBody(PostRentalStatusBodySchema)
-      ]
+        validateAndTransformBody(PostRentalStatusBodySchema),
+      ],
     },
-  ]
+  ],
 })
 ```
 
@@ -3959,7 +3959,7 @@ export default async function orderCanceledHandler({
         order_id: data.id,
         status: {
           $ne: "cancelled",
-        }
+        },
       },
     })
 
@@ -4186,7 +4186,7 @@ export default async function shipmentCreatedHandler({
       fields: ["id", "status", "line_item_id", "variant_id"],
       filters: {
         line_item_id: lineItemIds,
-        status: "pending"
+        status: "pending",
       },
     })
 
@@ -4327,7 +4327,7 @@ export const updateRentalWorkflow = createWorkflow(
               inventoryUpdates.push({
                 inventory_item_id: inv!.id,
                 location_id: locLevel!.location_id,
-                adjustment: 1
+                adjustment: 1,
               })
             })
           })
