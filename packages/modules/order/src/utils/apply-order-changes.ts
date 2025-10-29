@@ -1,3 +1,6 @@
+import { OrderCreditLine } from "#models/credit-line"
+import { OrderItem } from "#models/order-item"
+import { OrderShippingMethod } from "#models/shipping-method"
 import {
   InferEntityType,
   OrderChangeActionDTO,
@@ -10,7 +13,6 @@ import {
   isDefined,
   MathBN,
 } from "@medusajs/framework/utils"
-import { OrderCreditLine, OrderItem, OrderShippingMethod } from "@models"
 import { calculateOrderChange } from "./calculate-order-change"
 
 export interface ApplyOrderChangeDTO extends OrderChangeActionDTO {

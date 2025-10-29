@@ -1,5 +1,5 @@
 import { DALUtils } from "@medusajs/framework/utils"
-import { OrderExchange } from "@models"
+import { OrderExchange } from "#models/exchange"
 import { setFindMethods } from "../utils/base-repository-find"
 
 export class OrderExchangeRepository extends DALUtils.mikroOrmBaseRepositoryFactory(

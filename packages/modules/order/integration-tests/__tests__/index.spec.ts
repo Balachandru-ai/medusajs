@@ -1,7 +1,8 @@
+import "../__fixtures__"
+import { default as OrderModuleService } from "#services/order-module-service"
 import { IOrderModuleService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { OrderModuleService } from "@services"
 
 moduleIntegrationTestRunner<IOrderModuleService>({
   moduleName: Modules.ORDER,

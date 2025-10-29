@@ -12,7 +12,7 @@ import {
   MedusaError,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
-import { Order } from "@models"
+import { Order } from "#models/order"
 
 type InjectedDependencies = {
   orderRepository: DAL.RepositoryService

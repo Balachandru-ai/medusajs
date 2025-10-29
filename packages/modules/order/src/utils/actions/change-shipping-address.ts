@@ -1,7 +1,6 @@
 import { ChangeActionType } from "@medusajs/framework/utils"
-
-import { OrderChangeProcessing } from "../calculate-order-change"
-import { setActionReference } from "../set-action-reference"
+import { OrderChangeProcessing } from "#utils/calculate-order-change"
+import { setActionReference } from "#utils/set-action-reference"
 
 OrderChangeProcessing.registerActionType(
   ChangeActionType.UPDATE_ORDER_PROPERTIES,

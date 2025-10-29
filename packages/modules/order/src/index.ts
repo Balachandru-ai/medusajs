@@ -1,5 +1,5 @@
 import { Module, Modules } from "@medusajs/framework/utils"
-import { OrderModuleService } from "@services"
+import { default as OrderModuleService } from "#services/order-module-service"
 
 export default Module(Modules.ORDER, {
   service: OrderModuleService,

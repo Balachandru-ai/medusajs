@@ -13,7 +13,11 @@ import {
   promiseAll,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { OrderClaim, OrderClaimItem, Return, ReturnItem } from "@models"
+
+import { OrderClaim } from "#models/claim"
+import { OrderClaimItem } from "#models/claim-item"
+import { Return } from "#models/return"
+import { ReturnItem } from "#models/return-item"
 
 function createClaimAndReturnEntities(em, data, order) {
   const claimReference = em.create(toMikroORMEntity(OrderClaim), {

@@ -1,5 +1,5 @@
 import { DALUtils } from "@medusajs/framework/utils"
-import { Order } from "@models"
+import { Order } from "#models/order"
 import { setFindMethods } from "../utils/base-repository-find"
 
 export class OrderRepository extends DALUtils.mikroOrmBaseRepositoryFactory(

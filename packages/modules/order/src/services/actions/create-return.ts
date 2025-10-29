@@ -13,7 +13,8 @@ import {
   promiseAll,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { Return, ReturnItem } from "@models"
+import { Return } from "#models/return"
+import { ReturnItem } from "#models/return-item"
 
 function createReturnReference(em, data, order) {
   return em.create(toMikroORMEntity(Return), {

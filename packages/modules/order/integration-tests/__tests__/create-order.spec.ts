@@ -1,3 +1,4 @@
+import "../__fixtures__"
 import { CreateOrderDTO, IOrderModuleService } from "@medusajs/framework/types"
 import { Modules, promiseAll } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"

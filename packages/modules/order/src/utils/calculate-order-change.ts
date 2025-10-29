@@ -18,7 +18,7 @@ import {
   OrderSummaryCalculated,
   OrderTransaction,
   VirtualOrder,
-} from "@types"
+} from "#types/index"
 
 interface ProcessOptions {
   addActionReferenceToObject?: boolean

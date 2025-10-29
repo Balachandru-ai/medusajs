@@ -1,5 +1,5 @@
 import { model, OrderStatus } from "@medusajs/framework/utils"
-import { Return } from "@models"
+import { Return } from "#models/return"
 import { OrderAddress } from "./address"
 import { OrderCreditLine } from "./credit-line"
 import { OrderItem } from "./order-item"

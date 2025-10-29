@@ -1,6 +1,6 @@
 import { ChangeActionType } from "@medusajs/framework/utils"
-import { OrderChangeEvent } from "../../../../types"
-import { calculateOrderChange } from "../../../../utils"
+import { OrderChangeEvent } from "#types/utils/index"
+import { calculateOrderChange } from "#utils/calculate-order-change"
 
 describe("Order Return - Actions", function () {
   const originalOrder = {

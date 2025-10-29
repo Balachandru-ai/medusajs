@@ -12,7 +12,10 @@ import {
   promiseAll,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { OrderExchange, OrderExchangeItem, Return, ReturnItem } from "@models"
+import { OrderExchange } from "#models/exchange"
+import { OrderExchangeItem } from "#models/exchange-item"
+import { Return } from "#models/return"
+import { ReturnItem } from "#models/return-item"
 
 function createExchangeAndReturnEntities(em, data, order) {
   const exchangeReference = em.create(toMikroORMEntity(OrderExchange), {

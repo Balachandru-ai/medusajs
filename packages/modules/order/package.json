@@ -4,6 +4,13 @@
   "description": "Medusa Order module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "imports": {
+    "#models/*": "./dist/models/*.js",
+    "#services/*": "./dist/services/*.js",
+    "#repositories/*": "./dist/repositories/*.js",
+    "#types/*": "./dist/types/*.js",
+    "#utils/*": "./dist/utils/*.js"
+  },
   "files": [
     "dist",
     "!dist/**/__tests__",

@@ -44,31 +44,31 @@ import {
   toMikroORMEntity,
   transformPropertiesToBigNumber,
 } from "@medusajs/framework/utils"
-import {
-  Order,
-  OrderAddress,
-  OrderChange,
-  OrderChangeAction,
-  OrderClaim,
-  OrderClaimItem,
-  OrderClaimItemImage,
-  OrderCreditLine,
-  OrderExchange,
-  OrderExchangeItem,
-  OrderItem,
-  OrderLineItem,
-  OrderLineItemAdjustment,
-  OrderLineItemTaxLine,
-  OrderShipping,
-  OrderShippingMethod,
-  OrderShippingMethodAdjustment,
-  OrderShippingMethodTaxLine,
-  OrderSummary,
-  OrderTransaction,
-  Return,
-  ReturnItem,
-  ReturnReason,
-} from "@models"
+
+import { OrderAddress } from "#models/address"
+import { OrderClaim } from "#models/claim"
+import { OrderClaimItem } from "#models/claim-item"
+import { OrderClaimItemImage } from "#models/claim-item-image"
+import { OrderCreditLine } from "#models/credit-line"
+import { OrderExchange } from "#models/exchange"
+import { OrderExchangeItem } from "#models/exchange-item"
+import { OrderLineItem } from "#models/line-item"
+import { OrderLineItemAdjustment } from "#models/line-item-adjustment"
+import { OrderLineItemTaxLine } from "#models/line-item-tax-line"
+import { Order } from "#models/order"
+import { OrderChange } from "#models/order-change"
+import { OrderChangeAction } from "#models/order-change-action"
+import { OrderItem } from "#models/order-item"
+import { OrderShipping } from "#models/order-shipping-method"
+import { OrderSummary } from "#models/order-summary"
+import { Return } from "#models/return"
+import { ReturnItem } from "#models/return-item"
+import { ReturnReason } from "#models/return-reason"
+import { OrderShippingMethod } from "#models/shipping-method"
+import { OrderShippingMethodAdjustment } from "#models/shipping-method-adjustment"
+import { OrderShippingMethodTaxLine } from "#models/shipping-method-tax-line"
+import { OrderTransaction } from "#models/transaction"
+
 import {
   CreateOrderChangeDTO,
   CreateOrderItemDTO,
@@ -81,15 +81,28 @@ import {
   UpdateOrderLineItemTaxLineDTO,
   UpdateOrderShippingMethodTaxLineDTO,
   UpdateReturnReasonDTO,
-} from "@types"
-import { joinerConfig } from "../joiner-config"
+} from "#types/index"
+
 import {
   applyChangesToOrder,
   ApplyOrderChangeDTO,
-  calculateOrderChange,
-  formatOrder,
-} from "../utils"
-import * as BundledActions from "./actions"
+} from "#utils/apply-order-changes"
+import { calculateOrderChange } from "#utils/calculate-order-change"
+import { formatOrder } from "#utils/transform-order"
+import { joinerConfig } from "../joiner-config"
+
+import { cancelClaim } from "#services/actions/cancel-claim"
+import { cancelExchange } from "#services/actions/cancel-exchange"
+import { cancelFulfillment } from "#services/actions/cancel-fulfillment"
+import { cancelReturn } from "#services/actions/cancel-return"
+import { createClaim } from "#services/actions/create-claim"
+import { createExchange } from "#services/actions/create-exchange"
+import { createReturn } from "#services/actions/create-return"
+import { registerDelivery } from "#services/actions/register-delivery"
+import { registerFulfillment } from "#services/actions/register-fulfillment"
+import { registerShipment } from "#services/actions/register-shipment"
+import { receiveReturn } from "#services/actions/receive-return"
+
 import OrderService from "./order-service"
 
 type InjectedDependencies = {
@@ -114,6 +127,20 @@ type InjectedDependencies = {
   orderClaimService: ModulesSdkTypes.IMedusaInternalService<any>
   orderExchangeService: ModulesSdkTypes.IMedusaInternalService<any>
   orderCreditLineService: ModulesSdkTypes.IMedusaInternalService<any>
+}
+
+const BundledActions = {
+  createReturn,
+  createExchange,
+  createClaim,
+  cancelReturn,
+  cancelExchange,
+  cancelClaim,
+  registerDelivery,
+  registerFulfillment,
+  registerShipment,
+  cancelFulfillment,
+  receiveReturn,
 }
 
 const generateMethodForModels = {

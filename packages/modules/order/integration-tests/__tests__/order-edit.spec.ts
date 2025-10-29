@@ -1,3 +1,4 @@
+import "../__fixtures__"
 import {
   CreateOrderChangeActionDTO,
   CreateOrderChangeDTO,
