@@ -16,14 +16,23 @@ export class MedusaCloudEmailNotificationProvider extends AbstractNotificationPr
   async send(
     notification: NotificationTypes.ProviderSendNotificationDTO
   ): Promise<NotificationTypes.ProviderSendNotificationResultsDTO> {
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${this.options_.api_key}`,
+    }
+
+    if (this.options_.sandbox_handle) {
+      headers["x-medusa-sandbox-handle"] = this.options_.sandbox_handle
+    }
+
+    if (this.options_.environment_handle) {
+      headers["x-medusa-environment-handle"] = this.options_.environment_handle
+    }
+
     try {
       const response = await fetch(`${this.options_.endpoint}/send`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${this.options_.api_key}`,
-          "x-medusa-environment-handle": this.options_.environment_handle,
-        },
+        headers,
         body: JSON.stringify({
           to: notification.to,
           from: notification.from,
