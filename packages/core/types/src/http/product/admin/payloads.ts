@@ -516,6 +516,10 @@ export interface AdminCreateProductOption {
    */
   values: string[]
   /**
+   * The rank for each option value.
+   */
+  ranks?: Record<string, number>
+  /**
    * Whether the option is exclusive or global.
    */
   is_exclusive?: boolean
@@ -530,6 +534,10 @@ export interface AdminUpdateProductOption {
    * The option's values.
    */
   values?: string[]
+  /**
+   * The rank for each option value.
+   */
+  ranks?: Record<string, number>
   /**
    * Whether the option is exclusive or global.
    */

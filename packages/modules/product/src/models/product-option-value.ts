@@ -5,6 +5,7 @@ const ProductOptionValue = model
   .define("ProductOptionValue", {
     id: model.id({ prefix: "optval" }).primaryKey(),
     value: model.text(),
+    rank: model.number().nullable(),
     metadata: model.json().nullable(),
     option: model
       .belongsTo(() => ProductOption, {

@@ -41,7 +41,12 @@ export const createProductOptionsWorkflowId = "create-product-options"
  *       {
  *         title: "Color",
  *         values: ["Red", "Blue", "Green"]
- *         is_exclusive: true
+ *         is_exclusive: true,
+ *         ranks: {
+ *           "Red": 2,
+ *           "Blue": 1,
+ *           "Green": 3
+ *         }
  *       }
  *     ],
  *     additional_data: {

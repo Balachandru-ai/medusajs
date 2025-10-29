@@ -96,6 +96,64 @@ medusaIntegrationTestRunner({
       })
     })
 
+    describe("POST /admin/product-options", () => {
+      it("creates a product option with value ranks", async () => {
+        const option = (
+          await api.post(
+            `/admin/product-options`,
+            {
+              title: "option3",
+              values: ["D", "E"],
+              ranks: {
+                E: 1,
+                D: 2,
+              },
+            },
+            adminHeaders
+          )
+        ).data.product_option
+
+        expect(option).toEqual(
+          expect.objectContaining({
+            title: "option3",
+            is_exclusive: false,
+            values: expect.arrayContaining([
+              expect.objectContaining({
+                value: "D",
+                rank: 2,
+              }),
+              expect.objectContaining({
+                value: "E",
+                rank: 1,
+              }),
+            ]),
+          })
+        )
+      })
+
+      it("throws ir a rank is specified for invalid value", async () => {
+        const error = await api
+          .post(
+            `/admin/product-options`,
+            {
+              title: "option3",
+              values: ["D", "E"],
+              ranks: {
+                E: 1,
+                invalid: 2,
+              },
+            },
+            adminHeaders
+          )
+          .catch((err) => err)
+
+        expect(error.response.status).toEqual(400)
+        expect(error.response.data.message).toEqual(
+          'Value "invalid" is assigned a rank but is not defined in the list of values.'
+        )
+      })
+    })
+
     describe("GET /admin/product-options/[id]", () => {
       it("returns a product option", async () => {
         const res = await api.get(
@@ -148,6 +206,38 @@ medusaIntegrationTestRunner({
 
         expect(res.status).toEqual(200)
         expect(res.data.product_options.length).toEqual(0)
+      })
+
+      it("updates a product value ranks", async () => {
+        const option = (
+          await api.post(
+            `/admin/product-options/${option2.id}`,
+            {
+              ranks: {
+                D: 2,
+                E: 1,
+              },
+            },
+            adminHeaders
+          )
+        ).data.product_option
+
+        expect(option).toEqual(
+          expect.objectContaining({
+            title: "option2",
+            is_exclusive: true,
+            values: expect.arrayContaining([
+              expect.objectContaining({
+                value: "D",
+                rank: 2,
+              }),
+              expect.objectContaining({
+                value: "E",
+                rank: 1,
+              }),
+            ]),
+          })
+        )
       })
     })
 

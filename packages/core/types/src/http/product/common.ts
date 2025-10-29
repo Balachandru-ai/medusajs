@@ -327,6 +327,10 @@ export interface BaseProductOptionValue {
    */
   value: string
   /**
+   * The option's rank.
+   */
+  rank?: number
+  /**
    * The option's details.
    */
   option?: BaseProductOption | null

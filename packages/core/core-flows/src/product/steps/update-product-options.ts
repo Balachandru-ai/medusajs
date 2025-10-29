@@ -41,13 +41,12 @@ export const updateProductOptionsStep = createStep(
   async (data: UpdateProductOptionsStepInput, { container }) => {
     const service = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
-    const { selects, relations } = getSelectsAndRelationsFromObjectArray([
-      data.update,
-    ])
+    const { ranks, ...cleanedUpdate } = data.update
+    const { selects } = getSelectsAndRelationsFromObjectArray([cleanedUpdate])
 
     const prevData = await service.listProductOptions(data.selector, {
       select: selects,
-      relations,
+      relations: ["values"],
     })
 
     const productOptions = await service.updateProductOptions(
