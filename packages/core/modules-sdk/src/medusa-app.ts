@@ -1,3 +1,5 @@
+import { asValue } from "@medusajs/deps/awilix"
+import { Migrator } from "@medusajs/framework/migrations"
 import { RemoteFetchDataCallback } from "@medusajs/orchestration"
 import {
   ConfigModule,
@@ -33,7 +35,6 @@ import {
   promiseAll,
   registerFeatureFlag,
 } from "@medusajs/utils"
-import { asValue } from "@medusajs/deps/awilix"
 import { Link } from "./link"
 import {
   MedusaModule,
@@ -501,12 +502,14 @@ async function MedusaApp_({
     modulesNames: string[]
     action?: "run" | "revert" | "generate"
   }) => {
-    const moduleResolutions = modulesNames.map((moduleName) => {
-      return {
-        moduleName,
-        resolution: MedusaModule.getModuleResolutions(moduleName),
+    const moduleResolutions = Array.from(new Set(modulesNames)).map(
+      (moduleName) => {
+        return {
+          moduleName,
+          resolution: MedusaModule.getModuleResolutions(moduleName),
+        }
       }
-    })
+    )
 
     const missingModules = moduleResolutions
       .filter(({ resolution }) => !resolution)
@@ -524,36 +527,44 @@ async function MedusaApp_({
       throw error
     }
 
-    for (const { resolution: moduleResolution } of moduleResolutions) {
-      if (
-        !moduleResolution.options?.database &&
-        moduleResolution.moduleDeclaration?.scope === MODULE_SCOPE.INTERNAL
-      ) {
-        moduleResolution.options ??= {}
-        moduleResolution.options.database = {
-          ...(sharedResourcesConfig?.database ?? {}),
+    const migrator = new Migrator({ container: sharedContainer_ })
+    await migrator.ensureMigrationsTable()
+
+    await promiseAll(
+      moduleResolutions.map(async ({ resolution: moduleResolution }) => {
+        if (
+          !moduleResolution.options?.database &&
+          moduleResolution.moduleDeclaration?.scope === MODULE_SCOPE.INTERNAL
+        ) {
+          moduleResolution.options ??= {}
+          moduleResolution.options.database = {
+            ...(sharedResourcesConfig?.database ?? {}),
+          }
+          ;(moduleResolution as any).options.database.debug ??=
+            sharedResourcesConfig?.database?.debug
         }
-        ;(moduleResolution as any).options.database.debug ??=
-          sharedResourcesConfig?.database?.debug
-      }
 
-      const migrationOptions: MigrationOptions = {
-        moduleKey: moduleResolution.definition.key,
-        modulePath: moduleResolution.resolutionPath as string,
-        container: sharedContainer,
-        options: moduleResolution.options,
-        moduleExports: moduleResolution.moduleExports as ModuleExports,
-        cwd,
-      }
+        const migrationOptions: MigrationOptions = {
+          moduleKey: moduleResolution.definition.key,
+          modulePath: moduleResolution.resolutionPath as string,
+          container: sharedContainer,
+          options: moduleResolution.options,
+          moduleExports: moduleResolution.moduleExports as ModuleExports,
+          cwd,
+        }
 
-      if (action === "revert") {
-        await MedusaModule.migrateDown(migrationOptions)
-      } else if (action === "run") {
-        await MedusaModule.migrateUp(migrationOptions)
-      } else {
-        await MedusaModule.migrateGenerate(migrationOptions)
+        if (action === "revert") {
+          await MedusaModule.migrateDown(migrationOptions)
+        } else if (action === "run") {
+          await MedusaModule.migrateUp(migrationOptions)
+        } else {
+          await MedusaModule.migrateGenerate(migrationOptions)
+        }
+      }),
+      {
+        concurrency: 4,
       }
-    }
+    )
   }
 
   const runMigrations: RunMigrationFn = async (): Promise<void> => {
