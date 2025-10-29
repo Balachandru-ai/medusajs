@@ -5,26 +5,45 @@ import {
   refetchEntities,
   refetchEntity,
 } from "@medusajs/framework/http"
+import { DEFAULT_PRICE_FIELD_PATHS } from "./constants"
 
-export function normalizeDataForContext() {
+type PricingContextOptions = {
+  priceFieldPaths?: string[]
+}
+
+export function normalizeDataForContext(options: PricingContextOptions = {}) {
+  const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options
+
   return async (req: AuthenticatedMedusaRequest, _, next: NextFunction) => {
     // If the product pricing is not requested, we don't need region information
-    const calculatedPriceIndex = req.queryConfig.fields.findIndex((field) =>
-      field.startsWith("variants.calculated_price")
-    )
-
     let withCalculatedPrice = false
-    if (calculatedPriceIndex !== -1) {
-      req.queryConfig.fields[calculatedPriceIndex] =
-        "variants.calculated_price.*"
-      withCalculatedPrice = true
-    }
+
+    req.queryConfig.fields = req.queryConfig.fields.map((field) => {
+      for (const pricePath of priceFieldPaths) {
+        if (field === pricePath) {
+          withCalculatedPrice = true
+          return `${pricePath}.*`
+        }
+
+        if (field.startsWith(`${pricePath}.`)) {
+          withCalculatedPrice = true
+          return field
+        }
+      }
+
+      return field
+    })
 
     // If the region is passed, we calculate the prices without requesting them.
     // TODO: This seems a bit messy, reconsider if we want to keep this logic.
     if (!withCalculatedPrice && req.filterableFields.region_id) {
-      req.queryConfig.fields.push("variants.calculated_price.*")
-      withCalculatedPrice = true
+      for (const pricePath of priceFieldPaths) {
+        const wildcardField = `${pricePath}.*`
+        if (!req.queryConfig.fields.includes(wildcardField)) {
+          req.queryConfig.fields.push(wildcardField)
+        }
+      }
+      withCalculatedPrice = priceFieldPaths.length > 0
     }
 
     if (!withCalculatedPrice) {

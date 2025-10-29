@@ -160,6 +160,10 @@ export interface BaseProductVariant {
    */
   upc: string | null
   /**
+   * The variant's thumbnail.
+   */
+  thumbnail: string | null
+  /**
    * Whether the variant can be ordered even if it's out of stock.
    */
   allow_backorder: boolean | null

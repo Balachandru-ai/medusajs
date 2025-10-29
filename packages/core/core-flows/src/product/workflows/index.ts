@@ -1,3 +1,5 @@
+export * from "./batch-image-variants"
+export * from "./batch-variant-images"
 export * from "./batch-link-products-collection"
 export * from "./batch-product-variants"
 export * from "./batch-products"

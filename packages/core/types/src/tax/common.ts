@@ -523,6 +523,8 @@ export interface TaxCalculationContext {
 interface TaxLineDTO {
   /**
    * The associated rate's ID.
+   * When integrating with a third-party, you don't need to provide it.
+   * This is mainly used for the built-in rates.
    */
   rate_id?: string
 

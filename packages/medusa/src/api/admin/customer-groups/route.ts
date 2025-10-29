@@ -7,7 +7,6 @@ import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import { AdminCreateCustomerGroupType } from "./validators"
 import { refetchCustomerGroup } from "./helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
@@ -37,7 +36,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateCustomerGroupType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateCustomerGroup,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCustomerGroupResponse>
 ) => {
   const createGroups = createCustomerGroupsWorkflow(req.scope)

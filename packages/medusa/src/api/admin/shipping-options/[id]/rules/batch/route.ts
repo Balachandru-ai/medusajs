@@ -11,7 +11,8 @@ export const POST = async (
     BatchMethodRequest<
       HttpTypes.AdminCreateShippingOptionRule,
       HttpTypes.AdminUpdateShippingOptionRule
-    >
+    >,
+    HttpTypes.SelectParams
   >,
   res: MedusaResponse<HttpTypes.AdminUpdateShippingOptionRulesResponse>
 ) => {

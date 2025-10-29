@@ -1334,7 +1334,7 @@ A subscriber file exports:
 - An asynchronous function that's executed whenever the associated event is emitted, which is the `order.placed` event.
 - A configuration object with an `event` property indicating the event the subscriber is listening to.
 
-The subscriber function accepts the event's details as a first paramter which has a `data` property that holds the data payload of the event. For example, Medusa emits the `order.placed` event with the order's ID in the data payload. The function also accepts as a second parameter the [Medusa container](!docs!/learn/fundamentals/medusa-container).
+The subscriber function accepts the event's details as a first parameter which has a `data` property that holds the data payload of the event. For example, Medusa emits the `order.placed` event with the order's ID in the data payload. The function also accepts as a second parameter the [Medusa container](!docs!/learn/fundamentals/medusa-container).
 
 In the function, you execute the `sendOrderConfirmationWorkflow` by invoking it, passing it the `container`, then using its `run` method. The `run` method accepts an object having an `input` property, which is the input to pass to the workflow. You pass the ID of the placed order as received in the event's data payload.
 

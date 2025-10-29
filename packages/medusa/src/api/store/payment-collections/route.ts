@@ -11,7 +11,10 @@ import {
 import { Modules } from "@medusajs/utils"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreCreatePaymentCollection>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCreatePaymentCollection,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StorePaymentCollectionResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

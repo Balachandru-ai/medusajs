@@ -55,6 +55,9 @@ const mergeStep = (
   }
 }
 
+const getErrorSignature = (err: TransactionStepError) =>
+  `${err.action}:${err.handlerType}:${err.error?.message}`
+
 /**
  * @typedef TransactionMetadata
  * @property model_id - The id of the model_id that created the transaction (modelId).
@@ -105,7 +108,52 @@ const stateFlowOrder = [
   TransactionState.FAILED,
 ]
 
+const stateFlowOrderMap = new Map<TransactionState, number>(
+  stateFlowOrder.map((state, index) => [state, index])
+)
+
+const finishedStatesSet = new Set([
+  TransactionState.DONE,
+  TransactionState.REVERTED,
+  TransactionState.FAILED,
+])
+
 export class TransactionCheckpoint {
+  static readonly #ALLOWED_STATE_TRANSITIONS = {
+    [TransactionStepState.DORMANT]: [TransactionStepState.NOT_STARTED],
+    [TransactionStepState.NOT_STARTED]: [
+      TransactionStepState.INVOKING,
+      TransactionStepState.COMPENSATING,
+      TransactionStepState.FAILED,
+      TransactionStepState.SKIPPED,
+      TransactionStepState.SKIPPED_FAILURE,
+    ],
+    [TransactionStepState.INVOKING]: [
+      TransactionStepState.FAILED,
+      TransactionStepState.DONE,
+      TransactionStepState.TIMEOUT,
+      TransactionStepState.SKIPPED,
+    ],
+    [TransactionStepState.COMPENSATING]: [
+      TransactionStepState.REVERTED,
+      TransactionStepState.FAILED,
+    ],
+    [TransactionStepState.DONE]: [TransactionStepState.COMPENSATING],
+  } as const
+
+  static readonly #ALLOWED_STATUS_TRANSITIONS = {
+    [TransactionStepStatus.WAITING]: [
+      TransactionStepStatus.OK,
+      TransactionStepStatus.TEMPORARY_FAILURE,
+      TransactionStepStatus.PERMANENT_FAILURE,
+    ],
+    [TransactionStepStatus.TEMPORARY_FAILURE]: [
+      TransactionStepStatus.IDLE,
+      TransactionStepStatus.PERMANENT_FAILURE,
+    ],
+    [TransactionStepStatus.PERMANENT_FAILURE]: [TransactionStepStatus.IDLE],
+  } as const
+
   constructor(
     public flow: TransactionFlow,
     public context: TransactionContext,
@@ -165,17 +213,15 @@ export class TransactionCheckpoint {
             currentTransactionData.flow[prop] ?? 0
           )
         } else if (prop === "state") {
-          const curState = stateFlowOrder.findIndex(
-            (state) => state === currentTransactionData.flow.state
-          )
-          const storedState = stateFlowOrder.findIndex(
-            (state) => state === storedData.flow.state
-          )
+          const currentStateIndex =
+            stateFlowOrderMap.get(currentTransactionData.flow.state) ?? -1
+          const storedStateIndex =
+            stateFlowOrderMap.get(storedData.flow.state) ?? -1
 
-          if (storedState > curState) {
+          if (storedStateIndex > currentStateIndex) {
             currentTransactionData.flow.state = storedData.flow.state
           } else if (
-            curState < storedState &&
+            currentStateIndex < storedStateIndex &&
             currentTransactionData.flow.state !==
               TransactionState.WAITING_TO_COMPENSATE
           ) {
@@ -265,43 +311,6 @@ export class TransactionCheckpoint {
       status: TransactionStepStatus
     }
   ): boolean {
-    // Define allowed state transitions
-    const allowedStateTransitions = {
-      [TransactionStepState.DORMANT]: [TransactionStepState.NOT_STARTED],
-      [TransactionStepState.NOT_STARTED]: [
-        TransactionStepState.INVOKING,
-        TransactionStepState.COMPENSATING,
-        TransactionStepState.FAILED,
-        TransactionStepState.SKIPPED,
-        TransactionStepState.SKIPPED_FAILURE,
-      ],
-      [TransactionStepState.INVOKING]: [
-        TransactionStepState.FAILED,
-        TransactionStepState.DONE,
-        TransactionStepState.TIMEOUT,
-        TransactionStepState.SKIPPED,
-      ],
-      [TransactionStepState.COMPENSATING]: [
-        TransactionStepState.REVERTED,
-        TransactionStepState.FAILED,
-      ],
-      [TransactionStepState.DONE]: [TransactionStepState.COMPENSATING],
-    }
-
-    // Define allowed status transitions
-    const allowedStatusTransitions = {
-      [TransactionStepStatus.WAITING]: [
-        TransactionStepStatus.OK,
-        TransactionStepStatus.TEMPORARY_FAILURE,
-        TransactionStepStatus.PERMANENT_FAILURE,
-      ],
-      [TransactionStepStatus.TEMPORARY_FAILURE]: [
-        TransactionStepStatus.IDLE,
-        TransactionStepStatus.PERMANENT_FAILURE,
-      ],
-      [TransactionStepStatus.PERMANENT_FAILURE]: [TransactionStepStatus.IDLE],
-    }
-
     if (
       currentStepState.state === storedStepState.state &&
       currentStepState.status === storedStepState.status
@@ -311,7 +320,9 @@ export class TransactionCheckpoint {
 
     // Check if state transition from stored to current is allowed
     const allowedStatesFromCurrent =
-      allowedStateTransitions[currentStepState.state] || []
+      TransactionCheckpoint.#ALLOWED_STATE_TRANSITIONS[
+        currentStepState.state
+      ] || []
     const isStateTransitionValid = allowedStatesFromCurrent.includes(
       storedStepState.state
     )
@@ -328,7 +339,9 @@ export class TransactionCheckpoint {
 
     // Check if status transition from stored to current is allowed
     const allowedStatusesFromCurrent =
-      allowedStatusTransitions[currentStepState.status] || []
+      TransactionCheckpoint.#ALLOWED_STATUS_TRANSITIONS[
+        currentStepState.status
+      ] || []
 
     return allowedStatusesFromCurrent.includes(storedStepState.status)
   }
@@ -338,15 +351,13 @@ export class TransactionCheckpoint {
     incomingErrors: TransactionStepError[]
   ): void {
     const existingErrorSignatures = new Set(
-      currentErrors.map(
-        (err) => `${err.action}:${err.handlerType}:${err.error?.message}`
-      )
+      currentErrors.map(getErrorSignature)
     )
 
     for (const error of incomingErrors) {
-      const signature = `${error.action}:${error.handlerType}:${error.error?.message}`
-      if (!existingErrorSignatures.has(signature)) {
+      if (!existingErrorSignatures.has(getErrorSignature(error))) {
         currentErrors.push(error)
+        existingErrorSignatures.add(getErrorSignature(error))
       }
     }
   }
@@ -451,11 +462,7 @@ class DistributedTransaction extends EventEmitter {
   }
 
   public hasFinished(): boolean {
-    return [
-      TransactionState.DONE,
-      TransactionState.REVERTED,
-      TransactionState.FAILED,
-    ].includes(this.getState())
+    return finishedStatesSet.has(this.getState())
   }
 
   public getState(): TransactionState {
@@ -520,7 +527,7 @@ class DistributedTransaction extends EventEmitter {
       this.transactionId
     )
 
-    let checkpoint
+    let checkpoint: TransactionCheckpoint
 
     let retries = 0
     let backoffMs = 50
@@ -553,7 +560,7 @@ class DistributedTransaction extends EventEmitter {
 
         await setTimeoutPromise(backoffMs + jitter)
 
-        backoffMs = Math.min(backoffMs * 2, 1000)
+        backoffMs = Math.min(backoffMs * 2, 500)
 
         const lastCheckpoint = await DistributedTransaction.loadTransaction(
           this.modelId,
@@ -697,65 +704,45 @@ class DistributedTransaction extends EventEmitter {
    * @returns
    */
   #serializeCheckpointData() {
-    const data = new TransactionCheckpoint(
-      this.getFlow(),
-      this.getContext(),
-      this.getErrors()
-    )
-
-    const isSerializable = (obj) => {
-      try {
-        JSON.parse(JSON.stringify(obj))
-        return true
-      } catch {
-        return false
-      }
-    }
-
-    let rawData
     try {
-      rawData = JSON.parse(JSON.stringify(data))
-    } catch (e) {
-      if (!isSerializable(this.context)) {
-        // This is a safe guard, we should never reach this point
-        // If we do, it means that the context is not serializable
-        // and we should throw an error
-        throw new NonSerializableCheckPointError(
-          "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
-        )
-      }
-
-      if (!isSerializable(this.errors)) {
-        const nonSerializableErrors: TransactionStepError[] = []
-        for (const error of this.errors) {
-          if (!isSerializable(error.error)) {
-            error.error = {
-              name: error.error.name,
-              message: error.error.message,
-              stack: error.error.stack,
-            }
-            nonSerializableErrors.push({
-              ...error,
-              error: e,
-            })
-          }
-        }
-
-        if (nonSerializableErrors.length) {
-          this.errors.push(...nonSerializableErrors)
-        }
-      }
-
-      const data = new TransactionCheckpoint(
-        this.getFlow(),
-        this.getContext(),
-        this.getErrors()
+      JSON.stringify(this.context)
+    } catch {
+      throw new NonSerializableCheckPointError(
+        "Unable to serialize context object. Please make sure the workflow input and steps response are serializable."
       )
-
-      rawData = JSON.parse(JSON.stringify(data))
     }
 
-    return rawData
+    let errorsToUse = this.getErrors()
+    try {
+      JSON.stringify(errorsToUse)
+    } catch {
+      // Sanitize non-serializable errors
+      const sanitizedErrors: TransactionStepError[] = []
+      for (const error of this.errors) {
+        try {
+          JSON.stringify(error)
+          sanitizedErrors.push(error)
+        } catch {
+          sanitizedErrors.push({
+            action: error.action,
+            handlerType: error.handlerType,
+            error: {
+              name: error.error?.name || "Error",
+              message: error.error?.message || String(error.error),
+              stack: error.error?.stack,
+            },
+          })
+        }
+      }
+      errorsToUse = sanitizedErrors
+      this.errors = sanitizedErrors
+    }
+
+    return new TransactionCheckpoint(
+      JSON.parse(JSON.stringify(this.getFlow())),
+      this.getContext(),
+      [...errorsToUse]
+    )
   }
 }
 

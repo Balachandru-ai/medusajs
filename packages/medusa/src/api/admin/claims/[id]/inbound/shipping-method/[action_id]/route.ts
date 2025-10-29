@@ -12,10 +12,12 @@ import {
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
 import { defaultAdminDetailsReturnFields } from "../../../../../returns/query-config"
-import { AdminPostClaimsShippingActionReqSchemaType } from "../../../../validators"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminPostClaimsShippingActionReqSchemaType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminClaimUpdateInboundShipping,
+    HttpTypes.AdminClaimActionsParams
+  >,
   res: MedusaResponse<HttpTypes.AdminClaimPreviewResponse>
 ) => {
   const { id, action_id } = req.params

@@ -5,7 +5,10 @@ import { Modules, PromotionActions } from "@medusajs/framework/utils"
 import { refetchCart } from "../../helpers"
 
 export const POST = async (
-  req: MedusaRequest<HttpTypes.StoreCartAddPromotion>,
+  req: MedusaRequest<
+    HttpTypes.StoreCartAddPromotion,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
@@ -33,7 +36,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: MedusaRequest<HttpTypes.StoreCartRemovePromotion>,
+  req: MedusaRequest<HttpTypes.StoreCartRemovePromotion, HttpTypes.SelectParams>,
   res: MedusaResponse<{
     cart: HttpTypes.StoreCart
   }>
