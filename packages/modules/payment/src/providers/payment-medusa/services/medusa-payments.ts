@@ -46,6 +46,17 @@ import {
   getAmountFromSmallestUnit,
   getSmallestUnit,
 } from "../utils/get-smallest-unit"
+import {
+  CreateAccountHolderRequest,
+  CreatePaymentRequest,
+  MedusaAccountHolder,
+  MedusaPayment,
+  MedusaPaymentMethod,
+  MedusaPaymentMethodSession,
+  MedusaRefund,
+  RefundPaymentRequest,
+  UpdateAccountHolderRequest,
+} from "../types/medusa-payments"
 
 export class MedusaPaymentsError extends Error {
   public statusCode: number
@@ -109,7 +120,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
 
   normalizePaymentParameters(
     extra?: Record<string, string>
-  ): Record<string, string | undefined> {
+  ): Partial<CreatePaymentRequest> {
     const res = {
       description: extra?.payment_description ?? "",
       capture_method: extra?.capture_method as "automatic" | "manual",
@@ -123,7 +134,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       payment_method: extra?.payment_method,
       return_url: extra?.return_url,
       shared_payment_token: extra?.shared_payment_token,
-    }
+    } as Partial<CreatePaymentRequest>
 
     return res
   }
@@ -205,21 +216,18 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
         | undefined,
       idempotency_key: context?.idempotency_key,
       ...additionalParameters,
-    }
+    } as CreatePaymentRequest
 
-    const payment = await this.executeWithRetry(() => {
+    const payment = (await this.executeWithRetry(() => {
       return this.request<{ payment: any }>("/payments", {
         method: "POST",
         body: intentRequest,
       }).then((data) => data.payment)
-    })
+    })) as MedusaPayment
 
     return {
       id: payment.id,
-      ...(this.getStatus(payment) as unknown as Pick<
-        InitiatePaymentOutput,
-        "data" | "status"
-      >),
+      ...this.getStatus(payment),
     }
   }
 
@@ -239,16 +247,16 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       return { data: data }
     }
 
-    const res = await this.executeWithRetry(() => {
+    const intent = (await this.executeWithRetry(() => {
       return this.request<{ payment: any }>(`/payments/${id}/cancel`, {
         method: "POST",
         body: {
           idempotency_key: context?.idempotency_key,
         },
       }).then((data) => data.payment)
-    })
+    })) as MedusaPayment
 
-    return { data: res as unknown as Record<string, unknown> }
+    return { data: intent as unknown as Record<string, unknown> }
   }
 
   async capturePayment({
@@ -257,14 +265,14 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
   }: CapturePaymentInput): Promise<CapturePaymentOutput> {
     const id = data?.id as string
 
-    const intent = await this.executeWithRetry(() => {
+    const intent = (await this.executeWithRetry(() => {
       return this.request<{ payment: any }>(`/payments/${id}/capture`, {
         method: "POST",
         body: {
           idempotency_key: context?.idempotency_key,
         },
       }).then((data) => data.payment)
-    })
+    })) as MedusaPayment
 
     return { data: intent as unknown as Record<string, unknown> }
   }
@@ -285,15 +293,15 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
 
     const currencyCode = data?.currency as string
 
-    const response = await this.executeWithRetry(() => {
+    const response = (await this.executeWithRetry(() => {
       return this.request<{ refund: any }>(`/payments/${id}/refund`, {
         method: "POST",
         body: {
           amount: getSmallestUnit(amount, currencyCode),
           idempotency_key: context?.idempotency_key,
-        },
+        } as RefundPaymentRequest,
       }).then((data) => data.refund)
-    })
+    })) as MedusaRefund
 
     return { data: response as unknown as Record<string, unknown> }
   }
@@ -303,14 +311,13 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
   }: RetrievePaymentInput): Promise<RetrievePaymentOutput> {
     const id = data?.id as string
 
-    const intent = await this.executeWithRetry(() => {
+    const intent = (await this.executeWithRetry(() => {
       return this.request<{ payment: any }>(`/payments/${id}`, {
         method: "GET",
       }).then((data) => data.payment)
-    })
+    })) as MedusaPayment
 
     intent.amount = getAmountFromSmallestUnit(intent.amount, intent.currency)
-    intent.status = this.getStatus(intent).status
 
     return { data: intent as unknown as Record<string, unknown> }
   }
@@ -323,12 +330,14 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
   }: UpdatePaymentInput): Promise<UpdatePaymentOutput> {
     const amountNumeric = getSmallestUnit(amount, currency_code)
     if (isPresent(amount) && data?.amount === amountNumeric) {
-      return this.getStatus(data) as unknown as UpdatePaymentOutput
+      return this.getStatus(
+        data as unknown as MedusaPayment
+      ) as unknown as UpdatePaymentOutput
     }
 
     const id = data?.id as string
 
-    const sessionData = await this.executeWithRetry(() => {
+    const sessionData = (await this.executeWithRetry(() => {
       return this.request<{ payment: any }>(`/payments/${id}`, {
         method: "POST",
         body: {
@@ -336,9 +345,9 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
           idempotency_key: context?.idempotency_key,
         },
       }).then((data) => data.payment)
-    })
+    })) as MedusaPayment
 
-    return this.getStatus(sessionData) as unknown as UpdatePaymentOutput
+    return this.getStatus(sessionData)
   }
 
   async retrieveAccountHolder({
@@ -350,11 +359,11 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       )
     }
 
-    const res = await this.executeWithRetry(() => {
+    const res = (await this.executeWithRetry(() => {
       return this.request<{ account_holder: any }>(`/account-holders/${id}`, {
         method: "GET",
       }).then((data) => data.account_holder)
-    })
+    })) as MedusaAccountHolder
 
     return {
       id: res.id,
@@ -388,7 +397,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
         }
       : undefined
 
-    const accountHolder = await this.executeWithRetry(() => {
+    const accountHolder = (await this.executeWithRetry(() => {
       return this.request<{ account_holder: any }>(`/account-holders`, {
         method: "POST",
         body: {
@@ -400,9 +409,9 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
           phone: customer.phone as string | undefined,
           ...shipping,
           idempotency_key: idempotency_key,
-        },
+        } as CreateAccountHolderRequest,
       }).then((data) => data.account_holder)
-    })
+    })) as MedusaAccountHolder
 
     return {
       id: accountHolder.id,
@@ -441,7 +450,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
         }
       : undefined
 
-    const accountHolder = await this.executeWithRetry(() => {
+    const accountHolder = (await this.executeWithRetry(() => {
       return this.request<{ account_holder: any }>(
         `/account-holders/${accountHolderId}`,
         {
@@ -457,10 +466,10 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
             phone: customer.phone as string | undefined,
             ...shipping,
             idempotency_key: idempotency_key,
-          },
+          } as UpdateAccountHolderRequest,
         }
       ).then((data) => data.account_holder)
-    })
+    })) as MedusaAccountHolder
 
     return {
       data: accountHolder as unknown as Record<string, unknown>,
@@ -484,7 +493,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
         {
           method: "DELETE",
         }
-      ).then((data) => data.account_holder)
+      )
     })
 
     return {}
@@ -500,14 +509,14 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       return []
     }
 
-    const paymentMethods = await this.executeWithRetry(() => {
+    const paymentMethods = (await this.executeWithRetry(() => {
       return this.request<{ payment_methods: any[] }>(
         `/payment-methods?account_holder_id=${accountHolderId}`,
         {
           method: "GET",
         }
       ).then((data) => data.payment_methods)
-    })
+    })) as MedusaPaymentMethod[]
 
     return paymentMethods.map((method) => ({
       id: method.id,
@@ -527,7 +536,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       throw new Error("Account holder not set while saving a payment method")
     }
 
-    const paymentMethodSession = await this.executeWithRetry(() => {
+    const paymentMethodSession = (await this.executeWithRetry(() => {
       return this.request<{ payment_method_session: any }>(`/payment-methods`, {
         method: "POST",
         body: {
@@ -536,7 +545,7 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
           idempotency_key: context?.idempotency_key,
         },
       }).then((data) => data.payment_method_session)
-    })
+    })) as MedusaPaymentMethodSession
 
     return {
       id: paymentMethodSession.id,
@@ -544,29 +553,31 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
     }
   }
 
-  private getStatus(payment) {
+  private getStatus(payment: MedusaPayment) {
+    const paymenAsRecord = payment as unknown as Record<string, unknown>
+
     switch (payment.status) {
       case "requires_payment_method":
         if (payment.last_payment_error) {
-          return { status: PaymentSessionStatus.ERROR, data: payment }
+          return { status: PaymentSessionStatus.ERROR, data: paymenAsRecord }
         }
-        return { status: PaymentSessionStatus.PENDING, data: payment }
+        return { status: PaymentSessionStatus.PENDING, data: paymenAsRecord }
       case "requires_confirmation":
       case "processing":
-        return { status: PaymentSessionStatus.PENDING, data: payment }
+        return { status: PaymentSessionStatus.PENDING, data: paymenAsRecord }
       case "requires_action":
         return {
           status: PaymentSessionStatus.REQUIRES_MORE,
-          data: payment,
+          data: paymenAsRecord,
         }
       case "canceled":
-        return { status: PaymentSessionStatus.CANCELED, data: payment }
+        return { status: PaymentSessionStatus.CANCELED, data: paymenAsRecord }
       case "requires_capture":
-        return { status: PaymentSessionStatus.AUTHORIZED, data: payment }
+        return { status: PaymentSessionStatus.AUTHORIZED, data: paymenAsRecord }
       case "succeeded":
-        return { status: PaymentSessionStatus.CAPTURED, data: payment }
+        return { status: PaymentSessionStatus.CAPTURED, data: paymenAsRecord }
       default:
-        return { status: PaymentSessionStatus.PENDING, data: payment }
+        return { status: PaymentSessionStatus.PENDING, data: paymenAsRecord }
     }
   }
 
