@@ -2016,6 +2016,8 @@ describe("defineConfig", function () {
     process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE = "test-environment"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
     process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT = "test-emails-endpoint"
+    process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT = "test-payments-endpoint"
+    process.env.MEDUSA_CLOUD_WEBHOOK_SECRET = "test-webhook-secret"
     const config = defineConfig()
     process.env = { ...originalEnv }
 
@@ -2112,6 +2114,15 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/order",
           },
           "payment": {
+            "options": {
+              "cloud": {
+                "api_key": "test-api-key",
+                "endpoint": "test-payments-endpoint",
+                "environment_handle": "test-environment",
+                "sandbox_handle": undefined,
+                "webhook_secret": "test-webhook-secret",
+              },
+            },
             "resolve": "@medusajs/medusa/payment",
           },
           "pricing": {
@@ -2165,7 +2176,9 @@ describe("defineConfig", function () {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
             "environmentHandle": "test-environment",
+            "paymentsEndpoint": "test-payments-endpoint",
             "sandboxHandle": undefined,
+            "webhookSecret": "test-webhook-secret",
           },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -2197,6 +2210,8 @@ describe("defineConfig", function () {
     process.env.MEDUSA_CLOUD_SANDBOX_HANDLE = "test-sandbox"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
     process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT = "test-emails-endpoint"
+    process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT = "test-payments-endpoint"
+    process.env.MEDUSA_CLOUD_WEBHOOK_SECRET = "test-webhook-secret"
     const config = defineConfig()
     process.env = { ...originalEnv }
 
@@ -2293,6 +2308,15 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/order",
           },
           "payment": {
+            "options": {
+              "cloud": {
+                "api_key": "test-api-key",
+                "endpoint": "test-payments-endpoint",
+                "environment_handle": undefined,
+                "sandbox_handle": "test-sandbox",
+                "webhook_secret": "test-webhook-secret",
+              },
+            },
             "resolve": "@medusajs/medusa/payment",
           },
           "pricing": {
@@ -2346,7 +2370,9 @@ describe("defineConfig", function () {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
             "environmentHandle": undefined,
+            "paymentsEndpoint": "test-payments-endpoint",
             "sandboxHandle": "test-sandbox",
+            "webhookSecret": "test-webhook-secret",
           },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
@@ -2378,13 +2404,17 @@ describe("defineConfig", function () {
     process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE = "test-environment"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
     process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT = "test-emails-endpoint"
+    process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT = "test-payments-endpoint"
+    process.env.MEDUSA_CLOUD_WEBHOOK_SECRET = "test-webhook-secret"
     const config = defineConfig({
       projectConfig: {
         http: {} as any,
         cloud: {
           environmentHandle: "overriden-environment",
           apiKey: "overriden-api-key",
+          webhookSecret: "overriden-webhook-secret",
           emailsEndpoint: "overriden-emails-endpoint",
+          paymentsEndpoint: "overriden-payments-endpoint",
         },
       },
     })
@@ -2483,6 +2513,15 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/order",
           },
           "payment": {
+            "options": {
+              "cloud": {
+                "api_key": "overriden-api-key",
+                "endpoint": "overriden-payments-endpoint",
+                "environment_handle": "overriden-environment",
+                "sandbox_handle": undefined,
+                "webhook_secret": "overriden-webhook-secret",
+              },
+            },
             "resolve": "@medusajs/medusa/payment",
           },
           "pricing": {
@@ -2536,7 +2575,9 @@ describe("defineConfig", function () {
             "apiKey": "overriden-api-key",
             "emailsEndpoint": "overriden-emails-endpoint",
             "environmentHandle": "overriden-environment",
+            "paymentsEndpoint": "overriden-payments-endpoint",
             "sandboxHandle": undefined,
+            "webhookSecret": "overriden-webhook-secret",
           },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
