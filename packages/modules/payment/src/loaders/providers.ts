@@ -41,11 +41,46 @@ export default async ({
   (
     | ModulesSdkTypes.ModuleServiceInitializeOptions
     | ModulesSdkTypes.ModuleServiceInitializeCustomDataLayerOptions
-  ) & { providers: ModuleProvider[] }
+  ) & {
+    providers: ModuleProvider[]
+    cloud: {
+      api_key?: string
+      endpoint?: string
+      environment_handle?: string
+      sandbox_handle?: string
+      webhook_secret?: string
+    }
+  }
 >): Promise<void> => {
-  // Local providers
-  for (const provider of Object.values(providers)) {
-    await registrationFn(provider, container, { id: "default" })
+  await registrationFn(providers.SystemPaymentProvider, container, {
+    id: "default",
+  })
+
+  // We only want to register medusa payments if the options for it have been provided.
+  const {
+    api_key,
+    endpoint,
+    environment_handle,
+    sandbox_handle,
+    webhook_secret,
+  } = options?.cloud ?? {}
+
+  if (
+    api_key &&
+    endpoint &&
+    webhook_secret &&
+    (environment_handle || sandbox_handle)
+  ) {
+    await registrationFn(providers.MedusaPaymentsProvider, container, {
+      options: {
+        api_key,
+        endpoint,
+        environment_handle,
+        sandbox_handle,
+        webhook_secret,
+      },
+      id: "default",
+    })
   }
 
   await moduleProviderLoader({
