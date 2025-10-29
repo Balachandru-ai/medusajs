@@ -1548,6 +1548,128 @@ medusaIntegrationTestRunner({
         expect(orderResult2.original_total).toEqual(11)
       })
 
+      it("should update adjustments when adding then updating then removing the original item", async () => {
+        // Create a new order edit
+        let result = await api.post(
+          "/admin/order-edits",
+          {
+            order_id: order.id,
+            description: "Test",
+          },
+          adminHeaders
+        )
+
+        const orderId = result.data.order_change.order_id
+        const originalItem = order.items[0]
+
+        // Add a new item
+        result = (
+          await api.post(
+            `/admin/order-edits/${orderId}/items`,
+            {
+              items: [
+                {
+                  variant_id: productExtra.variants[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.order_preview
+
+        const addedItem = result.items.find(
+          (i) => i.variant_id === productExtra.variants[0].id
+        )
+        expect(addedItem).toBeDefined() // item is added
+        expect(result.original_total).toEqual(24.2) // ($10 + $12) + 10% tax = 22 + 2.2 = 24.2
+        expect(result.total).toEqual(21.78) // ($10 + $12 - $1 - $1.2) + 10% tax = 10 + 12 - 2.2 = 19.8 + 1.98 = 21.78
+
+        let adjustments = addedItem.adjustments
+        expect(adjustments).toEqual([
+          expect.objectContaining({
+            item_id: addedItem.id,
+            amount: 1.2,
+          }),
+        ])
+
+        console.log(addedItem.actions)
+
+        // Update the quantity of the newly added item by updating the action
+        const actionId = addedItem.actions.find(
+          (a) => a.action === "ITEM_ADD"
+        )?.id
+
+        result = (
+          await api.post(
+            `/admin/order-edits/${orderId}/items/${actionId}`,
+            {
+              quantity: 2,
+            },
+            adminHeaders
+          )
+        ).data.order_preview
+
+        let updatedAddedItem = result.items.find((i) => i.id === addedItem.id)
+
+        expect(result.original_total).toEqual(37.4) // $10 + $12*2 = 10+24=34 + 10% tax = 3.4 = 37.4
+        expect(result.total).toEqual(33.66) // ($10 + $24 - $1 - $2.4) + 10% tax = 31.6 + 3.16 = 34.76
+
+        adjustments = updatedAddedItem.adjustments
+        expect(adjustments).toEqual([
+          expect.objectContaining({
+            item_id: updatedAddedItem.id,
+            amount: 2.4,
+          }),
+        ])
+
+        // Remove the original item by setting its quantity to 0
+        result = (
+          await api.post(
+            `/admin/order-edits/${orderId}/items/item/${originalItem.id}`,
+            {
+              quantity: 0,
+            },
+            adminHeaders
+          )
+        ).data.order_preview
+
+        // $12*2 + 10% tax = $24 + $2.4 = $26.4
+        expect(result.original_total).toEqual(26.4)
+        expect(result.total).toEqual(23.76) // ($24 - $2.4) + $2.16 = $21.6 + $2.16 = $23.76
+
+        updatedAddedItem = result.items.find((i) => i.id === addedItem.id)
+        adjustments = updatedAddedItem.adjustments
+        expect(adjustments).toEqual([
+          expect.objectContaining({
+            item_id: updatedAddedItem.id,
+            amount: 2.4,
+          }),
+        ])
+
+        // Confirm that the original order is not updated
+        const orderResult = (
+          await api.get(`/admin/orders/${orderId}`, adminHeaders)
+        ).data.order
+        expect(orderResult.original_total).toEqual(11)
+        expect(orderResult.total).toEqual(9.9)
+
+        // Confirm the order edit
+        await api.post(
+          `/admin/order-edits/${orderId}/confirm`,
+          {},
+          adminHeaders
+        )
+
+        // Final check after confirmation
+        const orderResult2 = (
+          await api.get(`/admin/orders/${orderId}`, adminHeaders)
+        ).data.order
+
+        expect(orderResult2.original_total).toEqual(26.4)
+        expect(orderResult2.total).toEqual(23.76)
+      })
+
       it("should not create adjustments when adding a new item if promotion is disabled", async () => {
         let result = await api.post(
           "/admin/order-edits",
