@@ -564,7 +564,7 @@ async function MedusaApp_({
 
     await executeWithConcurrency(
       moduleResolutions.map((a) => () => run(a)),
-      4
+      8 // parallel migrations
     )
   }
 
