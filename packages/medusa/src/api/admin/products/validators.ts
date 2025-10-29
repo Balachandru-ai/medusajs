@@ -191,6 +191,7 @@ export const UpdateProductVariant = z
     barcode: z.string().nullish(),
     hs_code: z.string().nullish(),
     mid_code: z.string().nullish(),
+    thumbnail: z.string().nullish(),
     allow_backorder: booleanString().optional(),
     manage_inventory: booleanString().optional(),
     variant_rank: z.number().optional(),
@@ -265,7 +266,9 @@ export const UpdateProduct = z
     status: statusEnum.optional(),
     subtitle: z.string().nullish(),
     description: z.string().nullish(),
-    images: z.array(z.object({ url: z.string() })).optional(),
+    images: z
+      .array(z.object({ id: z.string().optional(), url: z.string() }))
+      .optional(),
     thumbnail: z.string().nullish(),
     handle: z.string().nullish(),
     type_id: z.string().nullish(),
@@ -347,6 +350,20 @@ export type AdminBatchVariantInventoryItemsType = BatchMethodRequest<
   AdminBatchCreateVariantInventoryItemType,
   AdminBatchUpdateVariantInventoryItemType,
   AdminBatchDeleteVariantInventoryItemType
+>
+
+export const AdminBatchImageVariant = z.object({
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+}) satisfies ZodType<HttpTypes.AdminBatchImageVariantRequest>
+export type AdminBatchImageVariantType = z.infer<typeof AdminBatchImageVariant>
+
+export const AdminBatchVariantImages = z.object({
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+}) satisfies ZodType<HttpTypes.AdminBatchVariantImagesRequest>
+export type AdminBatchVariantImagesType = z.infer<
+  typeof AdminBatchVariantImages
 >
 
 export const AdminImportProducts = z.object({

@@ -7,11 +7,10 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminPostReturnsReturnReqSchemaType } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminReturnResponse>
 ) => {
   const { id } = req.params
@@ -39,7 +38,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminPostReturnsReturnReqSchemaType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateReturnRequest,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminReturnPreviewResponse>
 ) => {
   const { id } = req.params

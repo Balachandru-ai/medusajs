@@ -3915,7 +3915,7 @@ You display a separate section for each custom field, complementary product, and
 
 When a customer chooses complementary and addon products, the price shown on the product page should reflect that selection. So, you need to modify the pricing component to accept the builder configuration, and update the displayed price accordingly.
 
-In `src/modules/products/components/product-price/index.tsx`, add the followng imports at the top of the file:
+In `src/modules/products/components/product-price/index.tsx`, add the following imports at the top of the file:
 
 ```tsx title="src/modules/products/components/product-price/index.tsx" badgeLabel="Storefront" badgeColor="blue"
 import { BuilderConfiguration } from "../../../../types/global"
@@ -4296,7 +4296,7 @@ npm run dev
 
 You should see the custom fields, complementary products, and addons on the product's page.
 
-![Product details page with builder configuations](https://res.cloudinary.com/dza7lstvk/image/upload/v1755101580/Medusa%20Resources/CleanShot_2025-08-13_at_19.12.48_2x_tf4goa.png)
+![Product details page with builder configurations](https://res.cloudinary.com/dza7lstvk/image/upload/v1755101580/Medusa%20Resources/CleanShot_2025-08-13_at_19.12.48_2x_tf4goa.png)
 
 While you can enter custom values and select variants, you still can't add the product variant with its builder configurations to the cart. You'll support that in the next step.
 
@@ -5274,7 +5274,7 @@ You changed the `text-ui-fg-muted` class in the wrapper `div` to `text-ui-fg-sub
 
 #### Update Item Component
 
-Next, you'll update the component showing a line item row. This component is used in mutliple places, including the cart and checkout pages.
+Next, you'll update the component showing a line item row. This component is used in multiple places, including the cart and checkout pages.
 
 You'll update the component to ignore addon products. Instead, you'll show them as part of the main product line item. You'll also display the custom field values of the main product.
 

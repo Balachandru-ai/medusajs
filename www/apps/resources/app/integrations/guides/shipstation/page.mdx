@@ -275,7 +275,7 @@ export class ShipStationClient {
       if (typeof resp !== "string" && resp.errors?.length) {
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
-          `An error occured while sending a request to ShipStation: ${
+          `An error occurred while sending a request to ShipStation: ${
             resp.errors.map((error) => error.message)
           }`
         )
@@ -630,7 +630,7 @@ export class ShipStationClient {
       if (resp.rate_response.errors?.length) {
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
-          `An error occured while retrieving rates from ShipStation: ${
+          `An error occurred while retrieving rates from ShipStation: ${
             resp.rate_response.errors.map((error) => error.message)
           }`
         )
@@ -1281,7 +1281,7 @@ Where `SHIPSTATION_API_KEY` is the ShipStation API key, which you can retrieve o
 
 ![The sidebar has an Account expandable. When you click on it, more items will show. Click on the API Settings](https://res.cloudinary.com/dza7lstvk/image/upload/v1734352145/Medusa%20Resources/Screenshot_2024-12-16_at_2.28.32_PM_wwfc1s.png).
 
-- On the API Settings page, make sure V2 API is selected for "Select API Verion" field, then click the "Generate API Key" button.
+- On the API Settings page, make sure V2 API is selected for "Select API Version" field, then click the "Generate API Key" button.
 
 ![Make sure V2 API is selected in the Select API Version dropdown, then click on the "Generate API Key" button.](https://res.cloudinary.com/dza7lstvk/image/upload/v1734352261/Medusa%20Resources/Screenshot_2024-12-16_at_2.30.31_PM_vbkz4i.png)
 

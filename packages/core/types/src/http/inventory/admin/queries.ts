@@ -1,9 +1,9 @@
 import { FindParams } from "../../common"
 import { BaseFilterable, OperatorMap } from "../../../dal"
 
-export interface AdminInventoryItemParams
+export interface AdminInventoryItemsParams
   extends FindParams,
-    BaseFilterable<AdminInventoryItemParams> {
+    BaseFilterable<AdminInventoryItemsParams> {
   /**
    * Filter by inventory item ID(s).
    */

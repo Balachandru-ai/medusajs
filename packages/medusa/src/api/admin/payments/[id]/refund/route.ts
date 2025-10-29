@@ -4,11 +4,13 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { refetchPayment } from "../../helpers"
-import { AdminCreatePaymentRefundType } from "../../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreatePaymentRefundType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminRefundPayment,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPaymentResponse>
 ) => {
   const { id } = req.params

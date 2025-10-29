@@ -8,12 +8,11 @@ import {
 } from "@medusajs/framework/http"
 
 import { refetchApiKey } from "../helpers"
-import { AdminUpdateApiKeyType } from "../validators"
 import { MedusaError } from "@medusajs/framework/utils"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminApiKeyResponse>
 ) => {
   const apiKey = await refetchApiKey(
@@ -33,7 +32,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateApiKeyType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateApiKey,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminApiKeyResponse>
 ) => {
   await updateApiKeysWorkflow(req.scope).run({

@@ -5,10 +5,12 @@ import {
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { AdminCreateOrderCreditLinesType } from "../../validators"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateOrderCreditLinesType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateOrderCreditLine,
+    HttpTypes.AdminGetOrderParams
+  >,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

@@ -1,36 +1,32 @@
-enum ExchangeReason {
-  MISSING_ITEM = "missing_item",
-  WRONG_ITEM = "wrong_item",
-  PRODUCTION_FAILURE = "production_failure",
-  OTHER = "other",
-}
-
-interface AdminExchangeAddItems {
+export interface AdminAddExchangeOutboundItems {
   /**
    * The items to add to the exchange.
    */
   items: {
     /**
-     * If you're adding an inbound item, this is the ID of the order item returned.
-     * If you're adding an outbound item, this is the ID of the variant to add.
+     * The ID of the variant to add.
      */
-    id: string
+    variant_id: string
     /**
      * The item's quantity.
      */
     quantity: number
     /**
-     * The reason the item is being returned / sent to the customer.
+     * The item's unit price.
      */
-    reason?: ExchangeReason
-    /**
-     * The item's description.
-     */
-    description?: string
+    unit_price?: number
     /**
      * An internal note viewed by admin users only.
      */
     internal_note?: string
+    /**
+     * Whether to allow backorder for the item.
+     */
+    allow_backorder?: boolean
+    /**
+     * Key-value pairs of custom data.
+     */
+    metadata?: Record<string, unknown>
   }[]
 }
 
@@ -111,13 +107,46 @@ export interface AdminCreateExchange {
   metadata?: Record<string, unknown> | null
 }
 
-export interface AdminAddExchangeInboundItems extends AdminExchangeAddItems {}
+export interface AdminAddExchangeInboundItems {
+  /**
+   * The ID of the location the items are returned to.
+   */
+  location_id?: string
+  /**
+   * The items to add to the exchange.
+   */
+  items: {
+    /**
+     * The ID of the order item returned.
+     */
+    id: string
+    /**
+     * The item's quantity.
+     */
+    quantity: number
+    /**
+     * The description of why the item is being returned.
+     */
+    description?: string
+    /**
+     * An internal note viewed by admin users only.
+     */
+    internal_note?: string
+    /**
+     * The ID of the associated return reason.
+     */
+    reason_id?: string
+    /**
+     * Key-value pairs of custom data.
+     */
+    metadata?: Record<string, unknown>
+  }[]
+}
 export interface AdminUpdateExchangeInboundItem
   extends AdminExchangeUpdateItem {}
 
-export interface AdminAddExchangeOutboundItems extends AdminExchangeAddItems {}
 export interface AdminUpdateExchangeOutboundItem
-  extends AdminExchangeUpdateItem {}
+  extends Omit<AdminExchangeUpdateItem, "reason_id" | "description"> {}
 
 export interface AdminExchangeAddInboundShipping
   extends AdminExchangeAddShippingMethod {}

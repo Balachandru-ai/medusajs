@@ -1,6 +1,6 @@
-import { ModuleServiceInitializeOptions } from "@medusajs/types"
 import { Filter as MikroORMFilter } from "@medusajs/deps/mikro-orm/core"
 import { TSMigrationGenerator } from "@medusajs/deps/mikro-orm/migrations"
+import { ModuleServiceInitializeOptions } from "@medusajs/types"
 import { isString, retryExecution, stringifyCircular } from "../../common"
 import { normalizeMigrationSQL } from "../utils"
 import { CustomDBMigrator } from "./custom-db-migrator"

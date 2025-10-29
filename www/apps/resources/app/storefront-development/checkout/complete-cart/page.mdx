@@ -36,7 +36,7 @@ Learn how to install and configure the JS SDK in the [JS SDK documentation](../.
 sdk.store.cart.complete(cart.id)
 .then((data) => {
   if (data.type === "cart" && data.cart) {
-    // an error occured
+    // an error occurred
     console.error(data.error)
   } else if (data.type === "order" && data.order) {
     // TODO redirect to order success page
@@ -106,7 +106,7 @@ export default function SystemDefaultPayment() {
     sdk.store.cart.complete(cart.id)
     .then((data) => {
       if (data.type === "cart" && data.cart) {
-        // an error occured
+        // an error occurred
         console.error(data.error)
       } else if (data.type === "order" && data.order) {
         // TODO redirect to order success page

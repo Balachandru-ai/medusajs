@@ -57,7 +57,7 @@ export type ItemTaxCalculationLine = {
  *
  * ### constructor
  *
- * You can use the `constructor` of your tax provider to access the resources registered in the [Module Container](https://docs.medusajs.com/resources/medusa-container-resources#module-container-resources).
+ * You can use the `constructor` of your Tax Module Provider's service to access the resources registered in the [Module Container](https://docs.medusajs.com/resources/medusa-container-resources#module-container-resources).
  *
  * You can also use the constructor to initialize your integration with the third-party provider. For example, if you use a client to connect to the third-party provider’s APIs, you can initialize it in the constructor and use it in other methods in the service.
  *
@@ -66,13 +66,34 @@ export type ItemTaxCalculationLine = {
  * For example:
  *
  * ```ts
+ * import {
+ *   ITaxProvider,
+ *   Logger
+ * } from "@medusajs/framework/types"
+ * 
+ * type InjectedDependencies = {
+ *   logger: Logger
+ * }
+ * 
+ * type Options = {
+ *   apiKey: string
+ * }
+ * 
  * export default class MyTaxProvider implements ITaxProvider {
- *   // ...
- *   constructor(container, options) {
- *     // you can access options here
+ *   static identifier = "my-tax"
+ *   protected logger_: Logger
+ *   protected options_: Options
+ *   // assuming you're initializing a client
+ *   protected client
+ * 
+ *   constructor (
+ *     { logger }: InjectedDependencies,
+ *     options: Options
+ *   ) {
+ *     this.logger_ = logger
+ *     this.options_ = options
  *
- *     // you can also initialize a client that
- *     // communicates with a third-party service.
+ *     // assuming you're initializing a client
  *     this.client = new Client(options)
  *   }
  * }
@@ -82,7 +103,18 @@ export type ItemTaxCalculationLine = {
  */
 export interface ITaxProvider {
   /**
-   * @ignore
+   * This method is used to retrieve the unique identifier of the tax provider.
+   * 
+   * @return {string} The unique identifier of the tax provider.
+   * 
+   * @example
+   * export default class MyTaxProvider implements ITaxProvider {
+   *   static identifier = "my-tax"
+   *   
+   *   getIdentifier(): string {
+   *     return MyTaxProvider.identifier
+   *   }
+   * }
    */
   getIdentifier(): string
 
@@ -115,8 +147,8 @@ export interface ITaxProvider {
    *     let taxLines: (TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] =
    *       itemLines.flatMap((l) => {
    *         return l.rates.map((r) => ({
-   *           rate_id: r.id,
-   *           rate: r.rate || 0,
+   *           rate_id: r.id, // this is optional. When integrating with a third-party, you don't need to provide it
+   *           rate: r.rate || 0, // For example, 10 for 10%
    *           name: r.name,
    *           code: r.code,
    *           line_item_id: l.line_item.id,
@@ -127,8 +159,8 @@ export interface ITaxProvider {
    *     taxLines = taxLines.concat(
    *       shippingLines.flatMap((l) => {
    *         return l.rates.map((r) => ({
-   *           rate_id: r.id,
-   *           rate: r.rate || 0,
+   *           rate_id: r.id, // this is optional. When integrating with a third-party, you don't need to provide it
+   *           rate: r.rate || 0, // For example, 10 for 10%
    *           name: r.name,
    *           code: r.code,
    *           shipping_line_id: l.shipping_line.id,
