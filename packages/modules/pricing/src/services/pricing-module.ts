@@ -909,63 +909,71 @@ export default class PricingModuleService
       existingPricesMap.set(hashPrice(price), price)
     })
 
+    const ruleOperatorsSet = new Set<PricingRuleOperatorValues>(
+      Object.values(PricingRuleOperator)
+    )
+    const validOperatorsList = Array.from(ruleOperatorsSet).join(", ")
+    const invalidOperatorError = `operator should be one of ${validOperatorsList}`
+
     data?.forEach((price) => {
       const cleanRules = price.rules ? removeNullish(price.rules) : {}
-      const ruleOperators: PricingRuleOperatorValues[] =
-        Object.values(PricingRuleOperator)
 
-      const rules = Object.entries(cleanRules)
-        .map(([attribute, value]) => {
-          if (Array.isArray(value)) {
-            return value.map((customRule) => {
-              if (!ruleOperators.includes(customRule.operator)) {
-                throw new MedusaError(
-                  MedusaError.Types.INVALID_DATA,
-                  `operator should be one of ${ruleOperators.join(", ")}`
-                )
-              }
+      const rules = Object.entries(cleanRules).flatMap(([attribute, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((customRule) => {
+            if (!ruleOperatorsSet.has(customRule.operator)) {
+              throw new MedusaError(
+                MedusaError.Types.INVALID_DATA,
+                invalidOperatorError
+              )
+            }
 
-              if (typeof customRule.value !== "number") {
-                throw new MedusaError(
-                  MedusaError.Types.INVALID_DATA,
-                  `value should be a number`
-                )
-              }
+            if (typeof customRule.value !== "number") {
+              throw new MedusaError(
+                MedusaError.Types.INVALID_DATA,
+                `value should be a number`
+              )
+            }
 
-              return {
-                attribute,
-                operator: customRule.operator,
-                // TODO: we throw above if value is not a number, but the model expect the value to be a string
-                value: customRule.value.toString(),
-              }
-            })
-          }
+            return {
+              attribute,
+              operator: customRule.operator,
+              // TODO: we throw above if value is not a number, but the model expect the value to be a string
+              value: customRule.value.toString(),
+            }
+          })
+        }
 
-          return {
-            attribute,
-            value,
-          }
-        })
-        .flat(1)
+        return {
+          attribute,
+          value,
+        }
+      })
+
+      const entry = price as ServiceTypes.UpsertPriceDTO
 
       const hasRulesInput = isPresent(price.rules)
-      const entry = {
-        ...price,
-        price_list_id: priceListId,
-        price_rules: hasRulesInput ? rules : undefined,
-        rules_count: hasRulesInput ? rules.length : undefined,
-      } as ServiceTypes.UpsertPriceDTO
-      delete (entry as CreatePricesDTO).rules
+      entry.price_list_id = priceListId
+      if (hasRulesInput) {
+        entry.price_rules = rules
+        entry.rules_count = rules.length
+        delete (entry as CreatePricesDTO).rules
+      }
 
       const entryHash = hashPrice(entry)
 
       // We want to keep the existing rules as they might already have ids, but any other data should come from the updated input
       const existing = existingPricesMap.get(entryHash)
-      pricesToUpsert.set(entryHash, {
-        ...entry,
-        id: existing?.id ?? entry.id,
-        price_rules: existing?.price_rules ?? entry.price_rules,
-      })
+
+      if (existing) {
+        pricesToUpsert.set(entryHash, {
+          ...entry,
+          id: existing.id,
+          price_rules: existing.price_rules ?? entry.price_rules,
+        })
+      } else {
+        pricesToUpsert.set(entryHash, entry)
+      }
 
       return entry
     })
@@ -1490,26 +1498,45 @@ export default class PricingModuleService
     data: PricingTypes.UpdatePriceListPricesDTO[],
     sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Price>[]> {
-    const priceLists = await this.listPriceLists(
-      { id: data.map((p) => p.price_list_id) },
-      { relations: ["prices", "prices.price_rules"] },
+    const priceIds = data
+      .flatMap((p) => p.prices.map((p) => p.id))
+      .filter(Boolean)
+    const priceListIds = data.map((p) => p.price_list_id)
+
+    const where = {
+      id: priceListIds,
+      ...(priceIds.length ? { prices: { id: priceIds } } : {}),
+    }
+
+    const relations = ["prices"]
+
+    const hasPricesWithRules = data.some((p) =>
+      p.prices.some((p) => p.rules?.length)
+    )
+
+    if (hasPricesWithRules) {
+      relations.push("prices.price_rules")
+    }
+
+    const priceLists = await this.priceListService_.list(
+      where,
+      { relations },
       sharedContext
     )
 
-    const existingPrices = priceLists
-      .map((p) => p.prices ?? [])
-      .flat() as PricingTypes.PriceDTO[]
+    const existingPrices = priceLists.flatMap(
+      (p) => p.prices ?? []
+    ) as unknown as PricingTypes.PriceDTO[]
 
     const pricesToUpsert = data
-      .map((addPrice) =>
+      .flatMap((addPrice) =>
         this.normalizePrices(
           addPrice.prices as ServiceTypes.UpsertPriceDTO[],
           existingPrices,
           addPrice.price_list_id
         )
       )
-      .filter(Boolean)
-      .flat() as ServiceTypes.UpsertPriceDTO[]
+      .filter(Boolean) as ServiceTypes.UpsertPriceDTO[]
 
     const priceListMap = new Map(priceLists.map((p) => [p.id, p]))
 
@@ -1546,26 +1573,25 @@ export default class PricingModuleService
     data: PricingTypes.AddPriceListPricesDTO[],
     sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Price>[]> {
-    const priceLists = await this.listPriceLists(
+    const priceLists = await this.priceListService_.list(
       { id: data.map((p) => p.price_list_id) },
       { relations: ["prices", "prices.price_rules"] },
       sharedContext
     )
 
-    const existingPrices = priceLists
-      .map((p) => p.prices ?? [])
-      .flat() as PricingTypes.PriceDTO[]
+    const existingPrices = priceLists.flatMap(
+      (p) => p.prices ?? []
+    ) as unknown as PricingTypes.PriceDTO[]
 
     const pricesToUpsert = data
-      .map((addPrice) =>
+      .flatMap((addPrice) =>
         this.normalizePrices(
           addPrice.prices,
           existingPrices,
           addPrice.price_list_id
         )
       )
-      .filter(Boolean)
-      .flat() as ServiceTypes.UpsertPriceDTO[]
+      .filter(Boolean) as ServiceTypes.UpsertPriceDTO[]
 
     const priceListMap = new Map(priceLists.map((p) => [p.id, p]))
     pricesToUpsert.forEach((price) => {
@@ -1785,20 +1811,23 @@ const isTaxInclusive = (
 const hashPrice = (
   price: PricingTypes.PriceDTO | PricingTypes.CreatePricesDTO
 ): string => {
-  const data = Object.entries({
-    currency_code: price.currency_code,
-    price_set_id: "price_set_id" in price ? price.price_set_id ?? null : null,
-    price_list_id:
-      "price_list_id" in price ? price.price_list_id ?? null : null,
-    min_quantity: price.min_quantity ? price.min_quantity.toString() : null,
-    max_quantity: price.max_quantity ? price.max_quantity.toString() : null,
-    ...("price_rules" in price
-      ? price.price_rules?.reduce((agg, pr) => {
-          agg[pr.attribute] = pr.value
-          return agg
-        }, {})
-      : {}),
-  }).sort(([a], [b]) => a.localeCompare(b))
+  // Build hash using deterministic property order to avoid expensive sort operation
+  // Using a direct string concatenation approach for better performance
+  const parts: string[] = [
+    `cc:${price.currency_code ?? ""}`,
+    `ps:${"price_set_id" in price ? price.price_set_id ?? "" : ""}`,
+    `pl:${"price_list_id" in price ? price.price_list_id ?? "" : ""}`,
+    `min:${price.min_quantity ?? ""}`,
+    `max:${price.max_quantity ?? ""}`,
+  ]
 
-  return simpleHash(JSON.stringify(data))
+  // Add price rules in a deterministic way if present
+  if ("price_rules" in price && price.price_rules) {
+    const sortedRules = price.price_rules
+      .map((pr) => `${pr.attribute}=${pr.value}`)
+      .sort()
+    parts.push(`rules:${sortedRules.join(",")}`)
+  }
+
+  return simpleHash(parts.join("|"))
 }
