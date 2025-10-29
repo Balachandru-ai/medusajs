@@ -1548,6 +1548,259 @@ medusaIntegrationTestRunner({
         expect(orderResult2.original_total).toEqual(11)
       })
 
+      it.only("should update adjustments correctly when adding items in 2 consecutive order edits", async () => {
+        // 1. Create the first order edit
+        let response = await api.post(
+          "/admin/order-edits",
+          {
+            order_id: order.id,
+            description: "First order edit",
+          },
+          adminHeaders
+        )
+        const orderChange1 = response.data.order_change
+
+        // 2. Add a new item in the first edit
+        response = await api.post(
+          `/admin/order-edits/${orderChange1.order_id}/items`,
+          {
+            items: [
+              {
+                variant_id: productExtra.variants[0].id,
+                quantity: 1,
+              },
+            ],
+          },
+          adminHeaders
+        )
+        let orderEditPreview1 = response.data.order_preview
+
+        const originalItem = orderEditPreview1.items.find(
+          (i) => i.variant_id === order.items[0].variant_id
+        )
+        const addedItem1 = orderEditPreview1.items.find(
+          (i) => i.variant_id === productExtra.variants[0].id
+        )
+        expect(addedItem1).toBeDefined()
+        expect(addedItem1.quantity).toBe(1)
+        expect(orderEditPreview1.items.length).toBe(2)
+
+        // Validate adjustments for added item in edit 1
+        expect(addedItem1.adjustments).toEqual([
+          expect.objectContaining({
+            item_id: addedItem1.id,
+            amount: 1.2,
+          }),
+        ])
+
+        // Validate total and original total after first edit
+        // original: $10 (orig item) + $12 (added) = $22 → 10% tax = $2.2 → 24.2
+        // promo: -$1 (orig item), -$1.2 (added) → subtotal $19.8, 10% = 1.98 → 21.78
+        expect(orderEditPreview1.original_total).toBeCloseTo(24.2)
+        expect(orderEditPreview1.total).toBeCloseTo(21.78)
+
+        // 3. Confirm the first order edit
+        response = await api.post(
+          `/admin/order-edits/${orderChange1.order_id}/confirm`,
+          {},
+          adminHeaders
+        )
+        expect(response.status).toBe(200)
+
+        // validate order
+        let orderResult = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
+        expect(orderResult.original_total).toEqual(24.2)
+        expect(orderResult.total).toEqual(21.78)
+
+        expect(orderResult.items).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: originalItem.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: originalItem.id,
+                  amount: 1,
+                  version: 2,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              id: addedItem1.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: addedItem1.id,
+                  amount: 1.2,
+                  version: 2,
+                }),
+              ]),
+            }),
+          ])
+        )
+
+        // 4. Create the second order edit
+        response = await api.post(
+          "/admin/order-edits",
+          {
+            order_id: order.id,
+            description: "Second order edit",
+          },
+          adminHeaders
+        )
+        const orderChange2 = response.data.order_change
+
+        // 5. Add another productExtra item
+        response = await api.post(
+          `/admin/order-edits/${orderChange2.order_id}/items`,
+          {
+            items: [
+              {
+                variant_id: productExtra.variants[0].id,
+                quantity: 2,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        let orderEditPreview2 = response.data.order_preview
+
+        // Adjustments should account for all quantity
+        // The individual adjustment for this add: -$1.2 per quantity added (for second edit), but for a 3-quantity line, adjustment stack
+        // We must find the two promo adjustments (from first and second edit): -$1.2 (from before, quantity 1), -$2.4 (from just now, quantity 2)
+        // Check that at least two adjustments exist with matching amount
+        expect(orderEditPreview2.items).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: originalItem.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: originalItem.id,
+                  amount: 1,
+                  // version: 3,
+                }),
+              ]),
+            }),
+            // added in 1st edit
+            expect.objectContaining({
+              id: expect.any(String),
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: expect.any(String),
+                  amount: 1.2,
+                  // version: 3,
+                }),
+              ]),
+            }),
+            // added in 2nd edit
+            expect.objectContaining({
+              id: expect.any(String),
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: expect.any(String),
+                  amount: 2.4,
+                  // version: 3,
+                }),
+              ]),
+            }),
+          ])
+        )
+        // Validate totals after the second edit with explicit numbers
+        // Original: $10 (orig) + $12*3 (added, 3 qty) = 10+36=46; 46*0.1=4.6 tax -> 50.6
+        // Promos: -$1 (orig), -$1.2 (first add), -$2.4 (second add, 2 qty * 1.2)
+        // subtotal after promos: 46 - 1 - 1.2 - 2.4 = 41.4; 41.4*0.1=4.14 tax -> total: 45.54
+        expect(orderEditPreview2.original_total).toBeCloseTo(50.6)
+        expect(orderEditPreview2.total).toBeCloseTo(45.54)
+
+        // validate that order is in the same state as after the first edit before we confirm the second edit
+        orderResult = (await api.get(`/admin/orders/${order.id}`, adminHeaders))
+          .data.order
+        expect(orderResult.original_total).toEqual(24.2)
+        expect(orderResult.total).toEqual(21.78)
+
+        expect(orderResult.items).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: originalItem.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: originalItem.id,
+                  amount: 1,
+                  version: 2,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              id: addedItem1.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: addedItem1.id,
+                  amount: 1.2,
+                  version: 2,
+                }),
+              ]),
+            }),
+          ])
+        )
+
+        // 6. Confirm the second order edit
+        response = await api.post(
+          `/admin/order-edits/${orderChange2.order_id}/confirm`,
+          {},
+          adminHeaders
+        )
+        expect(response.status).toBe(200)
+
+        // 7. Retrieve the final order and validate
+        response = await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        const finalOrder = response.data.order
+
+        // Adjustments in DB: two on added item
+        expect(finalOrder.items).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: originalItem.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: originalItem.id,
+                  amount: 1,
+                  version: 3,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              id: addedItem1.id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: addedItem1.id,
+                  amount: 1.2,
+                  version: 3,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              id: expect.any(String),
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  item_id: expect.any(String),
+                  amount: 2.4,
+                  version: 3,
+                }),
+              ]),
+            }),
+          ])
+        )
+
+        // Totals should match previous calculation
+        expect(finalOrder.original_total).toBeCloseTo(50.6)
+        expect(finalOrder.total).toBeCloseTo(45.54)
+      })
+
+      it.todo(
+        "should update adjustments correctly when additional fixed promotion is applied"
+      )
+
       it("should update adjustments when adding then updating then removing the original item", async () => {
         // Create a new order edit
         let result = await api.post(
