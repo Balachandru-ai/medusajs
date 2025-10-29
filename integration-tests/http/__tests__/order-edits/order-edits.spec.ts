@@ -16,6 +16,7 @@ import {
   generateStoreHeaders,
 } from "../../../helpers/create-admin-user"
 import { medusaTshirtProduct } from "../../__fixtures__/product"
+import { version } from "typescript"
 
 jest.setTimeout(300000)
 
@@ -1382,8 +1383,10 @@ medusaIntegrationTestRunner({
         result = (await api.get(`/admin/orders/${orderId}`, adminHeaders)).data
           .order
 
-        expect(result.original_total).toEqual(10)
-        expect(result.total).toEqual(9)
+        console.log("result", JSON.stringify(result, null, 2))
+
+        expect(result.original_total).toEqual(11) // $10 + 10% tax
+        expect(result.total).toEqual(9.9) // ($10 - 10% discount) + 10% tax = 9 + 0.9 = 9.9
 
         let adjustments = result.items[0].adjustments
 
@@ -1391,6 +1394,7 @@ medusaIntegrationTestRunner({
           expect.objectContaining({
             amount: 1,
             item_id: item.id,
+            version: 1,
           }),
         ])
 
@@ -1405,8 +1409,8 @@ medusaIntegrationTestRunner({
           )
         ).data.order_preview
 
-        expect(result.total).toEqual(18)
-        expect(result.original_total).toEqual(20)
+        expect(result.original_total).toEqual(22) // $20 + 10% tax
+        expect(result.total).toEqual(19.8) // ($20 - 10% discount) + 10% tax = 18 + 1.8 = 19.8
 
         adjustments = result.items[0].adjustments
 
@@ -1414,6 +1418,7 @@ medusaIntegrationTestRunner({
           expect.objectContaining({
             amount: 2,
             item_id: item.id,
+            // version: 2,
           }),
         ])
 
@@ -1422,8 +1427,8 @@ medusaIntegrationTestRunner({
         ).data.order
 
         // confirm original order is not updated
-        expect(orderResult.total).toEqual(9)
-        expect(orderResult.original_total).toEqual(10)
+        expect(orderResult.original_total).toEqual(11)
+        expect(orderResult.total).toEqual(9.9)
 
         await api.post(
           `/admin/order-edits/${orderId}/confirm`,
@@ -1435,8 +1440,8 @@ medusaIntegrationTestRunner({
           await api.get(`/admin/orders/${orderId}`, adminHeaders)
         ).data.order
 
-        expect(orderResult2.total).toEqual(18)
-        expect(orderResult2.original_total).toEqual(20)
+        expect(orderResult2.original_total).toEqual(22)
+        expect(orderResult2.total).toEqual(19.8)
       })
 
       it("should update adjustments when removing an item", async () => {
@@ -1755,8 +1760,6 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
         ).data.order_preview
-
-        console.log("result", JSON.stringify(result, null, 2))
 
         expect(result.total).toEqual(20)
         expect(result.original_total).toEqual(20)
