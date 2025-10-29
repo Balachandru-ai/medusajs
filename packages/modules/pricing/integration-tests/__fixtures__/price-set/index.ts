@@ -1,6 +1,7 @@
-import { CreatePriceSetDTO } from "@medusajs/framework/types"
+import { CreatePriceSetDTO, InferEntityType } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import { Price, PriceSet } from "@models"
+import Price from "#models/price"
+import PriceSet from "#models/price-set"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
 import { defaultPriceSetsData } from "./data"
 
@@ -9,8 +10,8 @@ export * from "./data"
 export async function createPriceSets(
   manager: SqlEntityManager,
   priceSetsData: CreatePriceSetDTO[] = defaultPriceSetsData
-): Promise<PriceSet[]> {
-  const priceSets: PriceSet[] = []
+): Promise<InferEntityType<typeof PriceSet>[]> {
+  const priceSets: InferEntityType<typeof PriceSet>[] = []
 
   for (let priceSetData of priceSetsData) {
     const priceSetDataClone = { ...priceSetData }
@@ -20,7 +21,7 @@ export async function createPriceSets(
     let priceSet = manager.create(
       toMikroORMEntity(PriceSet),
       priceSetDataClone
-    ) as PriceSet
+    ) as InferEntityType<typeof PriceSet>
 
     manager.persist(priceSet)
 

@@ -1,6 +1,6 @@
-import { PriceRule } from "@models"
+import PriceRule from "#models/price-rule"
 
-import { CreatePriceRuleDTO } from "@medusajs/framework/types"
+import { CreatePriceRuleDTO, InferEntityType } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
 import { defaultPriceRuleData } from "./data"
@@ -11,8 +11,8 @@ export * from "./operators"
 export async function createPriceRules(
   manager: SqlEntityManager,
   pricesRulesData: CreatePriceRuleDTO[] = defaultPriceRuleData
-): Promise<PriceRule[]> {
-  const priceRules: PriceRule[] = []
+): Promise<InferEntityType<typeof PriceRule>[]> {
+  const priceRules: InferEntityType<typeof PriceRule>[] = []
 
   for (let priceRuleData of pricesRulesData) {
     const priceRuleDataClone: CreatePriceRuleDTO = { ...priceRuleData }

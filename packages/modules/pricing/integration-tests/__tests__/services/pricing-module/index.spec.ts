@@ -1,6 +1,6 @@
 import { IPricingModuleService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
-import { PricingModuleService } from "@services"
+import { default as PricingModuleService } from "#services/pricing-module"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 moduleIntegrationTestRunner<IPricingModuleService>({

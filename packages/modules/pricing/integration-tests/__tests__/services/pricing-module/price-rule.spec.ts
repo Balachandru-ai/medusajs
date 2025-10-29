@@ -1,7 +1,7 @@
 import { IPricingModuleService } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { Price } from "../../../../src/models"
+import Price from "#models/price"
 import { createPrices } from "../../../__fixtures__/price"
 import { createPriceRules } from "../../../__fixtures__/price-rule"
 import { createPriceSets } from "../../../__fixtures__/price-set"
