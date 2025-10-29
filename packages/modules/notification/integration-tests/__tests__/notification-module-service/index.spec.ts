@@ -108,6 +108,30 @@ moduleIntegrationTestRunner<INotificationModuleService>({
             provider_id: "test-provider",
             external_id: "external_id",
             status: NotificationStatus.SUCCESS,
+            template: "signup-template",
+          })
+        )
+        expect(dbEntry).not.toHaveProperty("content")
+      })
+
+      it("should send a notification without a template", async () => {
+        const notification = {
+          to: "admin@medusa.com",
+          channel: "email",
+          content: {
+            html: "<p>Welcome to medusa</p>",
+          },
+        }
+
+        const result = await service.createNotifications(notification)
+        const dbEntry = await service.retrieveNotification(result.id)
+
+        expect(dbEntry).toEqual(
+          expect.objectContaining({
+            provider_id: "test-provider",
+            external_id: "external_id",
+            status: NotificationStatus.SUCCESS,
+            template: null,
           })
         )
         expect(dbEntry).not.toHaveProperty("content")
