@@ -1817,9 +1817,6 @@ const hashPrice = (
   if ("currency_code" in price) {
     parts.push(`cc:${price.currency_code ?? ""}`)
   }
-  // if ("amount" in price) {
-  //   parts.push(`amount:${price.amount ?? ""}`)
-  // }
   if ("price_set_id" in price) {
     parts.push(`ps:${price.price_set_id ?? ""}`)
   }
@@ -1874,9 +1871,6 @@ const buildPreNormalizationPriceConstraintsFromData = (
     if (price.currency_code !== undefined) {
       constraint.currency_code = price.currency_code
     }
-    // if (price.amount !== undefined) {
-    //   constraint.amount = price.amount
-    // }
     if ("price_set_id" in price && price.price_set_id !== undefined) {
       constraint.price_set_id = price.price_set_id
     }
