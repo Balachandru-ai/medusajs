@@ -2161,6 +2161,12 @@ describe("defineConfig", function () {
           },
         ],
         "projectConfig": {
+          "cloud": {
+            "apiKey": "test-api-key",
+            "emailsEndpoint": "test-emails-endpoint",
+            "environmentHandle": "test-environment",
+            "sandboxHandle": undefined,
+          },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
@@ -2176,12 +2182,6 @@ describe("defineConfig", function () {
               ],
             },
             "storeCors": "http://localhost:8000",
-          },
-          "cloud": {
-            "apiKey": "test-api-key",
-            "emailsEndpoint": "test-emails-endpoint",
-            "environmentHandle": "test-environment",
-            "sandboxHandle": undefined,
           },
           "redisOptions": {
             "retryStrategy": [Function],
@@ -2342,6 +2342,12 @@ describe("defineConfig", function () {
           },
         ],
         "projectConfig": {
+          "cloud": {
+            "apiKey": "test-api-key",
+            "emailsEndpoint": "test-emails-endpoint",
+            "environmentHandle": undefined,
+            "sandboxHandle": "test-sandbox",
+          },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
@@ -2357,12 +2363,6 @@ describe("defineConfig", function () {
               ],
             },
             "storeCors": "http://localhost:8000",
-          },
-          "cloud": {
-            "apiKey": "test-api-key",
-            "emailsEndpoint": "test-emails-endpoint",
-            "environmentHandle": undefined,
-            "sandboxHandle": "test-sandbox",
           },
           "redisOptions": {
             "retryStrategy": [Function],
@@ -2532,6 +2532,12 @@ describe("defineConfig", function () {
           },
         ],
         "projectConfig": {
+          "cloud": {
+            "apiKey": "overriden-api-key",
+            "emailsEndpoint": "overriden-emails-endpoint",
+            "environmentHandle": "overriden-environment",
+            "sandboxHandle": undefined,
+          },
           "databaseUrl": "postgres://localhost/medusa-starter-default",
           "http": {
             "adminCors": "http://localhost:7000,http://localhost:7001,http://localhost:5173",
@@ -2547,12 +2553,6 @@ describe("defineConfig", function () {
               ],
             },
             "storeCors": "http://localhost:8000",
-          },
-          "cloud": {
-            "apiKey": "overriden-api-key",
-            "emailsEndpoint": "overriden-emails-endpoint",
-            "environmentHandle": "overriden-environment",
-            "sandboxHandle": undefined,
           },
           "redisOptions": {
             "retryStrategy": [Function],
