@@ -558,10 +558,6 @@ async function MedusaApp_({
       }
     }
 
-    // Migrate the first module to ensure migration table is created
-    const initialMigration = moduleResolutions.shift()!
-    await run(initialMigration)
-
     await executeWithConcurrency(
       moduleResolutions.map((a) => () => run(a)),
       8 // parallel migrations
