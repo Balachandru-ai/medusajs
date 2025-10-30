@@ -7,13 +7,12 @@ import {
 import { ApiLoader } from "@medusajs/framework/http"
 import { TransactionOrchestrator } from "@medusajs/framework/orchestration"
 import { Tracer } from "@medusajs/framework/telemetry"
-import { FeatureFlag } from "@medusajs/framework/utils"
+import { ICachingModuleService } from "@medusajs/framework/types"
+import { camelToSnakeCase, FeatureFlag } from "@medusajs/framework/utils"
 import { SpanStatusCode } from "@opentelemetry/api"
 import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node"
 import type { SpanExporter } from "@opentelemetry/sdk-trace-node"
-import { snakeCase } from "lodash"
 import CacheModule from "../modules/caching"
-import { ICachingModuleService } from "@medusajs/framework/types"
 
 const EXCLUDED_RESOURCES = [".vite", "virtual:"]
 
@@ -110,7 +109,7 @@ export function instrumentHttpLayer() {
       }
 
       const traceName = `middleware: ${
-        handler.name ? snakeCase(handler.name) : `anonymous`
+        handler.name ? camelToSnakeCase(handler.name) : `anonymous`
       }`
 
       await HTTPTracer.trace(traceName, async (span) => {
@@ -198,7 +197,7 @@ export function instrumentRemoteQuery() {
     options
   ) {
     return await QueryTracer.trace(
-      `${snakeCase(serviceName)}.${snakeCase(method)}`,
+      `${camelToSnakeCase(serviceName)}.${camelToSnakeCase(method)}`,
       async (span) => {
         span.setAttributes({
           "fetch.select": options.select,
@@ -235,7 +234,7 @@ export function instrumentWorkflows() {
     metadata
   ) => {
     return await WorkflowsTracer.trace(
-      `workflow:${snakeCase(metadata.model_id)}`,
+      `workflow:${camelToSnakeCase(metadata.model_id)}`,
       async function (span) {
         span.setAttribute("workflow.transaction_id", metadata.transaction_id)
 
@@ -252,7 +251,7 @@ export function instrumentWorkflows() {
 
   TransactionOrchestrator.traceStep = async (stepHandler, metadata) => {
     return await WorkflowsTracer.trace(
-      `step:${snakeCase(metadata.action)}:${metadata.type}`,
+      `step:${camelToSnakeCase(metadata.action)}:${metadata.type}`,
       async function (span) {
         Object.entries(metadata).forEach(([key, value]) => {
           span.setAttribute(`workflow.step.${key}`, value)

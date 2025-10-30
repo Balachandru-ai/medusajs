@@ -6,7 +6,7 @@ import {
   buildOrder,
   stringToSelectRelationObject,
 } from "@medusajs/utils"
-import { pick } from "lodash"
+import pick from "lodash.pick"
 
 export function pickByConfig<TModel>(
   obj: TModel | TModel[],

@@ -1,5 +1,5 @@
-import get from "lodash/get"
-import set from "lodash/set"
+import get from "lodash.get"
+import set from "lodash.set"
 import { useCallback } from "react"
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
 
@@ -18,7 +18,7 @@ type UseDataGridFormHandlersOptions<TData, TFieldValues extends FieldValues> = {
 
 export const useDataGridFormHandlers = <
   TData,
-  TFieldValues extends FieldValues
+  TFieldValues extends FieldValues,
 >({
   matrix,
   form,
@@ -140,7 +140,7 @@ function convertToggleableNumber(value: any): {
 }
 
 function setValue<
-  T extends DataGridToggleableNumber = DataGridToggleableNumber
+  T extends DataGridToggleableNumber = DataGridToggleableNumber,
 >(
   currentValues: any,
   field: string,

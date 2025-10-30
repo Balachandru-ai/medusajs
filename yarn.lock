@@ -6396,6 +6396,8 @@ __metadata:
     "@tanstack/react-query": 5.64.2
     "@tanstack/react-table": 8.20.5
     "@tanstack/react-virtual": ^3.8.3
+    "@types/lodash.debounce": ^4.0.9
+    "@types/lodash.isequal": ^4.5.8
     "@types/node": ^20.11.15
     "@types/react": ^18.2.79
     "@types/react-dom": ^18.2.25
@@ -6409,7 +6411,10 @@ __metadata:
     i18next: 23.7.11
     i18next-browser-languagedetector: 7.2.0
     i18next-http-backend: 2.4.2
-    lodash: ^4.17.21
+    lodash.debounce: ^4.0.8
+    lodash.get: ^4.4.2
+    lodash.isequal: ^4.5.0
+    lodash.set: ^4.3.2
     match-sorter: ^6.3.4
     motion: ^11.15.0
     postcss: ^8.4.33
@@ -6474,12 +6479,16 @@ __metadata:
     "@swc/core": 1.5.7
     "@tanstack/react-query": 5.64.2
     "@types/lodash": ^4.17.15
+    "@types/lodash.debounce": ^4.0.9
+    "@types/lodash.isequal": ^4.5.8
     "@types/node": ^20.0.0
     "@types/react": ^18.3.2
     "@types/react-dom": ^18.2.25
     "@uiw/react-json-view": ^2.0.0-alpha.17
     date-fns: ^3.6.0
     lodash: ^4.17.21
+    lodash.debounce: ^4.0.8
+    lodash.isequal: ^4.5.0
     match-sorter: ^6.3.4
     radix-ui: 1.1.2
     react: ^18.2.0
@@ -6619,7 +6628,9 @@ __metadata:
     ioredis: ^5.4.1
     jest: ^29.7.0
     jsonwebtoken: ^9.0.2
-    lodash: 4.17.21
+    lodash.memoize: ^4.1.2
+    lodash.omit: ^4.5.0
+    lodash.pick: ^4.4.0
     morgan: ^1.9.1
     path-to-regexp: ^0.1.10
     rimraf: ^3.0.2
@@ -6925,7 +6936,6 @@ __metadata:
     "@swc/jest": ^0.2.36
     "@types/express": ^4.17.17
     "@types/jsonwebtoken": ^8.5.9
-    "@types/lodash": ^4.14.191
     "@types/multer": ^1.4.7
     boxen: ^5.0.1
     chalk: ^4.0.0
@@ -6935,7 +6945,6 @@ __metadata:
     fs-exists-cached: ^1.0.0
     jest: ^29.7.0
     jsonwebtoken: ^9.0.2
-    lodash: ^4.17.21
     multer: ^1.4.5-lts.1
     node-schedule: ^2.1.1
     qs: ^6.11.2
@@ -16036,17 +16045,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.debounce@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@types/lodash.debounce@npm:4.0.9"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 9fbb24e5e52616faf60ba5c82d8c6517f4b86fc6e9ab353b4c56c0760f63d9bf53af3f2d8f6c37efa48090359fb96dba1087d497758511f6c40677002191d042
+  languageName: node
+  linkType: hard
+
+"@types/lodash.isequal@npm:^4.5.8":
+  version: 4.5.8
+  resolution: "@types/lodash.isequal@npm:4.5.8"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 6db28cacf165d55421fbf2970ccfb1682a7b82b743bb7aba4398fa8ab98f1711fca2fe4afa1aa2b7b4afb3eff76c8aca13b22206f5efeb038d99e41300589bca
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*, @types/lodash@npm:^4.17.15":
+  version: 4.17.20
+  resolution: "@types/lodash@npm:4.17.20"
+  checksum: 98cdd0faae22cbb8079a01a3bb65aa8f8c41143367486c1cbf5adc83f16c9272a2a5d2c1f541f61d0d73da543c16ee1d21cf2ef86cb93cd0cc0ac3bced6dd88f
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:^4.14.167, @types/lodash@npm:^4.14.191":
   version: 4.17.1
   resolution: "@types/lodash@npm:4.17.1"
   checksum: af2ad8a3c8d7deb170a7ec6e18afc5ae8980576e5f7fe798d8a95a1df7222c15bdf967a25a35879f575a3b64743de00145710ee461a0051e055e94e4fe253f45
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:^4.17.15":
-  version: 4.17.20
-  resolution: "@types/lodash@npm:4.17.20"
-  checksum: 98cdd0faae22cbb8079a01a3bb65aa8f8c41143367486c1cbf5adc83f16c9272a2a5d2c1f541f61d0d73da543c16ee1d21cf2ef86cb93cd0cc0ac3bced6dd88f
   languageName: node
   linkType: hard
 
@@ -26914,10 +26941,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.omit@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.omit@npm:4.5.0"
+  checksum: 3808b9b6faae35177174b6ab327f1177e29c91f1e98dcbccf13a72a6767bba337306449d537a4e0d8a33d2673f10d39bc732e30c4b803274ea0c1168ea60e549
+  languageName: node
+  linkType: hard
+
 "lodash.once@npm:^4.0.0":
   version: 4.1.1
   resolution: "lodash.once@npm:4.1.1"
   checksum: 46a9a0a66c45dd812fcc016e46605d85ad599fe87d71a02f6736220554b52ffbe82e79a483ad40f52a8a95755b0d1077fba259da8bfb6694a7abbf4a48f1fc04
+  languageName: node
+  linkType: hard
+
+"lodash.pick@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "lodash.pick@npm:4.4.0"
+  checksum: a04c460b95d1aaa44e9513d1dacf72ea74d838da843e45831de9de64c303f13cdde1859702a6f4dcef417816898ffd47c6ae0614c957ac70245bed2809b8d2e2
+  languageName: node
+  linkType: hard
+
+"lodash.set@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "lodash.set@npm:4.3.2"
+  checksum: c641d31905e51df43170dce8a1d11a1cff11356e2e2e75fe2615995408e9687d58c3e1d64c3c284c2df2bc519f79a98af737d2944d382ff82ffd244ff6075c29
   languageName: node
   linkType: hard
 

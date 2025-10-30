@@ -1,7 +1,7 @@
 import { BaseEntity, QueryConfig, RequestQueryFields } from "@medusajs/types"
 import { MedusaError, removeUndefinedProperties } from "@medusajs/utils"
 import { NextFunction } from "express"
-import { omit } from "lodash"
+import omit from "lodash.omit"
 import { z } from "zod"
 
 import { zodValidator } from "../../zod/zod-helpers"
