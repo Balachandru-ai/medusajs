@@ -115,6 +115,35 @@ const nextConfig = {
   transpilePackages: ["docs-ui"],
   async rewrites() {
     return {
+      beforeFiles: [
+        {
+          source:
+            "/:path((?!resources|api|ui|user-guide|cloud).*)index.html.md",
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "header",
+              key: "Accept",
+              value: "text/markdown",
+            },
+          ],
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "header",
+              key: "Accept",
+              value: "text/plain",
+            },
+          ],
+          destination: "/md-content/:path*",
+        },
+      ],
       fallback: [
         {
           source: "/resources",
