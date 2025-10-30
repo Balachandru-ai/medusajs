@@ -16,7 +16,6 @@ import {
   generateStoreHeaders,
 } from "../../../helpers/create-admin-user"
 import { medusaTshirtProduct } from "../../__fixtures__/product"
-import { version } from "typescript"
 
 jest.setTimeout(300000)
 
@@ -1548,7 +1547,7 @@ medusaIntegrationTestRunner({
         expect(orderResult2.original_total).toEqual(11)
       })
 
-      it.only("should update adjustments correctly when adding items in 2 consecutive order edits", async () => {
+      it("should update adjustments correctly when adding items in 2 consecutive order edits", async () => {
         // 1. Create the first order edit
         let response = await api.post(
           "/admin/order-edits",
@@ -1797,9 +1796,233 @@ medusaIntegrationTestRunner({
         expect(finalOrder.total).toBeCloseTo(45.54)
       })
 
-      it.todo(
-        "should update adjustments correctly when additional fixed promotion is applied"
-      )
+      it("should update adjustments correctly when 2 promotions are applied (one is fixed, one is percentage)", async () => {
+        const publishableKey = await generatePublishableKey(container)
+        const storeHeaders = generateStoreHeaders({ publishableKey })
+
+        const product = (
+          await api.post(
+            "/admin/products",
+            {
+              title: "Prod 1",
+              status: ProductStatus.PUBLISHED,
+              sales_channels: [{ id: salesChannel.id }],
+
+              options: [{ title: "size", values: ["large", "small"] }],
+              shipping_profile_id: undefined,
+              variants: [
+                {
+                  title: "Prod 1 variant",
+                  manage_inventory: false,
+                  sku: "prod-1-variant-123",
+                  options: { size: "large" },
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 10,
+                    },
+                  ],
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+
+        // 1. Create two promotions: one fixed ($2 off), one 10% off
+        const fixedPromotion = await api.post(
+          "/admin/promotions",
+          {
+            code: "FIXED2",
+            type: "standard",
+            status: "active",
+            application_method: {
+              type: "fixed",
+              currency_code: "usd",
+              target_type: "items",
+              allocation: "each",
+              max_quantity: 5,
+              value: 2,
+            },
+            is_automatic: false,
+          },
+          adminHeaders
+        )
+
+        const percentPromotion = await api.post(
+          "/admin/promotions",
+          {
+            code: "PERCENT10",
+            type: "standard",
+            status: "active",
+            application_method: {
+              type: "percentage",
+              currency_code: "usd",
+              target_type: "items",
+              allocation: "across",
+              value: 10,
+            },
+            is_automatic: false,
+          },
+          adminHeaders
+        )
+
+        // 2. Create a fresh cart with a single item
+        const freshCartRes = await api.post(
+          "/store/carts",
+          {
+            sales_channel_id: salesChannel.id,
+            currency_code: "usd",
+            region_id: order.region_id,
+            email: "multi-promo@example.com",
+            items: [
+              {
+                variant_id: product.variants[0].id,
+                quantity: 1,
+              },
+            ],
+            // Apply both promotions to the cart
+            promo_codes: ["FIXED2", "PERCENT10"],
+          },
+          storeHeaders
+        )
+
+        const freshCartId = freshCartRes.data.cart.id
+
+        const paymentCollection = (
+          await api.post(
+            `/store/payment-collections`,
+            { cart_id: freshCartId },
+            storeHeaders
+          )
+        ).data.payment_collection
+
+        await api.post(
+          `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+          {
+            provider_id: "pp_system_default",
+          },
+          storeHeaders
+        )
+
+        const completeOrderRes = await api.post(
+          `/store/carts/${freshCartId}/complete`,
+          {},
+          storeHeaders
+        )
+
+        const newOrderId = completeOrderRes.data.order.id
+        let response = await api.get(
+          `/admin/orders/${newOrderId}`,
+          adminHeaders
+        )
+        let freshOrder = response.data.order
+        const originalItem = freshOrder.items[0]
+
+        // Check adjustments on item: should have both promos
+        expect(originalItem.adjustments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              amount: 2, // fixed accross
+              code: "FIXED2",
+            }),
+            expect.objectContaining({
+              amount: 1, // 10% off
+              code: "PERCENT10",
+            }),
+          ])
+        )
+
+        expect(freshOrder.original_total).toBe(10) // just 10$ item without tax
+        expect(freshOrder.total).toBe(7) // 10$ - 2$ fixed - 10% = 7$
+
+        const editRes = await api.post(
+          "/admin/order-edits",
+          {
+            order_id: newOrderId,
+          },
+          adminHeaders
+        )
+        const editOrderId = editRes.data.order_change.order_id
+        const extraVariantId = productExtra.variants[0].id
+
+        const addedItemsResult = (
+          await api.post(
+            `/admin/order-edits/${editOrderId}/items`,
+            {
+              items: [
+                {
+                  variant_id: extraVariantId,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.order_preview
+
+        const addedItem = addedItemsResult.items.find(
+          (i) => i.variant_id === extraVariantId
+        )
+
+        const initialItem = addedItemsResult.items.find(
+          (i) => i.variant_id === product.variants[0].id
+        )
+        expect(addedItem).toBeDefined()
+
+        // Should have both promo adjustments on new item as well
+        expect(addedItem.adjustments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: "FIXED2",
+              amount: 2,
+              version: 2,
+            }),
+            expect.objectContaining({
+              code: "PERCENT10",
+              amount: 1.2,
+              version: 2,
+            }),
+          ])
+        )
+
+        expect(addedItemsResult.original_total).toBe(10 + 12)
+        expect(addedItemsResult.total).toBe(15.8) // 22$ - 2$ - 2$ - 1.2$ - 1$
+
+        expect(initialItem.adjustments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: "FIXED2",
+              amount: 2,
+            }),
+            expect.objectContaining({
+              code: "PERCENT10",
+              amount: 1,
+            }),
+          ])
+        )
+
+        const initialOrder = (
+          await api.get(`/admin/orders/${newOrderId}`, adminHeaders)
+        ).data.order
+
+        // original order is still unchanged
+        expect(initialOrder.original_total).toBe(10)
+        expect(initialOrder.total).toBe(7)
+
+        await api.post(
+          `/admin/order-edits/${editOrderId}/confirm`,
+          {},
+          adminHeaders
+        )
+
+        const confirmedOrder = (
+          await api.get(`/admin/orders/${newOrderId}`, adminHeaders)
+        ).data.order
+
+        expect(confirmedOrder.original_total).toBe(10 + 12)
+        expect(confirmedOrder.total).toBe(15.8) // 22$ - 2$ - 2$ - 1.2$ - 1$
+      })
 
       it("should update adjustments when adding then updating then removing the original item", async () => {
         // Create a new order edit
@@ -1845,8 +2068,6 @@ medusaIntegrationTestRunner({
             amount: 1.2,
           }),
         ])
-
-        console.log(addedItem.actions)
 
         // Update the quantity of the newly added item by updating the action
         const actionId = addedItem.actions.find(
