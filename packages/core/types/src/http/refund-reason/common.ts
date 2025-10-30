@@ -48,14 +48,6 @@ export interface BaseRefundReasonListParams extends FindParams {
    */
   id?: string | string[]
   /**
-   * Filter by label(s).
-   */
-  label?: string | OperatorMap<string>
-  /**
-   * Filter by description(s).
-   */
-  description?: string | OperatorMap<string>
-  /**
    * Filter by parent refund reason ID(s).
    */
   parent_refund_reason_id?: string | OperatorMap<string | string[]>
@@ -67,4 +59,8 @@ export interface BaseRefundReasonListParams extends FindParams {
    * Filter by update date.
    */
   updated_at?: OperatorMap<string>
+  /**
+   * Apply filters on the refund reason's deletion date.
+   */
+  deleted_at?: OperatorMap<string>
 }

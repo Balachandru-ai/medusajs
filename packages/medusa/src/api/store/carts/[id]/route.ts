@@ -2,7 +2,6 @@ import { updateCartWorkflowId } from "@medusajs/core-flows"
 import {
   AdditionalData,
   HttpTypes,
-  UpdateCartDataDTO,
 } from "@medusajs/framework/types"
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
@@ -10,7 +9,7 @@ import { Modules } from "@medusajs/framework/utils"
 import { refetchCart } from "../helpers"
 
 export const GET = async (
-  req: MedusaRequest,
+  req: MedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const cart = await refetchCart(
@@ -23,7 +22,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: MedusaRequest<UpdateCartDataDTO & AdditionalData>,
+  req: MedusaRequest<
+    HttpTypes.StoreUpdateCart & AdditionalData,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<{
     cart: HttpTypes.StoreCart
   }>

@@ -5,6 +5,12 @@ import {
   createSelectParams,
 } from "../../utils/validators"
 
+export const AdminGetExchangeParams = createSelectParams()
+
+export type AdminGetExchangeParamsType = z.infer<
+  typeof AdminGetExchangeParams
+>
+
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
     id: z.union([z.string(), z.array(z.string())]).optional(),

@@ -11,7 +11,10 @@ import { refetchTaxRegion } from "./helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateTaxRegion>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateTaxRegion,
+    HttpTypes.AdminTaxRegionParams
+  >,
   res: MedusaResponse<HttpTypes.AdminTaxRegionResponse>
 ) => {
   const { result } = await createTaxRegionsWorkflow(req.scope).run({

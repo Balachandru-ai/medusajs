@@ -7,7 +7,7 @@ import {
 } from "@medusajs/framework/http"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.AdminGetOrderParams>,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const { id: orderId, fulfillment_id: fulfillmentId } = req.params

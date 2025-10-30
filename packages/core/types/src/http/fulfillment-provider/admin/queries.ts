@@ -1,6 +1,6 @@
 import { FindParams } from "../../common"
 
-export interface AdminFulfillmentProviderListParams extends FindParams {
+export interface AdminGetFulfillmentProvidersParams extends FindParams {
   /**
    * Filter by provider ID(s).
    */

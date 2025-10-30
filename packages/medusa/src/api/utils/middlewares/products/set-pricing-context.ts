@@ -6,11 +6,20 @@ import {
 import { MedusaPricingContext } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 import { NextFunction } from "express"
+import { DEFAULT_PRICE_FIELD_PATHS } from "./constants"
 
-export function setPricingContext() {
+type PricingContextOptions = {
+  priceFieldPaths?: string[]
+}
+
+export function setPricingContext(options: PricingContextOptions = {}) {
+  const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options
+
   return async (req: AuthenticatedMedusaRequest, _, next: NextFunction) => {
     const withCalculatedPrice = req.queryConfig.fields.some((field) =>
-      field.startsWith("variants.calculated_price")
+      priceFieldPaths.some(
+        (pricePath) => field === pricePath || field.startsWith(`${pricePath}.`)
+      )
     )
     if (!withCalculatedPrice) {
       return next()

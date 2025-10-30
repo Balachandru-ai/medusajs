@@ -14,11 +14,10 @@ import {
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
 import { refetchUser } from "../helpers"
-import { AdminUpdateUserType } from "../validators"
 
 // Get user
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminUserParams>,
   res: MedusaResponse<HttpTypes.AdminUserResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
@@ -43,7 +42,10 @@ export const GET = async (
 
 // update user
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateUserType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateUser,
+    HttpTypes.AdminUserParams
+  >,
   res: MedusaResponse<HttpTypes.AdminUserResponse>
 ) => {
   const workflow = updateUsersWorkflow(req.scope)
