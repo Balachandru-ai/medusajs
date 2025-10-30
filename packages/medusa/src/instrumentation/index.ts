@@ -5,13 +5,13 @@ import {
   Query,
 } from "@medusajs/framework"
 import { ApiLoader } from "@medusajs/framework/http"
+import { SpanStatusCode } from "@medusajs/framework/opentelemetry/api"
+import type { NodeSDKConfiguration } from "@medusajs/framework/opentelemetry/sdk-node"
+import type { SpanExporter } from "@medusajs/framework/opentelemetry/sdk-trace-node"
 import { TransactionOrchestrator } from "@medusajs/framework/orchestration"
 import { Tracer } from "@medusajs/framework/telemetry"
 import { ICachingModuleService } from "@medusajs/framework/types"
 import { camelToSnakeCase, FeatureFlag } from "@medusajs/framework/utils"
-import { SpanStatusCode } from "@opentelemetry/api"
-import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node"
-import type { SpanExporter } from "@opentelemetry/sdk-trace-node"
 import CacheModule from "../modules/caching"
 
 const EXCLUDED_RESOURCES = [".vite", "virtual:"]
@@ -29,7 +29,6 @@ function shouldExcludeResource(resource: string) {
 export function instrumentHttpLayer() {
   const startCommand = require("../commands/start")
   const HTTPTracer = new Tracer("@medusajs/http", "2.0.0")
-  const { SpanStatusCode } = require("@opentelemetry/api")
 
   startCommand.traceRequestHandler = async (
     requestHandler,
@@ -134,7 +133,6 @@ export function instrumentHttpLayer() {
  */
 export function instrumentRemoteQuery() {
   const QueryTracer = new Tracer("@medusajs/query", "2.0.0")
-  const { SpanStatusCode } = require("@opentelemetry/api")
 
   Query.instrument.graphQuery(async function (queryFn, queryOptions) {
     return await QueryTracer.trace(
@@ -409,12 +407,16 @@ export function registerOtel(
   const {
     Resource,
     resourceFromAttributes,
-  } = require("@opentelemetry/resources")
-  const { NodeSDK } = require("@opentelemetry/sdk-node")
-  const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-node")
+  } = require("@medusajs/framework/opentelemetry/resources")
+  const { NodeSDK } = require("@medusajs/framework/opentelemetry/sdk-node")
+  const {
+    SimpleSpanProcessor,
+  } = require("@medusajs/framework/opentelemetry/sdk-trace-node")
 
   if (instrument.db) {
-    const { PgInstrumentation } = require("@opentelemetry/instrumentation-pg")
+    const {
+      PgInstrumentation,
+    } = require("@medusajs/framework/opentelemetry/instrumentation-pg")
     instrumentations.push(new PgInstrumentation())
   }
   if (instrument.http) {
