@@ -559,7 +559,7 @@ export const createCategoryImagesWorkflow = createWorkflow(
     .then(
       () => {
         const categoryIds = transform({
-          input
+          input,
         }, (data) => {
           return data.input.category_images.filter(
             (img) => img.type === "thumbnail"
@@ -676,10 +676,10 @@ To apply middleware to a route, create the file `src/api/middlewares.ts` with th
 ```ts title="src/api/middlewares.ts"
 import { 
   defineMiddlewares, 
-  validateAndTransformBody
-} from "@medusajs/framework/http";
+  validateAndTransformBody,
+} from "@medusajs/framework/http"
 import { 
-  CreateCategoryImagesSchema
+  CreateCategoryImagesSchema,
 } from "./admin/categories/[category_id]/images/route"
 
 export default defineMiddlewares({
@@ -688,11 +688,11 @@ export default defineMiddlewares({
       matcher: "/admin/categories/:category_id/images",
       method: ["POST"],
       middlewares: [
-        validateAndTransformBody(CreateCategoryImagesSchema)
-      ]
+        validateAndTransformBody(CreateCategoryImagesSchema),
+      ],
     },
   ],
-});
+})
 ```
 
 You apply Medusa's `validateAndTransformBody` middleware to `POST` requests sent to the `/admin/categories/:category_id/images` route. The middleware function accepts a Zod schema that you created in the API route's file.
@@ -980,7 +980,7 @@ export const CategoryImageGallery = ({
       <div className="grid h-fit auto-rows-auto grid-cols-4 gap-6 p-6">
         {/* Existing images */}
         {visibleExistingImages.map((image) => {
-          if (!image.id) return null
+          if (!image.id) {return null}
           
           const imageId = image.id
           const isThumbnail = currentThumbnailId === imageId
@@ -1323,7 +1323,7 @@ Next, you'll add a function to handle file uploads. Replace the `// TODO handle 
 
 ```tsx title="src/admin/components/category-media/category-media-modal.tsx"
 const handleUploadFile = (files: FileList | null) => {
-  if (!files || files.length === 0) return
+  if (!files || files.length === 0) {return}
   const filesArray = Array.from(files)
   
   uploadFilesMutation.mutate(filesArray, {
@@ -1597,6 +1597,8 @@ export const updateCategoryImagesStep = createStep(
         type: img.type,
       }))
     )
+  }
+)
 ```
 
 This step accepts an array of updates, where each update contains the category image ID to update and the new type.
@@ -1643,7 +1645,7 @@ export const updateCategoryImagesWorkflow = createWorkflow(
     .then(
       () => {
         const categoryImageIds = transform({
-          input
+          input,
         }, (data) => data.input.updates.filter(
           (u) => u.type === "thumbnail"
         ).map((u) => u.id))
@@ -1654,11 +1656,11 @@ export const updateCategoryImagesWorkflow = createWorkflow(
             id: categoryImageIds,
           },
           options: {
-            throwIfKeyNotFound: true
-          }
+            throwIfKeyNotFound: true,
+          },
         })
         const categoryIds = transform({
-          categoryImages
+          categoryImages,
         }, (data) => data.categoryImages.map((img) => img.category_id))
     
         convertCategoryThumbnailsStep({
@@ -1693,7 +1695,7 @@ Create the file `src/api/admin/categories/[category_id]/images/batch/route.ts` w
 ```ts title="src/api/admin/categories/[category_id]/images/batch/route.ts"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import {
-  updateCategoryImagesWorkflow
+  updateCategoryImagesWorkflow,
 } from "../../../../../../workflows/update-category-images"
 import { z } from "zod"
 
@@ -1984,7 +1986,7 @@ Then, add a function that sets the selected image as the thumbnail:
 
 ```tsx title="src/admin/components/category-media/category-media-modal.tsx"
 const handleSetAsThumbnail = () => {
-  if (selectedImageIds.size !== 1) return
+  if (selectedImageIds.size !== 1) {return}
 
   const selectedId = Array.from(selectedImageIds)[0]
   setCurrentThumbnailId(selectedId)
@@ -1992,7 +1994,9 @@ const handleSetAsThumbnail = () => {
     // update uploaded file type to thumbnail
     const uploadedFileId = selectedId.replace("uploaded:", "")
     setUploadedFiles((prev) =>
-      prev.map((file) => file.id === uploadedFileId ? { ...file, type: "thumbnail" } : file)
+      prev.map((file) => {
+        return file.id === uploadedFileId ? { ...file, type: "thumbnail" } : file
+      })
     )
   }
   
@@ -2273,8 +2277,8 @@ export const deleteCategoryImagesWorkflow = createWorkflow(
         id: input.ids,
       },
       options: {
-        throwIfKeyNotFound: true
-      }
+        throwIfKeyNotFound: true,
+      },
     })
 
     // Transform the category images to extract file IDs
@@ -2315,7 +2319,7 @@ In `src/api/admin/categories/[category_id]/images/batch/route.ts`, add the follo
 
 ```ts title="src/api/admin/categories/[category_id]/images/batch/route.ts"
 import {
-  deleteCategoryImagesWorkflow
+  deleteCategoryImagesWorkflow,
 } from "../../../../../../workflows/delete-category-image"
 ```
 
@@ -2494,7 +2498,7 @@ After that, add a function that marks selected images for deletion:
 
 ```tsx title="src/admin/components/category-media/category-media-modal.tsx"
 const handleDelete = () => {
-  if (selectedImageIds.size === 0) return
+  if (selectedImageIds.size === 0) {return}
 
   const uploadedFileIds: string[] = []
   const savedImageIds: string[] = []
@@ -2609,12 +2613,17 @@ You update the `handleSave` function to:
 Finally, in the `return` statement, replace the `/* TODO add delete command */` comment with the following:
 
 ```tsx title="src/admin/components/category-media/category-media-modal.tsx"
-<CommandBar.Seperator />
-<CommandBar.Command
-  action={handleDelete}
-  label="Delete"
-  shortcut="d"
-/>
+return (
+  <CommandBar open={selectedImageIds.size > 0}>
+    {/* ... */}
+    <CommandBar.Seperator />
+    <CommandBar.Command
+      action={handleDelete}
+      label="Delete"
+      shortcut="d"
+    />
+  </CommandBar>
+)
 ```
 
 You add a command to "Delete" the selected images. You can also press the "d" key as a shortcut.
@@ -3046,7 +3055,7 @@ export default function CategoryTemplate({
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
 
-  if (!category || !countryCode) notFound()
+  if (!category || !countryCode) {notFound()}
 
   const parents = [] as HttpTypes.StoreProductCategory[]
 
@@ -3151,7 +3160,7 @@ You've now added support for category images in Medusa. You can expand on this b
 
 - Adding images to other models, such as collections.
 - Adding support for reordering category images.
-- Allowing setting multiple thumbnails for different use cases (e.g., mobile vs. desktop).
+- Allowing setting multiple thumbnails for different use cases (for example, mobile vs. desktop).
 - Adding alt text for category images for better accessibility and SEO.
 
 ### Learn More About Medusa
