@@ -12,13 +12,15 @@ type ProductMediaVariantsReponse = HttpTypes.AdminProductVariant & {
 export const ProductVariantMedia = () => {
   const { id, variant_id } = useParams()
 
-  const { variant, isLoading, isError, error } = useProductVariant(
+  const { variant, isFetching, isError, error } = useProductVariant(
     id!,
     variant_id!,
-    { fields: "*product,*product.images,*images,+images.variants.id" }
+    {
+      fields: "*product,*product.images,*images,+images.variants.id",
+    }
   )
 
-  const ready = !isLoading && variant
+  const ready = !isFetching && variant
 
   if (isError) {
     throw error
