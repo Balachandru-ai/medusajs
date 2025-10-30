@@ -22,12 +22,9 @@ export type DMLSchemaWithBigNumber<T extends DMLSchema> = {
 } & {
   [K in keyof T as T[K] extends
     | BigNumberProperty
-    | NullableModifier<number | string | BigNumber, BigNumberProperty>
+    | NullableModifier<number, BigNumberProperty>
     ? `raw_${string & K}`
-    : never]: T[K] extends NullableModifier<
-    number | string | BigNumber,
-    BigNumberProperty
-  >
+    : never]: T[K] extends NullableModifier<number, BigNumberProperty>
     ? NullableModifier<Record<string, unknown>, JSONProperty>
     : JSONProperty
 }
