@@ -1,3 +1,10 @@
+import ApiKey from "#models/api-key"
+import {
+  CreateApiKeyDTO,
+  RevokeApiKeyInput,
+  TokenDTO,
+  UpdateApiKeyInput,
+} from "#types/index"
 import {
   ApiKeyTypes,
   Context,
@@ -23,13 +30,6 @@ import {
   MedusaService,
   promiseAll,
 } from "@medusajs/framework/utils"
-import ApiKey from "#models/api-key"
-import {
-  CreateApiKeyDTO,
-  RevokeApiKeyInput,
-  TokenDTO,
-  UpdateApiKeyInput,
-} from "#types/index"
 import crypto from "crypto"
 import util from "util"
 import { joinerConfig } from "../joiner-config"

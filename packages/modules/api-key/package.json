@@ -5,10 +5,22 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "imports": {
-    "#models/*": "./dist/models/*.js",
-    "#services/*": "./dist/services/*.js",
-    "#repositories/*": "./dist/repositories/*.js",
-    "#types/*": "./dist/types/*.js"
+    "#models/*": {
+      "default": "./dist/models/*.js",
+      "types": "./dist/models/*.d.ts"
+    },
+    "#services/*": {
+      "default": "./dist/services/*.js",
+      "types": "./dist/services/*.d.ts"
+    },
+    "#repositories/*": {
+      "default": "./dist/repositories/*.js",
+      "types": "./dist/repositories/*.d.ts"
+    },
+    "#types/*": {
+      "default": "./dist/types/*.js",
+      "types": "./dist/types/*.d.ts"
+    }
   },
   "files": [
     "dist",

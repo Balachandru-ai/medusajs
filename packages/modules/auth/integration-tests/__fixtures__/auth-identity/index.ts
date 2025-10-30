@@ -1,5 +1,5 @@
 import { IAuthModuleService } from "@medusajs/framework/types"
-import { AuthIdentity } from "@models"
+import AuthIdentity from "#models/auth-identity"
 
 export async function createAuthIdentities(
   service: IAuthModuleService,
