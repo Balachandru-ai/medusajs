@@ -2234,7 +2234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.22.10, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.8, @babel/runtime@npm:^7.24.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.8, @babel/runtime@npm:^7.24.1, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.9.2":
   version: 7.24.5
   resolution: "@babel/runtime@npm:7.24.5"
   dependencies:
@@ -4185,17 +4185,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@inquirer/external-editor@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "@inquirer/external-editor@npm:1.0.2"
+  dependencies:
+    chardet: ^2.1.0
+    iconv-lite: ^0.7.0
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 414a3a2a9733459c57452d84ef19ff002222303d19041580685681153132d2a30af8f90f269b3967c30c670fa689dbb7d4fc25a86dc66f029eebe90dc7467b0a
+  languageName: node
+  linkType: hard
+
 "@inquirer/figures@npm:^1.0.1":
   version: 1.0.1
   resolution: "@inquirer/figures@npm:1.0.1"
   checksum: a1e9d3852e0d33c416eb39d7ee0e898971681a0a5a0d2fad5ebbb63047dd7e8b7bd32872cf2ef09578ce632bd9cc339f7e851dbd4640a9af11224481bf811e14
-  languageName: node
-  linkType: hard
-
-"@inquirer/figures@npm:^1.0.3":
-  version: 1.0.6
-  resolution: "@inquirer/figures@npm:1.0.6"
-  checksum: 2a00cf8db0b038dfb3b7ac9d09fe57ba12f0349e6258ad821bfa8e2e3cd9127f34b88ed7cae3e3441586f988db4df16ba91d6d701f88e529e87d2c2130a5c138
   languageName: node
   linkType: hard
 
@@ -4830,7 +4838,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -4847,7 +4855,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -4913,7 +4921,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -4980,7 +4988,7 @@ __metadata:
     jest: ^29.7.0
     node-cache: ^5.1.2
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
     xxhash-wasm: ^1.1.0
   peerDependencies:
@@ -4999,7 +5007,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5038,7 +5046,7 @@ __metadata:
     stack-trace: ^0.0.10
     typescript: ^5.6.2
     ulid: ^2.3.0
-    winston: ^3.8.2
+    winston: ^3.9.0
     yargs: ^17.7.2
   bin:
     medusa: cli.js
@@ -5074,7 +5082,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5091,7 +5099,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5143,7 +5151,7 @@ __metadata:
     match-sorter: ^6.3.4
     motion: ^11.15.0
     postcss: ^8.4.38
-    prettier: ^3.1.1
+    prettier: ^2.8.8
     qs: ^6.12.1
     radix-ui: 1.1.2
     react: ^18.3.1
@@ -5314,7 +5322,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5409,7 +5417,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5459,7 +5467,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5476,7 +5484,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5508,7 +5516,7 @@ __metadata:
     cross-env: ^5.2.1
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5556,7 +5564,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5757,7 +5765,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5801,7 +5809,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5835,7 +5843,7 @@ __metadata:
     jest: ^29.7.0
     rimraf: ^5.0.1
     stripe: 19.1.0
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5852,7 +5860,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5870,7 +5878,7 @@ __metadata:
     faker: ^5.5.3
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5887,7 +5895,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5904,7 +5912,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5921,7 +5929,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5938,7 +5946,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5955,7 +5963,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5972,7 +5980,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -5989,7 +5997,7 @@ __metadata:
     "@swc/jest": ^0.2.36
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -6000,7 +6008,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/telemetry@workspace:packages/medusa-telemetry"
   dependencies:
-    "@babel/runtime": ^7.22.10
+    "@babel/runtime": ^7.26.0
     axios: ^1.6.8
     axios-retry: ^3.1.9
     boxen: ^5.0.1
@@ -6181,7 +6189,7 @@ __metadata:
     jest: ^29.7.0
     jsonwebtoken: ^9.0.2
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
   peerDependencies:
     "@medusajs/framework": 2.11.1
@@ -6235,7 +6243,7 @@ __metadata:
     cron-parser: ^4.9.0
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
@@ -6255,7 +6263,7 @@ __metadata:
     ioredis: ^5.4.1
     jest: ^29.7.0
     rimraf: ^5.0.1
-    tsc-alias: ^1.8.6
+    tsc-alias: ^1.8.7
     typescript: ^5.6.2
     ulid: ^2.3.0
   peerDependencies:
@@ -15990,17 +15998,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bl@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "bl@npm:5.1.0"
-  dependencies:
-    buffer: ^6.0.3
-    inherits: ^2.0.4
-    readable-stream: ^3.4.0
-  checksum: 528a9c3d7d6b87af98c46f10a887654d027c28c503c7f7de87440e643f0056d7a2319a967762b8ec18150c64799d2825a277147a752a0570a7407c0b705b0d01
-  languageName: node
-  linkType: hard
-
 "body-parser@npm:1.20.2":
   version: 1.20.2
   resolution: "body-parser@npm:1.20.2"
@@ -16521,7 +16518,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:*, chalk@npm:^5.0.0":
+"chalk@npm:*":
   version: 5.3.0
   resolution: "chalk@npm:5.3.0"
   checksum: 8297d436b2c0f95801103ff2ef67268d362021b8210daf8ddbe349695333eb3610a71122172ff3b0272f1ef2cf7cc2c41fdaa4715f52e49ffe04c56340feed09
@@ -16615,6 +16612,13 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 96e4731b9ec8050cbb56ab684e8c48d6c33f7826b755802d14e3ebfdc51c57afeece3ea39bc6b09acc359e4363525388b915e16640c1378053820f5e70d0f27d
+  languageName: node
+  linkType: hard
+
+"chardet@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "chardet@npm:2.1.1"
+  checksum: d8391dd412338442b3de0d3a488aa9327f8bcf74b62b8723d6bd0b85c4084d50b731320e0a7c710edb1d44de75969995d2784b80e4c13b004a6c7a0db4c6e793
   languageName: node
   linkType: hard
 
@@ -16731,15 +16735,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-cursor@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "cli-cursor@npm:4.0.0"
-  dependencies:
-    restore-cursor: ^4.0.0
-  checksum: e776e8c3c6727300d0539b0d25160b2bb56aed1a63942753ba1826b012f337a6f4b7ace3548402e4f2f13b5e16bfd751be672c44b203205e7eca8be94afec42c
-  languageName: node
-  linkType: hard
-
 "cli-progress@npm:^3.4.0":
   version: 3.12.0
   resolution: "cli-progress@npm:3.12.0"
@@ -16749,7 +16744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-spinners@npm:^2.5.0, cli-spinners@npm:^2.6.1, cli-spinners@npm:^2.9.2":
+"cli-spinners@npm:^2.5.0, cli-spinners@npm:^2.9.2":
   version: 2.9.2
   resolution: "cli-spinners@npm:2.9.2"
   checksum: 907a1c227ddf0d7a101e7ab8b300affc742ead4b4ebe920a5bf1bc6d45dce2958fcd195eb28fa25275062fe6fa9b109b93b63bc8033396ed3bcb50297008b3a3
@@ -17477,12 +17472,12 @@ __metadata:
     eslint-config-google: ^0.14.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: ^4.2.1
-    inquirer: ^9.2.2
+    inquirer: ^8.0.0
     nanoid: ^4.0.2
     node-emoji: ^2.0.2
     node-fetch: ^3.3.1
     open: ^9.1.0
-    ora: ^6.3.0
+    ora: ^5.4.1
     prettier: ^2.8.8
     slugify: ^1.6.6
     ts-node: ^10.9.2
@@ -19977,7 +19972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"external-editor@npm:^3.0.3, external-editor@npm:^3.1.0":
+"external-editor@npm:^3.1.0":
   version: 3.1.0
   resolution: "external-editor@npm:3.1.0"
   dependencies:
@@ -21507,6 +21502,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iconv-lite@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "iconv-lite@npm:0.7.0"
+  dependencies:
+    safer-buffer: ">= 2.1.2 < 3.0.0"
+  checksum: 2382400469071c55b6746c531eed5fa4d033e5db6690b7331fb2a5f59a30d7a9782932e92253db26df33c1cf46fa200a3fbe524a2a7c62037c762283f188ec2f
+  languageName: node
+  linkType: hard
+
 "icss-utils@npm:^5.0.0, icss-utils@npm:^5.1.0":
   version: 5.1.0
   resolution: "icss-utils@npm:5.1.0"
@@ -21656,14 +21660,14 @@ __metadata:
   linkType: hard
 
 "inquirer@npm:^8.0.0":
-  version: 8.2.6
-  resolution: "inquirer@npm:8.2.6"
+  version: 8.2.7
+  resolution: "inquirer@npm:8.2.7"
   dependencies:
+    "@inquirer/external-editor": ^1.0.0
     ansi-escapes: ^4.2.1
     chalk: ^4.1.1
     cli-cursor: ^3.1.0
     cli-width: ^3.0.0
-    external-editor: ^3.0.3
     figures: ^3.0.0
     lodash: ^4.17.21
     mute-stream: 0.0.8
@@ -21674,27 +21678,7 @@ __metadata:
     strip-ansi: ^6.0.0
     through: ^2.3.6
     wrap-ansi: ^6.0.1
-  checksum: eb5724de1778265323f3a68c80acfa899378cb43c24cdcb58661386500e5696b6b0b6c700e046b7aa767fe7b4823c6f04e6ddc268173e3f84116112529016296
-  languageName: node
-  linkType: hard
-
-"inquirer@npm:^9.2.2":
-  version: 9.3.6
-  resolution: "inquirer@npm:9.3.6"
-  dependencies:
-    "@inquirer/figures": ^1.0.3
-    ansi-escapes: ^4.3.2
-    cli-width: ^4.1.0
-    external-editor: ^3.1.0
-    mute-stream: 1.0.0
-    ora: ^5.4.1
-    run-async: ^3.0.0
-    rxjs: ^7.8.1
-    string-width: ^4.2.3
-    strip-ansi: ^6.0.1
-    wrap-ansi: ^6.2.0
-    yoctocolors-cjs: ^2.1.2
-  checksum: 29625ffc98979a862d3db1d006464526e1dd9f62f0aae68ab0231af56a193cbdc7f90d6222541e1dcf1ff1d3c1d36e33883f314b67bb731fd68a7b18999ef6e3
+  checksum: 75aa594231769d292102615da3199320359bfb566e96dae0f89a5773a18e21c676709d9f5a9fb1372f7d2cf25c551a4efe53691ff436d941f95336931777c15d
   languageName: node
   linkType: hard
 
@@ -22134,13 +22118,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-interactive@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "is-interactive@npm:2.0.0"
-  checksum: 801c8f6064f85199dc6bf99b5dd98db3282e930c3bc197b32f2c5b89313bb578a07d1b8a01365c4348c2927229234f3681eb861b9c2c92bee72ff397390fa600
-  languageName: node
-  linkType: hard
-
 "is-invalid-path@npm:^0.1.0":
   version: 0.1.0
   resolution: "is-invalid-path@npm:0.1.0"
@@ -22392,13 +22369,6 @@ __metadata:
   version: 0.1.0
   resolution: "is-unicode-supported@npm:0.1.0"
   checksum: 00cbe3455c3756be68d2542c416cab888aebd5012781d6819749fefb15162ff23e38501fe681b3d751c73e8ff561ac09a5293eba6f58fdf0178462ce6dcb3453
-  languageName: node
-  linkType: hard
-
-"is-unicode-supported@npm:^1.1.0":
-  version: 1.3.0
-  resolution: "is-unicode-supported@npm:1.3.0"
-  checksum: b8674ea95d869f6faabddc6a484767207058b91aea0250803cbf1221345cb0c56f466d4ecea375dc77f6633d248d33c47bd296fb8f4cdba0b4edba8917e83d8a
   languageName: node
   linkType: hard
 
@@ -23891,16 +23861,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"log-symbols@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "log-symbols@npm:5.1.0"
-  dependencies:
-    chalk: ^5.0.0
-    is-unicode-supported: ^1.1.0
-  checksum: c14f8567c6618a7f96209c4c4b9fb3b794187116904712f7b526e465a5c9535728aec983735a5bef919247d0e54b9b72b6680a7fb9fc72d76b945dac4865e669
-  languageName: node
-  linkType: hard
-
 "log-update@npm:^4.0.0":
   version: 4.0.0
   resolution: "log-update@npm:4.0.0"
@@ -23913,7 +23873,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"logform@npm:^2.3.2, logform@npm:^2.4.0":
+"logform@npm:^2.3.2":
   version: 2.6.0
   resolution: "logform@npm:2.6.0"
   dependencies:
@@ -24958,7 +24918,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mute-stream@npm:1.0.0, mute-stream@npm:^1.0.0":
+"mute-stream@npm:^1.0.0":
   version: 1.0.0
   resolution: "mute-stream@npm:1.0.0"
   checksum: dce2a9ccda171ec979a3b4f869a102b1343dee35e920146776780de182f16eae459644d187e38d59a3d37adf85685e1c17c38cf7bfda7e39a9880f7a1d10a74c
@@ -25735,23 +25695,6 @@ __metadata:
     strip-ansi: ^6.0.0
     wcwidth: ^1.0.1
   checksum: 10ff14aace236d0e2f044193362b22edce4784add08b779eccc8f8ef97195cae1248db8ec1ec5f5ff076f91acbe573f5f42a98c19b78dba8c54eefff983cae85
-  languageName: node
-  linkType: hard
-
-"ora@npm:^6.3.0":
-  version: 6.3.1
-  resolution: "ora@npm:6.3.1"
-  dependencies:
-    chalk: ^5.0.0
-    cli-cursor: ^4.0.0
-    cli-spinners: ^2.6.1
-    is-interactive: ^2.0.0
-    is-unicode-supported: ^1.1.0
-    log-symbols: ^5.1.0
-    stdin-discarder: ^0.1.0
-    strip-ansi: ^7.0.1
-    wcwidth: ^1.0.1
-  checksum: f8753e234c9967c86cfb73e7396e1a51ed8771c4921d539af8e8962b32c7928cefef7b3c4ce730a504be72b1437f91cc0523f468927b9fe322498c4edcc50203
   languageName: node
   linkType: hard
 
@@ -26880,15 +26823,6 @@ __metadata:
   bin:
     prettier: bin-prettier.js
   checksum: 463ea8f9a0946cd5b828d8cf27bd8b567345cf02f56562d5ecde198b91f47a76b7ac9eae0facd247ace70e927143af6135e8cf411986b8cb8478784a4d6d724a
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^3.1.1":
-  version: 3.2.5
-  resolution: "prettier@npm:3.2.5"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: ea327f37a7d46f2324a34ad35292af2ad4c4c3c3355da07313339d7e554320f66f65f91e856add8530157a733c6c4a897dc41b577056be5c24c40f739f5ee8c6
   languageName: node
   linkType: hard
 
@@ -28324,16 +28258,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"restore-cursor@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "restore-cursor@npm:4.0.0"
-  dependencies:
-    onetime: ^5.1.0
-    signal-exit: ^3.0.2
-  checksum: 6f7da8c5e422ac26aa38354870b1afac09963572cf2879443540449068cb43476e9cbccf6f8de3e0171e0d6f7f533c2bc1a0a008003c9a525bbc098e89041318
-  languageName: node
-  linkType: hard
-
 "retimer@npm:^3.0.0":
   version: 3.0.0
   resolution: "retimer@npm:3.0.0"
@@ -28765,13 +28689,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"run-async@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "run-async@npm:3.0.0"
-  checksum: b18b562ae37c3020083dcaae29642e4cc360c824fbfb6b7d50d809a9d5227bb986152d09310255842c8dce40526e82ca768f02f00806c91ba92a8dfa6159cb85
-  languageName: node
-  linkType: hard
-
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
@@ -28781,12 +28698,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^7.2.0, rxjs@npm:^7.5.1, rxjs@npm:^7.5.5, rxjs@npm:^7.8.1":
+"rxjs@npm:^7.2.0, rxjs@npm:^7.5.1, rxjs@npm:^7.8.1":
   version: 7.8.1
   resolution: "rxjs@npm:7.8.1"
   dependencies:
     tslib: ^2.1.0
   checksum: 3c49c1ecd66170b175c9cacf5cef67f8914dcbc7cd0162855538d365c83fea631167cacb644b3ce533b2ea0e9a4d0b12175186985f89d75abe73dbd8f7f06f68
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^7.5.5":
+  version: 7.8.2
+  resolution: "rxjs@npm:7.8.2"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 1fcd33d2066ada98ba8f21fcbbcaee9f0b271de1d38dc7f4e256bfbc6ffcdde68c8bfb69093de7eeb46f24b1fb820620bf0223706cff26b4ab99a7ff7b2e2c45
   languageName: node
   linkType: hard
 
@@ -29666,15 +29592,6 @@ __metadata:
   version: 3.8.0
   resolution: "std-env@npm:3.8.0"
   checksum: f560a2902fd0fa3d648d7d0acecbd19d664006f7372c1fba197ed4c216b4c9e48db6e2769b5fe1616d42a9333c9f066c5011935035e85c59f45dc4f796272040
-  languageName: node
-  linkType: hard
-
-"stdin-discarder@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "stdin-discarder@npm:0.1.0"
-  dependencies:
-    bl: ^5.0.0
-  checksum: 3bbf7f8107e49c05b4a46bd739afdd34605cf1f06a038c8b2a33d034bf146344fc0ebc5149df1e6422510dd219971a220f25b1102413ef5128fe267683fbef9d
   languageName: node
   linkType: hard
 
@@ -30792,7 +30709,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsc-alias@npm:^1.8.6, tsc-alias@npm:^1.8.7":
+"tsc-alias@npm:^1.8.7":
   version: 1.8.8
   resolution: "tsc-alias@npm:1.8.8"
   dependencies:
@@ -32207,25 +32124,6 @@ __metadata:
     readable-stream: ^3.6.0
     triple-beam: ^1.3.0
   checksum: cd16f3d0ab56697f93c4899e0eb5f89690f291bb6cf309194819789326a7c7ed943ef00f0b2fab513b114d371314368bde1a7ae6252ad1516181a79f90199cd2
-  languageName: node
-  linkType: hard
-
-"winston@npm:^3.8.2":
-  version: 3.13.0
-  resolution: "winston@npm:3.13.0"
-  dependencies:
-    "@colors/colors": ^1.6.0
-    "@dabh/diagnostics": ^2.0.2
-    async: ^3.2.3
-    is-stream: ^2.0.0
-    logform: ^2.4.0
-    one-time: ^1.0.0
-    readable-stream: ^3.4.0
-    safe-stable-stringify: ^2.3.1
-    stack-trace: 0.0.x
-    triple-beam: ^1.3.0
-    winston-transport: ^4.7.0
-  checksum: 2c3cc7389a691e1638edcb0d4bfea72caa82d87d5681ec6131ac9bae780d94d06fb7b112edcd4ec37c8b947a1b64943941b761e34d67c6b0dac6e9c31ae4b25b
   languageName: node
   linkType: hard
 
