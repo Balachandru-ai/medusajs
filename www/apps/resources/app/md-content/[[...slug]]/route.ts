@@ -14,7 +14,7 @@ import { filesMap } from "../../../generated/files-map.mjs"
 import { slugChanges } from "../../../generated/slug-changes.mjs"
 
 type Params = {
-  params: Promise<{ slug: string[] }>
+  params: Promise<{ slug?: string[] }>
 }
 
 export async function GET(req: NextRequest, { params }: Params) {

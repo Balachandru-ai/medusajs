@@ -152,6 +152,38 @@ const nextConfig = {
       permanent: true,
     },
   ],
+  rewrites: async () => {
+    return {
+      beforeFiles: [
+        {
+          source: "/:path*/index.html.md",
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "header",
+              key: "accept",
+              value: "text/markdown",
+            },
+          ],
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          destination: "/md-content/:path*",
+          has: [
+            {
+              type: "header",
+              key: "accept",
+              value: "text/plain",
+            },
+          ],
+        },
+      ],
+    }
+  },
 }
 
 const withBundleAnalyzer = bundleAnalyzer({

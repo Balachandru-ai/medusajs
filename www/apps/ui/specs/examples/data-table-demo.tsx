@@ -1,19 +1,24 @@
-import { createDataTableColumnHelper, useDataTable, DataTable, Heading } from "@medusajs/ui"
+import {
+  createDataTableColumnHelper,
+  useDataTable,
+  DataTable,
+  Heading,
+} from "@medusajs/ui"
 
 const products = [
   {
     id: "1",
     title: "Shirt",
-    price: 10
+    price: 10,
   },
   {
     id: "2",
     title: "Pants",
-    price: 20
-  }
+    price: 20,
+  },
 ]
 
-const columnHelper = createDataTableColumnHelper<typeof products[0]>()
+const columnHelper = createDataTableColumnHelper<(typeof products)[0]>()
 
 const columns = [
   columnHelper.accessor("title", {
@@ -26,7 +31,7 @@ const columns = [
   }),
 ]
 
-export default function ProductTable () {
+export default function ProductTable() {
   const table = useDataTable({
     columns,
     data: products,
@@ -34,11 +39,11 @@ export default function ProductTable () {
     rowCount: products.length,
     isLoading: false,
   })
-  
+
   return (
     <DataTable instance={table}>
-	    <DataTable.Toolbar className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-	      <Heading>Products</Heading>
+      <DataTable.Toolbar className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
+        <Heading>Products</Heading>
       </DataTable.Toolbar>
       <DataTable.Table />
     </DataTable>

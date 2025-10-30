@@ -12,7 +12,7 @@ import {
 import type { Plugin } from "unified"
 
 type Params = {
-  params: Promise<{ slug: string[] }>
+  params: Promise<{ slug?: string[] }>
 }
 
 export async function GET(req: NextRequest, { params }: Params) {

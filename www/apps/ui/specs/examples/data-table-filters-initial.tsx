@@ -1,20 +1,27 @@
-import { DataTable, DataTableFilteringState, Heading, createDataTableColumnHelper, createDataTableFilterHelper, useDataTable } from "@medusajs/ui"
+import {
+  DataTable,
+  DataTableFilteringState,
+  Heading,
+  createDataTableColumnHelper,
+  createDataTableFilterHelper,
+  useDataTable,
+} from "@medusajs/ui"
 import { useMemo, useState } from "react"
 
 const products = [
   {
     id: "1",
     title: "Shirt",
-    price: 10
+    price: 10,
   },
   {
     id: "2",
     title: "Pants",
-    price: 20
-  }
+    price: 20,
+  },
 ]
 
-const columnHelper = createDataTableColumnHelper<typeof products[0]>()
+const columnHelper = createDataTableColumnHelper<(typeof products)[0]>()
 
 const columns = [
   columnHelper.accessor("title", {
@@ -27,7 +34,7 @@ const columns = [
   }),
 ]
 
-const filterHelper = createDataTableFilterHelper<typeof products[0]>()
+const filterHelper = createDataTableFilterHelper<(typeof products)[0]>()
 
 const filters = [
   filterHelper.accessor("title", {
@@ -35,14 +42,14 @@ const filters = [
     label: "Title",
     options: products.map((product) => ({
       label: product.title,
-      value: product.title.toLowerCase()
-    }))
+      value: product.title.toLowerCase(),
+    })),
   }),
 ]
 
-export default function ProductTable () {
-	const [filtering, setFiltering] = useState<DataTableFilteringState>({
-    title: ["shirt"]
+export default function ProductTable() {
+  const [filtering, setFiltering] = useState<DataTableFilteringState>({
+    title: ["shirt"],
   })
 
   const shownProducts = useMemo(() => {
@@ -51,17 +58,18 @@ export default function ProductTable () {
         if (!value) {
           return true
         }
+        const productValue = product[key as keyof typeof product]
         if (typeof value === "string") {
-          // @ts-ignore
-          return product[key].toString().toLowerCase().includes(value.toString().toLowerCase())
+          return productValue
+            .toString()
+            .toLowerCase()
+            .includes(value.toString().toLowerCase())
         }
         if (Array.isArray(value)) {
-          // @ts-ignore
-          return value.includes(product[key].toLowerCase())
+          return value.includes(productValue.toString().toLowerCase())
         }
         if (typeof value === "object") {
-          // @ts-ignore
-          const date = new Date(product[key])
+          const date = new Date(productValue)
           let matching = false
           if ("$gte" in value && value.$gte) {
             matching = date >= new Date(value.$gte as number)
@@ -91,8 +99,8 @@ export default function ProductTable () {
       state: filtering,
       onFilteringChange: setFiltering,
     },
-    filters
-  });
+    filters,
+  })
 
   return (
     <DataTable instance={table}>
@@ -101,7 +109,7 @@ export default function ProductTable () {
         {/** This component will render a menu that allows the user to choose which filters to apply to the table data. **/}
         <DataTable.FilterMenu tooltip="Filter" />
       </DataTable.Toolbar>
-	    <DataTable.Table />
+      <DataTable.Table />
     </DataTable>
-  );
-};
+  )
+}

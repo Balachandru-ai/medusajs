@@ -8,11 +8,7 @@ export default function DatePickerControlled() {
 
   return (
     <div className="space-y-4 w-[300px]">
-      <DatePicker
-        value={date}
-        onChange={setDate}
-        aria-label="Select a date"
-      />
+      <DatePicker value={date} onChange={setDate} aria-label="Select a date" />
       <div className="text-ui-fg-subtle text-ui-body-small">
         Selected date: {date ? date.toLocaleDateString() : "None"}
       </div>

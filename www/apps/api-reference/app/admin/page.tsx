@@ -6,9 +6,14 @@ import PageTitleProvider from "@/providers/page-title"
 import { getBaseSpecs } from "../../lib"
 import BaseSpecsProvider from "../../providers/base-specs"
 import React from "react"
+import { notFound } from "next/navigation"
 
 const AdminPage = async () => {
   const data = await getBaseSpecs("admin")
+
+  if (!data) {
+    throw notFound()
+  }
 
   return (
     <BaseSpecsProvider baseSpecs={data}>

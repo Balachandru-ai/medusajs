@@ -1,27 +1,33 @@
-import { DataTable, DataTableSortingState, Heading, createDataTableColumnHelper, useDataTable } from "@medusajs/ui"
+import {
+  DataTable,
+  DataTableSortingState,
+  Heading,
+  createDataTableColumnHelper,
+  useDataTable,
+} from "@medusajs/ui"
 import { useMemo, useState } from "react"
 
 const products = [
   {
     id: "1",
     title: "Shirt",
-    price: 10
+    price: 10,
   },
   {
     id: "2",
     title: "Pants",
-    price: 20
-  }
+    price: 20,
+  },
 ]
 
-const columnHelper = createDataTableColumnHelper<typeof products[0]>()
+const columnHelper = createDataTableColumnHelper<(typeof products)[0]>()
 
 const columns = [
   columnHelper.accessor("title", {
     header: "Title",
     // Enables sorting for the column.
     enableSorting: true,
-    // If omitted, the header will be used instead if it's a string, 
+    // If omitted, the header will be used instead if it's a string,
     // otherwise the accessor key (id) will be used.
     sortLabel: "Title",
     // If omitted the default value will be "A-Z"
@@ -34,18 +40,16 @@ const columns = [
   }),
 ]
 
-export default function ProductTable () {
-  const [sorting, setSorting] = useState<DataTableSortingState | null>(null);
+export default function ProductTable() {
+  const [sorting, setSorting] = useState<DataTableSortingState | null>(null)
 
   const shownProducts = useMemo(() => {
     if (!sorting) {
       return products
     }
     return products.slice().sort((a, b) => {
-      // @ts-ignore
-      const aVal = a[sorting.id]
-      // @ts-ignore
-      const bVal = b[sorting.id]
+      const aVal = a[sorting.id as keyof typeof a]
+      const bVal = b[sorting.id as keyof typeof b]
       if (aVal < bVal) {
         return sorting.desc ? 1 : -1
       }
@@ -76,7 +80,7 @@ export default function ProductTable () {
         {/** This component will render a menu that allows the user to choose which column to sort by and in what direction. **/}
         <DataTable.SortingMenu tooltip="Sort" />
       </DataTable.Toolbar>
-	    <DataTable.Table />
+      <DataTable.Table />
     </DataTable>
-  );
-};
+  )
+}

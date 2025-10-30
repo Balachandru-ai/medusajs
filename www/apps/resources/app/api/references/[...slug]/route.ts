@@ -75,7 +75,7 @@ const loadReferencesFile = unstable_cache(async (slug: string[]) => {
         development: process.env.NEXT_PUBLIC_ENV === "development",
         format: "mdx",
         rehypePlugins: [
-          ...mdxOptions.options.rehypePlugins,
+          ...mdxOptions.options?.rehypePlugins,
           [
             typeListLinkFixerPlugin,
             {
@@ -99,7 +99,7 @@ const loadReferencesFile = unstable_cache(async (slug: string[]) => {
           ],
           [localLinksRehypePlugin, pluginOptions],
         ],
-        remarkPlugins: [...mdxOptions.options.remarkPlugins],
+        remarkPlugins: [...mdxOptions.options?.remarkPlugins],
         recmaPlugins: [
           [
             recmaInjectMdxDataPlugin,

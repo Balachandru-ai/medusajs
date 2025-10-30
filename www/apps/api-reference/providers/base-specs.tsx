@@ -66,7 +66,6 @@ const BaseSpecsProvider = ({ children, baseSpecs }: BaseSpecsProviderProps) => {
         },
         newItem: {
           children: childItems,
-          loaded: childItems.length > 0,
           onOpen: () => {
             if (location.hash !== tagPathName) {
               router.push(`#${tagPathName}`, {

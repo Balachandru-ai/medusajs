@@ -4,7 +4,7 @@ import { Spinner } from "@medusajs/icons"
 import { PropTable } from "../PropsTable"
 import { Container } from "@medusajs/ui"
 import Feedback from "../Feedback"
-import { H3, MarkdownContent } from "docs-ui"
+import { H3, MarkdownContent, MarkdownContentProps } from "docs-ui"
 import MDXComponents from "../MDXComponents"
 import slugify from "slugify"
 
@@ -55,7 +55,11 @@ const ComponentReference = ({
                   <H3 id={componentSlug}>{componentName}</H3>
                 )}
                 {componentSpec.description && (
-                  <MarkdownContent components={MDXComponents}>
+                  <MarkdownContent
+                    components={
+                      MDXComponents as MarkdownContentProps["components"]
+                    }
+                  >
                     {componentSpec.description}
                   </MarkdownContent>
                 )}

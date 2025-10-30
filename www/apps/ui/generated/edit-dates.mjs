@@ -13,7 +13,7 @@ export const generatedEditDates = {
   "app/components/container/page.mdx": "2025-08-18T11:37:37.043Z",
   "app/components/copy/page.mdx": "2025-08-18T11:37:36.720Z",
   "app/components/currency-input/page.mdx": "2025-08-18T11:37:37.429Z",
-  "app/components/data-table/page.mdx": "2025-08-18T11:37:36.243Z",
+  "app/components/data-table/page.mdx": "2025-10-29T16:44:49.729Z",
   "app/components/date-picker/page.mdx": "2025-08-18T11:37:36.882Z",
   "app/components/drawer/page.mdx": "2025-08-18T11:37:37.962Z",
   "app/components/dropdown-menu/page.mdx": "2025-08-18T11:37:37.884Z",

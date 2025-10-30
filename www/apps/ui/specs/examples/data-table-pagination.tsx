@@ -1,95 +1,101 @@
-import { DataTable, Heading, createDataTableColumnHelper, useDataTable, type DataTablePaginationState } from "@medusajs/ui"
+import {
+  DataTable,
+  Heading,
+  createDataTableColumnHelper,
+  useDataTable,
+  type DataTablePaginationState,
+} from "@medusajs/ui"
 import { useMemo, useState } from "react"
 
 const products = [
   {
     id: "1",
     title: "Shirt",
-    price: 10
+    price: 10,
   },
   {
     id: "2",
     title: "Pants",
-    price: 20
+    price: 20,
   },
   {
     id: "3",
     title: "Hat",
-    price: 15
+    price: 15,
   },
   {
     id: "4",
     title: "Socks",
-    price: 5
+    price: 5,
   },
   {
     id: "5",
     title: "Shoes",
-    price: 50
+    price: 50,
   },
   {
     id: "6",
     title: "Jacket",
-    price: 100
+    price: 100,
   },
   {
     id: "7",
     title: "Scarf",
-    price: 25
+    price: 25,
   },
   {
     id: "8",
     title: "Gloves",
-    price: 12
+    price: 12,
   },
   {
     id: "9",
     title: "Belt",
-    price: 18
+    price: 18,
   },
   {
     id: "10",
     title: "Sunglasses",
-    price: 30
+    price: 30,
   },
   {
     id: "11",
     title: "Watch",
-    price: 200
+    price: 200,
   },
   {
     id: "12",
     title: "Tie",
-    price: 20
+    price: 20,
   },
   {
     id: "13",
     title: "Sweater",
-    price: 40
+    price: 40,
   },
   {
     id: "14",
     title: "Jeans",
-    price: 60
+    price: 60,
   },
   {
     id: "15",
     title: "Shorts",
-    price: 25
+    price: 25,
   },
   {
     id: "16",
     title: "Blouse",
-    price: 35
+    price: 35,
   },
   {
     id: "17",
     title: "Dress",
-    price: 80
-  }
+    price: 80,
+  },
 ]
 
-const columnHelper = createDataTableColumnHelper<typeof products[0]>()
+const columnHelper = createDataTableColumnHelper<(typeof products)[0]>()
 
 const columns = [
   columnHelper.accessor("title", {
@@ -102,9 +108,9 @@ const columns = [
   }),
 ]
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 10
 
-export default function ProductTable () {
+export default function ProductTable() {
   const [pagination, setPagination] = useState<DataTablePaginationState>({
     pageSize: PAGE_SIZE,
     pageIndex: 0,
@@ -128,16 +134,16 @@ export default function ProductTable () {
       onPaginationChange: setPagination,
     },
     isLoading: false,
-  });
+  })
 
   return (
-      <DataTable instance={table}>
-        <DataTable.Toolbar>
-          <Heading>Products</Heading>
-        </DataTable.Toolbar>
-				<DataTable.Table />
-        {/** This component will render the pagination controls **/}
-        <DataTable.Pagination />
-      </DataTable>
-  );
-};
+    <DataTable instance={table}>
+      <DataTable.Toolbar>
+        <Heading>Products</Heading>
+      </DataTable.Toolbar>
+      <DataTable.Table />
+      {/** This component will render the pagination controls **/}
+      <DataTable.Pagination />
+    </DataTable>
+  )
+}

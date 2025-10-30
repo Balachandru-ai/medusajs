@@ -15,7 +15,11 @@ export default function CommandBarDemo() {
         />
         <Label>Item One</Label>
       </div>
-      <div><Text size="small" className="text-ui-fg-muted">Check the box to view the command bar</Text></div>
+      <div>
+        <Text size="small" className="text-ui-fg-muted">
+          Check the box to view the command bar
+        </Text>
+      </div>
       <CommandBar open={selected}>
         <CommandBar.Bar>
           <CommandBar.Value>1 selected</CommandBar.Value>

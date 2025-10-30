@@ -492,17 +492,15 @@ const shownProducts = useMemo(() => {
       if (!value) {
         return true
       }
+      const productValue = product[key as keyof typeof product]
       if (typeof value === "string") {
-        // @ts-ignore
-        return product[key].toString().toLowerCase().includes(value.toString().toLowerCase())
+        return productValue.toString().toLowerCase().includes(value.toString().toLowerCase())
       }
       if (Array.isArray(value)) {
-        // @ts-ignore
-        return value.includes(product[key].toLowerCase())
+        return value.includes(productValue.toString().toLowerCase())
       }
       if (typeof value === "object") {
-        // @ts-ignore
-        const date = new Date(product[key])
+        const date = new Date(productValue)
         let matching = false
         if ("$gte" in value && value.$gte) {
           matching = date >= new Date(value.$gte as number)
@@ -628,10 +626,10 @@ const shownProducts = useMemo(() => {
       if (!value) {
         return true
       }
+      const productValue = product[key as keyof typeof product]
       // other types checks...
       if (typeof value === "object") {
-        // @ts-ignore
-        const date = new Date(product[key])
+        const date = new Date(productValue)
         let matching = false
         if ("$gte" in value && value.$gte) {
           matching = date >= new Date(value.$gte as number)
@@ -742,10 +740,8 @@ const shownProducts = useMemo(() => {
     return products
   }
   return products.slice().sort((a, b) => {
-    // @ts-ignore
-    const aVal = a[sorting.id]
-    // @ts-ignore
-    const bVal = b[sorting.id]
+    const aVal = a[sorting.id as keyof typeof a]
+    const bVal = b[sorting.id as keyof typeof b]
     if (aVal < bVal) {
       return sorting.desc ? 1 : -1
     }

@@ -5,9 +5,14 @@ import Tags from "@/components/Tags"
 import PageTitleProvider from "@/providers/page-title"
 import { getBaseSpecs } from "../../lib"
 import BaseSpecsProvider from "../../providers/base-specs"
+import { notFound } from "next/navigation"
 
 const StorePage = async () => {
   const data = await getBaseSpecs("store")
+  
+  if (!data) {
+    throw notFound()
+  }
 
   return (
     <BaseSpecsProvider baseSpecs={data}>

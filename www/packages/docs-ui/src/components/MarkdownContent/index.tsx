@@ -16,7 +16,6 @@ export const MarkdownContent = ({
   ...props
 }: MarkdownContentProps) => {
   return (
-    // @ts-expect-error React v19 doesn't see this type as a React element
     <ReactMarkdown
       components={
         components || {

@@ -34,12 +34,13 @@
     "lint": "eslint src --fix"
   },
   "devDependencies": {
+    "@types/mdx": "^2.0.13",
     "@types/react": "npm:types-react@rc",
     "@types/react-dom": "npm:types-react@rc",
     "clsx": "^2.0.0",
     "cpy-cli": "^5.0.0",
     "eslint": "^9.13.0",
-    "next": "15.3.5",
+    "next": "16.0.1",
     "rimraf": "^5.0.1",
     "tailwind": "*",
     "tailwindcss": "^3.3.3",
@@ -49,6 +50,7 @@
     "typescript": "^5.1.6"
   },
   "peerDependencies": {
+    "@types/mdx": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
     "next": "*",
@@ -61,7 +63,7 @@
     "@kapaai/react-sdk": "^0.9.0",
     "@medusajs/icons": "2.11.1",
     "@medusajs/ui": "4.0.25",
-    "@next/third-parties": "15.3.5",
+    "@next/third-parties": "16.0.1",
     "@react-hook/resize-observer": "^1.2.6",
     "@segment/analytics-next": "^1.75.0",
     "@uidotdev/usehooks": "^2.4.1",

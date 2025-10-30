@@ -13,10 +13,10 @@ export default function DatePickerBusinessHours() {
           // Disable weekends and holidays
           const day = date.getDay()
           const isWeekend = day === 0 || day === 6
-          
+
           // Example: Disable specific holiday (Christmas)
           const isChristmas = date.getMonth() === 11 && date.getDate() === 25
-          
+
           return isWeekend || isChristmas
         }}
       />

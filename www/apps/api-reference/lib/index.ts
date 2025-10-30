@@ -1,20 +1,25 @@
 "use server"
 
+import OpenAPIParser from "@readme/openapi-parser"
+import path from "path"
 import { OpenAPI } from "types"
+import getPathsOfTag from "../utils/get-paths-of-tag"
 
-const URL = `${process.env.NEXT_PUBLIC_BASE_URL}${process.env.NEXT_PUBLIC_BASE_PATH}`
-
-export async function getBaseSpecs(area: OpenAPI.Area) {
-  try {
-    const res = await fetch(`${URL}/base-specs?area=${area}`, {
-      next: {
-        revalidate: 3000,
-        tags: [area],
-      },
-    }).then(async (res) => res.json())
-
-    return res as OpenAPI.ExpandedDocument
-  } catch (e) {
-    console.error(e)
+export async function getBaseSpecs(area: OpenAPI.Area, expand?: string) {
+  if (area !== "admin" && area !== "store") {
+    throw new Error(`area ${area} is not allowed`)
   }
+  const baseSpecs = (await OpenAPIParser.parse(
+    path.join(process.cwd(), "specs", area, "openapi.yaml")
+  )) as OpenAPI.ExpandedDocument
+
+  if (expand) {
+    const paths = await getPathsOfTag(expand, area)
+    if (paths) {
+      baseSpecs.expandedTags = {}
+      baseSpecs.expandedTags[expand] = paths.paths
+    }
+  }
+
+  return baseSpecs
 }

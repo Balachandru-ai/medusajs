@@ -26,7 +26,7 @@ export default function DatePickerForm() {
             Set up your event and reminder dates
           </p>
         </div>
-        
+
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="event-date">Event Date & Time</Label>
@@ -52,8 +52,8 @@ export default function DatePickerForm() {
           </div>
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={!isFormValid || submitted}
           className="w-full"
         >
@@ -63,7 +63,8 @@ export default function DatePickerForm() {
 
       {submitted && (
         <div className="mt-4 text-ui-fg-subtle text-ui-body-small">
-          Event scheduled for {eventDate?.toLocaleString()} with a reminder on {reminderDate?.toLocaleDateString()}.
+          Event scheduled for {eventDate?.toLocaleString()} with a reminder on{" "}
+          {reminderDate?.toLocaleDateString()}.
         </div>
       )}
     </div>
