@@ -8,7 +8,7 @@ import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
 import ProviderService, {
   AnalyticsProviderIdentifierRegistrationName,
   AnalyticsProviderRegistrationPrefix,
-} from "../services/provider-service"
+} from "#services/provider-service"
 
 const registrationFn = async (klass, container, pluginOptions) => {
   const key = ProviderService.getRegistrationIdentifier(klass, pluginOptions.id)

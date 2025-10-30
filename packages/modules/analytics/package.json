@@ -4,6 +4,10 @@
   "description": "Medusa Analytics module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "imports": {
+    "#services/*": "./dist/services/*.js",
+    "#types/*": "./dist/types/*.js"
+  },
   "files": [
     "dist",
     "!dist/**/__tests__",
