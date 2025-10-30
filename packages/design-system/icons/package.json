@@ -36,7 +36,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@types/jsdom": "^21.1.1",
-    "@types/react": "^18.2.14",
+    "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.6",
     "esbuild": "^0.18.11",
     "eslint": "^7.32.0",
