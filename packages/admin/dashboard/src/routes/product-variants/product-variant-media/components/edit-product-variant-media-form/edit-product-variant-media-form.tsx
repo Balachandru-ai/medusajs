@@ -231,7 +231,7 @@ export const EditProductVariantMediaForm = ({
                   <h3 className="ui-fg-base ">
                     {t("products.media.availableImages")}
                   </h3>
-                  <p className="text-ui-fg-dimmed mt-1 text-sm">
+                  <p className="text-ui-fg-muted mt-1 text-sm">
                     {t("products.media.selectToAdd")}
                   </p>
                 </div>
@@ -265,7 +265,7 @@ export const EditProductVariantMediaForm = ({
                         <h3 className="ui-fg-base text-sm font-medium">
                           {t("products.media.availableImages")}
                         </h3>
-                        <p className="ui-fg-muted mt-1 text-xs">
+                        <p className="text-ui-fg-muted mt-1 pr-2 text-xs">
                           {t("products.media.selectToAdd")}
                         </p>
                       </div>
