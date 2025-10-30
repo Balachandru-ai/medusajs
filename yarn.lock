@@ -4848,7 +4848,7 @@ __metadata:
     "@babel/traverse": 7.25.6
     "@babel/types": 7.25.6
     "@medusajs/admin-shared": 2.11.1
-    "@types/node": ^20.10.4
+    "@types/node": ^20.12.11
     chokidar: 3.5.3
     fdir: 6.1.1
     magic-string: 0.30.5
@@ -5197,7 +5197,7 @@ __metadata:
     "@tanstack/react-virtual": ^3.8.3
     "@types/lodash.debounce": ^4.0.9
     "@types/lodash.isequal": ^4.5.8
-    "@types/node": ^20.11.15
+    "@types/node": ^20.12.11
     "@types/react": ^18.3.2
     "@types/react-dom": ^18.2.25
     "@uiw/react-json-view": ^2.0.0-alpha.17
@@ -5281,7 +5281,7 @@ __metadata:
     "@types/lodash": ^4.17.15
     "@types/lodash.debounce": ^4.0.9
     "@types/lodash.isequal": ^4.5.8
-    "@types/node": ^20.0.0
+    "@types/node": ^20.12.11
     "@types/react": ^18.3.2
     "@types/react-dom": ^18.2.25
     "@uiw/react-json-view": ^2.0.0-alpha.17
@@ -14312,7 +14312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=8.1.0, @types/node@npm:^20.10.4, @types/node@npm:^20.11.15":
+"@types/node@npm:*, @types/node@npm:>=8.1.0":
   version: 20.12.10
   resolution: "@types/node@npm:20.12.10"
   dependencies:
@@ -14350,15 +14350,6 @@ __metadata:
   dependencies:
     undici-types: ~5.26.4
   checksum: 29d60ddd83a8216daf90d4bf101a6eff7fcf034b24bb89da90291017ec54c33b5ce30e7c125aef3f23f756037f0c382d15ebd434ad9c4536c8db8f1fb129f0ce
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.0.0":
-  version: 20.19.10
-  resolution: "@types/node@npm:20.19.10"
-  dependencies:
-    undici-types: ~6.21.0
-  checksum: dac81561f6d7cbd37c876c4023846095a71d8b62df52c8b6b32de67f6ca6aaf2ffd0c1e02ede6d2c8af41e934ce2005f67b8b6348b79dd355c05f3192aa7b59a
   languageName: node
   linkType: hard
 
@@ -31927,13 +31918,6 @@ __metadata:
   version: 6.19.8
   resolution: "undici-types@npm:6.19.8"
   checksum: 078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
   languageName: node
   linkType: hard
 
