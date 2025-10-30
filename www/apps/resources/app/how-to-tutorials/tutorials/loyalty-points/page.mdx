@@ -971,7 +971,7 @@ Refer to the [Events and Subscribers](!docs!/learn/fundamentals/events-and-subsc
 
 </Note>
 
-Subscribers are created in a TypeScript or JavaScript file under the `src/subscribers` directory. So, to create a subscriber, create the fle `src/subscribers/order-placed.ts` with the following content:
+Subscribers are created in a TypeScript or JavaScript file under the `src/subscribers` directory. So, to create a subscriber, create the file `src/subscribers/order-placed.ts` with the following content:
 
 ```ts title="src/subscribers/order-placed.ts"
 import type {
@@ -1783,7 +1783,7 @@ The workflow will have the following steps:
       {
         type: "step",
         name: "updatePromotionsStep",
-        description: "Deactive the loyalty promotion.",
+        description: "Deactivate the loyalty promotion.",
         link: "/references/medusa-workflows/steps/updatePromotionsStep",
         depth: 1,
       },
@@ -2097,7 +2097,7 @@ completeCartWorkflow.hooks.validate(
 )
 ```
 
-Workflows have a special `hooks` property that includes all the hooks tht you can consume in that workflow. You consume the hook by invoking it from the workflow's `hooks` property.
+Workflows have a special `hooks` property that includes all the hooks that you can consume in that workflow. You consume the hook by invoking it from the workflow's `hooks` property.
 
 Since the hook is essentially a step function, it accepts the following parameters:
 

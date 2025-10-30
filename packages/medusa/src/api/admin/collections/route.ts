@@ -37,7 +37,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateCollectionType & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    AdminCreateCollectionType & AdditionalData,
+    HttpTypes.AdminCollectionParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCollectionResponse>
 ) => {
   const { additional_data, ...rest } = req.validatedBody

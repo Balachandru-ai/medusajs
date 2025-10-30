@@ -4,22 +4,15 @@ export interface AdminCreateCampaign {
   /**
    * The campaign's name.
    */
-  name?: string
+  name: string
   /**
    * The campaign's description.
    */
-  description?: string
-  /**
-   * The campaign's currency code.
-   *
-   * @example
-   * usd
-   */
-  currency?: string | null
+  description?: string | null
   /**
    * The campaign's identifier.
    */
-  campaign_identifier?: string
+  campaign_identifier: string
   /**
    * The date the campaign and its promotions start at.
    */
@@ -70,14 +63,7 @@ export interface AdminUpdateCampaign {
   /**
    * The campaign's description.
    */
-  description?: string
-  /**
-   * The campaign's currency code.
-   *
-   * @example
-   * usd
-   */
-  currency?: string | null
+  description?: string | null
   /**
    * The campaign's identifier.
    */
@@ -95,20 +81,8 @@ export interface AdminUpdateCampaign {
    */
   budget?: {
     /**
-     * The budget's type. `spend` means the limit is set on the total amount discounted by the campaign's promotions;
-     * `usage` means the limit is set on the total number of times the campaign's promotions can be used.
-     */
-    type?: CampaignBudgetTypeValues
-    /**
-     * The budget's currency code.
-     *
-     * @example
-     * usd
-     */
-    currency_code?: string | null
-    /**
      * The budget's limit.
      */
     limit?: number | null
-  } | null
+  }
 }

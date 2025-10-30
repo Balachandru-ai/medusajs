@@ -13,7 +13,10 @@ import { HttpTypes } from "@medusajs/framework/types"
 
 // Create stock location
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateStockLocation>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateStockLocation,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminStockLocationResponse>
 ) => {
   const { result } = await createStockLocationsWorkflow(req.scope).run({

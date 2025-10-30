@@ -15,7 +15,7 @@ import {
 } from "@medusajs/framework/http"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminReturnReasonParams>,
   res: MedusaResponse<AdminReturnReasonResponse>
 ) => {
   const return_reason = await refetchEntity({
@@ -36,7 +36,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminUpdateReturnReason>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateReturnReason,
+    HttpTypes.AdminReturnReasonParams
+  >,
   res: MedusaResponse<AdminReturnReasonResponse>
 ) => {
   const workflow = updateReturnReasonsWorkflow(req.scope)

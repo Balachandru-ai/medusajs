@@ -8,7 +8,6 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { fetchPriceList, transformPriceList } from "./helpers"
-import { AdminCreatePriceListType } from "./validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
@@ -37,7 +36,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreatePriceListType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreatePriceList,
+    HttpTypes.AdminPriceListListParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPriceListResponse>
 ) => {
   const workflow = createPriceListsWorkflow(req.scope)

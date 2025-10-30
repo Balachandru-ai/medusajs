@@ -7,7 +7,7 @@ import { refetchTaxRate } from "../../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminTaxRateRuleDeleteResponse>
 ) => {
   await deleteTaxRateRulesWorkflow(req.scope).run({

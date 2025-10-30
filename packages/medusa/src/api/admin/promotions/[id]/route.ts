@@ -12,14 +12,10 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { refetchPromotion } from "../helpers"
-import {
-  AdminGetPromotionParamsType,
-  AdminUpdatePromotionType,
-} from "../validators"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetPromotionParamsType>,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminGetPromotionParams>,
   res: MedusaResponse<HttpTypes.AdminPromotionResponse>
 ) => {
   const idOrCode = req.params.id
@@ -44,7 +40,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdatePromotionType & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdatePromotion & AdditionalData,
+    HttpTypes.AdminGetPromotionParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPromotionResponse>
 ) => {
   const { additional_data, ...rest } = req.validatedBody

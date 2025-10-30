@@ -1,5 +1,19 @@
 # @medusajs/admin-sdk
 
+## 2.11.1
+
+### Patch Changes
+
+- Updated dependencies [[`226984cf0f229bec00ee33a3a1a981b57889c11a`](https://github.com/medusajs/medusa/commit/226984cf0f229bec00ee33a3a1a981b57889c11a)]:
+  - @medusajs/admin-shared@2.11.1
+
+## 2.11.0
+
+### Patch Changes
+
+- Updated dependencies [[`5e827ec95d0f721e62c0d4e8c603bda7ddc0929c`](https://github.com/medusajs/medusa/commit/5e827ec95d0f721e62c0d4e8c603bda7ddc0929c)]:
+  - @medusajs/admin-shared@2.11.0
+
 ## 2.10.3
 
 ### Patch Changes

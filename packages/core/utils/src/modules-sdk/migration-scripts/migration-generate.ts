@@ -26,13 +26,12 @@ export function buildGenerateMigrationScript({
    * @param logger
    * @param moduleDeclaration
    */
-  return async function ({
-    options,
-    logger,
-  }: Pick<
-    LoaderOptions<ModulesSdkTypes.ModuleServiceInitializeOptions>,
-    "options" | "logger"
-  > = {}) {
+  return async function (
+    { options, logger } = {} as Pick<
+      LoaderOptions<ModulesSdkTypes.ModuleServiceInitializeOptions>,
+      "options" | "logger"
+    >
+  ) {
     logger ??= console as unknown as Logger
 
     logger.info(new Array(TERMINAL_SIZE).join("-"))

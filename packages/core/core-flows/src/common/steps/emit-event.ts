@@ -39,7 +39,11 @@ type Input = {
 export const emitEventStepId = "emit-event-step"
 
 /**
- * Emit an event.
+ * This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the
+ * subscriber by including it in the `data` property.
+ * 
+ * The event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. 
+ * If the workflow fails, it won't emit the event at all.
  *
  * @example
  * emitEventStep({

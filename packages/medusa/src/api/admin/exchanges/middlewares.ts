@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework"
 import * as QueryConfig from "./query-config"
 import {
+  AdminGetExchangeParams,
   AdminGetOrdersOrderParams,
   AdminGetOrdersParams,
   AdminPostCancelExchangeReqSchema,
@@ -33,7 +34,7 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/exchanges/:id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminGetExchangeParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
