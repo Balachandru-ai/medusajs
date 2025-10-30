@@ -59,7 +59,7 @@ export const authorizePaymentSessionStep = createStep(
         `Error was thrown trying to authorize payment session - ${input.id} - ${e}`
       )
       // this implies the error is already a MedusaError, so we can throw it safely,
-      if (e instanceof MedusaError) {
+      if (MedusaError.isMedusaError(e)) {
         throw e
       }
       
