@@ -419,6 +419,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "title": "Add Product Category Images",
+          "path": "/how-to-tutorials/tutorials/category-images",
+          "description": "Learn how to add images to product categories in Medusa.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "title": "Agentic Commerce",
           "path": "/how-to-tutorials/tutorials/agentic-commerce",
           "description": "Learn how to build Agentic Commerce with Medusa to support purchase with AI agents like ChatGPT.",

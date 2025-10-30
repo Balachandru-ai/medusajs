@@ -795,20 +795,20 @@ moduleIntegrationTestRunner<IPricingModuleService>({
         it("should update a price to a priceList successfully", async () => {
           const [priceSet] = await service.createPriceSets([{}])
 
+          const prices = Array.from({ length: 1 }, (_, i) => ({
+            id: `test-price-id-${i}`,
+            amount: 123 + i,
+            currency_code: "EUR",
+            price_set_id: priceSet.id,
+            rules: {
+              region_id: `test`,
+            },
+          }))
+
           const [priceBeforeUpdate] = await service.addPriceListPrices([
             {
               price_list_id: "price-list-1",
-              prices: [
-                {
-                  id: "test-price-id",
-                  amount: 123,
-                  currency_code: "EUR",
-                  price_set_id: priceSet.id,
-                  rules: {
-                    region_id: "test",
-                  },
-                },
-              ],
+              prices,
             },
           ])
 
@@ -819,7 +819,7 @@ moduleIntegrationTestRunner<IPricingModuleService>({
               price_list_id: "price-list-1",
               prices: [
                 {
-                  id: "test-price-id",
+                  id: "test-price-id-0",
                   price_set_id: priceSet.id,
                   rules: {
                     region_id: "new test",
