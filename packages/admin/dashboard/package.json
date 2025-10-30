@@ -17,9 +17,9 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/app.mjs",
-      "require": "./dist/app.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/app.js"
     },
     "./css": {
       "import": "./dist/app.css",
@@ -96,7 +96,7 @@
     "postcss": "^8.4.33",
     "prettier": "^3.1.1",
     "tailwindcss": "^3.4.1",
-    "tsup": "^8.0.2",
+    "tsup": "^8.4.0",
     "typescript": "^5.6.2",
     "vite": "^5.4.14",
     "vite-plugin-inspect": "^0.8.7",
