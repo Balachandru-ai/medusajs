@@ -1,4 +1,8 @@
 import { DMLSchema } from "@medusajs/types"
+import { isBigNumber } from "../../../common/is-big-number"
+import { isDefined } from "../../../common/is-defined"
+import { trimZeros } from "../../../common/trim-zeros"
+import { BigNumber } from "../../../totals/big-number"
 import { BigNumberProperty } from "../../properties/big-number"
 import { JSONProperty } from "../../properties/json"
 import { NullableModifier } from "../../properties/nullable"
@@ -18,9 +22,12 @@ export type DMLSchemaWithBigNumber<T extends DMLSchema> = {
 } & {
   [K in keyof T as T[K] extends
     | BigNumberProperty
-    | NullableModifier<number, BigNumberProperty>
+    | NullableModifier<number | string | BigNumber, BigNumberProperty>
     ? `raw_${string & K}`
-    : never]: T[K] extends NullableModifier<number, BigNumberProperty>
+    : never]: T[K] extends NullableModifier<
+    number | string | BigNumber,
+    BigNumberProperty
+  >
     ? NullableModifier<Record<string, unknown>, JSONProperty>
     : JSONProperty
 }
@@ -41,9 +48,19 @@ export function createBigNumberProperties<Schema extends DMLSchema>(
         continue
       }
 
+      let defaultValue = parsed.defaultValue
+      if (isDefined(defaultValue)) {
+        const bigNumber = isBigNumber(defaultValue)
+          ? (defaultValue as unknown as BigNumber)
+          : new BigNumber(defaultValue)
+
+        bigNumber.raw!.value = trimZeros(bigNumber.raw!.value + "")
+        defaultValue = bigNumber.raw
+      }
+
       let jsonProperty = parsed.nullable
-        ? new JSONProperty().nullable()
-        : new JSONProperty()
+        ? new JSONProperty().default(defaultValue).nullable()
+        : new JSONProperty().default(defaultValue)
 
       if (parsed.computed) {
         jsonProperty = jsonProperty.computed() as unknown as
