@@ -173,7 +173,9 @@ export class Client {
         const res = await fetchPromise
 
         if (!res.ok) {
-          return
+          const error = new Error(`Stream failed with status ${res.status}`)
+          error.name = "HttpError"
+          throw error
         }
 
         yield* events(res, abortController.signal)
