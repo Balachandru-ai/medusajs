@@ -5447,7 +5447,6 @@ __metadata:
     "@types/react-dom": ^18.2.25
     "@uiw/react-json-view": ^2.0.0-alpha.17
     date-fns: ^3.6.0
-    lodash: ^4.17.21
     lodash.debounce: ^4.0.8
     lodash.isequal: ^4.5.0
     match-sorter: ^6.3.4
@@ -5468,7 +5467,6 @@ __metadata:
     "@medusajs/icons": 2.11.1
     "@medusajs/test-utils": 2.11.1
     "@medusajs/ui": 4.0.25
-    lodash: ^4.17.21
     react-router-dom: 6.20.1
   languageName: unknown
   linkType: soft
@@ -5810,12 +5808,16 @@ __metadata:
     "@readme/openapi-parser": ^2.4.0
     "@redocly/cli": ^1.7.0
     "@types/js-yaml": ^4.0.9
-    "@types/lodash": ^4.14.191
+    "@types/lodash.isarray": ^4.0.9
+    "@types/lodash.mergewith": ^4.6.9
+    "@types/lodash.upperfirst": ^4.3.9
     commander: ^10.0.0
     execa: 1.0.0
     jest: ^29.1.0
     js-yaml: ^4.1.0
-    lodash: ^4.17.21
+    lodash.isarray: ^4.0.0
+    lodash.mergewith: ^4.6.2
+    lodash.upperfirst: ^4.3.1
     openapi3-ts: ^3.1.2
     swagger-inline: ^6.1.0
     ts-jest: ^29.1.0
@@ -14470,12 +14472,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.isarray@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@types/lodash.isarray@npm:4.0.9"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 1d9b8c14007a318c91c611dc1e86c671d0fd9c4690e204c8e2cebf394d414599a7a7a665285d5a2e135deebb6a063cd00be172ca7411d640da034e5c21f28a8a
+  languageName: node
+  linkType: hard
+
 "@types/lodash.isequal@npm:^4.5.8":
   version: 4.5.8
   resolution: "@types/lodash.isequal@npm:4.5.8"
   dependencies:
     "@types/lodash": "*"
   checksum: 6db28cacf165d55421fbf2970ccfb1682a7b82b743bb7aba4398fa8ab98f1711fca2fe4afa1aa2b7b4afb3eff76c8aca13b22206f5efeb038d99e41300589bca
+  languageName: node
+  linkType: hard
+
+"@types/lodash.mergewith@npm:^4.6.9":
+  version: 4.6.9
+  resolution: "@types/lodash.mergewith@npm:4.6.9"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: d245cb8c66f88251a6251f93eaec9e876f8c967ef7dac67d7da75eec2a8049e37342478dbe5ae163a566c233b2a1ecd494b180ccaa8603bef58d4ca6a803d2cf
+  languageName: node
+  linkType: hard
+
+"@types/lodash.upperfirst@npm:^4.3.9":
+  version: 4.3.9
+  resolution: "@types/lodash.upperfirst@npm:4.3.9"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 4f6be2e9d4b03a0739972fce3044c28bdf7fd96d5a3c773464f7b8e035d687e46878ad9b958a2fac448807636c0675962e3fbedf20af4fc74bc91bbaf471114f
   languageName: node
   linkType: hard
 
@@ -14486,7 +14515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.167, @types/lodash@npm:^4.14.191":
+"@types/lodash@npm:^4.14.167":
   version: 4.17.1
   resolution: "@types/lodash@npm:4.17.1"
   checksum: af2ad8a3c8d7deb170a7ec6e18afc5ae8980576e5f7fe798d8a95a1df7222c15bdf967a25a35879f575a3b64743de00145710ee461a0051e055e94e4fe253f45
@@ -24707,6 +24736,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isarray@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "lodash.isarray@npm:4.0.0"
+  checksum: 3cb47de912b7700fb1c6378f4240ff67713a2b45fa66a7b0fd6d85e03a8bb3b057bf8e706eb30c92d5047a3ac8fd38db892ae4b8d81985fc687eb6bc409ef4e8
+  languageName: node
+  linkType: hard
+
 "lodash.isboolean@npm:^3.0.3":
   version: 3.0.3
   resolution: "lodash.isboolean@npm:3.0.3"
@@ -24763,6 +24799,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.mergewith@npm:^4.6.2":
+  version: 4.6.2
+  resolution: "lodash.mergewith@npm:4.6.2"
+  checksum: 4adbed65ff96fd65b0b3861f6899f98304f90fd71e7f1eb36c1270e05d500ee7f5ec44c02ef979b5ddbf75c0a0b9b99c35f0ad58f4011934c4d4e99e5200b3b5
+  languageName: node
+  linkType: hard
+
 "lodash.omit@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.omit@npm:4.5.0"
@@ -24809,6 +24852,13 @@ __metadata:
   version: 4.4.2
   resolution: "lodash.truncate@npm:4.4.2"
   checksum: 4e870d54e8a6c86c8687e057cec4069d2e941446ccab7f40b4d9555fa5872d917d0b6aa73bece7765500a3123f1723bcdba9ae881b679ef120bba9e1a0b0ed70
+  languageName: node
+  linkType: hard
+
+"lodash.upperfirst@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "lodash.upperfirst@npm:4.3.1"
+  checksum: 435625da4b3ee74e7a1367a780d9107ab0b13ef4359fc074b2a1a40458eb8d91b655af62f6795b7138d493303a98c0285340160341561d6896e4947e077fa975
   languageName: node
   linkType: hard
 
@@ -29718,6 +29768,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root@workspace:."
   dependencies:
+    "@atomico/rollup-plugin-sizes": ^1.1.4
     "@changesets/changelog-github": ^0.4.8
     "@changesets/cli": ^2.26.0
     "@typescript-eslint/eslint-plugin": ^6.19.0

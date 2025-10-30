@@ -6,8 +6,11 @@ import { commandWrapper } from "@redocly/cli/lib/wrapper"
 import { Command, Option, OptionValues } from "commander"
 import execa from "execa"
 import fs, { mkdir } from "fs/promises"
-import { isArray, mergeWith } from "lodash"
+import isArray from "lodash.isarray"
+import mergeWith from "lodash.mergewith"
+
 import * as path from "path"
+import yargs from "yargs"
 import {
   formatHintRecommendation,
   getCircularPatchRecommendation,
@@ -21,7 +24,6 @@ import {
   writeYaml,
   writeYamlFromJson,
 } from "./utils/yaml-utils"
-import yargs from "yargs"
 
 /**
  * Constants

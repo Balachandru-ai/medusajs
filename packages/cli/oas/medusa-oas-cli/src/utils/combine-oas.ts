@@ -1,5 +1,5 @@
+import upperFirst from "lodash.upperfirst"
 import { OpenAPIObject } from "openapi3-ts"
-import { upperFirst } from "lodash"
 
 export async function combineOAS(
   adminOAS: OpenAPIObject,
