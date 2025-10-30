@@ -13974,6 +13974,7 @@ __metadata:
     docs-ui: "*"
     docs-utils: "*"
     eslint: ^9.13.0
+    eslint-config-next: ^16.0.1
     eslint-plugin-prettier: ^5.2.1
     eslint-plugin-react-hooks: ^5.0.0
     next: 16.0.1
@@ -16150,6 +16151,7 @@ turbo@latest:
     clsx: ^2.1.0
     docs-ui: "*"
     eslint: ^9.13.0
+    eslint-config-next: ^16.0.1
     eslint-plugin-prettier: ^5.2.1
     eslint-plugin-react-hooks: ^5.0.0
     next: 16.0.1
