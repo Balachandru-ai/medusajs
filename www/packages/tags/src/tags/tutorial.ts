@@ -32,6 +32,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
   },
   {
+    "title": "Product Category Images",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images"
+  },
+  {
     "title": "First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
