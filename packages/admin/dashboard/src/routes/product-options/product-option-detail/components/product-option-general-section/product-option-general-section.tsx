@@ -1,6 +1,6 @@
 import { PencilSquare, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
-import { Badge, Container, Heading, StatusBadge } from "@medusajs/ui"
+import { Badge, Container, Heading } from "@medusajs/ui"
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
@@ -32,11 +32,11 @@ export const ProductOptionGeneralSection = ({
       <div className="flex items-center justify-between px-6 py-4">
         <Heading>{productOption.title}</Heading>
         <div className="flex items-center gap-x-2">
-          <StatusBadge color={productOption.is_exclusive ? "orange" : "green"}>
+          <Badge size="xsmall" color="blue">
             {t(
               `general.${productOption.is_exclusive ? "exclusive" : "global"}`
             )}
-          </StatusBadge>
+          </Badge>
           <ActionMenu
             groups={[
               {
