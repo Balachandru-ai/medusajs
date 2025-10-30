@@ -50,7 +50,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
   const modules = resolveModules(config.modules, options, config.projectConfig)
-  applyCloudOptionsToModules(modules, projectConfig?.medusaCloudOptions)
+  applyCloudOptionsToModules(modules, projectConfig?.cloud)
   const plugins = resolvePlugins(config.plugins, options)
 
   return {
@@ -365,19 +365,17 @@ function normalizeProjectConfig(
   projectConfig: InputConfig["projectConfig"],
   { isCloud }: { isCloud: boolean }
 ): ConfigModule["projectConfig"] {
-  const {
-    http,
-    redisOptions,
-    sessionOptions,
-    medusaCloudOptions,
-    ...restOfProjectConfig
-  } = projectConfig || {}
+  const { http, redisOptions, sessionOptions, cloud, ...restOfProjectConfig } =
+    projectConfig || {}
 
   const mergedCloudOptions: MedusaCloudOptions = {
     environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+    sandboxHandle: process.env.MEDUSA_CLOUD_SANDBOX_HANDLE,
     apiKey: process.env.MEDUSA_CLOUD_API_KEY,
+    webhookSecret: process.env.MEDUSA_CLOUD_WEBHOOK_SECRET,
     emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
-    ...medusaCloudOptions,
+    paymentsEndpoint: process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT,
+    ...cloud,
   }
   const hasCloudOptions = Object.values(mergedCloudOptions).some(
     (value) => value !== undefined
@@ -444,7 +442,7 @@ function normalizeProjectConfig(
       ...sessionOptions,
     },
     // If there are no cloud options, we better don't pollute the project config for people not using the cloud
-    ...(hasCloudOptions ? { medusaCloudOptions: mergedCloudOptions } : {}),
+    ...(hasCloudOptions ? { cloud: mergedCloudOptions } : {}),
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
 
@@ -486,11 +484,23 @@ function applyCloudOptionsToModules(
             api_key: config.apiKey,
             endpoint: config.emailsEndpoint,
             environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
           },
           ...(module.options ?? {}),
         }
         break
-      // Will add payment module soon
+      case Modules.PAYMENT:
+        module.options = {
+          cloud: {
+            api_key: config.apiKey,
+            webhook_secret: config.webhookSecret,
+            endpoint: config.paymentsEndpoint,
+            environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
       default:
         break
     }
