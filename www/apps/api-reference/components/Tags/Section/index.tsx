@@ -105,6 +105,8 @@ const TagSectionComponent = ({ tag }: TagSectionProps) => {
     } else if (tagName.length > 1) {
       setLoadData(true)
     }
+    // TODO: fix dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slugTagName, activePath, isBrowser])
 
   return (

@@ -84,6 +84,8 @@ const BaseSpecsProvider = ({ children, baseSpecs }: BaseSpecsProviderProps) => {
     })
 
     return itemsToUpdate
+    // TODO: fix dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseSpecs])
 
   useEffect(() => {

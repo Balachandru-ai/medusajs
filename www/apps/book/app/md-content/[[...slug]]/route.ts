@@ -17,7 +17,6 @@ type Params = {
 
 export async function GET(req: NextRequest, { params }: Params) {
   const { slug = ["/"] } = await params
-  console.log("Requesting slug:", slug)
 
   if (slug[0] === "/") {
     const llmsFile = readFileSync(

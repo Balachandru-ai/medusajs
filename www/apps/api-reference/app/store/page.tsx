@@ -9,7 +9,7 @@ import { notFound } from "next/navigation"
 
 const StorePage = async () => {
   const data = await getBaseSpecs("store")
-  
+
   if (!data) {
     throw notFound()
   }

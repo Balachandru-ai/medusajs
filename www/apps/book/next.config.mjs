@@ -119,7 +119,8 @@ const nextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/:path((?!resources|api|ui|user-guide|cloud).*)index.html.md",
+          source:
+            "/:path((?!resources|api|ui|user-guide|cloud).*)index.html.md",
           destination: "/md-content/:path*",
         },
         {

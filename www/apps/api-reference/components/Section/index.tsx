@@ -3,7 +3,7 @@
 import clsx from "clsx"
 import { useActiveOnScroll, useSidebar } from "docs-ui"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
 
 export type SectionProps = {
   checkActiveOnScroll?: boolean
@@ -14,9 +14,9 @@ const Section = ({
   className,
   checkActiveOnScroll = false,
 }: SectionProps) => {
-  const sectionRef = useRef<HTMLDivElement>(null)
+  const [sectionElm, setSectionElm] = useState<HTMLDivElement | null>(null)
   const { activeItemId } = useActiveOnScroll({
-    rootElm: sectionRef.current || undefined,
+    rootElm: sectionElm || undefined,
     enable: checkActiveOnScroll,
     useDefaultIfNoActive: false,
     maxLevel: 2,
@@ -42,7 +42,7 @@ const Section = ({
 
   return (
     <div
-      ref={sectionRef}
+      ref={(ref) => setSectionElm(ref)}
       className={clsx("[&_ul]:list-disc [&_ul]:px-1", "[&_h2]:pt-7", className)}
     >
       {children}

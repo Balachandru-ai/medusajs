@@ -7,6 +7,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import js from "@eslint/js"
 import { FlatCompat } from "@eslint/eslintrc"
+import nextVitals from "eslint-config-next/core-web-vitals"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -16,7 +17,9 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 })
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default [
+  ...nextVitals,
   prettier,
   {
     ignores: [
@@ -24,20 +27,15 @@ export default [
       "**/.eslintrc.js",
       "**/dist",
       "**/next.config.js",
-      "**/spec",
+      "**/specs",
       "**/node_modules",
       "**/public",
       "**/.eslintrc.js",
       "**/generated",
+      "**/postcss.config.js",
     ],
   },
-  ...compat.extends(
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react/jsx-runtime",
-    "plugin:react-hooks/recommended",
-    "plugin:@next/next/recommended"
-  ),
+  ...compat.extends("eslint:recommended"),
   {
     languageOptions: {
       globals: {
@@ -150,15 +148,10 @@ export default [
       ],
     },
   },
-  ...compat
-    .extends(
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended"
-    )
-    .map((config) => ({
-      ...config,
-      files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-    })),
+  ...compat.extends("plugin:@typescript-eslint/recommended").map((config) => ({
+    ...config,
+    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  })),
   {
     files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
 
@@ -202,6 +195,7 @@ export default [
       "@/space-infix-ops": "error",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+      "react-hooks/immutability": "off",
     },
   },
 ]
