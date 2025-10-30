@@ -1,5 +1,5 @@
 import { getCleanMd } from "docs-utils"
-import { existsSync } from "fs"
+import { existsSync, readFileSync } from "fs"
 import { unstable_cache } from "next/cache"
 import { notFound } from "next/navigation"
 import { NextRequest, NextResponse } from "next/server"
@@ -16,7 +16,21 @@ type Params = {
 }
 
 export async function GET(req: NextRequest, { params }: Params) {
-  const { slug } = await params
+  const { slug = ["/"] } = await params
+
+  if (slug[0] === "/") {
+    const llmsFile = readFileSync(
+      path.join(process.cwd(), "public", "llms.txt"),
+      "utf-8"
+    )
+
+    return new NextResponse(llmsFile, {
+      headers: {
+        "Content-Type": "text/markdown",
+      },
+      status: 200,
+    })
+  }
 
   // keep this so that Vercel keeps the files in deployment
   const basePath = path.join(process.cwd(), "app")
