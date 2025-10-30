@@ -20,7 +20,8 @@
     "noImplicitThis": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "incremental": false
+    "incremental": false,
+    "isolatedDeclarations": true
   },
   "include": ["${configDir}/src"],
   "exclude": ["${configDir}/dist", "${configDir}/node_modules"]
