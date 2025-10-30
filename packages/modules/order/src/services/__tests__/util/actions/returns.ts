@@ -1,3 +1,4 @@
+import "#utils/actions/index"
 import { ChangeActionType } from "@medusajs/framework/utils"
 import { OrderChangeEvent } from "#types/utils/index"
 import { calculateOrderChange } from "#utils/calculate-order-change"

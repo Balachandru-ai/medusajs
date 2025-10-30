@@ -70,18 +70,21 @@ import { OrderShippingMethodTaxLine } from "#models/shipping-method-tax-line"
 import { OrderTransaction } from "#models/transaction"
 
 import {
-  CreateOrderChangeDTO,
-  CreateOrderItemDTO,
   CreateOrderLineItemDTO,
-  CreateOrderLineItemTaxLineDTO,
-  CreateOrderShippingMethodDTO,
-  CreateOrderShippingMethodTaxLineDTO,
-  UpdateOrderItemDTO,
   UpdateOrderLineItemDTO,
+} from "#types/line-item"
+import {
+  CreateOrderLineItemTaxLineDTO,
   UpdateOrderLineItemTaxLineDTO,
+} from "#types/line-item-tax-line"
+import { CreateOrderChangeDTO } from "#types/order-change"
+import { CreateOrderItemDTO, UpdateOrderItemDTO } from "#types/order-detail"
+import { UpdateReturnReasonDTO } from "#types/return-reason"
+import { CreateOrderShippingMethodDTO } from "#types/shipping-method"
+import {
+  CreateOrderShippingMethodTaxLineDTO,
   UpdateOrderShippingMethodTaxLineDTO,
-  UpdateReturnReasonDTO,
-} from "#types/index"
+} from "#types/shipping-method-tax-line"
 
 import {
   applyChangesToOrder,
@@ -99,10 +102,10 @@ import { cancelReturn } from "#services/actions/cancel-return"
 import { createClaim } from "#services/actions/create-claim"
 import { createExchange } from "#services/actions/create-exchange"
 import { createReturn } from "#services/actions/create-return"
+import { receiveReturn } from "#services/actions/receive-return"
 import { registerDelivery } from "#services/actions/register-delivery"
 import { registerFulfillment } from "#services/actions/register-fulfillment"
 import { registerShipment } from "#services/actions/register-shipment"
-import { receiveReturn } from "#services/actions/receive-return"
 
 import OrderService from "./order-service"
 

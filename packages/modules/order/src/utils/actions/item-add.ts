@@ -1,4 +1,4 @@
-import { VirtualOrder } from "#types/index"
+import { VirtualOrder } from "#types/utils/index"
 import {
   ChangeActionType,
   MathBN,

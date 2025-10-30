@@ -1,4 +1,13 @@
 import {
+  ActionTypeDefinition,
+  EVENT_STATUS,
+  InternalOrderChangeEvent,
+  OrderChangeEvent,
+  OrderSummaryCalculated,
+  OrderTransaction,
+  VirtualOrder,
+} from "#types/utils/index"
+import {
   BigNumberInput,
   OrderDTO,
   OrderSummaryDTO,
@@ -10,15 +19,6 @@ import {
   isPresent,
   transformPropertiesToBigNumber,
 } from "@medusajs/framework/utils"
-import {
-  ActionTypeDefinition,
-  EVENT_STATUS,
-  InternalOrderChangeEvent,
-  OrderChangeEvent,
-  OrderSummaryCalculated,
-  OrderTransaction,
-  VirtualOrder,
-} from "#types/index"
 
 interface ProcessOptions {
   addActionReferenceToObject?: boolean
