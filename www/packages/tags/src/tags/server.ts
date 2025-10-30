@@ -64,6 +64,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
   },
   {
+    "title": "Product Category Images",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images"
+  },
+  {
     "title": "First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -170,6 +174,14 @@ export const server = [
   {
     "title": "Use Cache Module",
     "path": "https://docs.medusajs.com/resources/references/cache-service"
+  },
+  {
+    "title": "Use Caching Module",
+    "path": "https://docs.medusajs.com/resources/references/caching-service"
+  },
+  {
+    "title": "Create Caching Provider",
+    "path": "https://docs.medusajs.com/resources/references/caching-module-provider"
   },
   {
     "title": "Use Event Module",

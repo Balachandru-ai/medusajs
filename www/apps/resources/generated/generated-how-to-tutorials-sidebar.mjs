@@ -66,6 +66,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Create Caching Provider",
+              "path": "https://docs.medusajs.com/resources/references/caching-module-provider",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Create Event Module",
               "path": "https://docs.medusajs.com/resources/infrastructure-modules/event/create",
               "children": []
@@ -188,6 +196,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "type": "ref",
               "title": "Use Cache Module",
               "path": "https://docs.medusajs.com/resources/references/cache-service",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Use Caching Module",
+              "path": "https://docs.medusajs.com/resources/references/caching-service",
               "children": []
             },
             {
@@ -397,6 +413,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "title": "Add Gift Message",
           "path": "/how-to-tutorials/tutorials/gift-message",
           "description": "Learn how to add a gift option and message to items in the cart.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Add Product Category Images",
+          "path": "/how-to-tutorials/tutorials/category-images",
+          "description": "Learn how to add images to product categories in Medusa.",
           "children": []
         },
         {

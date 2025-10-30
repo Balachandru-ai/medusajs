@@ -8,10 +8,9 @@ import {
   MedusaResponse,
   refetchEntity,
 } from "@medusajs/framework/http"
-import { AdminUpdatePaymentRefundReasonType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminRefundReasonParams>,
   res: MedusaResponse<RefundReasonResponse>
 ) => {
   const refund_reason = await refetchEntity({
@@ -25,7 +24,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdatePaymentRefundReasonType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateRefundReason,
+    HttpTypes.AdminRefundReasonParams
+  >,
   res: MedusaResponse<RefundReasonResponse>
 ) => {
   const { id } = req.params

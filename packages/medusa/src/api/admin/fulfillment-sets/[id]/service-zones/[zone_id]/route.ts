@@ -19,10 +19,9 @@ import {
   MedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminUpdateFulfillmentSetServiceZonesType } from "../../../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<AdminServiceZoneResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
@@ -48,7 +47,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: MedusaRequest<AdminUpdateFulfillmentSetServiceZonesType>,
+  req: MedusaRequest<
+    HttpTypes.AdminUpdateFulfillmentSetServiceZone,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<AdminFulfillmentSetResponse>
 ) => {
   const fulfillmentModuleService = req.scope.resolve<IFulfillmentModuleService>(

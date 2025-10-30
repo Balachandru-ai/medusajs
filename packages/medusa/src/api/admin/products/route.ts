@@ -93,7 +93,8 @@ async function getProductsWithIndexEngine(
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
-    HttpTypes.AdminCreateProduct & AdditionalData
+    HttpTypes.AdminCreateProduct & AdditionalData,
+    HttpTypes.SelectParams
   >,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {

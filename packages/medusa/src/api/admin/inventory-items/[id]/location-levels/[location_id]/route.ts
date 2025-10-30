@@ -10,10 +10,9 @@ import {
 } from "@medusajs/core-flows"
 import { HttpTypes } from "@medusajs/framework/types"
 import { refetchInventoryItem } from "../../../helpers"
-import { AdminUpdateInventoryLocationLevelType } from "../../../validators"
 
 export const DELETE = async (
-  req: MedusaRequest,
+  req: MedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminInventoryLevelDeleteResponse>
 ) => {
   const { id, location_id } = req.params
@@ -65,7 +64,10 @@ export const DELETE = async (
 }
 
 export const POST = async (
-  req: MedusaRequest<AdminUpdateInventoryLocationLevelType>,
+  req: MedusaRequest<
+    HttpTypes.AdminUpdateInventoryLevel,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminInventoryItemResponse>
 ) => {
   const { id, location_id } = req.params

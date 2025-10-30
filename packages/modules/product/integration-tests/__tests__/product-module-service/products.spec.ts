@@ -3,11 +3,7 @@ import {
   ProductCategoryDTO,
   ProductTagDTO,
 } from "@medusajs/framework/types"
-import {
-  kebabCase,
-  Modules,
-  ProductStatus,
-} from "@medusajs/framework/utils"
+import { kebabCase, Modules, ProductStatus } from "@medusajs/framework/utils"
 import {
   Product,
   ProductCategory,
@@ -16,9 +12,7 @@ import {
   ProductType,
 } from "@models"
 
-import {
-  moduleIntegrationTestRunner,
-} from "@medusajs/test-utils"
+import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { UpdateProductInput } from "@types"
 import {
   buildProductAndRelationsData,
@@ -566,7 +560,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-
         it("should add relationships to a product", async () => {
           const updateData = {
             id: productOne.id,
@@ -1053,7 +1046,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-
         it("should throw because variant doesn't have all options set", async () => {
           const error = await service
             .createProducts([
@@ -1232,7 +1224,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           expect(softDeleted).toHaveLength(1)
         })
-
       })
 
       describe("restore", function () {
@@ -1568,6 +1559,114 @@ moduleIntegrationTestRunner<IProductModuleService>({
               rank: 2,
             }),
           ])
+        })
+
+        it("should populate variant.images when variants.images relation is requested", async () => {
+          const images = [
+            { url: "general-image-1" },
+            { url: "general-image-2" },
+            { url: "variant-specific-image" },
+          ]
+
+          const [product] = await service.createProducts([
+            buildProductAndRelationsData({
+              images,
+              options: [{ title: "size", values: ["small", "large"] }],
+              variants: [
+                { title: "Small", options: { size: "small" } },
+                { title: "Large", options: { size: "large" } },
+              ],
+            }),
+          ])
+
+          const generalImage1 = product.images.find(
+            (img) => img.url === "general-image-1"
+          )!
+          const generalImage2 = product.images.find(
+            (img) => img.url === "general-image-2"
+          )!
+          const variantSpecificImage = product.images.find(
+            (img) => img.url === "variant-specific-image"
+          )!
+
+          const smallVariant = product.variants.find(
+            (v) => v.title === "Small"
+          )!
+          const largeVariant = product.variants.find(
+            (v) => v.title === "Large"
+          )!
+
+          // Add variant-specific image assignment
+          await service.addImageToVariant([
+            {
+              image_id: variantSpecificImage.id,
+              variant_id: smallVariant.id,
+            },
+          ])
+
+          // Test retrieveProduct with variants.images relation
+          const retrievedProduct = await service.retrieveProduct(product.id, {
+            relations: ["variants", "variants.images", "images"],
+          })
+
+          expect(retrievedProduct.variants).toHaveLength(2)
+
+          // First variant (Small) should have general images + variant-specific image
+          const retrievedSmallVariant = retrievedProduct.variants.find(
+            (v) => v.title === "Small"
+          )!
+          expect(retrievedSmallVariant.images).toHaveLength(3) // 2 general + 1 variant-specific
+          expect(retrievedSmallVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+              expect.objectContaining({ id: variantSpecificImage.id }),
+            ])
+          )
+
+          // Second variant (Large) should have only general images
+          const retrievedLargeVariant = retrievedProduct.variants.find(
+            (v) => v.title === "Large"
+          )!
+          expect(retrievedLargeVariant.images).toHaveLength(2) // 2 general images only
+          expect(retrievedLargeVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+            ])
+          )
+
+          // Test listProducts with variants.images relation
+          const products = await service.listProducts(
+            { id: product.id },
+            { relations: ["variants", "variants.images", "images"] }
+          )
+
+          expect(products).toHaveLength(1)
+          expect(products[0].variants).toHaveLength(2)
+
+          const listSmallVariant = products[0].variants.find(
+            (v) => v.title === "Small"
+          )!
+          expect(listSmallVariant.images).toHaveLength(3)
+          expect(listSmallVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+              expect.objectContaining({ id: variantSpecificImage.id }),
+            ])
+          )
+
+          const listLargeVariant = products[0].variants.find(
+            (v) => v.title === "Large"
+          )!
+          expect(listLargeVariant.images).toHaveLength(2)
+          expect(listLargeVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+            ])
+          )
         })
       })
     })

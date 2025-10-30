@@ -9,7 +9,10 @@ import { AdminCreateVariantInventoryItemType } from "../../../../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateVariantInventoryItemType>,
+  req: AuthenticatedMedusaRequest<
+    AdminCreateVariantInventoryItemType,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductVariantResponse>
 ) => {
   const variantId = req.params.variant_id

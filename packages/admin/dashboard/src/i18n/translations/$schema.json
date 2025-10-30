@@ -450,6 +450,12 @@
         "idCopiedToClipboard": {
           "type": "string"
         },
+        "editVariantImages": {
+          "type": "string"
+        },
+        "editImages": {
+          "type": "string"
+        },
         "addReason": {
           "type": "string"
         },
@@ -530,6 +536,8 @@
         "continue",
         "continueWithEmail",
         "idCopiedToClipboard",
+        "editVariantImages",
+        "editImages",
         "addReason",
         "addNote",
         "reset",
@@ -1912,6 +1920,9 @@
             "editHint": {
               "type": "string"
             },
+            "manageImageVariants": {
+              "type": "string"
+            },
             "makeThumbnail": {
               "type": "string"
             },
@@ -1969,11 +1980,27 @@
             },
             "successToast": {
               "type": "string"
+            },
+            "variantImages": {
+              "type": "string"
+            },
+            "showAvailableImages": {
+              "type": "string"
+            },
+            "availableImages": {
+              "type": "string"
+            },
+            "selectToAdd": {
+              "type": "string"
+            },
+            "removeSelected": {
+              "type": "string"
             }
           },
           "required": [
             "label",
             "editHint",
+            "manageImageVariants",
             "makeThumbnail",
             "uploadImagesLabel",
             "uploadImagesHint",
@@ -1988,7 +2015,57 @@
             "downloadImageLabel",
             "deleteImageLabel",
             "emptyState",
-            "successToast"
+            "successToast",
+            "variantImages",
+            "showAvailableImages",
+            "availableImages",
+            "selectToAdd",
+            "removeSelected"
+          ],
+          "additionalProperties": false
+        },
+        "variantMedia": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "manageVariants": {
+              "type": "string"
+            },
+            "addToMultipleVariants": {
+              "type": "string"
+            },
+            "manageVariantsDescription": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
+            "emptyState": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                }
+              },
+              "required": ["header", "description", "action"],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "label",
+            "manageVariants",
+            "addToMultipleVariants",
+            "manageVariantsDescription",
+            "successToast",
+            "emptyState"
           ],
           "additionalProperties": false
         },
@@ -2736,6 +2813,7 @@
         "editOptions",
         "editPrices",
         "media",
+        "variantMedia",
         "discountableHint",
         "noSalesChannels",
         "variantCount_one",
@@ -5003,6 +5081,12 @@
             "trackingNumber": {
               "type": "string"
             },
+            "trackingUrl": {
+              "type": "string"
+            },
+            "labelUrl": {
+              "type": "string"
+            },
             "addTracking": {
               "type": "string"
             },
@@ -5019,6 +5103,8 @@
           "required": [
             "title",
             "trackingNumber",
+            "trackingUrl",
+            "labelUrl",
             "addTracking",
             "sendNotification",
             "sendNotificationHint",
@@ -7569,6 +7655,9 @@
             "allocation": {
               "type": "string"
             },
+            "allocationTooltip": {
+              "type": "string"
+            },
             "addCondition": {
               "type": "string"
             },
@@ -7675,6 +7764,7 @@
             "campaign",
             "method",
             "allocation",
+            "allocationTooltip",
             "addCondition",
             "clearAll",
             "taxInclusive",
@@ -8048,9 +8138,22 @@
                   },
                   "required": ["title", "description"],
                   "additionalProperties": false
+                },
+                "once": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["title", "description"],
+                  "additionalProperties": false
                 }
               },
-              "required": ["each", "across"],
+              "required": ["each", "across", "once"],
               "additionalProperties": false
             },
             "code": {
@@ -8345,6 +8448,19 @@
         "budget": {
           "type": "object",
           "properties": {
+            "attribute": {
+              "type": "object",
+              "properties": {
+                "customer_id": {
+                  "type": "string"
+                },
+                "customer_email": {
+                  "type": "string"
+                }
+              },
+              "required": ["customer_id", "customer_email"],
+              "additionalProperties": false
+            },
             "create": {
               "type": "object",
               "properties": {
@@ -8384,6 +8500,12 @@
                 },
                 "totalUsedByAttribute": {
                   "type": "string"
+                },
+                "totalUsedByAttributeCustomerId": {
+                  "type": "string"
+                },
+                "totalUsedByAttributeEmail": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -8393,7 +8515,9 @@
                 "used",
                 "budgetAttribute",
                 "budgetAttributeTooltip",
-                "totalUsedByAttribute"
+                "totalUsedByAttribute",
+                "totalUsedByAttributeCustomerId",
+                "totalUsedByAttributeEmail"
               ],
               "additionalProperties": false
             },
@@ -8432,11 +8556,22 @@
                     "title": {
                       "type": "string"
                     },
+                    "titleCustomerId": {
+                      "type": "string"
+                    },
+                    "titleEmail": {
+                      "type": "string"
+                    },
                     "description": {
                       "type": "string"
                     }
                   },
-                  "required": ["title", "description"],
+                  "required": [
+                    "title",
+                    "titleCustomerId",
+                    "titleEmail",
+                    "description"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -8454,7 +8589,14 @@
               "additionalProperties": false
             }
           },
-          "required": ["create", "details", "fields", "type", "edit"],
+          "required": [
+            "attribute",
+            "create",
+            "details",
+            "fields",
+            "type",
+            "edit"
+          ],
           "additionalProperties": false
         },
         "promotions": {

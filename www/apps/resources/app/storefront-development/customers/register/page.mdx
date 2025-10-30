@@ -47,7 +47,7 @@ Learn how to install and configure the JS SDK in the [JS SDK documentation](../.
 
 ## How to Implement the Register Customer Flow
 
-An example implemetation of the registration flow in a storefront:
+An example implementation of the registration flow in a storefront:
 
 <CodeTabs group="store-request">
   <CodeTab label="React" value="react">
@@ -95,7 +95,7 @@ export const highlights = [
         const fetchError = error as FetchError
         
         if (fetchError.statusText !== "Unauthorized" || fetchError.message !== "Identity with email already exists") {
-          alert(`An error occured while creating account: ${fetchError}`)
+          alert(`An error occurred while creating account: ${fetchError}`)
           return
         }
         // another identity (for example, admin user)
@@ -105,7 +105,7 @@ export const highlights = [
           email,
           password,
         }).catch((e) => {
-          alert(`An error occured while creating account: ${e}`)
+          alert(`An error occurred while creating account: ${e}`)
         }))
 
         if (!loginResponse) {
@@ -206,7 +206,7 @@ export const fetchHighlights = [
       const fetchError = error as FetchError
       
       if (fetchError.statusText !== "Unauthorized" || fetchError.message !== "Identity with email already exists") {
-        alert(`An error occured while creating account: ${fetchError}`)
+        alert(`An error occurred while creating account: ${fetchError}`)
         return
       }
       // another identity (for example, admin user)
@@ -216,7 +216,7 @@ export const fetchHighlights = [
         email,
         password,
       }).catch((e) => {
-        alert(`An error occured while creating account: ${e}`)
+        alert(`An error occurred while creating account: ${e}`)
       }))
 
       if (!loginResponse) {

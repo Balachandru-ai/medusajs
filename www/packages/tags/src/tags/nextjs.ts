@@ -1,5 +1,9 @@
 export const nextjs = [
   {
+    "title": "Megamenu and Category Banner",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images"
+  },
+  {
     "title": "First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },

@@ -62,6 +62,7 @@ export class TransactionStep {
   startedAt?: number
   next: string[]
   saveResponse: boolean
+  _v?: number
 
   public getStates() {
     return this.isCompensating() ? this.compensate : this.invoke
@@ -176,7 +177,7 @@ export class TransactionStep {
       !!(
         this.lastAttempt &&
         this.definition.retryInterval &&
-        Date.now() - this.lastAttempt > this.definition.retryInterval * 1e3
+        Date.now() - this.lastAttempt >= this.definition.retryInterval * 1e3
       )
     )
   }
@@ -191,8 +192,12 @@ export class TransactionStep {
       this.lastAttempt &&
       Date.now() - this.lastAttempt >
         this.definition.retryIntervalAwaiting! * 1e3 &&
+      // For compensating steps, ignore maxAwaitingRetries and retry indefinitely
+      // Compensation must complete, so we keep checking until the nested workflow finishes
       (!("maxAwaitingRetries" in this.definition) ||
-        this.attempts < this.definition.maxAwaitingRetries!)
+        (this.isCompensating()
+          ? this.attempts < this.definition.maxAwaitingRetries! * 2
+          : this.attempts < this.definition.maxAwaitingRetries!))
     )
   }
 

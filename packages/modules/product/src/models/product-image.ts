@@ -1,5 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 import Product from "./product"
+import ProductVariant from "./product-variant"
+import ProductVariantProductImage from "./product-variant-product-image"
 
 const ProductImage = model
   .define(
@@ -11,6 +13,10 @@ const ProductImage = model
       rank: model.number().default(0),
       product: model.belongsTo(() => Product, {
         mappedBy: "images",
+      }),
+      variants: model.manyToMany(() => ProductVariant, {
+        mappedBy: "images",
+        pivotEntity: () => ProductVariantProductImage,
       }),
     }
   )

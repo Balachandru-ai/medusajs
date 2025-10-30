@@ -37,7 +37,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateReservation>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateReservation,
+    HttpTypes.AdminGetReservationsParams
+  >,
   res: MedusaResponse<HttpTypes.AdminReservationResponse>
 ) => {
   const input = [req.validatedBody]

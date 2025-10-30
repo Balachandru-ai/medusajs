@@ -12,7 +12,7 @@ import { refetchCustomer } from "../helpers"
 import { AdminUpdateCustomerType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminCustomerResponse>
 ) => {
   const customer = await refetchCustomer(
@@ -32,7 +32,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateCustomerType & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    AdminUpdateCustomerType & AdditionalData,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCustomerResponse>
 ) => {
   const existingCustomer = await refetchCustomer(req.params.id, req.scope, [

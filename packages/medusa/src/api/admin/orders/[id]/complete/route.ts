@@ -10,7 +10,7 @@ import {
 } from "@medusajs/framework/http"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdditionalData>,
+  req: AuthenticatedMedusaRequest<AdditionalData, HttpTypes.AdminGetOrderParams>,
   res: MedusaResponse<HttpTypes.AdminOrderResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

@@ -706,7 +706,7 @@ In the workflow's constructor function, you use `useQueryGraphStep` to retrieve 
 
 <Note title="Tip">
 
-`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), whic allows you to retrieve data across modules. For example, in the above snippet you're retrieving the cart's promotions, which are managed in the [Promotion Module](../../../commerce-modules/promotion/page.mdx), by passing `promotions.code` to the `fields` array.
+`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), which allows you to retrieve data across modules. For example, in the above snippet you're retrieving the cart's promotions, which are managed in the [Promotion Module](../../../commerce-modules/promotion/page.mdx), by passing `promotions.code` to the `fields` array.
 
 </Note>
 
@@ -1536,7 +1536,7 @@ export type AdminQuoteResponse = {
 You define the following types:
 
 - `AdminQuote`: Represents a quote.
-- `QuoteQueryParams`: Represents the query parameters that can be passed when retrieving qoutes.
+- `QuoteQueryParams`: Represents the query parameters that can be passed when retrieving quotes.
 - `AdminQuotesResponse`: Represents the response when retrieving a list of quotes.
 - `AdminQuoteResponse`: Represents the response when retrieving a single quote, which you'll implement later in this guide.
 
@@ -1628,9 +1628,9 @@ export const config = defineRouteConfig({
 export default Quotes
 ```
 
-The route file must export a React component that implements the content of the page. To show a link to the route in the sidebar, you can also export a configuation object created with `defineRouteConfig` that specifies the label and icon of the route in the Medusa Admin sidebar.
+The route file must export a React component that implements the content of the page. To show a link to the route in the sidebar, you can also export a configuration object created with `defineRouteConfig` that specifies the label and icon of the route in the Medusa Admin sidebar.
 
-In the `Quotes` component, you'll show a table of quotes using the [DataTable component](!ui!/components/data-table) from Medusa UI. This componet requires you first define the columns of the table.
+In the `Quotes` component, you'll show a table of quotes using the [DataTable component](!ui!/components/data-table) from Medusa UI. This component requires you first define the columns of the table.
 
 To define the table's columns, add in the same file and before the `Quotes` component the following:
 
@@ -1754,7 +1754,7 @@ In the component, you use the `useQuotes` hook to fetch the quotes from the Medu
 
 Next, you use the `useDataTable` hook to create a table instance with the columns you defined. You pass the fetched quotes to the `DataTable` component, along with configurations related to pagination and loading.
 
-Notice that as part of the `useDataTable` configurations you naviagte to the `/quotes/:id` UI route when a row is clicked. You'll create that route in a later step.
+Notice that as part of the `useDataTable` configurations you navigate to the `/quotes/:id` UI route when a row is clicked. You'll create that route in a later step.
 
 Finally, you render the `DataTable` component to display the quotes in a table.
 

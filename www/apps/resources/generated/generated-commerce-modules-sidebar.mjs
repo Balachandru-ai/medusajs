@@ -6423,6 +6423,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Manage Refund Reasons",
+              "path": "https://docs.medusajs.com/user-guide/settings/refund-reasons",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Manage Return Reasons",
               "path": "https://docs.medusajs.com/user-guide/settings/return-reasons",
               "children": []
@@ -11849,6 +11857,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "title": "Localization with Contentful",
               "path": "https://docs.medusajs.com/resources/integrations/guides/contentful",
               "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Product Category Images",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
+              "children": []
             }
           ]
         },
@@ -14320,6 +14336,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/promotion/models/CampaignBudget",
                       "title": "CampaignBudget",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/promotion/models/CampaignBudgetUsage",
+                      "title": "CampaignBudgetUsage",
                       "description": "",
                       "children": []
                     },
@@ -16868,6 +16893,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/tax/deleteTaxRegions",
                       "title": "deleteTaxRegions",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/tax/getProvider",
+                      "title": "getProvider",
                       "description": "",
                       "children": []
                     },
