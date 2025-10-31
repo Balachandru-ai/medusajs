@@ -468,8 +468,6 @@ const StreamTestPage = () => {
 
         if (error.name === "HttpError") {
           abort()
-          setIsStreaming(false)
-          setAbortStream(null)
         }
       }
     } finally {
