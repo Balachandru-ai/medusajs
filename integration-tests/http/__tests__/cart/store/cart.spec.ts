@@ -1872,7 +1872,7 @@ medusaIntegrationTestRunner({
             )
           })
 
-          it.only("should successfully complete cart and fail on concurrent complete", async () => {
+          it("should successfully complete cart and fail on concurrent complete", async () => {
             const paymentCollection = (
               await api.post(
                 `/store/payment-collections`,
@@ -1916,9 +1916,6 @@ medusaIntegrationTestRunner({
 
             let success = all.filter((res) => res.status === 200)
             let failure = all.filter((res) => res.status !== 200)
-
-            console.log(success.map((res) => res.data))
-            console.log(failure.map((res) => res))
 
             const successData = success[0].data.order
             for (const res of success) {
