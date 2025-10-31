@@ -175,3 +175,9 @@ export const AdminPostExchangesItemsActionReqSchema = z.object({
 export type AdminPostExchangesItemsActionReqSchemaType = z.infer<
   typeof AdminPostExchangesItemsActionReqSchema
 >
+
+export const AdminDeleteExchangeItemActionSchema = createSelectParams()
+
+export type AdminDeleteExchangeItemActionSchemaType = z.infer<
+  typeof AdminDeleteExchangeItemActionSchema
+>
