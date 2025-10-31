@@ -10,7 +10,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
-import { updateLineItemsStep } from "../steps"
+import { updateLineItemsStep, validateCartStep } from "../steps"
 import { cartFieldsForRefreshSteps } from "../utils/fields"
 import { pricingContextResult } from "../utils/schemas"
 import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
@@ -154,6 +154,8 @@ export const refreshCartItemsWorkflow = createWorkflow(
           isList: false,
         },
       })
+
+      validateCartStep({ cart })
 
       const { lineItems } = getVariantsAndItemsWithPrices.runAsStep({
         input: {
