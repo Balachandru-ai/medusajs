@@ -111,7 +111,7 @@ export const generatedEditDates = {
   "app/learn/resources/contribution-guidelines/admin-translations/page.mdx": "2025-02-11T16:57:46.726Z",
   "app/learn/resources/contribution-guidelines/docs/page.mdx": "2025-09-26T13:53:55.070Z",
   "app/learn/resources/usage/page.mdx": "2025-02-26T13:35:34.824Z",
-  "app/learn/configurations/medusa-config/page.mdx": "2025-09-30T06:04:15.705Z",
+  "app/learn/configurations/medusa-config/page.mdx": "2025-10-31T09:58:10.385Z",
   "app/learn/configurations/ts-aliases/page.mdx": "2025-07-23T15:32:18.008Z",
   "app/learn/production/worker-mode/page.mdx": "2025-10-13T10:33:27.403Z",
   "app/learn/fundamentals/module-links/read-only/page.mdx": "2025-10-15T15:42:22.610Z",
@@ -135,5 +135,6 @@ export const generatedEditDates = {
   "app/learn/fundamentals/workflows/locks/page.mdx": "2025-09-15T09:37:00.808Z",
   "app/learn/codemods/page.mdx": "2025-09-29T15:40:03.620Z",
   "app/learn/codemods/replace-imports/page.mdx": "2025-10-09T11:37:44.754Z",
-  "app/learn/fundamentals/admin/translations/page.mdx": "2025-10-30T11:55:32.221Z"
+  "app/learn/fundamentals/admin/translations/page.mdx": "2025-10-30T11:55:32.221Z",
+  "app/learn/configurations/medusa-config/asymmetric-encryption/page.mdx": "2025-10-31T09:53:38.607Z"
 }

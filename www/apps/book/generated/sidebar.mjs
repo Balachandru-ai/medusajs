@@ -1127,7 +1127,18 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Medusa Configuations",
             "path": "/learn/configurations/medusa-config",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Asymmetric Encryption",
+                "path": "/learn/configurations/medusa-config/asymmetric-encryption",
+                "children": [],
+                "chapterTitle": "6.2.1. Asymmetric Encryption",
+                "number": "6.2.1."
+              }
+            ],
             "chapterTitle": "6.2. Medusa Configuations",
             "number": "6.2."
           },
