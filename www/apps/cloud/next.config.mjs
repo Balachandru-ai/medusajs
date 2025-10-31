@@ -164,22 +164,11 @@ const nextConfig = {
           has: [
             {
               type: "header",
-              key: "accept",
-              value: "text/markdown",
+              key: "Accept",
+              value: ".*(text/markdown|text/plain).*",
             },
           ],
           destination: "/md-content/:path*",
-        },
-        {
-          source: "/:path*",
-          destination: "/md-content/:path*",
-          has: [
-            {
-              type: "header",
-              key: "accept",
-              value: "text/plain",
-            },
-          ],
         },
       ],
     }

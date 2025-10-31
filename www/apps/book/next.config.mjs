@@ -122,23 +122,12 @@ const nextConfig = {
           destination: "/md-content/:path*",
         },
         {
-          source: "/:path*",
+          source: "/:path((?!resources|api|ui|user-guide|cloud).*)*",
           has: [
             {
               type: "header",
               key: "Accept",
-              value: "text/markdown",
-            },
-          ],
-          destination: "/md-content/:path*",
-        },
-        {
-          source: "/:path*",
-          has: [
-            {
-              type: "header",
-              key: "Accept",
-              value: "text/plain",
+              value: ".*(text/markdown|text/plain).*",
             },
           ],
           destination: "/md-content/:path*",
