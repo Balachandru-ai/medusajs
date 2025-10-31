@@ -1075,4 +1075,42 @@ export class Product {
       }
     )
   }
+
+  /**
+   * This method links product options to a product. It allows adding new options
+   * or removing existing ones. It sends a request to the
+   * [Link Product Options](TODO)
+   * API route.
+   *
+   * @param productId - The product's ID.
+   * @param body - The options to add or remove.
+   * @param query - Configure the fields to retrieve in the product.
+   * @param headers - Headers to pass in the request
+   * @returns The product's details.
+   *
+   * @example
+   * sdk.admin.product.linkOptions("prod_123", {
+   *   add: ["prodopt_123", "prodopt_456"],
+   *   remove: ["prodopt_789"]
+   * })
+   * .then(({ product }) => {
+   *   console.log(product)
+   * })
+   */
+  async linkOptions(
+    productId: string,
+    body: HttpTypes.AdminLinkProductOptions,
+    query?: SelectParams,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminProductResponse>(
+      `/admin/products/${productId}/options`,
+      {
+        method: "POST",
+        headers,
+        body: body,
+        query,
+      }
+    )
+  }
 }
