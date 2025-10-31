@@ -37,9 +37,13 @@ export class RoutesFinder<
    */
   add(route: T) {
     // Doing a replacement for backwards compatibility with the old path-to-regexp with express 4
-    const normalizedPath = isString(route.matcher)
-      ? route.matcher.replace("/*", "/*splat")
-      : route.matcher
+    let normalizedPath = route.matcher
+    if (isString(route.matcher)) {
+      // Replace /* with {*splat} (wildcard matches zero or more path segments)
+      normalizedPath = normalizedPath.replace(/\/\*/g, "{*splat}")
+      // Replace /path* (no slash before asterisk) with /path{*splat}
+      normalizedPath = normalizedPath.replace(/(\w)\*/g, "$1{*splat}")
+    }
     this.#routes.push({
       ...route,
       matchRegex: pathToRegexp(normalizedPath).regexp,
