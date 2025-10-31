@@ -37,7 +37,7 @@ export class RoutesFinder<
   add(route: T) {
     this.#routes.push({
       ...route,
-      matchRegex: pathToRegexp(route.matcher),
+      matchRegex: pathToRegexp.pathToRegexp(route.matcher).regexp,
     })
   }
 
