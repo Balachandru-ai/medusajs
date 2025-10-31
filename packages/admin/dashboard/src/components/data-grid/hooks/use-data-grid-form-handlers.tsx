@@ -1,4 +1,3 @@
-import get from "lodash.get"
 import set from "lodash.set"
 import { useCallback } from "react"
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
@@ -162,7 +161,9 @@ function setValueToggleableNumber(
   newValue: DataGridToggleableNumber,
   isHistory?: boolean
 ) {
-  const currentValue = get(currentValues, field)
+  const currentValue = field
+    .split(".")
+    .reduce((obj, key) => obj?.[key], currentValues)
   const { disabledToggle } = currentValue
 
   const normalizeQuantity = (value: number | string | null | undefined) => {

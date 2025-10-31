@@ -79,7 +79,35 @@
     "@medusajs/icons": "2.11.1",
     "@medusajs/test-utils": "2.11.1",
     "@medusajs/ui": "4.0.25",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "6.20.1"
+  },
+  "peerDependenciesMeta": {
+    "@medusajs/admin-sdk": {
+      "optional": true
+    },
+    "@medusajs/cli": {
+      "optional": true
+    },
+    "@medusajs/icons": {
+      "optional": true
+    },
+    "@medusajs/test-utils": {
+      "optional": true
+    },
+    "@medusajs/ui": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-router-dom": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=20"
