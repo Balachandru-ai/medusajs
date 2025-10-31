@@ -10,6 +10,7 @@ import { OrderTransaction } from "./transaction"
 const _Order = model
   .define("Order", {
     id: model.id({ prefix: "order" }).primaryKey(),
+    tenant_id: model.text(), // Multi-tenancy support
     display_id: model.autoincrement().searchable(),
     region_id: model.text().nullable(),
     customer_id: model.text().nullable(),
@@ -66,26 +67,26 @@ const _Order = model
   })
   .indexes([
     {
-      name: "IDX_order_display_id",
-      on: ["display_id"],
+      name: "IDX_order_tenant_display_id",
+      on: ["tenant_id", "display_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
-      name: "IDX_order_region_id",
-      on: ["region_id"],
+      name: "IDX_order_tenant_region",
+      on: ["tenant_id", "region_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
-      name: "IDX_order_customer_id",
-      on: ["customer_id"],
+      name: "IDX_order_tenant_customer",
+      on: ["tenant_id", "customer_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
-      name: "IDX_order_sales_channel_id",
-      on: ["sales_channel_id"],
+      name: "IDX_order_tenant_sales_channel",
+      on: ["tenant_id", "sales_channel_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
@@ -96,8 +97,8 @@ const _Order = model
       where: "deleted_at IS NOT NULL",
     },
     {
-      name: "IDX_order_currency_code",
-      on: ["currency_code"],
+      name: "IDX_order_tenant_currency",
+      on: ["tenant_id", "currency_code"],
       unique: false,
       where: "deleted_at IS NULL",
     },

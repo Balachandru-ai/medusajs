@@ -11,6 +11,7 @@ import ProductVariant from "./product-variant"
 const Product = model
   .define("Product", {
     id: model.id({ prefix: "prod" }).primaryKey(),
+    tenant_id: model.text(), // Multi-tenancy support
     title: model.text().searchable(),
     handle: model.text(),
     subtitle: model.text().searchable().nullable(),
@@ -64,26 +65,26 @@ const Product = model
   })
   .indexes([
     {
-      name: "IDX_product_handle_unique",
-      on: ["handle"],
+      name: "IDX_product_tenant_handle_unique",
+      on: ["tenant_id", "handle"],
       unique: true,
       where: "deleted_at IS NULL",
     },
     {
-      name: "IDX_product_type_id",
-      on: ["type_id"],
+      name: "IDX_product_tenant_type",
+      on: ["tenant_id", "type_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
-      name: "IDX_product_collection_id",
-      on: ["collection_id"],
+      name: "IDX_product_tenant_collection",
+      on: ["tenant_id", "collection_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
-      name: "IDX_product_status",
-      on: ["status"],
+      name: "IDX_product_tenant_status",
+      on: ["tenant_id", "status"],
       unique: false,
       where: "deleted_at IS NULL",
     },

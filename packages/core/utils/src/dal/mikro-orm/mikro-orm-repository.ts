@@ -109,6 +109,90 @@ export class MikroOrmBaseRepository<const T extends object = object>
   }
 
   /**
+   * Multi-tenancy support: Check if entity has tenant_id field
+   */
+  protected entityHasTenantId(): boolean {
+    if (!this.entity) {
+      return false
+    }
+    
+    const properties = 
+      (this.entity as EntitySchema).meta?.properties ||
+      (this.entity as EntityClass<any>).prototype?.__meta?.properties ||
+      {}
+    
+    return "tenant_id" in properties
+  }
+
+  /**
+   * Multi-tenancy support: Inject tenant_id filter if present in context
+   */
+  protected injectTenantFilter<F extends FilterQuery<T>>(
+    filters: F,
+    context?: Context
+  ): F {
+    // Skip if no tenant context
+    const tenantId = context?.tenantId
+    if (!tenantId) {
+      return filters
+    }
+
+    // Skip if explicitly disabled (for system/super-admin operations)
+    if (context?.skipTenantScoping === true) {
+      return filters
+    }
+
+    // Skip if entity doesn't have tenant_id field
+    if (!this.entityHasTenantId()) {
+      return filters
+    }
+
+    // Inject tenant_id into filter
+    return {
+      ...filters,
+      tenant_id: tenantId,
+    } as F
+  }
+
+  /**
+   * Multi-tenancy support: Inject tenant_id into data being created
+   */
+  protected injectTenantData<D extends Record<string, any>>(
+    data: D,
+    context?: Context
+  ): D {
+    const tenantId = context?.tenantId
+    
+    // Skip if no tenant context or tenant scoping disabled
+    if (!tenantId || context?.skipTenantScoping === true) {
+      return data
+    }
+
+    // Skip if entity doesn't have tenant_id field
+    if (!this.entityHasTenantId()) {
+      return data
+    }
+
+    // Only inject if not already set
+    if (!data.tenant_id) {
+      return {
+        ...data,
+        tenant_id: tenantId,
+      }
+    }
+
+    // Validate that provided tenant_id matches context
+    if (data.tenant_id !== tenantId) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Tenant ID mismatch: expected ${tenantId}, got ${data.tenant_id}`
+      )
+    }
+
+    return data
+  }
+
+  /**
    * When using the select-in strategy, the populated fields are not selected by default unlike when using the joined strategy.
    * This method will add the populated fields to the fields array if they are not already specifically selected.
    *

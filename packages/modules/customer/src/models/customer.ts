@@ -6,6 +6,7 @@ import CustomerGroupCustomer from "./customer-group-customer"
 const Customer = model
   .define("Customer", {
     id: model.id({ prefix: "cus" }).primaryKey(),
+    tenant_id: model.text(), // Multi-tenancy support
     company_name: model.text().searchable().nullable(),
     first_name: model.text().searchable().nullable(),
     last_name: model.text().searchable().nullable(),
@@ -28,7 +29,8 @@ const Customer = model
   })
   .indexes([
     {
-      on: ["email", "has_account"],
+      name: "IDX_customer_tenant_email_account_unique",
+      on: ["tenant_id", "email", "has_account"],
       unique: true,
       where: "deleted_at IS NULL",
     },

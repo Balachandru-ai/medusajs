@@ -94,4 +94,14 @@ export type Context<TManager = unknown> = {
    * If true, the parent step will not be triggered by the sub workflow.
    */
   cancelingFromParentStep?: boolean
+
+  /**
+   * Multi-tenancy support: The ID of the tenant for this request context
+   */
+  tenantId?: string
+
+  /**
+   * Multi-tenancy support: Skip automatic tenant scoping (for super-admin or system operations)
+   */
+  skipTenantScoping?: boolean
 }

@@ -1,0 +1,13 @@
+{
+  "extends": "../../../_tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@models": ["./src/models"],
+      "@services": ["./src/services"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/__tests__", "**/__mocks__", "**/__fixtures__"]
+}
