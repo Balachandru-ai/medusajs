@@ -163,12 +163,13 @@
 	"ProductVariantProductImage": {
 		"filePath": "packages/modules/product/src/models/product-variant-product-image.ts",
 		"properties": {
-			"id": "The ID of the product variant product image.",
+			"id": "The ID of the association between product variant and product image.",
 			"variant": "The associated variant.\n\n@expandable",
 			"image": "The associated image.\n\n@expandable"
 		},
 		"deprecated": {
-			"is_deprecated": false
+			"is_deprecated": false,
+			"since": "2.11.2"
 		}
 	}
 }
