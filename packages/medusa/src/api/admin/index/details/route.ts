@@ -4,8 +4,9 @@ import { Modules } from "@medusajs/framework/utils"
 
 /**
  * Get the index information for all entities that are indexed and their sync state
- * @param req
- * @param res
+ * 
+ * @since 2.11.2
+ * @featureFlag index
  */
 export const GET = async (
   req: AuthenticatedMedusaRequest<void>,

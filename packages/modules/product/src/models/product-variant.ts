@@ -22,6 +22,9 @@ const ProductVariant = model
     width: model.number().nullable(),
     metadata: model.json().nullable(),
     variant_rank: model.number().default(0).nullable(),
+    /**
+     * @since 2.11.2
+     */
     thumbnail: model.text().nullable(),
     product: model
       .belongsTo(() => Product, {
@@ -29,6 +32,9 @@ const ProductVariant = model
       })
       .searchable()
       .nullable(),
+    /**
+     * @since 2.11.2
+     */
     images: model.manyToMany(() => ProductImage, {
       mappedBy: "variants",
       pivotEntity: () => ProductVariantProductImage,
