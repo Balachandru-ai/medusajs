@@ -1080,6 +1080,8 @@ export class Product {
    * This method manages image-variant associations for a specific image. It sends a request to the
    * [Batch Image Variants](https://docs.medusajs.com/api/admin#products_postproductsidimagesimage_idvariantsbatch)
    * API route.
+   * 
+   * @since 2.11.2
    *
    * @param productId - The product's ID.
    * @param imageId - The image's ID.
@@ -1116,6 +1118,8 @@ export class Product {
    * This method manages variant-image associations for a specific variant. It sends a request to the
    * [Batch Variant Images](https://docs.medusajs.com/api/admin#products_postproductsidvariantsvariant_idimagesbatch)
    * API route.
+   * 
+   * @since 2.11.2
    *
    * @param productId - The product's ID.
    * @param variantId - The variant's ID.
