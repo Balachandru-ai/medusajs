@@ -1,4 +1,4 @@
-import pathToRegexp from "path-to-regexp"
+import { pathToRegexp } from "path-to-regexp"
 import type { MiddlewareVerb, RouteVerb } from "./types"
 
 export class RoutesFinder<
@@ -37,7 +37,7 @@ export class RoutesFinder<
   add(route: T) {
     this.#routes.push({
       ...route,
-      matchRegex: pathToRegexp.pathToRegexp(route.matcher).regexp,
+      matchRegex: pathToRegexp(route.matcher).regexp,
     })
   }
 
