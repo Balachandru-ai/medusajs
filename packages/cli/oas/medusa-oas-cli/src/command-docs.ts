@@ -6,7 +6,6 @@ import { commandWrapper } from "@redocly/cli/lib/wrapper"
 import { Command, Option, OptionValues } from "commander"
 import execa from "execa"
 import fs, { mkdir } from "fs/promises"
-import isArray from "lodash.isarray"
 import mergeWith from "lodash.mergewith"
 
 import * as path from "path"
@@ -203,7 +202,7 @@ const mergeConfig = async (
       : await readJson(configFileCustom)
 
   const config = mergeWith(configDefault, configCustom, (objValue, srcValue) =>
-    isArray(objValue) ? objValue.concat(srcValue) : undefined
+    Array.isArray(objValue) ? objValue.concat(srcValue) : undefined
   ) as RedoclyConfig
 
   await writeYamlFromJson(configFileOut, config)
