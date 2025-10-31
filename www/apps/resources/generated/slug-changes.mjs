@@ -6520,6 +6520,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/pricing_models/variables/pricing_models.PriceSet/page.mdx"
   },
   {
+    "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.addImageToVariant",
+    "newSlug": "/references/product/addImageToVariant",
+    "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.addImageToVariant/page.mdx"
+  },
+  {
     "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.createProductCategories",
     "newSlug": "/references/product/createProductCategories",
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.createProductCategories/page.mdx"
@@ -6678,6 +6683,11 @@ export const slugChanges = [
     "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.listProducts",
     "newSlug": "/references/product/listProducts",
     "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.listProducts/page.mdx"
+  },
+  {
+    "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.removeImageFromVariant",
+    "newSlug": "/references/product/removeImageFromVariant",
+    "filePath": "/www/apps/resources/references/product/IProductModuleService/methods/product.IProductModuleService.removeImageFromVariant/page.mdx"
   },
   {
     "origSlug": "/references/product/IProductModuleService/methods/product.IProductModuleService.restoreProductCategories",
@@ -6923,6 +6933,11 @@ export const slugChanges = [
     "origSlug": "/references/product_models/variables/product_models.ProductVariant",
     "newSlug": "/references/product/models/ProductVariant",
     "filePath": "/www/apps/resources/references/product_models/variables/product_models.ProductVariant/page.mdx"
+  },
+  {
+    "origSlug": "/references/product_models/variables/product_models.ProductVariantProductImage",
+    "newSlug": "/references/product/models/ProductVariantProductImage",
+    "filePath": "/www/apps/resources/references/product_models/variables/product_models.ProductVariantProductImage/page.mdx"
   },
   {
     "origSlug": "/references/promotion/IPromotionModuleService/methods/promotion.IPromotionModuleService.addPromotionBuyRules",
