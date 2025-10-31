@@ -1540,9 +1540,9 @@ export interface CreateProductDTO {
    */
   category_ids?: string[]
   /**
-   * The product options to be created and associated with the product.
+   * The product options to be created and/or associated with the product.
    */
-  options?: CreateProductOptionDTO[]
+  options?: (CreateProductOptionDTO | { id: string })[]
   /**
    * The product variants to be created and associated with the product.
    */
