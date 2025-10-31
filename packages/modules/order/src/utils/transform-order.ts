@@ -104,7 +104,7 @@ export function formatOrder<T = any>(
     )
   })
 
-  return isArray ? orders : orders[0]
+  return isArray ? (orders as T) : orders[0]
 }
 
 function cleanNestedRelations(obj) {

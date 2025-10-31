@@ -41,7 +41,7 @@
     "@medusajs/utils": "2.11.2",
     "@readme/json-schema-ref-parser": "^1.2.0",
     "@readme/openapi-parser": "^2.4.0",
-    "@redocly/cli": "^1.7.0",
+    "@redocly/cli": "1.25.3",
     "commander": "^11.0.0",
     "execa": "^5.1.1",
     "lodash.mergewith": "^4.6.2",
