@@ -184,6 +184,14 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/storefront-development/products/variants"
   },
   {
+    "title": "addImageToVariantsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/addImageToVariantsStep"
+  },
+  {
+    "title": "addImagesToVariantStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/addImagesToVariantStep"
+  },
+  {
     "title": "batchLinkProductsToCategoryStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/batchLinkProductsToCategoryStep"
   },
@@ -244,6 +252,14 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getProductsStep"
   },
   {
+    "title": "removeImageFromVariantsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/removeImageFromVariantsStep"
+  },
+  {
+    "title": "removeImagesFromVariantStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/removeImagesFromVariantStep"
+  },
+  {
     "title": "updateCollectionsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateCollectionsStep"
   },
@@ -268,6 +284,10 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateProductsStep"
   },
   {
+    "title": "batchImageVariantsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchImageVariantsWorkflow"
+  },
+  {
     "title": "batchLinkProductsToCategoryWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchLinkProductsToCategoryWorkflow"
   },
@@ -278,6 +298,10 @@ export const product = [
   {
     "title": "batchProductVariantsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchProductVariantsWorkflow"
+  },
+  {
+    "title": "batchVariantImagesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchVariantImagesWorkflow"
   },
   {
     "title": "createCollectionsWorkflow",
