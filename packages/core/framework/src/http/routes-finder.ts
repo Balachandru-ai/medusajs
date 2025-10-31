@@ -38,7 +38,7 @@ export class RoutesFinder<
   add(route: T) {
     // Doing a replacement for backwards compatibility with the old path-to-regexp with express 4
     const normalizedPath = isString(route.matcher)
-      ? route.matcher.replace("*", "(.*)")
+      ? route.matcher.replace("/*", "/(.*)")
       : route.matcher
     this.#routes.push({
       ...route,
