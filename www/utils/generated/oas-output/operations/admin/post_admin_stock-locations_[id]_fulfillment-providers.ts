@@ -32,23 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The fulfillment providers to add or remove from the stock location.
- *         properties:
- *           add:
- *             type: array
- *             description: The fulfillment providers to add to the stock location.
- *             items:
- *               type: string
- *               title: add
- *               description: A fulfillment provider's ID.
- *           remove:
- *             type: array
- *             description: The fulfillment providers to remove from the stock location.
- *             items:
- *               type: string
- *               title: remove
- *               description: A fulfillment provider's ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

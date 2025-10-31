@@ -86,6 +86,10 @@
  *     type: string
  *     title: id
  *     description: The update's ID.
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
  * required:
  *   - id
  * 

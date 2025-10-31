@@ -7,13 +7,13 @@
  *   - return_requested_total
  *   - order_change
  *   - status
- *   - currency_code
  *   - id
  *   - version
  *   - region_id
  *   - customer_id
  *   - sales_channel_id
  *   - email
+ *   - currency_code
  *   - payment_collections
  *   - payment_status
  *   - fulfillment_status

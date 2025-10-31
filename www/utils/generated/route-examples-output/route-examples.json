@@ -563,6 +563,12 @@
   "DELETE /admin/products/{productid}/options/{id}": {
     "js-sdk": "sdk.admin.product.deleteOption(\"prod_123\", \"prodopt_123\")\n.then(({ deleted }) => {\n  console.log(deleted)\n})"
   },
+  "POST /admin/products/{productid}/images/{imageid}/variants/batch": {
+    "js-sdk": "sdk.admin.product.batchImageVariants(\"prod_123\", \"img_123\", {\n  add: [\"variant_123\", \"variant_456\"],\n  remove: [\"variant_789\"]\n})\n.then(({ added, removed }) => {\n  console.log(added, removed)\n})"
+  },
+  "POST /admin/products/{productid}/variants/{variantid}/images/batch": {
+    "js-sdk": "sdk.admin.product.batchVariantImages(\"prod_123\", \"variant_123\", {\n  add: [\"img_123\", \"img_456\"],\n  remove: [\"img_789\"]\n})\n.then(({ added, removed }) => {\n  console.log(added, removed)\n})"
+  },
   "POST /admin/product-categories": {
     "js-sdk": "sdk.admin.productCategory.create({\n  name: \"Shirts\"\n})\n.then(({ product_category }) => {\n  console.log(product_category)\n})"
   },

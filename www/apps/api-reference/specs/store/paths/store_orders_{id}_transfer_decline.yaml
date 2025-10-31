@@ -46,7 +46,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/StoreDeclineOrderTransferRequest.yaml
+          $ref: ../components/schemas/StoreDeclineOrderTransfer.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

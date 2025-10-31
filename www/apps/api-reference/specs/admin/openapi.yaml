@@ -201,6 +201,14 @@ tags:
       </Note>
     x-associatedSchema:
       $ref: ./components/schemas/AdminGiftCard.yaml
+  - name: Index
+    description: >
+      The Index Module is a tool to perform high-performance queries across
+      modules, for example, to filter linked modules.
+
+      The Index Module is currently experimental and is hidden behind a feature
+      flag. Learn more about it and how to enable it in the [Index Module
+      guide](https://docs.medusajs.com/learn/fundamentals/module-links/index-module).
   - name: Inventory Items
     description: |
       An inventory item is a stock-kept product whose inventory is managed.
@@ -874,6 +882,10 @@ paths:
     $ref: paths/admin_gift-cards_{id}_orders.yaml
   /admin/gift-cards/{id}/redeem:
     $ref: paths/admin_gift-cards_{id}_redeem.yaml
+  /admin/index/details:
+    $ref: paths/admin_index_details.yaml
+  /admin/index/sync:
+    $ref: paths/admin_index_sync.yaml
   /admin/inventory-items:
     $ref: paths/admin_inventory-items.yaml
   /admin/inventory-items/location-levels/batch:
@@ -1011,6 +1023,8 @@ paths:
     $ref: paths/admin_products_imports_{transaction_id}_confirm.yaml
   /admin/products/{id}:
     $ref: paths/admin_products_{id}.yaml
+  /admin/products/{id}/images/{image_id}/variants/batch:
+    $ref: paths/admin_products_{id}_images_{image_id}_variants_batch.yaml
   /admin/products/{id}/options:
     $ref: paths/admin_products_{id}_options.yaml
   /admin/products/{id}/options/{option_id}:
@@ -1023,6 +1037,8 @@ paths:
     $ref: paths/admin_products_{id}_variants_inventory-items_batch.yaml
   /admin/products/{id}/variants/{variant_id}:
     $ref: paths/admin_products_{id}_variants_{variant_id}.yaml
+  /admin/products/{id}/variants/{variant_id}/images/batch:
+    $ref: paths/admin_products_{id}_variants_{variant_id}_images_batch.yaml
   /admin/products/{id}/variants/{variant_id}/inventory-items:
     $ref: paths/admin_products_{id}_variants_{variant_id}_inventory-items.yaml
   /admin/products/{id}/variants/{variant_id}/inventory-items/{inventory_item_id}:

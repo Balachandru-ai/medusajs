@@ -445,9 +445,6 @@ class WorkflowsPlugin {
     const whenCondition =
       whenInitializer.arguments[conditionIndex].body.getText()
 
-    const thenStatements = (thenInitializer.arguments[0].body as ts.Block)
-      .statements
-
     const documentReflection = new DocumentReflection(
       "when",
       parentReflection,
@@ -474,15 +471,10 @@ class WorkflowsPlugin {
       ])
     )
 
-    thenStatements.forEach((statement) => {
-      const initializer = this.getInitializerOfNode(statement)
-
-      if (!initializer) {
-        return
-      }
-
+    // Handles then with a single return statment rather than a block
+    if (ts.isCallExpression(thenInitializer.arguments[0].body)) {
       this.parseSteps({
-        initializer,
+        initializer: thenInitializer.arguments[0].body,
         context,
         workflow,
         workflowVarName: parentReflection.name,
@@ -497,7 +489,35 @@ class WorkflowsPlugin {
 
         resources.push(...step.resources)
       })
-    })
+    } else {
+      const thenStatements = (thenInitializer.arguments[0].body as ts.Block)
+        .statements
+
+      thenStatements.forEach((statement) => {
+        const initializer = this.getInitializerOfNode(statement)
+
+        if (!initializer) {
+          return
+        }
+
+        this.parseSteps({
+          initializer,
+          context,
+          workflow,
+          workflowVarName: parentReflection.name,
+          workflowReflection,
+          ...rest,
+        }).forEach((step) => {
+          this.createStepDocumentReflection({
+            ...step,
+            depth: stepDepth,
+            parentReflection: documentReflection,
+          })
+
+          resources.push(...step.resources)
+        })
+      })
+    }
 
     if (documentReflection.children?.length) {
       parentReflection.documents?.push(documentReflection)

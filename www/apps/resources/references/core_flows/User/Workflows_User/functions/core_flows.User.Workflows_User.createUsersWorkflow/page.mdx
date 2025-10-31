@@ -17,14 +17,14 @@ This documentation provides a reference to the `createUsersWorkflow`. It belongs
 This workflow creates one or more users. It's used by other workflows, such
 as acceptInviteWorkflow to create a user for an invite.
 
-You can attach an auth identity to each user to allow the user to log in using the 
+You can attach an auth identity to each user to allow the user to log in using the
 setAuthAppMetadataStep. Learn more about auth identities in
 [this documentation](https://docs.medusajs.com/resources/commerce-modules/auth/auth-identity-and-actor-types).
 
-You can use this workflow within your customizations or your own custom workflows, allowing you to 
+You can use this workflow within your customizations or your own custom workflows, allowing you to
 create users within your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/user/workflows/create-users.ts#L40" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/user/workflows/create-users.ts#L40" />
 
 ## Examples
 
@@ -149,7 +149,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"createUsersWorkflow","steps":[{"type":"step","name":"createUsersStep","description":"This step creates one or more users. To allow these users to log in, \nyou must attach an auth identity to each user using the setAuthAppMetadataStep.","link":"../../../Steps_User/functions/core_flows.User.Steps_User.createUsersStep/page.mdx","depth":1},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
+<WorkflowDiagram workflow={{"name":"createUsersWorkflow","steps":[{"type":"step","name":"createUsersStep","description":"This step creates one or more users. To allow these users to log in,\nyou must attach an auth identity to each user using the setAuthAppMetadataStep.","link":"../../../Steps_User/functions/core_flows.User.Steps_User.createUsersStep/page.mdx","depth":1},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
 
 ## Input
 
@@ -163,11 +163,7 @@ const myWorkflow = createWorkflow(
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
 
-:::note
-
 The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
 
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 
