@@ -1,5 +1,6 @@
 import { pathToRegexp } from "path-to-regexp"
 import type { MiddlewareVerb, RouteVerb } from "./types"
+import { isString } from "@medusajs/utils"
 
 export class RoutesFinder<
   T extends
@@ -35,9 +36,13 @@ export class RoutesFinder<
    * Register route for lookup
    */
   add(route: T) {
+    // Doing a replacement for backwards compatibility with the old path-to-regexp with express 4
+    const normalizedPath = isString(route.matcher)
+      ? route.matcher.replace("*", "(.*)")
+      : route.matcher
     this.#routes.push({
       ...route,
-      matchRegex: pathToRegexp(route.matcher).regexp,
+      matchRegex: pathToRegexp(normalizedPath).regexp,
     })
   }
 
