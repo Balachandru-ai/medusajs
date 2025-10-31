@@ -14,11 +14,11 @@ export type Config = {
     type?: "jwt" | "session"
     jwtTokenStorageKey?: string
     jwtTokenStorageMethod?:
-      | "local"
-      | "session"
-      | "memory"
-      | "custom"
-      | "nostore"
+    | "local"
+    | "session"
+    | "memory"
+    | "custom"
+    | "nostore"
     fetchCredentials?: "include" | "omit" | "same-origin"
     storage?: CustomStorage
   }
@@ -36,19 +36,12 @@ export interface CustomStorage {
 
 export type FetchParams = Parameters<typeof fetch>
 
-export type ClientHeaders = Record<
-  string,
-  | string
-  | null
-  | {
-      /**
-       * Tags to cache data under for Next.js applications.
-       *
-       * Learn more in [Next.js's documentation](https://nextjs.org/docs/app/building-your-application/caching#fetch-optionsnexttags-and-revalidatetag).
-       */
-      tags: string[]
-    }
->
+/**
+ * Tags to cache data under for Next.js applications.
+ *
+ * Learn more in [Next.js's documentation](https://nextjs.org/docs/app/building-your-application/caching#fetch-optionsnexttags-and-revalidatetag).
+ */
+export type ClientHeaders = Record<string, string | null | NextFetchRequestConfig>
 
 export type FetchInput = FetchParams[0]
 
@@ -56,6 +49,7 @@ export type FetchArgs = Omit<RequestInit, "headers" | "body"> & {
   query?: Record<string, any>
   headers?: ClientHeaders
   body?: RequestInit["body"] | Record<string, any>
+  next?: NextFetchRequestConfig
 }
 
 export type ClientFetch = (
@@ -80,4 +74,9 @@ export interface ServerSentEventMessage {
 export interface FetchStreamResponse {
   stream: AsyncGenerator<ServerSentEventMessage, void, unknown> | null
   abort: () => void
+}
+
+interface NextFetchRequestConfig {
+  revalidate?: number | false
+  tags?: string[]
 }

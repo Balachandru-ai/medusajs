@@ -67,12 +67,14 @@ const normalizeRequest = (
     config.auth?.type === "session"
       ? config.auth?.fetchCredentials || "include"
       : "omit"
+  const { next } = init?.headers || {}
 
   return {
     ...init,
     headers,
     credentials: isFetchCredentialsSupported ? credentials : undefined,
     ...(body ? { body: body as RequestInit["body"] } : {}),
+    ...(next ? { next } : {}),
   } as RequestInit
 }
 
@@ -123,7 +125,7 @@ export class Client {
 
     this.logger = {
       ...logger,
-      debug: config.debug ? logger.debug : () => {},
+      debug: config.debug ? logger.debug : () => { },
     }
 
     this.fetch_ = this.initClient()
@@ -229,6 +231,10 @@ export class Client {
         ...this.config.globalHeaders,
         ...(await this.getJwtHeader_()),
         ...init?.headers,
+      }
+      // remove accidental `next` object if it was placed in headers
+      if ("next" in customHeaders) {
+        delete customHeaders.next
       }
       // We use `headers.set` in order to ensure headers are overwritten in a case-insensitive manner.
       Object.entries(customHeaders).forEach(([key, value]) => {
