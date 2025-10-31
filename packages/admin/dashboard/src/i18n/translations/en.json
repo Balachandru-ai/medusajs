@@ -449,7 +449,8 @@
         "productOptions": {
           "label": "Product options",
           "hint": "Define the options for the product, e.g. color, size, etc."
-        }
+        },
+        "selectValuesHint": "Select which values to use for each option"
       },
       "successToast": "Product {{title}} was successfully created."
     },

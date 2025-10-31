@@ -1696,6 +1696,9 @@
                   },
                   "required": ["label", "hint"],
                   "additionalProperties": false
+                },
+                "selectValuesHint": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -1705,7 +1708,8 @@
                 "optionTitle",
                 "optionValues",
                 "productVariants",
-                "productOptions"
+                "productOptions",
+                "selectValuesHint"
               ],
               "additionalProperties": false
             },
