@@ -28,6 +28,7 @@ import {
   arrayDifference,
   createMedusaMikroOrmEventSubscriber,
   EmitEvents,
+  FreeTextSearchFilterKeyPrefix,
   generateEntityId,
   InjectManager,
   InjectTransactionManager,
@@ -241,12 +242,24 @@ export default class ProductModuleService
       relationsSet.add("images")
     }
 
+    const productConfig = this.getProductFindConfig_({
+      ...config,
+      relations: Array.from(relationsSet),
+    })
+
+    // Apply free text search filter for q parameter
+    if (isDefined(filters?.q)) {
+      productConfig.filters ??= {}
+      productConfig.filters[FreeTextSearchFilterKeyPrefix + Product.name] = {
+        value: filters.q,
+        fromEntity: Product.name,
+      }
+      delete filters.q
+    }
+
     const products = await this.productService_.list(
       filters,
-      this.getProductFindConfig_({
-        ...config,
-        relations: Array.from(relationsSet),
-      }),
+      productConfig,
       sharedContext
     )
 
@@ -286,9 +299,21 @@ export default class ProductModuleService
       }
     }
 
+    const productConfig = this.getProductFindConfig_({ ...config, relations })
+
+    // Apply free text search filter for q parameter
+    if (isDefined(filters?.q)) {
+      productConfig.filters ??= {}
+      productConfig.filters[FreeTextSearchFilterKeyPrefix + Product.name] = {
+        value: filters.q,
+        fromEntity: Product.name,
+      }
+      delete filters.q
+    }
+
     const [products, count] = await this.productService_.listAndCount(
       filters,
-      this.getProductFindConfig_({ ...config, relations }),
+      productConfig,
       sharedContext
     )
 
