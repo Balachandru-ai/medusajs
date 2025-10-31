@@ -142,7 +142,7 @@
     "export": "Export",
     "import": "Import",
     "cannotUndo": "This action cannot be undone",
-    "organize": "Organize"
+    "manage": "Manage"
   },
   "operators": {
     "in": "In"
@@ -687,6 +687,13 @@
       "create": {
         "header": "Create Option",
         "successToast": "Option {{title}} was successfully created."
+      },
+      "manage": {
+        "header": "Manage Product Options",
+        "description": "Associate or disassociate product options from this product.",
+        "label": "Product Options",
+        "hint": "Select which options should be associated to this product.",
+        "placeholder": "Select options"
       },
       "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone."
     },

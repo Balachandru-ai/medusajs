@@ -1,4 +1,4 @@
-import { PencilSquare, Plus } from "@medusajs/icons"
+import { PencilSquare } from "@medusajs/icons"
 import { Badge, Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
@@ -47,9 +47,9 @@ export const ProductOptionSection = ({
             {
               actions: [
                 {
-                  label: t("actions.create"),
-                  to: "options/create",
-                  icon: <Plus />,
+                  label: t("actions.manage"),
+                  to: "options/manage",
+                  icon: <PencilSquare />,
                 },
               ],
             },

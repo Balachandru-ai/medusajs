@@ -146,6 +146,13 @@ export function getRouteMap({
                           lazy: () =>
                             import("../../routes/products/product-metadata"),
                         },
+                        {
+                          path: "options/manage",
+                          lazy: () =>
+                            import(
+                              "../../routes/products/product-options-manage"
+                            ),
+                        },
                       ],
                     },
                     {

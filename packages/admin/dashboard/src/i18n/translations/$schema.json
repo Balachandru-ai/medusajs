@@ -512,7 +512,7 @@
         "cannotUndo": {
           "type": "string"
         },
-        "organize": {
+        "manage": {
           "type": "string"
         }
       },
@@ -559,7 +559,7 @@
         "export",
         "import",
         "cannotUndo",
-        "organize"
+        "manage"
       ],
       "additionalProperties": false
     },
@@ -2587,11 +2587,39 @@
               "required": ["header", "successToast"],
               "additionalProperties": false
             },
+            "manage": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "hint": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "header",
+                "description",
+                "label",
+                "hint",
+                "placeholder"
+              ],
+              "additionalProperties": false
+            },
             "deleteWarning": {
               "type": "string"
             }
           },
-          "required": ["header", "edit", "create", "deleteWarning"],
+          "required": ["header", "edit", "create", "manage", "deleteWarning"],
           "additionalProperties": false
         },
         "organization": {

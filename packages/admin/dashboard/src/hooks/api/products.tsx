@@ -312,6 +312,29 @@ export const useDeleteProduct = (
   })
 }
 
+export const useLinkProductOptions = (
+  productId: string,
+  options?: UseMutationOptions<
+    HttpTypes.AdminProductResponse,
+    FetchError,
+    HttpTypes.AdminLinkProductOptions
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload) => sdk.admin.product.linkOptions(productId, payload),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: productsQueryKeys.lists() })
+      queryClient.invalidateQueries({
+        queryKey: productsQueryKeys.detail(productId),
+      })
+      queryClient.invalidateQueries({ queryKey: optionsQueryKeys.lists() })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useExportProducts = (
   query?: HttpTypes.AdminProductListParams,
   options?: UseMutationOptions<
