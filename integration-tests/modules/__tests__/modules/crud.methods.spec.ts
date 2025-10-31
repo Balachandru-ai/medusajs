@@ -2,18 +2,12 @@ import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(100000)
 
-process.env.ENABLE_INDEX_MODULE = "true"
-
 medusaIntegrationTestRunner({
   testSuite: ({ getContainer, dbConnection, api, dbConfig }) => {
     let appContainer
 
     beforeAll(() => {
       appContainer = getContainer()
-    })
-
-    afterAll(() => {
-      process.env.ENABLE_INDEX_MODULE = "false"
     })
 
     describe("auto-generated CRUD methods", () => {
