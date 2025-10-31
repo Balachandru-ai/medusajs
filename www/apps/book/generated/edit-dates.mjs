@@ -121,7 +121,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/workflows/errors/page.mdx": "2025-04-25T14:26:25.000Z",
   "app/learn/fundamentals/api-routes/override/page.mdx": "2025-05-09T08:01:24.493Z",
   "app/learn/fundamentals/module-links/index/page.mdx": "2025-05-23T07:57:58.958Z",
-  "app/learn/fundamentals/module-links/index-module/page.mdx": "2025-10-27T09:30:26.957Z",
+  "app/learn/fundamentals/module-links/index-module/page.mdx": "2025-10-30T11:31:29.704Z",
   "app/learn/introduction/build-with-llms-ai/page.mdx": "2025-10-02T15:10:49.394Z",
   "app/learn/installation/docker/page.mdx": "2025-10-24T08:53:46.445Z",
   "app/learn/fundamentals/generated-types/page.mdx": "2025-07-25T13:17:35.319Z",
@@ -135,5 +135,5 @@ export const generatedEditDates = {
   "app/learn/fundamentals/workflows/locks/page.mdx": "2025-09-15T09:37:00.808Z",
   "app/learn/codemods/page.mdx": "2025-09-29T15:40:03.620Z",
   "app/learn/codemods/replace-imports/page.mdx": "2025-10-09T11:37:44.754Z",
-  "app/learn/fundamentals/admin/translations/page.mdx": "2025-10-27T09:29:59.965Z"
+  "app/learn/fundamentals/admin/translations/page.mdx": "2025-10-30T11:55:32.221Z"
 }
