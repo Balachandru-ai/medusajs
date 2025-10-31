@@ -2243,7 +2243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.26.0":
+"@babel/runtime@npm:^7.26.10":
   version: 7.28.4
   resolution: "@babel/runtime@npm:7.28.4"
   checksum: 792ce7af9750fb9b93879cc9d1db175701c4689da890e6ced242ea0207c9da411ccf16dc04e689cc01158b28d7898c40d75598f4559109f761c12ce01e959bf7
@@ -5111,7 +5111,7 @@ __metadata:
   resolution: "@medusajs/dashboard@workspace:packages/admin/dashboard"
   dependencies:
     "@ariakit/react": ^0.4.15
-    "@babel/runtime": ^7.26.0
+    "@babel/runtime": ^7.26.10
     "@dnd-kit/core": ^6.1.0
     "@dnd-kit/sortable": ^8.0.0
     "@dnd-kit/utilities": ^3.2.2
@@ -5199,7 +5199,7 @@ __metadata:
   resolution: "@medusajs/draft-order@workspace:packages/plugins/draft-order"
   dependencies:
     "@ariakit/react": ^0.4.15
-    "@babel/runtime": ^7.26.0
+    "@babel/runtime": ^7.26.10
     "@hookform/resolvers": 3.4.2
     "@medusajs/admin-sdk": 2.11.1
     "@medusajs/cli": 2.11.1
@@ -5320,7 +5320,7 @@ __metadata:
     "@medusajs/framework": 2.11.1
     "@swc/core": ^1.7.28
     "@swc/jest": ^0.2.36
-    axios: ^1.6.8
+    axios: ^1.12.0
     jest: ^29.7.0
     rimraf: ^5.0.1
     typescript: ^5.6.2
@@ -5380,7 +5380,7 @@ __metadata:
     jsonwebtoken: ^9.0.2
     lodash.memoize: ^4.1.2
     morgan: ^1.9.1
-    path-to-regexp: ^0.1.10
+    path-to-regexp: ^0.1.12
     rimraf: ^5.0.1
     supertest: ^4.0.2
     tsconfig-paths: ^4.2.0
@@ -5454,7 +5454,7 @@ __metadata:
     "@types/jsdom": ^21.1.1
     "@types/react": ^18.3.2
     "@types/react-dom": ^18.2.25
-    esbuild: ^0.18.11
+    esbuild: ^0.25.0
     eslint: ^8.40.0
     jsdom: ^22.1.0
     react: ^18.3.1
@@ -6024,8 +6024,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/telemetry@workspace:packages/medusa-telemetry"
   dependencies:
-    "@babel/runtime": ^7.26.0
-    axios: ^1.6.8
+    "@babel/runtime": ^7.26.10
+    axios: ^1.12.0
     axios-retry: ^3.1.9
     boxen: ^5.0.1
     ci-info: ^3.2.0
@@ -6048,7 +6048,7 @@ __metadata:
   dependencies:
     "@medusajs/framework": 2.11.1
     "@types/express": ^4.17.21
-    axios: ^1.6.8
+    axios: ^1.12.0
     express: ^4.21.0
     get-port: ^5.1.1
     jest: ^29.7.0
@@ -6075,7 +6075,7 @@ __metadata:
     "@svgr/plugin-svgo": 8.0.1
     "@types/fs-extra": 11.0.1
     "@types/react": ^18.3.2
-    axios: ^1.6.8
+    axios: ^1.12.0
     axios-retry: ^3.1.9
     commander: ^11.0.0
     dotenv: ^16.4.5
@@ -6169,7 +6169,7 @@ __metadata:
     jsdom: ^22.1.0
     postcss: ^8.4.38
     prism-react-renderer: ^2.0.6
-    prismjs: ^1.29.0
+    prismjs: ^1.30.0
     prop-types: ^15.8.1
     radix-ui: 1.1.2
     react: ^18.3.1
@@ -15732,12 +15732,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.4":
-  version: 0.21.4
-  resolution: "axios@npm:0.21.4"
+"axios@npm:^1.12.0":
+  version: 1.13.1
+  resolution: "axios@npm:1.13.1"
   dependencies:
-    follow-redirects: ^1.14.0
-  checksum: fbcff55ec68f71f02d3773d467db2fcecdf04e749826c82c2427a232f9eba63242150a05f15af9ef15818352b814257541155de0281f8fb2b7e8a5b79f7f2142
+    follow-redirects: ^1.15.6
+    form-data: ^4.0.4
+    proxy-from-env: ^1.1.0
+  checksum: de9c3c6de43d3ee1146d3afe78645f19450cac6a5d7235bef8b8e8eeb705c2e47e2d231dea99cecaec4dae1897c521118ca9413b9d474063c719c4d94c5b9adc
   languageName: node
   linkType: hard
 
@@ -17499,7 +17501,7 @@ __metadata:
     ts-node: ^10.9.2
     typescript: ^5.6.2
     uuid: ^9.0.0
-    validator: ^13.9.0
+    validator: ^13.15.20
     wait-on: ^7.0.1
     winston: ^3.9.0
   bin:
@@ -18943,6 +18945,83 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esbuild@npm:^0.18.0":
+  version: 0.18.20
+  resolution: "esbuild@npm:0.18.20"
+  dependencies:
+    "@esbuild/android-arm": 0.18.20
+    "@esbuild/android-arm64": 0.18.20
+    "@esbuild/android-x64": 0.18.20
+    "@esbuild/darwin-arm64": 0.18.20
+    "@esbuild/darwin-x64": 0.18.20
+    "@esbuild/freebsd-arm64": 0.18.20
+    "@esbuild/freebsd-x64": 0.18.20
+    "@esbuild/linux-arm": 0.18.20
+    "@esbuild/linux-arm64": 0.18.20
+    "@esbuild/linux-ia32": 0.18.20
+    "@esbuild/linux-loong64": 0.18.20
+    "@esbuild/linux-mips64el": 0.18.20
+    "@esbuild/linux-ppc64": 0.18.20
+    "@esbuild/linux-riscv64": 0.18.20
+    "@esbuild/linux-s390x": 0.18.20
+    "@esbuild/linux-x64": 0.18.20
+    "@esbuild/netbsd-x64": 0.18.20
+    "@esbuild/openbsd-x64": 0.18.20
+    "@esbuild/sunos-x64": 0.18.20
+    "@esbuild/win32-arm64": 0.18.20
+    "@esbuild/win32-ia32": 0.18.20
+    "@esbuild/win32-x64": 0.18.20
+  dependenciesMeta:
+    "@esbuild/android-arm":
+      optional: true
+    "@esbuild/android-arm64":
+      optional: true
+    "@esbuild/android-x64":
+      optional: true
+    "@esbuild/darwin-arm64":
+      optional: true
+    "@esbuild/darwin-x64":
+      optional: true
+    "@esbuild/freebsd-arm64":
+      optional: true
+    "@esbuild/freebsd-x64":
+      optional: true
+    "@esbuild/linux-arm":
+      optional: true
+    "@esbuild/linux-arm64":
+      optional: true
+    "@esbuild/linux-ia32":
+      optional: true
+    "@esbuild/linux-loong64":
+      optional: true
+    "@esbuild/linux-mips64el":
+      optional: true
+    "@esbuild/linux-ppc64":
+      optional: true
+    "@esbuild/linux-riscv64":
+      optional: true
+    "@esbuild/linux-s390x":
+      optional: true
+    "@esbuild/linux-x64":
+      optional: true
+    "@esbuild/netbsd-x64":
+      optional: true
+    "@esbuild/openbsd-x64":
+      optional: true
+    "@esbuild/sunos-x64":
+      optional: true
+    "@esbuild/win32-arm64":
+      optional: true
+    "@esbuild/win32-ia32":
+      optional: true
+    "@esbuild/win32-x64":
+      optional: true
+  bin:
+    esbuild: bin/esbuild
+  checksum: 473b1d92842f50a303cf948a11ebd5f69581cd254d599dd9d62f9989858e0533f64e83b723b5e1398a5b488c0f5fd088795b4235f65ecaf4f007d4b79f04bc88
+  languageName: node
+  linkType: hard
+
 "esbuild@npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0":
   version: 0.23.1
   resolution: "esbuild@npm:0.23.1"
@@ -19023,83 +19102,6 @@ __metadata:
   bin:
     esbuild: bin/esbuild
   checksum: 08c2ed1105cc3c5e3a24a771e35532fe6089dd24a39c10097899072cef4a99f20860e41e9294e000d86380f353b04d8c50af482483d7f69f5208481cce61eec7
-  languageName: node
-  linkType: hard
-
-"esbuild@npm:^0.18.0, esbuild@npm:^0.18.11":
-  version: 0.18.20
-  resolution: "esbuild@npm:0.18.20"
-  dependencies:
-    "@esbuild/android-arm": 0.18.20
-    "@esbuild/android-arm64": 0.18.20
-    "@esbuild/android-x64": 0.18.20
-    "@esbuild/darwin-arm64": 0.18.20
-    "@esbuild/darwin-x64": 0.18.20
-    "@esbuild/freebsd-arm64": 0.18.20
-    "@esbuild/freebsd-x64": 0.18.20
-    "@esbuild/linux-arm": 0.18.20
-    "@esbuild/linux-arm64": 0.18.20
-    "@esbuild/linux-ia32": 0.18.20
-    "@esbuild/linux-loong64": 0.18.20
-    "@esbuild/linux-mips64el": 0.18.20
-    "@esbuild/linux-ppc64": 0.18.20
-    "@esbuild/linux-riscv64": 0.18.20
-    "@esbuild/linux-s390x": 0.18.20
-    "@esbuild/linux-x64": 0.18.20
-    "@esbuild/netbsd-x64": 0.18.20
-    "@esbuild/openbsd-x64": 0.18.20
-    "@esbuild/sunos-x64": 0.18.20
-    "@esbuild/win32-arm64": 0.18.20
-    "@esbuild/win32-ia32": 0.18.20
-    "@esbuild/win32-x64": 0.18.20
-  dependenciesMeta:
-    "@esbuild/android-arm":
-      optional: true
-    "@esbuild/android-arm64":
-      optional: true
-    "@esbuild/android-x64":
-      optional: true
-    "@esbuild/darwin-arm64":
-      optional: true
-    "@esbuild/darwin-x64":
-      optional: true
-    "@esbuild/freebsd-arm64":
-      optional: true
-    "@esbuild/freebsd-x64":
-      optional: true
-    "@esbuild/linux-arm":
-      optional: true
-    "@esbuild/linux-arm64":
-      optional: true
-    "@esbuild/linux-ia32":
-      optional: true
-    "@esbuild/linux-loong64":
-      optional: true
-    "@esbuild/linux-mips64el":
-      optional: true
-    "@esbuild/linux-ppc64":
-      optional: true
-    "@esbuild/linux-riscv64":
-      optional: true
-    "@esbuild/linux-s390x":
-      optional: true
-    "@esbuild/linux-x64":
-      optional: true
-    "@esbuild/netbsd-x64":
-      optional: true
-    "@esbuild/openbsd-x64":
-      optional: true
-    "@esbuild/sunos-x64":
-      optional: true
-    "@esbuild/win32-arm64":
-      optional: true
-    "@esbuild/win32-ia32":
-      optional: true
-    "@esbuild/win32-x64":
-      optional: true
-  bin:
-    esbuild: bin/esbuild
-  checksum: 473b1d92842f50a303cf948a11ebd5f69581cd254d599dd9d62f9989858e0533f64e83b723b5e1398a5b488c0f5fd088795b4235f65ecaf4f007d4b79f04bc88
   languageName: node
   linkType: hard
 
@@ -20399,7 +20401,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.6":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
   peerDependenciesMeta:
@@ -20464,7 +20466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:~4.0.0":
+"form-data@npm:^4.0.4, form-data@npm:~4.0.0":
   version: 4.0.4
   resolution: "form-data@npm:4.0.4"
   dependencies:
@@ -26028,7 +26030,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^0.1.10":
+"path-to-regexp@npm:^0.1.12":
   version: 0.1.12
   resolution: "path-to-regexp@npm:0.1.12"
   checksum: 1c6ff10ca169b773f3bba943bbc6a07182e332464704572962d277b900aeee81ac6aa5d060ff9e01149636c30b1f63af6e69dd7786ba6e0ddb39d4dee1f0645b
@@ -26880,6 +26882,13 @@ __metadata:
   version: 1.29.0
   resolution: "prismjs@npm:1.29.0"
   checksum: d906c4c4d01b446db549b4f57f72d5d7e6ccaca04ecc670fb85cea4d4b1acc1283e945a9cbc3d81819084a699b382f970e02f9d1378e14af9808d366d9ed7ec6
+  languageName: node
+  linkType: hard
+
+"prismjs@npm:^1.30.0":
+  version: 1.30.0
+  resolution: "prismjs@npm:1.30.0"
+  checksum: f56205bfd58ef71ccfcbcb691fd0eb84adc96c6ff21b0b69fc6fdcf02be42d6ef972ba4aed60466310de3d67733f6a746f89f2fb79c00bf217406d465b3e8f23
   languageName: node
   linkType: hard
 
@@ -28632,7 +28641,7 @@ __metadata:
     "@types/node": ^20.12.11
     "@typescript-eslint/eslint-plugin": ^6.19.0
     "@typescript-eslint/parser": ^6.19.0
-    axios: ^0.21.4
+    axios: ^1.12.0
     axios-mock-adapter: ^1.19.0
     cross-env: ^7.0.3
     eslint: ^8.23.0
@@ -31543,10 +31552,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:13.12.0, validator@npm:^13.9.0":
+"validator@npm:13.12.0":
   version: 13.12.0
   resolution: "validator@npm:13.12.0"
   checksum: 21d48a7947c9e8498790550f56cd7971e0e3d724c73388226b109c1bac2728f4f88caddfc2f7ed4b076f9b0d004316263ac786a17e9c4edf075741200718cd32
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.15.20":
+  version: 13.15.20
+  resolution: "validator@npm:13.15.20"
+  checksum: 65453f0c91ef154ae2da4d5ff3c22acff239d2c15216335ba83895b6f79914708709c641119aa9fba0ec9dd69229c1cf8196aff0081584bdda8a7f50ea97b789
   languageName: node
   linkType: hard
 
