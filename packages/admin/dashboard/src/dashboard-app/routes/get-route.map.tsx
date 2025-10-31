@@ -130,18 +130,6 @@ export function getRouteMap({
                             import("../../routes/products/product-prices"),
                         },
                         {
-                          path: "options/create",
-                          lazy: () =>
-                            import(
-                              "../../routes/products/product-create-option"
-                            ),
-                        },
-                        {
-                          path: "options/:option_id/edit",
-                          lazy: () =>
-                            import("../../routes/products/product-edit-option"),
-                        },
-                        {
                           path: "variants/create",
                           lazy: () =>
                             import(

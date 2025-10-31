@@ -1,19 +1,16 @@
 import { PencilSquare, Plus } from "@medusajs/icons"
-import { Badge, Container, Heading, usePrompt } from "@medusajs/ui"
+import { Badge, Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { SectionRow } from "../../../../../components/common/section"
 import { HttpTypes } from "@medusajs/types"
 
 const OptionActions = ({
-  product,
   option,
 }: {
-  product: HttpTypes.AdminProduct
   option: HttpTypes.AdminProductOption
 }) => {
   const { t } = useTranslation()
-  const prompt = usePrompt()
 
   return (
     <ActionMenu
@@ -22,20 +19,11 @@ const OptionActions = ({
           actions: [
             {
               label: t("actions.edit"),
-              to: `options/${option.id}/edit`,
+              to: `/product-options/${option.id}/edit`,
               icon: <PencilSquare />,
             },
           ],
         },
-        // {
-        //   actions: [
-        //     {
-        //       label: t("actions.delete"),
-        //       onClick: handleDelete,
-        //       icon: <Trash />,
-        //     },
-        //   ],
-        // },
       ]}
     />
   )
@@ -85,7 +73,7 @@ export const ProductOptionSection = ({
                 </Badge>
               )
             })}
-            actions={<OptionActions product={product} option={option} />}
+            actions={<OptionActions option={option} />}
           />
         )
       })}
