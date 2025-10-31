@@ -2827,31 +2827,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/accessibility@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@dnd-kit/accessibility@npm:3.1.1"
-  dependencies:
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ">=16.8.0"
-  checksum: be0bf41716dc58f9386bc36906ec1ce72b7b42b6d1d0e631d347afe9bd8714a829bd6f58a346dd089b1519e93918ae2f94497411a61a4f5e4d9247c6cfd1fef8
-  languageName: node
-  linkType: hard
-
-"@dnd-kit/core@npm:^6.0.0":
-  version: 6.3.1
-  resolution: "@dnd-kit/core@npm:6.3.1"
-  dependencies:
-    "@dnd-kit/accessibility": ^3.1.1
-    "@dnd-kit/utilities": ^3.2.2
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ">=16.8.0"
-    react-dom: ">=16.8.0"
-  checksum: 196db95d81096d9dc248983533eab91ba83591770fa5c894b1ac776f42af0d99522b3fd5bb3923411470e4733fcfa103e6ee17adc17b9b7eb54c7fbec5ff7c52
-  languageName: node
-  linkType: hard
-
 "@dnd-kit/core@npm:^6.1.0":
   version: 6.1.0
   resolution: "@dnd-kit/core@npm:6.1.0"
@@ -2863,19 +2838,6 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: c793eb97cb59285ca8937ebcdfcd27cff09d750ae06722e36ca5ed07925e41abc36a38cff98f9f6056f7a07810878d76909826142a2968330e7e22060e6be584
-  languageName: node
-  linkType: hard
-
-"@dnd-kit/sortable@npm:^7.0.0":
-  version: 7.0.2
-  resolution: "@dnd-kit/sortable@npm:7.0.2"
-  dependencies:
-    "@dnd-kit/utilities": ^3.2.0
-    tslib: ^2.0.0
-  peerDependencies:
-    "@dnd-kit/core": ^6.0.7
-    react: ">=16.8.0"
-  checksum: 06aeb113eeeb470bb2443bf1c48d597157bb3a1caa9740e60c2fa73a3076e753cd083a2d381f0556bd7e9873e851a49ce8ea14796ac02e2d796eabea4e27196d
   languageName: node
   linkType: hard
 
@@ -2892,7 +2854,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/utilities@npm:^3.2.0, @dnd-kit/utilities@npm:^3.2.2":
+"@dnd-kit/utilities@npm:^3.2.2":
   version: 3.2.2
   resolution: "@dnd-kit/utilities@npm:3.2.2"
   dependencies:
@@ -4929,7 +4891,7 @@ __metadata:
     "@babel/types": 7.25.6
     "@medusajs/admin-shared": 2.11.2
     "@types/node": ^20.12.11
-    chokidar: 3.5.3
+    chokidar: ^3.5.3
     fdir: 6.1.1
     magic-string: 0.30.5
     outdent: ^0.8.0
@@ -5355,7 +5317,7 @@ __metadata:
     "@medusajs/js-sdk": 2.11.2
     "@medusajs/test-utils": 2.11.2
     "@medusajs/types": 2.11.2
-    "@medusajs/ui": 4.0.25
+    "@medusajs/ui": 4.0.26
     "@medusajs/ui-preset": 2.11.2
     "@swc/core": ^1.7.28
     "@tanstack/react-query": 5.64.2
@@ -5386,7 +5348,7 @@ __metadata:
     "@medusajs/framework": 2.11.2
     "@medusajs/icons": 2.11.2
     "@medusajs/test-utils": 2.11.2
-    "@medusajs/ui": 4.0.25
+    "@medusajs/ui": 4.0.26
     react: ^18.3.1
     react-dom: ^18.3.1
     react-router-dom: 6.20.1
@@ -5619,15 +5581,6 @@ __metadata:
     react: ^18.3.1
   languageName: unknown
   linkType: soft
-
-"@medusajs/icons@npm:2.11.1":
-  version: 2.11.1
-  resolution: "@medusajs/icons@npm:2.11.1"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 1464d49350d280eeb1e992f35f1dcdbe55c26e304c6ec7a16ebba613f09d099b8d0343f9f6385fb0c8101ba7b372f9cddc7ddad9e6b7bbdbdfe89b993c510687
-  languageName: node
-  linkType: hard
 
 "@medusajs/index@2.11.2, @medusajs/index@workspace:packages/modules/index":
   version: 0.0.0-use.local
@@ -6345,35 +6298,6 @@ __metadata:
     react-dom: ^18.3.1
   languageName: unknown
   linkType: soft
-
-"@medusajs/ui@npm:4.0.25":
-  version: 4.0.25
-  resolution: "@medusajs/ui@npm:4.0.25"
-  dependencies:
-    "@dnd-kit/core": ^6.0.0
-    "@dnd-kit/sortable": ^7.0.0
-    "@dnd-kit/utilities": ^3.2.0
-    "@medusajs/icons": 2.11.1
-    "@radix-ui/react-dialog": 1.1.4
-    "@radix-ui/react-dismissable-layer": 1.1.4
-    "@tanstack/react-table": 8.20.5
-    clsx: ^1.2.1
-    copy-to-clipboard: ^3.3.3
-    cva: 1.0.0-beta.1
-    prism-react-renderer: ^2.0.6
-    prismjs: ^1.29.0
-    radix-ui: 1.1.2
-    react-aria: ^3.33.1
-    react-currency-input-field: ^3.6.11
-    react-stately: ^3.31.1
-    sonner: ^1.5.0
-    tailwind-merge: ^2.2.1
-  peerDependencies:
-    react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-    react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 2b7d9133737f6c8d32e029c33ba10eb2767214ae1ca5975e4f6593d4f945c4213322798aafc764afa616665e08cb5574690e7ca03bde89dc37dcd04c8c9e6d01
-  languageName: node
-  linkType: hard
 
 "@medusajs/user@2.11.2, @medusajs/user@workspace:^, @medusajs/user@workspace:packages/modules/user":
   version: 0.0.0-use.local
@@ -16949,25 +16873,6 @@ __metadata:
   version: 2.1.1
   resolution: "check-error@npm:2.1.1"
   checksum: 979f13eccab306cf1785fa10941a590b4e7ea9916ea2a4f8c87f0316fc3eab07eabefb6e587424ef0f88cbcd3805791f172ea739863ca3d7ce2afc54641c7f0e
-  languageName: node
-  linkType: hard
-
-"chokidar@npm:3.5.3":
-  version: 3.5.3
-  resolution: "chokidar@npm:3.5.3"
-  dependencies:
-    anymatch: ~3.1.2
-    braces: ~3.0.2
-    fsevents: ~2.3.2
-    glob-parent: ~5.1.2
-    is-binary-path: ~2.1.0
-    is-glob: ~4.0.1
-    normalize-path: ~3.0.0
-    readdirp: ~3.6.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  checksum: 1076953093e0707c882a92c66c0f56ba6187831aa51bb4de878c1fec59ae611a3bf02898f190efec8e77a086b8df61c2b2a3ea324642a0558bdf8ee6c5dc9ca1
   languageName: node
   linkType: hard
 
