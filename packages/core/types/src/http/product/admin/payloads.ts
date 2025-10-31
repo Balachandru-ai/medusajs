@@ -613,3 +613,14 @@ export interface AdminImportProductsRequest {
    */
   mime_type: string
 }
+
+export interface AdminLinkProductOptions {
+  /**
+   * The list of options to link to the product.
+   */
+  add?: (string | AdminCreateProductOption)[]
+  /**
+   * The list of options to unlink to the product.
+   */
+  remove?: string[]
+}

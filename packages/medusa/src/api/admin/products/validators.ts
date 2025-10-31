@@ -105,7 +105,6 @@ export type AdminLinkProductOptionsType = z.infer<
   typeof AdminLinkProductOptions
 >
 export const AdminLinkProductOptions = z.object({
-  product_id: z.string(),
   add: z.array(z.union([z.string(), AdminCreateProductOption])).optional(),
   remove: z.array(z.string()).optional(),
 })
