@@ -32,23 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The sales channels to add or remove from the publishable API key.
- *         properties:
- *           add:
- *             type: array
- *             description: The sales channels to add to the publishable API key.
- *             items:
- *               type: string
- *               title: add
- *               description: A sales channel's ID.
- *           remove:
- *             type: array
- *             description: The sales channels to remove from the publishable API key.
- *             items:
- *               type: string
- *               title: remove
- *               description: A sales channel's ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

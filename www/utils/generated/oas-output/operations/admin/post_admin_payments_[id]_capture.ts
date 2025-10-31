@@ -31,7 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreatePaymentCapture"
+ *         $ref: "#/components/schemas/AdminCapturePayment"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
