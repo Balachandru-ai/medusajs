@@ -25,6 +25,14 @@
  *         fields. Without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: version
+ *     in: query
+ *     description: The version of the order to retrieve.
+ *     required: false
+ *     schema:
+ *       type: number
+ *       title: version
+ *       description: The version of the order to retrieve.
  * security:
  *   - api_token: []
  *   - cookie_auth: []

@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreateFulfillmentSetServiceZones"
+ *         $ref: "#/components/schemas/AdminCreateFulfillmentSetServiceZone"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
