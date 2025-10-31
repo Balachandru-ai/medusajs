@@ -24,7 +24,7 @@ This workflow creates one or more regions. It's used by the
 You can use this workflow within your own customizations or custom workflows, allowing you
 to create regions in your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/region/workflows/create-regions.ts#L41" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/region/workflows/create-regions.ts#L41" />
 
 ## Examples
 
@@ -149,7 +149,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"createRegionsWorkflow","steps":[{"type":"step","name":"createRegionsStep","description":"This step creates one or more regions.","link":"../../../Steps_Region/functions/core_flows.Region.Steps_Region.createRegionsStep/page.mdx","depth":1},{"type":"step","name":"setRegionsPaymentProvidersStep","description":"This step sets the payment providers available in regions.","link":"../../../Steps_Region/functions/core_flows.Region.Steps_Region.setRegionsPaymentProvidersStep/page.mdx","depth":2},{"type":"workflow","name":"createPricePreferencesWorkflow","description":"Create one or more price preferences.","link":"../../../../Pricing/Workflows_Pricing/functions/core_flows.Pricing.Workflows_Pricing.createPricePreferencesWorkflow/page.mdx","depth":2},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
+<WorkflowDiagram workflow={{"name":"createRegionsWorkflow","steps":[{"type":"step","name":"createRegionsStep","description":"This step creates one or more regions.","link":"../../../Steps_Region/functions/core_flows.Region.Steps_Region.createRegionsStep/page.mdx","depth":1},{"type":"step","name":"setRegionsPaymentProvidersStep","description":"This step sets the payment providers available in regions.","link":"../../../Steps_Region/functions/core_flows.Region.Steps_Region.setRegionsPaymentProvidersStep/page.mdx","depth":2},{"type":"workflow","name":"createPricePreferencesWorkflow","description":"Create one or more price preferences.","link":"../../../../Pricing/Workflows_Pricing/functions/core_flows.Pricing.Workflows_Pricing.createPricePreferencesWorkflow/page.mdx","depth":2},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
 
 ## Input
 
@@ -163,11 +163,7 @@ const myWorkflow = createWorkflow(
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
 
-:::note
-
 The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
 
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 
