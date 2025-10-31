@@ -7,7 +7,6 @@ import {
 import { HttpTypes } from "@medusajs/framework/types"
 import { remapKeysForProduct, remapProductResponse } from "../../helpers"
 import { linkProductOptionsToProductWorkflow } from "@medusajs/core-flows"
-import { AdminLinkProductOptionsType } from "../../validators"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductOptionParams>,
@@ -31,13 +30,16 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminLinkProductOptionsType>,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminLinkProductOptions>,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {
   const productId = req.params.id
 
   await linkProductOptionsToProductWorkflow(req.scope).run({
-    input: req.validatedBody,
+    input: {
+      product_id: productId,
+      ...req.validatedBody,
+    },
   })
 
   const product = await refetchEntity({
