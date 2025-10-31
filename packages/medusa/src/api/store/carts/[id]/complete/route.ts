@@ -19,7 +19,6 @@ export const POST = async (
 
   const { errors, result, transaction } = await we.run(completeCartWorkflowId, {
     input: { id: cart_id },
-    transactionId: cart_id,
     throwOnError: false,
   })
 
