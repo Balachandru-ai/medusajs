@@ -235,7 +235,7 @@ export interface AdminCreateProduct {
   /**
    * The product's options.
    */
-  options: AdminCreateProductOption[]
+  options: (AdminCreateProductOption | { id: string })[]
   /**
    * The product's variants.
    */

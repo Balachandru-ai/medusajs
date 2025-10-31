@@ -58,6 +58,7 @@ import {
 import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
 import { EntityManager } from "@mikro-orm/core"
+import { CreateProductOptionDTO } from "@medusajs/types"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -1696,8 +1697,60 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
+    const existingOptionIds = data
+      .flatMap((p) => p.options ?? [])
+      .filter((o) => "id" in o)
+      .map((o) => o.id)
+
+    let existingOptions: InferEntityType<typeof ProductOption>[] = []
+    if (existingOptionIds.length > 0) {
+      existingOptions = await this.productOptionService_.list(
+        { id: existingOptionIds },
+        { relations: ["values"] },
+        sharedContext
+      )
+
+      const fetchedIds = new Set(existingOptions.map((opt) => opt.id))
+      const missingIds = existingOptionIds.filter((id) => !fetchedIds.has(id))
+      if (missingIds.length) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Some product options were not found: [${missingIds.join(", ")}]`
+        )
+      }
+    }
+
+    const existingOptionsMap = new Map(
+      existingOptions.map((opt) => [opt.id, opt])
+    )
+
+    const hydratedData = data.map((product) => {
+      if (!product.options?.length) return product
+
+      const hydratedOptions = product.options.map((option) => {
+        if ("id" in option) {
+          const dbOption = existingOptionsMap.get(option.id)
+          if (!dbOption) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Product option with id ${option.id} not found.`
+            )
+          }
+
+          return {
+            id: dbOption.id,
+            title: dbOption.title,
+            values: dbOption.values?.map((v) => ({ value: v.value })),
+          }
+        }
+        return option
+      })
+
+      return { ...product, options: hydratedOptions }
+    })
+
     const normalizedProducts = this.normalizeCreateProductInput(
-      data,
+      hydratedData,
       sharedContext
     )
 
@@ -1738,7 +1791,12 @@ export default class ProductModuleService
       }
 
       if (product.options?.length) {
-        productOptionsToCreate.set(productId, product.options as any)
+        const newOptions = product.options.filter(
+          (o) => !("id" in o)
+        ) as CreateProductOptionDTO[]
+        if (newOptions.length) {
+          productOptionsToCreate.set(productId, newOptions)
+        }
       }
 
       if (product.variants?.length) {
@@ -1748,9 +1806,9 @@ export default class ProductModuleService
 
           Object.entries(variant.options ?? {}).forEach(([key, value]) => {
             const productOption = product.options?.find(
-              (option) => option.title === key
+              (option) => (option as any).title === key
             )!
-            const productOptionValue = productOption.values?.find(
+            const productOptionValue = (productOption as any).values?.find(
               (optionValue) => (optionValue as any).value === value
             )!
             ;(productOptionValue as any).variants ??= []
@@ -1795,7 +1853,7 @@ export default class ProductModuleService
       const optionIds: string[] = []
 
       for (const option of options) {
-        const optionId = generateEntityId((option as any).id, "opt")
+        const optionId = generateEntityId(undefined, "opt")
         optionIds.push(optionId)
         allOptionsWithIds.push({
           ...option,
@@ -1806,7 +1864,6 @@ export default class ProductModuleService
       productToOptionIdsMap.set(productId, optionIds)
     }
 
-    // Create products and options in parallel since IDs are pre-generated
     const [createdProducts] = await Promise.all([
       this.productService_.create(productsToCreate, sharedContext),
       allOptionsWithIds.length > 0
@@ -1816,14 +1873,27 @@ export default class ProductModuleService
 
     const linkPairs: ProductTypes.ProductOptionProductPair[] = []
     for (const product of createdProducts) {
-      const optionIds = productToOptionIdsMap.get(product.id)
-      if (optionIds) {
-        for (const optionId of optionIds) {
-          linkPairs.push({
-            product_id: product.id,
-            product_option_id: optionId,
-          })
+      const hydratedProduct = hydratedData.find(
+        (p) => p.title === product.title
+      )
+      const allOptionIds: string[] = []
+
+      if (hydratedProduct?.options?.length) {
+        for (const option of hydratedProduct.options) {
+          if ("id" in option) {
+            allOptionIds.push(option.id)
+          }
         }
+      }
+
+      const newOptionIds = productToOptionIdsMap.get(product.id) ?? []
+      const optionIds = [...new Set([...allOptionIds, ...newOptionIds])]
+
+      for (const optionId of optionIds) {
+        linkPairs.push({
+          product_id: product.id,
+          product_option_id: optionId,
+        })
       }
     }
 
@@ -2021,7 +2091,7 @@ export default class ProductModuleService
     if (options?.length) {
       productData.variants?.forEach((variant) => {
         options.forEach((option) => {
-          if (!variant.options?.[option.title]) {
+          if (!variant.options?.[(option as any).title]) {
             missingOptionsVariants.push(variant.title)
           }
         })
@@ -2156,6 +2226,7 @@ export default class ProductModuleService
                 ...(dbValue ? { id: dbValue.id } : {}),
               }
             }),
+            ...(option.id ? { id: option.id } : {}),
             ...(dbOption ? { id: dbOption.id } : {}),
           }
         })

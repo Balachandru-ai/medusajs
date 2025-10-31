@@ -239,7 +239,9 @@ export const CreateProduct = z
     collection_id: z.string().nullish(),
     categories: z.array(IdAssociation).optional(),
     tags: z.array(IdAssociation).optional(),
-    options: z.array(AdminCreateProductOption).optional(),
+    options: z
+      .array(z.union([AdminCreateProductOption, z.object({ id: z.string() })]))
+      .optional(),
     variants: z.array(CreateProductVariant).optional(),
     sales_channels: z.array(z.object({ id: z.string() })).optional(),
     shipping_profile_id: z.string().optional(),
