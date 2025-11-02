@@ -183,7 +183,9 @@ class ModuleTestRunner<TService = any> {
         [ContainerRegistrationKeys.PG_CONNECTION]: this.connection,
         [Modules.EVENT_BUS]: new MockEventBusService(),
         [ContainerRegistrationKeys.LOGGER]: console,
-        [ContainerRegistrationKeys.CONFIG_MODULE]: this.modulesConfig,
+        [ContainerRegistrationKeys.CONFIG_MODULE]: {
+          modules: this.modulesConfig,
+        },
         ...this.injectedDependencies,
       },
       modulesConfig: this.modulesConfig,

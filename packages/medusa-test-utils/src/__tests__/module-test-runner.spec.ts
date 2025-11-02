@@ -23,7 +23,7 @@ moduleIntegrationTestRunner<TestService>({
         const configModule =
           dependencies[ContainerRegistrationKeys.CONFIG_MODULE]
         expect(configModule).toBeDefined()
-        expect(configModule["test"]?.options?.option1).toBe("value1")
+        expect(configModule.modules["test"]?.options?.option1).toBe("value1")
       })
 
       it("should inject internal services on the main service", async () => {
@@ -46,7 +46,7 @@ moduleIntegrationTestRunner<TestService>({
         const configModule =
           dependencies[ContainerRegistrationKeys.CONFIG_MODULE]
         expect(configModule).toBeDefined()
-        expect(configModule["test"]?.options?.option1).toBe("value1")
+        expect(configModule.modules["test"]?.options?.option1).toBe("value1")
       })
     })
   },
