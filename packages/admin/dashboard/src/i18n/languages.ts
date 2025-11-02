@@ -9,6 +9,7 @@ import {
   ja,
   pl,
   ptBR,
+  ptPT,
   th,
   tr,
   uk,
@@ -109,6 +110,12 @@ export const languages: Language[] = [
     display_name: "Português (Brasil)",
     ltr: true,
     date_locale: ptBR,
+  },
+  {
+    code: "ptPT",
+    display_name: "Português (Portugal)",
+    ltr: true,
+    date_locale: ptPT,
   },
   {
     code: "tr",
