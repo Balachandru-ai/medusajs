@@ -27,8 +27,7 @@
   "author": "Medusa",
   "license": "MIT",
   "devDependencies": {
-    "@medusajs/types": "2.11.2",
-    "express": "^4.21.0"
+    "@medusajs/types": "2.11.2"
   },
   "dependencies": {
     "@medusajs/deps": "2.11.2",
@@ -36,9 +35,6 @@
     "@medusajs/orchestration": "2.11.2",
     "@medusajs/utils": "2.11.2",
     "ulid": "^2.3.0"
-  },
-  "peerDependencies": {
-    "express": "^4.21.0"
   },
   "scripts": {
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
