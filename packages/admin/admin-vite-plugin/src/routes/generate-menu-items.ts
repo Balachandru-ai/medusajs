@@ -67,12 +67,13 @@ function generateCode(results: MenuItemResult[]): string {
 }
 
 function formatMenuItem(route: MenuItem): string {
-  const { label, icon, path, nested } = route
+  const { label, icon, path, nested, rank } = route
   return `{
     label: ${label},
     icon: ${icon || "undefined"},
     path: "${path}",
-    nested: ${nested ? `"${nested}"` : "undefined"}
+    nested: ${nested ? `"${nested}"` : "undefined"},
+    rank: ${rank !== undefined ? rank : "undefined"}
   }`
 }
 
