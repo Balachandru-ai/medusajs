@@ -86,6 +86,7 @@ jobs:
         uses: ./.github/actions/cache-deps
         with:
           extension: snapshot-this
+          skip-build: "true"
 
       - name: Build Packages
         shell: "bash"
