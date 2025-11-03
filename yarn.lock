@@ -3519,7 +3519,6 @@ __metadata:
   resolution: "@medusajs/event-bus-local@workspace:packages/modules/event-bus-local"
   dependencies:
     "@medusajs/framework": 2.11.2
-    ulid: ^2.3.0
   peerDependencies:
     "@medusajs/framework": 2.11.2
   languageName: unknown
@@ -3845,9 +3844,6 @@ __metadata:
     "@medusajs/orchestration": 2.11.2
     "@medusajs/types": 2.11.2
     "@medusajs/utils": 2.11.2
-    express: ^4.21.0
-  peerDependencies:
-    express: ^4.21.0
   languageName: unknown
   linkType: soft
 
@@ -3899,10 +3895,7 @@ __metadata:
     "@medusajs/deps": 2.11.2
     "@medusajs/types": 2.11.2
     "@medusajs/utils": 2.11.2
-    express: ^4.21.0
     ulid: ^2.3.0
-  peerDependencies:
-    express: ^4.21.0
   languageName: unknown
   linkType: soft
 

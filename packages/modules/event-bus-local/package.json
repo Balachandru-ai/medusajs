@@ -31,9 +31,6 @@
     "test": "../../../node_modules/.bin/jest --passWithNoTests",
     "test:integration": "../../../node_modules/.bin/jest --no-cache --bail --detectOpenHandles --forceExit --logHeapUsage -- integration-tests/__tests__/**/*.spec.ts"
   },
-  "dependencies": {
-    "ulid": "^2.3.0"
-  },
   "peerDependencies": {
     "@medusajs/framework": "2.11.2"
   }

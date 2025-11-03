@@ -31,15 +31,11 @@
     "watch": "yarn run -T tsc --build --watch"
   },
   "devDependencies": {
-    "@medusajs/types": "2.11.2",
-    "express": "^4.21.0"
+    "@medusajs/types": "2.11.2"
   },
   "dependencies": {
     "@medusajs/deps": "2.11.2",
     "@medusajs/orchestration": "2.11.2",
     "@medusajs/utils": "2.11.2"
-  },
-  "peerDependencies": {
-    "express": "^4.21.0"
   }
 }
