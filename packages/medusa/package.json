@@ -46,7 +46,7 @@
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "serve": "node dist/app.js",
     "test": "../../node_modules/.bin/jest --bail --forceExit --testPathIgnorePatterns='/integration-tests/' --testPathPattern=src",
-    "test:integration": "../../node_modules/.bin/jest --forceExit --testPathPattern=\"src/.*/integration-tests/__tests__(?:/.*)?/[^/]*\\.ts\""
+    "test:integration": "../../node_modules/.bin/jest --passWithNoTests --forceExit --testPathPattern=\"src/.*/integration-tests/__tests__(?:/.*)?/[^/]*\\.ts\""
   },
   "devDependencies": {
     "@medusajs/framework": "2.11.2"
