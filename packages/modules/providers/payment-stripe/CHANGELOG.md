@@ -1,5 +1,21 @@
 # @medusajs/payment-stripe
 
+## 2.11.2
+
+### Patch Changes
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
+## 2.11.1
+
+### Patch Changes
+
+- [#13801](https://github.com/medusajs/medusa/pull/13801) [`17fb3e2e10e4e53bfb4d7d33e004c59225a71861`](https://github.com/medusajs/medusa/commit/17fb3e2e10e4e53bfb4d7d33e004c59225a71861) Thanks [@vethan](https://github.com/vethan)! - feat(payment-stripe): merge custom metadata along with session_id on payment initiation
+
+- Updated dependencies []:
+  - @medusajs/framework@2.11.1
+
 ## 2.11.0
 
 ### Patch Changes

@@ -12,14 +12,13 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { refetchTaxRate } from "../helpers"
-import {
-  AdminGetTaxRateParamsType,
-  AdminUpdateTaxRateType,
-} from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateTaxRateType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateTaxRate,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminTaxRateResponse>
 ) => {
   const existingTaxRate = await refetchTaxRate(req.params.id, req.scope, ["id"])
@@ -47,7 +46,9 @@ export const POST = async (
 }
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetTaxRateParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminTaxRateResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

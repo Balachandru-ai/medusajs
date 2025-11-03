@@ -11,7 +11,7 @@ import { refetchCart } from "../../helpers"
 import { defaultStoreCartFields } from "../../query-config"
 
 export const POST = async (
-  req: MedusaRequest,
+  req: MedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCompleteCartResponse>
 ) => {
   const cart_id = req.params.id
@@ -19,7 +19,6 @@ export const POST = async (
 
   const { errors, result, transaction } = await we.run(completeCartWorkflowId, {
     input: { id: cart_id },
-    transactionId: cart_id,
     throwOnError: false,
   })
 

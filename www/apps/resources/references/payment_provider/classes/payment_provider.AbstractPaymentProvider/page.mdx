@@ -823,6 +823,56 @@ class MyPaymentProviderService extends AbstractPaymentProvider<
 
 <TypeList types={[{"name":"Promise","type":"Promise&#60;[RefundPaymentOutput](../../../types/interfaces/types.RefundPaymentOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The new data to store in the payment's `data` property, or an error object.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="refundPayment"/>
 
+### retrieveAccountHolder
+
+<BadgesList badges={[
+  {
+    "variant": "neutral",
+    "children": "optional"
+  }
+]} className="mb-1" />
+
+This method is used when retrieving an account holder in Medusa, allowing you to retrieve
+the equivalent account in the third-party payment provider. An account holder is useful to
+later save payment methods, such as credit cards, for a customer in the
+third-party payment provider using the [savePaymentMethod](../../../types/interfaces/types.IPaymentProvider/page.mdx#savepaymentmethod) method.
+
+:::note
+
+This is available starting from [Medusa v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0).
+
+:::
+
+#### Example
+
+```ts
+import { MedusaError } from "@medusajs/framework/utils"
+
+class MyPaymentProviderService extends AbstractPaymentProvider<
+ Options
+> {
+ async retrieveAccountHolder({ id }: RetrieveAccountHolderInput) {
+
+  // assuming you have a client that retrieves the account holder
+  const providerAccountHolder = await this.client.retrieveAccountHolder({
+    id
+  })
+
+  return {
+    id: providerAccountHolder.id,
+    data: providerAccountHolder as unknown as Record<string, unknown>
+  }
+}
+```
+
+#### Parameters
+
+<TypeList types={[{"name":"data","type":"[RetrieveAccountHolderInput](../../../types/interfaces/types.RetrieveAccountHolderInput/page.mdx)","description":"Input data including the details of the account holder to retrieve.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the account holder to retrieve.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"Data is a combination of the input from the user and what is stored in the database for the associated model.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[PaymentProviderContext](../../../types/interfaces/types.PaymentProviderContext/page.mdx)","description":"The context for this payment operation. The data is guaranteed to be validated and not directly provided by the user.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="retrieveAccountHolder"/>
+
+#### Returns
+
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[RetrieveAccountHolderOutput](../../../types/interfaces/types.RetrieveAccountHolderOutput/page.mdx)&#62;","optional":false,"defaultValue":"","description":"The retrieved account holder. If an error occurs, throw it.","expandable":false,"children":[],"since":"2.11.0"}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="retrieveAccountHolder"/>
+
 ### retrievePayment
 
 This method retrieves the payment's data from the third-party payment provider.

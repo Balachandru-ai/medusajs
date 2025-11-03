@@ -35,7 +35,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminTransferOrder"
+ *         $ref: "#/components/schemas/AdminRequestOrderTransfer"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

@@ -31,7 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsReturnReqSchema"
+ *         $ref: "#/components/schemas/AdminUpdateReturnRequest"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

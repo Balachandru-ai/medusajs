@@ -2223,6 +2223,38 @@ export interface IProductModuleService extends IModuleService {
   ): Promise<Record<string, string[]> | void>
 
   /**
+   * This method is used to associate images and variants.
+   *
+   * @param {DataTransferItemsFilter} data - Image variant pairs.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<{ id: string }[]>} The IDs of the image variant pairs.
+   *
+   * @example
+   * await productModuleService.addImageToVariant([
+   *   {
+   *     image_id: "img_123",
+   *     variant_id: "variant_321",
+   *   },
+   * ])
+   */
+  addImageToVariant(
+    data: { image_id: string; variant_id: string }[],
+    sharedContext?: Context
+  ): Promise<{ id: string }[]>
+
+  /**
+   * This method is used to remove images from variants.
+   *
+   * @param {DataTransferItemsFilter} data - Image variant pairs.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<void>} The IDs of the image variant pairs.
+   */
+  removeImageFromVariant(
+    data: { image_id: string; variant_id: string }[],
+    sharedContext?: Context
+  ): Promise<void>
+
+  /**
    * This method is used to retrieve a product collection by its ID.
    *
    * @param {string} productCollectionId - The ID of the product collection to retrieve.

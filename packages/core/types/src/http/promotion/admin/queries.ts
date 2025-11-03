@@ -78,7 +78,7 @@ export interface AdminGetPromotionRuleParams {
    */
   application_method_type?: ApplicationMethodTypeValues
   /**
-   * The type of application method to retrieve the attributes for.
+   * The target type of application method to retrieve the attributes for.
    */
   application_method_target_type?: ApplicationMethodTargetTypeValues
 }
@@ -92,6 +92,10 @@ export interface AdminGetPromotionRuleTypeParams extends SelectParams {
    * The type of application method to retrieve the attributes for.
    */
   application_method_type?: ApplicationMethodTypeValues
+  /**
+   * The target type of application method to retrieve the attributes for.
+   */
+  application_method_target_type?: ApplicationMethodTargetTypeValues
 }
 
 export interface AdminGetPromotionsRuleValueParams extends FindParams {
@@ -103,5 +107,8 @@ export interface AdminGetPromotionsRuleValueParams extends FindParams {
    * Filter by rule value.
    */
   value?: string | string[]
+  /**
+   * The target type of application method to retrieve the attributes for.
+   */
   application_method_target_type?: ApplicationMethodTargetTypeValues
 }

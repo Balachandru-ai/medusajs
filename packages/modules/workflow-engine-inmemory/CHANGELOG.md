@@ -1,5 +1,21 @@
 # @medusajs/workflow-engine-inmemory
 
+## 2.11.2
+
+### Patch Changes
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
+## 2.11.1
+
+### Patch Changes
+
+- [#13789](https://github.com/medusajs/medusa/pull/13789) [`d51ae2768be0dad5ece49324aa4866bb591e7ad0`](https://github.com/medusajs/medusa/commit/d51ae2768be0dad5ece49324aa4866bb591e7ad0) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(workflow-engine-\*): cleanup and improvements
+
+- Updated dependencies []:
+  - @medusajs/framework@2.11.1
+
 ## 2.11.0
 
 ### Patch Changes

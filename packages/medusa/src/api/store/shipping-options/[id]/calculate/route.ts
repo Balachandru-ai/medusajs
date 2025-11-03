@@ -4,7 +4,10 @@ import { calculateShippingOptionsPricesWorkflow } from "@medusajs/core-flows"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const POST = async (
-  req: MedusaRequest<HttpTypes.StoreCalculateShippingOptionPrice>,
+  req: MedusaRequest<
+    HttpTypes.StoreCalculateShippingOptionPrice,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreShippingOptionResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

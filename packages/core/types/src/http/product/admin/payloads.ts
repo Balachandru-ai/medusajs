@@ -317,6 +317,10 @@ export interface AdminUpdateProductVariant {
    */
   mid_code?: string | null
   /**
+   * The variant's thumbnail.
+   */
+  thumbnail?: string | null
+  /**
    * Whether the variant can be ordered even if it's out of stock.
    */
   allow_backorder?: boolean
@@ -400,6 +404,11 @@ export interface AdminUpdateProduct {
    * The product's images.
    */
   images?: {
+    /**
+     * The ID of the image to update
+     * or set for existing images.
+     */
+    id?: string
     /**
      * The image's URL.
      */
@@ -544,6 +553,12 @@ export interface AdminUpdateProductOption {
   is_exclusive?: boolean
 }
 
+/**
+ * @privateRemarks
+ * These types don't match the validators, however, they're used by the admin
+ * dashboard. We should update the admin dashboard to use different types that it
+ * needs instead.
+ */
 interface AdminCreateProductVariantInventoryItem {
   /**
    * The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the
@@ -560,6 +575,12 @@ interface AdminCreateProductVariantInventoryItem {
   variant_id: string
 }
 
+/**
+ * @privateRemarks
+ * These types don't match the validators, however, they're used by the admin
+ * dashboard. We should update the admin dashboard to use different types that it
+ * needs instead.
+ */
 interface AdminUpdateProductVariantInventoryItem {
   /**
    * The number of units a single quantity is equivalent to. For example, if a customer orders one quantity of the variant, Medusa checks the availability of the quantity multiplied by the
@@ -585,6 +606,28 @@ interface AdminDeleteProductVariantInventoryItem {
    * The ID of the variant.
    */
   variant_id: string
+}
+
+export interface AdminBatchImageVariantRequest {
+  /**
+   * The variant IDs to add to the image.
+   */
+  add?: string[]
+  /**
+   * The variant IDs to remove from the image.
+   */
+  remove?: string[]
+}
+
+export interface AdminBatchVariantImagesRequest {
+  /**
+   * The image IDs to add to the variant.
+   */
+  add?: string[]
+  /**
+   * The image IDs to remove from the variant.
+   */
+  remove?: string[]
 }
 
 export interface AdminImportProductsRequest {

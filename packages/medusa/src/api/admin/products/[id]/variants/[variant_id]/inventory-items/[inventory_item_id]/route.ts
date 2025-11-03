@@ -9,7 +9,10 @@ import { AdminUpdateVariantInventoryItemType } from "../../../../../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateVariantInventoryItemType>,
+  req: AuthenticatedMedusaRequest<
+    AdminUpdateVariantInventoryItemType,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductVariantResponse>
 ) => {
   const variantId = req.params.variant_id
@@ -35,7 +38,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductVariantInventoryLinkDeleteResponse>
 ) => {
   const variantId = req.params.variant_id

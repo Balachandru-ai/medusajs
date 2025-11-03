@@ -16,7 +16,6 @@
  *   - created_at
  *   - updated_at
  *   - order_id
- *   - canceled_at
  *   - return_id
  *   - exchange_id
  *   - claim_id
@@ -28,6 +27,7 @@
  *   - declined_reason
  *   - declined_at
  *   - canceled_by
+ *   - canceled_at
  * properties:
  *   id:
  *     type: string

@@ -23,6 +23,10 @@ export interface FindParams extends SelectParams {
    * -created_at
    */
   order?: string
+  /**
+   * Whether to include soft-deleted items in the results.
+   */
+  with_deleted?: boolean
 }
 
 export interface AdminBatchLink {

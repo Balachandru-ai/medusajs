@@ -110,19 +110,23 @@ export interface AdminCreateClaim {
    */
   internal_note?: string
   /**
+   * The ID of the associated reason.
+   */
+  reason_id?: string | null
+  /**
    * Key-value pairs of custom data.
    */
   metadata?: Record<string, unknown> | null
 }
 
 export interface AdminAddClaimItems extends AdminClaimAddItems {}
-export interface AdminUpdateClaimItem extends AdminClaimUpdateItem {}
+export interface AdminUpdateClaimItem extends Omit<AdminClaimUpdateItem, "description"> {}
 
 export interface AdminAddClaimInboundItems extends AdminClaimAddItems {}
 export interface AdminUpdateClaimInboundItem extends AdminClaimUpdateItem {}
 
 export interface AdminAddClaimOutboundItems extends AdminClaimAddItems {}
-export interface AdminUpdateClaimOutboundItem extends AdminClaimUpdateItem {}
+export interface AdminUpdateClaimOutboundItem extends Omit<AdminClaimUpdateItem, "description"> {}
 
 export interface AdminClaimAddInboundShipping
   extends AdminClaimAddShippingMethod {}

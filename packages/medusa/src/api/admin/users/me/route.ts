@@ -10,7 +10,7 @@ import {
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminUserParams>,
   res: MedusaResponse<HttpTypes.AdminUserResponse>
 ) => {
   const id = req.auth_context.actor_id

@@ -46,38 +46,7 @@
  *     type: array
  *     description: The price list's prices.
  *     items:
- *       type: object
- *       description: A price's details.
- *       required:
- *         - currency_code
- *         - variant_id
- *         - amount
- *       properties:
- *         currency_code:
- *           type: string
- *           title: currency_code
- *           description: The price's currency code.
- *         amount:
- *           type: number
- *           title: amount
- *           description: The price's amount.
- *         variant_id:
- *           type: string
- *           title: variant_id
- *           description: The ID of the product variant this price is for.
- *         min_quantity:
- *           type: number
- *           title: min_quantity
- *           description: The minimum quantity required in the cart for this price to be applied.
- *         max_quantity:
- *           type: number
- *           title: max_quantity
- *           description: The maximum quantity in the cart that shouldn't be crossed for this price to be applied.
- *         rules:
- *           type: object
- *           description: The price's rules.
- *           example:
- *             region_id: reg_123
+ *       $ref: "#/components/schemas/AdminCreatePriceListPrice"
  * 
 */
 

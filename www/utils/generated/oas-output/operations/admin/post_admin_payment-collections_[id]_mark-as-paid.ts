@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminMarkPaymentCollectionPaid"
+ *         $ref: "#/components/schemas/AdminMarkPaymentCollectionAsPaid"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

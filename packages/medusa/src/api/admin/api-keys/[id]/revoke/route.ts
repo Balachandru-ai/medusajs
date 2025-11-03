@@ -3,12 +3,14 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminRevokeApiKeyType } from "../../validators"
 import { refetchApiKey } from "../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminRevokeApiKeyType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminRevokeApiKey,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminApiKeyResponse>
 ) => {
   await revokeApiKeysWorkflow(req.scope).run({

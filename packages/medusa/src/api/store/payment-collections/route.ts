@@ -11,7 +11,10 @@ import {
 import { Modules } from "@medusajs/utils"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreCreatePaymentCollection>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCreatePaymentCollection,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StorePaymentCollectionResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
@@ -31,7 +34,6 @@ export const POST = async (
     const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
     await we.run(createPaymentCollectionForCartWorkflowId, {
       input: req.body,
-      transactionId: "create-payment-collection-for-cart-" + cart_id,
     })
 
     const [cartCollectionRelation] = await remoteQuery(

@@ -1,12 +1,12 @@
 import { MedusaContainer } from "@medusajs/types"
-import { Knex } from "../deps/mikro-orm-knex"
 import { glob } from "glob"
 import { join } from "path"
+import { Knex } from "../deps/mikro-orm-knex"
 import { logger } from "../logger"
 import { ContainerRegistrationKeys } from "../utils"
 
-export abstract class Migrator {
-  protected abstract migration_table_name: string
+export class Migrator {
+  protected migration_table_name: string
 
   protected container: MedusaContainer
   protected pgConnection: Knex<any>
@@ -18,6 +18,7 @@ export abstract class Migrator {
     this.pgConnection = this.container.resolve(
       ContainerRegistrationKeys.PG_CONNECTION
     )
+    this.migration_table_name = "mikro_orm_migrations"
   }
 
   /**
@@ -158,7 +159,21 @@ export abstract class Migrator {
     return allScripts
   }
 
-  protected abstract createMigrationTable(): Promise<void>
-  abstract run(...args: any[]): Promise<any>
-  abstract getPendingMigrations(migrationPaths: string[]): Promise<string[]>
+  protected async createMigrationTable(): Promise<void> {
+    await this.pgConnection.raw(`
+      CREATE TABLE IF NOT EXISTS ${this.migration_table_name} (
+        id serial PRIMARY KEY,
+        name varchar(255),
+        executed_at timestamptz DEFAULT CURRENT_TIMESTAMP
+      )
+    `)
+  }
+
+  run(...args: any[]): Promise<any> {
+    throw new Error("Method not implemented")
+  }
+
+  getPendingMigrations(migrationPaths: string[]): Promise<string[]> {
+    throw new Error("Method not implemented")
+  }
 }
