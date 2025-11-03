@@ -1,3 +1,4 @@
+import { logger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   DmlEntity,
@@ -8,7 +9,6 @@ import {
   normalizeImportPathWithSource,
   toMikroOrmEntities,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 import * as fs from "fs"
 import { getDatabaseURL, getMikroOrmWrapper, TestDatabase } from "./database"
 import { initModules, InitModulesOptions } from "./init-modules"
@@ -183,6 +183,9 @@ class ModuleTestRunner<TService = any> {
         [ContainerRegistrationKeys.PG_CONNECTION]: this.connection,
         [Modules.EVENT_BUS]: new MockEventBusService(),
         [ContainerRegistrationKeys.LOGGER]: console,
+        [ContainerRegistrationKeys.CONFIG_MODULE]: {
+          modules: this.modulesConfig,
+        },
         ...this.injectedDependencies,
       },
       modulesConfig: this.modulesConfig,
