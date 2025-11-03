@@ -5,8 +5,8 @@
  * x-schemaName: StoreCart
  * required:
  *   - promotions
- *   - currency_code
  *   - id
+ *   - currency_code
  *   - original_item_total
  *   - original_item_subtotal
  *   - original_item_tax_total

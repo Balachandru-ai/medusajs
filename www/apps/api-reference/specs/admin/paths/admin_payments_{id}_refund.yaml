@@ -38,7 +38,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminCreatePaymentRefund.yaml
+          $ref: ../components/schemas/AdminRefundPayment.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

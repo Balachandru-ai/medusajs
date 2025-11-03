@@ -14,6 +14,9 @@ const ProductImage = model
       product: model.belongsTo(() => Product, {
         mappedBy: "images",
       }),
+      /**
+       * @since 2.11.2
+       */
       variants: model.manyToMany(() => ProductVariant, {
         mappedBy: "images",
         pivotEntity: () => ProductVariantProductImage,

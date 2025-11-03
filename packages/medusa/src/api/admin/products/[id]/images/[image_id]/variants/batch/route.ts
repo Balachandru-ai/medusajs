@@ -5,6 +5,9 @@ import {
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 
+/**
+ * @since 2.11.2
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminBatchImageVariantRequest>,
   res: MedusaResponse<HttpTypes.AdminBatchImageVariantResponse>

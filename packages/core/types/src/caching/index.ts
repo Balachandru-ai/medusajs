@@ -1,6 +1,6 @@
 import { IModuleService, ModuleJoinerConfig } from "../modules-sdk"
 
-type Providers = string[] | { 
+type Providers = (string | { 
   /**
    * The ID of the provider to use, as set in `medusa-config.ts`.
    */
@@ -10,7 +10,7 @@ type Providers = string[] | {
    * in the provider is used, or the default TTL of the Caching Module if not configured in the provider.
    */ 
   ttl?: number
-}[]
+})[]
 
 /**
  * @since v2.11.0

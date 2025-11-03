@@ -35,6 +35,13 @@ properties:
     type: number
     title: rank
     description: The image's rank among sibling images.
+  product:
+    type: object
+  variants:
+    type: array
+    description: The variants associated with the image.
+    items:
+      type: object
 required:
   - id
   - url

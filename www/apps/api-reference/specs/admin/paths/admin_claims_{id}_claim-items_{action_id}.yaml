@@ -49,7 +49,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminPostClaimsItemsActionReqSchema.yaml
+          $ref: ../components/schemas/AdminUpdateClaimItem.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

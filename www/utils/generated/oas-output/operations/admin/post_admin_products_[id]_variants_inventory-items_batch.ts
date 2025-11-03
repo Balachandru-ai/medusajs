@@ -31,8 +31,8 @@
  *               description: The associations to create between a product variant and an inventory item.
  *               required:
  *                 - variant_id
- *                 - inventory_item_id
  *                 - required_quantity
+ *                 - inventory_item_id
  *               properties:
  *                 required_quantity:
  *                   type: number
@@ -55,8 +55,8 @@
  *               description: Update a product variant's association with an inventory item.
  *               required:
  *                 - variant_id
- *                 - inventory_item_id
  *                 - required_quantity
+ *                 - inventory_item_id
  *               properties:
  *                 required_quantity:
  *                   type: number

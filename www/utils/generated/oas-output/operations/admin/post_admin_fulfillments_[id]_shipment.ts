@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreateShipment"
+ *         $ref: "#/components/schemas/AdminCreateFulfillmentShipment"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
