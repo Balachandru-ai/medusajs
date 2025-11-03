@@ -14,15 +14,15 @@ import { TypeList, WorkflowDiagram } from "docs-ui"
 
 This documentation provides a reference to the `updateProductTypesWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
 
-This workflow updates one or more product types. It's used by the 
+This workflow updates one or more product types. It's used by the
 [Update Product Type Admin API Route](https://docs.medusajs.com/api/admin#product-types\_postproducttypesid).
 
-This workflow has a hook that allows you to perform custom actions on the updated product types. For example, you can pass under `additional_data` custom data that 
+This workflow has a hook that allows you to perform custom actions on the updated product types. For example, you can pass under `additional_data` custom data that
 allows you to update custom data models linked to the product types.
 
 You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around product-type updates.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/product/workflows/update-product-types.ts#L59" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/product/workflows/update-product-types.ts#L59" />
 
 ## Examples
 
@@ -163,7 +163,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"updateProductTypesWorkflow","steps":[{"type":"step","name":"updateProductTypesStep","description":"This step updates product types matching the specified filters.","link":"../../../Steps_Product/functions/core_flows.Product.Steps_Product.updateProductTypesStep/page.mdx","depth":1},{"type":"hook","name":"productTypesUpdated","description":"This hook is executed after the product types are updated. You can consume this hook to perform custom actions on the updated product types.","link":"#productTypesUpdated","depth":2},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3}]}} />
+<WorkflowDiagram workflow={{"name":"updateProductTypesWorkflow","steps":[{"type":"step","name":"updateProductTypesStep","description":"This step updates product types matching the specified filters.","link":"../../../Steps_Product/functions/core_flows.Product.Steps_Product.updateProductTypesStep/page.mdx","depth":1},{"type":"hook","name":"productTypesUpdated","description":"This hook is executed after the product types are updated. You can consume this hook to perform custom actions on the updated product types.","link":"#productTypesUpdated","depth":2},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3}]}} />
 
 ## Input
 
@@ -205,11 +205,7 @@ Handlers consuming this hook accept the following input.
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
 
-:::note
-
 The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
 
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 

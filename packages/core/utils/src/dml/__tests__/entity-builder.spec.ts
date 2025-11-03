@@ -564,6 +564,7 @@ describe("Entity builder", () => {
         },
         raw_spend_limit: {
           columnType: "jsonb",
+          default: '{"value":"500.4","precision":20}',
           getter: false,
           name: "raw_spend_limit",
           fieldName: "raw_spend_limit",
@@ -710,6 +711,7 @@ describe("Entity builder", () => {
         },
         raw_spend_limit: {
           columnType: "jsonb",
+          default: '{"value":"500.4","precision":20}',
           getter: false,
           name: "raw_spend_limit",
           fieldName: "raw_spend_limit",

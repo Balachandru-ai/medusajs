@@ -1,3 +1,4 @@
+import { BigNumber } from "../../totals/big-number"
 import { BaseProperty } from "./base"
 
 /**
@@ -11,5 +12,10 @@ export class BigNumberProperty extends BaseProperty<number> {
 
   static isBigNumberProperty(obj: any): obj is BigNumberProperty {
     return obj?.dataType?.name === "bigNumber"
+  }
+
+  default(value: number | string | BigNumber) {
+    super.default(value as number)
+    return this
   }
 }

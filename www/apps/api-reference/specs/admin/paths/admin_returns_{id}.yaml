@@ -102,7 +102,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminPostReturnsReturnReqSchema.yaml
+          $ref: ../components/schemas/AdminUpdateReturnRequest.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

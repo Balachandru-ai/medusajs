@@ -530,8 +530,8 @@
       "successToast": "Media was successfully updated.",
       "variantImages": "Variant images",
       "showAvailableImages": "Show available images",
-      "availableImages": "Available images",
-      "selectToAdd": "Select to add to variant",
+      "availableImages": "Select images",
+      "selectToAdd": "Add product images to the variant. To add new images, add them to the product first.",
       "removeSelected": "Remove Selected"
     },
     "variantMedia": {

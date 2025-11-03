@@ -1,5 +1,12 @@
 # @medusajs/analytics-local
 
+## 2.11.2
+
+### Patch Changes
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
 ## 2.11.1
 
 ### Patch Changes

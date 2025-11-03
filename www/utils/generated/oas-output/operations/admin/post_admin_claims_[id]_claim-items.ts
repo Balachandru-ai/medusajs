@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostClaimItemsReqSchema"
+ *         $ref: "#/components/schemas/AdminAddClaimItems"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

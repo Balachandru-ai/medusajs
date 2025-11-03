@@ -18,7 +18,7 @@ export interface CreateNotificationDTO {
   /**
    * The template name in the provider's system.
    */
-  template: string
+  template?: string | null
   /**
    * The data that gets passed over to the provider for rendering the notification.
    */

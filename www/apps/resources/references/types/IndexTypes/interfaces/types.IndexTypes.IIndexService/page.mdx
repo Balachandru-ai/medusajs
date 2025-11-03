@@ -17,3 +17,26 @@ import { TypeList } from "docs-ui"
 #### Returns
 
 <TypeList types={[{"name":"Promise","type":"Promise&#60;[QueryResultSet](../../types/types.IndexTypes.QueryResultSet/page.mdx)&#60;TEntry&#62;&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="query"/>
+
+### sync
+
+Sync the index
+The sync strategy can be "full" meaning it will re sync the entire index, "reset" meaning it
+will reset the index data and start from scratch, or if not specified, it will continue the
+sync from the last sync point.
+
+#### Parameters
+
+<TypeList types={[{"name":"strategy","type":"`object`","description":"The sync strategy","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"strategy","type":"`\"full\"` \\| `\"reset\"`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="sync"/>
+
+#### Returns
+
+<TypeList types={[{"name":"Promise","type":"Promise&#60;void&#62;","optional":false,"defaultValue":"","description":"Sync the index\nThe sync strategy can be \"full\" meaning it will re sync the entire index, \"reset\" meaning it\nwill reset the index data and start from scratch, or if not specified, it will continue the\nsync from the last sync point.","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="sync"/>
+
+### getInfo
+
+Get the index information
+
+#### Returns
+
+<TypeList types={[{"name":"Promise","type":"Promise&#60;[IndexInfo](../types.IndexTypes.IndexInfo/page.mdx)[]&#62;","optional":false,"defaultValue":"","description":"The index information","expandable":false,"children":[{"name":"IndexInfo[]","type":"[IndexInfo](../types.IndexTypes.IndexInfo/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"entity","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"status","type":"`\"error\"` \\| `\"pending\"` \\| `\"done\"` \\| `\"processing\"`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"fields","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`Date`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"last_synced_key","type":"`null` \\| `string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" sectionTitle="getInfo"/>

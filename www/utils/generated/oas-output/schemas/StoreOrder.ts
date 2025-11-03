@@ -7,12 +7,12 @@
  *   - items
  *   - shipping_methods
  *   - status
- *   - currency_code
  *   - id
  *   - region_id
  *   - customer_id
  *   - sales_channel_id
  *   - email
+ *   - currency_code
  *   - payment_status
  *   - fulfillment_status
  *   - summary

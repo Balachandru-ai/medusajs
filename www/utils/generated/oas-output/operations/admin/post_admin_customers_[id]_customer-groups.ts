@@ -36,23 +36,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: SUMMARY
- *         properties:
- *           add:
- *             type: array
- *             description: The customer groups to add the customer to.
- *             items:
- *               type: string
- *               title: add
- *               description: The ID of the group to add the customer to.
- *           remove:
- *             type: array
- *             description: The customer groups to remove the customer from.
- *             items:
- *               type: string
- *               title: remove
- *               description: The ID of the group to remove the customer from.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

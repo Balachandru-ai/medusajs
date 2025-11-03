@@ -1,4 +1,4 @@
-import { memoize } from "lodash"
+import memoize from "lodash.memoize"
 import logger from "@medusajs/cli/dist/reporter"
 import { json, NextFunction, RequestHandler, text, urlencoded } from "express"
 

@@ -10,6 +10,7 @@ required:
   - barcode
   - ean
   - upc
+  - thumbnail
   - allow_backorder
   - manage_inventory
   - hs_code
@@ -144,3 +145,12 @@ properties:
     description: The variant's inventory items.
     items:
       $ref: ./AdminProductVariantInventoryItemLink.yaml
+  images:
+    type: array
+    description: The variant's images.
+    items:
+      $ref: ./AdminProductImage.yaml
+  thumbnail:
+    type: string
+    title: thumbnail
+    description: The variant's thumbnail.
