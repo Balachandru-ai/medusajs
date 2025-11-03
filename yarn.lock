@@ -3506,10 +3506,10 @@ __metadata:
   resolution: "@medusajs/analytics-posthog@workspace:packages/modules/providers/analytics-posthog"
   dependencies:
     "@medusajs/framework": 2.11.2
-    posthog-node: ^4.17.1
+    posthog-node: ^5.11.0
   peerDependencies:
     "@medusajs/framework": 2.11.2
-    posthog-node: ^4.17.1
+    posthog-node: ^5.11.0
   languageName: unknown
   linkType: soft
 
@@ -13615,7 +13615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.12.0, axios@npm:^1.12.2, axios@npm:^1.13.1, axios@npm:^1.8.2":
+"axios@npm:^1.12.0, axios@npm:^1.12.2, axios@npm:^1.13.1":
   version: 1.13.1
   resolution: "axios@npm:1.13.1"
   dependencies:
@@ -18241,6 +18241,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"growly@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "growly@npm:1.3.0"
+  checksum: 3043bd5c064e87f89e8c9b66894ed09fd882c7fa645621a543b45b72f040c7241e25061207a858ab191be2fbdac34795ff57c2a40962b154a6b2908a5e509252
+  languageName: node
+  linkType: hard
+
 "gunzip-maybe@npm:^1.4.2":
   version: 1.4.2
   resolution: "gunzip-maybe@npm:1.4.2"
@@ -22106,6 +22113,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-notifier@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "node-notifier@npm:10.0.1"
+  dependencies:
+    growly: ^1.3.0
+    is-wsl: ^2.2.0
+    semver: ^7.3.5
+    shellwords: ^0.1.1
+    uuid: ^8.3.2
+    which: ^2.0.2
+  checksum: 8888f6c4c277c588e6be991019e32ebbf4abdd598151683de59b9f70c31e6bbbddf0e443ea373da44338ab82a958695dcf73035c96e336a398940228d59399eb
+  languageName: node
+  linkType: hard
+
 "node-readfiles@npm:^0.2.0":
   version: 0.2.0
   resolution: "node-readfiles@npm:0.2.0"
@@ -23531,15 +23552,6 @@ __metadata:
   dependencies:
     xtend: ^4.0.0
   checksum: c1734c3cb79e7f22579af0b268a463b1fa1d084e742a02a7a290c4f041e349456f3bee3b4ee0bb3f226828597f7b76deb615c1b857db9a742c45520100456272
-  languageName: node
-  linkType: hard
-
-"posthog-node@npm:^4.17.1":
-  version: 4.18.0
-  resolution: "posthog-node@npm:4.18.0"
-  dependencies:
-    axios: ^1.8.2
-  checksum: aa30427599d15b98357b5a88096a8b38b0812c71af49eb54fce0a46164521c247c3b064973931c3471cf84cb7f0e391bfc5d6174cd038f75f8c02cb8a9626cff
   languageName: node
   linkType: hard
 
@@ -25247,6 +25259,7 @@ __metadata:
     jsdom: ^27.1.0
     lint-staged: ^11.2.6
     msw: ^2.3.0
+    node-notifier: ^10.0.1
     nodemon: ^2.0.20
     pg-god: ^1.0.12
     postcss: ^8.4.38
@@ -25646,6 +25659,13 @@ __metadata:
   version: 3.0.0
   resolution: "shebang-regex@npm:3.0.0"
   checksum: 1dbed0726dd0e1152a92696c76c7f06084eb32a90f0528d11acd764043aacf76994b2fb30aa1291a21bd019d6699164d048286309a278855ee7bec06cf6fb690
+  languageName: node
+  linkType: hard
+
+"shellwords@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "shellwords@npm:0.1.1"
+  checksum: 7d66b28927e0b524b71b2e185651fcd88a70473a077dd230fbf86188380e948ffb36cea00832d78fc13c93cd15f6f52286fb05f2746b7580623ca1ec619eb004
   languageName: node
   linkType: hard
 
@@ -28442,7 +28462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"which@npm:^2.0.1":
+"which@npm:^2.0.1, which@npm:^2.0.2":
   version: 2.0.2
   resolution: "which@npm:2.0.2"
   dependencies:

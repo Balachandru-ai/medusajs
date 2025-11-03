@@ -22,7 +22,7 @@ module.exports = function defineJestConfig(config) {
     },
     modulePathIgnorePatterns: [`dist/`],
     testPathIgnorePatterns: [`dist/`, `node_modules/`],
-    transformIgnorePatterns: ["node_modules/"],
+    transformIgnorePatterns: ["node_modules/(?!(until-async|msw)/)"],
     testEnvironment: `node`,
     moduleFileExtensions: [`js`, `ts`],
     ...config,

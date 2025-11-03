@@ -16,7 +16,7 @@
     "package.json"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "yarn run -T tsup"
   },
   "dependencies": {
     "@medusajs/admin-shared": "2.11.2",

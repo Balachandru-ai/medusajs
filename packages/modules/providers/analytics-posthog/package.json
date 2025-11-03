@@ -20,17 +20,17 @@
   "author": "Medusa",
   "license": "MIT",
   "scripts": {
-    "test": "jest --passWithNoTests src",
-    "build": "rimraf dist && tsc --build ./tsconfig.json",
+    "test": "../../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build ./tsconfig.json",
     "watch": "tsc --watch"
   },
   "devDependencies": {
     "@medusajs/framework": "2.11.2",
-    "posthog-node": "^4.17.1"
+    "posthog-node": "^5.11.0"
   },
   "peerDependencies": {
     "@medusajs/framework": "2.11.2",
-    "posthog-node": "^4.17.1"
+    "posthog-node": "^5.11.0"
   },
   "keywords": [
     "medusa-plugin",

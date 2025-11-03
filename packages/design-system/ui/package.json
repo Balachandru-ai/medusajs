@@ -33,7 +33,7 @@
     "build:js:cjs": "tsc --project tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
     "build:js:esm": "tsc --project tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
     "clean": "rimraf dist",
-    "test": "vitest --run",
+    "test": "../../../node_modules/.bin/vitest --run",
     "test:watch": "vitest",
     "test:coverage": "vitest --run --coverage",
     "lint": "eslint \"**/*.ts*\"",

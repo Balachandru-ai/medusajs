@@ -7,7 +7,7 @@
   "author": "Kasper Kristensen <kasper@medusajs.com>",
   "bin": "./bin/toolbox.js",
   "scripts": {
-    "build": "tsup"
+    "build": "yarn run -T tsup"
   },
   "dependencies": {
     "@svgr/core": "8.0.0",

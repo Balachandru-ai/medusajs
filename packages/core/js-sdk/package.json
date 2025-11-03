@@ -36,8 +36,8 @@
     "qs": "^6.12.1"
   },
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
-    "test": "jest --passWithNoTests --bail --forceExit --detectOpenHandles",
-    "watch": "tsc --build --watch"
+    "build": "yarn run -T rimraf dist && yarn run -T tsc -p tsconfig.json && yarn run -T tsc -p tsconfig.esm.json",
+    "test": "../../../node_modules/.bin/jest --passWithNoTests --bail --forceExit --detectOpenHandles",
+    "watch": "yarn run -T tsc --build --watch"
   }
 }

@@ -35,7 +35,7 @@
   "author": "Medusa",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist && tsc --build"
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build"
   },
   "dependencies": {
     "@mikro-orm/cli": "6.4.16",

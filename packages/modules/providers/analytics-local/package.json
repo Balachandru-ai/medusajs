@@ -20,8 +20,8 @@
   "author": "Medusa",
   "license": "MIT",
   "scripts": {
-    "test": "jest --passWithNoTests src",
-    "build": "rimraf dist && tsc --build ./tsconfig.json",
+    "test": "../../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build ./tsconfig.json",
     "watch": "tsc --watch"
   },
   "devDependencies": {

@@ -41,9 +41,9 @@
     "express": "^4.21.0"
   },
   "scripts": {
-    "build": "rimraf dist && tsc --build",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --bail --forceExit -- src/**/__tests__/**/*.spec.ts",
+    "test": "../../../node_modules/.bin/jest --bail --forceExit -- src/**/__tests__/**/*.spec.ts",
     "test:run": "node ./dist/utils/_playground.js"
   }
 }

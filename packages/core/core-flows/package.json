@@ -37,8 +37,8 @@
     "@medusajs/framework": "2.11.2"
   },
   "scripts": {
-    "build": "rimraf dist && tsc --build",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --bail --forceExit --passWithNoTests"
+    "test": "../../../node_modules/.bin/jest --bail --forceExit --passWithNoTests"
   }
 }

@@ -27,8 +27,8 @@
   },
   "scripts": {
     "watch": "tsc --build --watch",
-    "build": "rimraf dist && tsc --build",
-    "test": "jest --passWithNoTests"
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
+    "test": "../../../node_modules/.bin/jest --passWithNoTests"
   },
   "dependencies": {
     "ioredis": "^5.4.1"

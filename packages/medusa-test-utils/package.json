@@ -12,9 +12,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "rimraf dist && tsc --build",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "watch": "tsc --build --watch",
-    "test": "jest --passWithNoTests src"
+    "test": "../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts"
   },
   "files": [
     "dist",

@@ -19,7 +19,7 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "tsup",
+    "build": "yarn run -T tsup",
     "generate": "toolbox tokens -o './src/theme'"
   },
   "dependencies": {

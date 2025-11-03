@@ -21,9 +21,9 @@
     "package.json"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "yarn run -T tsup",
     "watch": "tsup --watch",
-    "test": "vitest --run",
+    "test": "../../../node_modules/.bin/vitest --run",
     "test:watch": "vitest"
   },
   "devDependencies": {

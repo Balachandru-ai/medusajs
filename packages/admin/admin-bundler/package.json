@@ -4,7 +4,7 @@
   "description": "Bundler for the Medusa admin dashboard.",
   "author": "Kasper Kristensen <kasper@medusajs.com>",
   "scripts": {
-    "build": "tsup"
+    "build": "yarn run -T tsup"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

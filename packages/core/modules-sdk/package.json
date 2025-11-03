@@ -26,8 +26,8 @@
   "author": "Medusa",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist && tsc --build",
-    "test": "jest --bail --forceExit",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
+    "test": "../../../node_modules/.bin/jest --bail --forceExit",
     "watch": "tsc --build --watch"
   },
   "devDependencies": {

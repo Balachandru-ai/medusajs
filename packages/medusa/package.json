@@ -43,9 +43,9 @@
   "mcpServer": "https://docs.medusajs.com/mcp",
   "scripts": {
     "watch": "tsc --build --watch",
-    "build": "rimraf dist && tsc --build",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "serve": "node dist/app.js",
-    "test": "jest --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
+    "test": "../../node_modules/.bin/jest --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
     "test:integration": "jest --forceExit -- src/**/integration-tests/**/__tests__/**/*.ts"
   },
   "devDependencies": {

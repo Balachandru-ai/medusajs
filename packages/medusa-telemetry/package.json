@@ -23,10 +23,10 @@
     "start": "nodemon --watch plugins/ --watch src/ --exec node src/index.js",
     "prepare": "cross-env NODE_ENV=production yarn run build",
     "watch": "tsc --build --watch",
-    "build": "rimraf dist && tsc --build",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "serve": "node dist/index.js",
     "postinstall": "node dist/postinstall.js || true",
-    "test": "jest --passWithNoTests src"
+    "test": "../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.10",
