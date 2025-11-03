@@ -1,7 +1,7 @@
 import { Constructor, Context, DAL } from "@medusajs/framework/types"
-import { toMikroORMEntity } from "@medusajs/framework/utils"
+import { groupBy, toMikroORMEntity } from "@medusajs/framework/utils"
 import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
-import { Order, OrderClaim } from "@models"
+import { Order, OrderClaim, OrderLineItemAdjustment } from "@models"
 import { mapRepositoryToOrderModel } from "."
 
 export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
@@ -76,13 +76,50 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     configurePopulateWhere(config, isRelatedEntity, version)
 
+    let loadAdjustments = false
+    if (config.options.populate.includes("items.item.adjustments")) {
+      loadAdjustments = true
+      config.options.populate.splice(
+        config.options.populate.indexOf("items.item.adjustments"),
+        1
+      )
+    }
+
     if (!config.options.orderBy) {
       config.options.orderBy = { id: "ASC" }
     }
 
     config.where ??= {}
 
-    return await manager.find(this.entity, config.where, config.options)
+    const result = await manager.find(this.entity, config.where, config.options)
+
+    if (loadAdjustments) {
+      // todo: would be safer to always load adjustments?
+
+      const params = [] as any[]
+      result.map((r) => {
+        return r.items.map((i) =>
+          params.push({
+            item_id: i.item.id,
+            version: i.version,
+          })
+        )
+      })
+
+      const adjustments = await manager.find(OrderLineItemAdjustment, {
+        $or: params,
+      })
+
+      const adjustmentsByItemId = groupBy(adjustments, "item_id")
+
+      result.forEach((r) => {
+        r.items.map((i) => {
+          i.item.adjustments = adjustmentsByItemId[i.item.id] ?? []
+        })
+      })
+    }
+
+    return result
   }
 
   klass.prototype.findAndCount = async function findAndCount(
