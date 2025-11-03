@@ -67,19 +67,7 @@
     "test": "jest --bail --forceExit -- src/**/__tests__/**/*.ts"
   },
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.218.0",
-    "@medusajs/cli": "2.11.2",
-    "@swc/core": "^1.7.28",
-    "@swc/jest": "^0.2.36",
-    "@types/cors": "^2.8.17",
-    "@types/jsonwebtoken": "^8.5.9",
-    "connect-dynamodb": "^3.0.5",
-    "ioredis": "^5.4.1",
-    "jest": "^29.7.0",
-    "rimraf": "^5.0.1",
-    "supertest": "^7.1.4",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.14"
+    "@medusajs/cli": "2.11.2"
   },
   "dependencies": {
     "@jercle/yargonaut": "^1.1.5",
