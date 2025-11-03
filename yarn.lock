@@ -9326,14 +9326,14 @@ __metadata:
   linkType: hard
 
 "@redocly/ajv@npm:^8.11.2":
-  version: 8.11.3
-  resolution: "@redocly/ajv@npm:8.11.3"
+  version: 8.11.4
+  resolution: "@redocly/ajv@npm:8.11.4"
   dependencies:
     fast-deep-equal: ^3.1.1
     json-schema-traverse: ^1.0.0
     require-from-string: ^2.0.2
     uri-js-replace: ^1.0.1
-  checksum: 09b00e0c233a25c9b1060460ce2ac58837249833a06625c8567119cb7951cdc2282c71dede1096b18993f5dd1887a7623b59f7829796eb3d6573fa1a3390096c
+  checksum: 700e8997326b774060f1f4dcbbcc0410644a1c75344a0fd4924dc54c8db0f5e8cb2a3dab41f71c900b9a02f4dc55508d8690bfab37d3c9c45aacd7a18cd6ebe1
   languageName: node
   linkType: hard
 
