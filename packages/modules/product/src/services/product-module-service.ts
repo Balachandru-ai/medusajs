@@ -1976,7 +1976,15 @@ export default class ProductModuleService
       await this.addProductOptionToProduct_(linkPairs, sharedContext)
     }
 
-    return createdProducts
+    const productIds = createdProducts.map((p) => p.id)
+
+    const productsWithOptions = await this.productService_.list(
+      { id: productIds },
+      { relations: ["options", "options.values"] },
+      sharedContext
+    )
+
+    return productsWithOptions
   }
 
   @InjectTransactionManager()

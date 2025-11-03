@@ -76,8 +76,9 @@ moduleIntegrationTestRunner<IProductModuleService>({
           // 3. Product option values created (5 values total: 3 sizes + 2 colors)
           // 4. Product variants created (2 variants)
           // 5. Product images created (2 images)
+          // 6. Product product options created (pivot table) (2 product-productOption links)
 
-          const expectedEventsCount = 1 + 2 + 5 + 2 + 2 // 12 total events
+          const expectedEventsCount = 1 + 2 + 5 + 2 + 2 + 2 // 14 total events
           expect(emittedEvents).toHaveLength(expectedEventsCount)
 
           // Verify product created event
@@ -409,8 +410,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
-          // Total count should include: 1 product deleted + 1 variant deleted + 1 option deleted + 2 option values deleted + 2 images deleted = 7 events
-          expect(emittedEvents).toHaveLength(7)
+          // Total count should include: 1 product deleted + 1 variant deleted + 2 images deleted = 4 events
+          expect(emittedEvents).toHaveLength(4)
 
           // Should emit delete events for product and all its relations
           expect(emittedEvents).toEqual(
@@ -435,34 +436,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
               }),
             ])
           )
-
-          // Should emit delete events for options
-          expect(emittedEvents).toEqual(
-            expect.arrayContaining([
-              composeMessage(ProductEvents.PRODUCT_OPTION_DELETED, {
-                data: { id: createdProduct.options[0].id },
-                object: "product_option",
-                source: Modules.PRODUCT,
-                action: CommonEvents.DELETED,
-              }),
-            ])
-          )
-
-          // Should emit delete events for option values
-          createdProduct.options[0].values.forEach((value) => {
-            expect(emittedEvents).toEqual(
-              expect.arrayContaining([
-                composeMessage(ProductEvents.PRODUCT_OPTION_VALUE_DELETED, {
-                  data: {
-                    id: value.id,
-                  },
-                  object: "product_option_value",
-                  source: Modules.PRODUCT,
-                  action: CommonEvents.DELETED,
-                }),
-              ])
-            )
-          })
 
           // Should emit delete events for images
           createdProduct.images.forEach((image) => {

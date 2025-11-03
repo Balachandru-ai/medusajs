@@ -523,9 +523,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             ],
           })
 
-          const beforeOption = productBefore.options.find(
-            (opt) => opt.title === "size"
-          )!
           expect(product.options).toHaveLength(3)
           expect(product.options).toEqual(
             expect.arrayContaining([
