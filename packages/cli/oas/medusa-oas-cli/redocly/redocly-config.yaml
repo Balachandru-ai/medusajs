@@ -149,6 +149,9 @@ decorators:
         - StoreGiftCardInvitation
       StoreTransactionGroup:
         - StoreStoreCreditAccount
+      AdminProductImage:
+        - AdminProduct
+        - AdminProductVariant
 theme:
   openapi:
     theme:

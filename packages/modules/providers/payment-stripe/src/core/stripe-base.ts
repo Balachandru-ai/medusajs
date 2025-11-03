@@ -53,6 +53,7 @@ import {
 type StripeIndeterminateState = {
   indeterminate_due_to: string
 }
+
 type StripeErrorData = Stripe.PaymentIntent | StripeIndeterminateState
 type HandledErrorType =
   | { retry: true }
@@ -128,9 +129,7 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     res.return_url = extra?.return_url as string | undefined
 
     // @ts-expect-error - Need to update Stripe SDK
-    res.shared_payment_token = extra?.shared_payment_token as
-      | string
-      | undefined
+    res.shared_payment_token = extra?.shared_payment_token as string | undefined
 
     return res
   }
@@ -248,7 +247,10 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     const intentRequest: Stripe.PaymentIntentCreateParams = {
       amount: getSmallestUnit(amount, currency_code),
       currency: currency_code,
-      metadata: { ...(data?.metadata ?? {}), session_id: data?.session_id as string },
+      metadata: {
+        ...(data?.metadata ?? {}),
+        session_id: data?.session_id as string,
+      },
       ...additionalParameters,
     }
 

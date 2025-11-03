@@ -31,7 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReceiveReturnsReqSchema"
+ *         $ref: "#/components/schemas/AdminInitiateReceiveReturn"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

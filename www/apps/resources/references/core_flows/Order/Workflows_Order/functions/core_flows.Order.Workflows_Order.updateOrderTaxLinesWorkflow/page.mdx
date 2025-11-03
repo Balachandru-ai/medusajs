@@ -3,7 +3,6 @@ slug: /references/medusa-workflows/updateOrderTaxLinesWorkflow
 sidebar_label: updateOrderTaxLinesWorkflow
 sidebar_description: Update the tax lines of items and shipping methods in an order.
 tags:
-  - remote query
   - tax
   - order
   - workflow
@@ -22,7 +21,7 @@ tax lines.
 You can use this workflow within your customizations or your own custom workflows, allowing you to update an
 order's tax lines in your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/order/workflows/update-tax-lines.ts#L180" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/order/workflows/update-tax-lines.ts#L180" />
 
 ## Examples
 
@@ -135,7 +134,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"updateOrderTaxLinesWorkflow","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":1},{"type":"when","condition":"{\n      return input.item_ids!?.length > 0\n    }","depth":"2","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":2}]},{"type":"when","condition":"{\n      return input.shipping_method_ids!?.length > 0\n    }","depth":"3","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":3}]},{"type":"step","name":"getItemTaxLinesStep","description":"This step retrieves the tax lines for an order or cart's line items and shipping methods.\n\n:::note\n\nYou can retrieve an order, cart, item, shipping method, and address details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../../../../Tax/Steps_Tax/functions/core_flows.Tax.Steps_Tax.getItemTaxLinesStep/page.mdx","depth":4},{"type":"step","name":"setOrderTaxLinesForItemsStep","description":"This step sets the tax lines of an order's items and shipping methods.\n\n:::note\n\nYou can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.setOrderTaxLinesForItemsStep/page.mdx","depth":5}]}} />
+<WorkflowDiagram workflow={{"name":"updateOrderTaxLinesWorkflow","steps":[{"type":"step","name":"getItemTaxLinesStep","description":"This step retrieves the tax lines for an order or cart's line items and shipping methods.\n\n:::note\n\nYou can retrieve an order, cart, item, shipping method, and address details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../../../../Tax/Steps_Tax/functions/core_flows.Tax.Steps_Tax.getItemTaxLinesStep/page.mdx","depth":3},{"type":"step","name":"setOrderTaxLinesForItemsStep","description":"This step sets the tax lines of an order's items and shipping methods.\n\n:::note\n\nYou can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.setOrderTaxLinesForItemsStep/page.mdx","depth":4}]}} />
 
 ## Input
 

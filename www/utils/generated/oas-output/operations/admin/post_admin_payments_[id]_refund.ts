@@ -31,7 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreatePaymentRefund"
+ *         $ref: "#/components/schemas/AdminRefundPayment"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

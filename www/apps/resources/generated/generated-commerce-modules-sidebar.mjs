@@ -11857,6 +11857,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "title": "Localization with Contentful",
               "path": "https://docs.medusajs.com/resources/integrations/guides/contentful",
               "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Product Category Images",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
+              "children": []
             }
           ]
         },
@@ -12683,6 +12691,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/product/addImageToVariant",
+                      "title": "addImageToVariant",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/product/createProductCategories",
                       "title": "createProductCategories",
                       "description": "",
@@ -12964,6 +12981,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/product/listProducts",
                       "title": "listProducts",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/product/removeImageFromVariant",
+                      "title": "removeImageFromVariant",
                       "description": "",
                       "children": []
                     },
@@ -13427,6 +13453,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/product/models/ProductVariant",
                       "title": "ProductVariant",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/product/models/ProductVariantProductImage",
+                      "title": "ProductVariantProductImage",
                       "description": "",
                       "children": []
                     }
