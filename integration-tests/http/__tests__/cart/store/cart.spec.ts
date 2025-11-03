@@ -161,6 +161,309 @@ medusaIntegrationTestRunner({
 
           expect(response.response.status).toEqual(404)
         })
+
+        describe("with inventory items", () => {
+          let stockLocation, inventoryItem1, inventoryItem2
+
+          beforeEach(async () => {
+            stockLocation = (
+              await api.post(
+                `/admin/stock-locations`,
+                { name: "test location" },
+                adminHeaders
+              )
+            ).data.stock_location
+
+            await api.post(
+              `/admin/stock-locations/${stockLocation.id}/sales-channels`,
+              { add: [salesChannel.id] },
+              adminHeaders
+            )
+
+            inventoryItem1 = (
+              await api.post(
+                `/admin/inventory-items`,
+                { sku: "test-sku-1" },
+                adminHeaders
+              )
+            ).data.inventory_item
+
+            inventoryItem2 = (
+              await api.post(
+                `/admin/inventory-items`,
+                { sku: "test-sku-2" },
+                adminHeaders
+              )
+            ).data.inventory_item
+
+            await api.post(
+              `/admin/inventory-items/${inventoryItem1.id}/location-levels`,
+              {
+                location_id: stockLocation.id,
+                stocked_quantity: 100,
+              },
+              adminHeaders
+            )
+
+            await api.post(
+              `/admin/inventory-items/${inventoryItem2.id}/location-levels`,
+              {
+                location_id: stockLocation.id,
+                stocked_quantity: 50,
+              },
+              adminHeaders
+            )
+          })
+
+          it("should return inventory quantity for cart items when variant's manage_inventory is true", async () => {
+            const productWithInventory = (
+              await api.post(
+                `/admin/products`,
+                {
+                  title: "Product with inventory",
+                  status: ProductStatus.PUBLISHED,
+                  options: [
+                    {
+                      title: "Size",
+                      values: ["S"],
+                    },
+                  ],
+                  variants: [
+                    {
+                      title: "S",
+                      sku: "product-with-inventory-s",
+                      options: {
+                        Size: "S",
+                      },
+                      manage_inventory: true,
+                      inventory_items: [
+                        {
+                          inventory_item_id: inventoryItem1.id,
+                          required_quantity: 10,
+                        },
+                        {
+                          inventory_item_id: inventoryItem2.id,
+                          required_quantity: 5,
+                        },
+                      ],
+                      prices: [
+                        {
+                          amount: 1000,
+                          currency_code: "usd",
+                        },
+                      ],
+                    },
+                  ],
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const productWithoutInventory = (
+              await api.post(
+                `/admin/products`,
+                {
+                  title: "Product without inventory",
+                  status: ProductStatus.PUBLISHED,
+                  options: [
+                    {
+                      title: "Size",
+                      values: ["M"],
+                    },
+                  ],
+                  variants: [
+                    {
+                      title: "M",
+                      sku: "product-without-inventory-m",
+                      options: {
+                        Size: "M",
+                      },
+                      manage_inventory: false,
+                      prices: [
+                        {
+                          amount: 1000,
+                          currency_code: "usd",
+                        },
+                      ],
+                    },
+                  ],
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [
+                    {
+                      variant_id: productWithInventory.variants[0].id,
+                      quantity: 2,
+                    },
+                    {
+                      variant_id: productWithoutInventory.variants[0].id,
+                      quantity: 1,
+                    },
+                  ],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const response = await api.get(
+              `/store/carts/${cart.id}?fields=+items.variant.inventory_quantity,+items.variant.manage_inventory`,
+              storeHeaders
+            )
+
+            expect(response.status).toEqual(200)
+            expect(response.data.cart).toEqual(
+              expect.objectContaining({
+                id: cart.id,
+                items: expect.arrayContaining([
+                  expect.objectContaining({
+                    variant_id: productWithInventory.variants[0].id,
+                    quantity: 2,
+                    variant: expect.objectContaining({
+                      manage_inventory: true,
+                      inventory_quantity: 10, // min(100/10, 50/5) = min(10, 10) = 10
+                    }),
+                  }),
+                  expect.objectContaining({
+                    variant_id: productWithoutInventory.variants[0].id,
+                    quantity: 1,
+                    variant: expect.objectContaining({
+                      manage_inventory: false,
+                    }),
+                  }),
+                ]),
+              })
+            )
+
+            // Verify that product without inventory management doesn't have inventory_quantity
+            const itemWithoutInventory = response.data.cart.items.find(
+              (item) =>
+                item.variant_id === productWithoutInventory.variants[0].id
+            )
+            expect(itemWithoutInventory.variant.inventory_quantity).toEqual(
+              undefined
+            )
+          })
+
+          it("should return correct inventory quantity for multiple stock locations", async () => {
+            const stockLocation2 = (
+              await api.post(
+                `/admin/stock-locations`,
+                { name: "test location 2" },
+                adminHeaders
+              )
+            ).data.stock_location
+
+            await api.post(
+              `/admin/stock-locations/${stockLocation2.id}/sales-channels`,
+              { add: [salesChannel.id] },
+              adminHeaders
+            )
+
+            const inventoryItem3 = (
+              await api.post(
+                `/admin/inventory-items`,
+                { sku: "test-sku-3" },
+                adminHeaders
+              )
+            ).data.inventory_item
+
+            await api.post(
+              `/admin/inventory-items/${inventoryItem3.id}/location-levels`,
+              {
+                location_id: stockLocation.id,
+                stocked_quantity: 20,
+              },
+              adminHeaders
+            )
+
+            await api.post(
+              `/admin/inventory-items/${inventoryItem3.id}/location-levels`,
+              {
+                location_id: stockLocation2.id,
+                stocked_quantity: 30,
+              },
+              adminHeaders
+            )
+
+            const productMultiLocation = (
+              await api.post(
+                `/admin/products`,
+                {
+                  title: "Product multi location",
+                  status: ProductStatus.PUBLISHED,
+                  options: [
+                    {
+                      title: "Size",
+                      values: ["L"],
+                    },
+                  ],
+                  variants: [
+                    {
+                      title: "L",
+                      sku: "product-multi-location-l",
+                      options: {
+                        Size: "L",
+                      },
+                      manage_inventory: true,
+                      inventory_items: [
+                        {
+                          inventory_item_id: inventoryItem3.id,
+                          required_quantity: 5,
+                        },
+                      ],
+                      prices: [
+                        {
+                          amount: 1000,
+                          currency_code: "usd",
+                        },
+                      ],
+                    },
+                  ],
+                  shipping_profile_id: shippingProfile.id,
+                },
+                adminHeaders
+              )
+            ).data.product
+
+            const cart = (
+              await api.post(
+                `/store/carts`,
+                {
+                  currency_code: "usd",
+                  sales_channel_id: salesChannel.id,
+                  region_id: region.id,
+                  items: [
+                    {
+                      variant_id: productMultiLocation.variants[0].id,
+                      quantity: 1,
+                    },
+                  ],
+                },
+                storeHeaders
+              )
+            ).data.cart
+
+            const response = await api.get(
+              `/store/carts/${cart.id}?fields=+items.variant.inventory_quantity`,
+              storeHeaders
+            )
+
+            expect(response.status).toEqual(200)
+            const cartItem = response.data.cart.items[0]
+            expect(cartItem.variant.inventory_quantity).toEqual(10) // (20 + 30) / 5 = 10
+          })
+        })
       })
 
       describe("POST /store/carts", () => {

@@ -26,7 +26,7 @@ export const wrapVariantsWithTotalInventoryQuantity = async (
 }
 
 export const wrapVariantsWithInventoryQuantityForSalesChannel = async (
-  req: MedusaStoreRequest<unknown>,
+  req: MedusaStoreRequest<any, any>,
   variants: VariantInput[]
 ) => {
   const salesChannelIds = transformAndValidateSalesChannelIds(req)
@@ -48,6 +48,7 @@ export const wrapVariantsWithInventoryQuantityForSalesChannel = async (
   }
 
   variants ??= []
+  
   const variantIds = variants.map((variant) => variant.id).flat(1)
 
   if (!variantIds.length) {
