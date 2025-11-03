@@ -32,23 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The products to add or remove from the channel.
- *         properties:
- *           add:
- *             type: array
- *             description: The products to add to the sales channel.
- *             items:
- *               type: string
- *               title: add
- *               description: A product's ID.
- *           remove:
- *             type: array
- *             description: The products to remove from the sales channel.
- *             items:
- *               type: string
- *               title: remove
- *               description: A product's ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

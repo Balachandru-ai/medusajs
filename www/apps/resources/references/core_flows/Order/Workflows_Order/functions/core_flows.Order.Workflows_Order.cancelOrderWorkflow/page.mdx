@@ -23,12 +23,12 @@ any uncaptured payments, and refund any captured payments.
 
 This workflow is used by the [Cancel Order Admin API Route](https://docs.medusajs.com/api/admin#orders\_postordersidcancel).
 
-This workflow has a hook that allows you to perform custom actions on the canceled order. For example, you can 
+This workflow has a hook that allows you to perform custom actions on the canceled order. For example, you can
 make changes to custom models linked to the order.
 
 You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around canceling an order.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/order/workflows/cancel-order.ts#L127" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/order/workflows/cancel-order.ts#L125" />
 
 ## Examples
 
@@ -137,7 +137,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"cancelOrderWorkflow","steps":[{"type":"step","name":"cancelValidateOrder","description":"This step validates that an order can be canceled. If the order has fulfillments that\naren't canceled, or the order was canceled previously, the step throws an error.\n\n:::note\n\nYou can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Order.Workflows_Order.cancelValidateOrder/page.mdx","depth":1},{"type":"step","name":"deleteReservationsByLineItemsStep","description":"This step deletes reservations by their associated line items.","link":"../../../../Reservation/Steps_Reservation/functions/core_flows.Reservation.Steps_Reservation.deleteReservationsByLineItemsStep/page.mdx","depth":2},{"type":"step","name":"cancelPaymentStep","description":"This step cancels one or more payments.","link":"../../../../Payment/Steps_Payment/functions/core_flows.Payment.Steps_Payment.cancelPaymentStep/page.mdx","depth":2},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2},{"type":"when","condition":"{\n      return !!paymentCollectionids?.length\n    }","depth":"3","steps":[{"type":"step","name":"updatePaymentCollectionStep","description":"This step updates payment collections matching the specified filters.","link":"../../../../Payment_Collection/Steps_Payment_Collection/functions/core_flows.Payment_Collection.Steps_Payment_Collection.updatePaymentCollectionStep/page.mdx","depth":3}]},{"type":"step","name":"cancelOrdersStep","description":"This step cancels one or more orders.","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.cancelOrdersStep/page.mdx","depth":4},{"type":"hook","name":"orderCanceled","description":"This hook is executed after the order is canceled. You can consume this hook to perform custom actions on the canceled order.","link":"#orderCanceled","depth":5}]}} />
+<WorkflowDiagram workflow={{"name":"cancelOrderWorkflow","steps":[{"type":"step","name":"cancelValidateOrder","description":"This step validates that an order can be canceled. If the order has fulfillments that\naren't canceled, or the order was canceled previously, the step throws an error.\n\n:::note\n\nYou can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),\nor [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).\n\n:::","link":"../core_flows.Order.Workflows_Order.cancelValidateOrder/page.mdx","depth":1},{"type":"step","name":"deleteReservationsByLineItemsStep","description":"This step deletes reservations by their associated line items.","link":"../../../../Reservation/Steps_Reservation/functions/core_flows.Reservation.Steps_Reservation.deleteReservationsByLineItemsStep/page.mdx","depth":2},{"type":"step","name":"cancelPaymentStep","description":"This step cancels one or more payments.","link":"../../../../Payment/Steps_Payment/functions/core_flows.Payment.Steps_Payment.cancelPaymentStep/page.mdx","depth":2},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2},{"type":"when","condition":"{\n      return !!paymentCollectionids?.length\n    }","depth":"3","steps":[{"type":"step","name":"updatePaymentCollectionStep","description":"This step updates payment collections matching the specified filters.","link":"../../../../Payment_Collection/Steps_Payment_Collection/functions/core_flows.Payment_Collection.Steps_Payment_Collection.updatePaymentCollectionStep/page.mdx","depth":3}]},{"type":"step","name":"cancelOrdersStep","description":"This step cancels one or more orders.","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.cancelOrdersStep/page.mdx","depth":4},{"type":"hook","name":"orderCanceled","description":"This hook is executed after the order is canceled. You can consume this hook to perform custom actions on the canceled order.","link":"#orderCanceled","depth":5}]}} />
 
 ## Input
 
@@ -175,11 +175,7 @@ Handlers consuming this hook accept the following input.
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
 
-:::note
-
 The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
 
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 

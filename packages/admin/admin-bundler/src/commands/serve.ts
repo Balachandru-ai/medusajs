@@ -42,7 +42,7 @@ export async function serve(options: ServeOptions) {
     res.setHeader("Vary", "Origin, Cache-Control")
   }
 
-  router.use(compression())
+  router.use(compression() as any)
 
   router.get("/", sendHtml)
   router.use(

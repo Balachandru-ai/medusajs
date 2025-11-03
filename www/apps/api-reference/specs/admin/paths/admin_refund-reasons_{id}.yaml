@@ -102,7 +102,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminUpdatePaymentRefundReason.yaml
+          $ref: ../components/schemas/AdminUpdateRefundReason.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

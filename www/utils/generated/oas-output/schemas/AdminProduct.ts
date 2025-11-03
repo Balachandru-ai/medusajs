@@ -11,13 +11,13 @@
  *   - length
  *   - title
  *   - status
- *   - description
  *   - id
  *   - created_at
  *   - updated_at
  *   - subtitle
  *   - thumbnail
  *   - handle
+ *   - description
  *   - is_giftcard
  *   - width
  *   - weight

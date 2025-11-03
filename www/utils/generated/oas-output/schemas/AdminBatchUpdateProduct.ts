@@ -37,6 +37,10 @@
  *           type: string
  *           title: url
  *           description: The image's URL.
+ *         id:
+ *           type: string
+ *           title: id
+ *           description: The image's ID.
  *   thumbnail:
  *     type: string
  *     title: thumbnail

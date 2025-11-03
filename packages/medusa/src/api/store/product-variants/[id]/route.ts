@@ -17,6 +17,9 @@ type StoreVariantRetrieveRequest =
   StoreRequestWithContext<HttpTypes.StoreProductVariantParams> &
     AuthenticatedMedusaRequest<StoreProductVariantParamsType>
 
+/**
+ * @since 2.11.2
+ */
 export const GET = async (
   req: StoreVariantRetrieveRequest,
   res: MedusaResponse<HttpTypes.StoreProductVariantResponse>

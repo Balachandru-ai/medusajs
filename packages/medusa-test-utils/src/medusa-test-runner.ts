@@ -1,4 +1,6 @@
+import { asValue } from "@medusajs/framework/awilix"
 import { logger } from "@medusajs/framework/logger"
+import { Migrator } from "@medusajs/framework/migrations"
 import { MedusaAppOutput } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import {
@@ -7,7 +9,6 @@ import {
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { asValue } from "@medusajs/framework/awilix"
 import { dbTestUtilFactory, getDatabaseURL } from "./database"
 import {
   applyEnvVarsToProcess,
@@ -177,6 +178,9 @@ class MedusaTestRunner {
     }
 
     await this.initializeDatabase()
+
+    const migrator = new Migrator({ container })
+    await migrator.ensureMigrationsTable()
 
     logger.info(
       `Migrating database with core migrations and links ${this.dbName}`

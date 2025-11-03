@@ -24,7 +24,7 @@ This is available starting from [Medusa v2.10.0](https://github.com/medusajs/med
 
 :::
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/order/workflows/list-shipping-options-for-order.ts#L36" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/order/workflows/list-shipping-options-for-order.ts#L35" />
 
 ## Examples
 
@@ -138,3 +138,7 @@ const myWorkflow = createWorkflow(
 ## Input
 
 <TypeList types={[{"name":"ListShippingOptionsForOrderWorkflowInput","type":"[ListShippingOptionsForOrderWorkflowInput](../../../../../types/types/types.ListShippingOptionsForOrderWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The context for retrieving the shipping options.","expandable":false,"children":[{"name":"order_id","type":"`string`","description":"The order's ID.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_return","type":"`boolean`","description":"Whether to retrieve return shipping options.\nBy default, non-return shipping options are retrieved.","optional":true,"defaultValue":"false","expandable":false,"children":[]},{"name":"enabled_in_store","type":"`boolean`","description":"Whether to retrieve the shipping option's enabled in the store, which is the default.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="listShippingOptionsForOrderWorkflow"/>
+
+## Output
+
+<TypeList types={[{"name":"any[]","type":"`any`[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"any","type":"`any`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="listShippingOptionsForOrderWorkflow"/>

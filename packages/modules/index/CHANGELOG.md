@@ -1,5 +1,14 @@
 # @medusajs/index
 
+## 2.11.2
+
+### Patch Changes
+
+- [#13869](https://github.com/medusajs/medusa/pull/13869) [`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(index): Add support for API end points to interact with the index module
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
 ## 2.11.1
 
 ### Patch Changes

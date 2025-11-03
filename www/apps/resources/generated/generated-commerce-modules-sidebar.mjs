@@ -12691,6 +12691,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/product/addImageToVariant",
+                      "title": "addImageToVariant",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/product/createProductCategories",
                       "title": "createProductCategories",
                       "description": "",
@@ -12972,6 +12981,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/product/listProducts",
                       "title": "listProducts",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/product/removeImageFromVariant",
+                      "title": "removeImageFromVariant",
                       "description": "",
                       "children": []
                     },
@@ -13435,6 +13453,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/product/models/ProductVariant",
                       "title": "ProductVariant",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/product/models/ProductVariantProductImage",
+                      "title": "ProductVariantProductImage",
                       "description": "",
                       "children": []
                     }

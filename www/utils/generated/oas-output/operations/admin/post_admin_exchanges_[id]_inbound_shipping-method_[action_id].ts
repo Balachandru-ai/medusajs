@@ -41,7 +41,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostExchangesShippingActionReqSchema"
+ *         $ref: "#/components/schemas/AdminExchangeUpdateInboundShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
