@@ -45,7 +45,7 @@
     "watch": "yarn run -T tsc --build --watch",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "serve": "node dist/app.js",
-    "test": "../../node_modules/.bin/jest --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
+    "test": "../../node_modules/.bin/jest --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src",
     "test:integration": "../../node_modules/.bin/jest --forceExit -- src/**/integration-tests/**/__tests__/**/*.ts"
   },
   "devDependencies": {

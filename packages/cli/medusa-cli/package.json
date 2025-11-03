@@ -25,7 +25,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
+    "test": "../../../node_modules/.bin/jest --passWithNoTests src",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "watch": "yarn run -T tsc --watch"
   },

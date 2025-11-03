@@ -20,7 +20,7 @@
   "author": "Medusa",
   "license": "MIT",
   "scripts": {
-    "test": "../../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
+    "test": "../../../../node_modules/.bin/jest --passWithNoTests src",
     "test:integration": "../../../../node_modules/.bin/jest --forceExit -- integration-tests/__tests__/*.spec.ts",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build ./tsconfig.json",
     "watch": "yarn run -T tsc --watch"

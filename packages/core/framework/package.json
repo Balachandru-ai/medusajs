@@ -64,7 +64,7 @@
     "watch": "yarn run -T tsc --watch ",
     "watch:test": "yarn run -T tsc --watch",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "test": "../../../node_modules/.bin/jest --bail --forceExit -- src/**/__tests__/**/*.ts"
+    "test": "../../../node_modules/.bin/jest --bail --forceExit -- src"
   },
   "devDependencies": {
     "@medusajs/cli": "2.11.2"

@@ -48,7 +48,7 @@
     "directory": "packages/cli/medusa-dev-cli"
   },
   "scripts": {
-    "test": "../../../node_modules/.bin/jest --passWithNoTests -- src/**/__tests__/**/*.ts",
+    "test": "../../../node_modules/.bin/jest --passWithNoTests -- src",
     "build": "tsc",
     "watch": "yarn run -T tsc --watch"
   },

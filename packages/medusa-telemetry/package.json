@@ -26,7 +26,7 @@
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "serve": "node dist/index.js",
     "postinstall": "node dist/postinstall.js || true",
-    "test": "../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts"
+    "test": "../../node_modules/.bin/jest --passWithNoTests src"
   },
   "dependencies": {
     "@babel/runtime": "^7.26.10",
