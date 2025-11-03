@@ -102,12 +102,12 @@ jobs:
 
   integration-tests-packages-matrix:
     needs: setup
-    name: Packages integration tests (${{ matrix.group }})
+    name: Package Integration Tests - Shard ${{ matrix.shard_index }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        group: ["slow", "fast"]
+        shard_index: [1, 2, 3, 4]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -157,8 +157,8 @@ jobs:
           name: build-artifacts
           path: .
 
-      - name: Run integration tests
-        run: yarn test:integration:packages:${{ matrix.group }} -- --maxWorkers=${{ steps.cpu-cores.outputs.count }}
+      - name: Run package integration tests
+        run: yarn test:integration:packages -- --shard=${{ matrix.shard_index }}/4 --maxWorkers=${{ steps.cpu-cores.outputs.count }}
         env:
           DB_PASSWORD: postgres
           DB_USERNAME: postgres
