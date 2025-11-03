@@ -10,7 +10,7 @@
     "dev": "node --loader ts-node/esm src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "yarn run -T tsc --watch"
   },
   "dependencies": {
     "@medusajs/deps": "2.11.2",

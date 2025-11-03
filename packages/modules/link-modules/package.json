@@ -24,13 +24,13 @@
   "author": "Medusa",
   "license": "MIT",
   "scripts": {
-    "watch": "tsc --build --watch",
-    "watch:test": "tsc --build tsconfig.spec.json --watch",
+    "watch": "yarn run -T tsc --build --watch",
+    "watch:test": "yarn run -T tsc --build tsconfig.spec.json --watch",
     "prepare": "cross-env NODE_ENV=production yarn run build",
-    "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
+    "resolve:aliases": "yarn run -T tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && yarn run -T tsc-alias -p tsconfig.resolved.json && yarn run -T rimraf tsconfig.resolved.json",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build && npm run resolve:aliases",
     "test": "../../../node_modules/.bin/jest --passWithNoTests --bail --forceExit -- src/**/__tests__/**/*.ts",
-    "test:integration": "jest --forceExit -- integration-tests/**/__tests__/**/*.ts"
+    "test:integration": "../../../node_modules/.bin/jest --forceExit -- integration-tests/**/__tests__/**/*.ts"
   },
   "devDependencies": {
     "@medusajs/framework": "2.11.2",

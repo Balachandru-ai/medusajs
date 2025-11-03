@@ -30,16 +30,16 @@
   ],
   "scripts": {
     "build": "yarn clean && yarn build:js:cjs && yarn build:js:esm",
-    "build:js:cjs": "tsc --project tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
-    "build:js:esm": "tsc --project tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
-    "clean": "rimraf dist",
+    "build:js:cjs": "yarn run -T tsc --project tsconfig.cjs.json && yarn run -T tsc-alias -p tsconfig.cjs.json",
+    "build:js:esm": "yarn run -T tsc --project tsconfig.esm.json && yarn run -T tsc-alias -p tsconfig.esm.json",
+    "clean": "yarn run -T rimraf dist",
     "test": "../../../node_modules/.bin/vitest --run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest --run --coverage",
+    "test:watch": "../../../node_modules/.bin/vitest",
+    "test:coverage": "../../../node_modules/.bin/vitest --run --coverage",
     "lint": "eslint \"**/*.ts*\"",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "yarn run -T tsc --noEmit"
   },
   "devDependencies": {
     "@medusajs/ui-preset": "2.11.2",

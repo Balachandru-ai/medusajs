@@ -29,12 +29,12 @@
     "ioredis": "^5.4.1"
   },
   "scripts": {
-    "watch": "tsc --build --watch",
-    "watch:test": "tsc --build tsconfig.spec.json --watch",
-    "resolve:aliases": "tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && tsc-alias -p tsconfig.resolved.json && rimraf tsconfig.resolved.json",
+    "watch": "yarn run -T tsc --build --watch",
+    "watch:test": "yarn run -T tsc --build tsconfig.spec.json --watch",
+    "resolve:aliases": "yarn run -T tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && yarn run -T tsc-alias -p tsconfig.resolved.json && yarn run -T rimraf tsconfig.resolved.json",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build && npm run resolve:aliases",
     "test": "../../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
-    "test:integration": "jest --forceExit -- integration-tests/**/__tests__/**/*.spec.ts"
+    "test:integration": "../../../../node_modules/.bin/jest --forceExit -- integration-tests/**/__tests__/**/*.spec.ts"
   },
   "keywords": [
     "medusa-providers",

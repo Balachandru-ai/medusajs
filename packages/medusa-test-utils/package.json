@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "watch": "tsc --build --watch",
+    "watch": "yarn run -T tsc --build --watch",
     "test": "../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts"
   },
   "files": [

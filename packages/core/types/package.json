@@ -28,7 +28,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "watch": "tsc --build --watch",
+    "watch": "yarn run -T tsc --build --watch",
     "test": "exit 0"
   },
   "dependencies": {

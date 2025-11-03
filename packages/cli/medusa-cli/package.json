@@ -27,7 +27,7 @@
   "scripts": {
     "test": "../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "watch": "tsc --watch"
+    "watch": "yarn run -T tsc --watch"
   },
   "author": "Sebastian Rindom",
   "license": "MIT",

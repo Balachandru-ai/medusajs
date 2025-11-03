@@ -21,9 +21,9 @@
   "license": "MIT",
   "scripts": {
     "test": "../../../../node_modules/.bin/jest --passWithNoTests src/**/__tests__/**/*.ts",
-    "test:integration": "jest --forceExit -- integration-tests/**/__tests__/**/*.spec.ts",
+    "test:integration": "../../../../node_modules/.bin/jest --forceExit -- integration-tests/**/__tests__/**/*.spec.ts",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "watch": "tsc --watch"
+    "watch": "yarn run -T tsc --watch"
   },
   "devDependencies": {
     "@medusajs/framework": "2.11.2"

@@ -21,11 +21,11 @@
   "scripts": {
     "build": "yarn build:bundles && yarn build:types",
     "build:bundles": "rollup -c ./rollup.config.mjs",
-    "build:types": "tsc --emitDeclarationOnly",
+    "build:types": "yarn run -T tsc --emitDeclarationOnly",
     "test": "../../../node_modules/.bin/vitest --run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest --run --coverage",
-    "generate": "rimraf ./src/components && toolbox icons -o './src/components'"
+    "test:watch": "../../../node_modules/.bin/vitest",
+    "test:coverage": "../../../node_modules/.bin/vitest --run --coverage",
+    "generate": "yarn run -T rimraf ./src/components && toolbox icons -o './src/components'"
   },
   "devDependencies": {
     "@medusajs/toolbox": "2.11.2",

@@ -22,7 +22,7 @@
   "scripts": {
     "start": "nodemon --watch plugins/ --watch src/ --exec node src/index.js",
     "prepare": "cross-env NODE_ENV=production yarn run build",
-    "watch": "tsc --build --watch",
+    "watch": "yarn run -T tsc --build --watch",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "serve": "node dist/index.js",
     "postinstall": "node dist/postinstall.js || true",

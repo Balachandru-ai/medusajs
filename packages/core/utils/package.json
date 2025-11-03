@@ -51,8 +51,8 @@
   },
   "scripts": {
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "watch": "tsc --build --watch",
+    "watch": "yarn run -T tsc --build --watch",
     "test": "../../../node_modules/.bin/jest --silent=false --bail --forceExit --testPathIgnorePatterns='/integration-tests/' -- src/**/__tests__/**/*.ts",
-    "test:integration": "jest --silent --bail --forceExit -- src/**/integration-tests/__tests__/**/*.ts"
+    "test:integration": "../../../node_modules/.bin/jest --silent --bail --forceExit -- src/**/integration-tests/__tests__/**/*.ts"
   }
 }

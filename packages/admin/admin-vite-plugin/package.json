@@ -22,9 +22,9 @@
   ],
   "scripts": {
     "build": "yarn run -T tsup",
-    "watch": "tsup --watch",
+    "watch": "yarn run -T tsup --watch",
     "test": "../../../node_modules/.bin/vitest --run",
-    "test:watch": "vitest"
+    "test:watch": "../../../node_modules/.bin/vitest"
   },
   "devDependencies": {
     "vite": "^5.4.14"

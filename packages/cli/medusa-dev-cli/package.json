@@ -50,7 +50,7 @@
   "scripts": {
     "test": "../../../node_modules/.bin/jest --passWithNoTests -- src/**/__tests__/**/*.ts",
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "yarn run -T tsc --watch"
   },
   "engines": {
     "node": ">=16"
