@@ -30,6 +30,12 @@ export interface RouteConfig {
    * The nested route to display under existing route in the sidebar.
    */
   nested?: NestedRoutePosition
+
+  /**
+   * The ranking of the route among sibling routes. Routes are sorted in ascending order (lower rank appears first).
+   * If not provided, the route will be ranked after all routes with explicit ranks.
+   */
+  rank?: number
 }
 
 export type CustomFormField<

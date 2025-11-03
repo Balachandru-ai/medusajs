@@ -7,6 +7,7 @@ import { outdent } from "outdent"
 import {
   File,
   isIdentifier,
+  isNumericLiteral,
   isObjectProperty,
   isStringLiteral,
   Node,
@@ -28,6 +29,7 @@ type RouteConfig = {
   label: boolean
   icon: boolean
   nested?: string
+  rank?: number
 }
 
 type MenuItem = {
@@ -35,6 +37,7 @@ type MenuItem = {
   label: string
   path: string
   nested?: string
+  rank?: number
 }
 
 type MenuItemResult = {
@@ -130,6 +133,7 @@ function generateMenuItem(
     icon: config.icon ? `${configName}.icon` : undefined,
     path: getRoute(file),
     nested: config.nested,
+    rank: config.rank,
   }
 }
 
@@ -240,10 +244,22 @@ function processConfigProperties(
     return null
   }
 
+  const rank = properties.find(
+    (prop) =>
+      isObjectProperty(prop) && isIdentifier(prop.key, { name: "rank" })
+  ) as ObjectProperty | undefined
+
+  let rankValue: number | undefined = undefined
+
+  if (isNumericLiteral(rank?.value)) {
+    rankValue = rank.value.value
+  }
+
   return {
     label: hasLabel,
     icon: hasProperty("icon"),
     nested: nestedValue,
+    rank: rankValue,
   }
 }
 

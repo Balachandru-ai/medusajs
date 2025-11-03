@@ -173,12 +173,13 @@ export class DashboardApp {
         return
       }
 
-      const navItem: INavItem = {
+      const navItem: INavItem & { rank?: number } = {
         label: item.label,
         to: item.path,
         icon: item.icon ? <item.icon /> : undefined,
         items: [],
         nested: item.nested,
+        rank: item.rank,
       }
 
       if (parentPath !== "/" && tempRegistry[parentPath]) {
@@ -196,7 +197,48 @@ export class DashboardApp {
       tempRegistry[item.path] = navItem
     })
 
+    // Sort menu items by rank (ascending order, undefined ranks come last)
+    registry.forEach((items, key) => {
+      const sorted = this.sortMenuItemsByRank(items)
+      registry.set(key, sorted)
+    })
+
     return registry
+  }
+
+  private sortMenuItemsByRank(
+    items: (INavItem & { rank?: number })[]
+  ): INavItem[] {
+    // Sort items by rank (ascending order)
+    // Items with rank come first, sorted by rank value
+    // Items without rank come last, maintaining their original order
+    const sortedItems = items.sort((a, b) => {
+      // If both have rank, sort by rank value
+      if (a.rank !== undefined && b.rank !== undefined) {
+        return a.rank - b.rank
+      }
+      // If only a has rank, it comes first
+      if (a.rank !== undefined) {
+        return -1
+      }
+      // If only b has rank, it comes first
+      if (b.rank !== undefined) {
+        return 1
+      }
+      // If neither has rank, maintain original order
+      return 0
+    })
+
+    // Recursively sort nested items
+    sortedItems.forEach((item) => {
+      if (item.items && item.items.length > 0) {
+        item.items = this.sortMenuItemsByRank(
+          item.items as (INavItem & { rank?: number })[]
+        )
+      }
+    })
+
+    return sortedItems
   }
 
   private populateForm(plugins: DashboardPlugin[]): {
