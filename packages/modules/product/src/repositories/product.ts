@@ -3,7 +3,6 @@ import { Product, ProductOption } from "@models"
 import { Context, DAL, InferEntityType } from "@medusajs/framework/types"
 import {
   arrayDifference,
-  buildQuery,
   DALUtils,
   deepCopy,
   isDefined,
@@ -95,15 +94,12 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     const relationsToLoad =
       ProductRepository.#getProductDeepUpdateRelationsToLoad(productsToUpdate_)
 
-    const findOptions = buildQuery(
+    const manager = super.getActiveManager<SqlEntityManager>(context)
+    const products = await manager.find<InferEntityType<typeof Product>>(
+      Product.name,
       { id: productIdsToUpdate },
-      {
-        relations: relationsToLoad,
-        take: productsToUpdate_.length,
-      }
+      { populate: relationsToLoad, limit: productsToUpdate_.length } as any
     )
-
-    const products = await this.find(findOptions, context)
     const productsMap = new Map(products.map((p) => [p.id, p]))
 
     const productIds = Array.from(productsMap.keys())

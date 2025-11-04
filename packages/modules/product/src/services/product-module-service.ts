@@ -2059,10 +2059,12 @@ export default class ProductModuleService
 
     const linkPairs: ProductTypes.ProductOptionProductPair[] = []
     const unlinkPairs: ProductTypes.ProductOptionProductPair[] = []
-
     for (const product of data) {
-      const input = data.find((p) => p.id === product.id)!
-      const newOptionIds = new Set(input.option_ids ?? [])
+      if (!product.option_ids) {
+        continue
+      }
+
+      const newOptionIds = new Set(product.option_ids)
 
       const existingOptionIds = new Set(
         originalProducts
@@ -2097,6 +2099,8 @@ export default class ProductModuleService
       unlinkPairs.length &&
         this.removeProductOptionFromProduct_(unlinkPairs, sharedContext),
     ])
+
+    await (sharedContext.transactionManager as any).flush()
 
     const normalizedProducts = this.normalizeUpdateProductInput(data)
 

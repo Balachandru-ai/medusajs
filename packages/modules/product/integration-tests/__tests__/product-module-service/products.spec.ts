@@ -802,7 +802,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           const updateData = {
             id: productTwo.id,
-            option_ids: [...productTwo.options.map((o) => o.id), option.id],
+            option_ids: [option.id],
             variants: [{ title: "variant 1", options: { material: "cotton" } }],
           }
 
