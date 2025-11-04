@@ -50,7 +50,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminPostClaimsShippingActionReqSchema.yaml
+          $ref: ../components/schemas/AdminClaimUpdateOutboundShipping.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsRequestItemsReqSchema"
+ *         $ref: "#/components/schemas/AdminAddReturnItems"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

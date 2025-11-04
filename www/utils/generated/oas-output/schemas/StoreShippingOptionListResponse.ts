@@ -103,7 +103,7 @@
  *                               type: string
  *                               title: country_code
  *                               description: The address's country code.
- *                               example: "us"
+ *                               example: us
  *                             province:
  *                               type: string
  *                               title: province

@@ -26,13 +26,7 @@
   "author": "Medusa",
   "license": "MIT",
   "devDependencies": {
-    "@medusajs/framework": "2.11.2",
-    "@swc/core": "^1.7.28",
-    "@swc/jest": "^0.2.36",
-    "expect-type": "^0.20.0",
-    "jest": "^29.7.0",
-    "rimraf": "^5.0.1",
-    "typescript": "^5.6.2"
+    "@medusajs/framework": "2.11.2"
   },
   "dependencies": {
     "csv-parse": "^5.6.0",
@@ -43,8 +37,8 @@
     "@medusajs/framework": "2.11.2"
   },
   "scripts": {
-    "build": "rimraf dist && tsc --build",
-    "watch": "tsc --build --watch",
-    "test": "jest --bail --forceExit --passWithNoTests"
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
+    "watch": "yarn run -T tsc --build --watch",
+    "test": "../../../node_modules/.bin/jest --bail --forceExit --passWithNoTests"
   }
 }

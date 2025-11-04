@@ -180,7 +180,6 @@ module.exports = {
       ],
       extends: [
         "plugin:react/recommended",
-        "plugin:storybook/recommended",
         "plugin:react-hooks/recommended",
         "plugin:@typescript-eslint/recommended",
       ],

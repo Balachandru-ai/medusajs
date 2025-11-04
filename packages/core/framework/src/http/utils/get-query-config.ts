@@ -5,8 +5,8 @@ import {
   MedusaError,
   buildOrder,
   stringToSelectRelationObject,
+  pickDeep,
 } from "@medusajs/utils"
-import { pick } from "lodash"
 
 export function pickByConfig<TModel>(
   obj: TModel | TModel[],
@@ -16,9 +16,9 @@ export function pickByConfig<TModel>(
 
   if (fields.length) {
     if (Array.isArray(obj)) {
-      return obj.map((o) => pick(o, fields))
+      return obj.map((o) => pickDeep(o as object, fields as string[]))
     } else {
-      return pick(obj, fields)
+      return pickDeep(obj as object, fields as string[])
     }
   }
   return obj

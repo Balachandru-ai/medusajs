@@ -37,6 +37,13 @@
  *     type: number
  *     title: rank
  *     description: The image's rank among sibling images.
+ *   product:
+ *     $ref: "#/components/schemas/AdminProduct"
+ *   variants:
+ *     type: array
+ *     description: The variants associated with the image.
+ *     items:
+ *       $ref: "#/components/schemas/AdminProductVariant"
  * required:
  *   - id
  *   - url

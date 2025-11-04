@@ -41,7 +41,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostClaimsShippingActionReqSchema"
+ *         $ref: "#/components/schemas/AdminClaimUpdateInboundShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

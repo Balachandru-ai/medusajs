@@ -16,12 +16,7 @@
     "package.json"
   ],
   "scripts": {
-    "build": "tsup"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.2",
-    "tsup": "^8.0.1",
-    "typescript": "^5.3.3"
+    "build": "yarn run -T tsup"
   },
   "dependencies": {
     "@medusajs/admin-shared": "2.11.2",

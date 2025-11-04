@@ -20,18 +20,6 @@ export const region = [
     "path": "https://docs.medusajs.com/resources/storefront-development/regions/store-retrieve-region"
   },
   {
-    "title": "findOneOrAnyRegionStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/findOneOrAnyRegionStep"
-  },
-  {
-    "title": "createCartWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createCartWorkflow"
-  },
-  {
-    "title": "addDraftOrderItemsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
-  },
-  {
     "title": "validateShippingOptionPricesStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/validateShippingOptionPricesStep"
   },
@@ -42,26 +30,6 @@ export const region = [
   {
     "title": "updateShippingOptionsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateShippingOptionsWorkflow"
-  },
-  {
-    "title": "addOrderLineItemsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addOrderLineItemsWorkflow"
-  },
-  {
-    "title": "createOrderWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderWorkflow"
-  },
-  {
-    "title": "orderClaimAddNewItemWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderClaimAddNewItemWorkflow"
-  },
-  {
-    "title": "orderEditAddNewItemWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderEditAddNewItemWorkflow"
-  },
-  {
-    "title": "orderExchangeAddNewItemWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderExchangeAddNewItemWorkflow"
   },
   {
     "title": "generateProductCsvStep",
