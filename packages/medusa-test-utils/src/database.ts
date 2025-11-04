@@ -237,7 +237,8 @@ export const dbTestUtilFactory = (): any => ({
       let hasIndexTables = false
 
       const tablesToTruncate: string[] = []
-      const indexTablesToTruncate: string[] = []
+      const allTablesToVerify: string[] = []
+
       for (const { table_name } of tableNames) {
         if (mainPartitionTables.includes(table_name)) {
           hasIndexTables = true
@@ -247,19 +248,61 @@ export const dbTestUtilFactory = (): any => ({
           table_name.startsWith(skipIndexPartitionPrefix) ||
           mainPartitionTables.includes(table_name)
         ) {
-          indexTablesToTruncate.push(`${schema}."${table_name}"`)
+          allTablesToVerify.push(table_name)
           continue
         }
 
         tablesToTruncate.push(`${schema}."${table_name}"`)
+        allTablesToVerify.push(table_name)
       }
+
+      // Truncate regular tables
       if (tablesToTruncate.length > 0) {
         await runRawQuery(`TRUNCATE ${tablesToTruncate.join(", ")};`)
       }
 
       if (hasIndexTables) {
-        await runRawQuery(`TRUNCATE ${indexTablesToTruncate.join(", ")};`)
+        await runRawQuery(`TRUNCATE ${mainPartitionTables.join(", ")};`)
       }
+
+      const verifyEmpty = async (maxRetries = 5) => {
+        for (let retry = 0; retry < maxRetries; retry++) {
+          const countQueries = allTablesToVerify.map(
+            (tableName) =>
+              `SELECT '${tableName}' as table_name, COUNT(*) as count FROM ${schema}."${tableName}"`
+          )
+
+          const { rows: counts } = await runRawQuery(
+            countQueries.join(" UNION ALL ")
+          )
+
+          const nonEmptyTables = counts.filter(
+            (row: { table_name: string; count: string }) =>
+              parseInt(row.count) > 0
+          )
+
+          if (nonEmptyTables.length === 0) {
+            return true
+          }
+
+          if (retry < maxRetries - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+          } else {
+            const tableList = nonEmptyTables
+              .map(
+                (t: { table_name: string; count: string }) =>
+                  `${t.table_name}(${t.count})`
+              )
+              .join(", ")
+            logger.warn(
+              `Some tables still contain data after truncate: ${tableList}`
+            )
+          }
+        }
+        return false
+      }
+
+      await verifyEmpty()
     } catch (error) {
       logger.error("Error during database teardown:", error)
       throw error
