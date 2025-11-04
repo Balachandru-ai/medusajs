@@ -86,7 +86,7 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
       )
 
       // make sure version is loaded if adjustments are requested
-      if (config.options.fields.includes("items.item.")) {
+      if (config.options.fields?.includes("items.item.")) {
         config.options.fields.push(
           isRelatedEntity ? "order.items.item.version" : "items.item.version"
         )
