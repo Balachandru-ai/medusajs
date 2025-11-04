@@ -12,9 +12,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "rimraf dist && tsc --build",
-    "watch": "tsc --build --watch",
-    "test": "jest --passWithNoTests src"
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
+    "watch": "yarn run -T tsc --build --watch",
+    "test": "../../node_modules/.bin/jest --passWithNoTests src"
   },
   "files": [
     "dist",
@@ -25,11 +25,7 @@
   "author": "Medusa",
   "license": "MIT",
   "devDependencies": {
-    "@medusajs/framework": "2.11.2",
-    "jest": "^29.7.0",
-    "pg-god": "^1.0.12",
-    "rimraf": "^5.0.1",
-    "typescript": "^5.6.2"
+    "@medusajs/framework": "2.11.2"
   },
   "dependencies": {
     "@types/express": "^4.17.21",

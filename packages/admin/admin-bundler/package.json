@@ -4,7 +4,7 @@
   "description": "Bundler for the Medusa admin dashboard.",
   "author": "Kasper Kristensen <kasper@medusajs.com>",
   "scripts": {
-    "build": "tsup"
+    "build": "yarn run -T tsup"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,11 +18,7 @@
     "package.json"
   ],
   "devDependencies": {
-    "@medusajs/types": "2.11.2",
-    "@types/compression": "^1.7.5",
-    "@types/express": "^4.17.21",
-    "tsup": "^8.4.0",
-    "typescript": "^5.6.2"
+    "@medusajs/types": "2.11.2"
   },
   "dependencies": {
     "@medusajs/admin-shared": "2.11.2",
