@@ -1,5 +1,5 @@
 ---
-"@medusajs/types": minor
+"@medusajs/types": patch
 ---
 
 Update Providers to enable mixed provider entries.
