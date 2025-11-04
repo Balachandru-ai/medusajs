@@ -83,7 +83,7 @@ jobs:
           path: .
 
       - name: Run unit tests
-        run: yarn test:chunk -- --shard=${{ matrix.shard_index }}/4 --maxWorkers=${{ steps.cpu-cores.outputs.count }} --passWithNoTests
+        run: yarn test -- --shard=${{ matrix.shard_index }}/4 --maxWorkers=${{ steps.cpu-cores.outputs.count }} --passWithNoTests
 
   unit-tests:
     if: ${{ always() }}
