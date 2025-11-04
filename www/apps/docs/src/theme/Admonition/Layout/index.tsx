@@ -47,7 +47,7 @@ function AdmonitionContent({
       )}
     >
       {title && (
-        <span className="txt-compact-medium-plus block mb-0.125">
+        <span className="text-compact-medium-plus block mb-docs_0.125 text-medusa-fg-base">
           {transformAdmonitionTitle(title)}
         </span>
       )}
