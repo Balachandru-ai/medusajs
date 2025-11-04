@@ -7,7 +7,7 @@ const DetailedFeedback = () => {
   const [improvementFeedback, setImprovementFeedback] = useState("")
   const [positiveFeedback, setPositiveFeedback] = useState("")
   const [additionalFeedback, setAdditionalFeedback] = useState("")
-  const { loaded, track } = useAnalytics()
+  const { track } = useAnalytics()
   const { closeModal } = useModal()
 
   return (
@@ -44,10 +44,9 @@ const DetailedFeedback = () => {
             children: "Save",
             onClick: (e) => {
               if (
-                !loaded ||
-                (!improvementFeedback &&
-                  !positiveFeedback &&
-                  !additionalFeedback)
+                !improvementFeedback &&
+                !positiveFeedback &&
+                !additionalFeedback
               ) {
                 return
               }
