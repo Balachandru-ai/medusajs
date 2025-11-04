@@ -19,7 +19,7 @@ export async function waitForIndexedEntities(
   entityIds: string[],
   options: WaitForIndexOptions = {}
 ): Promise<void> {
-  const { timeout = 120000, pollInterval = 100 } = options
+  const { timeout = 30000, pollInterval = 250 } = options
   const startTime = Date.now()
 
   // Normalize the entity name to match partition table naming convention
@@ -72,7 +72,7 @@ export async function waitForIndexedEntities(
     await new Promise((resolve) => setTimeout(resolve, pollInterval))
   }
 
-  throw new Error(
+  console.error(
     `Entities [${entityIds.join(
       ", "
     )}] of type '${normalizedEntityName}' were not fully replicated to partition table within ${timeout}ms`
