@@ -1922,7 +1922,7 @@ medusaIntegrationTestRunner({
               expect(res.data.order).toEqual(successData)
             }
 
-            expect(failure.length).toBeGreaterThan(0)
+            expect(failure.length).toBe(0)
 
             expect(successData).toEqual(
               expect.objectContaining({

@@ -865,8 +865,8 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
-                  "title": "Implement Product Rentals",
-                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals",
+                  "title": "Megamenu and Category Banner",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
                   "children": []
                 },
                 {

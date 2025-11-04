@@ -590,6 +590,13 @@ export const sidebars = [
             type: "link",
             title: "Medusa Configuations",
             path: "/learn/configurations/medusa-config",
+            children: [
+              {
+                type: "link",
+                title: "Asymmetric Encryption",
+                path: "/learn/configurations/medusa-config/asymmetric-encryption",
+              },
+            ],
           },
           {
             type: "link",

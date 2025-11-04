@@ -38,7 +38,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/StoreDeclineOrderTransferRequest"
+ *         $ref: "#/components/schemas/StoreDeclineOrderTransfer"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

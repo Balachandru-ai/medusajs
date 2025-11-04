@@ -38,7 +38,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminUpdateFulfillmentSetServiceZones"
+ *         $ref: "#/components/schemas/AdminUpdateFulfillmentSetServiceZone"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

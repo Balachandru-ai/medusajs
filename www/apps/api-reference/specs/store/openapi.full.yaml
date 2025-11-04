@@ -3599,44 +3599,6 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: fields
-          in: query
-          description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
-          required: false
-          schema:
-            type: string
-            title: fields
-            description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
-            externalDocs:
-              url: '#select-fields-and-relations'
-        - name: offset
-          in: query
-          description: The number of items to skip when retrieving a list.
-          required: false
-          schema:
-            type: number
-            title: offset
-            description: The number of items to skip when retrieving a list.
-            externalDocs:
-              url: '#pagination'
-        - name: limit
-          in: query
-          description: Limit the number of items returned in the list.
-          required: false
-          schema:
-            type: number
-            title: limit
-            description: Limit the number of items returned in the list.
-            externalDocs:
-              url: '#pagination'
-        - name: order
-          in: query
-          description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
-          required: false
-          schema:
-            type: string
-            title: order
-            description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
         - name: city
           in: query
           description: Filter by the address's city.
@@ -3690,14 +3652,54 @@ paths:
             type: string
             title: q
             description: Search term to filter the address's searchable properties.
-        - name: with_deleted
+        - name: company
           in: query
-          description: Whether to include deleted records in the result.
           required: false
           schema:
-            type: boolean
-            title: with_deleted
-            description: Whether to include deleted records in the result.
+            oneOf:
+              - type: string
+                title: company
+                description: Filter addresses by company.
+              - type: array
+                description: Filter addresses by companies.
+                items:
+                  type: string
+                  title: company
+                  description: A company.
+        - name: province
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: province
+                description: Filter addresses by province.
+              - type: array
+                description: Filter addresses by provinces.
+                items:
+                  type: string
+                  title: province
+                  description: A province.
+        - name: $and
+          in: query
+          description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $and
+        - name: $or
+          in: query
+          description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $or
       security:
         - cookie_auth: []
         - jwt_token: []
@@ -4828,7 +4830,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StoreDeclineOrderTransferRequest'
+              $ref: '#/components/schemas/StoreDeclineOrderTransfer'
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -8328,36 +8330,6 @@ paths:
             type: string
             title: cart_id
             description: The ID of the customer's cart. If set, the cart's region and shipping address's country code and province are used instead of the `region_id`, `country_code`, and `province` properties.
-        - name: limit
-          in: query
-          description: Limit the number of items returned in the list.
-          required: false
-          schema:
-            type: number
-            title: limit
-            description: Limit the number of items returned in the list.
-            externalDocs:
-              url: '#pagination'
-        - name: offset
-          in: query
-          description: The number of items to skip when retrieving a list.
-          required: false
-          schema:
-            type: number
-            title: offset
-            description: The number of items to skip when retrieving a list.
-            externalDocs:
-              url: '#pagination'
-        - name: order
-          in: query
-          description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
-          required: false
-          schema:
-            type: string
-            title: order
-            description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
-            externalDocs:
-              url: '#pagination'
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -9648,6 +9620,84 @@ paths:
             This API route is only available in [Medusa Cloud](https://docs.medusajs.com/cloud/loyalty-plugin).
 components:
   schemas:
+    AdminAddClaimItems:
+      type: object
+      description: The details of the order items to add to the claim.
+      x-schemaName: AdminAddClaimItems
+      properties:
+        items:
+          type: array
+          description: The item's details.
+          items:
+            type: object
+            description: An item's details.
+            required:
+              - id
+              - quantity
+            properties:
+              id:
+                type: string
+                title: id
+                description: The ID of the order's item.
+              quantity:
+                type: number
+                title: quantity
+                description: The quantity of the order's item to add to the claim.
+              reason:
+                type: string
+                description: The reason the item is claimed.
+                enum:
+                  - missing_item
+                  - wrong_item
+                  - production_failure
+                  - other
+              description:
+                type: string
+                title: description
+                description: The item's description.
+              internal_note:
+                type: string
+                title: internal_note
+                description: A note that's only viewed by admin users.
+    AdminAddClaimOutboundItems:
+      type: object
+      description: The details of the outbound items to add to the claim.
+      x-schemaName: AdminAddClaimOutboundItems
+      properties:
+        items:
+          type: array
+          description: The outbound item's details.
+          items:
+            type: object
+            description: An item's details.
+            required:
+              - id
+              - quantity
+            properties:
+              quantity:
+                type: number
+                title: quantity
+                description: The quantity to send to the customer.
+              internal_note:
+                type: string
+                title: internal_note
+                description: A note viewed only by admin users.
+              id:
+                type: string
+                title: id
+                description: The item's ID.
+              reason:
+                type: string
+                description: The item's reason.
+                enum:
+                  - missing_item
+                  - wrong_item
+                  - production_failure
+                  - other
+              description:
+                type: string
+                title: description
+                description: The item's description.
     AdminAddDraftOrderItems:
       type: object
       description: The details of the items to add to a draft order.
@@ -9736,6 +9786,163 @@ components:
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+    AdminAddExchangeInboundItems:
+      type: object
+      description: The details of the inbound (return) items.
+      x-schemaName: AdminAddExchangeInboundItems
+      properties:
+        items:
+          type: array
+          description: The details of the inbound (return) items.
+          items:
+            type: object
+            description: An item's details.
+            required:
+              - id
+              - quantity
+            properties:
+              id:
+                type: string
+                title: id
+                description: The ID of the order's item.
+              quantity:
+                type: number
+                title: quantity
+                description: The item's quantity.
+              description:
+                type: string
+                title: description
+                description: The item's description.
+              internal_note:
+                type: string
+                title: internal_note
+                description: A note viewed only by admin users.
+              reason_id:
+                type: string
+                title: reason_id
+                description: The ID of the return reason to associate with the item.
+              metadata:
+                type: object
+                description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location to which outbound items are sent from.
+    AdminAddExchangeOutboundItems:
+      type: object
+      description: The details of outbound items.
+      x-schemaName: AdminAddExchangeOutboundItems
+      properties:
+        items:
+          type: array
+          description: The details of outbound items.
+          items:
+            type: object
+            description: An item's details.
+            required:
+              - variant_id
+              - quantity
+            properties:
+              variant_id:
+                type: string
+                title: variant_id
+                description: The ID of the associated product variant.
+              quantity:
+                type: number
+                title: quantity
+                description: The item's quantity.
+              unit_price:
+                type: number
+                title: unit_price
+                description: The item's unit price.
+              internal_note:
+                type: string
+                title: internal_note
+                description: A note viewed only by admin users.
+              allow_backorder:
+                type: boolean
+                title: allow_backorder
+                description: Whether the item can be added even if it's not in stock.
+              metadata:
+                type: object
+                description: The item's metadata, can hold custom key-value pairs.
+                externalDocs:
+                  url: https://docs.medusajs.com/api/admin#manage-metadata
+                  description: Learn how to manage metadata
+    AdminAddReturnItem:
+      type: object
+      description: An item's details.
+      required:
+        - id
+        - quantity
+      properties:
+        id:
+          type: string
+          title: id
+          description: The item's ID.
+        quantity:
+          type: number
+          title: quantity
+          description: The item's quantity.
+        description:
+          type: string
+          title: description
+          description: The item's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        metadata:
+          type: object
+          description: The item's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+      x-schemaName: AdminAddReturnItem
+    AdminAddReturnItems:
+      type: object
+      description: The items' details.
+      x-schemaName: AdminAddReturnItems
+      properties:
+        items:
+          type: array
+          description: The items' details.
+          items:
+            $ref: '#/components/schemas/AdminAddReturnItem'
+      required:
+        - items
+    AdminAddReturnShipping:
+      type: object
+      description: The shipping method's details.
+      x-schemaName: AdminAddReturnShipping
+      required:
+        - shipping_option_id
+      properties:
+        shipping_option_id:
+          type: string
+          title: shipping_option_id
+          description: The ID of the associated shipping option.
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: Set the price of the shipping method.
+        description:
+          type: string
+          title: description
+          description: The shipping method's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        metadata:
+          type: object
+          description: The exchange's metadata, can hold custom key-value pairs.
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
@@ -9885,6 +10092,25 @@ components:
           type: number
           title: apply_to_quantity
           description: The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a "Buy 2 shirts get 1 free", the value of this attribute is `1`.
+    AdminBatchCreateInventoryItemLocationLevels:
+      type: object
+      description: The inventory level's details.
+      required:
+        - location_id
+      properties:
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the associated location.
+        stocked_quantity:
+          type: number
+          title: stocked_quantity
+          description: The inventory level's stocked quantity.
+        incoming_quantity:
+          type: number
+          title: incoming_quantity
+          description: The inventory level's incoming quantity.
+      x-schemaName: AdminBatchCreateInventoryItemLocationLevels
     AdminBatchCreateInventoryItemsLocationLevels:
       type: object
       description: The details of an inventory level to create.
@@ -9909,6 +10135,47 @@ components:
           title: incoming_quantity
           description: The incoming quantity to be added to stock.
       x-schemaName: AdminBatchCreateInventoryItemsLocationLevels
+    AdminBatchImageVariantRequest:
+      type: object
+      description: Details of the associations between variants and a product image to manage.
+      x-schemaName: AdminBatchImageVariantRequest
+      properties:
+        add:
+          type: array
+          description: The IDs of product variants to add the image to.
+          items:
+            type: string
+            title: add
+            description: The ID of the variant to add.
+        remove:
+          type: array
+          description: The IDs of product variants to remove the image from.
+          items:
+            type: string
+            title: remove
+            description: The ID of the variant to remove.
+    AdminBatchImageVariantResponse:
+      type: object
+      description: Result of managing the associations between variants and a product image.
+      x-schemaName: AdminBatchImageVariantResponse
+      required:
+        - added
+        - removed
+      properties:
+        added:
+          type: array
+          description: The IDs of product variants added the image to.
+          items:
+            type: string
+            title: added
+            description: The ID of the variant added.
+        removed:
+          type: array
+          description: The IDs of product variants removed the image from.
+          items:
+            type: string
+            title: removed
+            description: The ID of the variant removed.
     AdminBatchInventoryItemLocationsLevel:
       type: object
       description: The inventory levels to create, update, or delete.
@@ -10023,6 +10290,25 @@ components:
             type: string
             title: deleted
             description: The ID of a deleted inventory level.
+    AdminBatchLink:
+      type: object
+      description: A batch operation to manage the associations between two entities.
+      properties:
+        add:
+          type: array
+          description: The IDs of an entity to add to the other.
+          items:
+            type: string
+            title: add
+            description: The entity's ID.
+        remove:
+          type: array
+          description: The IDs of an entity to remove from the other.
+          items:
+            type: string
+            title: remove
+            description: The entity's ID.
+      x-schemaName: AdminBatchLink
     AdminBatchProductRequest:
       type: object
       description: The products to create, update, or delete.
@@ -10219,6 +10505,10 @@ components:
                 type: string
                 title: url
                 description: The image's URL.
+              id:
+                type: string
+                title: id
+                description: The image's ID.
         thumbnail:
           type: string
           title: thumbnail
@@ -10433,8 +10723,53 @@ components:
           type: string
           title: id
           description: The update's ID.
+        thumbnail:
+          type: string
+          title: thumbnail
+          description: The variant's thumbnail.
       required:
         - id
+    AdminBatchVariantImagesRequest:
+      type: object
+      description: Details of the associations between images and a product variant to manage.
+      x-schemaName: AdminBatchVariantImagesRequest
+      properties:
+        add:
+          type: array
+          description: The IDs of product images to add to the variant.
+          items:
+            type: string
+            title: add
+            description: The ID of the image to add.
+        remove:
+          type: array
+          description: The IDs of product images to remove from the variant.
+          items:
+            type: string
+            title: remove
+            description: The ID of the image to remove.
+    AdminBatchVariantImagesResponse:
+      type: object
+      description: Result of managing the associations between images and a product variant.
+      x-schemaName: AdminBatchVariantImagesResponse
+      required:
+        - added
+        - removed
+      properties:
+        added:
+          type: array
+          description: The IDs of product images added to the variant.
+          items:
+            type: string
+            title: added
+            description: The ID of the image added.
+        removed:
+          type: array
+          description: The IDs of product images removed from the variant.
+          items:
+            type: string
+            title: removed
+            description: The ID of the image removed.
     AdminCampaign:
       type: object
       description: The campaign's details.
@@ -10545,6 +10880,15 @@ components:
       properties:
         campaign:
           $ref: '#/components/schemas/AdminCampaign'
+    AdminCapturePayment:
+      type: object
+      description: The payment's details.
+      properties:
+        amount:
+          type: number
+          title: amount
+          description: The amount to capture.
+      x-schemaName: AdminCapturePayment
     AdminClaim:
       type: object
       description: The claim's details.
@@ -10654,6 +10998,35 @@ components:
           format: date-time
           title: deleted_at
           description: The date the claim was deleted.
+    AdminClaimAddOutboundShipping:
+      type: object
+      description: The details of the shipping method used to ship outbound items.
+      x-schemaName: AdminClaimAddOutboundShipping
+      required:
+        - shipping_option_id
+      properties:
+        shipping_option_id:
+          type: string
+          title: shipping_option_id
+          description: The ID of the associated shipping option.
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: Set a custom price for the shipping method.
+        description:
+          type: string
+          title: description
+          description: The shipping method's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note only viewed by admin users.
+        metadata:
+          type: object
+          description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminClaimDeleteResponse:
       type: object
       description: The details of the deleted claim.
@@ -10768,6 +11141,44 @@ components:
           $ref: '#/components/schemas/AdminOrderPreview'
         return:
           $ref: '#/components/schemas/AdminReturn'
+    AdminClaimUpdateInboundShipping:
+      type: object
+      description: The details to update in the shipping method.
+      x-schemaName: AdminClaimUpdateInboundShipping
+      properties:
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: The shipping method's custom amount.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note only viewed by admin users.
+        metadata:
+          type: object
+          description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+    AdminClaimUpdateOutboundShipping:
+      type: object
+      description: The details to update in the shipping method.
+      x-schemaName: AdminClaimUpdateOutboundShipping
+      properties:
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: The shipping method's custom amount.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note only viewed by admin users.
+        metadata:
+          type: object
+          description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCollection:
       type: object
       description: The product collection's details.
@@ -10997,6 +11408,24 @@ components:
             - timestamp
             - metric
             - relationship
+    AdminConfirmReceiveReturn:
+      type: object
+      description: The confirmation's details.
+      x-schemaName: AdminConfirmReceiveReturn
+      properties:
+        no_notification:
+          type: boolean
+          title: no_notification
+          description: Whether to send the customer a notification about the confirmation.
+    AdminConfirmReturnRequest:
+      type: object
+      description: The confirmation's details.
+      x-schemaName: AdminConfirmReturnRequest
+      properties:
+        no_notification:
+          type: boolean
+          title: no_notification
+          description: Whether to send the customer a notification about the confirmation.
     AdminCreateApiKey:
       type: object
       description: The API key's details.
@@ -11068,6 +11497,42 @@ components:
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.
+    AdminCreateClaim:
+      type: object
+      description: The claim's details.
+      x-schemaName: AdminCreateClaim
+      required:
+        - type
+        - order_id
+      properties:
+        type:
+          type: string
+          description: The claim's type.
+          enum:
+            - refund
+            - replace
+        order_id:
+          type: string
+          title: order_id
+          description: The ID of the order the claim is created for.
+        description:
+          type: string
+          title: description
+          description: The claim's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        reason_id:
+          type: string
+          title: reason_id
+          description: The ID of the associated return reason.
+        metadata:
+          type: object
+          description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminCreateCustomerGroup:
       type: object
       description: The customer group's details.
@@ -11082,6 +11547,31 @@ components:
         metadata:
           type: object
           description: The customer group's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+    AdminCreateExchange:
+      type: object
+      description: The exchange's details.
+      x-schemaName: AdminCreateExchange
+      required:
+        - order_id
+      properties:
+        order_id:
+          type: string
+          title: order_id
+          description: The ID of the order this exchange is created for.
+        description:
+          type: string
+          title: description
+          description: The exchange's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        metadata:
+          type: object
+          description: The exchange's metadata, can hold custom key-value pairs.
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
@@ -11237,14 +11727,12 @@ components:
       description: The filfillment's details.
       x-schemaName: AdminCreateFulfillment
       required:
-        - items
-        - metadata
-        - order_id
-        - data
         - location_id
         - provider_id
         - delivery_address
+        - items
         - labels
+        - order_id
       properties:
         location_id:
           type: string
@@ -11255,118 +11743,17 @@ components:
           title: provider_id
           description: The ID of the provider handling this fulfillment.
         delivery_address:
-          type: object
-          description: The address to deliver the items to.
-          properties:
-            first_name:
-              type: string
-              title: first_name
-              description: The customer's first name.
-            last_name:
-              type: string
-              title: last_name
-              description: The customer's last name.
-            phone:
-              type: string
-              title: phone
-              description: The customer's phone.
-            company:
-              type: string
-              title: company
-              description: The delivery address's company.
-            address_1:
-              type: string
-              title: address_1
-              description: The delivery address's first line.
-            address_2:
-              type: string
-              title: address_2
-              description: The delivery address's second line.
-            city:
-              type: string
-              title: city
-              description: The delivery address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The delivery address's country code.
-            province:
-              type: string
-              title: province
-              description: The delivery address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
-            postal_code:
-              type: string
-              title: postal_code
-              description: The delivery address's postal code.
-            metadata:
-              type: object
-              description: The delivery address's metadata, used to store custom key-value pairs.
-              externalDocs:
-                url: https://docs.medusajs.com/api/admin#manage-metadata
-                description: Learn how to manage metadata
+          $ref: '#/components/schemas/AdminFulfillmentDeliveryAddress'
         items:
           type: array
           description: The items to fulfill.
           items:
-            type: object
-            description: An item to fulfill.
-            required:
-              - title
-              - quantity
-              - sku
-              - barcode
-            properties:
-              title:
-                type: string
-                title: title
-                description: The item's title.
-              sku:
-                type: string
-                title: sku
-                description: The item's SKU.
-              quantity:
-                type: number
-                title: quantity
-                description: The quantity to fulfill of the item.
-              barcode:
-                type: string
-                title: barcode
-                description: The item's barcode.
-              line_item_id:
-                type: string
-                title: line_item_id
-                description: The ID of the associated line item.
-              inventory_item_id:
-                type: string
-                title: inventory_item_id
-                description: The ID of the inventory item associated with the underlying variant.
+            $ref: '#/components/schemas/AdminCreateFulfillmentItem'
         labels:
           type: array
           description: The labels for the fulfillment's shipments.
           items:
-            type: object
-            description: A shipment's label.
-            required:
-              - tracking_number
-              - tracking_url
-              - label_url
-            properties:
-              tracking_number:
-                type: string
-                title: tracking_number
-                description: The label's tracking number.
-              tracking_url:
-                type: string
-                title: tracking_url
-                description: The label's tracking URL.
-              label_url:
-                type: string
-                title: label_url
-                description: The label's URL.
+            $ref: '#/components/schemas/AdminCreateFulfillmentLabel'
         order_id:
           type: string
           title: order_id
@@ -11407,11 +11794,67 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminCreateFulfillmentSetServiceZones:
+    AdminCreateFulfillmentItem:
       type: object
-      description: The service zone's details.
+      description: An item to fulfill.
+      required:
+        - title
+        - sku
+        - quantity
+        - barcode
+      properties:
+        title:
+          type: string
+          title: title
+          description: The item's title.
+        sku:
+          type: string
+          title: sku
+          description: The item's SKU.
+        quantity:
+          type: number
+          title: quantity
+          description: The quantity to fulfill of the item.
+        barcode:
+          type: string
+          title: barcode
+          description: The item's barcode.
+        line_item_id:
+          type: string
+          title: line_item_id
+          description: The ID of the associated line item.
+        inventory_item_id:
+          type: string
+          title: inventory_item_id
+          description: The ID of the inventory item associated with the underlying variant.
+      x-schemaName: AdminCreateFulfillmentItem
+    AdminCreateFulfillmentLabel:
+      type: object
+      description: Details of the fulfillment label to create.
+      required:
+        - tracking_number
+        - tracking_url
+        - label_url
+      properties:
+        tracking_number:
+          type: string
+          title: tracking_number
+          description: The label's tracking number.
+        tracking_url:
+          type: string
+          title: tracking_url
+          description: The label's tracking URL.
+        label_url:
+          type: string
+          title: label_url
+          description: The label's URL.
+      x-schemaName: AdminCreateFulfillmentLabel
+    AdminCreateFulfillmentSetServiceZone:
+      type: object
+      description: Details of the service zone to create for the fulfillment set.
       required:
         - name
+        - geo_zones
       properties:
         name:
           type: string
@@ -11551,7 +11994,19 @@ components:
                   postal_expression:
                     type: object
                     description: The geo zone's postal expression or ZIP code.
-      x-schemaName: AdminCreateFulfillmentSetServiceZones
+      x-schemaName: AdminCreateFulfillmentSetServiceZone
+    AdminCreateFulfillmentShipment:
+      type: object
+      description: Details of the shipment to create for a fulfillment.
+      x-schemaName: AdminCreateFulfillmentShipment
+      required:
+        - labels
+      properties:
+        labels:
+          type: array
+          description: The shipment's labels.
+          items:
+            $ref: '#/components/schemas/AdminCreateFulfillmentLabel'
     AdminCreateGiftCardParams:
       type: object
       description: The details of the gift card to create.
@@ -11670,29 +12125,10 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminCreateInventoryLocationLevel:
-      type: object
-      description: The inventory level's details.
-      required:
-        - location_id
-      properties:
-        location_id:
-          type: string
-          title: location_id
-          description: The ID of the associated location.
-        stocked_quantity:
-          type: number
-          title: stocked_quantity
-          description: The inventory level's stocked quantity.
-        incoming_quantity:
-          type: number
-          title: incoming_quantity
-          description: The inventory level's incoming quantity.
-      x-schemaName: AdminCreateInventoryLocationLevel
-    AdminCreateOrderCreditLines:
+    AdminCreateOrderCreditLine:
       type: object
       description: The details of a credit line to add to an order.
-      x-schemaName: AdminCreateOrderCreditLines
+      x-schemaName: AdminCreateOrderCreditLine
       required:
         - amount
         - reference
@@ -11719,15 +12155,6 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminCreatePaymentCapture:
-      type: object
-      description: The payment's details.
-      properties:
-        amount:
-          type: number
-          title: amount
-          description: The amount to capture.
-      x-schemaName: AdminCreatePaymentCapture
     AdminCreatePaymentCollection:
       type: object
       description: The payment collection's details.
@@ -11744,23 +12171,6 @@ components:
           title: amount
           description: The amount to be paid.
       x-schemaName: AdminCreatePaymentCollection
-    AdminCreatePaymentRefund:
-      type: object
-      description: The refund's details.
-      properties:
-        amount:
-          type: number
-          title: amount
-          description: The amount to refund.
-        refund_reason_id:
-          type: string
-          title: refund_reason_id
-          description: The ID of a refund reason.
-        note:
-          type: string
-          title: note
-          description: A note to attach to the refund.
-      x-schemaName: AdminCreatePaymentRefund
     AdminCreatePriceList:
       type: object
       description: The price list's details.
@@ -11808,38 +12218,41 @@ components:
           type: array
           description: The price list's prices.
           items:
-            type: object
-            description: A price's details.
-            required:
-              - currency_code
-              - variant_id
-              - amount
-            properties:
-              currency_code:
-                type: string
-                title: currency_code
-                description: The price's currency code.
-              amount:
-                type: number
-                title: amount
-                description: The price's amount.
-              variant_id:
-                type: string
-                title: variant_id
-                description: The ID of the product variant this price is for.
-              min_quantity:
-                type: number
-                title: min_quantity
-                description: The minimum quantity required in the cart for this price to be applied.
-              max_quantity:
-                type: number
-                title: max_quantity
-                description: The maximum quantity in the cart that shouldn't be crossed for this price to be applied.
-              rules:
-                type: object
-                description: The price's rules.
-                example:
-                  region_id: reg_123
+            $ref: '#/components/schemas/AdminCreatePriceListPrice'
+    AdminCreatePriceListPrice:
+      type: object
+      description: The details of a price to be created within a price list.
+      required:
+        - currency_code
+        - amount
+        - variant_id
+      properties:
+        currency_code:
+          type: string
+          title: currency_code
+          description: The price's currency code.
+        amount:
+          type: number
+          title: amount
+          description: The price's amount.
+        variant_id:
+          type: string
+          title: variant_id
+          description: The ID of the product variant this price is for.
+        min_quantity:
+          type: number
+          title: min_quantity
+          description: The minimum quantity required in the cart for this price to be applied.
+        max_quantity:
+          type: number
+          title: max_quantity
+          description: The maximum quantity in the cart that shouldn't be crossed for this price to be applied.
+        rules:
+          type: object
+          description: The price's rules.
+          example:
+            region_id: reg_123
+      x-schemaName: AdminCreatePriceListPrice
     AdminCreatePricePreference:
       type: object
       description: The price preference's details.
@@ -12459,36 +12872,6 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminCreateShipment:
-      type: object
-      description: The shipment's details.
-      x-schemaName: AdminCreateShipment
-      required:
-        - labels
-      properties:
-        labels:
-          type: array
-          description: The shipment's labels.
-          items:
-            type: object
-            description: A shipment label's details.
-            required:
-              - tracking_number
-              - tracking_url
-              - label_url
-            properties:
-              tracking_number:
-                type: string
-                title: tracking_number
-                description: The label's tracking number.
-              tracking_url:
-                type: string
-                title: tracking_url
-                description: The label's tracking URL.
-              label_url:
-                type: string
-                title: label_url
-                description: The label's URL.
     AdminCreateShippingOptionRule:
       type: object
       description: The details of the shipping option rule.
@@ -12597,8 +12980,8 @@ components:
       type: object
       description: The fulfillment set to create.
       required:
-        - type
         - name
+        - type
       properties:
         name:
           type: string
@@ -12769,8 +13152,8 @@ components:
       description: The details of the variant-inventory item association.
       x-schemaName: AdminCreateVariantInventoryItem
       required:
-        - inventory_item_id
         - required_quantity
+        - inventory_item_id
       properties:
         required_quantity:
           type: number
@@ -13814,6 +14197,33 @@ components:
           type: boolean
           title: deleted
           description: Whether the object was deleted.
+    AdminDismissItems:
+      type: object
+      description: The items details.
+      x-schemaName: AdminDismissItems
+      properties:
+        items:
+          type: array
+          description: The items details.
+          items:
+            type: object
+            description: An item's details.
+            required:
+              - id
+              - quantity
+            properties:
+              id:
+                type: string
+                title: id
+                description: The ID of the item in the order.
+              quantity:
+                type: number
+                title: quantity
+                description: The item's quantity.
+              internal_note:
+                type: string
+                title: internal_note
+                description: A note viewed only by admin users.
     AdminDraftOrder:
       type: object
       description: The draft order's details.
@@ -13823,13 +14233,13 @@ components:
         - items
         - shipping_methods
         - status
-        - currency_code
         - id
         - version
         - region_id
         - customer_id
         - sales_channel_id
         - email
+        - currency_code
         - payment_status
         - fulfillment_status
         - summary
@@ -14115,6 +14525,15 @@ components:
           title: estimate_count
           description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
           x-featureFlag: index_engine
+    AdminDraftOrderParams:
+      type: object
+      description: The parameters for retrieving draft orders.
+      x-schemaName: AdminDraftOrderParams
+      properties:
+        fields:
+          type: string
+          title: fields
+          description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
     AdminDraftOrderPreview:
       type: object
       description: The draft order preview's details.
@@ -14123,13 +14542,13 @@ components:
         - return_requested_total
         - order_change
         - status
-        - currency_code
         - id
         - version
         - region_id
         - customer_id
         - sales_channel_id
         - email
+        - currency_code
         - payment_collections
         - payment_status
         - fulfillment_status
@@ -14889,6 +15308,35 @@ components:
           type: boolean
           title: allow_backorder
           description: Whether variants that are out-of-stock can still be added as additional or outbound items.
+    AdminExchangeAddOutboundShipping:
+      type: object
+      description: The outbound shipping method's details.
+      x-schemaName: AdminExchangeAddOutboundShipping
+      required:
+        - shipping_option_id
+      properties:
+        shipping_option_id:
+          type: string
+          title: shipping_option_id
+          description: The ID of the associated shipping option.
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: Set a custom amount for the shipping method.
+        description:
+          type: string
+          title: description
+          description: The shipping method's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed by admin users only.
+        metadata:
+          type: object
+          description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminExchangeDeleteResponse:
       type: object
       description: The details of deleting an exchange.
@@ -14971,6 +15419,44 @@ components:
           $ref: '#/components/schemas/AdminOrderPreview'
         return:
           $ref: '#/components/schemas/AdminReturn'
+    AdminExchangeUpdateInboundShipping:
+      type: object
+      description: The details of the shipping method to update.
+      x-schemaName: AdminExchangeUpdateInboundShipping
+      properties:
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: The shipping method's custom amount.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed by admin users only.
+        metadata:
+          type: object
+          description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+    AdminExchangeUpdateOutboundShipping:
+      type: object
+      description: The details of the shipping method to update.
+      x-schemaName: AdminExchangeUpdateOutboundShipping
+      properties:
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: The shipping method's custom amount.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed by admin users only.
+        metadata:
+          type: object
+          description: The exchange's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminExportProductResponse:
       type: object
       description: The details of the product export.
@@ -15209,6 +15695,61 @@ components:
           format: date-time
           title: deleted_at
           description: The date the address was deleted.
+    AdminFulfillmentDeliveryAddress:
+      type: object
+      description: The address to deliver the items to.
+      properties:
+        first_name:
+          type: string
+          title: first_name
+          description: The customer's first name.
+        last_name:
+          type: string
+          title: last_name
+          description: The customer's last name.
+        phone:
+          type: string
+          title: phone
+          description: The customer's phone.
+        company:
+          type: string
+          title: company
+          description: The delivery address's company.
+        address_1:
+          type: string
+          title: address_1
+          description: The delivery address's first line.
+        address_2:
+          type: string
+          title: address_2
+          description: The delivery address's second line.
+        city:
+          type: string
+          title: city
+          description: The delivery address's city.
+        country_code:
+          type: string
+          title: country_code
+          description: The delivery address's country code.
+        province:
+          type: string
+          title: province
+          description: The delivery address's ISO 3166-2 province code. Must be lower-case.
+          example: us-ca
+          externalDocs:
+            url: https://en.wikipedia.org/wiki/ISO_3166-2
+            description: Learn more about ISO 3166-2
+        postal_code:
+          type: string
+          title: postal_code
+          description: The delivery address's postal code.
+        metadata:
+          type: object
+          description: The delivery address's metadata, used to store custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+      x-schemaName: AdminFulfillmentDeliveryAddress
     AdminFulfillmentItem:
       type: object
       description: The details of a fulfillment's item.
@@ -15759,6 +16300,83 @@ components:
           title: mime_type
           description: The file's mime type.
           example: text/csv
+    AdminIndexDetailsResponse:
+      type: object
+      description: The index's metadata details.
+      x-schemaName: AdminIndexDetailsResponse
+      required:
+        - metadata
+      properties:
+        metadata:
+          type: array
+          description: The index's metadata.
+          items:
+            $ref: '#/components/schemas/IndexInfo'
+    AdminIndexSyncPayload:
+      type: object
+      description: The details of the index sync.
+      x-schemaName: AdminIndexSyncPayload
+      required:
+        - strategy
+      properties:
+        strategy:
+          type: string
+          description: The syncing strategy. `full` indicates a full reindex, while `reset` truncates tables and performs a fresh sync.
+          enum:
+            - full
+            - reset
+    AdminInitiateReceiveReturn:
+      type: object
+      description: The return receival details.
+      x-schemaName: AdminInitiateReceiveReturn
+      properties:
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        description:
+          type: string
+          title: description
+          description: The return's description.
+        metadata:
+          type: object
+          description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+    AdminInitiateReturnRequest:
+      type: object
+      description: The return's details.
+      x-schemaName: AdminInitiateReturnRequest
+      required:
+        - order_id
+      properties:
+        order_id:
+          type: string
+          title: order_id
+          description: The ID of the order the return belongs to.
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location the items are returned to.
+        description:
+          type: string
+          title: description
+          description: The return's description.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        no_notification:
+          type: boolean
+          title: no_notification
+          description: Whether to send the customer a notification about the created return.
+        metadata:
+          type: object
+          description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminInventoryItem:
       type: object
       description: The inventory item's details.
@@ -15998,7 +16616,7 @@ components:
             title: remove
             description: The ID of a product.
       x-schemaName: AdminLinkPriceListProducts
-    AdminMarkPaymentCollectionPaid:
+    AdminMarkPaymentCollectionAsPaid:
       type: object
       description: The payment details.
       required:
@@ -16008,7 +16626,7 @@ components:
           type: string
           title: order_id
           description: The ID of the order associated with the payment collection.
-      x-schemaName: AdminMarkPaymentCollectionPaid
+      x-schemaName: AdminMarkPaymentCollectionAsPaid
     AdminNotification:
       type: object
       description: The notification's details.
@@ -16126,13 +16744,13 @@ components:
         - items
         - shipping_methods
         - status
-        - currency_code
         - id
         - version
         - region_id
         - customer_id
         - sales_channel_id
         - email
+        - currency_code
         - payment_status
         - fulfillment_status
         - summary
@@ -16483,7 +17101,6 @@ components:
         - created_at
         - updated_at
         - order_id
-        - canceled_at
         - return_id
         - exchange_id
         - claim_id
@@ -16495,6 +17112,7 @@ components:
         - declined_reason
         - declined_at
         - canceled_by
+        - canceled_at
       properties:
         id:
           type: string
@@ -17098,13 +17716,13 @@ components:
         - return_requested_total
         - order_change
         - status
-        - currency_code
         - id
         - version
         - region_id
         - customer_id
         - sales_channel_id
         - email
+        - currency_code
         - payment_collections
         - payment_status
         - fulfillment_status
@@ -18191,201 +18809,6 @@ components:
           type: boolean
           title: no_notification
           description: Whether to send the customer a notification about the return's cancelation.
-    AdminPostClaimItemsReqSchema:
-      type: object
-      description: The details of the order items to add to the claim.
-      x-schemaName: AdminPostClaimItemsReqSchema
-      properties:
-        items:
-          type: array
-          description: The item's details.
-          items:
-            type: object
-            description: An item's details.
-            required:
-              - id
-              - quantity
-            properties:
-              id:
-                type: string
-                title: id
-                description: The ID of the order's item.
-              quantity:
-                type: number
-                title: quantity
-                description: The quantity of the order's item to add to the claim.
-              reason:
-                type: string
-                description: The reason the item is claimed.
-                enum:
-                  - missing_item
-                  - wrong_item
-                  - production_failure
-                  - other
-              description:
-                type: string
-                title: description
-                description: The item's description.
-              internal_note:
-                type: string
-                title: internal_note
-                description: A note that's only viewed by admin users.
-    AdminPostClaimsAddItemsReqSchema:
-      type: object
-      description: The details of the outbound items to add to the claim.
-      x-schemaName: AdminPostClaimsAddItemsReqSchema
-      properties:
-        items:
-          type: array
-          description: The outbound item's details.
-          items:
-            type: object
-            description: An item's details.
-            required:
-              - variant_id
-              - quantity
-            properties:
-              variant_id:
-                type: string
-                title: variant_id
-                description: The ID of the associated product variant.
-              quantity:
-                type: number
-                title: quantity
-                description: The quantity to send to the customer.
-              unit_price:
-                type: number
-                title: unit_price
-                description: The item's unit price.
-              internal_note:
-                type: string
-                title: internal_note
-                description: A note viewed only by admin users.
-              metadata:
-                type: object
-                description: The item's metadata, can hold custom key-value pairs.
-                externalDocs:
-                  url: https://docs.medusajs.com/api/admin#manage-metadata
-                  description: Learn how to manage metadata
-    AdminPostClaimsItemsActionReqSchema:
-      type: object
-      description: The details to update in the item.
-      x-schemaName: AdminPostClaimsItemsActionReqSchema
-      properties:
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        reason_id:
-          type: string
-          title: reason_id
-          description: The ID of the return reason associated with the item.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note that's only viewed by admin users.
-    AdminPostClaimsShippingActionReqSchema:
-      type: object
-      description: The details to update in the shipping method.
-      x-schemaName: AdminPostClaimsShippingActionReqSchema
-      properties:
-        custom_amount:
-          type: number
-          title: custom_amount
-          description: The shipping method's custom amount.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note only viewed by admin users.
-        metadata:
-          type: object
-          description: The claim's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostClaimsShippingReqSchema:
-      type: object
-      description: The details of the shipping method used to ship outbound items.
-      x-schemaName: AdminPostClaimsShippingReqSchema
-      required:
-        - shipping_option_id
-      properties:
-        shipping_option_id:
-          type: string
-          title: shipping_option_id
-          description: The ID of the associated shipping option.
-        custom_amount:
-          type: number
-          title: custom_amount
-          description: Set a custom price for the shipping method.
-        description:
-          type: string
-          title: description
-          description: The shipping method's description.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note only viewed by admin users.
-        metadata:
-          type: object
-          description: The claim's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostExchangesAddItemsReqSchema:
-      type: object
-      description: The details of outbound items.
-      x-schemaName: AdminPostExchangesAddItemsReqSchema
-      properties:
-        items:
-          type: array
-          description: The details of outbound items.
-          items:
-            type: object
-            description: An item's details.
-            required:
-              - variant_id
-              - quantity
-            properties:
-              variant_id:
-                type: string
-                title: variant_id
-                description: The ID of the associated product variant.
-              quantity:
-                type: number
-                title: quantity
-                description: The item's quantity.
-              unit_price:
-                type: number
-                title: unit_price
-                description: The item's unit price.
-              internal_note:
-                type: string
-                title: internal_note
-                description: A note viewed only by admin users.
-              allow_backorder:
-                type: boolean
-                title: allow_backorder
-                description: Whether the item can be added even if it's not in stock.
-              metadata:
-                type: object
-                description: The item's metadata, can hold custom key-value pairs.
-                externalDocs:
-                  url: https://docs.medusajs.com/api/admin#manage-metadata
-                  description: Learn how to manage metadata
-    AdminPostExchangesItemsActionReqSchema:
-      type: object
-      description: The details to update in an outbound item.
-      x-schemaName: AdminPostExchangesItemsActionReqSchema
-      properties:
-        quantity:
-          type: number
-          title: quantity
-          description: The item's quantity.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note only viewed by admin users.
     AdminPostExchangesRequestItemsReturnActionReqSchema:
       type: object
       description: The details to update in an inbound (returned) item.
@@ -18406,135 +18829,6 @@ components:
         metadata:
           type: object
           description: The exchange's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostExchangesReturnRequestItemsReqSchema:
-      type: object
-      description: The details of the inbound (return) items.
-      x-schemaName: AdminPostExchangesReturnRequestItemsReqSchema
-      properties:
-        items:
-          type: array
-          description: The details of the inbound (return) items.
-          items:
-            type: object
-            description: An item's details.
-            required:
-              - id
-              - quantity
-            properties:
-              id:
-                type: string
-                title: id
-                description: The ID of the order's item.
-              quantity:
-                type: number
-                title: quantity
-                description: The item's quantity.
-              description:
-                type: string
-                title: description
-                description: The item's description.
-              internal_note:
-                type: string
-                title: internal_note
-                description: A note viewed only by admin users.
-              reason_id:
-                type: string
-                title: reason_id
-                description: The ID of the return reason to associate with the item.
-              metadata:
-                type: object
-                description: The item's metadata, can hold custom key-value pairs.
-                externalDocs:
-                  url: https://docs.medusajs.com/api/admin#manage-metadata
-                  description: Learn how to manage metadata
-        location_id:
-          type: string
-          title: location_id
-          description: The ID of the location to which outbound items are sent from.
-    AdminPostExchangesShippingActionReqSchema:
-      type: object
-      description: The details of the shipping method to update.
-      x-schemaName: AdminPostExchangesShippingActionReqSchema
-      properties:
-        custom_amount:
-          type: number
-          title: custom_amount
-          description: The shipping method's custom amount.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed by admin users only.
-        metadata:
-          type: object
-          description: The exchange's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostExchangesShippingReqSchema:
-      type: object
-      description: The outbound shipping method's details.
-      x-schemaName: AdminPostExchangesShippingReqSchema
-      required:
-        - shipping_option_id
-      properties:
-        shipping_option_id:
-          type: string
-          title: shipping_option_id
-          description: The ID of the associated shipping option.
-        custom_amount:
-          type: number
-          title: custom_amount
-          description: Set a custom amount for the shipping method.
-        description:
-          type: string
-          title: description
-          description: The shipping method's description.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed by admin users only.
-        metadata:
-          type: object
-          description: The exchange's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostOrderClaimsReqSchema:
-      type: object
-      description: The claim's details.
-      x-schemaName: AdminPostOrderClaimsReqSchema
-      required:
-        - type
-        - order_id
-      properties:
-        type:
-          type: string
-          description: The claim's type.
-          enum:
-            - refund
-            - replace
-        order_id:
-          type: string
-          title: order_id
-          description: The ID of the order the claim is created for.
-        description:
-          type: string
-          title: description
-          description: The claim's description.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed only by admin users.
-        reason_id:
-          type: string
-          title: reason_id
-          description: The ID of the associated return reason.
-        metadata:
-          type: object
-          description: The claim's metadata, can hold custom key-value pairs.
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
@@ -18700,59 +18994,6 @@ components:
           type: number
           title: compare_at_unit_price
           description: The original price of the item before a promotion or sale.
-    AdminPostOrderExchangesReqSchema:
-      type: object
-      description: The exchange's details.
-      x-schemaName: AdminPostOrderExchangesReqSchema
-      required:
-        - order_id
-      properties:
-        order_id:
-          type: string
-          title: order_id
-          description: The ID of the order this exchange is created for.
-        description:
-          type: string
-          title: description
-          description: The exchange's description.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed only by admin users.
-        metadata:
-          type: object
-          description: The exchange's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostReceiveReturnsReqSchema:
-      type: object
-      description: The return receival details.
-      x-schemaName: AdminPostReceiveReturnsReqSchema
-      properties:
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed only by admin users.
-        description:
-          type: string
-          title: description
-          description: The return's description.
-        metadata:
-          type: object
-          description: The return's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostReturnsConfirmRequestReqSchema:
-      type: object
-      description: The confirmation's details.
-      x-schemaName: AdminPostReturnsConfirmRequestReqSchema
-      properties:
-        no_notification:
-          type: boolean
-          title: no_notification
-          description: Whether to send the customer a notification about the confirmation.
     AdminPostReturnsDismissItemsActionReqSchema:
       type: object
       description: The details to update of the damaged item.
@@ -18779,70 +19020,6 @@ components:
           type: string
           title: internal_note
           description: A note viewed only by admin users.
-    AdminPostReturnsReceiveItemsReqSchema:
-      type: object
-      description: The items details.
-      x-schemaName: AdminPostReturnsReceiveItemsReqSchema
-      properties:
-        items:
-          type: array
-          description: The items details.
-          items:
-            type: object
-            description: An item's details.
-            required:
-              - id
-              - quantity
-            properties:
-              id:
-                type: string
-                title: id
-                description: The ID of the item in the order.
-              quantity:
-                type: number
-                title: quantity
-                description: The item's quantity.
-              description:
-                type: string
-                title: description
-                description: The item's description.
-              internal_note:
-                type: string
-                title: internal_note
-                description: A note viewed only by admin users.
-    AdminPostReturnsReqSchema:
-      type: object
-      description: The return's details.
-      x-schemaName: AdminPostReturnsReqSchema
-      required:
-        - order_id
-      properties:
-        order_id:
-          type: string
-          title: order_id
-          description: The ID of the order the return belongs to.
-        location_id:
-          type: string
-          title: location_id
-          description: The ID of the location the items are returned to.
-        description:
-          type: string
-          title: description
-          description: The return's description.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed only by admin users.
-        no_notification:
-          type: boolean
-          title: no_notification
-          description: Whether to send the customer a notification about the created return.
-        metadata:
-          type: object
-          description: The return's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
     AdminPostReturnsRequestItemsActionReqSchema:
       type: object
       description: The details to update in the item.
@@ -18907,44 +19084,6 @@ components:
                 externalDocs:
                   url: https://docs.medusajs.com/api/admin#manage-metadata
                   description: Learn how to manage metadata
-    AdminPostReturnsReturnReqSchema:
-      type: object
-      description: The return's details.
-      x-schemaName: AdminPostReturnsReturnReqSchema
-      properties:
-        location_id:
-          type: string
-          title: location_id
-          description: The ID of the location to return items to.
-        no_notification:
-          type: boolean
-          title: no_notification
-          description: Whether the customer should receive notifications about updates to the return.
-        metadata:
-          type: object
-          description: The return's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
-    AdminPostReturnsShippingActionReqSchema:
-      type: object
-      description: The shipping method's details.
-      x-schemaName: AdminPostReturnsShippingActionReqSchema
-      properties:
-        custom_amount:
-          type: number
-          title: custom_amount
-          description: Set a custom price for the shipping method.
-        internal_note:
-          type: string
-          title: internal_note
-          description: A note viewed only by admin users.
-        metadata:
-          type: object
-          description: The return's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/admin#manage-metadata
-            description: Learn how to manage metadata
     AdminPostReturnsShippingReqSchema:
       type: object
       description: The shipping method's details.
@@ -19411,13 +19550,13 @@ components:
         - length
         - title
         - status
-        - description
         - id
         - created_at
         - updated_at
         - subtitle
         - thumbnail
         - handle
+        - description
         - is_giftcard
         - width
         - weight
@@ -19780,6 +19919,13 @@ components:
           type: number
           title: rank
           description: The image's rank among sibling images.
+        product:
+          type: object
+        variants:
+          type: array
+          description: The variants associated with the image.
+          items:
+            type: object
       required:
         - id
         - url
@@ -20134,6 +20280,7 @@ components:
         - barcode
         - ean
         - upc
+        - thumbnail
         - allow_backorder
         - manage_inventory
         - hs_code
@@ -20264,6 +20411,15 @@ components:
           description: The variant's inventory items.
           items:
             $ref: '#/components/schemas/AdminProductVariantInventoryItemLink'
+        images:
+          type: array
+          description: The variant's images.
+          items:
+            $ref: '#/components/schemas/AdminProductImage'
+        thumbnail:
+          type: string
+          title: thumbnail
+          description: The variant's thumbnail.
     AdminProductVariantDeleteResponse:
       type: object
       description: The details of the product variant's deletion.
@@ -20601,6 +20757,37 @@ components:
             - cusgroup_123
           items:
             $ref: '#/components/schemas/BasePromotionRuleValue'
+    AdminReceiveItems:
+      type: object
+      description: The items details.
+      x-schemaName: AdminReceiveItems
+      properties:
+        items:
+          type: array
+          description: The items details.
+          items:
+            type: object
+            description: An item's details.
+            required:
+              - id
+              - quantity
+            properties:
+              id:
+                type: string
+                title: id
+                description: The ID of the item in the order.
+              quantity:
+                type: number
+                title: quantity
+                description: The item's quantity.
+              description:
+                type: string
+                title: description
+                description: The item's description.
+              internal_note:
+                type: string
+                title: internal_note
+                description: A note viewed only by admin users.
     AdminRedeemGiftCard:
       type: object
       description: The details of the gift card to redeem.
@@ -20651,6 +20838,23 @@ components:
           $ref: '#/components/schemas/BasePayment'
         refund_reason:
           $ref: '#/components/schemas/BaseRefundReason'
+    AdminRefundPayment:
+      type: object
+      description: The refund's details.
+      properties:
+        amount:
+          type: number
+          title: amount
+          description: The amount to refund.
+        refund_reason_id:
+          type: string
+          title: refund_reason_id
+          description: The ID of a refund reason.
+        note:
+          type: string
+          title: note
+          description: A note to attach to the refund.
+      x-schemaName: AdminRefundPayment
     AdminRefundReason:
       type: object
       description: The refund reason's details.
@@ -20721,9 +20925,9 @@ components:
       description: The region's details.
       x-schemaName: AdminRegion
       required:
-        - name
-        - currency_code
         - id
+        - currency_code
+        - name
       properties:
         id:
           type: string
@@ -20825,6 +21029,25 @@ components:
             type: string
             title: promo_codes
             description: A promotion code to remove from the draft order.
+    AdminRequestOrderTransfer:
+      type: object
+      description: The details of the request to transfer the order.
+      x-schemaName: AdminRequestOrderTransfer
+      required:
+        - customer_id
+      properties:
+        customer_id:
+          type: string
+          title: customer_id
+          description: The ID of the customer to transfer the order to.
+        description:
+          type: string
+          title: description
+          description: The description of the order transfer, which can be shown to the customer receiving the order transfer request.
+        internal_note:
+          type: string
+          title: internal_note
+          description: An internal note viewable only by admin users.
     AdminReservation:
       type: object
       description: The reservation's details.
@@ -22756,25 +22979,6 @@ components:
           title: estimate_count
           description: The store credit account's estimate count.
           x-featureFlag: index_engine
-    AdminTransferOrder:
-      type: object
-      description: The details of the request to transfer the order.
-      x-schemaName: AdminTransferOrder
-      required:
-        - customer_id
-      properties:
-        customer_id:
-          type: string
-          title: customer_id
-          description: The ID of the customer to transfer the order to.
-        description:
-          type: string
-          title: description
-          description: The description of the order transfer, which can be shown to the customer receiving the order transfer request.
-        internal_note:
-          type: string
-          title: internal_note
-          description: An internal note viewable only by admin users.
     AdminUpdateApiKey:
       type: object
       description: The details to update in an API key.
@@ -22786,6 +22990,40 @@ components:
           type: string
           title: title
           description: The API key's title.
+    AdminUpdateClaimItem:
+      type: object
+      description: The details to update in the item.
+      x-schemaName: AdminUpdateClaimItem
+      properties:
+        quantity:
+          type: number
+          title: quantity
+          description: The item's quantity.
+        reason_id:
+          type: string
+          title: reason_id
+          description: The ID of the return reason associated with the item.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note that's only viewed by admin users.
+    AdminUpdateClaimOutboundItem:
+      type: object
+      description: The details to update in the item.
+      x-schemaName: AdminUpdateClaimOutboundItem
+      properties:
+        quantity:
+          type: number
+          title: quantity
+          description: The item's quantity.
+        reason_id:
+          type: string
+          title: reason_id
+          description: The ID of the return reason associated with the item.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note that's only viewed by admin users.
     AdminUpdateCustomerGroup:
       type: object
       description: The details to update in a customer group.
@@ -22812,115 +23050,9 @@ components:
           description: The customer email associated with the draft order.
           format: email
         shipping_address:
-          type: object
-          description: The draft order's shipping address.
-          properties:
-            first_name:
-              type: string
-              title: first_name
-              description: The shipping address's first name.
-            last_name:
-              type: string
-              title: last_name
-              description: The shipping address's last name.
-            phone:
-              type: string
-              title: phone
-              description: The shipping address's phone.
-            company:
-              type: string
-              title: company
-              description: The shipping address's company.
-            address_1:
-              type: string
-              title: address_1
-              description: The first address line.
-            address_2:
-              type: string
-              title: address_2
-              description: The second address line.
-            city:
-              type: string
-              title: city
-              description: The shipping address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The shipping address's country code.
-              example: us
-            province:
-              type: string
-              title: province
-              description: The shipping address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
-            postal_code:
-              type: string
-              title: postal_code
-              description: The shipping address's postal code.
-            metadata:
-              type: object
-              description: The shipping address's metadata, can hold custom key-value pairs.
-              externalDocs:
-                url: https://docs.medusajs.com/api/admin#manage-metadata
-                description: Learn how to manage metadata
+          $ref: '#/components/schemas/OrderAddress'
         billing_address:
-          type: object
-          description: The draft order's billing address.
-          properties:
-            first_name:
-              type: string
-              title: first_name
-              description: The billing address's first name.
-            last_name:
-              type: string
-              title: last_name
-              description: The billing address's last name.
-            phone:
-              type: string
-              title: phone
-              description: The billing address's phone.
-            company:
-              type: string
-              title: company
-              description: The billing address's company.
-            address_1:
-              type: string
-              title: address_1
-              description: The first address line.
-            address_2:
-              type: string
-              title: address_2
-              description: The second address line.
-            city:
-              type: string
-              title: city
-              description: The billing address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The billing address's country code.
-              example: us
-            province:
-              type: string
-              title: province
-              description: The billing address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
-            postal_code:
-              type: string
-              title: postal_code
-              description: The billing address's postal code.
-            metadata:
-              type: object
-              description: The billing address's metadata, can hold custom key-value pairs.
-              externalDocs:
-                url: https://docs.medusajs.com/api/admin#manage-metadata
-                description: Learn how to manage metadata
+          $ref: '#/components/schemas/OrderAddress'
         metadata:
           type: object
           description: The draft order's metadata, can hold custom key-value pairs.
@@ -23004,7 +23136,20 @@ components:
           type: string
           title: internal_note
           description: A note viewed only by admin users about the shipping method.
-    AdminUpdateFulfillmentSetServiceZones:
+    AdminUpdateExchangeOutboundItem:
+      type: object
+      description: The details to update in an outbound item.
+      x-schemaName: AdminUpdateExchangeOutboundItem
+      properties:
+        quantity:
+          type: number
+          title: quantity
+          description: The item's quantity.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note only viewed by admin users.
+    AdminUpdateFulfillmentSetServiceZone:
       type: object
       description: The service zone's details.
       properties:
@@ -23162,7 +23307,7 @@ components:
                     type: string
                     title: id
                     description: The ID of an existing geo zone.
-      x-schemaName: AdminUpdateFulfillmentSetServiceZones
+      x-schemaName: AdminUpdateFulfillmentSetServiceZone
     AdminUpdateGiftCardParams:
       type: object
       description: The details to update in the gift card.
@@ -23264,7 +23409,7 @@ components:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
       x-schemaName: AdminUpdateInventoryItem
-    AdminUpdateInventoryLocationLevel:
+    AdminUpdateInventoryLevel:
       type: object
       description: The properties to update in the inventory level.
       properties:
@@ -23276,7 +23421,7 @@ components:
           type: number
           title: incoming_quantity
           description: The inventory level's incoming quantity.
-      x-schemaName: AdminUpdateInventoryLocationLevel
+      x-schemaName: AdminUpdateInventoryLevel
     AdminUpdateOrder:
       type: object
       description: The details to update in the order.
@@ -23288,138 +23433,15 @@ components:
           description: The order's email.
           format: email
         shipping_address:
-          type: object
-          description: The order's shipping address.
-          properties:
-            first_name:
-              type: string
-              title: first_name
-              description: The address's first name.
-            last_name:
-              type: string
-              title: last_name
-              description: The address's last name.
-            phone:
-              type: string
-              title: phone
-              description: The address's phone.
-            company:
-              type: string
-              title: company
-              description: The address's company.
-            address_1:
-              type: string
-              title: address_1
-              description: The address's first line.
-            address_2:
-              type: string
-              title: address_2
-              description: The address's second line.
-            city:
-              type: string
-              title: city
-              description: The address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The address's country code.
-              example: us
-            province:
-              type: string
-              title: province
-              description: The address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
-            postal_code:
-              type: string
-              title: postal_code
-              description: The address's postal code.
-            metadata:
-              type: object
-              description: The address's metadata, can hold custom key-value pairs.
-              externalDocs:
-                url: https://docs.medusajs.com/api/admin#manage-metadata
-                description: Learn how to manage metadata
+          $ref: '#/components/schemas/OrderAddress'
         billing_address:
-          type: object
-          description: The order's billing address.
-          properties:
-            first_name:
-              type: string
-              title: first_name
-              description: The address's first name.
-            last_name:
-              type: string
-              title: last_name
-              description: The address's last name.
-            phone:
-              type: string
-              title: phone
-              description: The address's phone.
-            company:
-              type: string
-              title: company
-              description: The address's company.
-            address_1:
-              type: string
-              title: address_1
-              description: The address's first line.
-            address_2:
-              type: string
-              title: address_2
-              description: The address's second line.
-            city:
-              type: string
-              title: city
-              description: The address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The address's country code.
-              example: us
-            province:
-              type: string
-              title: province
-              description: The address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
-            postal_code:
-              type: string
-              title: postal_code
-              description: The address's postal code.
-            metadata:
-              type: object
-              description: The address's metadata, can hold custom key-value pairs.
-              externalDocs:
-                url: https://docs.medusajs.com/api/admin#manage-metadata
-                description: Learn how to manage metadata
+          $ref: '#/components/schemas/OrderAddress'
         metadata:
           type: object
           description: The order's metadata, can hold custom key-value pairs.
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminUpdatePaymentRefundReason:
-      type: object
-      description: The properties to update in the refund reason.
-      properties:
-        label:
-          type: string
-          title: label
-          description: The refund reason's label.
-        description:
-          type: string
-          title: description
-          description: The refund reason's description.
-        code:
-          type: string
-          title: code
-          description: The refund reason's code.
-      x-schemaName: AdminUpdatePaymentRefundReason
     AdminUpdatePriceList:
       type: object
       description: the details to update in a price list.
@@ -23846,6 +23868,29 @@ components:
                 description: An attribute value.
                 example: prod_123
       x-schemaName: AdminUpdatePromotionRule
+    AdminUpdateRefundReason:
+      type: object
+      description: The properties to update in the refund reason.
+      properties:
+        label:
+          type: string
+          title: label
+          description: The refund reason's label.
+        description:
+          type: string
+          title: description
+          description: The refund reason's description.
+        code:
+          type: string
+          title: code
+          description: The refund reason's code.
+        metadata:
+          type: object
+          description: The refund reason's metadata.
+      x-schemaName: AdminUpdateRefundReason
+      required:
+        - label
+        - code
     AdminUpdateRegion:
       type: object
       description: The propeties to update in the region.
@@ -23910,6 +23955,29 @@ components:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
       x-schemaName: AdminUpdateReservation
+    AdminUpdateReturnItems:
+      type: object
+      description: The details to update in the item.
+      x-schemaName: AdminUpdateReturnItems
+      properties:
+        quantity:
+          type: number
+          title: quantity
+          description: The item's quantity.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        reason_id:
+          type: string
+          title: reason_id
+          description: The ID of the associated return reason.
+        metadata:
+          type: object
+          description: The claim's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateReturnReason:
       type: object
       description: The details to update in a return reason.
@@ -23936,6 +24004,44 @@ components:
       required:
         - value
         - label
+    AdminUpdateReturnRequest:
+      type: object
+      description: The return's details.
+      x-schemaName: AdminUpdateReturnRequest
+      properties:
+        location_id:
+          type: string
+          title: location_id
+          description: The ID of the location to return items to.
+        no_notification:
+          type: boolean
+          title: no_notification
+          description: Whether the customer should receive notifications about updates to the return.
+        metadata:
+          type: object
+          description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
+    AdminUpdateReturnShipping:
+      type: object
+      description: The shipping method's details.
+      x-schemaName: AdminUpdateReturnShipping
+      properties:
+        custom_amount:
+          type: number
+          title: custom_amount
+          description: Set a custom price for the shipping method.
+        internal_note:
+          type: string
+          title: internal_note
+          description: A note viewed only by admin users.
+        metadata:
+          type: object
+          description: The return's metadata, can hold custom key-value pairs.
+          externalDocs:
+            url: https://docs.medusajs.com/api/admin#manage-metadata
+            description: Learn how to manage metadata
     AdminUpdateSalesChannel:
       type: object
       description: The properties to update in the sales channel.
@@ -23959,6 +24065,216 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+    AdminUpdateShippingOption:
+      type: object
+      description: The properties to update in the shipping option type.
+      properties:
+        name:
+          type: string
+          title: name
+          description: The shipping option's name.
+        data:
+          type: object
+          description: The shipping option's data.
+        price_type:
+          type: string
+          description: The shipping option's price type.
+          enum:
+            - flat
+            - calculated
+        provider_id:
+          type: string
+          title: provider_id
+          description: The shipping option's provider id.
+        shipping_profile_id:
+          type: string
+          title: shipping_profile_id
+          description: The shipping option's shipping profile id.
+        type:
+          $ref: '#/components/schemas/AdminCreateShippingOptionType'
+        type_id:
+          type: string
+          title: type_id
+          description: The shipping option's type id.
+        prices:
+          type: array
+          description: The shipping option's prices.
+          items:
+            oneOf:
+              - type: object
+                description: The price's prices.
+                x-schemaName: AdminUpdateShippingOptionPriceWithCurrency
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The price's ID.
+                  currency_code:
+                    type: string
+                    title: currency_code
+                    description: The price's currency code.
+                  amount:
+                    type: number
+                    title: amount
+                    description: The price's amount.
+                  rules:
+                    type: array
+                    description: The price's rules.
+                    items:
+                      type: object
+                      description: The rule's rules.
+                      x-schemaName: PriceRule
+                      required:
+                        - attribute
+                        - operator
+                        - value
+                      properties:
+                        attribute:
+                          type: string
+                          title: attribute
+                          description: The rule's attribute.
+                        operator:
+                          type: string
+                          description: The rule's operator.
+                          enum:
+                            - gt
+                            - lt
+                            - eq
+                            - lte
+                            - gte
+                        value:
+                          type: number
+                          title: value
+                          description: The rule's value.
+              - type: object
+                description: The price's prices.
+                x-schemaName: AdminUpdateShippingOptionPriceWithRegion
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The price's ID.
+                  region_id:
+                    type: string
+                    title: region_id
+                    description: The price's region id.
+                  amount:
+                    type: number
+                    title: amount
+                    description: The price's amount.
+                  rules:
+                    type: array
+                    description: The price's rules.
+                    items:
+                      type: object
+                      description: The rule's rules.
+                      x-schemaName: PriceRule
+                      required:
+                        - attribute
+                        - operator
+                        - value
+                      properties:
+                        attribute:
+                          type: string
+                          title: attribute
+                          description: The rule's attribute.
+                        operator:
+                          type: string
+                          description: The rule's operator.
+                          enum:
+                            - gt
+                            - lt
+                            - eq
+                            - lte
+                            - gte
+                        value:
+                          type: number
+                          title: value
+                          description: The rule's value.
+        rules:
+          type: array
+          description: The shipping option's rules.
+          items:
+            oneOf:
+              - type: object
+                description: The rule's rules.
+                x-schemaName: AdminCreateShippingOptionRule
+                required:
+                  - operator
+                  - attribute
+                  - value
+                properties:
+                  operator:
+                    type: string
+                    description: The rule's operator.
+                    enum:
+                      - gt
+                      - lt
+                      - eq
+                      - ne
+                      - in
+                      - lte
+                      - gte
+                      - nin
+                  attribute:
+                    type: string
+                    title: attribute
+                    description: The rule's attribute.
+                  value:
+                    oneOf:
+                      - type: string
+                        title: value
+                        description: The rule's value.
+                      - type: array
+                        description: The rule's value.
+                        items:
+                          type: string
+                          title: value
+                          description: The value's details.
+              - type: object
+                description: The rule's rules.
+                x-schemaName: AdminUpdateShippingOptionRule
+                required:
+                  - id
+                  - operator
+                  - attribute
+                  - value
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The rule's ID.
+                  operator:
+                    type: string
+                    description: The rule's operator.
+                    enum:
+                      - gt
+                      - lt
+                      - eq
+                      - ne
+                      - in
+                      - lte
+                      - gte
+                      - nin
+                  attribute:
+                    type: string
+                    title: attribute
+                    description: The rule's attribute.
+                  value:
+                    oneOf:
+                      - type: string
+                        title: value
+                        description: The rule's value.
+                      - type: array
+                        description: The rule's value.
+                        items:
+                          type: string
+                          title: value
+                          description: The value's details.
+        metadata:
+          type: object
+          description: The shipping option's metadata.
+      x-schemaName: AdminUpdateShippingOption
     AdminUpdateShippingOptionRule:
       type: object
       description: The properties to update in the shipping option rule.
@@ -24049,49 +24365,7 @@ components:
           title: name
           description: The stock location's name.
         address:
-          type: object
-          description: The stock location's address. Pass this property if you're creating a new address to associate with the location.
-          required:
-            - address_1
-            - country_code
-          properties:
-            address_1:
-              type: string
-              title: address_1
-              description: The address's first line.
-            address_2:
-              type: string
-              title: address_2
-              description: The address's second line.
-            company:
-              type: string
-              title: company
-              description: The address's company.
-            city:
-              type: string
-              title: city
-              description: The address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The address's country code.
-              example: us
-            phone:
-              type: string
-              title: phone
-              description: The address's phone.
-            postal_code:
-              type: string
-              title: postal_code
-              description: The address's postal code.
-            province:
-              type: string
-              title: province
-              description: The address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
+          $ref: '#/components/schemas/AdminUpsertStockLocationAddress'
         address_id:
           type: string
           title: address_id
@@ -24115,24 +24389,7 @@ components:
           type: array
           description: The store's supported currencies.
           items:
-            type: object
-            description: A store currency.
-            required:
-              - currency_code
-            properties:
-              currency_code:
-                type: string
-                title: currency_code
-                description: The currency's code.
-                example: usd
-              is_default:
-                type: boolean
-                title: is_default
-                description: Whether the currency is the default in the store.
-              is_tax_inclusive:
-                type: boolean
-                title: is_tax_inclusive
-                description: Whether prices using this currency are tax inclusive.
+            $ref: '#/components/schemas/AdminUpdateStoreSupportedCurrency'
         default_sales_channel_id:
           type: string
           title: default_sales_channel_id
@@ -24151,6 +24408,26 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+    AdminUpdateStoreSupportedCurrency:
+      type: object
+      description: The details to update in a supported currency of the store.
+      required:
+        - currency_code
+      properties:
+        currency_code:
+          type: string
+          title: currency_code
+          description: The currency's code.
+          example: usd
+        is_default:
+          type: boolean
+          title: is_default
+          description: Whether the currency is the default in the store.
+        is_tax_inclusive:
+          type: boolean
+          title: is_tax_inclusive
+          description: Whether prices using this currency are tax inclusive.
+      x-schemaName: AdminUpdateStoreSupportedCurrency
     AdminUpdateTaxRate:
       type: object
       description: The properties to update in the tax rate.
@@ -24168,22 +24445,7 @@ components:
           type: array
           description: The tax rate's rules.
           items:
-            type: object
-            description: A tax rate rule.
-            required:
-              - reference
-              - reference_id
-            properties:
-              reference:
-                type: string
-                title: reference
-                description: The name of the table this rule references.
-                example: product_type
-              reference_id:
-                type: string
-                title: reference_id
-                description: The ID of the record in the table that the rule references.
-                example: ptyp_123
+            $ref: '#/components/schemas/AdminCreateTaxRateRule'
         name:
           type: string
           title: name
@@ -24204,6 +24466,8 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+      required:
+        - code
     AdminUpdateTaxRegion:
       type: object
       description: The details to update in a tax region.
@@ -27777,6 +28041,7 @@ components:
         - barcode
         - ean
         - upc
+        - thumbnail
         - allow_backorder
         - manage_inventory
         - hs_code
@@ -27898,6 +28163,10 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/store#manage-metadata
             description: Learn how to manage metadata
+        thumbnail:
+          type: string
+          title: thumbnail
+          description: The variant's thumbnail.
     BasePromotionRuleValue:
       type: object
       description: The rule value's details.
@@ -28769,6 +29038,50 @@ components:
             - unexpected_state
             - invalid_argument
             - unknown_error
+    IndexInfo:
+      type: object
+      description: The index's metadata information.
+      x-schemaName: IndexInfo
+      required:
+        - id
+        - entity
+        - status
+        - fields
+        - updated_at
+        - last_synced_key
+      properties:
+        id:
+          type: string
+          title: id
+          description: The index's ID.
+        entity:
+          type: string
+          title: entity
+          description: The index's entity.
+        status:
+          type: string
+          description: The index's syncing or ingesting status.
+          enum:
+            - pending
+            - error
+            - done
+            - processing
+        fields:
+          type: array
+          description: The index's fields.
+          items:
+            type: string
+            title: fields
+            description: The index's fields.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the index was last updated.
+        last_synced_key:
+          type: string
+          title: last_synced_key
+          description: The key of the last index sync.
     InventoryLevel:
       type: object
       description: The inventory level's details
@@ -30798,8 +31111,8 @@ components:
       x-schemaName: StoreCart
       required:
         - promotions
-        - currency_code
         - id
+        - currency_code
         - original_item_total
         - original_item_subtotal
         - original_item_tax_total
@@ -32412,10 +32725,10 @@ components:
       properties:
         customer:
           $ref: '#/components/schemas/StoreCustomer'
-    StoreDeclineOrderTransferRequest:
+    StoreDeclineOrderTransfer:
       type: object
       description: The details of declining the order transfer request.
-      x-schemaName: StoreDeclineOrderTransferRequest
+      x-schemaName: StoreDeclineOrderTransfer
       required:
         - token
       properties:
@@ -32536,12 +32849,12 @@ components:
         - items
         - shipping_methods
         - status
-        - currency_code
         - id
         - region_id
         - customer_id
         - sales_channel_id
         - email
+        - currency_code
         - payment_status
         - fulfillment_status
         - summary
@@ -39689,6 +40002,10 @@ components:
           description: The variant's rank among its siblings.
         calculated_price:
           $ref: '#/components/schemas/BaseCalculatedPriceSet'
+        thumbnail:
+          type: string
+          title: thumbnail
+          description: The variant's thumbnail.
       required:
         - options
         - length
@@ -39696,6 +40013,7 @@ components:
         - id
         - created_at
         - updated_at
+        - thumbnail
         - width
         - weight
         - height
@@ -39704,12 +40022,12 @@ components:
         - mid_code
         - material
         - deleted_at
-        - sku
-        - barcode
         - manage_inventory
         - allow_backorder
         - ean
         - upc
+        - barcode
+        - sku
     StoreRegion:
       type: object
       description: The region's details.

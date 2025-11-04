@@ -26,6 +26,28 @@
  *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: include_ancestors_tree
+ *     in: query
+ *     description: Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass
+ *       `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: include_ancestors_tree
+ *       description: Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass
+ *         `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`.
+ *   - name: include_descendants_tree
+ *     in: query
+ *     description: Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either
+ *       pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example,
+ *       `fields=category_children.id,category_children.name`.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: include_descendants_tree
+ *       description: Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either
+ *         pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example,
+ *         `fields=category_children.id,category_children.name`.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -34,23 +56,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The products to add or remove from the category.
- *         properties:
- *           add:
- *             type: array
- *             description: The products to add.
- *             items:
- *               type: string
- *               title: add
- *               description: A product ID.
- *           remove:
- *             type: array
- *             description: The product to remove.
- *             items:
- *               type: string
- *               title: remove
- *               description: A product ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

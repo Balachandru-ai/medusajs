@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework"
 import * as QueryConfig from "./query-config"
 import {
+  AdminDeleteClaimItemActionSchema,
   AdminGetOrdersOrderParams,
   AdminGetOrdersParams,
   AdminPostCancelClaimReqSchema,
@@ -77,7 +78,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/claims/:id/claim-items/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteClaimItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -110,7 +111,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/claims/:id/inbound/items/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteClaimItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -142,7 +143,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/claims/:id/inbound/shipping-method/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteClaimItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -175,7 +176,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/claims/:id/outbound/items/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteClaimItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -207,7 +208,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/claims/:id/outbound/shipping-method/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteClaimItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],

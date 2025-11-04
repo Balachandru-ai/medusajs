@@ -1,4 +1,4 @@
-import { MedusaAppLoader } from "@medusajs/framework"
+import { MedusaAppLoader, Migrator } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
 import {
   ContainerRegistrationKeys,
@@ -40,6 +40,10 @@ const main = async function ({ directory, modules }) {
      * Reverting migrations
      */
     logger.info("Reverting migrations...")
+
+    const migrator = new Migrator({ container })
+    await migrator.ensureMigrationsTable()
+
     await medusaAppLoader.runModulesMigrations({
       moduleNames: modules,
       action: "revert",
