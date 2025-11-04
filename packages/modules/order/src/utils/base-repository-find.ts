@@ -92,12 +92,15 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     config.where ??= {}
 
-    const result = await manager.find(this.entity, config.where, config.options) // Order here!
+    const result = await manager.find(this.entity, config.where, config.options)
 
     if (loadAdjustments) {
       const params = [] as any[]
-      const order = result.getItems() // spread order if related entity
-      const items = order.flatMap((r) => [...(r.items ?? [])])
+      const orders = !isRelatedEntity
+        ? [...result]
+        : [...result].map((r) => r.order).filter(Boolean) // spread order if related entity
+
+      const items = orders.flatMap((r) => [...(r.items ?? [])])
       const itemsIdMap = new Map<string, any>(
         items.map((i) => [i.item.id, i.item])
       )
