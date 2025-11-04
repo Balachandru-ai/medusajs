@@ -756,7 +756,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it.only("should complete cart when payment webhook and storefront are called in simultaneously", async () => {
+        it("should complete cart when payment webhook and storefront are called in simultaneously", async () => {
           const salesChannel = await scModuleService.createSalesChannels({
             name: "Webshop",
           })
