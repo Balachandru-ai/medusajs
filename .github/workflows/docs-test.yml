@@ -41,6 +41,8 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
           API_URL: "https://docs.medusajs.com"
+          POSTHOG_API_KEY: "temp"
+          POSTHOG_HOST: "https://eu.i.posthog.com"
         run: yarn build:docs
         
   vale-docs:
