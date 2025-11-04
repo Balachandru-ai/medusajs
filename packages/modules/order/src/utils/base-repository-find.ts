@@ -163,6 +163,22 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     const version = config.where.version ?? defaultVersion
     delete config.where.version
 
+    let loadAdjustments = false
+    if (config.options.populate.includes("items.item.adjustments")) {
+      loadAdjustments = true
+      config.options.populate.splice(
+        config.options.populate.indexOf("items.item.adjustments"),
+        1
+      )
+
+      // make sure version is loaded if adjustments are requested
+      if (config.options.fields?.includes("items.item.")) {
+        config.options.fields.push(
+          isRelatedEntity ? "order.items.item.version" : "items.item.version"
+        )
+      }
+    }
+
     configurePopulateWhere(
       config,
       isRelatedEntity,
@@ -175,7 +191,21 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
       config.options.orderBy = { id: "ASC" }
     }
 
-    return await manager.findAndCount(this.entity, config.where, config.options)
+    const [result, count] = await manager.findAndCount(
+      this.entity,
+      config.where,
+      config.options
+    )
+
+    if (loadAdjustments) {
+      const orders = !isRelatedEntity
+        ? [...result]
+        : [...result].map((r) => r.order).filter(Boolean)
+
+      await loadItemAdjustments(manager, orders)
+    }
+
+    return [result, count]
   }
 }
 
