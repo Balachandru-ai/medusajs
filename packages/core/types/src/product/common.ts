@@ -1674,9 +1674,9 @@ export interface UpdateProductDTO {
    */
   category_ids?: string[]
   /**
-   * The associated options to create or update.
+   * The product options to associate with the product.
    */
-  options?: UpsertProductOptionDTO[]
+  option_ids?: string[]
   /**
    * The product variants to be created and associated with the product.
    * You can also update existing product variants associated with the product.

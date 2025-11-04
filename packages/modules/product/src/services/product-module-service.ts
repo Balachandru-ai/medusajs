@@ -1980,7 +1980,16 @@ export default class ProductModuleService
 
     const productsWithOptions = await this.productService_.list(
       { id: productIds },
-      { relations: ["options", "options.values"] },
+      {
+        relations: [
+          "options",
+          "options.values",
+          "options.products",
+          "variants",
+          "images",
+          "tags",
+        ],
+      },
       sharedContext
     )
 
@@ -2007,27 +2016,89 @@ export default class ProductModuleService
         .registerSubscriber(new subscriber(sharedContext))
     }
 
-    const originalProducts = await this.productService_.list(
-      {
-        id: data.map((d) => d.id),
-      },
-      {
-        relations: [
-          "options",
-          "options.values",
-          "options.products",
-          "variants",
-          "images",
-          "tags",
-        ],
-      },
-      sharedContext
-    )
+    const allOptionIds = data
+      .flatMap((p) => p.option_ids ?? [])
+      .filter((id) => !!id)
 
-    const normalizedProducts = this.normalizeUpdateProductInput(
-      data,
-      originalProducts
-    )
+    const [originalProducts, existingOptions] = await Promise.all([
+      this.productService_.list(
+        { id: data.map((d) => d.id) },
+        {
+          relations: [
+            "options",
+            "options.values",
+            "options.products",
+            "variants",
+            "images",
+            "tags",
+          ],
+        },
+        sharedContext
+      ),
+      allOptionIds.length
+        ? this.productOptionService_.list(
+            { id: allOptionIds },
+            {
+              relations: ["values", "products"],
+            },
+            sharedContext
+          )
+        : Promise.resolve([]),
+    ])
+
+    if (allOptionIds.length && existingOptions.length !== allOptionIds.length) {
+      const found = new Set(existingOptions.map((opt) => opt.id))
+      const missing = allOptionIds.filter((id) => !found.has(id))
+      if (missing.length) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Some product options were not found: [${missing.join(", ")}]`
+        )
+      }
+    }
+
+    const linkPairs: ProductTypes.ProductOptionProductPair[] = []
+    const unlinkPairs: ProductTypes.ProductOptionProductPair[] = []
+
+    for (const product of data) {
+      const input = data.find((p) => p.id === product.id)!
+      const newOptionIds = new Set(input.option_ids ?? [])
+
+      const existingOptionIds = new Set(
+        originalProducts
+          .find((p) => p.id === product.id)
+          ?.options?.map((o) => o.id) ?? []
+      )
+
+      for (const optionId of newOptionIds) {
+        if (!existingOptionIds.has(optionId)) {
+          linkPairs.push({
+            product_id: product.id,
+            product_option_id: optionId,
+          })
+        }
+      }
+
+      for (const optionId of existingOptionIds) {
+        if (!newOptionIds.has(optionId)) {
+          unlinkPairs.push({
+            product_id: product.id,
+            product_option_id: optionId,
+          })
+        }
+      }
+
+      delete product.option_ids
+    }
+
+    await Promise.all([
+      linkPairs.length &&
+        this.addProductOptionToProduct_(linkPairs, sharedContext),
+      unlinkPairs.length &&
+        this.removeProductOptionFromProduct_(unlinkPairs, sharedContext),
+    ])
+
+    const normalizedProducts = this.normalizeUpdateProductInput(data)
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
@@ -2063,7 +2134,7 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {
-    // TODO: There is a missmatch in the API which lead to function with different number of
+    // TODO: There is a mismatch in the API which lead to function with different number of
     // arguments. Therefore, applying the MedusaContext() decorator to the function will not work
     // because the context arg index will differ from method to method.
     sharedContext.messageAggregator ??= new MessageAggregator()
@@ -2210,6 +2281,20 @@ export default class ProductModuleService
     ) as ProductTypes.CreateProductDTO[]
 
     for (const productData of normalizedProducts) {
+      if (productData.options?.length) {
+        ;(productData as any).options = productData.options?.map((option) => {
+          return {
+            title: (option as any).title,
+            values: (option as any).values?.map((value) => {
+              return {
+                value: value,
+              }
+            }),
+            ...((option as any).id ? { id: (option as any).id } : {}),
+          }
+        })
+      }
+
       if (!productData.handle && productData.title) {
         productData.handle = toHandle(productData.title)
       }
@@ -2265,25 +2350,8 @@ export default class ProductModuleService
     TOutput = T extends UpdateProductInput[]
       ? UpdateProductInput[]
       : UpdateProductInput
-  >(
-    products: T,
-    originalProducts?: InferEntityType<typeof Product>[]
-  ): TOutput {
+  >(products: T): TOutput {
     const products_ = Array.isArray(products) ? products : [products]
-    const productsIds = products_.map((p) => p.id).filter(Boolean)
-
-    let dbOptions: InferEntityType<typeof ProductOption>[] = []
-
-    if (productsIds.length) {
-      // Re map options to handle non serialized data as well
-      dbOptions =
-        originalProducts
-          ?.map((originalProduct) =>
-            originalProduct.options.map((option) => option)
-          )
-          .flat()
-          .filter(Boolean) ?? []
-    }
 
     const normalizedProducts: UpdateProductInput[] = []
 
@@ -2291,28 +2359,6 @@ export default class ProductModuleService
       const productData = { ...product }
       if (productData.is_giftcard) {
         productData.discountable = false
-      }
-
-      if (productData.options?.length) {
-        ;(productData as any).options = productData.options?.map((option) => {
-          const dbOption = dbOptions.find(
-            (o) => o.title === option.title || o.id === option.id
-          )
-          return {
-            title: option.title,
-            values: option.values?.map((value) => {
-              const dbValue = dbOption?.values?.find(
-                (val) => val.value === value
-              )
-              return {
-                value: value,
-                ...(dbValue ? { id: dbValue.id } : {}),
-              }
-            }),
-            ...(option.id ? { id: option.id } : {}),
-            ...(dbOption ? { id: dbOption.id } : {}),
-          }
-        })
       }
 
       if (productData.tag_ids) {

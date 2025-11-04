@@ -5,11 +5,11 @@ import {
   arrayDifference,
   buildQuery,
   DALUtils,
-  MedusaError,
-  isPresent,
-  mergeMetadata,
-  isDefined,
   deepCopy,
+  isDefined,
+  isPresent,
+  MedusaError,
+  mergeMetadata,
 } from "@medusajs/framework/utils"
 import {
   SqlEntityManager,
