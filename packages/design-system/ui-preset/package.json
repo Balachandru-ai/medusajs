@@ -19,7 +19,7 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "tsup",
+    "build": "yarn run -T tsup",
     "generate": "toolbox tokens -o './src/theme'"
   },
   "dependencies": {
@@ -31,9 +31,7 @@
   },
   "devDependencies": {
     "@medusajs/toolbox": "2.11.2",
-    "tailwindcss": "^3.4.3",
-    "tsup": "^8.4.0",
-    "typescript": "^5.6.2"
+    "tailwindcss": "^3.4.3"
   },
   "publishConfig": {
     "access": "public"

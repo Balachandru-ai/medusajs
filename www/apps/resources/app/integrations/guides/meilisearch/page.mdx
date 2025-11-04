@@ -403,13 +403,27 @@ If you get a type error on resolving the Meilisearch Module, run the Medusa appl
 </Note>
 
 ```ts title="src/workflows/steps/sync-products.ts"
-import { ProductDTO } from "@medusajs/framework/types"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { MEILISEARCH_MODULE } from "../../modules/meilisearch"
 import MeilisearchModuleService from "../../modules/meilisearch/service"
 
 export type SyncProductsStepInput = {
-  products: ProductDTO[]
+  products: {
+    id: string
+    title: string
+    description?: string
+    handle: string
+    thumbnail?: string
+    categories: {
+      id: string
+      name: string
+      handle: string
+    }[]
+    tags: {
+      id: string
+      value: string
+    }[]
+  }[]
 }
 
 export const syncProductsStep = createStep(
@@ -547,6 +561,7 @@ export const syncProductsWorkflow = createWorkflow(
       products: data,
     } as SyncProductsStepInput)
 
+    // @ts-ignore
     return new WorkflowResponse({
       products: data,
       metadata,
