@@ -11710,6 +11710,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Product Rentals",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Implement Product Reviews",
               "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews",
               "children": []

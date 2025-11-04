@@ -615,6 +615,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "title": "Product Rentals",
+          "path": "/how-to-tutorials/tutorials/product-rentals",
+          "description": "Learn how to implement product rentals in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "title": "Product Reviews",
           "path": "/how-to-tutorials/tutorials/product-reviews",
           "description": "Learn how to implement product reviews in your Medusa store.",

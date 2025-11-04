@@ -24,6 +24,10 @@ export const nextjs = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder"
   },
   {
+    "title": "Implement Product Rentals",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals"
+  },
+  {
     "title": "Saved Payment Methods",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods"
   },

@@ -90,12 +90,9 @@ export const Feedback = ({
     : showForm
       ? inlineQuestionRef
       : inlineFeedbackRef
-  const { loaded, track } = useAnalytics()
+  const { track } = useAnalytics()
 
   function handleFeedback(feedback: boolean) {
-    if (!loaded) {
-      return
-    }
     setPositiveFeedback(feedback)
     setShowForm(true)
     submitFeedback(feedback)
