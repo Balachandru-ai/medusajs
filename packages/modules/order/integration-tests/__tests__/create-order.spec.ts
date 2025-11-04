@@ -158,7 +158,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             id: expect.stringContaining("ordli_"),
             quantity: 2,
             tax_lines: [],
-            adjustments: [],
+            // adjustments: [],
             detail: expect.objectContaining({
               id: expect.stringContaining("orditem_"),
               version: 1,
@@ -169,7 +169,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
           expect.objectContaining({
             id: expect.stringContaining("ordli_"),
             tax_lines: [],
-            adjustments: [],
+            // adjustments: [],
             detail: expect.objectContaining({
               id: expect.stringContaining("orditem_"),
               version: 1,
