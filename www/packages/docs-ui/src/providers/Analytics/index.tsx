@@ -7,20 +7,16 @@ import React, {
   useEffect,
   useState,
 } from "react"
-import { Analytics, AnalyticsBrowser } from "@segment/analytics-next"
-import posthog from "posthog-js"
-
-// @ts-expect-error Doesn't have a types package
-import { loadReoScript } from "reodotdev"
+import { useSegmentAnalytics } from "./providers/segment"
+import { usePostHogAnalytics } from "./providers/posthog"
+import { useReoDevAnalytics } from "./providers/reo-dev"
 
 export type ExtraData = {
   section?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export type AnalyticsContextType = {
-  loaded: boolean
-  analytics: Analytics | null
   track: ({
     event,
     instant,
@@ -34,7 +30,7 @@ type Trackers = "segment" | "posthog"
 
 export type TrackedEvent = {
   event: string
-  options?: Record<string, any>
+  options?: Record<string, unknown>
   callback?: () => void
   tracker?: Trackers | Trackers[]
 }
@@ -47,73 +43,18 @@ export type AnalyticsProviderProps = {
   children?: React.ReactNode
 }
 
-const LOCAL_STORAGE_KEY = "ajs_anonymous_id"
-
 export const AnalyticsProvider = ({
-  segmentWriteKey = "temp",
+  segmentWriteKey,
   reoDevKey,
   children,
 }: AnalyticsProviderProps) => {
-  // loaded is used to ensure that a connection has been made to segment
-  // even if it failed. This is to ensure that the connection isn't
-  // continuously retried
-  const [loaded, setLoaded] = useState<boolean>(false)
-  const [analytics, setAnalytics] = useState<Analytics | null>(null)
-  const analyticsBrowser = new AnalyticsBrowser()
-  const [queue, setQueue] = useState<TrackedEvent[]>([])
-
-  const initSegment = useCallback(() => {
-    if (!loaded) {
-      analyticsBrowser
-        .load(
-          { writeKey: segmentWriteKey },
-          {
-            initialPageview: true,
-            user: {
-              localStorage: {
-                key: LOCAL_STORAGE_KEY,
-              },
-            },
-          }
-        )
-        .then((instance) => {
-          setAnalytics(instance[0])
-        })
-        .catch((e) =>
-          console.error(`Could not connect to Segment. Error: ${e}`)
-        )
-        .finally(() => setLoaded(true))
-    }
-  }, [loaded, segmentWriteKey])
-
-  const trackWithSegment = useCallback(
-    async ({ event, options }: TrackedEvent) => {
-      if (analytics) {
-        void analytics.track(event, {
-          ...options,
-          uuid: analytics.user().anonymousId(),
-        })
-      } else {
-        // push the event into the queue
-        setQueue((prevQueue) => [
-          ...prevQueue,
-          {
-            event,
-            options,
-            tracker: "segment",
-          },
-        ])
-        console.warn(
-          "Segment is either not installed or not configured. Simulating success..."
-        )
-      }
-    },
-    [analytics, loaded]
-  )
-
-  const trackWithPostHog = async ({ event, options }: TrackedEvent) => {
-    posthog.capture(event, options)
-  }
+  const [eventsQueue, setEventsQueue] = useState<TrackedEvent[]>([])
+  const { track: trackWithSegment } = useSegmentAnalytics({
+    segmentWriteKey,
+    setEventsQueue,
+  })
+  const { track: trackWithPostHog } = usePostHogAnalytics()
+  useReoDevAnalytics({ reoDevKey })
 
   const processEvent = useCallback(
     async (event: TrackedEvent) => {
@@ -137,7 +78,7 @@ export const AnalyticsProvider = ({
 
   const track = ({ event }: { event: TrackedEvent }) => {
     // Always queue events - this makes tracking non-blocking
-    setQueue((prevQueue) => [...prevQueue, event])
+    setEventsQueue((prevQueue) => [...prevQueue, event])
 
     // Process event callback immediately
     // This ensures that the callback is called even if the event is queued
@@ -145,14 +86,10 @@ export const AnalyticsProvider = ({
   }
 
   useEffect(() => {
-    initSegment()
-  }, [initSegment])
-
-  useEffect(() => {
-    if (analytics && queue.length) {
+    if (eventsQueue.length) {
       // Process queue in background without blocking
-      const currentQueue = [...queue]
-      setQueue([])
+      const currentQueue = [...eventsQueue]
+      setEventsQueue([])
 
       // Process events asynchronously in batches to avoid overwhelming the system
       const batchSize = 5
@@ -163,32 +100,12 @@ export const AnalyticsProvider = ({
         }, i * 10) // Small delay between batches
       }
     }
-  }, [analytics, queue, trackWithSegment, trackWithPostHog, processEvent])
-
-  useEffect(() => {
-    if (!reoDevKey) {
-      return
-    }
-
-    loadReoScript({
-      clientID: reoDevKey,
-    })
-      .then((Reo: unknown) => {
-        ;(Reo as { init: (config: { clientID: string }) => void }).init({
-          clientID: reoDevKey,
-        })
-      })
-      .catch((e: Error) => {
-        console.error(`Could not connect to Reodotdev. Error: ${e}`)
-      })
-  }, [reoDevKey])
+  }, [eventsQueue, processEvent])
 
   return (
     <AnalyticsContext.Provider
       value={{
-        analytics,
         track,
-        loaded,
       }}
     >
       {children}
