@@ -112,15 +112,15 @@ medusaIntegrationTestRunner({
   testSuite: ({ getContainer, dbConnection, api, dbConfig }) => {
     let appContainer
 
-    beforeAll(() => {
-      appContainer = getContainer()
-    })
-
-    afterAll(() => {
-      process.env.ENABLE_INDEX_MODULE = "false"
-    })
-
     describe("Index engine - Query.index", () => {
+      beforeAll(() => {
+        appContainer = getContainer()
+      })
+
+      afterAll(() => {
+        process.env.ENABLE_INDEX_MODULE = "false"
+      })
+
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
       })
@@ -633,6 +633,26 @@ medusaIntegrationTestRunner({
             }
           ),
         ])
+
+        const allData = await dbConnection.raw(`SELECT * FROM index_data`)
+        const allCatData = await promiseAll([
+          dbConnection.raw(`SELECT * FROM cat_product`),
+          dbConnection.raw(`SELECT * FROM cat_productvariant`),
+          dbConnection.raw(`SELECT * FROM cat_price`),
+          dbConnection.raw(`SELECT * FROM cat_brand`),
+          dbConnection.raw(`SELECT * FROM cat_linkproductproductbrandbrand`),
+        ])
+        console.log(`
+          all data
+          ----
+
+        ${JSON.stringify(allData.rows)}
+
+          all cat data
+          ----
+
+          ${JSON.stringify(allCatData)}
+        `)
 
         const resultset = await fetchAndRetry(
           async () =>
