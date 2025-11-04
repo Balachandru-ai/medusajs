@@ -134,7 +134,7 @@ medusaIntegrationTestRunner({
           name: "Medusa Brand",
         })
 
-        await link.create({
+        const createdLink = await link.create({
           [Modules.PRODUCT]: {
             product_id: products.find((p) => p.title === "Extra product").id,
           },
@@ -166,6 +166,9 @@ medusaIntegrationTestRunner({
             )
           ),
           waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+          waitForIndexedEntities(dbConnection, "ProductBrand", [
+            createdLink.id,
+          ]),
         ])
 
         const resultset = await fetchAndRetry(
@@ -584,7 +587,7 @@ medusaIntegrationTestRunner({
           name: "Medusa Brand",
         })
 
-        await link.create({
+        const createdLink = await link.create({
           [Modules.PRODUCT]: {
             product_id: products.find((p) => p.title === "Extra product").id,
           },
@@ -616,6 +619,9 @@ medusaIntegrationTestRunner({
             )
           ),
           waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+          waitForIndexedEntities(dbConnection, "ProductBrand", [
+            createdLink.id,
+          ]),
         ])
 
         const resultset = await fetchAndRetry(
