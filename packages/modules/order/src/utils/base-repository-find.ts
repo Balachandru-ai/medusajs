@@ -1,7 +1,8 @@
 import { Constructor, Context, DAL } from "@medusajs/framework/types"
-import { groupBy, toMikroORMEntity } from "@medusajs/framework/utils"
+import { toMikroORMEntity } from "@medusajs/framework/utils"
 import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
 import { Order, OrderClaim, OrderLineItemAdjustment } from "@models"
+
 import { mapRepositoryToOrderModel } from "."
 
 export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
@@ -91,32 +92,37 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     config.where ??= {}
 
-    const result = await manager.find(this.entity, config.where, config.options)
+    const result = await manager.find(this.entity, config.where, config.options) // Order here!
 
     if (loadAdjustments) {
-      // todo: would be safer to always load adjustments?
-
       const params = [] as any[]
-      result.map((r) => {
-        return r.items.map((i) =>
-          params.push({
-            item_id: i.item.id,
-            version: i.version,
-          })
-        )
-      })
+      const order = result.getItems() // spread order if related entity
+      const items = order.flatMap((r) => [...(r.items ?? [])])
+      const itemsIdMap = new Map<string, any>(
+        items.map((i) => [i.item.id, i.item])
+      )
+
+      // TODO: throw if there is no i.version since it could lead to wrong computation
+      items.forEach((i) =>
+        params.push({
+          item_id: i.item.id,
+          version: i.version, // push this into fields if "items.item." exists in fields
+        })
+      )
 
       const adjustments = await manager.find(OrderLineItemAdjustment, {
         $or: params,
       })
 
-      const adjustmentsByItemId = groupBy(adjustments, "item_id")
-
-      result.forEach((r) => {
-        r.items.map((i) => {
-          i.item.adjustments = adjustmentsByItemId[i.item.id] ?? []
-        })
-      })
+      for (const adjustment of adjustments) {
+        const item = itemsIdMap.get(adjustment.item_id)
+        if (item) {
+          if (!item.adjustments.isInitialized()) {
+            item.adjustments.initialized = true
+          }
+          item.adjustments.add(adjustment)
+        }
+      }
     }
 
     return result
