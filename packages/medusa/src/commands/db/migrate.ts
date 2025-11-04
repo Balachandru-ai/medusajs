@@ -1,4 +1,4 @@
-import { MEDUSA_CLI_PATH, MedusaAppLoader } from "@medusajs/framework"
+import { MEDUSA_CLI_PATH, MedusaAppLoader, Migrator } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
 import {
   ContainerRegistrationKeys,
@@ -60,6 +60,10 @@ export async function migrate({
    * Run migrations
    */
   logger.info("Running migrations...")
+
+  const migrator = new Migrator({ container })
+  await migrator.ensureMigrationsTable()
+
   await medusaAppLoader.runModulesMigrations({
     action: "run",
   })

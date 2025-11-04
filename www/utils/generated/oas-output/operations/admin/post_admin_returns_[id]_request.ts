@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsConfirmRequestReqSchema"
+ *         $ref: "#/components/schemas/AdminConfirmReturnRequest"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

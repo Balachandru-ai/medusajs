@@ -10,6 +10,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
+import { validateCartStep } from "../steps"
 import { upsertTaxLinesForItemsStep } from "../steps/upsert-tax-lines-for-items"
 
 const cartFields = [
@@ -140,6 +141,8 @@ export const upsertTaxLinesWorkflow = createWorkflow(
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
       return input.cart ?? fetchCart
     })
+
+    validateCartStep({ cart })
 
     const taxLineItems = getItemTaxLinesStep(
       transform({ input, cart }, (data) => ({

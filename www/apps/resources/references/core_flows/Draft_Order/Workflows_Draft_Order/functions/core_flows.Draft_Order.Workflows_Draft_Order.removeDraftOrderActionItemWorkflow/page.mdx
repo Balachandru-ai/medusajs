@@ -3,6 +3,7 @@ slug: /references/medusa-workflows/removeDraftOrderActionItemWorkflow
 sidebar_label: removeDraftOrderActionItemWorkflow
 sidebar_description: Remove an item from a draft order edit.
 tags:
+  - locking
   - order
   - workflow
 ---
@@ -19,7 +20,7 @@ This workflow removes an item that was added or updated in a draft order edit. I
 You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
 removing an item from a draft order edit.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/draft-order/workflows/remove-draft-order-action-item.ts#L48" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/draft-order/workflows/remove-draft-order-action-item.ts#L49" />
 
 ## Examples
 
@@ -132,7 +133,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"removeDraftOrderActionItemWorkflow","steps":[{"type":"step","name":"deleteOrderChangeActionsStep","description":"This step deletes order change actions.","link":"../../../../Order/Steps_Order/functions/core_flows.Order.Steps_Order.deleteOrderChangeActionsStep/page.mdx","depth":1},{"type":"step","name":"previewOrderChangeStep","description":"This step retrieves a preview of an order change.","link":"../../../../Order/Steps_Order/functions/core_flows.Order.Steps_Order.previewOrderChangeStep/page.mdx","depth":3}]}} />
+<WorkflowDiagram workflow={{"name":"removeDraftOrderActionItemWorkflow","steps":[{"type":"step","name":"acquireLockStep","description":"This step acquires a lock for a given key. Learn more about locks in the [Locking Module](https://docs.medusajs.com/resources/infrastructure-modules/locking)\nguide.","link":"../../../../Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.acquireLockStep/page.mdx","depth":1},{"type":"step","name":"deleteOrderChangeActionsStep","description":"This step deletes order change actions.","link":"../../../../Order/Steps_Order/functions/core_flows.Order.Steps_Order.deleteOrderChangeActionsStep/page.mdx","depth":2},{"type":"step","name":"releaseLockStep","description":"This step releases a lock for a given key. Learn more about locks in the [Locking Module](https://docs.medusajs.com/resources/infrastructure-modules/locking)\nguide.","link":"../../../../Locking/Steps_Locking/functions/core_flows.Locking.Steps_Locking.releaseLockStep/page.mdx","depth":4},{"type":"step","name":"previewOrderChangeStep","description":"This step retrieves a preview of an order change.","link":"../../../../Order/Steps_Order/functions/core_flows.Order.Steps_Order.previewOrderChangeStep/page.mdx","depth":5}]}} />
 
 ## Input
 

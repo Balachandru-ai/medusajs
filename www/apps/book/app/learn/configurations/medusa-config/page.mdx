@@ -337,6 +337,69 @@ module.exports = defineConfig({
 
 The `http` configures the application's http-specific settings, such as the JWT secret, CORS configurations, and more.
 
+#### http.jwtOptions
+
+The `projectConfig.http.jwtOptions` configuration specifies options for the JWT token when using asymmetric signing private/public key. These options will be used for validation if `jwtVerifyOptions` is not provided.
+
+This configuration accepts an object with the same properties as the [jsonwebtoken sign options](https://www.npmjs.com/package/jsonwebtoken#jwtsignpayload-secretorprivatekey-options-callback).
+
+<Note>
+
+Learn more in the [Asymmetric Encryption chapter](./asymmetric-encryption/page.mdx).
+
+</Note>
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    http: {
+      jwtOptions: {
+        algorithm: "RS256",
+        expiresIn: "1h",
+        issuer: "medusa",
+        keyid: "medusa",
+      },
+    },
+    // ...
+  },
+  // ...
+})
+```
+
+#### http.jwtPublicKey
+
+The `projectConfig.http.jwtPublicKey` configuration specifies the public key used to verify the JWT token in combination with the JWT secret and the JWT options. This is only used when the JWT secret is a secret key for asymmetric validation.
+
+It accepts one of the following values:
+
+- A string containing the public key in PEM format.
+- A `Buffer` containing the public key in PEM format.
+- An object containing the following properties:
+  - `key`: A string or `Buffer` containing the public key in PEM format.
+  - `passphrase`: A string containing the passphrase for the public key, if applicable.
+
+<Note>
+
+Learn more in the [Asymmetric Encryption chapter](./asymmetric-encryption/page.mdx).
+
+</Note>
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    http: {
+      jwtPublicKey: process.env.JWT_PUBLIC_KEY,
+    },
+    // ...
+  },
+  // ...
+})
+```
+
 #### http.jwtSecret
 
 The `projectConfig.http.jwtSecret` configuration is a random string used to create authentication tokens in the HTTP layer. This configuration is not required in development, but must be set in production.
@@ -350,6 +413,35 @@ module.exports = defineConfig({
   projectConfig: {
     http: {
       jwtSecret: process.env.JWT_SECRET || "supersecret",
+    },
+    // ...
+  },
+  // ...
+})
+```
+
+#### http.jwtVerifyOptions
+
+The `projectConfig.http.jwtVerifyOptions` configuration specifies options for the JWT token when using asymmetric validation private/public key.
+
+This configuration accepts the same options as the [jsonwebtoken verify options](https://www.npmjs.com/package/jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback).
+
+<Note>
+
+Learn more in the [Asymmetric Encryption chapter](./asymmetric-encryption/page.mdx).
+
+</Note>
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    http: {
+      jwtVerifyOptions: {
+        algorithms: ["RS256"],
+        issuer: "medusa",
+      },
     },
     // ...
   },
@@ -944,8 +1036,9 @@ For example, if you're using a third-party library that isn't ESM-compatible, ad
 ```ts title="medusa-config.ts"
 module.exports = defineConfig({
   admin: {
-    vite: () => {
+    vite: (config) => {
       return {
+        ...config,
         optimizeDeps: {
           include: ["qs"],
         },

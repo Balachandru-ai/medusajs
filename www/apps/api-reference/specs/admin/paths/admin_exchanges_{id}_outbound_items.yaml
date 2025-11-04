@@ -38,7 +38,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminPostExchangesAddItemsReqSchema.yaml
+          $ref: ../components/schemas/AdminAddExchangeOutboundItems.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

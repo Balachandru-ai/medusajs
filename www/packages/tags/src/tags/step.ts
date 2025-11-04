@@ -80,10 +80,6 @@ export const step = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getPromotionCodesToApply"
   },
   {
-    "title": "getVariantPriceSetsStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getVariantPriceSetsStep"
-  },
-  {
     "title": "prepareAdjustmentsFromPromotionActionsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/prepareAdjustmentsFromPromotionActionsStep"
   },
@@ -892,8 +888,8 @@ export const step = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/validatePaymentsRefundStep"
   },
   {
-    "title": "validateRefundStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/validateRefundStep"
+    "title": "validateRefundPaymentExceedsCapturedAmountStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/validateRefundPaymentExceedsCapturedAmountStep"
   },
   {
     "title": "createPaymentAccountHolderStep",
@@ -984,6 +980,14 @@ export const step = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updatePriceSetsStep"
   },
   {
+    "title": "addImageToVariantsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/addImageToVariantsStep"
+  },
+  {
+    "title": "addImagesToVariantStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/addImagesToVariantStep"
+  },
+  {
     "title": "batchLinkProductsToCategoryStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/batchLinkProductsToCategoryStep"
   },
@@ -1066,6 +1070,14 @@ export const step = [
   {
     "title": "processImportChunksStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/processImportChunksStep"
+  },
+  {
+    "title": "removeImageFromVariantsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/removeImageFromVariantsStep"
+  },
+  {
+    "title": "removeImagesFromVariantStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/removeImagesFromVariantStep"
   },
   {
     "title": "updateCollectionsStep",

@@ -51,23 +51,8 @@ export const EditProductVariantMediaForm = ({
     (image) => !image.variants?.some((variant) => variant.id === variant.id)
   )
 
-  const [variantImages, setVariantImages] = useState<Record<string, true>>(() =>
-    allVariantImages.reduce(
-      // @eslint-disable-next-line
-      (acc: Record<string, true>, image) => {
-        acc[image.id] = true
-        return acc
-      },
-      {}
-    )
-  )
-
   const [selection, setSelection] = useState<Record<string, true>>({})
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-
-  const availableImages = unassociatedImages.filter(
-    (image) => !variantImages[image.id!]
-  )
 
   const form = useForm<MediaSchemaType>({
     defaultValues: {
@@ -76,6 +61,11 @@ export const EditProductVariantMediaForm = ({
     },
     resolver: zodResolver(MediaSchema),
   })
+
+  const formImageIds = form.watch("image_ids")
+  const availableImages = unassociatedImages.filter(
+    (image) => !formImageIds.includes(image.id!)
+  )
 
   const { mutateAsync: updateVariant } = useUpdateProductVariant(
     variant.product_id!,
@@ -88,10 +78,8 @@ export const EditProductVariantMediaForm = ({
   )
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const currentVariantImageIds = data.image_ids
-    const newVariantImageIds = Object.keys(variantImages).filter(
-      (id) => variantImages[id]
-    )
+    const currentVariantImageIds = allVariantImages.map((image) => image.id!)
+    const newVariantImageIds = data.image_ids
 
     const imagesToAdd = newVariantImageIds.filter(
       (id) => !currentVariantImageIds.includes(id)
@@ -134,10 +122,11 @@ export const EditProductVariantMediaForm = ({
   })
 
   const handleAddImageToVariant = (imageId: string) => {
-    setVariantImages((prev) => ({
-      ...prev,
-      [imageId]: true,
-    }))
+    const currentImageIds = form.getValues("image_ids")
+    form.setValue("image_ids", [...currentImageIds, imageId], {
+      shouldDirty: true,
+      shouldTouch: true,
+    })
   }
 
   const handleCheckedChange = useCallback(
@@ -163,7 +152,10 @@ export const EditProductVariantMediaForm = ({
 
     const selectedImage = allProductImages.find((image) => image.id === ids[0])
     if (selectedImage) {
-      form.setValue("thumbnail", selectedImage.url)
+      form.setValue("thumbnail", selectedImage.url, {
+        shouldDirty: selectedImage.url !== variant.thumbnail,
+        shouldTouch: selectedImage.url !== variant.thumbnail,
+      })
     }
   }
 
@@ -173,12 +165,13 @@ export const EditProductVariantMediaForm = ({
       return
     }
 
-    setVariantImages((prev) => {
-      const newVariantImages = { ...prev }
-      selectedIds.forEach((id) => {
-        delete newVariantImages[id]
-      })
-      return newVariantImages
+    const currentImageIds = form.getValues("image_ids")
+    const newImageIds = currentImageIds.filter(
+      (id) => !selectedIds.includes(id)
+    )
+    form.setValue("image_ids", newImageIds, {
+      shouldDirty: true,
+      shouldTouch: true,
     })
 
     setSelection({})
@@ -218,7 +211,7 @@ export const EditProductVariantMediaForm = ({
               </div>
               <div className="grid h-fit auto-rows-auto grid-cols-2 gap-4 p-4 sm:grid-cols-3 lg:grid-cols-6 lg:gap-6 lg:p-6">
                 {allProductImages
-                  .filter((image) => variantImages[image.id!])
+                  .filter((image) => formImageIds.includes(image.id!))
                   .map((image) => (
                     <MediaGridItem
                       key={image.id}
@@ -238,7 +231,7 @@ export const EditProductVariantMediaForm = ({
                   <h3 className="ui-fg-base ">
                     {t("products.media.availableImages")}
                   </h3>
-                  <p className="text-ui-fg-dimmed mt-1 text-sm">
+                  <p className="text-ui-fg-muted mt-1 text-sm">
                     {t("products.media.selectToAdd")}
                   </p>
                 </div>
@@ -272,7 +265,7 @@ export const EditProductVariantMediaForm = ({
                         <h3 className="ui-fg-base text-sm font-medium">
                           {t("products.media.availableImages")}
                         </h3>
-                        <p className="ui-fg-muted mt-1 text-xs">
+                        <p className="text-ui-fg-muted mt-1 pr-2 text-xs">
                           {t("products.media.selectToAdd")}
                         </p>
                       </div>

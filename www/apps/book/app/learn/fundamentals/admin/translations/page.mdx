@@ -157,6 +157,42 @@ Next, [change the admin language](!user-guide!/settings/profile#edit-profile-det
 
 ---
 
+## Translation Auto-Completion
+
+<Note>
+
+Translation auto-completion is available from [Medusa v2.11.2](https://github.com/medusajs/medusa/releases/tag/v2.11.2).
+
+</Note>
+
+To enhance your development experience, you can set up auto-completion for translation keys. This will allow you to auto-complete translation keys from Medusa's default translations as well as your custom translations.
+
+To set up auto-completion, create the file `src/admin/i18next.d.ts` with the following content:
+
+```ts title="src/admin/i18n/i18next.d.ts"
+// Import Medusa keys
+import type { Resources } from "@medusajs/dashboard"
+// Import your custom translation keys
+// For example, import the English translation file
+import type enTranslation from "./i18n/en.json"
+// add other imports for different languages if needed...
+// import type esTranslation from "./i18n/es.json"
+
+declare module "i18next" {
+    interface CustomTypeOptions {
+        fallbackNS: "translation"
+        resources: {
+            translation: Resources["translation"]                     
+            // Optional: add custom namespaces here
+            // For example, if you have a custom namespace called 'brands':
+            brands: typeof enTranslation & Resources["translation"]
+        }
+    }
+}
+```
+
+---
+
 ## How Translations are Loaded
 
 When you load the translations with the `translation` key in `src/admin/i18n/index.ts`, your custom Medusa Admin translations are merged with the default Medusa Admin translations:

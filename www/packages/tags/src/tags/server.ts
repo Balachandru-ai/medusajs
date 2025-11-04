@@ -64,6 +64,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
   },
   {
+    "title": "Product Category Images",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images"
+  },
+  {
     "title": "First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -94,6 +98,10 @@ export const server = [
   {
     "title": "Meta Product Feed",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
+    "title": "Product Rentals",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals"
   },
   {
     "title": "Product Reviews",
