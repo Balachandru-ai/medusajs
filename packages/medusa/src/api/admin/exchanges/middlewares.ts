@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework"
 import * as QueryConfig from "./query-config"
 import {
+  AdminDeleteExchangeItemActionSchema,
   AdminGetExchangeParams,
   AdminGetOrdersOrderParams,
   AdminGetOrdersParams,
@@ -79,7 +80,7 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/exchanges/:id/inbound/items/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -111,7 +112,7 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/exchanges/:id/inbound/shipping-method/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -144,7 +145,7 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/exchanges/:id/outbound/items/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
@@ -176,7 +177,7 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/exchanges/:id/outbound/shipping-method/:action_id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],

@@ -53,7 +53,7 @@ export function createBodyParserMiddlewaresStack(
     handler: RequestHandler | MiddlewareFunction,
     route: { route: string; method?: string }
   ) => RequestHandler | MiddlewareFunction
-) {
+): RequestHandler[] {
   return (["json", "text", "urlencoded"] as (keyof typeof parsers)[]).map(
     (parser) => {
       function bodyParser(
