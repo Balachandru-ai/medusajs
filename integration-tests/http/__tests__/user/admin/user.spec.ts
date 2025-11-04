@@ -116,10 +116,6 @@ medusaIntegrationTestRunner({
             container,
             { email: "test@test.com" },
           )
-        
-        console.log(`user two ${JSON.stringify(userTwo, null, 2)}`)
-        console.log(`user one ${JSON.stringify(user, null, 2)}`)
-        console.log(`adminHeaders after create user two ${JSON.stringify(adminHeaders, null, 2)}`)
 
         const response = await api.delete(
           `/admin/users/${userTwo.id}`,
