@@ -256,13 +256,13 @@ export const dbTestUtilFactory = (): any => ({
         allTablesToVerify.push(table_name)
       }
 
-      // Truncate regular tables
-      if (tablesToTruncate.length > 0) {
-        await runRawQuery(`TRUNCATE ${tablesToTruncate.join(", ")};`)
-      }
+      const allTablesToTruncase = [
+        ...tablesToTruncate,
+        ...(hasIndexTables ? mainPartitionTables : []),
+      ].join(", ")
 
-      if (hasIndexTables) {
-        await runRawQuery(`TRUNCATE ${mainPartitionTables.join(", ")};`)
+      if (allTablesToTruncase) {
+        await runRawQuery(`TRUNCATE ${allTablesToTruncase};`)
       }
 
       const verifyEmpty = async (maxRetries = 5) => {
