@@ -3,14 +3,15 @@ import {
   container,
   logger,
   MedusaAppLoader,
+  Migrator,
 } from "@medusajs/framework"
+import { asValue } from "@medusajs/framework/awilix"
+import { EntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { MedusaAppOutput, MedusaModule } from "@medusajs/framework/modules-sdk"
 import { IndexTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { initDb, TestDatabaseUtils } from "@medusajs/test-utils"
-import { EntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { IndexData, IndexRelation } from "@models"
-import { asValue } from "@medusajs/framework/awilix"
 import path from "path"
 import { EventBusServiceMock } from "../__fixtures__"
 import { dbName } from "../__fixtures__/medusa-config"
@@ -47,6 +48,9 @@ const beforeAll_ = async () => {
     medusaAppLoader = new MedusaAppLoader(container as any)
 
     // Migrations
+    const migrator = new Migrator({ container })
+    await migrator.ensureMigrationsTable()
+
     await medusaAppLoader.runModulesMigrations()
     const linkPlanner = await medusaAppLoader.getLinksExecutionPlanner()
     const plan = await linkPlanner.createPlan()

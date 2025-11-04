@@ -47,11 +47,11 @@
  *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
  *   - name: deleted_at
  *     in: query
- *     description: The claim's deleted at.
+ *     description: Filter by the claim's deletion date.
  *     required: false
  *     schema:
  *       type: object
- *       description: The claim's deleted at.
+ *       description: The claim's deletion date.
  *       properties:
  *         $and:
  *           type: array
@@ -319,20 +319,20 @@
  *       oneOf:
  *         - type: string
  *           title: status
- *           description: The claim's status.
+ *           description: Filter by the claim's status.
  *         - type: array
- *           description: The claim's status.
+ *           description: Filter by the claim's status.
  *           items:
  *             type: string
  *             title: status
- *             description: The status's details.
+ *             description: The claim's status.
  *   - name: created_at
  *     in: query
- *     description: The claim's created at.
+ *     description: Filter by the claim's creation date.
  *     required: false
  *     schema:
  *       type: object
- *       description: The claim's created at.
+ *       description: The claim's creation date.
  *       properties:
  *         $and:
  *           type: array
@@ -559,11 +559,11 @@
  *           description: Filter by whether a value for this parameter exists (not `null`).
  *   - name: updated_at
  *     in: query
- *     description: The claim's updated at.
+ *     description: Filter by the claim's update date.
  *     required: false
  *     schema:
  *       type: object
- *       description: The claim's updated at.
+ *       description: The claim's update date.
  *       properties:
  *         $and:
  *           type: array

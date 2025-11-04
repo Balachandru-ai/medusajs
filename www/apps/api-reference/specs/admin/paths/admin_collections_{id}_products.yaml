@@ -39,23 +39,7 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The products to add or remove.
-          properties:
-            add:
-              type: array
-              description: The products to add to the collection.
-              items:
-                type: string
-                title: add
-                description: A product's ID.
-            remove:
-              type: array
-              description: The products to remove from the collection.
-              items:
-                type: string
-                title: remove
-                description: A product's ID.
+          $ref: ../components/schemas/AdminBatchLink.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

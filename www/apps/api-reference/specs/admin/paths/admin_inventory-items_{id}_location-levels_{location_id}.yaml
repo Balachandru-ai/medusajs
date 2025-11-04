@@ -45,7 +45,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminUpdateInventoryLocationLevel.yaml
+          $ref: ../components/schemas/AdminUpdateInventoryLevel.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

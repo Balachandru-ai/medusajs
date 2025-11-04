@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsReceiveItemsReqSchema"
+ *         $ref: "#/components/schemas/AdminDismissItems"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

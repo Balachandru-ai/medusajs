@@ -41,7 +41,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostExchangesItemsActionReqSchema"
+ *         $ref: "#/components/schemas/AdminUpdateExchangeOutboundItem"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

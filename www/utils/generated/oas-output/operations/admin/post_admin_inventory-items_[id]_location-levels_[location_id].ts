@@ -38,7 +38,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminUpdateInventoryLocationLevel"
+ *         $ref: "#/components/schemas/AdminUpdateInventoryLevel"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

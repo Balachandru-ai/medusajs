@@ -155,12 +155,14 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
   }
 
   handleStripeError(error: CloudServiceError): HandledErrorType {
+    let medusaPayment: MedusaPayment | undefined
+
     switch (error.type) {
       case "MedusaCardError":
         // Medusa has created a payment but it failed
         // Extract and return payment object to be stored in payment_session
         // Allows for reference to the failed intent and potential webhook reconciliation
-        const medusaPayment = error.data as MedusaPayment | undefined
+        medusaPayment = error.data as MedusaPayment | undefined
         if (medusaPayment) {
           return {
             retry: false,
@@ -169,7 +171,16 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
         } else {
           throw error
         }
-
+      case "MedusaPaymentUnexpectedStateError":
+        medusaPayment = error.data as MedusaPayment | undefined
+        if (medusaPayment) {
+          return {
+            retry: false,
+            data: medusaPayment,
+          }
+        } else {
+          throw error
+        }
       case "MedusaConnectionError":
       case "MedusaRateLimitError":
         // Connection or rate limit errors indicate an uncertain result
@@ -239,11 +250,11 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
     }
 
     const payment = await this.retrievePayment({ data: { id } })
+    const statusResponse = this.getStatus(
+      payment.data as unknown as MedusaPayment
+    )
 
-    return {
-      status: payment.data?.status as PaymentSessionStatus,
-      data: payment.data,
-    }
+    return statusResponse
   }
 
   async initiatePayment({
@@ -307,6 +318,13 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
       }).then((data) => data.payment)
     })) as MedusaPayment
 
+    const status = this.getStatus(intent)
+    if (status.status !== PaymentSessionStatus.CANCELED) {
+      throw new Error(
+        `Payment with id ${id} could not be canceled. Status: ${status.status}`
+      )
+    }
+
     return { data: intent as unknown as Record<string, unknown> }
   }
 
@@ -324,6 +342,13 @@ export class MedusaPaymentsProvider extends AbstractPaymentProvider<MedusaPaymen
         },
       }).then((data) => data.payment)
     })) as MedusaPayment
+
+    const status = this.getStatus(intent)
+    if (status.status !== PaymentSessionStatus.CAPTURED) {
+      throw new Error(
+        `Payment with id ${id} could not be captured. Status: ${status.status}`
+      )
+    }
 
     return { data: intent as unknown as Record<string, unknown> }
   }

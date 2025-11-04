@@ -1,11 +1,12 @@
+import { MetadataStorage } from "@medusajs/deps/mikro-orm/core"
 import { join } from "path"
 import { setTimeout } from "timers/promises"
-import { MetadataStorage } from "@medusajs/deps/mikro-orm/core"
 
-import { Migrations } from "../../index"
 import { FileSystem } from "../../../common"
 import { DmlEntity, mikroORMEntityBuilder, model } from "../../../dml"
 import { defineMikroOrmCliConfig } from "../../../modules-sdk"
+import { BigNumber } from "../../../totals/big-number"
+import { Migrations } from "../../index"
 
 jest.setTimeout(30000)
 
@@ -39,6 +40,20 @@ describe("Generate migrations", () => {
       id: model.id().primaryKey(),
       email: model.text().unique(),
       fullName: model.text().nullable(),
+      numericFieldNoDefault: model.number(),
+      numericField: model.number().default(0),
+      numericFieldNullable: model.number().default(1).nullable(),
+      bigNumberFieldNoDefault: model.bigNumber(),
+      bigNumberField: model
+        .bigNumber()
+        .default(
+          new BigNumber(
+            "892.87896454789798987789789789541354687681246874956165789639",
+            { precision: 50 }
+          )
+        ),
+      bigNumberFieldNullable: model.bigNumber().default(3).nullable(),
+      bigNumberWithString: model.bigNumber().default("5789.6547899").nullable(),
     })
 
     const config = defineMikroOrmCliConfig(moduleName, {
@@ -54,8 +69,32 @@ describe("Generate migrations", () => {
     const results = await migrations.generate()
 
     expect(await fs.exists(results.fileName))
-    expect(await fs.contents(results.fileName)).toMatch(
-      /create table if not exists "user"/
+    const migrationFile = await fs.contents(results.fileName)
+
+    expect(migrationFile).toMatch(/create table if not exists "user"/)
+    expect(migrationFile).toMatch(/"numericFieldNoDefault" integer not null/)
+    expect(migrationFile).toMatch(/"numericField" integer not null default 0/)
+    expect(migrationFile).toMatch(
+      /"numericFieldNullable" integer null default 1/
+    )
+    expect(migrationFile).toMatch(
+      /"bigNumberWithString" numeric null default '5789\.6547899'/
+    )
+    expect(migrationFile).toMatch(
+      /"bigNumberField" numeric not null default 892\.878964547898/
+    )
+    expect(migrationFile).toMatch(
+      /"bigNumberFieldNullable" numeric null default 3/
+    )
+    expect(migrationFile).toMatch(/"bigNumberFieldNoDefault" numeric not null/)
+    expect(migrationFile).toMatch(
+      /"raw_bigNumberField" jsonb not null default '{"value":"892\.87896454789798987789789789541354687681246874956","precision":50}'/
+    )
+    expect(migrationFile).toMatch(
+      /"raw_bigNumberFieldNullable" jsonb null default '{"value":"3","precision":20}'/
+    )
+    expect(migrationFile).toMatch(
+      /"raw_bigNumberWithString" jsonb null default '{"value":"5789\.6547899","precision":20}'/
     )
   })
 
