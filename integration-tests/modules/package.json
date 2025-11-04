@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test:integration": "jest --no-cache --bail --detectOpenHandles --forceExit --logHeapUsage",
-    "test:integration:chunk": "jest  --no-cache --bail --forceExit",
+    "test:integration:chunk": "jest --silent --no-cache --bail --forceExit",
     "build": "tsc --allowJs --outDir ./dist"
   },
   "dependencies": {
