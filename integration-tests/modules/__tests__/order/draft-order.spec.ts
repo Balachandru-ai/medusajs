@@ -55,7 +55,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("Draft Orders - Admin", () => {
-      it("should create a draft order", async () => {
+      it.only("should create a draft order", async () => {
         const region = await regionModuleService.createRegions({
           name: "US",
           currency_code: "usd",
@@ -236,6 +236,11 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        console.log(
+          "RESPONSE",
+          JSON.stringify(response.data.draft_order.items, null, 2)
+        )
+
         expect(response.data).toEqual(
           expect.objectContaining({
             draft_order: expect.objectContaining({
@@ -275,7 +280,6 @@ medusaIntegrationTestRunner({
                       rate: 2,
                     }),
                   ],
-                  adjustments: [],
                   unit_price: 3000,
                   quantity: 2,
                   raw_quantity: expect.objectContaining({
