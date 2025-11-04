@@ -265,7 +265,7 @@ export const UpdateProduct = z
     title: z.string().optional(),
     discountable: booleanString().optional(),
     is_giftcard: booleanString().optional(),
-    options: z.array(UpdateProductOption).optional(),
+    option_ids: z.array(IdAssociation).optional(),
     variants: z.array(UpdateProductVariant).optional(),
     status: statusEnum.optional(),
     subtitle: z.string().nullish(),
