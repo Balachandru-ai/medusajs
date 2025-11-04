@@ -86,6 +86,9 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
         1
       )
 
+      config.options.populate.push("items")
+      config.options.populate.push("items.item")
+
       // make sure version is loaded if adjustments are requested
       if (config.options.fields?.some((f) => f.includes("items.item."))) {
         config.options.fields.push(
@@ -171,6 +174,9 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
         config.options.populate.indexOf("items.item.adjustments"),
         1
       )
+
+      config.options.populate.push("items")
+      config.options.populate.push("items.item")
 
       // make sure version is loaded if adjustments are requested
       if (config.options.fields?.some((f) => f.includes("items.item."))) {
