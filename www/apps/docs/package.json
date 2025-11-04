@@ -43,6 +43,8 @@
     "lodash": "^4.17.21",
     "mdast-util-mdx": "^3.0.0",
     "postcss": "^8.4.21",
+    "posthog-docusaurus": "^2.0.5",
+    "posthog-js": "^1.285.1",
     "prism-react-renderer": "^2.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

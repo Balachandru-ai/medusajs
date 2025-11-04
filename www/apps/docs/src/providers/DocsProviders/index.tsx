@@ -17,11 +17,11 @@ type DocsProvidersProps = {
 
 const DocsProviders = ({ children }: DocsProvidersProps) => {
   const {
-    analytics: { apiKey },
+    analytics: { apiKey, host },
   } = useThemeConfig() as ThemeConfig
 
   return (
-    <AnalyticsProvider writeKey={apiKey}>
+    <AnalyticsProvider posthogApiKey={apiKey} posthogHost={host}>
       <ColorModeProvider>
         <ModalProvider>
           <SearchProvider>

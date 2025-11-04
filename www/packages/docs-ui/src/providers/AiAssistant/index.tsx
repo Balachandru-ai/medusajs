@@ -1,7 +1,6 @@
 "use client"
 
 import React, { createContext, useContext } from "react"
-import { useAnalytics } from "@/providers"
 import { AiAssistant } from "@/components"
 import { RecaptchaAction, useRecaptcha } from "../../hooks/use-recaptcha"
 
@@ -30,7 +29,6 @@ export const AiAssistantProvider = ({
   websiteId,
   children,
 }: AiAssistantProviderProps) => {
-  const { analytics } = useAnalytics()
   const { execute: getReCaptchaToken } = useRecaptcha({
     siteKey: recaptchaSiteKey,
   })
@@ -77,7 +75,6 @@ export const AiAssistantProvider = ({
       JSON.stringify({
         question_id: questionId,
         reaction,
-        user_identifier: analytics?.user().anonymousId() || "",
       })
     )
   }

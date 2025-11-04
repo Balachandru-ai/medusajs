@@ -1,13 +1,8 @@
 "use client"
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
-import { Analytics, AnalyticsBrowser } from "@segment/analytics-next"
+import React, { createContext, useCallback, useContext, useEffect } from "react"
+import posthog from "posthog-js"
+import { PostHogProvider as PHProvider } from "@posthog/react"
 
 export type ExtraData = {
   section?: string
@@ -15,8 +10,6 @@ export type ExtraData = {
 }
 
 export type AnalyticsContextType = {
-  loaded: boolean
-  analytics: Analytics | null
   track: (
     event: string,
     options?: Record<string, any>,
@@ -32,107 +25,48 @@ export type TrackedEvent = {
 const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 
 export type AnalyticsProviderProps = {
-  writeKey?: string
+  posthogApiKey?: string
+  posthogHost?: string
   children?: React.ReactNode
 }
 
-const LOCAL_STORAGE_KEY = "ajs_anonymous_id"
-
 export const AnalyticsProvider = ({
-  writeKey = "temp",
+  posthogApiKey,
+  posthogHost,
   children,
 }: AnalyticsProviderProps) => {
-  // loaded is used to ensure that a connection has been made to segment
-  // even if it failed. This is to ensure that the connection isn't
-  // continuously retried
-  const [loaded, setLoaded] = useState<boolean>(false)
-  const [analytics, setAnalytics] = useState<Analytics | null>(null)
-  const analyticsBrowser = new AnalyticsBrowser()
-  const [queue, setQueue] = useState<TrackedEvent[]>([])
-
-  const init = useCallback(() => {
-    if (!loaded) {
-      analyticsBrowser
-        .load(
-          { writeKey },
-          {
-            initialPageview: true,
-            user: {
-              localStorage: {
-                key: LOCAL_STORAGE_KEY,
-              },
-            },
-          }
-        )
-        .then((instance) => {
-          setAnalytics(instance[0])
-        })
-        .catch((e) =>
-          console.error(`Could not connect to Segment. Error: ${e}`)
-        )
-        .finally(() => setLoaded(true))
-    }
-  }, [loaded, writeKey])
-
   const track = useCallback(
     async (
       event: string,
       options?: Record<string, any>,
       callback?: () => void
     ) => {
-      if (analytics) {
-        void analytics.track(
-          event,
-          {
-            ...options,
-            uuid: analytics.user().anonymousId(),
-          },
-          callback
-        )
-      } else {
-        // push the event into the queue
-        setQueue((prevQueue) => [
-          ...prevQueue,
-          {
-            event,
-            options,
-          },
-        ])
-        if (callback) {
-          console.warn(
-            "Segment is either not installed or not configured. Simulating success..."
-          )
-          callback()
-        }
-      }
+      posthog.capture(event, options)
+      callback?.()
     },
-    [analytics, loaded]
+    []
   )
 
   useEffect(() => {
-    init()
-  }, [init])
-
-  useEffect(() => {
-    if (analytics && queue.length) {
-      // track stuff in queue
-      queue.forEach(async (trackEvent) =>
-        track(trackEvent.event, trackEvent.options)
-      )
-      setQueue([])
+    if (!posthogApiKey || !posthogHost) {
+      return
     }
-  }, [analytics, queue])
+    posthog.init(posthogApiKey, {
+      api_host: posthogHost,
+      defaults: "2025-05-24",
+    })
+  }, [posthogApiKey, posthogHost])
 
   return (
-    <AnalyticsContext.Provider
-      value={{
-        analytics,
-        track,
-        loaded,
-      }}
-    >
-      {children}
-    </AnalyticsContext.Provider>
+    <PHProvider client={posthog}>
+      <AnalyticsContext.Provider
+        value={{
+          track,
+        }}
+      >
+        {children}
+      </AnalyticsContext.Provider>
+    </PHProvider>
   )
 }
 

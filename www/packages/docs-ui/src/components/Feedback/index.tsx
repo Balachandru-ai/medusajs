@@ -59,12 +59,9 @@ export const Feedback = ({
     : showForm
     ? inlineQuestionRef
     : inlineFeedbackRef
-  const { loaded, track } = useAnalytics()
+  const { track } = useAnalytics()
 
   function handleFeedback(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    if (!loaded) {
-      return
-    }
     const feedback = (e.target as Element).classList.contains("positive")
     setPositiveFeedback(feedback)
     setShowForm(true)

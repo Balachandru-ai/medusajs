@@ -5,7 +5,22 @@ addHowToData: true
 
 # General Deployment Guide for Medusa Backend
 
-In this guide, you’ll learn the general steps you need to take when deploying your Medusa backend. This is useful when the [platform-specific deployment guides](./index.mdx) do not include your selected hosting provider.
+In this guide, you’ll learn the general steps you need to take when deploying your Medusa v1 backend. This is useful when the [platform-specific deployment guides](./index.mdx) do not include your selected hosting provider.
+
+:::info[Deploy with Medusa Cloud]
+
+This guide is intended for Medusa v1 users. If you're a Medusa v2 user, consider using [Medusa Cloud](https://docs.medusajs.com/cloud). By using Medusa Cloud, you can avoid the complexities and challenges of self-hosting, while benefiting from automated deployment, scaling, and maintenance.
+
+With Medusa Cloud, you also maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+
+1. Push to deploy.
+2. Multiple testing environments.
+3. Preview environments for new PRs.
+4. Test on production-like data.
+
+Refer to the [Cloud vs. Self-Hosting comparison guide](https://docs.medusajs.com/cloud/comparison) for more details.
+
+:::
 
 ## Prerequisites
 

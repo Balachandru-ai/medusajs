@@ -18,7 +18,10 @@ type ProvidersProps = {
 
 const Providers = ({ children }: ProvidersProps) => {
   return (
-    <AnalyticsProvider writeKey={process.env.NEXT_PUBLIC_SEGMENT_API_KEY}>
+    <AnalyticsProvider
+      posthogApiKey={process.env.NEXT_PUBLIC_POSTHOG_API_KEY}
+      posthogHost={process.env.NEXT_PUBLIC_POSTHOG_HOST}
+    >
       <PageLoadingProvider>
         <ModalProvider>
           <ColorModeProvider>

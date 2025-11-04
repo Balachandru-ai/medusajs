@@ -5,7 +5,22 @@ addHowToData: true
 
 # Deploy Your Medusa Backend on Microtica
 
-In this document, you'll learn how to deploy your Medusa backend on your AWS account with Microtica.
+In this document, you'll learn how to deploy your Medusa v1 backend on your AWS account with Microtica.
+
+:::info[Deploy with Medusa Cloud]
+
+This guide is intended for Medusa v1 users. If you're a Medusa v2 user, consider using [Medusa Cloud](https://docs.medusajs.com/cloud). By using Medusa Cloud, you can avoid the complexities and challenges of self-hosting, while benefiting from automated deployment, scaling, and maintenance.
+
+With Medusa Cloud, you also maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+
+1. Push to deploy.
+2. Multiple testing environments.
+3. Preview environments for new PRs.
+4. Test on production-like data.
+
+Refer to the [Cloud vs. Self-Hosting comparison guide](https://docs.medusajs.com/cloud/comparison) for more details.
+
+:::
 
 :::note
 

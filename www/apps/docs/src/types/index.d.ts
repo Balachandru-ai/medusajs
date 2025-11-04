@@ -181,6 +181,7 @@ declare module "@medusajs/docs" {
     }
     analytics?: {
       apiKey: string
+      host?: string
     }
     aiAssistant?: {
       apiUrl: string
