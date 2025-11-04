@@ -205,6 +205,13 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
+        title: "Product Rentals",
+        path: "/how-to-tutorials/tutorials/product-rentals",
+        description:
+          "Learn how to implement product rentals in your Medusa store.",
+      },
+      {
+        type: "link",
         title: "Product Reviews",
         path: "/how-to-tutorials/tutorials/product-reviews",
         description:

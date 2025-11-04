@@ -6682,6 +6682,7 @@ export const generatedEditDates = {
   "references/utils/PromotionUtils/enums/utils.PromotionUtils.ApplicationMethodAllocation/page.mdx": "2025-10-21T08:10:52.665Z",
   "references/utils/PromotionUtils/enums/utils.PromotionUtils.CampaignBudgetType/page.mdx": "2025-10-21T08:10:52.672Z",
   "app/integrations/guides/avalara/page.mdx": "2025-10-22T09:56:11.929Z",
+  "app/how-to-tutorials/tutorials/product-rentals/page.mdx": "2025-10-28T16:09:26.244Z",
   "references/js_sdk/admin/Product/methods/js_sdk.admin.Product.batchImageVariants/page.mdx": "2025-10-31T09:41:42.515Z",
   "references/js_sdk/admin/Product/methods/js_sdk.admin.Product.batchVariantImages/page.mdx": "2025-10-31T09:41:42.517Z",
   "references/product/IProductModuleService/methods/product.IProductModuleService.addImageToVariant/page.mdx": "2025-10-31T09:41:35.918Z",
