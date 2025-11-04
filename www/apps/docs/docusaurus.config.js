@@ -71,6 +71,14 @@ const config = {
         outputPath: path.join(__dirname, "src", "utils"),
       },
     ],
+    [
+      "posthog-docusaurus",
+      {
+        apiKey: process.env.POSTHOG_API_KEY,
+        appUrl: process.env.POSTHOG_HOST,
+        enableInDevelopment: false, // optional
+      },
+    ],
   ],
   themes: ["@docusaurus/theme-mermaid"],
   themeConfig: {
@@ -157,7 +165,8 @@ const config = {
       defaultFilters: ["docs"],
     },
     analytics: {
-      apiKey: process.env.SEGMENT_API_KEY || "temp",
+      apiKey: process.env.POSTHOG_API_KEY || "temp",
+      host: process.env.POSTHOG_HOST || "https://us.i.posthog.com",
     },
     prism: {
       defaultLanguage: "ts",
