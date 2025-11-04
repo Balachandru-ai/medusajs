@@ -79,6 +79,7 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     let loadAdjustments = false
     if (config.options.populate.includes("items.item.adjustments")) {
+      // TODO: handle if populate is an object
       loadAdjustments = true
       config.options.populate.splice(
         config.options.populate.indexOf("items.item.adjustments"),
@@ -86,9 +87,9 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
       )
 
       // make sure version is loaded if adjustments are requested
-      if (config.options.fields?.includes("items.item.")) {
+      if (config.options.fields?.some((f) => f.includes("items.item."))) {
         config.options.fields.push(
-          isRelatedEntity ? "order.items.item.version" : "items.item.version"
+          isRelatedEntity ? "order.items.version" : "items.version"
         )
       }
     }
@@ -172,9 +173,9 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
       )
 
       // make sure version is loaded if adjustments are requested
-      if (config.options.fields?.includes("items.item.")) {
+      if (config.options.fields?.some((f) => f.includes("items.item."))) {
         config.options.fields.push(
-          isRelatedEntity ? "order.items.item.version" : "items.item.version"
+          isRelatedEntity ? "order.items.version" : "items.version"
         )
       }
     }
