@@ -84,6 +84,13 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
         config.options.populate.indexOf("items.item.adjustments"),
         1
       )
+
+      // make sure version is loaded if adjustments are requested
+      if (config.options.fields.includes("items.item.")) {
+        config.options.fields.push(
+          isRelatedEntity ? "order.items.item.version" : "items.item.version"
+        )
+      }
     }
 
     if (!config.options.orderBy) {
@@ -95,37 +102,11 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     const result = await manager.find(this.entity, config.where, config.options)
 
     if (loadAdjustments) {
-      const params = [] as any[]
       const orders = !isRelatedEntity
         ? [...result]
-        : [...result].map((r) => r.order).filter(Boolean) // spread order if related entity
+        : [...result].map((r) => r.order).filter(Boolean)
 
-      const items = orders.flatMap((r) => [...(r.items ?? [])])
-      const itemsIdMap = new Map<string, any>(
-        items.map((i) => [i.item.id, i.item])
-      )
-
-      // TODO: throw if there is no i.version since it could lead to wrong computation
-      items.forEach((i) =>
-        params.push({
-          item_id: i.item.id,
-          version: i.version, // push this into fields if "items.item." exists in fields
-        })
-      )
-
-      const adjustments = await manager.find(OrderLineItemAdjustment, {
-        $or: params,
-      })
-
-      for (const adjustment of adjustments) {
-        const item = itemsIdMap.get(adjustment.item_id)
-        if (item) {
-          if (!item.adjustments.isInitialized()) {
-            item.adjustments.initialized = true
-          }
-          item.adjustments.add(adjustment)
-        }
-      }
+      await loadItemAdjustments(manager, orders)
     }
 
     return result
@@ -195,6 +176,40 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     }
 
     return await manager.findAndCount(this.entity, config.where, config.options)
+  }
+}
+
+/**
+ * Load adjustment for the lates items/order version
+ * @param manager MikroORM manager
+ * @param orders Orders to load adjustments for
+ */
+async function loadItemAdjustments(manager, orders) {
+  const items = orders.flatMap((r) => [...(r.items ?? [])])
+  const itemsIdMap = new Map<string, any>(items.map((i) => [i.item.id, i.item]))
+
+  const params = items.map((i) => {
+    if (!i.version) {
+      throw new Error("Item version is required to load adjustments")
+    }
+    return {
+      item_id: i.item.id,
+      version: i.version,
+    }
+  })
+
+  const adjustments = await manager.find(OrderLineItemAdjustment, {
+    $or: params,
+  })
+
+  for (const adjustment of adjustments) {
+    const item = itemsIdMap.get(adjustment.item_id)
+    if (item) {
+      if (!item.adjustments.isInitialized()) {
+        item.adjustments.initialized = true
+      }
+      item.adjustments.add(adjustment)
+    }
   }
 }
 
