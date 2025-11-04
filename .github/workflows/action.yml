@@ -102,7 +102,7 @@ jobs:
 
   integration-tests-packages-matrix:
     needs: setup
-    name: Package Integration Tests - Shard ${{ matrix.shard_index }}
+    name: Package Integration Tests (${{ matrix.group }}) - Shard ${{ matrix.shard_index }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
