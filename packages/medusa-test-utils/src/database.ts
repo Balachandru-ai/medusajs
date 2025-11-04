@@ -237,6 +237,7 @@ export const dbTestUtilFactory = (): any => ({
       let hasIndexTables = false
 
       const tablesToTruncate: string[] = []
+      const indexTablesToTruncate: string[] = []
       for (const { table_name } of tableNames) {
         if (mainPartitionTables.includes(table_name)) {
           hasIndexTables = true
@@ -246,6 +247,7 @@ export const dbTestUtilFactory = (): any => ({
           table_name.startsWith(skipIndexPartitionPrefix) ||
           mainPartitionTables.includes(table_name)
         ) {
+          indexTablesToTruncate.push(`${schema}."${table_name}"`)
           continue
         }
 
@@ -256,9 +258,7 @@ export const dbTestUtilFactory = (): any => ({
       }
 
       if (hasIndexTables) {
-        await runRawQuery(
-          `TRUNCATE ${schema}.index_data, ${schema}.index_relation;`
-        )
+        await runRawQuery(`TRUNCATE ${indexTablesToTruncate.join(", ")};`)
       }
     } catch (error) {
       logger.error("Error during database teardown:", error)
