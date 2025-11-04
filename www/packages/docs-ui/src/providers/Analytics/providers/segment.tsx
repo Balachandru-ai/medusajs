@@ -21,30 +21,26 @@ export const useSegmentAnalytics = ({
   const segmentAnalyticsBrowser = new AnalyticsBrowser()
 
   const initSegment = useCallback(() => {
-    if (!segmentWriteKey) {
+    if (!segmentWriteKey || !loaded) {
       return
     }
-    if (!loaded) {
-      segmentAnalyticsBrowser
-        .load(
-          { writeKey: segmentWriteKey },
-          {
-            initialPageview: true,
-            user: {
-              localStorage: {
-                key: LOCAL_STORAGE_KEY,
-              },
+    segmentAnalyticsBrowser
+      .load(
+        { writeKey: segmentWriteKey },
+        {
+          initialPageview: true,
+          user: {
+            localStorage: {
+              key: LOCAL_STORAGE_KEY,
             },
-          }
-        )
-        .then((instance) => {
-          setAnalytics(instance[0])
-        })
-        .catch((e) =>
-          console.error(`Could not connect to Segment. Error: ${e}`)
-        )
-        .finally(() => setLoaded(true))
-    }
+          },
+        }
+      )
+      .then((instance) => {
+        setAnalytics(instance[0])
+      })
+      .catch((e) => console.error(`Could not connect to Segment. Error: ${e}`))
+      .finally(() => setLoaded(true))
   }, [loaded, segmentWriteKey])
 
   const track = useCallback(
