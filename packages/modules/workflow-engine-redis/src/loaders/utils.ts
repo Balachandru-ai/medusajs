@@ -1,5 +1,5 @@
 import { asClass, asValue } from "@medusajs/framework/awilix"
-import { RedisDistributedTransactionStorage } from "../utils"
+import { RedisDistributedTransactionStorage } from "#utils/index"
 
 export default async ({ container, dataLoaderOnly }): Promise<void> => {
   container.register({

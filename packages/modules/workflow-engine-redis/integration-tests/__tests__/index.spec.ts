@@ -55,7 +55,7 @@ import {
   step1InvokeMock as step1InvokeMockManualRetry,
   step2InvokeMock as step2InvokeMockManualRetry,
 } from "../__fixtures__/workflow_1_manual_retry_step"
-import { TestDatabase } from "../utils"
+import { TestDatabase } from "#utils/index"
 
 jest.setTimeout(30000)
 

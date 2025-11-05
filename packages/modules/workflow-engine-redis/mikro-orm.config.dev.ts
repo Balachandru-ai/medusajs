@@ -1,6 +1,6 @@
 import { defineMikroOrmCliConfig, Modules } from "@medusajs/framework/utils"
-import * as entities from "./src/models"
+import { WorkflowExecution } from "#models/workflow-execution"
 
 export default defineMikroOrmCliConfig(Modules.WORKFLOW_ENGINE, {
-  entities: Object.values(entities),
+  entities: [WorkflowExecution],
 })

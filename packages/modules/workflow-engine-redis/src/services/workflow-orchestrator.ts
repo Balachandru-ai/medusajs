@@ -27,7 +27,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import Redis from "ioredis"
 import { ulid } from "ulid"
-import type { RedisDistributedTransactionStorage } from "../utils"
+import type { RedisDistributedTransactionStorage } from "#utils/index"
 
 export type WorkflowOrchestratorRunOptions<T> = Omit<
   FlowRunOptions<T>,

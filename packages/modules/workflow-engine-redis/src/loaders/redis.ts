@@ -4,7 +4,7 @@ import {
 } from "@medusajs/framework/types"
 import { asValue } from "@medusajs/framework/awilix"
 import Redis from "ioredis"
-import { RedisWorkflowsOptions } from "../types"
+import { RedisWorkflowsOptions } from "#types/index"
 
 export default async (
   { container, logger, options, dataLoaderOnly }: LoaderOptions,

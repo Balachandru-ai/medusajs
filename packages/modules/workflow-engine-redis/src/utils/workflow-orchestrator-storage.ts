@@ -23,7 +23,7 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
-import { WorkflowOrchestratorService } from "@services"
+import { WorkflowOrchestratorService } from "#services/workflow-orchestrator"
 import { Queue, RepeatOptions, Worker } from "bullmq"
 import Redis from "ioredis"
 

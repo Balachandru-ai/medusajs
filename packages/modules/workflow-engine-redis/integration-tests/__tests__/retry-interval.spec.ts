@@ -15,7 +15,7 @@ import {
   retryIntervalStep2InvokeMock,
   workflowRetryIntervalId,
 } from "../__fixtures__/workflow_retry_interval"
-import { TestDatabase } from "../utils"
+import { TestDatabase } from "#utils/index"
 
 jest.setTimeout(60000) // Increase timeout for async retries
 
@@ -49,28 +49,27 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         })
 
         // Create promise to wait for workflow completion
-        const workflowCompletion = new Promise<{ result: any; errors: any }>((resolve) => {
-          workflowOrcModule.subscribe({
-            workflowId: workflowRetryIntervalId,
-            subscriber: async (data) => {
-              if (data.eventType === "onFinish") {
-                resolve({
-                  result: data.result,
-                  errors: data.errors,
-                })
-              }
-            },
-          })
-        })
-
-        // Execute workflow
-        await workflowOrcModule.run(
-          workflowRetryIntervalId,
-          {
-            input: { attemptToSucceedOn },
-            throwOnError: false,
+        const workflowCompletion = new Promise<{ result: any; errors: any }>(
+          (resolve) => {
+            workflowOrcModule.subscribe({
+              workflowId: workflowRetryIntervalId,
+              subscriber: async (data) => {
+                if (data.eventType === "onFinish") {
+                  resolve({
+                    result: data.result,
+                    errors: data.errors,
+                  })
+                }
+              },
+            })
           }
         )
+
+        // Execute workflow
+        await workflowOrcModule.run(workflowRetryIntervalId, {
+          input: { attemptToSucceedOn },
+          throwOnError: false,
+        })
 
         // Wait for async workflow to complete
         const { result, errors } = await workflowCompletion
