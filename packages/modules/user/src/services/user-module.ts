@@ -25,8 +25,9 @@ import {
 import jwt, { JwtPayload, SignOptions, VerifyOptions } from "jsonwebtoken"
 import crypto from "node:crypto"
 
-import { Invite, User } from "@models"
-import { getExpiresAt } from "../utils/utils"
+import { Invite } from "#models/invite"
+import { User } from "#models/user"
+import { getExpiresAt } from "#utils/utils"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
