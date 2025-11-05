@@ -32,7 +32,7 @@
     "axios": "^1.13.1",
     "express": "^4.21.0",
     "get-port": "^5.1.1",
-    "randomatic": "^3.1.1"
+    "ulid": "^2.3.0"
   },
   "peerDependencies": {
     "@medusajs/framework": "2.11.2",
