@@ -1,5 +1,5 @@
 import { ModuleExports } from "@medusajs/framework/types"
-import InMemoryCacheService from "./services/inmemory-cache"
+import InMemoryCacheService from "#services/inmemory-cache"
 
 const service = InMemoryCacheService
 

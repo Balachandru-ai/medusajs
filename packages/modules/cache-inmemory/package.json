@@ -28,9 +28,16 @@
   "scripts": {
     "watch": "yarn run -T tsc --build --watch",
     "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
-    "test": "../../../node_modules/.bin/jest --passWithNoTests"
+    "test": "../../../node_modules/.bin/jest --passWithNoTests",
+    "test:integration": "../../../node_modules/.bin/jest --passWithNoTests --testPathPattern=\"integration-tests/__tests__/.*\\.ts\""
   },
   "peerDependencies": {
     "@medusajs/framework": "2.11.3"
+  },
+  "imports": {
+    "#services/*": {
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
+    }
   }
 }
