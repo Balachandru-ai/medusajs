@@ -457,9 +457,9 @@ export interface AdminUpdateProduct {
     id: string
   }[]
   /**
-   * The product's options.
+   * The IDs of the associated product options.
    */
-  options?: AdminUpdateProductOption[]
+  option_ids?: string[]
   /**
    * The product's variants.
    */
