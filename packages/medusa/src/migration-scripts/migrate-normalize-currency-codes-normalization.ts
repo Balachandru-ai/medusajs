@@ -7,8 +7,12 @@ const updatePricesStep = createStep(
     async (_, { container }) => {
         const knex = container.resolve(ContainerRegistrationKeys.PG_CONNECTION)
 
-        await knex('price')
-            .update({currency_code: knex.raw("LOWER(currency_code)")})
+        await knex.transaction(async (trx) => {
+          return await trx("price")
+            .update({
+              currency_code: knex.raw("LOWER(currency_code)"),
+            })
+        })
     }
 )
 
