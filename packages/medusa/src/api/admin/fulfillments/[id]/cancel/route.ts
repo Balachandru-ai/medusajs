@@ -7,7 +7,7 @@ import { refetchFulfillment } from "../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminFulfillmentResponse>
 ) => {
   const { id } = req.params

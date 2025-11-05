@@ -15,6 +15,7 @@ const ProductOption = model
   })
   .cascades({
     delete: ["values"],
+    detach: ["products"],
   })
 
 export default ProductOption

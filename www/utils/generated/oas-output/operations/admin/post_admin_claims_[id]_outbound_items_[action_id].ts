@@ -41,7 +41,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostClaimsItemsActionReqSchema"
+ *         $ref: "#/components/schemas/AdminUpdateClaimOutboundItem"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

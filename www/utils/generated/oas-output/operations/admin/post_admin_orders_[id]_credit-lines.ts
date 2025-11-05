@@ -34,7 +34,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreateOrderCreditLines"
+ *         $ref: "#/components/schemas/AdminCreateOrderCreditLine"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

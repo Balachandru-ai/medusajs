@@ -125,6 +125,13 @@ export function getRouteMap({
                             import("../../routes/products/product-media"),
                         },
                         {
+                          path: "images/:image_id/variants",
+                          lazy: () =>
+                            import(
+                              "../../routes/products/product-image-variants-edit"
+                            ),
+                        },
+                        {
                           path: "prices",
                           lazy: () =>
                             import("../../routes/products/product-prices"),
@@ -191,6 +198,13 @@ export function getRouteMap({
                           lazy: () =>
                             import(
                               "../../routes/product-variants/product-variant-manage-inventory-items"
+                            ),
+                        },
+                        {
+                          path: "media",
+                          lazy: () =>
+                            import(
+                              "../../routes/product-variants/product-variant-media"
                             ),
                         },
                         {

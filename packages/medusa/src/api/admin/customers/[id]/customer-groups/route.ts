@@ -4,12 +4,15 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 
-import { HttpTypes, LinkMethodRequest } from "@medusajs/framework/types"
+import { HttpTypes } from "@medusajs/framework/types"
 
 import { refetchCustomer } from "../../helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<LinkMethodRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchLink,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminCustomerResponse>
 ) => {
   const { id } = req.params

@@ -62,6 +62,7 @@ const Product = model
   })
   .cascades({
     delete: ["variants", "images"],
+    detach: ["options"],
   })
   .indexes([
     {

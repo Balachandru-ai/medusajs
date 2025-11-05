@@ -10,6 +10,7 @@
  *   - barcode
  *   - ean
  *   - upc
+ *   - thumbnail
  *   - allow_backorder
  *   - manage_inventory
  *   - hs_code
@@ -131,6 +132,10 @@
  *     externalDocs:
  *       url: https://docs.medusajs.com/api/store#manage-metadata
  *       description: Learn how to manage metadata
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
  * 
 */
 

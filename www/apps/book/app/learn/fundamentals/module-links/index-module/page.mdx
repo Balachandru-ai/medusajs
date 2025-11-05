@@ -273,6 +273,20 @@ This will return all products that are linked to the brand with the name `Acme`.
 
 ---
 
+## Trigger Index Reingestion
+
+<Note>
+
+The Index API routes are available from [Medusa v2.11.2](https://github.com/medusajs/medusa/releases/tag/v2.11.2).
+
+</Note>
+
+Medusa provides API routes to view and trigger index reingestion or syncing. This is useful if you want to reingest data manually, for example, after a large data import.
+
+Refer to the [Index API Reference](!api!/admin#index) for more information about the available API routes and how to use them.
+
+---
+
 ## Apply Pagination with the Index Module
 
 Similar to Query's `graph` method, the Index Module accepts a `pagination` object to paginate the results.
@@ -370,8 +384,8 @@ const { data: products } = await query.index({
   fields: ["id", "title"],
 }, {
   cache: {
-    enable: true
-  }
+    enable: true,
+  },
 })
 ```
 
@@ -443,7 +457,7 @@ const { data: products } = await query.index({
     key: "products-123456",
     // to disable auto invalidation:
     // autoInvalidate: false,
-  }
+  },
 })
 ```
 
@@ -467,10 +481,10 @@ const { data: products } = await query.index({
     key: async (args, cachingModuleService) => {
       return await cachingModuleService.computeKey({
         ...args,
-        prefix: "products"
+        prefix: "products",
       })
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -497,7 +511,7 @@ const { data: products } = await query.index({
   cache: {
     enable: true,
     tags: ["Product:list:*"],
-  }
+  },
 })
 ```
 
@@ -525,7 +539,7 @@ const { data: products } = await query.index({
         collectionId ? `ProductCollection:${collectionId}` : undefined,
       ]
     },
-  }
+  },
 })
 ```
 
@@ -549,7 +563,7 @@ const { data: products } = await query.index({
   cache: {
     enable: true,
     ttl: 100, // 100 seconds
-  }
+  },
 })
 ```
 
@@ -562,15 +576,15 @@ const { data: products } = await query.index({
   entity: "product",
   fields: ["id", "title"],
   filters: {
-    id: "prod_123"
-  }
+    id: "prod_123",
+  },
 }, {
   cache: {
     enable: true,
     ttl: (args) => {
       return args[0].filters.id === "test" ? 10 : 100
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -594,7 +608,7 @@ const { data: products } = await query.index({
   cache: {
     enable: true,
     autoInvalidate: false,
-  }
+  },
 })
 ```
 
@@ -611,8 +625,8 @@ const { data: products } = await query.index({
     enable: true,
     autoInvalidate: (args) => {
       return !args[0].fields.includes("custom_field")
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -641,8 +655,8 @@ const { data: products } = await query.index({
 }, {
   cache: {
     enable: true,
-    providers: ["caching-redis", "caching-memcached"]
-  }
+    providers: ["caching-redis", "caching-memcached"],
+  },
 })
 ```
 
@@ -657,15 +671,15 @@ const { data: products } = await query.index({
   entity: "product",
   fields: ["id", "title"],
   filters: {
-    id: "prod_123"
-  }
+    id: "prod_123",
+  },
 }, {
   cache: {
     enable: true,
     providers: (args) => {
       return args[0].filters.id === "test" ? ["caching-redis"] : ["caching-memcached"]
-    }
-  }
+    },
+  },
 })
 ```
 

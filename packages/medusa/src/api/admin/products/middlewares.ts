@@ -13,6 +13,8 @@ import { maybeApplyPriceListsFilter } from "./utils"
 import {
   AdminBatchCreateVariantInventoryItem,
   AdminBatchDeleteVariantInventoryItem,
+  AdminBatchImageVariant,
+  AdminBatchVariantImages,
   AdminBatchUpdateProduct,
   AdminBatchUpdateProductVariant,
   AdminBatchUpdateVariantInventoryItem,
@@ -177,6 +179,22 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveVariantConfig
       ),
     ],
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/products/:id/images/:image_id/variants/batch",
+    bodyParser: {
+      sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
+    },
+    middlewares: [validateAndTransformBody(AdminBatchImageVariant)],
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/products/:id/variants/:variant_id/images/batch",
+    bodyParser: {
+      sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
+    },
+    middlewares: [validateAndTransformBody(AdminBatchVariantImages)],
   },
   // Note: New endpoint in v2
   {

@@ -16,6 +16,7 @@ import {
   Users,
   WIP,
 } from "@medusajs/icons"
+import { config } from "../../../config"
 
 const P = MDXComponents.p
 
@@ -26,29 +27,39 @@ interface FeatureSectionsProps {
 }
 
 const featureLinks: Record<string, string> = {
-  Orders: "https://docs.medusajs.com/commerce-modules/order",
-  Products: "https://docs.medusajs.com/commerce-modules/product",
-  "Sales Channels": "https://docs.medusajs.com/commerce-modules/sales-channels",
-  "Regions & currencies": "https://docs.medusajs.com/commerce-modules/region",
-  "GitHub integration":
-    "https://docs.medusajs.com/cloud/projects#2-create-project-from-an-existing-application",
-  "Push-to-deploy flow":
-    "https://docs.medusajs.com/cloud/deployments#how-are-deployments-created",
-  Previews: "https://docs.medusajs.com/cloud/environments/preview",
-  "Auto configuration:":
-    "https://docs.medusajs.com/cloud/projects#prerequisite-medusa-application-configurations",
-  Postgres: "https://docs.medusajs.com/cloud/database",
-  Redis: "https://docs.medusajs.com/cloud/redis",
-  S3: "https://docs.medusajs.com/cloud/s3",
-  "Environment variables":
-    "https://docs.medusajs.com/cloud/environments/environment-variables",
-  "Data import/export":
-    "https://docs.medusajs.com/cloud/database#importexport-database-dumps",
-  Logs: "https://docs.medusajs.com/cloud/logs",
-  "Multiple Long-Lived Environments":
-    "https://docs.medusajs.com/cloud/environments/long-lived",
-  "Cloud seats":
-    "https://docs.medusajs.com/cloud/organizations#view-organization-members",
+  orders: "/resources/commerce-modules/order",
+  products: "/resources/commerce-modules/product",
+  "sales channels": "/resources/commerce-modules/sales-channels",
+  "regions & currencies": "/resources/commerce-modules/region",
+  "github integration":
+    "/cloud/projects#2-create-project-from-an-existing-application",
+  "push-to-deploy flow": "/cloud/deployments#how-are-deployments-created",
+  previews: "/cloud/environments/preview",
+  "auto configuration:":
+    "/cloud/projects#prerequisite-medusa-application-configurations",
+  postgres: "/cloud/database",
+  redis: "/cloud/redis",
+  s3: "/cloud/s3",
+  "environment variables": "/cloud/environments/environment-variables",
+  "data import/export": "/cloud/database#importexport-database-dumps",
+  logs: "/cloud/logs",
+  "multiple long-lived environments": "/cloud/environments/long-lived",
+  "long-lived environments (lle)": "/cloud/environments/long-lived",
+  "preview environments (pe)": "/cloud/environments/preview",
+  "cloud seats": "/cloud/organizations#view-organization-members",
+  "object storage": "/cloud/s3",
+  "database storage": "/cloud/database",
+  "key value store": "/cloud/redis",
+  "admin dashboard users": "/user-guide/settings/users",
+  "unlimited deployments": "/cloud/deployments",
+  "traffic load balancing": "/cloud/comparison#auto-scaling",
+  "log retention": "/cloud/logs",
+  "real-time 24/7 monitoring": "/cloud/comparison#high-availability",
+  "zero-downtime deployment": "/cloud/deployments",
+  backups: "/cloud/database#cloud-database-backups",
+  "performance tuning": "/cloud/comparison#performance",
+  "sla-backed uptime": "/cloud/comparison#high-availability",
+  support: "/cloud/comparison#support",
 }
 
 const featureIcons: Record<string, React.FC> = {
@@ -72,9 +83,14 @@ const renderBlockContent = (blocks: Block[]) => {
         return block.children
           .map((child: Span | TooltipBlock) => {
             if (child._type === "span") {
-              const key = child.text.trim()
+              const key = child.text.trim().toLowerCase()
               return featureLinks[key]
-                ? "[" + child.text + "](" + featureLinks[key] + ")"
+                ? "[" +
+                    child.text +
+                    "](" +
+                    config.baseUrl +
+                    featureLinks[key] +
+                    ")"
                 : child.text
             }
             return ""

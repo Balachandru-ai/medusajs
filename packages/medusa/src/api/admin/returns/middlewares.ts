@@ -7,6 +7,7 @@ import * as QueryConfig from "./query-config"
 import {
   AdminGetOrdersOrderParams,
   AdminGetOrdersParams,
+  AdminGetReturnParams,
   AdminPostCancelReturnReqSchema,
   AdminPostReceiveReturnItemsReqSchema,
   AdminPostReceiveReturnsReqSchema,
@@ -35,7 +36,7 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/returns/:id",
     middlewares: [
       validateAndTransformQuery(
-        AdminGetOrdersOrderParams,
+        AdminGetReturnParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],

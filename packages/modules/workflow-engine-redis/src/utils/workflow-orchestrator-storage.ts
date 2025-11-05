@@ -37,22 +37,25 @@ enum JobType {
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
 
-const doneStates = [
+const doneStates = new Set([
   TransactionStepState.DONE,
   TransactionStepState.REVERTED,
   TransactionStepState.FAILED,
   TransactionStepState.SKIPPED,
   TransactionStepState.SKIPPED_FAILURE,
   TransactionStepState.TIMEOUT,
-]
+])
 
-const finishedStates = [
+const finishedStates = new Set([
   TransactionState.DONE,
   TransactionState.FAILED,
   TransactionState.REVERTED,
-]
+])
 
-const failedStates = [TransactionState.FAILED, TransactionState.REVERTED]
+const failedStates = new Set([
+  TransactionState.FAILED,
+  TransactionState.REVERTED,
+])
 export class RedisDistributedTransactionStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
@@ -280,7 +283,7 @@ export class RedisDistributedTransactionStorage
     const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
     const asyncVersion = data.flow._v
 
-    const isFinished = finishedStates.includes(data.flow.state)
+    const isFinished = finishedStates.has(data.flow.state)
     const isWaitingToCompensate =
       data.flow.state === TransactionState.WAITING_TO_COMPENSATE
 
@@ -288,16 +291,16 @@ export class RedisDistributedTransactionStorage
 
     const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
     let currentStep!: TransactionStep
+    let currentStepsIsAsync = false
 
     const targetStates = isFlowInvoking
-      ? [
+      ? new Set([
           TransactionStepState.INVOKING,
           TransactionStepState.DONE,
           TransactionStepState.FAILED,
-        ]
-      : [TransactionStepState.COMPENSATING]
+        ])
+      : new Set([TransactionStepState.COMPENSATING])
 
-    // Find the current step from the end
     for (let i = stepsArray.length - 1; i >= 0; i--) {
       const step = stepsArray[i]
 
@@ -305,20 +308,29 @@ export class RedisDistributedTransactionStorage
         break
       }
 
-      const isTargetState = targetStates.includes(step.invoke?.state)
+      const isTargetState = targetStates.has(step.invoke?.state)
 
-      if (isTargetState) {
+      if (isTargetState && !currentStep) {
         currentStep = step
         break
       }
     }
 
-    const currentStepsIsAsync = currentStep
-      ? stepsArray.some(
-          (step) =>
-            step?.definition?.async === true && step.depth === currentStep.depth
-        )
-      : false
+    if (currentStep) {
+      for (const step of stepsArray) {
+        if (step.id === "_root") {
+          continue
+        }
+
+        if (
+          step.depth === currentStep.depth &&
+          step?.definition?.async === true
+        ) {
+          currentStepsIsAsync = true
+          break
+        }
+      }
+    }
 
     if (
       !(isNotStarted || isFinished || isWaitingToCompensate) &&
@@ -395,29 +407,36 @@ export class RedisDistributedTransactionStorage
 
   async get(
     key: string,
-    options?: TransactionOptions & { isCancelling?: boolean }
+    options?: TransactionOptions & {
+      isCancelling?: boolean
+      _cachedRawData?: string | null
+    }
   ): Promise<TransactionCheckpoint | undefined> {
     const [_, workflowId, transactionId] = key.split(":")
-    const trx = await this.workflowExecutionService_
-      .list(
-        {
-          workflow_id: workflowId,
-          transaction_id: transactionId,
-        },
-        {
-          select: ["execution", "context"],
-          order: {
-            id: "desc",
+
+    const [trx, rawData] = await promiseAll([
+      this.workflowExecutionService_
+        .list(
+          {
+            workflow_id: workflowId,
+            transaction_id: transactionId,
           },
-          take: 1,
-        }
-      )
-      .then((trx) => trx[0])
-      .catch(() => undefined)
+          {
+            select: ["execution", "context"],
+            order: {
+              id: "desc",
+            },
+            take: 1,
+          }
+        )
+        .then((trx) => trx[0])
+        .catch(() => undefined),
+      options?._cachedRawData !== undefined
+        ? Promise.resolve(options._cachedRawData)
+        : this.redisClient.get(key),
+    ])
 
     if (trx) {
-      const rawData = await this.redisClient.get(key)
-
       let flow!: TransactionFlow, errors!: TransactionStepError[]
       if (rawData) {
         const data = JSON.parse(rawData)
@@ -429,7 +448,7 @@ export class RedisDistributedTransactionStorage
       const execution = trx.execution as TransactionFlow
 
       if (!idempotent) {
-        const isFailedOrReverted = failedStates.includes(execution.state)
+        const isFailedOrReverted = failedStates.has(execution.state)
 
         const isDone = execution.state === TransactionState.DONE
 
@@ -470,6 +489,8 @@ export class RedisDistributedTransactionStorage
 
     let lockAcquired = false
 
+    let storedData: TransactionCheckpoint | undefined
+
     if (data.flow._v) {
       lockAcquired = await this.#acquireLock(key)
 
@@ -477,7 +498,7 @@ export class RedisDistributedTransactionStorage
         throw new Error("Lock not acquired")
       }
 
-      const storedData = await this.get(key, {
+      storedData = await this.get(key, {
         isCancelling: !!data.flow.cancelledAt,
       } as any)
 
@@ -485,21 +506,13 @@ export class RedisDistributedTransactionStorage
     }
 
     try {
-      const hasFinished = finishedStates.includes(data.flow.state)
-
-      let cachedCheckpoint: TransactionCheckpoint | undefined
-      const getCheckpoint = async (options?: TransactionOptions) => {
-        if (!cachedCheckpoint) {
-          cachedCheckpoint = await this.get(key, options)
-        }
-        return cachedCheckpoint
-      }
+      const hasFinished = finishedStates.has(data.flow.state)
 
       await this.#preventRaceConditionExecutionIfNecessary({
         data: data,
         key,
         options,
-        getCheckpoint,
+        storedData,
       })
 
       // Only set if not exists
@@ -514,11 +527,10 @@ export class RedisDistributedTransactionStorage
       }
 
       const execPipeline = () => {
-        const lightData_ = {
+        const stringifiedData = JSON.stringify({
           errors: data.errors,
           flow: data.flow,
-        }
-        const stringifiedData = JSON.stringify(lightData_)
+        })
 
         const pipeline = this.redisClient.pipeline()
 
@@ -558,17 +570,15 @@ export class RedisDistributedTransactionStorage
         })
       }
 
+      // Parallelize DB and Redis operations for better performance
       if (hasFinished && !retentionTime) {
         if (!data.flow.metadata?.parentStepIdempotencyKey) {
-          await this.deleteFromDb(data)
-          await execPipeline()
+          await promiseAll([this.deleteFromDb(data), execPipeline()])
         } else {
-          await this.saveToDb(data, retentionTime)
-          await execPipeline()
+          await promiseAll([this.saveToDb(data, retentionTime), execPipeline()])
         }
       } else {
-        await this.saveToDb(data, retentionTime)
-        await execPipeline()
+        await promiseAll([this.saveToDb(data, retentionTime), execPipeline()])
       }
 
       return data as TransactionCheckpoint
@@ -801,14 +811,12 @@ export class RedisDistributedTransactionStorage
     data,
     key,
     options,
-    getCheckpoint,
+    storedData,
   }: {
     data: TransactionCheckpoint
     key: string
     options?: TransactionOptions
-    getCheckpoint: (
-      options: TransactionOptions
-    ) => Promise<TransactionCheckpoint | undefined>
+    storedData?: TransactionCheckpoint
   }) {
     const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
       data.flow.state
@@ -819,19 +827,24 @@ export class RedisDistributedTransactionStorage
      */
     const currentFlow = data.flow
 
-    const rawData = await this.redisClient.get(key)
-    let data_ = {} as TransactionCheckpoint
-    if (rawData) {
-      data_ = JSON.parse(rawData)
-    } else {
-      const getOptions = {
-        ...options,
-        isCancelling: !!data.flow.cancelledAt,
-      } as Parameters<typeof this.get>[1]
+    let data_ = storedData ?? ({} as TransactionCheckpoint)
 
-      data_ =
-        (await getCheckpoint(getOptions as TransactionOptions)) ??
-        ({ flow: {} } as TransactionCheckpoint)
+    if (!storedData) {
+      const rawData = await this.redisClient.get(key)
+      if (rawData) {
+        data_ = JSON.parse(rawData)
+      } else {
+        // Pass cached raw data to avoid redundant Redis fetch
+        const getOptions = {
+          ...options,
+          isCancelling: !!data.flow.cancelledAt,
+          _cachedRawData: rawData,
+        } as Parameters<typeof this.get>[1]
+
+        data_ =
+          (await this.get(key, getOptions as TransactionOptions)) ??
+          ({ flow: {} } as TransactionCheckpoint)
+      }
     }
 
     const { flow: latestUpdatedFlow } = data_
@@ -846,7 +859,7 @@ export class RedisDistributedTransactionStorage
           ? latestStep.compensate?.state
           : latestStep.invoke?.state
 
-        const shouldSkip = doneStates.includes(latestState)
+        const shouldSkip = doneStates.has(latestState)
 
         if (shouldSkip) {
           throw new SkipStepAlreadyFinishedError(
@@ -891,7 +904,7 @@ export class RedisDistributedTransactionStorage
       },
       updated_at: {
         $lte: raw(
-          (alias) =>
+          (_alias) =>
             `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
         ),
       },

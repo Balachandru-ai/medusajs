@@ -11,12 +11,14 @@ import { MedusaError } from "@medusajs/framework/utils"
 import { refetchStockLocation } from "../helpers"
 import {
   AdminGetStockLocationParamsType,
-  AdminUpdateStockLocationType,
 } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateStockLocationType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateStockLocation,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminStockLocationResponse>
 ) => {
   const { id } = req.params

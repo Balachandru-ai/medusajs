@@ -38,7 +38,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminCreatePaymentCapture.yaml
+          $ref: ../components/schemas/AdminCapturePayment.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

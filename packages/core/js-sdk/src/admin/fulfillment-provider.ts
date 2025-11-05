@@ -62,7 +62,7 @@ export class FulfillmentProvider {
    * Learn more about the `fields` property in the [API reference](https://docs.medusajs.com/api/store#select-fields-and-relations).
    */
   async list(
-    query?: HttpTypes.AdminFulfillmentProviderListParams,
+    query?: HttpTypes.AdminGetFulfillmentProvidersParams,
     headers?: ClientHeaders
   ) {
     return await this.client.fetch<HttpTypes.AdminFulfillmentProviderListResponse>(

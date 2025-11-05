@@ -7,7 +7,10 @@ import { refetchBatchProducts, remapProductResponse } from "../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminBatchProductRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchProductRequest,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminBatchProductResponse>
 ) => {
   const { result } = await batchProductsWorkflow(req.scope).run({

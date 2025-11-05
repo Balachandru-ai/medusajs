@@ -11,7 +11,7 @@ import {
 import { useQueryGraphStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
-import { setTaxLinesForItemsStep } from "../steps"
+import { setTaxLinesForItemsStep, validateCartStep } from "../steps"
 
 const cartFields = [
   "id",
@@ -143,6 +143,8 @@ export const updateTaxLinesWorkflow = createWorkflow(
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
       return input.cart ?? fetchCart
     })
+
+    validateCartStep({ cart })
 
     acquireLockStep({
       key: cart.id,

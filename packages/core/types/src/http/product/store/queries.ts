@@ -1,4 +1,4 @@
-import { FindParams } from "../../common"
+import { SelectParams } from "../../common"
 import {
   BaseProductListParams,
   BaseProductOptionParams,
@@ -25,10 +25,10 @@ export interface StoreProductPricingContext {
    */
   cart_id?: string
 }
-export interface StoreProductParams extends FindParams, StoreProductPricingContext {}
+export interface StoreProductParams extends SelectParams, StoreProductPricingContext {}
 
 export interface StoreProductListParams
-  extends Omit<BaseProductListParams, "tags" | "status" | "categories" | "deleted_at">, StoreProductPricingContext {
+  extends Omit<BaseProductListParams, "tags" | "status" | "categories" | "deleted_at" | "with_deleted">, StoreProductPricingContext {
   /**
    * Filter by the product's tag(s).
    */

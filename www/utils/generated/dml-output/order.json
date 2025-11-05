@@ -124,7 +124,8 @@
 			"reference_id": "The ID of the record in the referenced table. For example, `paycol_123`.",
 			"amount": "The amount of the order credit line",
 			"raw_amount": "The raw amount of the order credit line",
-			"metadata": "Holds custom data in key-value pairs."
+			"metadata": "Holds custom data in key-value pairs.",
+			"version": "The version of the order credit line"
 		},
 		"deprecated": {
 			"is_deprecated": false

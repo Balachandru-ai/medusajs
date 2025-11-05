@@ -4,15 +4,11 @@ import {
   deleteInventoryItemWorkflow,
   updateInventoryItemsWorkflow,
 } from "@medusajs/core-flows"
-import {
-  AdminGetInventoryItemParamsType,
-  AdminUpdateInventoryItemType,
-} from "../validators"
 import { refetchInventoryItem } from "../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: MedusaRequest<AdminGetInventoryItemParamsType>,
+  req: MedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminInventoryItemResponse>
 ) => {
   const { id } = req.params
@@ -35,7 +31,10 @@ export const GET = async (
 
 // Update inventory item
 export const POST = async (
-  req: MedusaRequest<AdminUpdateInventoryItemType>,
+  req: MedusaRequest<
+    HttpTypes.AdminUpdateInventoryItem,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminInventoryItemResponse>
 ) => {
   const { id } = req.params

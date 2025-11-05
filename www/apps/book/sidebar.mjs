@@ -556,6 +556,11 @@ export const sidebars = [
           },
           {
             type: "link",
+            path: "/learn/fundamentals/admin/translations",
+            title: "Translations",
+          },
+          {
+            type: "link",
             path: "/learn/fundamentals/admin/constraints",
             title: "Constraints",
           },
@@ -585,6 +590,13 @@ export const sidebars = [
             type: "link",
             title: "Medusa Configuations",
             path: "/learn/configurations/medusa-config",
+            children: [
+              {
+                type: "link",
+                title: "Asymmetric Encryption",
+                path: "/learn/configurations/medusa-config/asymmetric-encryption",
+              },
+            ],
           },
           {
             type: "link",

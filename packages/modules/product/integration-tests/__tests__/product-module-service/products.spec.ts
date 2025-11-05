@@ -3,11 +3,7 @@ import {
   ProductCategoryDTO,
   ProductTagDTO,
 } from "@medusajs/framework/types"
-import {
-  kebabCase,
-  Modules,
-  ProductStatus,
-} from "@medusajs/framework/utils"
+import { kebabCase, Modules, ProductStatus } from "@medusajs/framework/utils"
 import {
   Product,
   ProductCategory,
@@ -16,9 +12,7 @@ import {
   ProductType,
 } from "@models"
 
-import {
-  moduleIntegrationTestRunner,
-} from "@medusajs/test-utils"
+import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { UpdateProductInput } from "@types"
 import {
   buildProductAndRelationsData,
@@ -229,7 +223,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             },
             ...data.variants,
           ]
-          productBefore.options = data.options
           productBefore.images = data.images
           productBefore.thumbnail = data.thumbnail
           productBefore.tag_ids = data.tag_ids
@@ -238,6 +231,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productBefore.length = 201
           productBefore.height = 301
           productBefore.width = 401
+          productBefore.option_ids = [productOne.options.map((o) => o.id)]
+          delete productBefore.options
           const updatedProducts = await service.upsertProducts([productBefore])
           expect(updatedProducts).toHaveLength(1)
 
@@ -286,11 +281,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
               options: expect.arrayContaining([
                 expect.objectContaining({
                   id: expect.any(String),
-                  title: productBefore.options?.[0].title,
+                  title: productOne.options[0].title,
                   values: expect.arrayContaining([
                     expect.objectContaining({
                       id: expect.any(String),
-                      value: data.options[0].values[0],
+                      value: productOne.options[0].values[0].value,
                     }),
                   ]),
                 }),
@@ -499,20 +494,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             {
               id: productBefore.id,
               title: "updated title",
-              options: [
-                {
-                  title: "size",
-                  values: ["large", "small"],
-                },
-                {
-                  title: "color",
-                  values: ["red"],
-                },
-                {
-                  title: "material",
-                  values: ["cotton"],
-                },
-              ],
+              option_ids: productBefore.options.map((o) => o.id),
             },
           ])
 
@@ -529,43 +511,38 @@ moduleIntegrationTestRunner<IProductModuleService>({
             ],
           })
 
-          const beforeOption = productBefore.options.find(
+          const beforeOptionOne = productBefore.options.find(
             (opt) => opt.title === "size"
           )!
-          expect(product.options).toHaveLength(3)
+          const beforeOptionTwo = productBefore.options.find(
+            (opt) => opt.title === "color"
+          )!
+          expect(product.options).toHaveLength(2)
           expect(product.options).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                id: beforeOption.id,
-                title: beforeOption.title,
+                id: beforeOptionOne.id,
+                title: beforeOptionOne.title,
                 values: expect.arrayContaining([
                   expect.objectContaining({
-                    id: beforeOption.values[0].id,
-                    value: beforeOption.values[0].value,
+                    id: beforeOptionOne.values[0].id,
+                    value: beforeOptionOne.values[0].value,
                   }),
                 ]),
               }),
               expect.objectContaining({
-                title: "color",
+                id: beforeOptionTwo.id,
+                title: beforeOptionTwo.title,
                 values: expect.arrayContaining([
                   expect.objectContaining({
-                    value: "red",
-                  }),
-                ]),
-              }),
-              expect.objectContaining({
-                id: expect.any(String),
-                title: "material",
-                values: expect.arrayContaining([
-                  expect.objectContaining({
-                    value: "cotton",
+                    id: beforeOptionTwo.values[0].id,
+                    value: beforeOptionTwo.values[0].value,
                   }),
                 ]),
               }),
             ])
           )
         })
-
 
         it("should add relationships to a product", async () => {
           const updateData = {
@@ -817,9 +794,15 @@ moduleIntegrationTestRunner<IProductModuleService>({
         })
 
         it("should simultaneously update options and variants", async () => {
+          const option = (
+            await service.createProductOptions([
+              { title: "material", values: ["cotton", "silk"] },
+            ])
+          )[0]
+
           const updateData = {
             id: productTwo.id,
-            options: [{ title: "material", values: ["cotton", "silk"] }],
+            option_ids: [option.id],
             variants: [{ title: "variant 1", options: { material: "cotton" } }],
           }
 
@@ -1053,7 +1036,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-
         it("should throw because variant doesn't have all options set", async () => {
           const error = await service
             .createProducts([
@@ -1173,6 +1155,111 @@ moduleIntegrationTestRunner<IProductModuleService>({
           const deletedProducts = await service.listProducts(
             { id: products[0].id },
             {
+              relations: ["variants"],
+              withDeleted: true,
+            }
+          )
+
+          expect(deletedProducts).toHaveLength(1)
+          expect(deletedProducts[0].deleted_at).not.toBeNull()
+
+          for (const variant of deletedProducts[0].variants) {
+            expect(variant.deleted_at).not.toBeNull()
+          }
+        })
+
+        it("should not soft delete a product's options and option values", async () => {
+          const data = buildProductAndRelationsData({
+            images,
+            thumbnail: images[0].url,
+            options: [
+              { title: "size", values: ["large", "small"] },
+              { title: "color", values: ["red", "blue"] },
+              { title: "material", values: ["cotton", "polyester"] },
+            ],
+            variants: [
+              {
+                title: "Large Red Cotton",
+                sku: "LRG-RED-CTN",
+                options: {
+                  size: "large",
+                  color: "red",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Large Red Polyester",
+                sku: "LRG-RED-PLY",
+                options: {
+                  size: "large",
+                  color: "red",
+                  material: "polyester",
+                },
+              },
+              {
+                title: "Large Blue Cotton",
+                sku: "LRG-BLU-CTN",
+                options: {
+                  size: "large",
+                  color: "blue",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Large Blue Polyester",
+                sku: "LRG-BLU-PLY",
+                options: {
+                  size: "large",
+                  color: "blue",
+                  material: "polyester",
+                },
+              },
+              {
+                title: "Small Red Cotton",
+                sku: "SML-RED-CTN",
+                options: {
+                  size: "small",
+                  color: "red",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Small Red Polyester",
+                sku: "SML-RED-PLY",
+                options: {
+                  size: "small",
+                  color: "red",
+                  material: "polyester",
+                },
+              },
+              {
+                title: "Small Blue Cotton",
+                sku: "SML-BLU-CTN",
+                options: {
+                  size: "small",
+                  color: "blue",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Small Blue Polyester",
+                sku: "SML-BLU-PLY",
+                options: {
+                  size: "small",
+                  color: "blue",
+                  material: "polyester",
+                },
+              },
+            ],
+          })
+
+          const products = await service.createProducts([data])
+
+          await service.softDeleteProducts([products[0].id])
+
+          const deletedProducts = await service.listProducts(
+            { id: products[0].id },
+            {
               relations: [
                 "variants",
                 "variants.options",
@@ -1183,11 +1270,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
             }
           )
 
-          expect(deletedProducts).toHaveLength(1)
-          expect(deletedProducts[0].deleted_at).not.toBeNull()
-
           for (const option of deletedProducts[0].options) {
-            expect(option.deleted_at).not.toBeNull()
+            expect(option.deleted_at).toBeNull()
           }
 
           const productOptionsValues = deletedProducts[0].options
@@ -1195,11 +1279,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             .flat()
 
           for (const optionValue of productOptionsValues) {
-            expect(optionValue.deleted_at).not.toBeNull()
-          }
-
-          for (const variant of deletedProducts[0].variants) {
-            expect(variant.deleted_at).not.toBeNull()
+            expect(optionValue.deleted_at).toBeNull()
           }
 
           const variantsOptions = deletedProducts[0].options
@@ -1207,7 +1287,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             .flat()
 
           for (const option of variantsOptions) {
-            expect(option.deleted_at).not.toBeNull()
+            expect(option.deleted_at).toBeNull()
           }
         })
 
@@ -1232,7 +1312,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           expect(softDeleted).toHaveLength(1)
         })
-
       })
 
       describe("restore", function () {
@@ -1568,6 +1647,114 @@ moduleIntegrationTestRunner<IProductModuleService>({
               rank: 2,
             }),
           ])
+        })
+
+        it("should populate variant.images when variants.images relation is requested", async () => {
+          const images = [
+            { url: "general-image-1" },
+            { url: "general-image-2" },
+            { url: "variant-specific-image" },
+          ]
+
+          const [product] = await service.createProducts([
+            buildProductAndRelationsData({
+              images,
+              options: [{ title: "size", values: ["small", "large"] }],
+              variants: [
+                { title: "Small", options: { size: "small" } },
+                { title: "Large", options: { size: "large" } },
+              ],
+            }),
+          ])
+
+          const generalImage1 = product.images.find(
+            (img) => img.url === "general-image-1"
+          )!
+          const generalImage2 = product.images.find(
+            (img) => img.url === "general-image-2"
+          )!
+          const variantSpecificImage = product.images.find(
+            (img) => img.url === "variant-specific-image"
+          )!
+
+          const smallVariant = product.variants.find(
+            (v) => v.title === "Small"
+          )!
+          const largeVariant = product.variants.find(
+            (v) => v.title === "Large"
+          )!
+
+          // Add variant-specific image assignment
+          await service.addImageToVariant([
+            {
+              image_id: variantSpecificImage.id,
+              variant_id: smallVariant.id,
+            },
+          ])
+
+          // Test retrieveProduct with variants.images relation
+          const retrievedProduct = await service.retrieveProduct(product.id, {
+            relations: ["variants", "variants.images", "images"],
+          })
+
+          expect(retrievedProduct.variants).toHaveLength(2)
+
+          // First variant (Small) should have general images + variant-specific image
+          const retrievedSmallVariant = retrievedProduct.variants.find(
+            (v) => v.title === "Small"
+          )!
+          expect(retrievedSmallVariant.images).toHaveLength(3) // 2 general + 1 variant-specific
+          expect(retrievedSmallVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+              expect.objectContaining({ id: variantSpecificImage.id }),
+            ])
+          )
+
+          // Second variant (Large) should have only general images
+          const retrievedLargeVariant = retrievedProduct.variants.find(
+            (v) => v.title === "Large"
+          )!
+          expect(retrievedLargeVariant.images).toHaveLength(2) // 2 general images only
+          expect(retrievedLargeVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+            ])
+          )
+
+          // Test listProducts with variants.images relation
+          const products = await service.listProducts(
+            { id: product.id },
+            { relations: ["variants", "variants.images", "images"] }
+          )
+
+          expect(products).toHaveLength(1)
+          expect(products[0].variants).toHaveLength(2)
+
+          const listSmallVariant = products[0].variants.find(
+            (v) => v.title === "Small"
+          )!
+          expect(listSmallVariant.images).toHaveLength(3)
+          expect(listSmallVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+              expect.objectContaining({ id: variantSpecificImage.id }),
+            ])
+          )
+
+          const listLargeVariant = products[0].variants.find(
+            (v) => v.title === "Large"
+          )!
+          expect(listLargeVariant.images).toHaveLength(2)
+          expect(listLargeVariant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: generalImage1.id }),
+              expect.objectContaining({ id: generalImage2.id }),
+            ])
+          )
         })
       })
     })
