@@ -1,6 +1,6 @@
 import { IStoreModuleService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
-import { StoreModuleService } from "@services"
+import StoreModuleService from "#services/store-module-service"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { createStoreFixture } from "../__fixtures__"
 

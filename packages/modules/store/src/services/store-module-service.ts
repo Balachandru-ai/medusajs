@@ -20,8 +20,9 @@ import {
   removeUndefined,
 } from "@medusajs/framework/utils"
 
-import { Store, StoreCurrency } from "@models"
-import { UpdateStoreInput } from "@types"
+import Store from "#models/store"
+import StoreCurrency from "#models/currency"
+import { UpdateStoreInput } from "#types/index"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

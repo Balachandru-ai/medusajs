@@ -4,6 +4,24 @@
   "description": "Medusa Store module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "imports": {
+    "#migrations/*": {
+      "types": "./dist/migrations/*.d.ts",
+      "default": "./dist/migrations/*.js"
+    },
+    "#models/*": {
+      "types": "./dist/models/*.d.ts",
+      "default": "./dist/models/*.js"
+    },
+    "#services/*": {
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
+    },
+    "#types/*": {
+      "types": "./dist/types/*.d.ts",
+      "default": "./dist/types/*.js"
+    }
+  },
   "files": [
     "dist",
     "!dist/**/__tests__",
@@ -26,8 +44,7 @@
   "scripts": {
     "watch": "yarn run -T tsc --build --watch",
     "watch:test": "yarn run -T tsc --build tsconfig.spec.json --watch",
-    "resolve:aliases": "yarn run -T tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && yarn run -T tsc-alias -p tsconfig.resolved.json && yarn run -T rimraf tsconfig.resolved.json",
-    "build": "yarn run -T rimraf dist && yarn run -T tsc --build && npm run resolve:aliases",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "test": "../../../node_modules/.bin/jest --bail --forceExit --testPathPattern=src",
     "test:integration": "../../../node_modules/.bin/jest --passWithNoTests --forceExit --testPathPattern=\"integration-tests/__tests__/.*\\.ts\"",
     "migration:initial": "MIKRO_ORM_CLI_CONFIG=./mikro-orm.config.dev.ts MIKRO_ORM_ALLOW_GLOBAL_CLI=true medusa-mikro-orm migration:create --initial",

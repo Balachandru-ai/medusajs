@@ -1,6 +1,7 @@
-import * as entities from "./src/models"
+import Currency from "#models/currency"
+import Store from "#models/store"
 import { defineMikroOrmCliConfig, Modules } from "@medusajs/framework/utils"
 
 export default defineMikroOrmCliConfig(Modules.STORE, {
-  entities: Object.values(entities),
+  entities: [Currency, Store],
 })
