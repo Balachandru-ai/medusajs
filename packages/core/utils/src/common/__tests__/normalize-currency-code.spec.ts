@@ -1,19 +1,21 @@
 import { normalizeCurrencyCode } from "../normalize-currency-code"
 
 describe("normalizeCurrencyCode", () => {
-    it("returns lowercased currency code", () => {
-        const uppercased = "USD"
-        const result = normalizeCurrencyCode(uppercased)
+  it("returns lowercased currency code", () => {
+    const uppercased = "USD"
+    const result = normalizeCurrencyCode(uppercased)
 
-        expect(result).toEqual("usd")
-    })
+    expect(result).toEqual("usd")
+  })
 
-    it("returns undefined when value is not a string", () => {
-        const number = 1
-        const numberResult = normalizeCurrencyCode(number)
-        const undefinedResult = normalizeCurrencyCode(undefined)
+  it("throws when value is not a string", () => {
+    const errorMessage = "Currency code needs to be a string"
 
-        expect(numberResult).toBeUndefined()
-        expect(undefinedResult).toBeUndefined()
-    })
+    expect(() => {
+      normalizeCurrencyCode(1 as unknown as string)
+    }).toThrow(errorMessage)
+    expect(() => {
+      normalizeCurrencyCode(undefined as unknown as string)
+    }).toThrow(errorMessage)
+  })
 })
