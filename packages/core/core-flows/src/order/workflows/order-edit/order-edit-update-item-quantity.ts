@@ -1,5 +1,4 @@
 import {
-  ComputeActionContext,
   OrderChangeDTO,
   OrderDTO,
   OrderPreviewDTO,
@@ -8,7 +7,6 @@ import {
 import {
   BigNumber,
   ChangeActionType,
-  getLineItemTotals,
   MathBN,
   OrderChangeStatus,
 } from "@medusajs/framework/utils"
