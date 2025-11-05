@@ -16,7 +16,7 @@ import {
 import { createProductsWorkflow } from "./create-products"
 import { deleteProductsWorkflow } from "./delete-products"
 import { updateProductsWorkflow } from "./update-products"
-import { processProductOptionsForImportStep } from "../steps"
+import { processProductOptionsForImportStep } from "../steps/process-product-options-for-import"
 
 /**
  * The products to manage.
